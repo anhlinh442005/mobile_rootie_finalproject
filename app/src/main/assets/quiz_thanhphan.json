@@ -1,0 +1,40 @@
+{
+  "ingredients": [
+
+    { "name": "Cocos nucifera oil", "vi": "Dầu dừa", "category": "oil", "risk": "avoid" },
+    { "name": "Olive oil", "vi": "Dầu ô liu", "category": "oil", "risk": "caution" },
+    { "name": "Jojoba oil", "vi": "Dầu jojoba", "category": "oil", "risk": "safe" },
+
+    { "name": "Sodium Lauryl Sulfate", "vi": "Chất tẩy rửa mạnh", "category": "surfactant", "risk": "avoid" },
+    { "name": "Sodium Laureth Sulfate", "vi": "Chất tẩy rửa", "category": "surfactant", "risk": "caution" },
+    { "name": "Cocamidopropyl Betaine", "vi": "Chất tạo bọt", "category": "surfactant", "risk": "caution" },
+    { "name": "Decyl Glucoside", "vi": "Chất làm sạch dịu", "category": "surfactant", "risk": "safe" },
+
+    { "name": "Alcohol Denat", "vi": "Cồn khô", "category": "alcohol", "risk": "avoid" },
+    { "name": "Ethanol", "vi": "Cồn", "category": "alcohol", "risk": "avoid" },
+    { "name": "Cetyl Alcohol", "vi": "Cồn béo", "category": "alcohol", "risk": "safe" },
+
+    { "name": "Fragrance", "vi": "Hương liệu", "category": "fragrance", "risk": "avoid" },
+    { "name": "Essential Oil", "vi": "Tinh dầu", "category": "fragrance", "risk": "caution" },
+
+    { "name": "Phenoxyethanol", "vi": "Chất bảo quản", "category": "preservative", "risk": "caution" },
+    { "name": "Paraben", "vi": "Paraben", "category": "preservative", "risk": "caution" },
+
+    { "name": "Propylene Glycol", "vi": "Chất giữ ẩm", "category": "humectant", "risk": "caution" },
+    { "name": "Glycerin", "vi": "Glycerin", "category": "humectant", "risk": "safe" },
+    { "name": "Hyaluronic Acid", "vi": "HA dưỡng ẩm", "category": "humectant", "risk": "safe" },
+
+    { "name": "Niacinamide", "vi": "Vitamin B3", "category": "active", "risk": "safe" },
+    { "name": "Retinol", "vi": "Retinol", "category": "active", "risk": "caution" },
+    { "name": "Salicylic Acid", "vi": "BHA", "category": "active", "risk": "caution" },
+    { "name": "Glycolic Acid", "vi": "AHA", "category": "active", "risk": "caution" },
+
+    { "name": "Centella Asiatica", "vi": "Rau má", "category": "extract", "risk": "safe" },
+    { "name": "Green tea", "vi": "Trà xanh", "category": "extract", "risk": "safe" },
+    { "name": "Aloe Vera", "vi": "Nha đam", "category": "extract", "risk": "safe" },
+
+    { "name": "Silicone", "vi": "Silicone", "category": "occlusive", "risk": "caution" },
+    { "name": "Petrolatum", "vi": "Vaseline", "category": "occlusive", "risk": "safe" }
+
+  ]
+}

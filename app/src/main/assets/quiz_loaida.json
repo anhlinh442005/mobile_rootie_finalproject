@@ -1,0 +1,30 @@
+{
+  "skin_types": [
+    { "id": "normal", "vi": "Da thường" },
+    { "id": "dry", "vi": "Da khô" },
+    { "id": "oily", "vi": "Da dầu" },
+    { "id": "combination", "vi": "Da hỗn hợp" },
+    { "id": "sensitive", "vi": "Da nhạy cảm" },
+
+    { "id": "acne", "vi": "Da mụn" },
+    { "id": "aging", "vi": "Da lão hóa" },
+    { "id": "dehydrated", "vi": "Da mất nước" },
+    { "id": "reactive", "vi": "Da dễ kích ứng" },
+    { "id": "oily_sensitive", "vi": "Da dầu nhạy cảm" }
+  ],
+
+  "logic_rules": [
+    {
+      "condition": ["oily", "sensitive"],
+      "result": "oily_sensitive"
+    },
+    {
+      "condition": ["dry", "dehydrated"],
+      "result": "dehydrated"
+    },
+    {
+      "condition": ["acne", "oily"],
+      "result": "acne"
+    }
+  ]
+}

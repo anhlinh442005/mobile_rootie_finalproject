@@ -1,0 +1,19 @@
+{
+  "skin_type": "Da dầu nhạy cảm",
+
+  "ingredient_analysis": {
+    "avoid": ["Cồn khô", "Hương liệu"],
+    "caution": ["Retinol"],
+    "safe": ["Glycerin"]
+  },
+
+  "product_analysis": [
+    {
+      "product": "Rootie Gentle Cleanser",
+      "risk": "Nguy cơ cao",
+      "problem_ingredients": ["Sodium Lauryl Sulfate", "Fragrance"]
+    }
+  ],
+
+  "recommendation": "Nên dùng sản phẩm dịu nhẹ, không cồn, không hương liệu."
+}
