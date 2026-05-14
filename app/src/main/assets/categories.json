@@ -1,0 +1,516 @@
+{
+  "categories": [
+    {
+      "name": "Chăm sóc da",
+      "slug": "cham-soc-da",
+      "level": 1,
+      "icon": "",
+      "display_order": 1,
+      "isActive": true,
+      "parentId": null,
+      "id": "64e8034f5e0e7384674e1652",
+      "_id": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:25:50.535Z"
+      }
+    },
+    {
+      "name": "Tắm & Dưỡng Thể",
+      "slug": "tam-duong-the",
+      "level": 1,
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "parentId": null,
+      "id": "4abe1668ad625c94d6c4553b",
+      "_id": {
+        "$oid": "4abe1668ad625c94d6c4553b"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:31:27.493Z"
+      }
+    },
+    {
+      "name": "Chăm Sóc Tóc",
+      "slug": "cham-soc-toc",
+      "level": 1,
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "parentId": null,
+      "id": "9b71bd6a36146d2783935085",
+      "_id": {
+        "$oid": "9b71bd6a36146d2783935085"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:31:34.947Z"
+      }
+    },
+    {
+      "name": "Dưỡng Môi",
+      "slug": "duong-moi",
+      "level": 1,
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "parentId": null,
+      "id": "df28101cfba09eff2da2026c",
+      "_id": {
+        "$oid": "df28101cfba09eff2da2026c"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:31:51.174Z"
+      }
+    },
+    {
+      "name": "Combo & Bộ Sản Phẩm",
+      "slug": "combo-bo-san-pham",
+      "level": 1,
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "parentId": null,
+      "id": "b14a12191dcced2b80463ebb",
+      "_id": {
+        "$oid": "b14a12191dcced2b80463ebb"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:32:05.786Z"
+      }
+    },
+    {
+      "name": "Chống Nắng",
+      "slug": "cham-soc-da/chong-nang",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "36cbf3f5c4b7a299ce2a2d0c",
+      "_id": {
+        "$oid": "36cbf3f5c4b7a299ce2a2d0c"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:32:29.999Z"
+      }
+    },
+    {
+      "name": "Tẩy Trang",
+      "slug": "cham-soc-da/tay-trang",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "389971929086b2ce7fba9dd0",
+      "_id": {
+        "$oid": "389971929086b2ce7fba9dd0"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:32:47.060Z"
+      }
+    },
+    {
+      "name": "Sữa Rửa Mặt",
+      "slug": "cham-soc-da/sua-rua-mat",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "f5877af6a55f88bcf57c17b4",
+      "_id": {
+        "$oid": "f5877af6a55f88bcf57c17b4"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:32:55.583Z"
+      }
+    },
+    {
+      "name": "Tẩy Da Chết Mặt",
+      "slug": "cham-soc-da/tay-da-chet-mat",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "c211afa24702f5d1ff86fe42",
+      "_id": {
+        "$oid": "c211afa24702f5d1ff86fe42"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:33:05.568Z"
+      }
+    },
+    {
+      "name": "Mặt Nạ",
+      "slug": "cham-soc-da/mat-na",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "7667d982515426a9d88b787b",
+      "_id": {
+        "$oid": "7667d982515426a9d88b787b"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:33:19.600Z"
+      }
+    },
+    {
+      "name": "Nước Cân Bằng",
+      "slug": "cham-soc-da/nuoc-can-bang",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "4e20d6bbc1203015ee2ecd48",
+      "_id": {
+        "$oid": "4e20d6bbc1203015ee2ecd48"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:33:30.337Z"
+      }
+    },
+    {
+      "name": "Tinh Chất",
+      "slug": "cham-soc-da/tinh-chat",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "b1b6cd208332d4f1e015a26c",
+      "_id": {
+        "$oid": "b1b6cd208332d4f1e015a26c"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:33:41.080Z"
+      }
+    },
+    {
+      "name": "Kem Dưỡng",
+      "slug": "cham-soc-da/kem-duong",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "bb88a3306cf95af20d073594",
+      "_id": {
+        "$oid": "bb88a3306cf95af20d073594"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:33:55.764Z"
+      }
+    },
+    {
+      "name": "Xịt Khoáng",
+      "slug": "cham-soc-da/xit-khoang",
+      "level": 2,
+      "parentId": {
+        "$oid": "64e8034f5e0e7384674e1652"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "9882d5fa14c74dd053e17f33",
+      "_id": {
+        "$oid": "9882d5fa14c74dd053e17f33"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:34:08.166Z"
+      }
+    },
+    {
+      "name": "Tẩy Da Chết Cơ Thể",
+      "slug": "tam-duong-the/tay-da-chet-co-the",
+      "level": 2,
+      "parentId": {
+        "$oid": "4abe1668ad625c94d6c4553b"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "b703bb813e660aa88076ee5a",
+      "_id": {
+        "$oid": "b703bb813e660aa88076ee5a"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:41:41.647Z"
+      }
+    },
+    {
+      "name": "Sữa Tắm",
+      "slug": "tam-duong-the/sua-tam",
+      "level": 2,
+      "parentId": {
+        "$oid": "4abe1668ad625c94d6c4553b"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "7c70e845e829b374e57ee7b1",
+      "_id": {
+        "$oid": "7c70e845e829b374e57ee7b1"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:41:50.893Z"
+      }
+    },
+    {
+      "name": "Dưỡng Thể",
+      "slug": "tam-duong-the/duong-the",
+      "level": 2,
+      "parentId": {
+        "$oid": "4abe1668ad625c94d6c4553b"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "8fce5340c618672aa1ae7fb3",
+      "_id": {
+        "$oid": "8fce5340c618672aa1ae7fb3"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:42:16.402Z"
+      }
+    },
+    {
+      "name": "Tẩy Da Chết Da Đầu",
+      "slug": "cham-soc-toc/tay-da-chet-da-au",
+      "level": 2,
+      "parentId": {
+        "$oid": "9b71bd6a36146d2783935085"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "24a75aa9d541feed638b1970",
+      "_id": {
+        "$oid": "24a75aa9d541feed638b1970"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:42:40.555Z"
+      }
+    },
+    {
+      "name": "Dầu Gội",
+      "slug": "cham-soc-toc/dau-goi",
+      "level": 2,
+      "parentId": {
+        "$oid": "9b71bd6a36146d2783935085"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "7cda1abb28a80b4630e9f67e",
+      "_id": {
+        "$oid": "7cda1abb28a80b4630e9f67e"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:42:49.689Z"
+      }
+    },
+    {
+      "name": "Kem Ủ",
+      "slug": "cham-soc-toc/kem-u",
+      "level": 2,
+      "parentId": {
+        "$oid": "9b71bd6a36146d2783935085"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "2d97aabe97dc1b9a0ff38e7a",
+      "_id": {
+        "$oid": "2d97aabe97dc1b9a0ff38e7a"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:42:59.616Z"
+      }
+    },
+    {
+      "name": "Dầu Xả",
+      "slug": "cham-soc-toc/dau-xa",
+      "level": 2,
+      "parentId": {
+        "$oid": "9b71bd6a36146d2783935085"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "15f32830229b8c65fb23d63f",
+      "_id": {
+        "$oid": "15f32830229b8c65fb23d63f"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:43:08.807Z"
+      }
+    },
+    {
+      "name": "Nước Dưỡng Tóc",
+      "slug": "cham-soc-toc/nuoc-duong-toc",
+      "level": 2,
+      "parentId": {
+        "$oid": "9b71bd6a36146d2783935085"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "b7c8f58b2b354f9067386517",
+      "_id": {
+        "$oid": "b7c8f58b2b354f9067386517"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:43:20.471Z"
+      }
+    },
+    {
+      "name": "Tinh Chất Dưỡng Tóc",
+      "slug": "cham-soc-toc/tinh-chat-duong-toc",
+      "level": 2,
+      "parentId": {
+        "$oid": "9b71bd6a36146d2783935085"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "5bc89b7801fcc12c873218aa",
+      "_id": {
+        "$oid": "5bc89b7801fcc12c873218aa"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:43:30.663Z"
+      }
+    },
+    {
+      "name": "Tẩy Da Chết Môi",
+      "slug": "duong-moi/tay-da-chet-moi",
+      "level": 2,
+      "parentId": {
+        "$oid": "df28101cfba09eff2da2026c"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "755731e01d8c579c633ae4d2",
+      "_id": {
+        "$oid": "755731e01d8c579c633ae4d2"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:43:45.448Z"
+      }
+    },
+    {
+      "name": "Dưỡng Ẩm Môi",
+      "slug": "duong-moi/duong-am-moi",
+      "level": 2,
+      "parentId": {
+        "$oid": "df28101cfba09eff2da2026c"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "ded17e0716783c133b1a5b9a",
+      "_id": {
+        "$oid": "ded17e0716783c133b1a5b9a"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:43:52.467Z"
+      }
+    },
+    {
+      "name": "Chăm Sóc Da Mặt",
+      "slug": "combo-bo-san-pham/cham-soc-da-mat",
+      "level": 2,
+      "parentId": {
+        "$oid": "b14a12191dcced2b80463ebb"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "7176b5e7966be88daf95cfd4",
+      "_id": {
+        "$oid": "7176b5e7966be88daf95cfd4"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:44:08.039Z"
+      }
+    },
+    {
+      "name": "Chăm Sóc Cơ Thể",
+      "slug": "duong-moi/cham-soc-co-the",
+      "level": 2,
+      "parentId": {
+        "$oid": "b14a12191dcced2b80463ebb"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "f40c1f05dcf4059f25fb89a1",
+      "_id": {
+        "$oid": "f40c1f05dcf4059f25fb89a1"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:44:33.176Z"
+      }
+    },
+    {
+      "name": "Chăm Sóc Mái Tóc",
+      "slug": "combo-bo-san-pham/cham-soc-mai-toc",
+      "level": 2,
+      "parentId": {
+        "$oid": "b14a12191dcced2b80463ebb"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "e0754dabb88699e92481e123",
+      "_id": {
+        "$oid": "e0754dabb88699e92481e123"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:44:26.170Z"
+      }
+    },
+    {
+      "name": "Chăm Sóc Môi",
+      "slug": "combo-bo-san-pham/-combo-bo-san-pham-cham-soc-moi-cham-soc-moi",
+      "level": 2,
+      "parentId": {
+        "$oid": "b14a12191dcced2b80463ebb"
+      },
+      "icon": "",
+      "display_order": 0,
+      "isActive": true,
+      "id": "bd1c0ff76b19b1b5a3130a79",
+      "_id": {
+        "$oid": "bd1c0ff76b19b1b5a3130a79"
+      },
+      "updatedAt": {
+        "$date": "2026-04-26T18:45:20.099Z"
+      }
+    }
+  ]
+}

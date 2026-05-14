@@ -1,0 +1,537 @@
+{
+  "policy_deposit": {
+    "title": "Chính sách đặt cọc",
+    "hotline": "1800 1234",
+    "sections": [
+      {
+        "type": "qa",
+        "question": "Khi nào tôi cần tiến hành đặt cọc?",
+        "answer": "Việc đặt cọc được áp dụng đối với các trường hợp khách hàng có nhu cầu mua hàng hóa với số lượng lớn, hoặc đặt trước các sản phẩm phiên bản giới hạn (limited edition), sản phẩm pre-order chưa có sẵn tại cửa hàng."
+      },
+      {
+        "type": "qa",
+        "question": "Tôi cần đặt cọc trước bao nhiêu phần trăm?",
+        "answer": "Để xác nhận đơn hàng, Quý khách vui lòng tiến hành đặt cọc trước 30% tổng giá trị đơn hàng. Số tiền còn lại sẽ được thanh toán khi Quý khách nhận và kiểm tra hàng thành công."
+      },
+      {
+        "type": "qa",
+        "question": "Thời gian nhận hàng sau khi đặt cọc là bao lâu?",
+        "answer": "Sau khi hệ thống ghi nhận khoản tiền cọc, Rootie sẽ tiến hành xử lý đơn hàng. Trong vòng tối đa 15 ngày kể từ ngày đặt cọc thành công, nhân viên của Rootie sẽ liên hệ để giao sản phẩm đến tay Quý khách."
+      },
+      {
+        "type": "qa",
+        "question": "Khi không còn nhu cầu mua hàng, tôi có thể hủy cọc không?",
+        "answer": "Quý khách có thể liên hệ trực tiếp với bộ phận Chăm sóc khách hàng của Rootie để được hỗ trợ hủy cọc. Xin lưu ý, sau 15 ngày kể từ ngày đặt cọc mà khách hàng không nhận hàng, hệ thống sẽ tự động hủy đơn và Rootie không hỗ trợ hoàn tiền trong trường hợp này."
+      },
+      {
+        "type": "table",
+        "title": "Chính sách hoàn tiền khi hủy cọc",
+        "headers": [
+          "Thời gian thông báo",
+          "Trường hợp / Nguyên nhân",
+          "Trách nhiệm hoàn tiền"
+        ],
+        "rows": [
+          [
+            "Trong vòng 24h",
+            "Khách hàng chủ động yêu cầu hủy cọc",
+            "Hoàn lại 100% giá trị đã cọc"
+          ],
+          [
+            "Sau 24h",
+            "Khách hàng chủ động yêu cầu hủy cọc",
+            "Không hỗ trợ hoàn tiền"
+          ],
+          [
+            "Từ 2 - 15 ngày",
+            "Rootie không đủ nguồn hàng cung cấp",
+            "Hoàn lại 100% giá trị đã cọc"
+          ],
+          [
+            "Từ 2 - 15 ngày",
+            "Rootie đủ hàng giao nhưng khách thay đổi ý định",
+            "Không hỗ trợ hoàn tiền"
+          ],
+          [
+            "Sau 15 ngày",
+            "Khách không nhận hàng, hệ thống tự động hủy",
+            "Không hỗ trợ hoàn tiền"
+          ]
+        ]
+      },
+      {
+        "type": "qa",
+        "question": "Tôi có thể đổi sang sản phẩm khác với sản phẩm đã đặt cọc không?",
+        "answer": "Hoàn toàn có thể. Nếu sản phẩm mới có giá trị thấp hơn, Rootie sẽ hoàn trả lại phần tiền chênh lệch. Nếu sản phẩm mới có giá trị cao hơn, Quý khách vui lòng thanh toán bù thêm khoản phí tương ứng."
+      },
+      {
+        "type": "qa",
+        "question": "Tiền hủy cọc sẽ được hoàn lại cho tôi như thế nào?",
+        "answer": "Quý khách có thể nhận lại tiền mặt trực tiếp tại quầy thu ngân của Rootie. Nếu chọn phương thức chuyển khoản, tiền sẽ được hoàn về tài khoản của Quý khách trong vòng 2-3 ngày làm việc (không tính thứ 7, Chủ Nhật và các ngày lễ)."
+      }
+    ]
+  },
+  "content_policy": {
+    "title": "Chính sách nội dung",
+    "sections": [
+      {
+        "title": "Thông báo miễn trừ trách nhiệm",
+        "content": [
+          "Tất cả các sản phẩm được phân phối tại Rootie đều đi kèm với thông tin mô tả chi tiết về hình ảnh, nguồn gốc xuất xứ, bảng thành phần và công dụng chăm sóc da.",
+          "Mặc dù chúng tôi luôn nỗ lực chọn lọc, tổng hợp thông tin từ các nguồn tài liệu của nhà sản xuất và các trang chính thống có độ tin cậy cao, xin lưu ý rằng những nội dung này chỉ mang tính chất tham khảo.",
+          "Cơ địa và tình trạng da của mỗi cá nhân là hoàn toàn khác nhau. Một sản phẩm có thể phát huy tác dụng rất tốt trên nền da này nhưng lại có thể gây kích ứng với nền da khác.",
+          "Quý khách hàng được khuyến nghị nên đọc kỹ bảng thành phần và hướng dẫn sử dụng từ nhà sản xuất trước khi quyết định dùng lên da.",
+          "Các thông tin trên website hoặc bao bì sản phẩm không thể thay thế cho những chẩn đoán y khoa hoặc lời khuyên từ các bác sĩ da liễu có chuyên môn.",
+          "Rootie bảo lưu quyền cập nhật, sửa đổi hoặc loại bỏ nội dung trên hệ thống website/ứng dụng mà không cần phải thông báo trước.",
+          "Quý khách tuyệt đối không nên tự ý dựa vào các thông tin này để tự chẩn đoán hay điều trị các bệnh lý nghiêm trọng về da mà chưa có chỉ định của chuyên gia y tế."
+        ]
+      },
+      {
+        "title": "Đóng góp và phản hồi nội dung",
+        "content": [
+          "Rootie luôn hướng tới sự hoàn thiện, minh bạch và cố gắng cung cấp thông tin chính xác nhất từ các nguồn uy tín.",
+          "Nếu Quý khách phát hiện bất kỳ thông tin nào có sai sót hoặc cần đóng góp để hoàn thiện nội dung, xin vui lòng liên hệ ngay với Rootie qua Hotline hoặc Email để chúng tôi kịp thời đối chiếu và cập nhật nhanh chóng nhất."
+        ]
+      }
+    ]
+  },
+  "return_policy": {
+    "title": "Chính sách đổi trả",
+    "sections": [
+      {
+        "type": "group",
+        "title": "Điều kiện áp dụng đổi trả",
+        "items": [
+          {
+            "title": "Sản phẩm có lỗi từ nhà sản xuất",
+            "conditions": [
+              "Thời gian yêu cầu đổi trả không quá 30 ngày kể từ ngày mua hàng.",
+              "Áp dụng cho tất cả các dòng sản phẩm bị lỗi bao bì, móp méo từ NSX hoặc chất lượng bên trong bị ảnh hưởng trước khi mở seal."
+            ]
+          },
+          {
+            "title": "Sản phẩm không có lỗi (Khách hàng thay đổi nhu cầu)",
+            "conditions": [
+              "Thời gian yêu cầu đổi trả không quá 30 ngày kể từ ngày mua hàng.",
+              "Sản phẩm phải còn nguyên trạng, nguyên tem mác, chưa qua bất kỳ hình thức sử dụng nào.",
+              "Chỉ áp dụng đổi trả với những đơn hàng chứa tối đa 5 sản phẩm cùng loại."
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Các nhóm sản phẩm KHÔNG hỗ trợ đổi trả",
+        "items": [
+          "Sản phẩm đã bị xé tem niêm phong, màng co, rách vỏ hộp hoặc không còn giữ được tình trạng nguyên vẹn ban đầu.",
+          "Sản phẩm đã được mở nắp, có dấu hiệu đã qua sử dụng dù chỉ một lần.",
+          "Các sản phẩm mỹ phẩm đặc thù dạng kem, gel, tinh chất (serum), toner, mặt nạ... đã có dấu hiệu vặn nắp, mở seal bảo vệ.",
+          "Sản phẩm thuộc chương trình khuyến mãi thanh lý (clearance) hoặc hàng được tặng kèm theo đơn.",
+          "Hàng hóa được đặt riêng theo yêu cầu cá nhân, hàng pre-order không có sẵn."
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Quy định chung khi thực hiện đổi trả",
+        "items": [
+          "Quý khách có thể đổi/trả một phần hoặc toàn bộ đơn hàng nếu các sản phẩm đều đáp ứng điều kiện còn nguyên seal niêm phong.",
+          "Số tiền hoàn lại sẽ được tính toán chi tiết dựa trên số lượng sản phẩm thực tế đủ điều kiện trả hàng.",
+          "Trong trường hợp sản phẩm còn nguyên vẹn nhưng vỏ hộp giấy bên ngoài bị mất hoặc rách nát, Rootie có thể áp dụng mức phí thu hồi tương ứng."
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Lưu ý quan trọng",
+        "items": [
+          "Quý khách cần cung cấp số điện thoại đã dùng để mua hàng nhằm phục vụ việc đối soát trên hệ thống.",
+          "Trong trường hợp đổi trả sản phẩm chính, Quý khách vui lòng hoàn trả lại toàn bộ các mặt hàng quà tặng kèm (nếu có)."
+        ]
+      },
+      {
+        "type": "group",
+        "title": "Phương thức hoàn tiền",
+        "items": [
+          {
+            "title": "Nhận tiền tại cửa hàng",
+            "conditions": [
+              "Nhận lại tiền mặt trực tiếp tại quầy thu ngân của bất kỳ chi nhánh Rootie nào sau khi nhân viên kiểm tra hàng hóa thành công."
+            ]
+          },
+          {
+            "title": "Chuyển khoản ngân hàng",
+            "conditions": [
+              "Tiền sẽ được hoàn về tài khoản của Quý khách trong thời gian từ 2-3 ngày làm việc.",
+              "Quý khách cần điền đầy đủ và chính xác thông tin tài khoản nhận tiền qua đường link bảo mật mà hệ thống Rootie cung cấp."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "service_policy": {
+    "title": "Chính sách dịch vụ soi da",
+    "sections": [
+      {
+        "type": "group",
+        "title": "Quy định Hoàn / Hủy gói dịch vụ",
+        "items": [
+          {
+            "title": "Trong vòng 3 ngày sau khi thanh toán",
+            "conditions": [
+              "Miễn phí hoàn/hủy dịch vụ.",
+              "Rootie sẽ tiến hành thu hồi lại các quà tặng hiện vật (nếu khách hàng chưa bóc tem/sử dụng).",
+              "Khách hàng không được hoàn lại các loại voucher đã áp dụng cho đơn hàng.",
+              "Hoàn lại số tiền thực tế khách hàng đã thanh toán sau khi trừ đi các giá trị khuyến mãi."
+            ]
+          },
+          {
+            "title": "Sau 3 ngày kể từ khi thanh toán",
+            "conditions": [
+              "Vẫn được hỗ trợ miễn phí hoàn/hủy dịch vụ.",
+              "Rootie không thu hồi lại quà tặng hiện vật, thay vào đó giá trị quà tặng sẽ được trừ trực tiếp vào số tiền hoàn lại.",
+              "Khách hàng không được hoàn lại các loại voucher đã áp dụng.",
+              "Chỉ hoàn lại phần tiền tương ứng với số buổi dịch vụ chưa sử dụng."
+            ]
+          }
+        ]
+      },
+      {
+        "type": "group",
+        "title": "Quy định Dời lịch hẹn",
+        "items": [
+          {
+            "title": "Báo dời lịch từ 30 ngày trở xuống",
+            "conditions": [
+              "Hỗ trợ dời lịch hoàn toàn miễn phí sang thời gian phù hợp hơn."
+            ]
+          },
+          {
+            "title": "Dời lịch trong khoảng 31–180 ngày",
+            "conditions": [
+              "Có thể phát sinh phí quản lý hồ sơ và duy trì dịch vụ tương đương khoảng 10% giá trị gói."
+            ]
+          },
+          {
+            "title": "Vượt quá 180 ngày (6 tháng)",
+            "conditions": [
+              "Gói dịch vụ tự động hết hiệu lực trên hệ thống và không được hỗ trợ hoàn tiền."
+            ]
+          }
+        ]
+      },
+      {
+        "type": "group",
+        "title": "Quy định đối với Gói Combo/Liệu trình nhiều buổi",
+        "items": [
+          {
+            "title": "Hoàn trả gói dịch vụ dang dở",
+            "conditions": [
+              "Rootie sẽ hỗ trợ hoàn lại số tiền tương ứng với các buổi soi da/tư vấn chưa sử dụng.",
+              "Không hỗ trợ hoàn lại tiền cọc ban đầu (nếu có)."
+            ]
+          },
+          {
+            "title": "Mất ưu đãi Combo",
+            "conditions": [
+              "Khi hoàn hủy một phần của gói Combo, Quý khách sẽ mất toàn bộ ưu đãi giảm giá ban đầu.",
+              "Số tiền của các buổi đã sử dụng sẽ được tính toán lại dựa trên bảng giá dịch vụ lẻ niêm yết tại thời điểm mua hàng."
+            ]
+          }
+        ]
+      },
+      {
+        "type": "group",
+        "title": "Phương thức hoàn tiền dịch vụ",
+        "items": [
+          {
+            "title": "Tại cơ sở Rootie",
+            "conditions": [
+              "Nhận lại tiền mặt tại quầy thu ngân."
+            ]
+          },
+          {
+            "title": "Qua chuyển khoản",
+            "conditions": [
+              "Hoàn tiền qua hệ thống ngân hàng trong vòng 2-3 ngày làm việc sau khi xác nhận đối soát."
+            ]
+          }
+        ]
+      },
+      {
+        "type": "group",
+        "title": "Hiệu lực của hợp đồng dịch vụ",
+        "items": [
+          {
+            "title": "Thời hạn sử dụng tiêu chuẩn",
+            "conditions": [
+              "Gói dịch vụ có thời hạn sử dụng kéo dài đến tối đa 3 tháng kể từ sau khi hoàn tất buổi tư vấn/soi da cuối cùng trong phác đồ."
+            ]
+          },
+          {
+            "title": "Trường hợp bất khả kháng",
+            "conditions": [
+              "Trong các sự kiện bất khả kháng (thiên tai, dịch bệnh, lý do sức khỏe cá nhân nghiêm trọng), Rootie có thể xem xét gia hạn thời gian sử dụng.",
+              "Tùy vào thời điểm và quy định, việc gia hạn này có thể phát sinh thêm một khoản phụ phí quản lý hồ sơ nhỏ."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "shipping_policy": {
+    "title": "Chính sách giao hàng",
+    "sections": [
+      {
+        "type": "list",
+        "title": "Các kênh đặt hàng chính thức",
+        "items": [
+          "Hệ thống Website thương mại điện tử chính thức của Rootie.",
+          "Ứng dụng (App) Rootie trên thiết bị di động.",
+          "Các kênh mạng xã hội chính thức: Fanpage Facebook, Zalo OA.",
+          "Tổng đài Hotline hỗ trợ tư vấn và đặt hàng miễn phí."
+        ]
+      },
+      {
+        "type": "table",
+        "title": "Bảng cước phí giao hàng tiêu chuẩn",
+        "headers": [
+          "Kênh đặt hàng",
+          "Giá trị đơn hàng",
+          "Giao Nội tỉnh (Cùng tỉnh)",
+          "Giao Liên tỉnh (Khác tỉnh)"
+        ],
+        "rows": [
+          [
+            "Website / Hotline / MXH",
+            "Từ 300.000 VNĐ trở lên",
+            "Miễn phí vận chuyển",
+            "40.000 VNĐ"
+          ],
+          [
+            "Website / Hotline / MXH",
+            "Dưới 300.000 VNĐ",
+            "25.000 VNĐ",
+            "40.000 VNĐ"
+          ],
+          [
+            "Ứng dụng Rootie / Zalo",
+            "Áp dụng mọi giá trị đơn",
+            "Miễn phí hoàn toàn",
+            "Miễn phí hoàn toàn"
+          ]
+        ]
+      },
+      {
+        "type": "table",
+        "title": "Thời gian giao hàng dự kiến",
+        "headers": [
+          "Khu vực nhận hàng",
+          "Thời gian dự kiến"
+        ],
+        "rows": [
+          [
+            "Khu vực Nội thành",
+            "Nhận hàng ngay trong ngày"
+          ],
+          [
+            "Khu vực Nội tỉnh (Ngoại thành)",
+            "Từ 1 đến 2 ngày làm việc"
+          ],
+          [
+            "Khu vực Liên tỉnh (Thành phố lớn)",
+            "Từ 2 đến 5 ngày làm việc"
+          ],
+          [
+            "Tuyến Huyện / Xã / Vùng sâu",
+            "Từ 4 đến 6 ngày làm việc"
+          ]
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Các hình thức thanh toán khi nhận hàng",
+        "items": [
+          "Thanh toán tiền mặt trực tiếp cho bưu tá (Ship COD).",
+          "Thanh toán trước qua Thẻ ngân hàng nội địa hoặc quốc tế.",
+          "Chuyển khoản trực tiếp vào tài khoản công ty."
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Những lưu ý quan trọng về giao nhận",
+        "items": [
+          "Hiện tại Rootie chỉ hỗ trợ dịch vụ giao hàng trong phạm vi lãnh thổ Việt Nam, chưa hỗ trợ vận chuyển quốc tế.",
+          "Quý khách hoàn toàn có quyền yêu cầu mở kiện hàng để kiểm tra ngoại quan (số lượng, đúng mặt hàng, tình trạng bao bì) trước khi thanh toán.",
+          "Tuyệt đối không được bóc seal bảo vệ hộp hoặc dùng thử (test) sản phẩm bên trong.",
+          "Trong trường hợp nhân viên giao hàng không thể liên hệ được với Quý khách sau nhiều lần phát tá, đơn hàng sẽ tự động bị hệ thống hủy bỏ."
+        ]
+      }
+    ]
+  },
+  "privacy_policy": {
+    "title": "Chính sách bảo mật thông tin chung",
+    "sections": [
+      {
+        "title": "Phạm vi thu thập thông tin cá nhân",
+        "items": [
+          "Họ và tên đầy đủ của khách hàng.",
+          "Địa chỉ nhận hàng chi tiết.",
+          "Số điện thoại liên hệ thường xuyên.",
+          "Ngày tháng năm sinh.",
+          "Giới tính (phục vụ cá nhân hóa tư vấn)."
+        ]
+      },
+      {
+        "title": "Mục đích sử dụng thông tin",
+        "items": [
+          "Xử lý, xác nhận và đóng gói các đơn đặt hàng trực tuyến.",
+          "Cung cấp địa chỉ cho đơn vị vận chuyển để tiến hành giao hàng.",
+          "Lưu trữ lịch sử mua sắm để hỗ trợ dịch vụ chăm sóc khách hàng, nâng hạng thành viên.",
+          "Phân tích hành vi tiêu dùng để cải thiện chất lượng dịch vụ và nâng cao trải nghiệm người dùng."
+        ]
+      },
+      {
+        "title": "Đối tượng được phép tiếp cận thông tin",
+        "items": [
+          "Nhân viên quản lý đơn hàng và chăm sóc khách hàng nội bộ của Rootie.",
+          "Các đối tác vận chuyển liên kết (chỉ cung cấp tên, số điện thoại, địa chỉ).",
+          "Các đối tác cung cấp giải pháp công nghệ/hệ thống quản lý được ký kết bảo mật chặt chẽ.",
+          "Các cơ quan pháp luật, cơ quan nhà nước có thẩm quyền khi có yêu cầu bằng văn bản hợp lệ."
+        ]
+      },
+      {
+        "title": "Quyền hạn của người dùng đối với dữ liệu",
+        "items": [
+          "Quyền truy cập và xem lại toàn bộ thông tin cá nhân đã cung cấp.",
+          "Quyền yêu cầu chỉnh sửa, thay đổi những thông tin bị sai lệch hoặc chưa cập nhật.",
+          "Quyền tự quản lý và cập nhật thông tin tài khoản đăng nhập trên hệ thống."
+        ]
+      },
+      {
+        "title": "Kênh liên hệ hỗ trợ bảo mật",
+        "items": [
+          "Hotline chăm sóc và giải quyết khiếu nại: 1800 1234 (Miễn phí).",
+          "Email tiếp nhận thông tin: support@rootie.vn."
+        ]
+      }
+    ]
+  },
+  "payment_policy": {
+    "title": "Chính sách thanh toán an toàn",
+    "sections": [
+      {
+        "type": "group",
+        "title": "Đa dạng phương thức thanh toán",
+        "items": [
+          {
+            "title": "Thanh toán tiền mặt khi nhận hàng (COD)",
+            "content": [
+              "Khách hàng nhận hàng, kiểm tra ngoại quan và thanh toán trực tiếp bằng tiền mặt cho nhân viên bưu tá.",
+              "Rootie sẽ liên hệ xác nhận đơn hàng qua điện thoại trước khi tiến hành bàn giao cho đơn vị vận chuyển."
+            ]
+          },
+          {
+            "title": "Thanh toán qua Ví điện tử",
+            "content": [
+              "Tích hợp cổng thanh toán ZaloPay an toàn, nhiều ưu đãi.",
+              "Hỗ trợ thanh toán nhanh chóng qua ứng dụng MoMo.",
+              "Thanh toán qua cổng VNPay với độ bảo mật cao."
+            ]
+          },
+          {
+            "title": "Thanh toán qua Thẻ ngân hàng",
+            "content": [
+              "Chấp nhận thẻ ghi nợ nội địa (ATM) qua mạng lưới Napas.",
+              "Thanh toán quốc tế dễ dàng với thẻ Visa.",
+              "Hỗ trợ thẻ tín dụng/ghi nợ Mastercard.",
+              "Hỗ trợ thanh toán qua thẻ JCB.",
+              "Tích hợp phương thức thanh toán một chạm hiện đại Apple Pay."
+            ]
+          },
+          {
+            "title": "Thanh toán qua quét mã QR (QR Code)",
+            "content": [
+              "Hỗ trợ quét mã QR động (dynamic QR) chứa chính xác thông tin đơn hàng và số tiền.",
+              "Thao tác chuyển khoản diễn ra nhanh chóng chỉ trong vài giây.",
+              "Hệ thống tự động nhận diện và xác nhận giao dịch thành công mà không cần gửi biên lai thủ công."
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Lưu ý về các khoản phí",
+        "items": [
+          "Mọi mức giá sản phẩm niêm yết trên website/ứng dụng đều đã bao gồm các loại thuế phí theo quy định của nhà nước.",
+          "Giá sản phẩm hiển thị chưa bao gồm chi phí đóng gói và cước vận chuyển.",
+          "Phí giao hàng (ship) sẽ được tính toán riêng biệt phụ thuộc vào khu vực nhận hàng và giá trị tổng đơn."
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Cam kết bảo mật giao dịch",
+        "items": [
+          "Rootie tuyệt đối không lưu trữ bất kỳ thông tin thẻ tín dụng hay số tài khoản nhạy cảm nào của khách hàng trên hệ thống.",
+          "Mọi giao dịch trực tuyến đều được thực hiện thông qua các cổng thanh toán trung gian đạt chuẩn an ninh quốc tế.",
+          "Toàn bộ dữ liệu truyền tải trong quá trình thanh toán đều được mã hóa SSL an toàn ở mức độ cao nhất."
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Hỗ trợ khi gặp sự cố thanh toán",
+        "items": [
+          "Hotline trực tuyến xử lý lỗi giao dịch: 1800 1234.",
+          "Email hỗ trợ đối soát thanh toán: support@rootie.vn."
+        ]
+      }
+    ]
+  },
+  "data_privacy_policy": {
+    "title": "Chính sách bảo mật dữ liệu cá nhân chuyên sâu",
+    "sections": [
+      {
+        "title": "Mục đích xử lý dữ liệu minh bạch",
+        "items": [
+          "Phục vụ quá trình xác nhận, đóng gói và xử lý các đơn đặt hàng.",
+          "Hỗ trợ công tác chăm sóc khách hàng, giải quyết khiếu nại, bảo hành và hậu mãi.",
+          "Phân tích dữ liệu nội bộ nhằm cải thiện chất lượng dịch vụ, sản phẩm và giao diện hệ thống.",
+          "Cung cấp thông tin về các chương trình khuyến mãi, ưu đãi cá nhân hóa (Marketing) khi có sự đồng ý của khách hàng.",
+          "Thực hiện các nghĩa vụ báo cáo, lưu trữ theo yêu cầu và tuân thủ chặt chẽ pháp luật Việt Nam."
+        ]
+      },
+      {
+        "title": "Các hạng mục dữ liệu được thu thập",
+        "items": [
+          "Dữ liệu thông tin cá nhân cơ bản (Họ tên, SĐT, Email, Địa chỉ, Ngày sinh).",
+          "Dữ liệu định danh thiết bị truy cập (Loại thiết bị, Hệ điều hành, Địa chỉ IP).",
+          "Dữ liệu hành vi người dùng (Lịch sử tìm kiếm sản phẩm, Thời gian lưu lại trang, Lịch sử mua hàng).",
+          "Dữ liệu Cookie giúp ghi nhớ phiên đăng nhập và cá nhân hóa trải nghiệm duyệt web."
+        ]
+      },
+      {
+        "title": "Quyền lợi và sự kiểm soát của khách hàng",
+        "items": [
+          "Quyền yêu cầu trích xuất và xem lại toàn bộ dữ liệu cá nhân mà hệ thống đang lưu trữ.",
+          "Quyền chủ động chỉnh sửa, bổ sung để đảm bảo tính chính xác của dữ liệu.",
+          "Quyền yêu cầu xóa bỏ hoàn toàn (quyền được lãng quên) dữ liệu cá nhân khỏi máy chủ của Rootie.",
+          "Quyền khiếu nại hoặc rút lại sự đồng ý cho phép xử lý dữ liệu vào bất kỳ thời điểm nào."
+        ]
+      },
+      {
+        "title": "Các biện pháp bảo vệ và An toàn thông tin",
+        "items": [
+          "Cam kết tuyệt đối không bán, trao đổi hoặc chia sẻ trái phép dữ liệu cho bất kỳ bên thứ ba nào vì mục đích trục lợi.",
+          "Áp dụng các thuật toán mã hóa dữ liệu đầu cuối tiên tiến nhất để bảo vệ thông tin trước các cuộc tấn công mạng.",
+          "Rootie luôn khuyến nghị người dùng tự bảo mật tài khoản cá nhân, không chia sẻ mật khẩu hay mã OTP cho bất kỳ ai."
+        ]
+      },
+      {
+        "title": "Thông tin liên hệ quản lý dữ liệu",
+        "items": [
+          "Mọi thắc mắc về quyền riêng tư xin gửi về Email: support@rootie.vn.",
+          "Tổng đài giải đáp các vấn đề bảo mật dữ liệu: 1800 1234."
+        ]
+      }
+    ]
+  }
+}

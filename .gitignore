@@ -1,0 +1,14 @@
+# 1. Những thứ máy bạn bạn sẽ tự tạo ra khi nhấn nút "Run"
+.gradle/
+build/
+app/build/
+
+# 2. Những thứ chứa thông tin cá nhân của máy bạn (Gây lỗi đường dẫn nếu mang sang máy khác)
+local.properties
+.idea/workspace.xml
+.idea/libraries/
+
+# 3. File rác hệ thống (Không liên quan đến code)
+*.hprof
+.DS_Store
+serviceAccountKey.json

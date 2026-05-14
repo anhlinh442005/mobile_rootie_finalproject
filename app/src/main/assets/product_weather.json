@@ -1,0 +1,1656 @@
+{
+  "mappings": [
+    {
+      "product_id": "1e499ed75a31e4a02af2d962",
+      "weather_id": "weather_001",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "1e499ed75a31e4a02af2d962",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 2,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "1e499ed75a31e4a02af2d962",
+      "weather_id": "weather_005",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "24c454b0d57a53fe4be37964",
+      "weather_id": "weather_001",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "24c454b0d57a53fe4be37964",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 2,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "24c454b0d57a53fe4be37964",
+      "weather_id": "weather_005",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "3ec85dfb4eba9ccb5d808c02",
+      "weather_id": "weather_001",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "3ec85dfb4eba9ccb5d808c02",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 2,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "3ec85dfb4eba9ccb5d808c02",
+      "weather_id": "weather_005",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Bảo vệ da khỏi tia UV"
+    },
+    {
+      "product_id": "a2ba6a40610e099f10b42d7f",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "a2ba6a40610e099f10b42d7f",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "a2ba6a40610e099f10b42d7f",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "a2ba6a40610e099f10b42d7f",
+      "weather_id": "weather_007",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "a2ba6a40610e099f10b42d7f",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "9c60e218100d013418e3eb91",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "9c60e218100d013418e3eb91",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "9c60e218100d013418e3eb91",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "9c60e218100d013418e3eb91",
+      "weather_id": "weather_007",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "9c60e218100d013418e3eb91",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "0b8fadbc1bd44562f75704e6",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "0b8fadbc1bd44562f75704e6",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "0b8fadbc1bd44562f75704e6",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "0b8fadbc1bd44562f75704e6",
+      "weather_id": "weather_007",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "0b8fadbc1bd44562f75704e6",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "98ec272ca4f37e7a6550cccd",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "98ec272ca4f37e7a6550cccd",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "98ec272ca4f37e7a6550cccd",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "98ec272ca4f37e7a6550cccd",
+      "weather_id": "weather_007",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "98ec272ca4f37e7a6550cccd",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "dc312be5eec4d740ae26acbb",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "dc312be5eec4d740ae26acbb",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "dc312be5eec4d740ae26acbb",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "dc312be5eec4d740ae26acbb",
+      "weather_id": "weather_007",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "dc312be5eec4d740ae26acbb",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "edd9e4ecece58a82a253e4a8",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "edd9e4ecece58a82a253e4a8",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "edd9e4ecece58a82a253e4a8",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "edd9e4ecece58a82a253e4a8",
+      "weather_id": "weather_007",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "edd9e4ecece58a82a253e4a8",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "dd23909f6a123054c8cf62f4",
+      "weather_id": "weather_003",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "dd23909f6a123054c8cf62f4",
+      "weather_id": "weather_006",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "dd23909f6a123054c8cf62f4",
+      "weather_id": "weather_008",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "5c5672e9b67657a2b86069fe",
+      "weather_id": "weather_003",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "5c5672e9b67657a2b86069fe",
+      "weather_id": "weather_006",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "5c5672e9b67657a2b86069fe",
+      "weather_id": "weather_008",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "d9054c76d1034d593bea440c",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "d9054c76d1034d593bea440c",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "d9054c76d1034d593bea440c",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "d9054c76d1034d593bea440c",
+      "weather_id": "weather_007",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "d9054c76d1034d593bea440c",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "6d7d02a9276d5114489a48c3",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "6d7d02a9276d5114489a48c3",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "6d7d02a9276d5114489a48c3",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "6d7d02a9276d5114489a48c3",
+      "weather_id": "weather_007",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "6d7d02a9276d5114489a48c3",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch da hiệu quả"
+    },
+    {
+      "product_id": "812ea7faa15bac41e52d4170",
+      "weather_id": "weather_002",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "812ea7faa15bac41e52d4170",
+      "weather_id": "weather_003",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "812ea7faa15bac41e52d4170",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "812ea7faa15bac41e52d4170",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "87ca86128c249a4e52690db8",
+      "weather_id": "weather_001",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "87ca86128c249a4e52690db8",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "87ca86128c249a4e52690db8",
+      "weather_id": "weather_007",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "25b93e7dda9397da3b212b63",
+      "weather_id": "weather_001",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "25b93e7dda9397da3b212b63",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "25b93e7dda9397da3b212b63",
+      "weather_id": "weather_007",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "8d4ab3d4fb9c1ee4077c8d1d",
+      "weather_id": "weather_002",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "8d4ab3d4fb9c1ee4077c8d1d",
+      "weather_id": "weather_003",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "8d4ab3d4fb9c1ee4077c8d1d",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "8d4ab3d4fb9c1ee4077c8d1d",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "13afaa472ab5642f72112123",
+      "weather_id": "weather_002",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "13afaa472ab5642f72112123",
+      "weather_id": "weather_003",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "13afaa472ab5642f72112123",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "13afaa472ab5642f72112123",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch nhẹ nhàng"
+    },
+    {
+      "product_id": "7df6fb8720d3cc5566f0c4ca",
+      "weather_id": "weather_001",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "7df6fb8720d3cc5566f0c4ca",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "7df6fb8720d3cc5566f0c4ca",
+      "weather_id": "weather_007",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "947e0b2bbd933756c73469b4",
+      "weather_id": "weather_001",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "947e0b2bbd933756c73469b4",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "947e0b2bbd933756c73469b4",
+      "weather_id": "weather_007",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "5f29c9fa19873eb44aedced4",
+      "weather_id": "weather_001",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "5f29c9fa19873eb44aedced4",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "5f29c9fa19873eb44aedced4",
+      "weather_id": "weather_007",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Kiểm soát dầu, làm sạch sâu"
+    },
+    {
+      "product_id": "f2f170af25caff6973113648",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Loại bỏ tế bào chết"
+    },
+    {
+      "product_id": "f2f170af25caff6973113648",
+      "weather_id": "weather_006",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Loại bỏ tế bào chết"
+    },
+    {
+      "product_id": "f2f170af25caff6973113648",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Loại bỏ tế bào chết"
+    },
+    {
+      "product_id": "8fe068265d7f674a7dd86f84",
+      "weather_id": "weather_001",
+      "suitability_score": 90,
+      "priority": 2,
+      "notes": "Hút dầu, se khít lỗ chân lông"
+    },
+    {
+      "product_id": "8fe068265d7f674a7dd86f84",
+      "weather_id": "weather_004",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Hút dầu, se khít lỗ chân lông"
+    },
+    {
+      "product_id": "8fe068265d7f674a7dd86f84",
+      "weather_id": "weather_007",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Hút dầu, se khít lỗ chân lông"
+    },
+    {
+      "product_id": "2b8ad283ba0fe39ef106880f",
+      "weather_id": "weather_001",
+      "suitability_score": 90,
+      "priority": 2,
+      "notes": "Hút dầu, se khít lỗ chân lông"
+    },
+    {
+      "product_id": "2b8ad283ba0fe39ef106880f",
+      "weather_id": "weather_004",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Hút dầu, se khít lỗ chân lông"
+    },
+    {
+      "product_id": "2b8ad283ba0fe39ef106880f",
+      "weather_id": "weather_007",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Hút dầu, se khít lỗ chân lông"
+    },
+    {
+      "product_id": "813455e9fcaaa2178c222614",
+      "weather_id": "weather_003",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Dưỡng ẩm, làm dịu da"
+    },
+    {
+      "product_id": "813455e9fcaaa2178c222614",
+      "weather_id": "weather_006",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Dưỡng ẩm, làm dịu da"
+    },
+    {
+      "product_id": "813455e9fcaaa2178c222614",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Dưỡng ẩm, làm dịu da"
+    },
+    {
+      "product_id": "3c691929f72b07a51ab8df27",
+      "weather_id": "weather_003",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Dưỡng ẩm, làm dịu da"
+    },
+    {
+      "product_id": "3c691929f72b07a51ab8df27",
+      "weather_id": "weather_006",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Dưỡng ẩm, làm dịu da"
+    },
+    {
+      "product_id": "3c691929f72b07a51ab8df27",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Dưỡng ẩm, làm dịu da"
+    },
+    {
+      "product_id": "9be4bb818bdad1c0cff402b7",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "9be4bb818bdad1c0cff402b7",
+      "weather_id": "weather_006",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "9be4bb818bdad1c0cff402b7",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "c1c6def56e82dfbd16743d83",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "c1c6def56e82dfbd16743d83",
+      "weather_id": "weather_006",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "c1c6def56e82dfbd16743d83",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "178545ef04bc12afd653231c",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "178545ef04bc12afd653231c",
+      "weather_id": "weather_006",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "178545ef04bc12afd653231c",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "7007b8b1425c64a7af919b72",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "7007b8b1425c64a7af919b72",
+      "weather_id": "weather_006",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "7007b8b1425c64a7af919b72",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "63fbeb4b71d9be046f8cd2e4",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "63fbeb4b71d9be046f8cd2e4",
+      "weather_id": "weather_006",
+      "suitability_score": 88,
+      "priority": 1,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "63fbeb4b71d9be046f8cd2e4",
+      "weather_id": "weather_008",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm mịn da cơ thể"
+    },
+    {
+      "product_id": "a185202d2cc44ecd80397574",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "a185202d2cc44ecd80397574",
+      "weather_id": "weather_002",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "a185202d2cc44ecd80397574",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "a185202d2cc44ecd80397574",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "a185202d2cc44ecd80397574",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "a185202d2cc44ecd80397574",
+      "weather_id": "weather_007",
+      "suitability_score": 86,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "a185202d2cc44ecd80397574",
+      "weather_id": "weather_008",
+      "suitability_score": 86,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "67ac81895e29370aa758f466",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "67ac81895e29370aa758f466",
+      "weather_id": "weather_002",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "67ac81895e29370aa758f466",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "67ac81895e29370aa758f466",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "67ac81895e29370aa758f466",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "67ac81895e29370aa758f466",
+      "weather_id": "weather_007",
+      "suitability_score": 86,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "67ac81895e29370aa758f466",
+      "weather_id": "weather_008",
+      "suitability_score": 86,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "c4ffadcfbb7ab91d5edcc360",
+      "weather_id": "weather_003",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Dưỡng ẩm cơ thể"
+    },
+    {
+      "product_id": "c4ffadcfbb7ab91d5edcc360",
+      "weather_id": "weather_006",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Dưỡng ẩm cơ thể"
+    },
+    {
+      "product_id": "c4ffadcfbb7ab91d5edcc360",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Dưỡng ẩm cơ thể"
+    },
+    {
+      "product_id": "fa9faa32eb09f2a48bb19fc8",
+      "weather_id": "weather_003",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Dưỡng ẩm cơ thể"
+    },
+    {
+      "product_id": "fa9faa32eb09f2a48bb19fc8",
+      "weather_id": "weather_006",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Dưỡng ẩm cơ thể"
+    },
+    {
+      "product_id": "fa9faa32eb09f2a48bb19fc8",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Dưỡng ẩm cơ thể"
+    },
+    {
+      "product_id": "0270231fcfee24f5205ecfee",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm mềm môi"
+    },
+    {
+      "product_id": "0270231fcfee24f5205ecfee",
+      "weather_id": "weather_006",
+      "suitability_score": 87,
+      "priority": 1,
+      "notes": "Làm mềm môi"
+    },
+    {
+      "product_id": "0270231fcfee24f5205ecfee",
+      "weather_id": "weather_008",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm mềm môi"
+    },
+    {
+      "product_id": "6c1f36304287d148fdd36144",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Dưỡng ẩm môi"
+    },
+    {
+      "product_id": "6c1f36304287d148fdd36144",
+      "weather_id": "weather_002",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Dưỡng ẩm môi"
+    },
+    {
+      "product_id": "6c1f36304287d148fdd36144",
+      "weather_id": "weather_003",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Dưỡng ẩm môi"
+    },
+    {
+      "product_id": "6c1f36304287d148fdd36144",
+      "weather_id": "weather_005",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Dưỡng ẩm môi"
+    },
+    {
+      "product_id": "6c1f36304287d148fdd36144",
+      "weather_id": "weather_008",
+      "suitability_score": 86,
+      "priority": 2,
+      "notes": "Dưỡng ẩm môi"
+    },
+    {
+      "product_id": "ca6e1382ef917a9d2cb0031a",
+      "weather_id": "weather_003",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "ca6e1382ef917a9d2cb0031a",
+      "weather_id": "weather_005",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "ca6e1382ef917a9d2cb0031a",
+      "weather_id": "weather_008",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "f4d2089a9b35bb5d6845764f",
+      "weather_id": "weather_004",
+      "suitability_score": 87,
+      "priority": 1,
+      "notes": "Làm sạch da đầu"
+    },
+    {
+      "product_id": "f4d2089a9b35bb5d6845764f",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch da đầu"
+    },
+    {
+      "product_id": "85aaa24b4e80e35fdf3e0892",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "85aaa24b4e80e35fdf3e0892",
+      "weather_id": "weather_002",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "85aaa24b4e80e35fdf3e0892",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "85aaa24b4e80e35fdf3e0892",
+      "weather_id": "weather_004",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "85aaa24b4e80e35fdf3e0892",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "85aaa24b4e80e35fdf3e0892",
+      "weather_id": "weather_007",
+      "suitability_score": 86,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "85aaa24b4e80e35fdf3e0892",
+      "weather_id": "weather_008",
+      "suitability_score": 86,
+      "priority": 2,
+      "notes": "Làm sạch cơ thể"
+    },
+    {
+      "product_id": "9806f8679f1abada0a0e6378",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "9806f8679f1abada0a0e6378",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "9806f8679f1abada0a0e6378",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "9806f8679f1abada0a0e6378",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "9806f8679f1abada0a0e6378",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "9806f8679f1abada0a0e6378",
+      "weather_id": "weather_007",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "9806f8679f1abada0a0e6378",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d6049a26f5e640bdd69cda40",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d6049a26f5e640bdd69cda40",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d6049a26f5e640bdd69cda40",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d6049a26f5e640bdd69cda40",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d6049a26f5e640bdd69cda40",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d6049a26f5e640bdd69cda40",
+      "weather_id": "weather_007",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d6049a26f5e640bdd69cda40",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d7b2542d9f43256d944d854a",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d7b2542d9f43256d944d854a",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d7b2542d9f43256d944d854a",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d7b2542d9f43256d944d854a",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d7b2542d9f43256d944d854a",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d7b2542d9f43256d944d854a",
+      "weather_id": "weather_007",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "d7b2542d9f43256d944d854a",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "58990d055eb566f37e3c5d80",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "58990d055eb566f37e3c5d80",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "58990d055eb566f37e3c5d80",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "58990d055eb566f37e3c5d80",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "58990d055eb566f37e3c5d80",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "58990d055eb566f37e3c5d80",
+      "weather_id": "weather_007",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "58990d055eb566f37e3c5d80",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0ed27f8f8207d06b3cd04db3",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0ed27f8f8207d06b3cd04db3",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0ed27f8f8207d06b3cd04db3",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0ed27f8f8207d06b3cd04db3",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0ed27f8f8207d06b3cd04db3",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0ed27f8f8207d06b3cd04db3",
+      "weather_id": "weather_007",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0ed27f8f8207d06b3cd04db3",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0066feeceaba62d09860f05c",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0066feeceaba62d09860f05c",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0066feeceaba62d09860f05c",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0066feeceaba62d09860f05c",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0066feeceaba62d09860f05c",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0066feeceaba62d09860f05c",
+      "weather_id": "weather_007",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "0066feeceaba62d09860f05c",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "5ee9a1e82a48994b6e401a29",
+      "weather_id": "weather_001",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "5ee9a1e82a48994b6e401a29",
+      "weather_id": "weather_002",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "5ee9a1e82a48994b6e401a29",
+      "weather_id": "weather_003",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "5ee9a1e82a48994b6e401a29",
+      "weather_id": "weather_004",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "5ee9a1e82a48994b6e401a29",
+      "weather_id": "weather_006",
+      "suitability_score": 85,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "5ee9a1e82a48994b6e401a29",
+      "weather_id": "weather_007",
+      "suitability_score": 87,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "5ee9a1e82a48994b6e401a29",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cân bằng pH, chuẩn bị da"
+    },
+    {
+      "product_id": "641cdf538114d9cb102d9ab2",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "641cdf538114d9cb102d9ab2",
+      "weather_id": "weather_004",
+      "suitability_score": 90,
+      "priority": 2,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "641cdf538114d9cb102d9ab2",
+      "weather_id": "weather_007",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "c4b7cebcaf1a27611a9395af",
+      "weather_id": "weather_003",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "c4b7cebcaf1a27611a9395af",
+      "weather_id": "weather_005",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "c4b7cebcaf1a27611a9395af",
+      "weather_id": "weather_008",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "568e1a3abfd97d6406cd3db9",
+      "weather_id": "weather_003",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "568e1a3abfd97d6406cd3db9",
+      "weather_id": "weather_005",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "568e1a3abfd97d6406cd3db9",
+      "weather_id": "weather_008",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "09f0912f3bc5246ed851a7ae",
+      "weather_id": "weather_003",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "09f0912f3bc5246ed851a7ae",
+      "weather_id": "weather_005",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "09f0912f3bc5246ed851a7ae",
+      "weather_id": "weather_008",
+      "suitability_score": 90,
+      "priority": 1,
+      "notes": "Cấp ẩm, phục hồi da"
+    },
+    {
+      "product_id": "afacd99996f7d76b3c0c7f88",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "afacd99996f7d76b3c0c7f88",
+      "weather_id": "weather_004",
+      "suitability_score": 90,
+      "priority": 2,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "afacd99996f7d76b3c0c7f88",
+      "weather_id": "weather_007",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "44e410999cfeae6eedd37038",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "44e410999cfeae6eedd37038",
+      "weather_id": "weather_004",
+      "suitability_score": 90,
+      "priority": 2,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "44e410999cfeae6eedd37038",
+      "weather_id": "weather_007",
+      "suitability_score": 93,
+      "priority": 1,
+      "notes": "Giảm mụn, kiểm soát dầu"
+    },
+    {
+      "product_id": "ead1d3ea6f03b685eb8ca0d4",
+      "weather_id": "weather_001",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Cấp ẩm tức thì, giải nhiệt"
+    },
+    {
+      "product_id": "ead1d3ea6f03b685eb8ca0d4",
+      "weather_id": "weather_005",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Cấp ẩm tức thì, giải nhiệt"
+    },
+    {
+      "product_id": "e3b8810d7bb90e696e5f43c7",
+      "weather_id": "weather_003",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Dưỡng ẩm sâu cho da khô"
+    },
+    {
+      "product_id": "e3b8810d7bb90e696e5f43c7",
+      "weather_id": "weather_006",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Dưỡng ẩm sâu cho da khô"
+    },
+    {
+      "product_id": "e3b8810d7bb90e696e5f43c7",
+      "weather_id": "weather_008",
+      "suitability_score": 88,
+      "priority": 2,
+      "notes": "Dưỡng ẩm sâu cho da khô"
+    },
+    {
+      "product_id": "0c8e0704cf2997ca8560441a",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "0c8e0704cf2997ca8560441a",
+      "weather_id": "weather_007",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "ef39d32a96ce292d1e83a7ab",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "ef39d32a96ce292d1e83a7ab",
+      "weather_id": "weather_007",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "fdc1ca708d8cf2225c9d9697",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "fdc1ca708d8cf2225c9d9697",
+      "weather_id": "weather_007",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "ca192eb70b03e780dc19d872",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "ca192eb70b03e780dc19d872",
+      "weather_id": "weather_007",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "113023f9cf480dbe4182e96c",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "113023f9cf480dbe4182e96c",
+      "weather_id": "weather_007",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "1ba0d34dab3627b376a567c7",
+      "weather_id": "weather_001",
+      "suitability_score": 92,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    },
+    {
+      "product_id": "1ba0d34dab3627b376a567c7",
+      "weather_id": "weather_007",
+      "suitability_score": 95,
+      "priority": 1,
+      "notes": "Texture nhẹ cho da dầu"
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "weathers": [
+    {
+      "id": "weather_001",
+      "name": "Nắng nóng gay gắt",
+      "temperature": "hot",
+      "humidity": "high",
+      "condition": "sunny",
+      "temperature_range": {
+        "min": 32,
+        "max": 40
+      },
+      "humidity_range": {
+        "min": 70,
+        "max": 90
+      },
+      "description": "Thời tiết nắng nóng, độ ẩm cao, da dễ tiết dầu và bí bách",
+      "icon": "☀️🔥",
+      "is_active": true
+    },
+    {
+      "id": "weather_002",
+      "name": "Nắng ấm dễ chịu",
+      "temperature": "warm",
+      "humidity": "medium",
+      "condition": "sunny",
+      "temperature_range": {
+        "min": 24,
+        "max": 31
+      },
+      "humidity_range": {
+        "min": 50,
+        "max": 70
+      },
+      "description": "Thời tiết ôn hòa, phù hợp mọi loại da",
+      "icon": "🌤️",
+      "is_active": true
+    },
+    {
+      "id": "weather_003",
+      "name": "Lạnh khô",
+      "temperature": "cool",
+      "humidity": "low",
+      "condition": "cloudy",
+      "temperature_range": {
+        "min": 10,
+        "max": 23
+      },
+      "humidity_range": {
+        "min": 30,
+        "max": 50
+      },
+      "description": "Thời tiết lạnh, không khí khô, da dễ mất nước",
+      "icon": "❄️☁️",
+      "is_active": true
+    },
+    {
+      "id": "weather_004",
+      "name": "Mùa mưa ẩm ướt",
+      "temperature": "warm",
+      "humidity": "high",
+      "condition": "rainy",
+      "temperature_range": {
+        "min": 22,
+        "max": 28
+      },
+      "humidity_range": {
+        "min": 80,
+        "max": 95
+      },
+      "description": "Thời tiết mưa nhiều, độ ẩm cao, da dễ bị mụn",
+      "icon": "🌧️",
+      "is_active": true
+    },
+    {
+      "id": "weather_005",
+      "name": "Nắng hanh khô",
+      "temperature": "hot",
+      "humidity": "low",
+      "condition": "sunny",
+      "temperature_range": {
+        "min": 30,
+        "max": 38
+      },
+      "humidity_range": {
+        "min": 30,
+        "max": 50
+      },
+      "description": "Nắng nóng nhưng khô, da dễ bị cháy nắng và mất nước",
+      "icon": "☀️💨",
+      "is_active": true
+    },
+    {
+      "id": "weather_006",
+      "name": "Lạnh ẩm",
+      "temperature": "cool",
+      "humidity": "high",
+      "condition": "cloudy",
+      "temperature_range": {
+        "min": 15,
+        "max": 22
+      },
+      "humidity_range": {
+        "min": 75,
+        "max": 90
+      },
+      "description": "Thời tiết lạnh và ẩm, da cần dưỡng ẩm nhưng không quá nặng",
+      "icon": "☁️💧",
+      "is_active": true
+    },
+    {
+      "id": "weather_007",
+      "name": "Nhiệt đới ẩm",
+      "temperature": "hot",
+      "humidity": "high",
+      "condition": "cloudy",
+      "temperature_range": {
+        "min": 28,
+        "max": 35
+      },
+      "humidity_range": {
+        "min": 75,
+        "max": 90
+      },
+      "description": "Nóng ẩm quanh năm, da dầu cần kiểm soát dầu tốt",
+      "icon": "🌴☁️",
+      "is_active": true
+    },
+    {
+      "id": "weather_008",
+      "name": "Mát mẻ dễ chịu",
+      "temperature": "cool",
+      "humidity": "medium",
+      "condition": "cloudy",
+      "temperature_range": {
+        "min": 18,
+        "max": 24
+      },
+      "humidity_range": {
+        "min": 55,
+        "max": 70
+      },
+      "description": "Thời tiết mát mẻ, thoải mái, phù hợp dùng nhiều loại sản phẩm",
+      "icon": "🍃",
+      "is_active": true
+    }
+  ]
+}

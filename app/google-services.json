@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "434534715748",
+    "project_id": "gen-lang-client-0869521637",
+    "storage_bucket": "gen-lang-client-0869521637.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434534715748:android:de601d9865929df32dea71",
+        "android_client_info": {
+          "package_name": "com.veganbeauty.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5AzSrnSSnHhJC871dW6cLBOOkPJYaiTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
