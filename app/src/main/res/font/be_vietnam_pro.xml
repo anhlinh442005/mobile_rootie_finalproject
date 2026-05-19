@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+    <font app:fontStyle="normal" app:fontWeight="100" app:font="@font/be_vietnam_pro_thin" />
+    <font app:fontStyle="italic" app:fontWeight="100" app:font="@font/be_vietnam_pro_thinitalic" />
+    <font app:fontStyle="normal" app:fontWeight="200" app:font="@font/be_vietnam_pro_extralight" />
+    <font app:fontStyle="italic" app:fontWeight="200" app:font="@font/be_vietnam_pro_extralightitalic" />
+    <font app:fontStyle="normal" app:fontWeight="300" app:font="@font/be_vietnam_pro_light" />
+    <font app:fontStyle="italic" app:fontWeight="300" app:font="@font/be_vietnam_pro_lightitalic" />
+    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/be_vietnam_pro_regular" />
+    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/be_vietnam_pro_italic" />
+    <font app:fontStyle="normal" app:fontWeight="500" app:font="@font/be_vietnam_pro_medium" />
+    <font app:fontStyle="italic" app:fontWeight="500" app:font="@font/be_vietnam_pro_mediumitalic" />
+    <font app:fontStyle="normal" app:fontWeight="600" app:font="@font/be_vietnam_pro_semibold" />
+    <font app:fontStyle="italic" app:fontWeight="600" app:font="@font/be_vietnam_pro_semibolditalic" />
+    <font app:fontStyle="normal" app:fontWeight="700" app:font="@font/be_vietnam_pro_bold" />
+    <font app:fontStyle="italic" app:fontWeight="700" app:font="@font/be_vietnam_pro_bolditalic" />
+    <font app:fontStyle="normal" app:fontWeight="800" app:font="@font/be_vietnam_pro_extrabold" />
+    <font app:fontStyle="italic" app:fontWeight="800" app:font="@font/be_vietnam_pro_extrabolditalic" />
+    <font app:fontStyle="normal" app:fontWeight="900" app:font="@font/be_vietnam_pro_black" />
+    <font app:fontStyle="italic" app:fontWeight="900" app:font="@font/be_vietnam_pro_blackitalic" />
+</font-family>
