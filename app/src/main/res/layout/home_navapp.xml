@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+ 
+    <!-- Custom View: bo tròn + lồi giữa + shadow. ĐỔI package cho đúng ↓ -->
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="72dp"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:elevation="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+ 
+        <!-- 1. Trang chủ -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
+            android:id="@+id/nav_home" android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true" android:focusable="true">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                android:src="@drawable/ic_home" android:contentDescription="Trang chủ" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="3dp" android:text="Trang chủ"
+                android:textColor="@color/nav_icon_color" android:textSize="10sp"
+                android:fontFamily="@font/lexend" />
+        </LinearLayout>
+ 
+        <!-- 2. Mua sắm -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
+            android:id="@+id/nav_shop" android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true" android:focusable="true">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                android:src="@drawable/ic_shop" android:contentDescription="Mua sắm" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="3dp" android:text="Mua sắm"
+                android:textColor="@color/nav_icon_color" android:textSize="10sp"
+                android:fontFamily="@font/lexend" />
+        </LinearLayout>
+ 
+        <!-- 3. My Skin — icon lồi lên trên, marginTop âm khớp bumpRadius trong .kt -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
+            android:id="@+id/nav_myskin" android:clipChildren="false" android:clipToPadding="false"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true" android:focusable="true" android:elevation="12dp">
+
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="-28dp"
+                android:contentDescription="My skin"
+                android:elevation="12dp"
+                android:src="@drawable/ic_myskin" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/lexend"
+                android:text="My skin"
+                android:textColor="@color/nav_icon_color"
+                android:textSize="10sp" />
+
+            <com.veganbeauty.app.ui.widget.BottomNavBackground
+                android:id="@+id/nav_background"
+                android:layout_width="0dp"
+                android:layout_height="100dp" />
+        </LinearLayout>
+ 
+        <!-- 4. Cộng đồng -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
+            android:id="@+id/nav_community" android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true" android:focusable="true">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                android:src="@drawable/ic_community" android:contentDescription="Cộng đồng" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="3dp" android:text="Cộng đồng"
+                android:textColor="@color/nav_icon_color" android:textSize="10sp"
+                android:fontFamily="@font/lexend" />
+        </LinearLayout>
+ 
+        <!-- 5. Tài khoản -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
+            android:id="@+id/nav_account" android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true" android:focusable="true">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                android:src="@drawable/ic_account" android:contentDescription="Tài khoản" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="3dp" android:text="Tài khoản"
+                android:textColor="@color/nav_icon_color" android:textSize="10sp"
+                android:fontFamily="@font/lexend" />
+        </LinearLayout>
+ 
+    </LinearLayout>
+ 
+</androidx.constraintlayout.widget.ConstraintLayout>
