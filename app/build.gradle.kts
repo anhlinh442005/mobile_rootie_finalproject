@@ -62,6 +62,7 @@ dependencies {
     
     // Coil
     implementation(libs.coil)
+    implementation(libs.coil.svg)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
