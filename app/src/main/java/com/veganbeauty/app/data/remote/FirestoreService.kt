@@ -18,6 +18,7 @@ class FirestoreService {
                     sku = doc.getString("sku") ?: "",
                     price = doc.getLong("price") ?: 0L,
                     category = doc.getString("category") ?: "",
+                    categoryIds = doc.getString("categoryIds") ?: "",
                     stock = doc.getLong("stock")?.toInt() ?: 0,
                     description = doc.getString("description") ?: "",
                     mainImage = doc.getString("mainImage") ?: "",

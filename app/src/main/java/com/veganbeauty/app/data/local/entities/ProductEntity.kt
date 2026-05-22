@@ -10,6 +10,7 @@ data class ProductEntity(
     val sku: String,
     val price: Long,
     val category: String,
+    val categoryIds: String = "",
     val stock: Int,
     val description: String,
     val mainImage: String,

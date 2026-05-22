@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.veganbeauty.app.data.local.dao.ProductDao
 import com.veganbeauty.app.data.local.entities.ProductEntity
 
-@Database(entities = [ProductEntity::class], version = 1)
+@Database(entities = [ProductEntity::class], version = 2)
 abstract class RootieDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
 }
