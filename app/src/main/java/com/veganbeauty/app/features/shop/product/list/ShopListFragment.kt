@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
+import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.data.local.RootieDatabase
 import com.veganbeauty.app.data.local.LocalJsonReader
@@ -37,7 +38,7 @@ class ShopListFragment : RootieFragment() {
                 android.R.anim.fade_in,
                 android.R.anim.fade_out
             )
-            .replace(com.veganbeauty.app.R.id.main_container, detailFragment)
+            .replace(R.id.main_container, detailFragment)
             .addToBackStack(null)
             .commit()
     }

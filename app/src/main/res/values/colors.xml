@@ -3,8 +3,15 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#3E4D44</color>
+    <color name="secondary">#677559</color>
     <color name="content">#677559</color>
     <color name="tertiary">#97A49C</color>
     <color name="neutral">#FEFBF4</color>
     <color name="nav_icon_color">#DDDFC4</color>
+    <color name="home_sheet_bg">#3E4D44</color>
+    <color name="home_login_button">#2C2C2C</color>
+    <color name="home_input_bg">#FEFBF4</color>
+    <color name="home_overlay_dark">#66000000</color>
+    <!-- ~70% neutral — hiệu ứng kính mờ trên ảnh peek -->
+    <color name="home_peek_overlay">#B3FEFBF4</color>
 </resources>

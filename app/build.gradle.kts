@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation(libs.viewpager2)
     
     // Firebase
     implementation(platform(libs.firebase.bom))

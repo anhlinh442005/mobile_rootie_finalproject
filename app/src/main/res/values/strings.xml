@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Rootie</string>
+    <string name="home_search_hint">Tìm kiếm</string>
 </resources>
