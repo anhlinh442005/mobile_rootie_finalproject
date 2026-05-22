@@ -12,19 +12,34 @@ import com.veganbeauty.app.data.local.RootieDatabase
 import com.veganbeauty.app.data.local.LocalJsonReader
 import com.veganbeauty.app.data.local.entities.ProductEntity
 import com.veganbeauty.app.data.repository.ProductRepository
-import com.veganbeauty.app.databinding.ShopFragmentBinding
+import com.veganbeauty.app.databinding.ShopCategoryBinding
 import com.veganbeauty.app.features.shop.ShopViewModel
 import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment
 
 class ShopListFragment : RootieFragment() {
 
-    private var _binding: ShopFragmentBinding? = null
+    private var _binding: ShopCategoryBinding? = null
     private val binding get() = _binding!!
     
     private lateinit var viewModel: ShopViewModel
-    private val productAdapter = ShopListAdapter { product ->
-        navigateToDetail(product)
-    }
+    private lateinit var subcategoryAdapter: SubcategoryAdapter
+    private val productAdapter = ShopListAdapter(
+        onItemClick = { product ->
+            navigateToDetail(product)
+        },
+        onAddToCartClick = { product ->
+            val bottomSheet = com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
+                product = product,
+                onAddToCartClick = { p, quantity ->
+                    android.widget.Toast.makeText(requireContext(), "Đã thêm $quantity ${p.name} vào giỏ", android.widget.Toast.LENGTH_SHORT).show()
+                },
+                onBuyNowClick = { p, quantity ->
+                    android.widget.Toast.makeText(requireContext(), "Mua ngay $quantity ${p.name}", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            )
+            bottomSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.TAG)
+        }
+    )
 
     private fun navigateToDetail(product: ProductEntity) {
         val detailFragment = ShopDetailFragment()
@@ -43,7 +58,7 @@ class ShopListFragment : RootieFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = ShopFragmentBinding.inflate(inflater, container, false)
+        _binding = ShopCategoryBinding.inflate(inflater, container, false)
         setupViewModel()
         return binding.root
     }
@@ -54,7 +69,9 @@ class ShopListFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db").build()
+        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
+            .fallbackToDestructiveMigration()
+            .build()
         val repository = ProductRepository(db.productDao(), LocalJsonReader(requireContext()))
         
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
@@ -67,11 +84,36 @@ class ShopListFragment : RootieFragment() {
 
     override fun setupUI(view: View) {
         binding.rvProducts.adapter = productAdapter
+        
+        subcategoryAdapter = SubcategoryAdapter { subcategory ->
+            subcategoryAdapter.selectedSubcategory = subcategory
+            viewModel.setSubcategoryFilter(subcategory)
+        }
+        binding.rvSubcategories.adapter = subcategoryAdapter
+        
+        binding.btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+        
+        val categoryName = arguments?.getString("CATEGORY_NAME")
+        if (categoryName != null) {
+            viewModel.setCategoryFilter(categoryName)
+            binding.tvTitle.text = categoryName
+        } else {
+            viewModel.setCategoryFilter("Tất cả")
+            binding.tvTitle.text = "Tất cả sản phẩm"
+        }
     }
 
     override fun observeViewModel() {
         viewModel.products.observe(viewLifecycleOwner) { products ->
             productAdapter.submitList(products)
+        }
+        
+        viewModel.subcategories.observe(viewLifecycleOwner) { subcategories ->
+            subcategoryAdapter.submitList(subcategories)
+            // Reset to "Tất cả" whenever category changes
+            subcategoryAdapter.selectedSubcategory = "Tất cả"
         }
     }
 
