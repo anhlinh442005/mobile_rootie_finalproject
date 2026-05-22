@@ -28,9 +28,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="3e4d44" />
-                            <entry key="outputName" value="baseline_add_shopping_cart_24" />
-                            <entry key="sourceFile" value="E:\KHANH XUAN\UEL_study\N3HK3\MOBILE APP\PROJECT\code\mobile_rootie_finalproject" />
+                            <entry key="outputName" value="ic_qrscan" />
+                            <entry key="sourceFile" value="E:\KHANH XUAN\UEL_study\N3HK3\MOBILE APP\PROJECT\code\mobile_rootie_finalproject\app\src\main\res\drawable\ic_qrscan.svg" />
                           </map>
                         </option>
                       </PersistentState>
