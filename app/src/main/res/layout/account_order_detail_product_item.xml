@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="12dp">
+
+    <!-- Product Image with Rounded Corners -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardProductImage"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/gray_light"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/ivProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_voucher" />
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Product Title -->
+    <TextView
+        android:id="@+id/tvProductName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:maxLines="2"
+        android:ellipsize="end"
+        app:layout_constraintStart_toEndOf="@id/cardProductImage"
+        app:layout_constraintEnd_toStartOf="@id/tvProductPrice"
+        app:layout_constraintTop_toTopOf="@id/cardProductImage"
+        tools:text="Nước Dưỡng Tóc Tinh Dầu Bưởi Rootie" />
+
+    <!-- Product Attribute (e.g. Size/Type) -->
+    <TextView
+        android:id="@+id/tvProductAttribute"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="2dp"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/gray_dark"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/cardProductImage"
+        app:layout_constraintEnd_toStartOf="@id/tvProductPrice"
+        app:layout_constraintTop_toBottomOf="@id/tvProductName"
+        tools:text="Dung tích: 100ml" />
+
+    <!-- Quantity Label -->
+    <TextView
+        android:id="@+id/tvProductQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/gray_dark"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/cardProductImage"
+        app:layout_constraintTop_toBottomOf="@id/tvProductAttribute"
+        tools:text="x2" />
+
+    <!-- Price (Right aligned) -->
+    <TextView
+        android:id="@+id/tvProductPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tvProductQuantity"
+        tools:text="280.000đ" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

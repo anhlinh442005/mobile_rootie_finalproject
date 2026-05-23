@@ -467,10 +467,14 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/btn_all_orders"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
                         android:text="Xem tất cả đơn hàng >"
                         android:textColor="#879578"
                         android:textSize="12sp" />
@@ -485,9 +489,13 @@
 
                     <!-- Step 1: Chờ xác nhận -->
                     <LinearLayout
+                        android:id="@+id/btn_status_pending"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -515,9 +523,13 @@
 
                     <!-- Step 2: Đang xử lý -->
                     <LinearLayout
+                        android:id="@+id/btn_status_processing"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -545,9 +557,13 @@
 
                     <!-- Step 3: Đang giao -->
                     <LinearLayout
+                        android:id="@+id/btn_status_delivering"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -575,9 +591,13 @@
 
                     <!-- Step 4: Hoàn tất -->
                     <LinearLayout
+                        android:id="@+id/btn_status_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -605,9 +625,13 @@
 
                     <!-- Step 5: Đã hủy -->
                     <LinearLayout
+                        android:id="@+id/btn_status_cancelled"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 

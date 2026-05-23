@@ -9,6 +9,8 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.AccountProfileBinding
+import com.veganbeauty.app.features.account.notification.AccountNotificationFragment
+import com.veganbeauty.app.features.account.order.AccountOrderListFragment
 
 class AccountProfileFragment : RootieFragment() {
 
@@ -42,7 +44,54 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         binding.btnNotification.setOnClickListener {
-            Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Order List Fragment
+        binding.btnAllOrders.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Tất cả"))
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Order List Fragment with specific status filters pre-selected
+        binding.btnStatusPending.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Chờ xác nhận"))
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.btnStatusProcessing.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Đang xử lý"))
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.btnStatusDelivering.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Đang giao"))
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.btnStatusSuccess.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Thành công"))
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.btnStatusCancelled.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Đã hủy"))
+                .addToBackStack(null)
+                .commit()
         }
 
         // Navigate to Edit Profile Fragment when clicking the edit pencil button
