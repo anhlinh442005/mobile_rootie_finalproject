@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/neutral"
-    android:paddingVertical="12dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="16dp">
 
     <!-- Suggested Users Header -->
     <LinearLayout
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Xem tất cả"
-            android:textColor="@color/secondary"
+            android:textColor="@color/content"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -45,10 +45,4 @@
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/com_item_suggestion" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#E0E0E0"
-        android:layout_marginTop="16dp" />
 </LinearLayout>

@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.veganbeauty.app.features.community.com_feed.CommunityFeedFragment;
+import com.veganbeauty.app.features.home.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new CommunityFeedFragment())
+                .replace(R.id.main_container, new HomeFragment())
                 .commit();
         }
     }

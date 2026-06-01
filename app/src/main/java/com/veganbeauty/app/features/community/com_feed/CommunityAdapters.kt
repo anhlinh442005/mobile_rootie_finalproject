@@ -18,8 +18,6 @@ import com.veganbeauty.app.databinding.ComItemSuggestedReelsFeedBinding
 
 import com.google.android.material.tabs.TabLayoutMediator
 import android.widget.ImageView
-import android.content.Intent
-import android.net.Uri
 import coil.decode.SvgDecoder
 
 sealed class CommunityFeedItem {
@@ -97,7 +95,8 @@ class StoryAdapter(private var stories: List<UserEntity>) : RecyclerView.Adapter
 }
 
 class PostAdapter(
-    private var items: List<CommunityFeedItem> = emptyList()
+    private var items: List<CommunityFeedItem> = emptyList(),
+    private var globalProducts: List<com.veganbeauty.app.data.local.entities.CommunityProduct> = emptyList()
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -145,8 +144,11 @@ class PostAdapter(
                 val tagList = mutableListOf<String>()
                 post.skinType?.takeIf { it.isNotBlank() && it != "Không xác định" }?.let { tagList.add("✨ $it") }
                 post.concern?.takeIf { it.isNotBlank() && it != "Khác" && it != "Chung" }?.let { tagList.add("🌿 $it") }
-                tagList.add("🌿 Routine")
+                post.type?.takeIf { it.isNotBlank() }?.let { tagList.add("🌿 $it") }
                 postHolder.binding.tvSkinType.text = tagList.joinToString(" • ")
+                
+                postHolder.binding.tvCreatedAt.text = com.veganbeauty.app.utils.TimeFormatter.getTimeAgo(post.createdAt)
+                
                 postHolder.binding.tvLikes.text = post.likesCount.toString()
                 postHolder.binding.tvComments.text = post.commentsCount.toString()
                 postHolder.binding.tvContent.text = post.content
@@ -163,10 +165,24 @@ class PostAdapter(
                     postHolder.binding.ivAuthorAvatar.setImageResource(android.R.color.darker_gray)
                 }
 
+                // Linked Products
+                val linkedIds = post.linkedProductIds?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+                if (linkedIds.isNotEmpty() && globalProducts.isNotEmpty()) {
+                    val matchingProducts = globalProducts.filter { linkedIds.contains(it.id) }
+                    if (matchingProducts.isNotEmpty()) {
+                        postHolder.binding.llUsedProducts.visibility = View.VISIBLE
+                        postHolder.binding.rvLinkedProducts.adapter = PostLinkedProductAdapter(matchingProducts)
+                    } else {
+                        postHolder.binding.llUsedProducts.visibility = View.GONE
+                    }
+                } else {
+                    postHolder.binding.llUsedProducts.visibility = View.GONE
+                }
+
                 // Load post images slider (ViewPager2)
                 val urls = post.mediaUrlsString.split(",").filter { it.isNotBlank() }
-                val rootLayout = postHolder.binding.root as android.widget.LinearLayout
-                rootLayout.removeView(postHolder.binding.tvContent)
+                val rootLayout = postHolder.binding.root
+                rootLayout.removeView(postHolder.binding.llContentContainer)
 
                 if (urls.isNotEmpty()) {
                     val sliderAdapter = ImageSliderAdapter(urls)
@@ -182,11 +198,11 @@ class PostAdapter(
                         postHolder.binding.tabIndicator.visibility = View.VISIBLE
                     }
                     postHolder.binding.flPostImagesContainer.visibility = View.VISIBLE
-                    rootLayout.addView(postHolder.binding.tvContent)
+                    rootLayout.addView(postHolder.binding.llContentContainer)
                 } else {
                     postHolder.binding.flPostImagesContainer.visibility = View.GONE
                     postHolder.binding.tabIndicator.visibility = View.GONE
-                    rootLayout.addView(postHolder.binding.tvContent, 1)
+                    rootLayout.addView(postHolder.binding.llContentContainer, 1)
                 }
 
                 // Like toggle micro-interaction
@@ -220,8 +236,12 @@ class PostAdapter(
     fun updateData(
         newPosts: List<CommunityPostEntity>,
         newUsers: List<UserEntity>,
-        newReels: List<ReelEntity>
+        newReels: List<ReelEntity>,
+        newProducts: List<com.veganbeauty.app.data.local.entities.CommunityProduct> = emptyList()
     ) {
+        if (newProducts.isNotEmpty()) {
+            this.globalProducts = newProducts
+        }
         val mergedItems = mutableListOf<CommunityFeedItem>()
         
         for (i in newPosts.indices) {
@@ -284,12 +304,22 @@ class SuggestionAdapter(private var users: List<UserEntity>) : RecyclerView.Adap
     }
 }
 
-class ReelAdapter(private var reels: List<ReelEntity>) : RecyclerView.Adapter<ReelAdapter.ReelViewHolder>() {
+class ReelAdapter(private var reels: List<ReelEntity>, private val isGrid: Boolean = false) : RecyclerView.Adapter<ReelAdapter.ReelViewHolder>() {
 
     class ReelViewHolder(val binding: ComItemReelBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReelViewHolder {
         val binding = ComItemReelBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        if (isGrid) {
+            val lp = binding.root.layoutParams as ViewGroup.MarginLayoutParams
+            lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+            // Use 1dp (or small px value) for the margins so that the gap is 2dp between items.
+            val marginInPx = (1 * parent.context.resources.displayMetrics.density).toInt()
+            lp.setMargins(marginInPx, marginInPx, marginInPx, marginInPx)
+            lp.marginStart = marginInPx
+            lp.marginEnd = marginInPx
+            binding.root.layoutParams = lp
+        }
         return ReelViewHolder(binding)
     }
 
@@ -304,11 +334,11 @@ class ReelAdapter(private var reels: List<ReelEntity>) : RecyclerView.Adapter<Re
             holder.binding.ivThumbnail.setImageResource(android.R.color.darker_gray)
         }
 
-        // Bấm vào thước phim thì hiện lên giao diện để xem reels TikTok-style
+        // Bấm vào thước phim thì hiện lên giao diện để xem reels TikTok-style (hỗ trợ lướt)
         holder.binding.root.setOnClickListener {
             val context = holder.binding.root.context
             if (context is androidx.fragment.app.FragmentActivity) {
-                val dialog = ReelPlayerDialog(reel)
+                val dialog = ReelPlayerDialog(reels, holder.bindingAdapterPosition)
                 dialog.show(context.supportFragmentManager, "ReelPlayerDialog")
             }
         }

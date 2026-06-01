@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/neutral"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!-- Rootie Logo Name -->
+        <ImageView
+            android:layout_width="160dp"
+            android:layout_height="60dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/logo_name"
+            app:tint="@color/primary"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Circular ProgressBar -->
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminateTint="@color/primary"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Loading Subtext -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đang kết nối cộng đồng thuần chay..."
+            android:textColor="@color/content"
+            android:textSize="14sp"
+            android:fontFamily="@font/lexend" />
+
+    </LinearLayout>
+</RelativeLayout>

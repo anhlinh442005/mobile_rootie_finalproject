@@ -5,31 +5,15 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <!-- Full screen VideoView -->
-    <VideoView
-        android:id="@+id/videoView"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerReels"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true" />
+        android:orientation="vertical" />
 
-    <!-- Loading progress -->
-    <ProgressBar
-        android:id="@+id/pbLoading"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_centerInParent="true"
-        android:indeterminateTint="@android:color/white" />
-
-    <!-- Overlay dark gradient click zone for play/pause -->
-    <View
-        android:id="@+id/viewClickZone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#22000000" />
-
-    <!-- Close Button (Top Left) -->
+    <!-- Back Button (Top Left) -->
     <ImageView
-        android:id="@+id/ivClose"
+        android:id="@+id/ivBack"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentStart="true"
@@ -37,201 +21,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:padding="8dp"
-        android:src="@drawable/ic_close"
+        android:src="@drawable/ic_back"
         android:background="@drawable/com_bg_dot_selector"
         android:backgroundTint="#44000000"
         app:tint="@android:color/white" />
-
-    <!-- Right Side Actions Column (Like, Comment, Share) -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="80dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <!-- Author Avatar Right -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="@android:color/transparent">
-            
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                
-                <ImageView
-                    android:id="@+id/ivAuthorAvatarRight"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@android:color/darker_gray" />
-
-                <!-- Tiny Add Button on Avatar -->
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="-2dp"
-                    android:src="@drawable/ic_plus"
-                    android:background="@drawable/com_bg_dot_selector"
-                    android:backgroundTint="#E53935"
-                    android:padding="2dp"
-                    app:tint="@android:color/white" />
-            </FrameLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Like Icon -->
-        <ImageView
-            android:id="@+id/ivLike"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="6dp"
-            android:src="@drawable/ic_heart_outline"
-            app:tint="@android:color/white" />
-
-        <TextView
-            android:id="@+id/tvLikesCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="29.8K"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Comment Icon -->
-        <ImageView
-            android:id="@+id/ivComment"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="6dp"
-            android:src="@drawable/ic_comment"
-            app:tint="@android:color/white" />
-
-        <TextView
-            android:id="@+id/tvCommentsCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="23"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Share Icon -->
-        <ImageView
-            android:id="@+id/ivShare"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="6dp"
-            android:src="@drawable/ic_share"
-            app:tint="@android:color/white" />
-
-        <TextView
-            android:id="@+id/tvShareCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="38"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <!-- More Icon -->
-        <ImageView
-            android:id="@+id/ivMore"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="6dp"
-            android:src="@android:drawable/ic_menu_more"
-            app:tint="@android:color/white" />
-
-    </LinearLayout>
-
-    <!-- Bottom Left Information Panel -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/ivShare"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginBottom="24dp"
-        android:orientation="vertical">
-
-        <!-- Author Name and Follow Button -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:id="@+id/tvAuthorName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="\@WeNew Corporation"
-                android:textColor="@android:color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btnFollow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:background="@drawable/com_bg_filter_selected"
-                android:backgroundTint="#E53935"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:text="Theo dõi"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Caption -->
-        <TextView
-            android:id="@+id/tvCaption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Đứa bạn mới thấy đề tiếng anh đã rén... Xem thêm"
-            android:textColor="@android:color/white"
-            android:textSize="13sp"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Volume Speaker Mute/Unmute Toggle -->
-        <ImageView
-            android:id="@+id/ivMute"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:src="@drawable/ic_chevron_down"
-            app:tint="@android:color/white"
-            android:visibility="gone" />
-
-    </LinearLayout>
-
-    <!-- Bottom Playback Progress Bar -->
-    <ProgressBar
-        android:id="@+id/playbackProgress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_alignParentBottom="true"
-        android:progressDrawable="@drawable/com_bg_dot_selector"
-        android:progressTint="#E53935"
-        android:progress="0"
-        android:max="100" />
 
 </RelativeLayout>

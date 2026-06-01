@@ -48,8 +48,10 @@ ksp {
 dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
+    implementation(libs.recyclerview)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     
     // Firebase
     implementation(platform(libs.firebase.bom))

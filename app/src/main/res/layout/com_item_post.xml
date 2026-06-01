@@ -36,7 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp">
 
             <TextView
                 android:id="@+id/tvAuthorName"
@@ -52,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="✨ Da dầu mụn • 🌿 Routine"
-                android:textColor="@color/secondary"
+                android:textColor="@color/content"
                 android:textSize="12sp"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -74,7 +75,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
-            android:src="@drawable/ic_chevron_down"
+            android:src="@drawable/ic_more_horiz"
             app:tint="@color/primary" />
     </LinearLayout>
 
@@ -197,15 +198,60 @@
             app:tint="@color/primary" />
     </LinearLayout>
 
-    <!-- Post Content -->
-    <TextView
-        android:id="@+id/tvContent"
+    <!-- Post Content Container -->
+    <LinearLayout
+        android:id="@+id/llContentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="16dp"
-        android:text="Cả nhà yêu dưỡng da ăn Tết tới đâu rồi..."
-        android:textColor="@color/primary"
-        android:textSize="14sp" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="4dp"
+            android:text="Cả nhà yêu dưỡng da ăn Tết tới đâu rồi..."
+            android:textColor="@color/primary"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvCreatedAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="8dp"
+            android:text="2 giờ"
+            android:textColor="#888888"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:id="@+id/llUsedProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/com_bg_post_products_container"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sản phẩm đã dùng"
+                android:textStyle="bold"
+                android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvLinkedProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

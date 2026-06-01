@@ -1,4 +1,4 @@
-# 1. Những thứ máy bạn bạn sẽ tự tạo ra khi nhấn nút "Run"
+# 1. Những thứ máy sẽ tự tạo ra khi nhấn nút "Run"
 .gradle/
 build/
 app/build/

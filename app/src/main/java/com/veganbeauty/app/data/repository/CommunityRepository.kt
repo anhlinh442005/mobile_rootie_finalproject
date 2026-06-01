@@ -5,6 +5,7 @@ import com.veganbeauty.app.data.local.dao.CommunityDao
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity
 import com.veganbeauty.app.data.local.entities.ReelEntity
 import com.veganbeauty.app.data.local.entities.UserEntity
+import com.veganbeauty.app.data.local.entities.YtVideoEntity
 import com.veganbeauty.app.data.remote.FirestoreService
 import kotlinx.coroutines.flow.Flow
 
@@ -18,10 +19,17 @@ class CommunityRepository(
     val allUsers: Flow<List<UserEntity>> = communityDao.getAllUsers()
     val allReels: Flow<List<ReelEntity>> = communityDao.getAllReels()
 
+    fun getExploreVideos(): List<YtVideoEntity> {
+        return localJsonReader.getExploreVideos()
+    }
+
     // Sync Data
     suspend fun refreshCommunityData() {
         try {
-            // 1. Try to sync from Firebase Firestore
+            // 1. Always load local assets first (fresh data from JSON files)
+            loadFromLocalAssets()
+
+            // 2. Then try to sync from Firebase Firestore (overrides local if available)
             val remoteUsers = firestoreService.fetchAllUsers()
             val remotePosts = firestoreService.fetchAllCommunityPosts()
             val remoteReels = firestoreService.fetchAllReels()
@@ -35,15 +43,9 @@ class CommunityRepository(
             if (remoteReels.isNotEmpty()) {
                 communityDao.insertReels(remoteReels)
             }
-
-            // If remote is completely empty, fall back to local assets
-            if (remoteUsers.isEmpty() && remotePosts.isEmpty() && remoteReels.isEmpty()) {
-                loadFromLocalAssets()
-            }
         } catch (e: Exception) {
             e.printStackTrace()
-            // In case of error (e.g. no connection), fall back to local JSON
-            loadFromLocalAssets()
+            // In case of error, local assets already loaded above
         }
     }
 

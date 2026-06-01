@@ -16,7 +16,7 @@ TARGET_FILES = [
     # 'categories.json',
     # 'community_blog.json',
     # 'community_news.json',
-    # 'community_reels_fb.json',
+    'community_reels_fb.json',
     # 'community_video_yt.json',
     # 'ingredient.json',
     # 'policy.json',

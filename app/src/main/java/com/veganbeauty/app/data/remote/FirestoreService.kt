@@ -40,7 +40,8 @@ class FirestoreService {
  
                  val reactions = doc.get("reactions") as? Map<*, *>
                  val likesCount = (reactions?.get("like") as? Long)?.toInt() ?: 0
- 
+                 val linkedProductIds = (doc.get("linked_products") as? List<*>)?.joinToString(",")
+
                  CommunityPostEntity(
                      postId = doc.getString("post_id") ?: doc.id,
                      authorId = authorId,
@@ -53,7 +54,9 @@ class FirestoreService {
                      commentsCount = (doc.getLong("comments_count") ?: 0L).toInt(),
                      skinType = doc.getString("skin_type"),
                      concern = doc.getString("concern"),
-                     mediaUrlsString = mediaUrlsString
+                     mediaUrlsString = mediaUrlsString,
+                     type = doc.getString("type"),
+                     linkedProductIds = linkedProductIds
                  )
             }
         } catch (e: Exception) {

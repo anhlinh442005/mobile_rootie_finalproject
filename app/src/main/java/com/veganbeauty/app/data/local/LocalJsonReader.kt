@@ -4,6 +4,7 @@ import android.content.Context
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity
 import com.veganbeauty.app.data.local.entities.UserEntity
 import com.veganbeauty.app.data.local.entities.ReelEntity
+import com.veganbeauty.app.data.local.entities.YtVideoEntity
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -39,6 +40,14 @@ class LocalJsonReader(private val context: Context) {
                     likesCount = obj.getJSONObject("reactions").optInt("like", 0)
                 }
 
+                val linkedProductsArray = obj.optJSONArray("linked_products")
+                val linkedProductIds = mutableListOf<String>()
+                if (linkedProductsArray != null) {
+                    for (j in 0 until linkedProductsArray.length()) {
+                        linkedProductIds.add(linkedProductsArray.getString(j))
+                    }
+                }
+
                 postList.add(
                     CommunityPostEntity(
                         postId = obj.getString("post_id"),
@@ -52,7 +61,9 @@ class LocalJsonReader(private val context: Context) {
                         commentsCount = obj.optInt("comments_count", 0),
                         skinType = obj.optString("skin_type").takeIf { it.isNotEmpty() },
                         concern = obj.optString("concern").takeIf { it.isNotEmpty() },
-                        mediaUrlsString = mediaUrls.joinToString(",")
+                        mediaUrlsString = mediaUrls.joinToString(","),
+                        type = obj.optString("type").takeIf { it.isNotEmpty() },
+                        linkedProductIds = linkedProductIds.joinToString(",").takeIf { it.isNotEmpty() }
                     )
                 )
             }
@@ -124,6 +135,98 @@ class LocalJsonReader(private val context: Context) {
                 )
             }
             reelList
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    fun getProducts(): List<com.veganbeauty.app.data.local.entities.CommunityProduct> {
+        return try {
+            val jsonString = context.assets.open("products.json").bufferedReader().use { it.readText() }
+            val root = JSONObject(jsonString)
+            val jsonArray = root.getJSONArray("products")
+            
+            val productList = mutableListOf<com.veganbeauty.app.data.local.entities.CommunityProduct>()
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                productList.add(
+                    com.veganbeauty.app.data.local.entities.CommunityProduct(
+                        id = obj.getString("id"),
+                        name = obj.getString("name"),
+                        mainImage = obj.getString("mainImage"),
+                        price = obj.optInt("price", 0)
+                    )
+                )
+            }
+            productList
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    fun getExploreVideos(): List<YtVideoEntity> {
+        return try {
+            val usersList = getUsers()
+            val usersById = usersList.associateBy { it.userId }
+            val usersByName = usersList.associateBy { it.username }
+            val validAvatars = usersList.mapNotNull { it.avatarUrl }.filter { it.isNotEmpty() }
+
+            val jsonString = context.assets.open("community_video_yt.json").bufferedReader().use { it.readText() }
+            val jsonArray = JSONArray(jsonString)
+            
+            val videoList = mutableListOf<YtVideoEntity>()
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val typeArray = obj.optJSONArray("Type")
+                val types = mutableListOf<String>()
+                var isNotebook = false
+                if (typeArray != null) {
+                    for (j in 0 until typeArray.length()) {
+                        val t = typeArray.getString(j)
+                        types.add(t)
+                        if (t.equals("notebook", ignoreCase = true)) {
+                            isNotebook = true
+                        }
+                    }
+                }
+                
+                // Skip videos with "notebook" type
+                if (isNotebook) continue
+                
+                val userId = obj.optString("user_id", "")
+                val username = obj.getString("username")
+
+                var finalAvatarUrl: String? = null
+                if (userId.isNotEmpty() && usersById.containsKey(userId)) {
+                    finalAvatarUrl = usersById[userId]?.avatarUrl
+                } else if (usersByName.containsKey(username)) {
+                    finalAvatarUrl = usersByName[username]?.avatarUrl
+                }
+
+                if (finalAvatarUrl.isNullOrEmpty()) {
+                    val originalAvatar = obj.optString("avatar", "")
+                    finalAvatarUrl = if (originalAvatar == "null" || originalAvatar.isEmpty() || originalAvatar.contains("ytimg.com")) {
+                        if (validAvatars.isNotEmpty()) validAvatars.random() else null
+                    } else {
+                        originalAvatar
+                    }
+                }
+                
+                videoList.add(
+                    YtVideoEntity(
+                        id = obj.getString("_id"),
+                        title = obj.getString("title"),
+                        url = obj.getString("url"),
+                        description = obj.optString("short_description", ""),
+                        username = username,
+                        avatarUrl = finalAvatarUrl,
+                        type = types
+                    )
+                )
+            }
+            videoList
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()

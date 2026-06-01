@@ -22,18 +22,22 @@ import com.veganbeauty.app.databinding.ComDialogReelPlayerBinding
 import java.security.MessageDigest
 
 class ReelPlayerDialog(
-    private val reel: ReelEntity
+    private val reels: List<ReelEntity>,
+    private val initialPosition: Int
 ) : DialogFragment() {
 
     private var _binding: ComDialogReelPlayerBinding? = null
     private val binding get() = _binding!!
 
     private val videoUrls = listOf(
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+        "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423179/tiktok_nwm_7231472377438276870_n5xk8h.mp4",
+        "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423182/tiktok_nwm_7559978021822713106_ojcm1u.mp4",
+        "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423181/tiktok_nwm_7538058081125633298_c9sifg.mp4",
+        "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423180/tiktok_nwm_7487926346300148998_l8eetu.mp4",
+        "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423178/tiktok_nwm_7641962033369337096_nkiv9h.mp4",
+        "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423178/tiktok_nwm_7478916826060164370_uficoo.mp4",
+        "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423177/tiktok_nwm_7603600256147737876_xwwweq.mp4",
+        "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423177/tiktok_nwm_7504330582579563784_rtlvxf.mp4"
     )
 
     private val progressHandler = Handler(Looper.getMainLooper())
@@ -54,10 +58,36 @@ class ReelPlayerDialog(
         return binding.root
     }
 
+    private var currentPlayingHolder: ReelPlayerViewHolder? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViews()
-        setupVideoPlayer()
+        
+        // Setup Back Button
+        binding.ivBack.setOnClickListener {
+            dismiss()
+        }
+
+        // Setup ViewPager2
+        val adapter = ReelPagerAdapter(reels)
+        binding.viewPagerReels.adapter = adapter
+        binding.viewPagerReels.setCurrentItem(initialPosition, false)
+        
+        binding.viewPagerReels.registerOnPageChangeCallback(object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                // Stop previous video
+                currentPlayingHolder?.stopVideo()
+                
+                // Play new video
+                val rv = binding.viewPagerReels.getChildAt(0) as? androidx.recyclerview.widget.RecyclerView
+                val holder = rv?.findViewHolderForAdapterPosition(position) as? ReelPlayerViewHolder
+                if (holder != null) {
+                    holder.playVideo()
+                    currentPlayingHolder = holder
+                }
+            }
+        })
     }
 
     override fun onStart() {
@@ -68,109 +98,139 @@ class ReelPlayerDialog(
         }
     }
 
-    private fun setupViews() {
-        // Close button click listener
-        binding.ivClose.setOnClickListener {
-            dismiss()
+    inner class ReelPagerAdapter(private val items: List<ReelEntity>) : androidx.recyclerview.widget.RecyclerView.Adapter<ReelPlayerViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReelPlayerViewHolder {
+            val itemBinding = com.veganbeauty.app.databinding.ComItemReelPlayerBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+            return ReelPlayerViewHolder(itemBinding)
         }
 
-        // Author details binding
-        binding.tvAuthorName.text = "@${reel.authorUsername}"
-        binding.tvCaption.text = reel.caption
-        binding.tvLikesCount.text = formatCount(reel.likesCount)
-        binding.tvCommentsCount.text = formatCount(reel.commentsCount)
-        binding.tvShareCount.text = formatCount(reel.shareCount)
-
-        // Load circular author avatar using Coil
-        if (!reel.authorAvatarUrl.isNullOrEmpty()) {
-            binding.ivAuthorAvatarRight.load(reel.authorAvatarUrl) {
-                decoderFactory(SvgDecoder.Factory())
-                crossfade(true)
-                placeholder(android.R.color.darker_gray)
-                error(R.drawable.logo)
-            }
-        } else {
-            binding.ivAuthorAvatarRight.setImageResource(android.R.color.darker_gray)
+        override fun onBindViewHolder(holder: ReelPlayerViewHolder, position: Int) {
+            holder.bind(items[position])
         }
 
-        // Like toggle transition
-        var isLiked = false
-        binding.ivLike.setOnClickListener {
-            isLiked = !isLiked
-            if (isLiked) {
-                binding.ivLike.setImageResource(R.drawable.ic_heart_filled)
-                binding.ivLike.setColorFilter(Color.parseColor("#E53935"))
-                binding.tvLikesCount.text = formatCount(reel.likesCount + 1)
-            } else {
-                binding.ivLike.setImageResource(R.drawable.ic_heart_outline)
-                binding.ivLike.setColorFilter(Color.WHITE)
-                binding.tvLikesCount.text = formatCount(reel.likesCount)
+        override fun getItemCount() = items.size
+        
+        override fun onViewAttachedToWindow(holder: ReelPlayerViewHolder) {
+            super.onViewAttachedToWindow(holder)
+            if (holder.bindingAdapterPosition == binding.viewPagerReels.currentItem) {
+                holder.playVideo()
+                currentPlayingHolder = holder
             }
         }
-
-        // Follow button toggle
-        var isFollowing = false
-        binding.btnFollow.setOnClickListener {
-            isFollowing = !isFollowing
-            if (isFollowing) {
-                binding.btnFollow.text = "Đang theo dõi"
-                binding.btnFollow.setBackgroundResource(R.drawable.com_bg_filter_normal)
-                binding.btnFollow.setTextColor(Color.WHITE)
-            } else {
-                binding.btnFollow.text = "Theo dõi"
-                binding.btnFollow.setBackgroundResource(R.drawable.com_bg_filter_selected)
-                binding.btnFollow.setBackgroundColor(Color.parseColor("#E53935"))
-                binding.btnFollow.setTextColor(Color.WHITE)
+        
+        override fun onViewDetachedFromWindow(holder: ReelPlayerViewHolder) {
+            super.onViewDetachedFromWindow(holder)
+            holder.stopVideo()
+            if (currentPlayingHolder == holder) {
+                currentPlayingHolder = null
             }
         }
     }
 
-    private fun setupVideoPlayer() {
-        val h = intFromMd5(reel.videoId)
-        val selectedVideoUrl = videoUrls[h % videoUrls.size]
+    inner class ReelPlayerViewHolder(val itemBinding: com.veganbeauty.app.databinding.ComItemReelPlayerBinding) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemBinding.root) {
+        private var mediaPlayer: MediaPlayer? = null
+        private var isLiked = false
+        private var isFollowing = false
 
-        binding.pbLoading.visibility = View.VISIBLE
-        binding.videoView.setZOrderMediaOverlay(true)
-        binding.videoView.setVideoPath(selectedVideoUrl)
+        fun bind(reel: ReelEntity) {
+            // Author details binding
+            itemBinding.tvAuthorName.text = "@${reel.authorUsername}"
+            itemBinding.tvCaption.text = reel.caption
+            itemBinding.tvLikesCount.text = formatCount(reel.likesCount)
+            itemBinding.tvCommentsCount.text = formatCount(reel.commentsCount)
+            itemBinding.tvShareCount.text = formatCount(reel.shareCount)
 
-        binding.videoView.setOnPreparedListener { mp ->
-            mediaPlayer = mp
-            binding.pbLoading.visibility = View.GONE
-            mp.isLooping = true
-            binding.videoView.start()
-            startProgressUpdateLoop()
-        }
-
-        binding.videoView.setOnErrorListener { _, _, _ ->
-            binding.pbLoading.visibility = View.GONE
-            // Return true to gracefully suppress the default system "Can't play this video" popup
-            true
-        }
-
-        // Play/Pause click toggle zone
-        binding.viewClickZone.setOnClickListener {
-            if (binding.videoView.isPlaying) {
-                binding.videoView.pause()
-            } else {
-                binding.videoView.start()
-            }
-        }
-    }
-
-    private fun startProgressUpdateLoop() {
-        progressHandler.post(object : Runnable {
-            override fun run() {
-                if (binding.videoView.isPlaying) {
-                    val current = binding.videoView.currentPosition
-                    val duration = binding.videoView.duration
-                    if (duration > 0) {
-                        val progress = (current * 100) / duration
-                        binding.playbackProgress.progress = progress
-                    }
+            // Load circular author avatar using Coil
+            if (!reel.authorAvatarUrl.isNullOrEmpty()) {
+                itemBinding.ivAuthorAvatarRight.load(reel.authorAvatarUrl) {
+                    decoderFactory(SvgDecoder.Factory())
+                    crossfade(true)
+                    placeholder(android.R.color.darker_gray)
+                    error(R.drawable.logo)
                 }
-                progressHandler.postDelayed(this, 250)
+            } else {
+                itemBinding.ivAuthorAvatarRight.setImageResource(android.R.color.darker_gray)
             }
-        })
+
+            // Like toggle
+            itemBinding.ivLike.setOnClickListener {
+                isLiked = !isLiked
+                if (isLiked) {
+                    itemBinding.ivLike.setImageResource(R.drawable.ic_heart_filled)
+                    itemBinding.ivLike.setColorFilter(Color.parseColor("#E53935"))
+                    itemBinding.tvLikesCount.text = formatCount(reel.likesCount + 1)
+                } else {
+                    itemBinding.ivLike.setImageResource(R.drawable.ic_heart_outline)
+                    itemBinding.ivLike.setColorFilter(Color.WHITE)
+                    itemBinding.tvLikesCount.text = formatCount(reel.likesCount)
+                }
+            }
+
+            // Follow toggle
+            itemBinding.btnFollow.setOnClickListener {
+                isFollowing = !isFollowing
+                if (isFollowing) {
+                    itemBinding.btnFollow.text = "Đang theo dõi"
+                    itemBinding.btnFollow.setBackgroundResource(R.drawable.com_bg_filter_normal)
+                    itemBinding.btnFollow.setTextColor(Color.WHITE)
+                } else {
+                    itemBinding.btnFollow.text = "Theo dõi"
+                    itemBinding.btnFollow.setBackgroundResource(R.drawable.com_bg_filter_selected)
+                    itemBinding.btnFollow.setBackgroundColor(Color.parseColor("#E53935"))
+                    itemBinding.btnFollow.setTextColor(Color.WHITE)
+                }
+            }
+
+            // Play/Pause toggle
+            itemBinding.viewClickZone.setOnClickListener {
+                if (itemBinding.videoView.isPlaying) {
+                    itemBinding.videoView.pause()
+                } else {
+                    itemBinding.videoView.start()
+                }
+            }
+
+            // Setup Video Path
+            val h = intFromMd5(reel.videoId)
+            val selectedVideoUrl = videoUrls[h % videoUrls.size]
+            itemBinding.videoView.setZOrderMediaOverlay(true)
+            itemBinding.videoView.setVideoPath(selectedVideoUrl)
+
+            itemBinding.videoView.setOnPreparedListener { mp ->
+                mediaPlayer = mp
+                itemBinding.pbLoading.visibility = View.GONE
+                mp.isLooping = true
+                if (bindingAdapterPosition == binding.viewPagerReels.currentItem) {
+                    itemBinding.videoView.start()
+                }
+            }
+
+            itemBinding.videoView.setOnErrorListener { _, _, _ ->
+                itemBinding.pbLoading.visibility = View.GONE
+                true
+            }
+        }
+
+        fun playVideo() {
+            if (mediaPlayer != null) {
+                itemBinding.videoView.start()
+            } else {
+                itemBinding.pbLoading.visibility = View.VISIBLE
+            }
+        }
+
+        fun stopVideo() {
+            try {
+                if (itemBinding.videoView.isPlaying) {
+                    itemBinding.videoView.pause()
+                }
+                itemBinding.videoView.seekTo(0)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun formatCount(count: Int): String {
@@ -198,11 +258,7 @@ class ReelPlayerDialog(
     override fun onDestroyView() {
         super.onDestroyView()
         progressHandler.removeCallbacksAndMessages(null)
-        try {
-            binding.videoView.stopPlayback()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        currentPlayingHolder?.stopVideo()
         _binding = null
     }
 }
