@@ -1,0 +1,173 @@
+{
+  "orders": [
+    {
+      "id": "ORD-123456",
+      "orderDate": "10/10/2023",
+      "orderTime": "14:30",
+      "status": "Chờ xác nhận",
+      "shippingName": "Nguyễn Văn A",
+      "shippingPhone": "090 123 4567",
+      "shippingAddress": "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+      "shippingCost": 30000,
+      "voucherDiscount": 20000,
+      "paymentMethod": "Thanh toán qua Ví MoMo",
+      "items": [
+        {
+          "productId": "1e499ed75a31e4a02af2d962",
+          "productName": "Sữa chống nắng bí đao 50ml",
+          "productImage": "https://image.cocoonvietnam.com/uploads/Ecom_Skin_BD_Sua_chong_nang_bi_dao_50ml_01_01_9df155e3a1.png",
+          "quantity": 1,
+          "price": 432000
+        }
+      ]
+    },
+    {
+      "id": "ORD-123457",
+      "orderDate": "09/10/2023",
+      "orderTime": "09:15",
+      "status": "Chờ xác nhận",
+      "shippingName": "Nguyễn Văn A",
+      "shippingPhone": "090 123 4567",
+      "shippingAddress": "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+      "shippingCost": 30000,
+      "voucherDiscount": 0,
+      "paymentMethod": "Thanh toán khi nhận hàng (COD)",
+      "items": [
+        {
+          "productId": "ca192eb70b03e780dc19d872",
+          "productName": "Thạch hoa hồng dưỡng ẩm 30ml",
+          "productImage": "https://image.cocoonvietnam.com/uploads/z3741705995135_9891ea4b14c3157d95cdd6a207307e05_1edc3960f6.jpg",
+          "quantity": 2,
+          "price": 192000
+        }
+      ]
+    },
+    {
+      "id": "ORD-123440",
+      "orderDate": "05/10/2023",
+      "orderTime": "16:45",
+      "status": "Đang xử lý",
+      "shippingName": "Nguyễn Văn A",
+      "shippingPhone": "090 123 4567",
+      "shippingAddress": "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+      "shippingCost": 30000,
+      "voucherDiscount": 10000,
+      "paymentMethod": "Thanh toán qua Ví MoMo",
+      "items": [
+        {
+          "productId": "50c50369a5552d24a4c319b6",
+          "productName": "Tinh chất bí đao 70ml - Tặng dung dịch chấm mụn bí đao 5ml",
+          "productImage": "https://image.cocoonvietnam.com/uploads/Artboard_26_copy_5_ad72a3b272.png",
+          "quantity": 1,
+          "price": 299000
+        }
+      ]
+    },
+    {
+      "id": "ORD-123412",
+      "orderDate": "01/10/2023",
+      "orderTime": "10:20",
+      "status": "Thành công",
+      "shippingName": "Nguyễn Văn A",
+      "shippingPhone": "090 123 4567",
+      "shippingAddress": "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+      "shippingCost": 30000,
+      "voucherDiscount": 30000,
+      "paymentMethod": "Thanh toán qua Thẻ tín dụng",
+      "items": [
+        {
+          "productId": "246c3c1f2c0ec26df7a0f42c",
+          "productName": "Combo làm sạch và chăm sóc da mụn từ bí đao",
+          "productImage": "https://image.cocoonvietnam.com/uploads/Artboard_26_copy_9_ab89840ccd.png",
+          "quantity": 1,
+          "price": 650750
+        }
+      ]
+    },
+    {
+      "id": "ORD-123445",
+      "orderDate": "24/10/2023",
+      "orderTime": "14:30",
+      "status": "Đang giao",
+      "shippingName": "Nguyễn Văn A",
+      "shippingPhone": "090 123 4567",
+      "shippingAddress": "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+      "shippingCost": 30000,
+      "voucherDiscount": 50000,
+      "paymentMethod": "Thanh toán qua Ví MoMo",
+      "expectedDeliveryTime": "24 Thg 10, 2023 - 18:00 - 20:00",
+      "items": [
+        {
+          "productId": "product_hair_grapefruit",
+          "productName": "Nước Dưỡng Tóc Tinh Dầu Bưởi Rootie",
+          "productImage": "https://image.cocoonvietnam.com/uploads/Ecom_Hair_Tinh_dau_buoi_140ml_01_d6006ee7aa.png",
+          "quantity": 2,
+          "price": 505000
+        }
+      ]
+    },
+    {
+      "id": "ORD-123400",
+      "orderDate": "28/09/2023",
+      "orderTime": "15:40",
+      "status": "Thành công",
+      "shippingName": "Nguyễn Văn A",
+      "shippingPhone": "090 123 4567",
+      "shippingAddress": "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+      "shippingCost": 30000,
+      "voucherDiscount": 15000,
+      "paymentMethod": "Thanh toán qua Ví MoMo",
+      "items": [
+        {
+          "productId": "6d7d02a9276d5114489a48c3",
+          "productName": "Nước tẩy trang hoa hồng 140ml",
+          "productImage": "https://image.cocoonvietnam.com/uploads/z4372805386498_3bd533296846158103cd752a124be5a8_f90a56659b.jpg",
+          "quantity": 1,
+          "price": 153000
+        }
+      ]
+    },
+    {
+      "id": "ORD-123390",
+      "orderDate": "25/09/2023",
+      "orderTime": "11:20",
+      "status": "Đã hủy",
+      "shippingName": "Nguyễn Văn A",
+      "shippingPhone": "090 123 4567",
+      "shippingAddress": "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+      "shippingCost": 30000,
+      "voucherDiscount": 50000,
+      "paymentMethod": "Thanh toán qua Ví MoMo",
+      "items": [
+        {
+          "productId": "813455e9fcaaa2178c222614",
+          "productName": "Mặt nạ bí đao 100ml",
+          "productImage": "https://image.cocoonvietnam.com/uploads/Artboard_39_cb91c1c0cb.jpg",
+          "quantity": 3,
+          "price": 339000
+        }
+      ]
+    },
+    {
+      "id": "ORD-123388",
+      "orderDate": "20/09/2023",
+      "orderTime": "16:00",
+      "status": "Thành công",
+      "shippingName": "Nguyễn Văn A",
+      "shippingPhone": "090 123 4567",
+      "shippingAddress": "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+      "shippingCost": 30000,
+      "voucherDiscount": 20000,
+      "paymentMethod": "Thanh toán qua Ví MoMo",
+      "items": [
+        {
+          "productId": "1e499ed75a31e4a02af2d962",
+          "productName": "Sữa chống nắng bí đao 50ml",
+          "productImage": "https://image.cocoonvietnam.com/uploads/Ecom_Skin_BD_Sua_chong_nang_bi_dao_50ml_01_01_9df155e3a1.png",
+          "quantity": 1,
+          "price": 432000
+        }
+      ]
+    }
+  ]
+}

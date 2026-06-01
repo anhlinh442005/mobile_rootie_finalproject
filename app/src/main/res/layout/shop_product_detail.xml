@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAF9F4">
+
+    <!-- Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clHeader"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#FAF9F4"
+        android:elevation="2dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#455B49" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chi tiết sản phẩm"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/btnSearch"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:tint="#455B49" />
+
+            <ImageView
+                android:id="@+id/btnCart"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_gallery"
+                app:tint="#455B49" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/llBottomBar"
+        app:layout_constraintTop_toBottomOf="@id/clHeader">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Image ViewPager -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:background="#FAF9F4">
+                
+                <ImageView
+                    android:id="@+id/ivProductLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerInside"
+                    android:src="@android:color/darker_gray" />
+
+                <!-- Mock Pager Indicators -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
+                    <androidx.cardview.widget.CardView android:layout_width="6dp" android:layout_height="6dp" android:layout_margin="3dp" app:cardCornerRadius="3dp" app:cardBackgroundColor="#455B49" app:cardElevation="0dp"/>
+                    <androidx.cardview.widget.CardView android:layout_width="6dp" android:layout_height="6dp" android:layout_margin="3dp" app:cardCornerRadius="3dp" app:cardBackgroundColor="#CCCCCC" app:cardElevation="0dp"/>
+                    <androidx.cardview.widget.CardView android:layout_width="6dp" android:layout_height="6dp" android:layout_margin="3dp" app:cardCornerRadius="3dp" app:cardBackgroundColor="#CCCCCC" app:cardElevation="0dp"/>
+                </LinearLayout>
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="32dp">
+
+                <TextView
+                    android:id="@+id/tvProductName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Gel tắm đường thốt nốt An Giang 500ml"
+                    android:textColor="#333333"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- In stock dot -->
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_chip_selected"
+                        android:backgroundTint="#4CAF50" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Còn hàng"
+                        android:textColor="#555555"
+                        android:textSize="13sp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@android:drawable/star_on"
+                        app:tint="#FFC107" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="4.8"
+                        android:textColor="#333333"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="(124 reviews)"
+                        android:textColor="#888888"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="241.000đ"
+                        android:textColor="#B91C1C"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvOriginalPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="325.000đ"
+                        android:textColor="#999999"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Tabs (Thông tin, Thành phần, Câu chuyện, Cách sử dụng) -->
+                <com.google.android.material.tabs.TabLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@android:color/transparent"
+                    app:tabIndicatorColor="#455B49"
+                    app:tabSelectedTextColor="#333333"
+                    app:tabTextColor="#888888">
+                    
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thông tin" />
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thành phần" />
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Câu chuyện" />
+                </com.google.android.material.tabs.TabLayout>
+
+                <TextView
+                    android:id="@+id/tvDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:lineSpacingExtra="4dp"
+                    android:text="Từ những tinh thể đường thốt nốt An Giang nhuyễn mịn giàu chất ngăn ngừa oxy hóa và khoáng chất, kết hợp cùng vitamin B5 và B3, gel tắm với hương thơm trái cây giúp làm sạch nhẹ nhàng, hỗ trợ bảo vệ hàng rào độ ẩm, giúp làn da luôn mềm mại và không bị khô sau khi tắm."
+                    android:textColor="#444444"
+                    android:textSize="14sp" />
+
+                <!-- Info boxes -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="#EDF3ED"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp">
+                    
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_agenda"
+                            app:tint="#455B49" />
+                            
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Thích hợp với:"
+                            android:textColor="#333333"
+                            android:textStyle="bold" />
+                            
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Mọi loại da cơ thể"
+                            android:textColor="#444444" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardBackgroundColor="#EDF3ED"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp">
+                    
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:orientation="horizontal">
+                        
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_sort_by_size"
+                            app:tint="#455B49" />
+                            
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thành phần chính:"
+                                android:textColor="#333333"
+                                android:textStyle="bold" />
+                                
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Đường thốt nốt An Giang, Vitamin B5 (Panthenol), Vitamin B3 (Niacinamide), Sodium PCA."
+                                android:textColor="#444444" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardBackgroundColor="#FBEAEB"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp">
+                    
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_dialog_alert"
+                            app:tint="#B91C1C" />
+                            
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cảnh báo dị ứng:"
+                                android:textColor="#B91C1C"
+                                android:textStyle="bold" />
+                                
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Dị ứng gì thì báo vô đây"
+                                android:textColor="#555555" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Handbook / Articles -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cẩm nang liên quan"
+                        android:textColor="#455B49"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="Xem tất cả >"
+                        android:textColor="#888888"
+                        android:textSize="13sp" />
+                </RelativeLayout>
+
+                <!-- Mock horizontal list cho Cẩm nang -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvHandbook"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/shop_item_handbook"
+                    tools:itemCount="3"/>
+
+                <!-- Reviews -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đánh giá nổi bật"
+                        android:textColor="#455B49"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="Xem tất cả >"
+                        android:textColor="#888888"
+                        android:textSize="13sp" />
+                </RelativeLayout>
+                
+                <!-- Review List (Mock) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#EAEAEA">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_chip_selected"
+                                android:gravity="center"
+                                android:text="N"
+                                android:textColor="#455B49"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Bảo Nguyên"
+                                android:textColor="#333333"
+                                android:textStyle="bold" />
+                            <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text='"Chất kem rất mỏng nhẹ, thấm nhanh và không để lại vệt trắng trên da. Rất ưng ý!"'
+                            android:textColor="#555555"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#EAEAEA">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_chip_selected"
+                                android:gravity="center"
+                                android:text="N"
+                                android:textColor="#455B49"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Bảo Nguyên"
+                                android:textColor="#333333"
+                                android:textStyle="bold" />
+                            <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text='"Chất kem rất mỏng nhẹ, thấm nhanh và không để lại vệt trắng trên da. Rất ưng ý!"'
+                            android:textColor="#555555"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Related Products -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sản phẩm liên quan"
+                        android:textColor="#455B49"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="Xem tất cả >"
+                        android:textColor="#888888"
+                        android:textSize="13sp" />
+                </RelativeLayout>
+
+                <!-- Mock grid cho SP liên quan -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRelatedProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:listitem="@layout/shop_item_product"
+                    tools:itemCount="2"/>
+
+                <!-- Recently Viewed Products -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sản phẩm vừa xem"
+                        android:textColor="#455B49"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="Xem tất cả >"
+                        android:textColor="#888888"
+                        android:textSize="13sp" />
+                </RelativeLayout>
+
+                <!-- Mock grid cho SP vừa xem -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRecentlyViewed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:listitem="@layout/shop_item_product"
+                    tools:itemCount="2"/>
+                    
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Action Bar -->
+    <LinearLayout
+        android:id="@+id/llBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFindStore"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Tìm cửa hàng"
+            android:textColor="#555555"
+            app:strokeColor="#CCCCCC"
+            android:textAllCaps="false"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBuyOnline"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#455B49"
+            android:text="Mua online"
+            android:textAllCaps="false"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,4 +8,30 @@
     <color name="tertiary">#97A49C</color>
     <color name="neutral">#FEFBF4</color>
     <color name="nav_icon_color">#DDDFC4</color>
+
+    <!-- Gray tones -->
+    <color name="gray_light">#E0E4E2</color>
+    <color name="gray_dark">#7E8A83</color>
+
+    <color name="secondary">#677559</color>
+
+    <!-- Status Pending (Chờ xác nhận) -->
+    <color name="status_pending_bg">#FFF6E5</color>
+    <color name="status_pending_text">#FF9F00</color>
+
+    <!-- Status Processing (Đang xử lý) -->
+    <color name="status_processing_bg">#E5F2FF</color>
+    <color name="status_processing_text">#007AFF</color>
+
+    <!-- Status Delivering (Đang giao) -->
+    <color name="status_delivering_bg">#E8F5E9</color>
+    <color name="status_delivering_text">#2E7D32</color>
+
+    <!-- Status Success (Thành công) -->
+    <color name="status_success_bg">#E8F5E9</color>
+    <color name="status_success_text">#2E7D32</color>
+
+    <!-- Status Cancelled (Đã hủy) -->
+    <color name="status_cancelled_bg">#FFEBEE</color>
+    <color name="status_cancelled_text">#C62828</color>
 </resources>

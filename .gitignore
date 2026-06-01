@@ -12,5 +12,6 @@ local.properties
 *.hprof
 .DS_Store
 serviceAccountKey.json
-# 4. Large Data Files
-app/src/main/assets/community_blog.json
+
+# 4. Tệp tin dữ liệu JSON (Tránh commit các file data lớn)
+app/src/main/assets/*.json
