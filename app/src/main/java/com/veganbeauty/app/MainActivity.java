@@ -4,8 +4,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.veganbeauty.app.features.profile.AccountProfileFragment;
 import com.veganbeauty.app.features.shop.product.list.ShopListFragment;
+import com.veganbeauty.app.features.account.order.AccountOrderListFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new AccountProfileFragment())
+                .replace(R.id.main_container, new AccountOrderListFragment())
                 .commit();
         }
     }

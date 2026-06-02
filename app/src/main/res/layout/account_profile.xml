@@ -772,30 +772,7 @@
                             android:textSize="10sp" />
                     </LinearLayout>
 
-                    <!-- item 4: Đổi quà -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_gift" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:gravity="center"
-                            android:text="Đổi quà"
-                            android:textColor="#000000"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-
-                    <!-- item 5: Hỏi đáp -->
+                    <!-- item 4: Hỏi đáp -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -817,39 +794,8 @@
                             android:textColor="#000000"
                             android:textSize="10sp" />
                     </LinearLayout>
-                </LinearLayout>
 
-                <!-- Grid - Row 2 (5 items) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <!-- item 6: Thiết lập tài khoản -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_settings" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:gravity="center"
-                            android:text="Thiết lập\ntài khoản"
-                            android:textColor="#000000"
-                            android:textSize="9sp" />
-                    </LinearLayout>
-
-                    <!-- item 7: Sản phẩm mới -->
+                    <!-- item 5: Sản phẩm mới -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -871,8 +817,16 @@
                             android:textColor="#000000"
                             android:textSize="9sp" />
                     </LinearLayout>
+                </LinearLayout>
 
-                    <!-- item 8: Sản phẩm bán chạy -->
+                <!-- Grid - Row 2 (4 items) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <!-- item 6: Sản phẩm bán chạy -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -895,7 +849,7 @@
                             android:textSize="9sp" />
                     </LinearLayout>
 
-                    <!-- item 9: Rootie deal -->
+                    <!-- item 7: Rootie deal -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -918,7 +872,7 @@
                             android:textSize="10sp" />
                     </LinearLayout>
 
-                    <!-- item 10: Tuyển dụng -->
+                    <!-- item 8: Tuyển dụng -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -939,6 +893,29 @@
                             android:text="Tuyển dụng"
                             android:textColor="#000000"
                             android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <!-- item 9: Thiết lập tài khoản -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_settings" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center"
+                            android:text="Thiết lập\ntài khoản"
+                            android:textColor="#000000"
+                            android:textSize="9sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
