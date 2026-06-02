@@ -1,0 +1,95 @@
+{
+  "notifications": [
+    {
+      "id": "NTF-001",
+      "title": "Voucher: Giảm 50K!",
+      "content": "Ưu đãi cực hời dành riêng cho bạn. Sử dụng mã GREEN50 để được giảm ngay 50.000đ cho đơn hàng thân thiện môi trường tiếp theo.",
+      "time": "10:45",
+      "category": "Khuyến mãi",
+      "tag": "Voucher mới",
+      "voucherCode": "GREEN50",
+      "actionText": "COPY MÃ",
+      "isRead": false,
+      "section": "Hôm nay",
+      "iconResName": "ic_voucher"
+    },
+    {
+      "id": "NTF-002",
+      "title": "ORD-123456 đang giao",
+      "content": "Mã đơn hàng ORD-123456 đang giao. Tài xế đang trên đường đến địa chỉ của bạn.",
+      "time": "10:00",
+      "category": "Đơn hàng",
+      "tag": "Cập nhật đơn hàng",
+      "voucherCode": null,
+      "actionText": "THEO DÕI",
+      "isRead": false,
+      "section": "Hôm nay",
+      "iconResName": "ic_truck"
+    },
+    {
+      "id": "NTF-003",
+      "title": "Daily Carbon Report",
+      "content": "Bạn đã tiết kiệm được 2kg CO2 thông qua việc lựa chọn sản phẩm không đóng gói nilon!",
+      "time": "Hôm qua",
+      "category": "Đơn hàng",
+      "tag": null,
+      "voucherCode": null,
+      "actionText": "THEO DÕI",
+      "isRead": true,
+      "section": "Hôm qua",
+      "iconResName": "ic_leaf"
+    },
+    {
+      "id": "NTF-004",
+      "title": "Deal hời cuối tuần",
+      "content": "Khám phá bộ sưu tập sản phẩm tái chế với mức giá giảm đến 30% chỉ trong cuối tuần này. Sống xanh không khó, bắt đầu ngay!",
+      "time": "Hôm qua",
+      "category": "Khuyến mãi",
+      "tag": "FLASH SALE",
+      "voucherCode": null,
+      "actionText": "COPY MÃ",
+      "isRead": true,
+      "section": "Hôm qua",
+      "iconResName": "ic_percent"
+    },
+    {
+      "id": "NTF-005",
+      "title": "Nhận ngay 100 điểm thưởng",
+      "content": "Hoàn thành khảo sát người dùng để nhận ngay 100 điểm thưởng.",
+      "time": "Hôm qua",
+      "category": "Khuyến mãi",
+      "tag": null,
+      "voucherCode": null,
+      "actionText": "COPY MÃ",
+      "isRead": true,
+      "section": "Hôm qua",
+      "iconResName": "ic_gift"
+    },
+    {
+      "id": "NTF-006",
+      "title": "Điểm thưởng",
+      "content": "Chúc mừng! Bạn đã đạt hạng Thành viên Bạc. Tận hưởng ưu đãi giảm giá 6% cho tất cả đơn hàng từ hôm nay.",
+      "time": "5 phút trước",
+      "category": "Tin nhắn",
+      "tag": "Hạng Bạc",
+      "voucherCode": null,
+      "actionText": "TRA CỨU & CẬP NHẬT",
+      "isRead": false,
+      "section": "Hôm nay",
+      "iconResName": "ic_ribbon"
+    },
+    {
+      "id": "NTF-007",
+      "title": "Chuyên viên tư vấn",
+      "content": "Sữa chống nắng bí đao rất phù hợp cho da dầu mụn đấy ạ. Thành phần bí đao giúp làm dịu da, kháng viêm hiệu quả.",
+      "time": "1 giờ trước",
+      "category": "Tin nhắn",
+      "tag": null,
+      "voucherCode": null,
+      "actionText": "Phản hồi",
+      "isRead": false,
+      "section": "Hôm nay",
+      "iconResName": "ic_agent"
+    }
+  ]
+}
