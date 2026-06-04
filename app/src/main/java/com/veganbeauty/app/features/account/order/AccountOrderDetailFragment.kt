@@ -47,7 +47,7 @@ class AccountOrderDetailFragment : RootieFragment() {
         val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
             .fallbackToDestructiveMigration()
             .build()
-        val repository = OrderRepository(db.orderDao(), LocalJsonReader(requireContext()))
+        val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
         val orderId = arguments?.getString(ARG_ORDER_ID) ?: ""
 
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
@@ -215,7 +215,7 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.btnBannerSubAction.backgroundTintList = ContextCompat.getColorStateList(context, bgResId)
                 
                 // Set text inside TextView
-                binding.tvBannerSubActionText.text = "Đánh giá đơn hàng"
+                binding.tvBannerSubActionText.text = if (order.hasReview) "Xem đánh giá" else "Đánh giá đơn hàng"
                 binding.tvBannerSubActionText.setTextColor(ContextCompat.getColor(context, textResId))
                 
                 // Set icon in ImageView and tint it perfectly
@@ -224,7 +224,10 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.ivBannerSubActionIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, textResId))
 
                 binding.btnBannerSubAction.setOnClickListener {
-                    Toast.makeText(context, "Đang mở giao diện đánh giá đơn hàng ${order.orderId}...", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.orderId))
+                        .addToBackStack(null)
+                        .commit()
                 }
             }
             "Đã hủy" -> {
@@ -332,6 +335,10 @@ class AccountOrderDetailFragment : RootieFragment() {
                     "Cảm ơn bạn đã mua sắm tại Rootie!",
                     Toast.LENGTH_SHORT
                 ).show()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.orderId))
+                    .addToBackStack(null)
+                    .commit()
             }
             .setNegativeButton("Quay lại", null)
             .show()

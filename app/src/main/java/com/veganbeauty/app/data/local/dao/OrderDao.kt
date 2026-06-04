@@ -24,6 +24,20 @@ interface OrderDao {
     @Query("SELECT * FROM orders WHERE orderId = :orderId")
     fun getOrderByIdFlow(orderId: String): Flow<OrderEntity?>
 
+    @Query("SELECT COUNT(*) FROM orders")
+    suspend fun getOrderCount(): Int
+
+    @Query("UPDATE orders SET hasReview = :hasReview, reviewStars = :stars, reviewText = :text, reviewImage = :image, isAnonymous = :isAnonymous, recommendToFriends = :recommend WHERE orderId = :orderId")
+    suspend fun updateOrderReview(
+        orderId: String,
+        hasReview: Boolean,
+        stars: Int,
+        text: String?,
+        image: String?,
+        isAnonymous: Boolean,
+        recommend: Boolean
+    ): Int
+
     @Query("DELETE FROM orders")
     suspend fun deleteAllOrders(): Int
 }

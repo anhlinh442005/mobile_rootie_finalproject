@@ -252,6 +252,7 @@
 
                 <!-- Coins Badge (Aligned to top-right of the profile section, shifted up) -->
                 <LinearLayout
+                    android:id="@+id/layoutCoinsBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
@@ -270,6 +271,7 @@
                         android:src="@drawable/ic_coin" />
 
                     <TextView
+                        android:id="@+id/tvCoins"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -774,10 +776,14 @@
 
                     <!-- item 4: Đổi quà -->
                     <LinearLayout
+                        android:id="@+id/btnRewardExchange"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:orientation="vertical">
 
                         <ImageView

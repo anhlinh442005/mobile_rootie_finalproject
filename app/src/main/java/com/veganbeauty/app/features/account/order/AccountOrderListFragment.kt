@@ -53,7 +53,10 @@ class AccountOrderListFragment : RootieFragment() {
             Toast.makeText(requireContext(), "Kết nối với tư vấn viên Rootie hỗ trợ đơn ${order.orderId}", Toast.LENGTH_SHORT).show()
         },
         onReviewClick = { order ->
-            Toast.makeText(requireContext(), "Đánh giá dịch vụ & sản phẩm cho đơn ${order.orderId}", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.orderId))
+                .addToBackStack(null)
+                .commit()
         }
     )
 
@@ -71,7 +74,7 @@ class AccountOrderListFragment : RootieFragment() {
         val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
             .fallbackToDestructiveMigration()
             .build()
-        val repository = OrderRepository(db.orderDao(), LocalJsonReader(requireContext()))
+        val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
 
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {

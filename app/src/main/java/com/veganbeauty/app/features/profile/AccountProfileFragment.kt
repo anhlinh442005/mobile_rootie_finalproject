@@ -11,6 +11,12 @@ import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.AccountProfileBinding
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment
 import com.veganbeauty.app.features.account.order.AccountOrderListFragment
+import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
+import com.veganbeauty.app.data.local.RootieDatabase
+import com.veganbeauty.app.data.local.LocalJsonReader
+import com.veganbeauty.app.data.repository.OrderRepository
+import kotlinx.coroutines.launch
 
 class AccountProfileFragment : RootieFragment() {
 
@@ -102,6 +108,22 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        // Navigate to Loyalty Reward & Exchange Fragment
+        binding.btnRewardExchange.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.account.reward.AccountRewardFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Daily Check-in Fragment
+        binding.layoutCoinsBadge.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.account.checkin.AccountCheckinFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Action Buttons Click Listeners
         view.findViewById<View>(com.veganbeauty.app.R.id.iv_pin)?.parent?.let { parentLayout ->
             (parentLayout as View).setOnClickListener {
@@ -120,6 +142,20 @@ class AccountProfileFragment : RootieFragment() {
             // Set active green color and bold style to the text label
             label?.setTextColor(android.graphics.Color.parseColor("#677559"))
             label?.setTypeface(null, android.graphics.Typeface.BOLD)
+        }
+
+        // Retrieve and observe dynamic reward points count from Room database
+        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
+            .fallbackToDestructiveMigration()
+            .build()
+        val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
+        viewLifecycleOwner.lifecycleScope.launch {
+            repository.refreshOrders()
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            db.rewardPointDao().getTotalPointsFlow().collect { points ->
+                binding.tvCoins.text = (points ?: 0).toString()
+            }
         }
     }
 

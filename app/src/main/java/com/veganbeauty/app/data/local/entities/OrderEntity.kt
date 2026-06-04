@@ -25,5 +25,11 @@ data class OrderEntity(
     val shippingCost: Long = 30000L,
     val voucherDiscount: Long = 50000L,
     val paymentMethod: String = "Thanh toán qua Ví MoMo",
-    val expectedDeliveryTime: String? = null
+    val expectedDeliveryTime: String? = null,
+    val hasReview: Boolean = false,
+    val reviewStars: Int = 0,
+    val reviewText: String? = null,
+    val reviewImage: String? = null,
+    val isAnonymous: Boolean = false,
+    val recommendToFriends: Boolean = false
 )
