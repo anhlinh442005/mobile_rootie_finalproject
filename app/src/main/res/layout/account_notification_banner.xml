@@ -23,7 +23,7 @@
             android:background="@drawable/bg_circle_icon"
             android:backgroundTint="#4E5C53"
             android:padding="10dp"
-            android:src="@drawable/ic_leaf"
+            android:src="@drawable/ic_logo_ol"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

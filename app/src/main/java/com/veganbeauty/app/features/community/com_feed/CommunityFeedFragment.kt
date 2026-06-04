@@ -169,9 +169,9 @@ class CommunityFeedFragment : RootieFragment() {
             tvDisplayName?.text = user.username // Replace with displayName if added to UserEntity later
             tvUsername?.text = "@${user.username.lowercase().replace(" ", "_")}"
             
-            if (!user.avatarUrl.isNullOrEmpty() && ivAvatar != null) {
-                // Use Coil to load avatar if logged in
-                ivAvatar.load(user.avatarUrl) {
+            if (!user.avatar.isNullOrEmpty() && ivAvatar != null) {
+                ivAvatar.visibility = View.VISIBLE
+                ivAvatar.load(user.avatar) {
                     crossfade(true)
                     transformations(coil.transform.CircleCropTransformation())
                     placeholder(R.drawable.img_avatar) // fallback

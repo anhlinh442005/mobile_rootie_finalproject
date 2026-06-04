@@ -43,8 +43,8 @@ class CommunityRepository(
             val rawRemoteVideos = emptyList<YtVideoEntity>()
             val remoteVideos = rawRemoteVideos.map { video ->
                 val matchedUser = remoteUsers.find { it.username.equals(video.username, ignoreCase = true) }
-                if (matchedUser?.avatarUrl?.isNotEmpty() == true) {
-                    video.copy(avatarUrl = matchedUser.avatarUrl)
+                if (matchedUser?.avatar?.isNotEmpty() == true) {
+                    video.copy(avatarUrl = matchedUser.avatar)
                 } else video
             }
             
@@ -81,8 +81,8 @@ class CommunityRepository(
             val rawLocalVideos = localJsonReader.getExploreVideos()
             val localVideos = rawLocalVideos.map { video ->
                 val matchedUser = localUsers.find { it.username.equals(video.username, ignoreCase = true) }
-                if (matchedUser?.avatarUrl?.isNotEmpty() == true) {
-                    video.copy(avatarUrl = matchedUser.avatarUrl)
+                if (matchedUser?.avatar?.isNotEmpty() == true) {
+                    video.copy(avatarUrl = matchedUser.avatar)
                 } else video
             }
 

@@ -507,7 +507,7 @@ class ExchangeGiftsAdapter(
                     "voucher" -> R.drawable.ic_voucher
                     "freeship" -> R.drawable.ic_truck
                     "gift" -> R.drawable.ic_gift
-                    "product" -> R.drawable.ic_leaf
+                    "product" -> R.drawable.ic_logo_ol
                     else -> R.drawable.ic_gift
                 }
                 img.setImageResource(iconRes)
@@ -527,7 +527,7 @@ class ExchangeGiftsAdapter(
                     "voucher" -> R.drawable.ic_voucher
                     "freeship" -> R.drawable.ic_truck
                     "gift" -> R.drawable.ic_gift
-                    "product" -> R.drawable.ic_leaf
+                    "product" -> R.drawable.ic_logo_ol
                     else -> R.drawable.ic_gift
                 }
                 img.setImageResource(iconRes)
@@ -623,7 +623,7 @@ class MyGiftsAdapter(
                 "voucher" -> R.drawable.ic_voucher
                 "freeship" -> R.drawable.ic_truck
                 "gift" -> R.drawable.ic_gift
-                "product" -> R.drawable.ic_leaf
+                "product" -> R.drawable.ic_logo_ol
                 else -> R.drawable.ic_gift
             }
             img.setImageResource(iconRes)

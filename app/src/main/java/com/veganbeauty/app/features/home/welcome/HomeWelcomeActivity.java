@@ -60,7 +60,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private BottomSheetBehavior<FrameLayout> sheetBehavior;
     private View splashContent;
     private ImageView logoIcon;
-    private TextView tagline;
+    private ImageView logoText;
 
     private FlowPhase phase = FlowPhase.SPLASH;
     private boolean welcomeSheetLockedExpanded = false;
@@ -97,7 +97,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         peekHandle = findViewById(R.id.home_peek_handle);
         splashContent = findViewById(R.id.home_splash_content);
         logoIcon = findViewById(R.id.home_logo_icon);
-        tagline = findViewById(R.id.home_tagline);
+        logoText = findViewById(R.id.home_logo_text);
 
         setupInsets();
         setupBottomSheet();
@@ -140,7 +140,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private void setupBottomSheet() {
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
         sheetBehavior.setHideable(false);
-        sheetBehavior.setFitToContents(false);
+        sheetBehavior.setFitToContents(true);
         sheetBehavior.setPeekHeight(getResources().getDimensionPixelSize(R.dimen.home_sheet_peek_height));
         sheetBehavior.setExpandedOffset(0);
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -202,34 +202,26 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void startSplashSequence() {
-        animateSlideInFromLeft(logoIcon, () -> animateSlideInFromLeft(tagline, this::showSplashPeekSheet));
-    }
-
-    /** Trượt từ trái sang phải kèm fade-in. */
-    private void animateSlideInFromLeft(View view, Runnable onEnd) {
-        float distance = 72f * getResources().getDisplayMetrics().density;
-        view.setAlpha(0f);
-        view.setTranslationX(-distance);
-        view.animate()
-                .translationX(0f)
+        logoIcon.setAlpha(0f);
+        logoIcon.setScaleX(0.5f);
+        logoIcon.setScaleY(0.5f);
+        logoIcon.animate()
                 .alpha(1f)
-                .setDuration(650)
-                .setInterpolator(new DecelerateInterpolator())
-                .withEndAction(onEnd)
-                .start();
-    }
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(600)
+                .setInterpolator(new android.view.animation.OvershootInterpolator())
+                .withEndAction(() -> {
+                    float distance = 40f * getResources().getDisplayMetrics().density;
+                    logoText.setAlpha(0f);
+                    logoText.setTranslationY(distance);
 
-    private void animateSlideUpFromBottom(View view, Runnable onEnd) {
-        float distance = 48f * getResources().getDisplayMetrics().density;
-        view.setAlpha(0f);
-        view.setTranslationY(distance);
-        view.animate()
-                .translationY(0f)
-                .alpha(1f)
-                .setDuration(550)
-                .setInterpolator(new DecelerateInterpolator())
-                .withEndAction(onEnd)
-                .start();
+                    logoText.animate().alpha(1f).translationY(0f).setDuration(800).setInterpolator(new DecelerateInterpolator()).start();
+
+                    logoIcon.animate().translationY(-16f * getResources().getDisplayMetrics().density)
+                            .setDuration(800).setInterpolator(new DecelerateInterpolator())
+                            .withEndAction(this::showSplashPeekSheet).start();
+                }).start();
     }
 
     /** Trang logo: sheet peek + lớp phủ primary 30% + thanh 60x5. */
@@ -303,6 +295,19 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         if (!visible) {
             welcomeBinding.homeWelcomeBottomPanel.setAlpha(0f);
         }
+    }
+
+    private void animateSlideUpFromBottom(View view, Runnable onEnd) {
+        float distance = 48f * getResources().getDisplayMetrics().density;
+        view.setAlpha(0f);
+        view.setTranslationY(distance);
+        view.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setDuration(550)
+                .setInterpolator(new DecelerateInterpolator())
+                .withEndAction(onEnd)
+                .start();
     }
 
     private void inflateWelcomeSheet() {
@@ -428,8 +433,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
         float offset = Math.max(0f, Math.min(1f, slideOffset));
         float overlayAlpha = 1f - offset;
-        float contentAlpha = 0.55f + 0.45f * offset;
-
+        
         boolean overlayVisible = overlayAlpha > 0.02f && !welcomeSheetLockedExpanded;
         showPeekOverlay(overlayVisible);
         if (overlayVisible) {
@@ -438,9 +442,9 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         }
 
         if (!welcomeSheetLockedExpanded) {
-            sheetContent.setAlpha(contentAlpha);
-        } else {
-            sheetContent.setAlpha(1f);
+            if (welcomeBinding != null) {
+                welcomeBinding.homeWelcomePager.setAlpha(1f);
+            }
         }
 
         if (welcomeSheetLockedExpanded || offset >= 0.98f) {
@@ -448,6 +452,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         } else if (phase == FlowPhase.SPLASH || phase == FlowPhase.ONBOARDING) {
             splashContent.setVisibility(View.VISIBLE);
             splashContent.setAlpha(1f - offset);
+            splashContent.setTranslationY(-offset * splashContent.getHeight() * 0.5f);
         }
     }
 
@@ -469,20 +474,12 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         updateSheetCorners(offset);
     }
 
-    /** Bo góc 10dp trên nội dung sheet khi kéo lên. */
     private void updateSheetCorners(float slideOffset) {
         if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER) {
             return;
         }
 
-        float progress = Math.max(0f, Math.min(1f, slideOffset));
-        float radius = progress * sheetCornerRadiusPx;
-
-        if (radius < 1f) {
-            sheetContent.setClipToOutline(false);
-            sheetContent.setBackground(null);
-            return;
-        }
+        float radius = sheetCornerRadiusPx;
 
         ShapeAppearanceModel shapeModel = ShapeAppearanceModel.builder()
                 .setTopLeftCorner(CornerFamily.ROUNDED, radius)
@@ -493,10 +490,13 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
         ColorStateList fillColor = (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER)
                 ? ColorStateList.valueOf(ContextCompat.getColor(this, R.color.home_sheet_bg))
-                : ColorStateList.valueOf(Color.TRANSPARENT);
+                : ColorStateList.valueOf(Color.parseColor("#FEFBF4"));
 
         MaterialShapeDrawable drawable = new MaterialShapeDrawable(shapeModel);
         drawable.setFillColor(fillColor);
+        if (phase != FlowPhase.LOGIN && phase != FlowPhase.REGISTER) {
+            drawable.setStroke(1.5f * getResources().getDisplayMetrics().density, ContextCompat.getColor(this, R.color.black));
+        }
         sheetContent.setBackground(drawable);
         sheetContent.setClipToOutline(true);
     }

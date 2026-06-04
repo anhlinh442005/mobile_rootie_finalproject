@@ -31,8 +31,8 @@ class DiscoverPeopleAdapter(
         val user = users[position]
         holder.binding.tvUsername.text = user.username
         
-        if (!user.avatarUrl.isNullOrEmpty()) {
-            holder.binding.ivAvatar.load(user.avatarUrl) {
+        if (!user.avatar.isNullOrEmpty()) {
+            holder.binding.ivAvatar.load(user.avatar) {
                 decoderFactory(SvgDecoder.Factory())
                 crossfade(true)
                 placeholder(android.R.color.darker_gray)

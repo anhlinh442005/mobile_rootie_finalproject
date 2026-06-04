@@ -77,12 +77,34 @@ class FirestoreService {
             val snapshot = db.collection("users").get().await()
             snapshot.documents.mapNotNull { doc ->
                 UserEntity(
-                    userId = doc.id,
+                    user_id = doc.id,
                     username = doc.getString("username") ?: "",
-                    avatarUrl = doc.getString("avatar") ?: doc.getString("avatar_url") ?: ""
+                    full_name = "",
+                    email = "",
+                    phone = "",
+                    password = "",
+                    avatar = doc.getString("avatar") ?: doc.getString("avatar_url") ?: ""
                 )
             }
         } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun saveUser(user: UserEntity): Boolean {
+        return try {
+            val userMap = hashMapOf(
+                "username" to user.username,
+                "avatar" to (user.avatar ?: ""),
+                "email" to user.email,
+                "phone" to user.phone,
+                "full_name" to user.full_name,
+                "password" to user.password // Note: Plain text password saving in real apps is bad practice, but hashing is already applied in AuthRepository
+            )
+            db.collection("users").document(user.user_id).set(userMap).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     suspend fun fetchAllCommunityPosts(): List<CommunityPostEntity> {

@@ -2,6 +2,9 @@ package com.veganbeauty.app.data.repository
 
 import com.veganbeauty.app.data.local.dao.UserDao
 import com.veganbeauty.app.data.local.entities.UserEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AuthRepository(private val userDao: UserDao) {
 
@@ -49,6 +52,16 @@ class AuthRepository(private val userDao: UserDao) {
         )
 
         userDao.insertUser(newUser)
+        
+        // Sync to Firebase in the background
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+            try {
+                com.veganbeauty.app.data.remote.FirestoreService().saveUser(newUser)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        
         return Result.success(newUser)
     }
 }

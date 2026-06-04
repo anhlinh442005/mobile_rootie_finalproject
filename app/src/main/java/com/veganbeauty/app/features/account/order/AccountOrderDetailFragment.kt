@@ -220,7 +220,7 @@ class AccountOrderDetailFragment : RootieFragment() {
                 
                 // Set icon in ImageView and tint it perfectly
                 binding.ivBannerSubActionIcon.visibility = View.VISIBLE
-                binding.ivBannerSubActionIcon.setImageResource(R.drawable.ic_leaf)
+                binding.ivBannerSubActionIcon.setImageResource(R.drawable.ic_logo_ol)
                 binding.ivBannerSubActionIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, textResId))
 
                 binding.btnBannerSubAction.setOnClickListener {

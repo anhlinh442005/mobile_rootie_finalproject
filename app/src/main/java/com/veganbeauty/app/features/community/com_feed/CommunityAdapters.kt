@@ -74,8 +74,8 @@ class StoryAdapter(private var stories: List<UserEntity>) : RecyclerView.Adapter
         }
 
         // Load avatar using Coil
-        if (!story.avatarUrl.isNullOrEmpty()) {
-            holder.binding.ivAvatar.load(story.avatarUrl) {
+        if (!story.avatar.isNullOrEmpty()) {
+            holder.binding.ivAvatar.load(story.avatar) {
                 decoderFactory(SvgDecoder.Factory())
                 crossfade(true)
                 placeholder(android.R.color.darker_gray)
@@ -295,8 +295,8 @@ class SuggestionAdapter(private var users: List<UserEntity>) : RecyclerView.Adap
         val user = users[position]
         holder.binding.tvUsername.text = user.username
         
-        if (!user.avatarUrl.isNullOrEmpty()) {
-            holder.binding.ivAvatar.load(user.avatarUrl) {
+        if (!user.avatar.isNullOrEmpty()) {
+            holder.binding.ivAvatar.load(user.avatar) {
                 decoderFactory(SvgDecoder.Factory())
                 crossfade(true)
                 placeholder(android.R.color.darker_gray)

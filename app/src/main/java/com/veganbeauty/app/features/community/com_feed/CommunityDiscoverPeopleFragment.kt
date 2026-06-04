@@ -28,9 +28,9 @@ class CommunityDiscoverPeopleFragment : RootieFragment() {
         val content = if (action == "FOLLOW") "Bạn đã bắt đầu theo dõi ${user.username}" else "Bạn đã chấp nhận yêu cầu theo dõi của ${user.username}"
         val memory = com.veganbeauty.app.data.local.entities.UserMemoryEntity(
             actionType = action,
-            targetUserId = user.userId,
+            targetUserId = user.user_id,
             targetUsername = user.username,
-            targetAvatar = user.avatarUrl ?: "",
+            targetAvatar = user.avatar ?: "",
             content = content
         )
         kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
