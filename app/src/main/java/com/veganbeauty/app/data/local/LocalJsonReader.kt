@@ -173,7 +173,67 @@ class LocalJsonReader(private val context: Context) {
         } catch (e: Exception) { emptyList() }
     }
     fun getAllNotifications(): List<NotificationItem> = emptyList()
-    fun getAllOrders(): List<OrderEntity> = emptyList()
+    fun getAllOrders(): List<OrderEntity> {
+        return try {
+            val jsonString = context.assets.open("orders.json").bufferedReader().use { it.readText() }
+            val root = org.json.JSONObject(jsonString)
+            val jsonArray = root.getJSONArray("orders")
+            val orderList = mutableListOf<OrderEntity>()
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val itemsArray = obj.getJSONArray("items")
+                val orderItems = mutableListOf<com.veganbeauty.app.data.local.entities.OrderItem>()
+                var totalAmount = 0L
+                for (j in 0 until itemsArray.length()) {
+                    val itemObj = itemsArray.getJSONObject(j)
+                    val price = itemObj.optLong("price", 0L)
+                    val qty = itemObj.optInt("quantity", 1)
+                    totalAmount += (price * qty)
+                    orderItems.add(
+                        com.veganbeauty.app.data.local.entities.OrderItem(
+                            productId = itemObj.getString("productId"),
+                            productName = itemObj.getString("productName"),
+                            productImage = itemObj.getString("productImage"),
+                            quantity = qty,
+                            price = price
+                        )
+                    )
+                }
+                
+                val shippingCost = obj.optLong("shippingCost", 30000L)
+                val voucherDiscount = obj.optLong("voucherDiscount", 0L)
+                val finalTotal = totalAmount + shippingCost - voucherDiscount
+                
+                orderList.add(
+                    OrderEntity(
+                        orderId = obj.getString("id"),
+                        orderDate = obj.getString("orderDate"),
+                        orderTime = obj.getString("orderTime"),
+                        status = obj.getString("status"),
+                        totalAmount = finalTotal,
+                        items = orderItems,
+                        shippingName = obj.optString("shippingName", "Nguyễn Văn A"),
+                        shippingPhone = obj.optString("shippingPhone", "090 123 4567"),
+                        shippingAddress = obj.optString("shippingAddress", "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh"),
+                        shippingCost = shippingCost,
+                        voucherDiscount = voucherDiscount,
+                        paymentMethod = obj.optString("paymentMethod", "Thanh toán qua Ví MoMo"),
+                        expectedDeliveryTime = if (obj.has("expectedDeliveryTime")) obj.getString("expectedDeliveryTime") else null,
+                        hasReview = obj.optBoolean("hasReview", false),
+                        reviewStars = obj.optInt("reviewStars", 0),
+                        reviewText = if (obj.has("reviewText")) obj.getString("reviewText") else null,
+                        reviewImage = if (obj.has("reviewImage")) obj.getString("reviewImage") else null,
+                        isAnonymous = obj.optBoolean("isAnonymous", false),
+                        recommendToFriends = obj.optBoolean("recommendToFriends", false)
+                    )
+                )
+            }
+            orderList
+        } catch (e: Exception) { 
+            e.printStackTrace()
+            emptyList() 
+        }
+    }
 
     fun getIngredients(): List<IngredientEntity> {
         return try {

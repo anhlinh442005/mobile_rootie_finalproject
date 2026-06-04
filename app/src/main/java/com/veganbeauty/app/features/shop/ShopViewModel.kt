@@ -243,6 +243,5 @@ class ShopViewModel(private val repository: ProductRepository) : ViewModel() {
                 // Xử lý lỗi nếu cần
             }
         }
-        }
     }
 }

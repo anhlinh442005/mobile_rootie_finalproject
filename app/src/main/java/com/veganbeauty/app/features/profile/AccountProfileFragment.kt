@@ -123,6 +123,14 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        // Navigate to Order List for Reviews
+        binding.btnReviewProducts.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Thành công"))
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Navigate to Daily Check-in Fragment
         binding.layoutCoinsBadge.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -138,18 +146,8 @@ class AccountProfileFragment : RootieFragment() {
             }
         }
 
-        // Highlight the "Tài khoản" tab as active in the bottom navigation menu
-        view.findViewById<android.widget.LinearLayout>(com.veganbeauty.app.R.id.nav_account)?.let { navAccount ->
-            val icon = navAccount.getChildAt(0) as? android.widget.ImageView
-            val label = navAccount.getChildAt(1) as? android.widget.TextView
-            
-            // Set active green color tint to the icon (#677559)
-            icon?.setColorFilter(android.graphics.Color.parseColor("#677559"))
-            
-            // Set active green color and bold style to the text label
-            label?.setTextColor(android.graphics.Color.parseColor("#677559"))
-            label?.setTypeface(null, android.graphics.Typeface.BOLD)
-        }
+        // Highlight the "Tài khoản" tab as active in the bottom navigation menu and set up click listeners
+        com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, com.veganbeauty.app.R.id.nav_account)
 
         // Retrieve and observe dynamic reward points count from Room database
         val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
