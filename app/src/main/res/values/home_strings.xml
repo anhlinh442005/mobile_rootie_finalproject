@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_tagline">Từ thiên nhiên nguyên bản đến làn da thuần khiết</string>
+    <string name="home_welcome_1_title">Chào mừng bạn đến với Rootie</string>
+    <string name="home_welcome_2_title">Chăm sóc làn da thuần chay bằng những tinh chất dịu lành từ thiên nhiên</string>
+    <string name="home_welcome_3_title">Mua sắm tiện lợi hơn với ứng dụng Rootie, khám phá mỹ phẩm xanh mọi lúc mọi nơi</string>
+    <string name="home_btn_continue">Tiếp tục</string>
+    <string name="home_btn_continue_shopping">Tiếp tục mua sắm</string>
+    <string name="home_login_title">Đăng nhập</string>
+    <string name="home_login_subtitle">Chào mừng bạn trở lại</string>
+    <string name="home_hint_email">Email hoặc số điện thoại</string>
+    <string name="home_hint_password">Mật khẩu</string>
+    <string name="home_forgot_password">Quên mật khẩu?</string>
+    <string name="home_btn_login">Đăng nhập</string>
+    <string name="home_or_login_with">Hoặc đăng nhập với</string>
+    <string name="home_no_account">Chưa có tài khoản?</string>
+    <string name="home_register">Đăng ký</string>
+    <string name="home_guest_continue">Tiếp tục mà không đăng nhập</string>
+    <string name="home_recent_activity">Hoạt động gần đây của bạn</string>
+    <string name="home_see_all">Xem tất cả</string>
+    <string name="home_flash_sale_placeholder">Flash Sale — thiết kế sẽ cập nhật sau</string>
+    <string name="home_promo_sunscreen_subtitle">Chống nắng phổ rộng</string>
+    <string name="home_promo_sunscreen_title">Sữa chống nắng bí đao</string>
+    <string name="home_promo_sunscreen_desc">Bảo vệ da toàn diện, finish mỏng nhẹ suốt cả ngày.</string>
+    <string name="home_view_now">XEM NGAY</string>
+    <string name="home_slogan_marquee">TỪ THIÊN NHIÊN NGUYÊN BẢN ĐẾN LÀN DA THUẦN KHIẾT   TỪ THIÊN NHIÊN NGUYÊN BẢN ĐẾN LÀN DA THUẦN KHIẾT   TỪ THIÊN NHIÊN NGUYÊN BẢN ĐẾN LÀN DA THUẦN KHIẾT</string>
+    <string name="home_promo_lotus_title">Tinh chất xịt dưỡng Sen Hậu Giang</string>
+    <string name="home_promo_lotus_desc">Cấp ẩm tức thì, làm dịu và phục hồi làn da căng mọng.</string>
+    <string name="home_buy_now">MUA NGAY →</string>
+    <string name="home_categories">Danh mục</string>
+    <string name="home_bestsellers">Bán chạy</string>
+    <string name="home_top_search">Top Tìm Kiếm</string>
+    <string name="home_recommendations">Gợi ý cho bạn trong 2h</string>
+    <string name="home_shortcut_label">Tên lối tắt</string>
+    <string name="home_banner_title_1">CÙNG ROOTIE\nSỐNG XANH MỖI NGÀY</string>
+    <string name="home_banner_action">THAM GIA</string>
+</resources>

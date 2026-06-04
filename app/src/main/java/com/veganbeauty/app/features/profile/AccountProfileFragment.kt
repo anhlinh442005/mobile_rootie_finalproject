@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import coil.load
 import coil.transform.CircleCropTransformation
+import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.AccountProfileBinding
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment
@@ -18,6 +19,7 @@ import com.veganbeauty.app.data.local.RootieDatabase
 import com.veganbeauty.app.data.local.LocalJsonReader
 import com.veganbeauty.app.data.repository.OrderRepository
 import kotlinx.coroutines.launch
+import com.veganbeauty.app.features.home.BottomNavHelper
 
 class AccountProfileFragment : RootieFragment() {
 
@@ -219,6 +221,11 @@ class AccountProfileFragment : RootieFragment() {
                 binding.tvCoins.text = (points ?: 0).toString()
             }
         }
+        BottomNavHelper.setup(
+            fragment = this,
+            root = binding.root,
+            activeTabId = R.id.nav_account
+        ) { tabId -> BottomNavHelper.navigate(this, tabId) }
     }
 
     override fun observeViewModel() {

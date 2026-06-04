@@ -38,6 +38,11 @@
         <item name="android:fontFamily">@font/be_vietnam_pro</item>
     </style>
 
+    <style name="TextAppearance.Rootie.Myriad" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/myriadpro</item>
+        <item name="android:fontFamily">@font/myriadpro</item>
+    </style>
+
     <style name="Theme.Rootie" parent="Base.Theme.Rootie" />
 
     <!-- Style for rounded shape overlay of product images -->

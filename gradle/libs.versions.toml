@@ -7,6 +7,8 @@ appcompat = "1.7.0"
 material = "1.12.0"
 activityKtx = "1.9.3"
 constraintlayout = "2.2.1"
+viewpager2 = "1.1.0"
+lifecycle = "2.8.7"
 googleServices = "4.4.2"
 firebaseBom = "33.1.1"
 room = "2.6.1"
@@ -23,6 +25,9 @@ recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
 
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
@@ -38,4 +43,3 @@ coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-

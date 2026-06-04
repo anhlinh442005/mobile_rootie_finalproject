@@ -3,7 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#3E4D44</color>
-    <color name="secondary">@color/content</color>
+    <color name="secondary">#677559</color>
     <color name="content">#677559</color>
     <color name="tertiary">#97A49C</color>
     <color name="neutral">#FEFBF4</color>
@@ -12,6 +12,8 @@
     <!-- Gray tones -->
     <color name="gray_light">#E0E4E2</color>
     <color name="gray_dark">#7E8A83</color>
+
+    <color name="secondary">#677559</color>
 
     <!-- Status Pending (Chờ xác nhận) -->
     <color name="status_pending_bg">#FFF6E5</color>
@@ -32,4 +34,10 @@
     <!-- Status Cancelled (Đã hủy) -->
     <color name="status_cancelled_bg">#FFEBEE</color>
     <color name="status_cancelled_text">#C62828</color>
+    <color name="home_sheet_bg">@color/secondary</color>
+    <color name="home_login_button">#2C2C2C</color>
+    <color name="home_input_bg">#EDEBE5</color>
+    <color name="home_overlay_dark">#66000000</color>
+    <!-- ~70% neutral — hiệu ứng kính mờ trên ảnh peek -->
+    <color name="home_peek_overlay">#B3FEFBF4</color>
 </resources>
