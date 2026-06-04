@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FEFBF4"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Center Content Wrapper -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp">
+
+        <!-- Logo (slogan1) -->
+        <ImageView
+            android:id="@+id/iv_loading_logo"
+            android:layout_width="238dp"
+            android:layout_height="197dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/slogan1"
+            android:layout_marginBottom="40dp" />
+
+        <!-- Status Message -->
+        <TextView
+            android:id="@+id/tv_loading_status"
+            android:layout_width="334dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexend"
+            android:text="Đang xác định độ nhạy cảm và thành phần phù hợp cho làn da của bạn"
+            android:textColor="#3E4D44"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.2"
+            android:layout_marginBottom="40dp" />
+
+        <!-- Animation Container for Scooter and Progress Bar -->
+        <LinearLayout
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="start"
+            android:layout_marginBottom="16dp">
+
+            <!-- Scooter Character (moves translationX along with progress) -->
+            <ImageView
+                android:id="@+id/iv_loading_character"
+                android:layout_width="64dp"
+                android:layout_height="73dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/quiz_ic_loading_character"
+                android:layout_marginBottom="-4dp" />
+
+            <!-- Custom Progress Bar -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="@drawable/quiz_bg_progress_track">
+
+                <!-- Animated Fill Indicator -->
+                <View
+                    android:id="@+id/v_progress_fill"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/quiz_bg_progress_fill" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <!-- Waiting Message -->
+        <TextView
+            android:layout_width="334dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexend"
+            android:text="Gần xong rồi, hãy đợi chút nhé!"
+            android:textColor="#3E4D44"
+            android:textSize="15sp"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+</RelativeLayout>
