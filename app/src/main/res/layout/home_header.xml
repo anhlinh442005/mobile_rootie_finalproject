@@ -67,7 +67,7 @@
             android:layout_height="26dp"
             android:layout_gravity="center"
             android:contentDescription="@null"
-            android:src="@drawable/home_ic_qr" />
+            android:src="@drawable/ic_qr_code" />
 
     </FrameLayout>
 

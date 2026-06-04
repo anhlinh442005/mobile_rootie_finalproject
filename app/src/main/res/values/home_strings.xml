@@ -16,4 +16,22 @@
     <string name="home_no_account">Chưa có tài khoản?</string>
     <string name="home_register">Đăng ký</string>
     <string name="home_guest_continue">Tiếp tục mà không đăng nhập</string>
+    <string name="home_recent_activity">Hoạt động gần đây của bạn</string>
+    <string name="home_see_all">Xem tất cả</string>
+    <string name="home_flash_sale_placeholder">Flash Sale — thiết kế sẽ cập nhật sau</string>
+    <string name="home_promo_sunscreen_subtitle">Chống nắng phổ rộng</string>
+    <string name="home_promo_sunscreen_title">Sữa chống nắng bí đao</string>
+    <string name="home_promo_sunscreen_desc">Bảo vệ da toàn diện, finish mỏng nhẹ suốt cả ngày.</string>
+    <string name="home_view_now">XEM NGAY</string>
+    <string name="home_slogan_marquee">TỪ THIÊN NHIÊN NGUYÊN BẢN ĐẾN LÀN DA THUẦN KHIẾT   TỪ THIÊN NHIÊN NGUYÊN BẢN ĐẾN LÀN DA THUẦN KHIẾT   TỪ THIÊN NHIÊN NGUYÊN BẢN ĐẾN LÀN DA THUẦN KHIẾT</string>
+    <string name="home_promo_lotus_title">Tinh chất xịt dưỡng Sen Hậu Giang</string>
+    <string name="home_promo_lotus_desc">Cấp ẩm tức thì, làm dịu và phục hồi làn da căng mọng.</string>
+    <string name="home_buy_now">MUA NGAY →</string>
+    <string name="home_categories">Danh mục</string>
+    <string name="home_bestsellers">Bán chạy</string>
+    <string name="home_top_search">Top Tìm Kiếm</string>
+    <string name="home_recommendations">Gợi ý cho bạn trong 2h</string>
+    <string name="home_shortcut_label">Tên lối tắt</string>
+    <string name="home_banner_title_1">CÙNG ROOTIE\nSỐNG XANH MỖI NGÀY</string>
+    <string name="home_banner_action">THAM GIA</string>
 </resources>

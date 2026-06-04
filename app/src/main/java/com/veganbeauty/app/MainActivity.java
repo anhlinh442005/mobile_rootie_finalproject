@@ -2,13 +2,10 @@ package com.veganbeauty.app;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 
-import com.veganbeauty.app.features.shop.product.list.ShopListFragment;
+import com.veganbeauty.app.features.home.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,9 +15,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new ShopListFragment())
-                .commit();
+            loadFragment(new HomeFragment());
         }
+    }
+
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.main_container, fragment)
+            .commit();
     }
 }

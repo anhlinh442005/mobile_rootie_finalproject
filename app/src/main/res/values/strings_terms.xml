@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="terms_and_policies_text">
+        <![CDATA[
+<b>ĐIỀU KHOẢN SỬ DỤNG</b><br/><br/>
+<b>1. Giới thiệu</b><br/>
+Chào mừng bạn đến với Rootie. Khi truy cập hoặc sử dụng ứng dụng, website và các dịch vụ do Rootie cung cấp, bạn đồng ý tuân thủ các điều khoản và điều kiện được quy định trong Điều khoản sử dụng này.<br/>
+Nếu bạn không đồng ý với bất kỳ nội dung nào trong Điều khoản sử dụng, vui lòng ngừng sử dụng dịch vụ của chúng tôi.<br/><br/>
+<b>2. Điều kiện sử dụng</b><br/>
+Người dùng cam kết:<br/>
+- Cung cấp thông tin đăng ký chính xác và đầy đủ.<br/>
+- Chịu trách nhiệm bảo mật tài khoản và mật khẩu của mình.<br/>
+- Không sử dụng hệ thống cho các mục đích gian lận, vi phạm pháp luật hoặc gây ảnh hưởng đến người dùng khác.<br/>
+- Không thực hiện các hành vi tấn công, khai thác lỗ hổng hoặc làm gián đoạn hoạt động của hệ thống.<br/>
+Rootie có quyền tạm khóa hoặc chấm dứt tài khoản nếu phát hiện các hành vi vi phạm.<br/><br/>
+<b>3. Tài khoản người dùng</b><br/>
+Khi tạo tài khoản, người dùng chịu trách nhiệm:<br/>
+- Bảo mật thông tin đăng nhập.<br/>
+- Cập nhật thông tin cá nhân khi có thay đổi.<br/>
+- Thông báo ngay cho Rootie khi phát hiện dấu hiệu truy cập trái phép.<br/>
+Mọi hoạt động phát sinh từ tài khoản sẽ được xem là do chủ tài khoản thực hiện.<br/><br/>
+<b>4. Đặt hàng và thanh toán</b><br/>
+Khi thực hiện đặt hàng trên Rootie:<br/>
+- Người dùng cần cung cấp thông tin giao hàng chính xác.<br/>
+- Giá sản phẩm hiển thị đã bao gồm các khoản thuế theo quy định (nếu có).<br/>
+- Đơn hàng chỉ được xác nhận sau khi hệ thống gửi thông báo xác nhận thành công.<br/>
+- Rootie có quyền từ chối hoặc hủy đơn hàng trong trường hợp phát hiện sai sót về giá, thông tin sản phẩm hoặc dấu hiệu gian lận.<br/><br/>
+<b>5. Chính sách đổi trả</b><br/>
+Khách hàng có thể yêu cầu đổi trả trong các trường hợp:<br/>
+- Sản phẩm bị lỗi từ nhà sản xuất.<br/>
+- Giao sai sản phẩm hoặc thiếu sản phẩm.<br/>
+- Sản phẩm bị hư hỏng trong quá trình vận chuyển.<br/>
+Yêu cầu đổi trả cần được gửi trong vòng 07 ngày kể từ ngày nhận hàng và đáp ứng các điều kiện theo chính sách đổi trả của Rootie.<br/><br/>
+<b>6. Quyền sở hữu trí tuệ</b><br/>
+Tất cả nội dung trên Rootie bao gồm: Logo, Hình ảnh, Thiết kế giao diện, Nội dung bài viết, Tài liệu và dữ liệu đều thuộc quyền sở hữu của Rootie hoặc các đối tác được cấp phép.<br/>
+Người dùng không được sao chép, phân phối hoặc sử dụng cho mục đích thương mại khi chưa có sự đồng ý bằng văn bản từ Rootie.<br/><br/>
+<b>7. Giới hạn trách nhiệm</b><br/>
+Rootie nỗ lực đảm bảo thông tin sản phẩm chính xác và cập nhật. Tuy nhiên, chúng tôi không cam kết tuyệt đối rằng mọi thông tin luôn hoàn toàn chính xác hoặc không có sai sót.<br/>
+Rootie không chịu trách nhiệm đối với các thiệt hại phát sinh từ: Việc sử dụng sai mục đích của người dùng, Lỗi kết nối mạng hoặc thiết bị cá nhân, Các sự cố ngoài khả năng kiểm soát hợp lý của hệ thống.<br/><br/>
+<b>8. Thay đổi điều khoản</b><br/>
+Rootie có quyền sửa đổi hoặc cập nhật Điều khoản sử dụng bất kỳ lúc nào nhằm phù hợp với quy định pháp luật và hoạt động kinh doanh.<br/>
+Phiên bản mới sẽ được công bố trên website hoặc ứng dụng và có hiệu lực kể từ ngày đăng tải.<br/><br/><br/>
+
+<b>CHÍNH SÁCH BẢO MẬT</b><br/><br/>
+<b>1. Mục đích thu thập thông tin</b><br/>
+Rootie thu thập thông tin nhằm:<br/>
+- Xác thực tài khoản người dùng.<br/>
+- Xử lý đơn hàng và giao hàng.<br/>
+- Cung cấp dịch vụ chăm sóc khách hàng.<br/>
+- Cá nhân hóa trải nghiệm mua sắm.<br/>
+- Gửi thông tin khuyến mãi và cập nhật sản phẩm mới.<br/>
+- Cải thiện chất lượng dịch vụ.<br/><br/>
+<b>2. Thông tin được thu thập</b><br/>
+Các thông tin có thể được thu thập bao gồm:<br/>
+- Thông tin cá nhân: Họ và tên, Số điện thoại, Email, Địa chỉ giao hàng, Ngày sinh (nếu có)<br/>
+- Thông tin giao dịch: Lịch sử đơn hàng, Phương thức thanh toán, Giá trị giao dịch<br/>
+- Dữ liệu sử dụng: Thiết bị truy cập, Địa chỉ IP, Trình duyệt sử dụng, Hành vi tương tác trên ứng dụng<br/><br/>
+<b>3. Phạm vi sử dụng thông tin</b><br/>
+Thông tin cá nhân được sử dụng cho các mục đích:<br/>
+- Quản lý tài khoản khách hàng.<br/>
+- Xử lý đơn hàng và thanh toán.<br/>
+- Hỗ trợ chăm sóc khách hàng.<br/>
+- Gửi thông báo liên quan đến đơn hàng.<br/>
+- Cải thiện trải nghiệm người dùng.<br/>
+- Thực hiện các nghĩa vụ theo yêu cầu của cơ quan nhà nước có thẩm quyền.<br/><br/>
+<b>4. Chia sẻ thông tin với bên thứ ba</b><br/>
+Rootie cam kết không bán hoặc trao đổi thông tin cá nhân của khách hàng cho bên thứ ba.<br/>
+Thông tin chỉ được chia sẻ trong các trường hợp:<br/>
+- Đơn vị vận chuyển phục vụ giao hàng.<br/>
+- Đối tác thanh toán phục vụ giao dịch.<br/>
+- Cơ quan nhà nước theo yêu cầu pháp luật.<br/>
+- Đối tác cung cấp dịch vụ công nghệ hỗ trợ vận hành hệ thống.<br/>
+Các bên liên quan đều phải tuân thủ quy định bảo mật thông tin.<br/><br/>
+<b>5. Bảo mật thông tin</b><br/>
+Rootie áp dụng nhiều biện pháp kỹ thuật và quản lý nhằm bảo vệ dữ liệu người dùng:<br/>
+- Mã hóa dữ liệu nhạy cảm.<br/>
+- Phân quyền truy cập hệ thống.<br/>
+- Giám sát và phát hiện truy cập bất thường.<br/>
+- Sao lưu dữ liệu định kỳ.<br/>
+- Sử dụng giao thức bảo mật HTTPS.<br/>
+Tuy nhiên, không có phương thức truyền tải dữ liệu nào đảm bảo an toàn tuyệt đối trên Internet.<br/><br/>
+<b>6. Thời gian lưu trữ dữ liệu</b><br/>
+Thông tin cá nhân được lưu trữ:<br/>
+- Trong thời gian tài khoản còn hoạt động.<br/>
+- Hoặc cho đến khi người dùng yêu cầu xóa dữ liệu.<br/>
+- Hoặc theo thời hạn được quy định bởi pháp luật hiện hành.<br/><br/>
+<b>7. Quyền của người dùng</b><br/>
+Người dùng có quyền:<br/>
+- Truy cập thông tin cá nhân của mình.<br/>
+- Yêu cầu chỉnh sửa thông tin không chính xác.<br/>
+- Yêu cầu xóa tài khoản theo quy định.<br/>
+- Từ chối nhận thông tin tiếp thị.<br/>
+- Khiếu nại về việc sử dụng dữ liệu cá nhân.<br/>
+Rootie sẽ xử lý các yêu cầu hợp lệ trong thời gian sớm nhất.<br/><br/>
+<b>8. Cookie và công nghệ theo dõi</b><br/>
+Rootie có thể sử dụng Cookie và các công nghệ tương tự để:<br/>
+- Ghi nhớ thông tin đăng nhập.<br/>
+- Cá nhân hóa nội dung hiển thị.<br/>
+- Phân tích hành vi sử dụng.<br/>
+- Cải thiện hiệu suất hệ thống.<br/>
+Người dùng có thể thay đổi cài đặt Cookie thông qua trình duyệt của mình.<br/><br/>
+<b>9. Thông tin liên hệ</b><br/>
+Mọi thắc mắc liên quan đến Điều khoản sử dụng hoặc Chính sách bảo mật, vui lòng liên hệ:<br/>
+Rootie – Nền tảng mua sắm mỹ phẩm và chăm sóc da<br/>
+Email: support@rootie.vn<br/>
+Hotline: 1900 xxxx<br/>
+Website: www.rootie.vn
+        ]]>
+    </string>
+</resources>

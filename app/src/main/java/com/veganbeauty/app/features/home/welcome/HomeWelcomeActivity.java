@@ -33,6 +33,8 @@ import com.veganbeauty.app.MainActivity;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.databinding.HomeLoginSheetBinding;
 import com.veganbeauty.app.databinding.HomeWelcomeSheetBinding;
+import com.veganbeauty.app.databinding.HomeRegisterSheetBinding;
+import com.veganbeauty.app.features.auth.AuthViewModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +47,9 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         /** 3 trang thông tin sau khi kéo lên. */
         ONBOARDING,
         /** Form đăng nhập — không dùng lớp phủ peek. */
-        LOGIN
+        LOGIN,
+        /** Form đăng ký. */
+        REGISTER
     }
 
     private FrameLayout bottomSheet;
@@ -65,9 +69,12 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     @Nullable
     private HomeLoginSheetBinding loginBinding;
     @Nullable
+    private HomeRegisterSheetBinding registerBinding;
+    @Nullable
     private ViewPager2 welcomePager;
     @Nullable
     private HomeWelcomePagerAdapter pagerAdapter;
+    private AuthViewModel authViewModel;
     private float sheetCornerRadiusPx;
 
     private final int[] welcomeTitles = {
@@ -94,7 +101,32 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
         setupInsets();
         setupBottomSheet();
+        setupViewModel();
         startSplashSequence();
+    }
+
+    private void setupViewModel() {
+        com.veganbeauty.app.data.local.RootieDatabase db = androidx.room.Room.databaseBuilder(this, com.veganbeauty.app.data.local.RootieDatabase.class, "rootie-db").fallbackToDestructiveMigration().build();
+        com.veganbeauty.app.data.repository.AuthRepository repository = new com.veganbeauty.app.data.repository.AuthRepository(db.userDao());
+        com.veganbeauty.app.features.auth.AuthViewModelFactory factory = new com.veganbeauty.app.features.auth.AuthViewModelFactory(repository);
+        authViewModel = new androidx.lifecycle.ViewModelProvider(this, factory).get(com.veganbeauty.app.features.auth.AuthViewModel.class);
+
+        authViewModel.getLoginState().observe(this, state -> {
+            if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) {
+                navigateToMain();
+            } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
+                android.widget.Toast.makeText(this, ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        authViewModel.getRegisterState().observe(this, state -> {
+            if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) {
+                android.widget.Toast.makeText(this, "Đăng ký thành công", android.widget.Toast.LENGTH_SHORT).show();
+                transitionToLogin();
+            } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
+                android.widget.Toast.makeText(this, ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupInsets() {
@@ -117,7 +149,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             public void onStateChanged(@NonNull View sheet, int newState) {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        if (phase != FlowPhase.LOGIN) {
+                        if (phase != FlowPhase.LOGIN && phase != FlowPhase.REGISTER) {
                             lockWelcomeSheetExpanded();
                             if (phase == FlowPhase.SPLASH) {
                                 enterOnboardingUi();
@@ -133,7 +165,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             return;
                         }
                         updateSheetCorners(0f);
-                        if (phase != FlowPhase.LOGIN) {
+                        if (phase != FlowPhase.LOGIN && phase != FlowPhase.REGISTER) {
                             updateDragTransition(0f);
                             showSplashContent();
                         }
@@ -150,7 +182,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             @Override
             public void onSlide(@NonNull View sheet, float slideOffset) {
                 float offset = Math.max(0f, Math.min(1f, slideOffset));
-                if (phase != FlowPhase.LOGIN) {
+                if (phase != FlowPhase.LOGIN && phase != FlowPhase.REGISTER) {
                     updateDragTransition(offset);
                     if (offset >= 0.95f && !welcomeSheetLockedExpanded) {
                         lockWelcomeSheetExpanded();
@@ -281,6 +313,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 true
         );
         loginBinding = null;
+        registerBinding = null;
 
         List<HomeWelcomePagerAdapter.WelcomePage> pages = Arrays.asList(
                 new HomeWelcomePagerAdapter.WelcomePage(R.drawable.ic_welcome_1),
@@ -387,7 +420,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
      * ảnh nội dung sheet hiện dần theo cử chỉ kéo.
      */
     private void updateDragTransition(float slideOffset) {
-        if (phase == FlowPhase.LOGIN) {
+        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER) {
             showPeekOverlay(false);
             sheetContent.setAlpha(1f);
             return;
@@ -419,7 +452,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void updateSheetAlphaFromSlide() {
-        if (phase == FlowPhase.LOGIN) return;
+        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER) return;
 
         View parent = (View) bottomSheet.getParent();
         if (parent == null) return;
@@ -438,7 +471,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
     /** Bo góc 10dp trên nội dung sheet khi kéo lên. */
     private void updateSheetCorners(float slideOffset) {
-        if (phase == FlowPhase.LOGIN) {
+        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER) {
             return;
         }
 
@@ -458,7 +491,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 .setBottomRightCorner(CornerFamily.ROUNDED, 0f)
                 .build();
 
-        ColorStateList fillColor = phase == FlowPhase.LOGIN
+        ColorStateList fillColor = (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER)
                 ? ColorStateList.valueOf(ContextCompat.getColor(this, R.color.home_sheet_bg))
                 : ColorStateList.valueOf(Color.TRANSPARENT);
 
@@ -495,6 +528,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private void inflateLoginSheet() {
         sheetContent.removeAllViews();
         welcomeBinding = null;
+        registerBinding = null;
         welcomePager = null;
 
         loginBinding = HomeLoginSheetBinding.inflate(
@@ -509,16 +543,171 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         int start = registerText.indexOf(registerLabel);
         if (start >= 0) {
             spannable.setSpan(
-                    new StyleSpan(Typeface.BOLD),
+                    new android.text.style.ClickableSpan() {
+                        @Override
+                        public void onClick(@NonNull View widget) {
+                            transitionToRegister();
+                        }
+                        
+                        @Override
+                        public void updateDrawState(@NonNull android.text.TextPaint ds) {
+                            super.updateDrawState(ds);
+                            ds.setUnderlineText(false);
+                            ds.setTypeface(Typeface.DEFAULT_BOLD);
+                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.white));
+                        }
+                    },
                     start,
                     registerText.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             );
         }
         loginBinding.homeRegisterLink.setText(spannable);
+        loginBinding.homeRegisterLink.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+        loginBinding.homeRegisterLink.setHighlightColor(Color.TRANSPARENT);
 
         loginBinding.homeGuestLink.setOnClickListener(v -> navigateToMain());
-        loginBinding.homeBtnLogin.setOnClickListener(v -> navigateToMain());
+        loginBinding.homeBtnLogin.setOnClickListener(v -> {
+            String email = loginBinding.homeInputEmail.getText() != null ? loginBinding.homeInputEmail.getText().toString() : "";
+            String password = loginBinding.homeInputPassword.getText() != null ? loginBinding.homeInputPassword.getText().toString() : "";
+            authViewModel.login(email, password);
+        });
+    }
+
+    private void transitionToRegister() {
+        phase = FlowPhase.REGISTER;
+        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        bottomSheet.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction(() -> {
+                    inflateRegisterSheet();
+                    bottomSheet.setAlpha(1f);
+                    showPeekOverlay(false);
+                    sheetBehavior.setPeekHeight((int) (220 * getResources().getDisplayMetrics().density));
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    bottomSheet.setVisibility(View.VISIBLE);
+                    updateSheetCorners(0f);
+                    if (registerBinding != null) {
+                        animateSlideUpFromBottom(registerBinding.getRoot(), () -> {});
+                    }
+                })
+                .start();
+    }
+
+    private void inflateRegisterSheet() {
+        sheetContent.removeAllViews();
+        welcomeBinding = null;
+        loginBinding = null;
+        welcomePager = null;
+
+        registerBinding = com.veganbeauty.app.databinding.HomeRegisterSheetBinding.inflate(
+                LayoutInflater.from(this),
+                sheetContent,
+                true
+        );
+
+        String loginText = "Đã có tài khoản? Đăng nhập";
+        SpannableString spannable = new SpannableString(loginText);
+        String loginLabel = "Đăng nhập";
+        int start = loginText.indexOf(loginLabel);
+        if (start >= 0) {
+            spannable.setSpan(
+                    new android.text.style.ClickableSpan() {
+                        @Override
+                        public void onClick(@NonNull View widget) {
+                            transitionToLogin();
+                        }
+
+                        @Override
+                        public void updateDrawState(@NonNull android.text.TextPaint ds) {
+                            super.updateDrawState(ds);
+                            ds.setUnderlineText(false);
+                            ds.setTypeface(Typeface.DEFAULT_BOLD);
+                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.white));
+                        }
+                    },
+                    start,
+                    loginText.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
+        registerBinding.homeLoginLink.setText(spannable);
+        registerBinding.homeLoginLink.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+        registerBinding.homeLoginLink.setHighlightColor(Color.TRANSPARENT);
+
+        String termsText = "Tôi đã đọc và đồng ý với\nĐiều khoản sử dụng và Chính sách bảo mật";
+        SpannableString termsSpannable = new SpannableString(termsText);
+        String termsLabel = "Điều khoản sử dụng và Chính sách bảo mật";
+        int termsStart = termsText.indexOf(termsLabel);
+        if (termsStart >= 0) {
+            termsSpannable.setSpan(
+                    new android.text.style.ClickableSpan() {
+                        @Override
+                        public void onClick(@NonNull View widget) {
+                            showTermsDialog();
+                        }
+
+                        @Override
+                        public void updateDrawState(@NonNull android.text.TextPaint ds) {
+                            super.updateDrawState(ds);
+                            ds.setUnderlineText(false);
+                            ds.setTypeface(Typeface.DEFAULT_BOLD);
+                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.neutral));
+                        }
+                    },
+                    termsStart,
+                    termsText.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
+        registerBinding.homeCheckTerms.setText(termsSpannable);
+        registerBinding.homeCheckTerms.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+        registerBinding.homeCheckTerms.setHighlightColor(Color.TRANSPARENT);
+
+        registerBinding.homeBtnRegister.setOnClickListener(v -> {
+            String fullName = registerBinding.homeInputFullname.getText() != null ? registerBinding.homeInputFullname.getText().toString() : "";
+            String emailOrPhone = registerBinding.homeInputEmailPhone.getText() != null ? registerBinding.homeInputEmailPhone.getText().toString() : "";
+            String password = registerBinding.homeInputPassword.getText() != null ? registerBinding.homeInputPassword.getText().toString() : "";
+            String confirmPassword = registerBinding.homeInputConfirmPassword.getText() != null ? registerBinding.homeInputConfirmPassword.getText().toString() : "";
+            boolean acceptedTerms = registerBinding.homeCheckTerms.isChecked();
+
+            if (!password.equals(confirmPassword)) {
+                android.widget.Toast.makeText(this, "Mật khẩu không khớp", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!acceptedTerms) {
+                android.widget.Toast.makeText(this, "Bạn phải đồng ý với Điều khoản", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            authViewModel.register(fullName, emailOrPhone, password);
+        });
+    }
+
+    private void showTermsDialog() {
+        android.app.Dialog dialog = new android.app.Dialog(this);
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_terms_policy);
+        
+        android.view.Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT);
+            window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        TextView tvContent = dialog.findViewById(R.id.dialog_terms_content);
+        tvContent.setText(androidx.core.text.HtmlCompat.fromHtml(getString(R.string.terms_and_policies_text), androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY));
+
+        dialog.findViewById(R.id.dialog_btn_close).setOnClickListener(v -> dialog.dismiss());
+        dialog.findViewById(R.id.dialog_btn_agree).setOnClickListener(v -> {
+            if (registerBinding != null) {
+                registerBinding.homeCheckTerms.setChecked(true);
+            }
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void navigateToMain() {

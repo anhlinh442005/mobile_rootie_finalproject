@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/neutral">
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_nav"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- Header Panel -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="66dp"
+                android:background="@drawable/bg_header_gradient"
+                android:paddingHorizontal="16dp"
+                android:gravity="center_vertical">
+
+                <!-- Back button -->
+                <ImageView
+                    android:id="@+id/btn_back"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_chevron_left"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
+                <!-- Header Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="Chỉnh sửa hồ sơ"
+                    android:textColor="#28362E"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/lexend" />
+
+                <!-- Notification Icon -->
+                <ImageView
+                    android:id="@+id/btn_notification"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_notification"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </RelativeLayout>
+
+            <!-- Centered Profile Avatar Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <!-- Double CardView Avatar Container with green border -->
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
+
+                    <!-- Outer CardView acting as the green border -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_avatar_container"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        app:cardCornerRadius="50dp"
+                        app:cardBackgroundColor="@color/primary"
+                        app:cardElevation="2dp"
+                        app:cardPreventCornerOverlap="false"
+                        app:cardUseCompatPadding="false">
+
+                        <!-- Inner CardView for the actual avatar image crop -->
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cv_avatar"
+                            android:layout_width="96dp"
+                            android:layout_height="96dp"
+                            android:layout_gravity="center"
+                            app:cardCornerRadius="48dp"
+                            app:cardBackgroundColor="@android:color/white"
+                            app:cardElevation="0dp"
+                            app:cardPreventCornerOverlap="false"
+                            app:cardUseCompatPadding="false">
+
+                            <ImageView
+                                android:id="@+id/iv_avatar"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@android:color/darker_gray" />
+                        </androidx.cardview.widget.CardView>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Camera overlay button with white stroke -->
+                    <FrameLayout
+                        android:id="@+id/btn_change_avatar"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_alignBottom="@id/cv_avatar_container"
+                        android:layout_alignEnd="@id/cv_avatar_container"
+                        android:background="@drawable/bg_circle_edit_button"
+                        android:padding="7dp"
+                        android:elevation="4dp"
+                        android:translationZ="2dp"
+                        android:layout_marginEnd="-4dp"
+                        android:layout_marginBottom="-4dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_camera" />
+                    </FrameLayout>
+                </RelativeLayout>
+
+                <!-- Profile Name -->
+                <TextView
+                    android:id="@+id/tv_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Sông Khánh Bình"
+                    android:textColor="#28362E"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/lexend" />
+
+                <!-- Badge Gold Member -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_pill_green"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_star_gold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="Thành viên vàng"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/lexend" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Editable Fields Area -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp">
+
+                <!-- Field 1: Email Address -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <EditText
+                        android:id="@+id/et_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:inputType="textEmailAddress"
+                        android:paddingVertical="8dp"
+                        android:text="binhsk23411@st.uel.edu.vn"
+                        android:textColor="#28362E"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/lexend" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+                </LinearLayout>
+
+                <!-- Field 2: Full Name -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <EditText
+                        android:id="@+id/et_fullname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:inputType="textPersonName"
+                        android:paddingVertical="8dp"
+                        android:text="Sông Khánh Bình"
+                        android:textColor="#28362E"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/lexend" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+                </LinearLayout>
+
+                <!-- Field 3: Phone Number -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <EditText
+                        android:id="@+id/et_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:inputType="phone"
+                        android:paddingVertical="8dp"
+                        android:text="0123456789"
+                        android:textColor="#28362E"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/lexend" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+                </LinearLayout>
+
+                <!-- Field 4: Date of Birth with Dropdown Chevron -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <RelativeLayout
+                        android:id="@+id/btn_select_dob"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:id="@+id/tv_dob"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toStartOf="@id/iv_dob_chevron"
+                            android:paddingVertical="8dp"
+                            android:text="01/01/2000"
+                            android:textColor="#28362E"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
+                        <ImageView
+                            android:id="@+id/iv_dob_chevron"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            android:rotation="90"
+                            app:tint="#888888" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+                </LinearLayout>
+
+                <!-- Field 5: Gender Selection Radio Buttons -->
+                <RadioGroup
+                    android:id="@+id/rg_gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="28dp">
+
+                    <!-- Option Nam -->
+                    <RadioButton
+                        android:id="@+id/rb_male"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nam"
+                        android:textColor="#28362E"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/lexend"
+                        android:buttonTint="@color/primary"
+                        android:layout_marginEnd="24dp" />
+
+                    <!-- Option Nữ (Selected by default) -->
+                    <RadioButton
+                        android:id="@+id/rb_female"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nữ"
+                        android:textColor="#28362E"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/lexend"
+                        android:buttonTint="@color/primary"
+                        android:checked="true"
+                        android:layout_marginEnd="24dp" />
+
+                    <!-- Option Khác -->
+                    <RadioButton
+                        android:id="@+id/rb_other"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Khác"
+                        android:textColor="#28362E"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/lexend"
+                        android:buttonTint="@color/primary" />
+                </RadioGroup>
+
+                <!-- Navigation List Items Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Row 1: Tài khoản liên kết -->
+                    <RelativeLayout
+                        android:id="@+id/btn_linked_accounts"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:text="Tài khoản liên kết"
+                            android:textColor="#28362E"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#C3C8C2" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="#E2E4E1" />
+                    </RelativeLayout>
+
+                    <!-- Row 2: Thông tin cá nhân -->
+                    <RelativeLayout
+                        android:id="@+id/btn_personal_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:text="Thông tin cá nhân"
+                            android:textColor="#28362E"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#C3C8C2" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="#E2E4E1" />
+                    </RelativeLayout>
+
+                    <!-- Row 3: Thiết lập tài khoản -->
+                    <RelativeLayout
+                        android:id="@+id/btn_account_settings"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:text="Thiết lập tài khoản"
+                            android:textColor="#28362E"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#C3C8C2" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="#E2E4E1" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <!-- Change Password Green Button -->
+                <TextView
+                    android:id="@+id/btn_change_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_gravity="start"
+                    android:text="Thay đổi mật khẩu"
+                    android:textColor="@color/content"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/lexend"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingVertical="4dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Shared Bottom Navigation Bar -->
+    <include
+        android:id="@+id/bottom_nav"
+        layout="@layout/home_navapp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
