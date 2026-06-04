@@ -42,7 +42,19 @@ class ShopSearchDetailFragment : RootieFragment() {
                     android.widget.Toast.makeText(requireContext(), "Đã thêm $quantity ${p.name} vào giỏ", android.widget.Toast.LENGTH_SHORT).show()
                 },
                 onBuyNowClick = { p, quantity ->
-                    android.widget.Toast.makeText(requireContext(), "Mua ngay $quantity ${p.name}", android.widget.Toast.LENGTH_SHORT).show()
+                    val checkoutItem = com.veganbeauty.app.data.local.entities.CartItemEntity(
+                        id = p.id,
+                        name = p.name,
+                        image = p.mainImage,
+                        price = p.price,
+                        quantity = quantity,
+                        isSelected = true
+                    )
+                    val checkoutFragment = com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(arrayListOf(checkoutItem))
+                    parentFragmentManager.beginTransaction()
+                        .replace(com.veganbeauty.app.R.id.main_container, checkoutFragment)
+                        .addToBackStack(null)
+                        .commit()
                 }
             )
             bottomSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.TAG)

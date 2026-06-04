@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:paddingTop="12dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:id="@+id/dragHandle"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#6C757D"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Title Section -->
+    <TextView
+        android:id="@+id/tvSheetTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/be_vietnam_pro_bold"
+        android:text="Bộ lọc nâng cao"
+        android:textColor="@color/primary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dragHandle" />
+
+    <View
+        android:id="@+id/dividerTop"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/gray_light"
+        app:layout_constraintTop_toBottomOf="@id/tvSheetTitle" />
+
+    <!-- Scrollable Filter Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintHeight_max="400dp"
+        app:layout_constraintTop_toBottomOf="@id/dividerTop"
+        app:layout_constraintBottom_toTopOf="@id/dividerBottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Section: Loại da -->
+            <LinearLayout
+                android:id="@+id/headerSkinType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/be_vietnam_pro_semibold"
+                    android:text="Loại da"
+                    android:textColor="@color/primary"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/ivChevronSkinType"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:rotation="90"
+                    app:tint="@color/primary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutSkinTypeOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="12dp"
+                android:visibility="visible">
+
+                <!-- Checkbox: Da thường -->
+                <CheckBox
+                    android:id="@+id/cbSkinNormal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Da thường"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+
+                <!-- Checkbox: Da khô -->
+                <CheckBox
+                    android:id="@+id/cbSkinDry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Da khô"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+
+                <!-- Checkbox: Da dầu -->
+                <CheckBox
+                    android:id="@+id/cbSkinOily"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Da dầu"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+
+                <!-- Checkbox: Da nhạy cảm -->
+                <CheckBox
+                    android:id="@+id/cbSkinSensitive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Da nhạy cảm"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+
+                <!-- Checkbox: Da hỗn hợp -->
+                <CheckBox
+                    android:id="@+id/cbSkinCombination"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Da hỗn hợp"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_light" />
+
+            <!-- Section: Giá bán -->
+            <LinearLayout
+                android:id="@+id/headerPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/be_vietnam_pro_semibold"
+                    android:text="Giá bán"
+                    android:textColor="@color/primary"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/ivChevronPrice"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:rotation="90"
+                    app:tint="@color/primary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutPriceOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="12dp"
+                android:visibility="visible">
+
+                <!-- Row 1 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/chipPrice1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_chip_normal"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center"
+                        android:text="Dưới 100.000đ"
+                        android:textColor="@color/content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:id="@+id/chipPrice2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_chip_normal"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center"
+                        android:text="100.000đ - 300.000đ"
+                        android:textColor="@color/content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+
+                <!-- Row 2 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chipPrice3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_chip_normal"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center"
+                        android:text="300.000đ - 500.000đ"
+                        android:textColor="@color/content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:id="@+id/chipPrice4"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_chip_normal"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center"
+                        android:text="Trên 500.000đ"
+                        android:textColor="@color/content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_light" />
+
+            <!-- Section: Công dụng -->
+            <LinearLayout
+                android:id="@+id/headerUsage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/be_vietnam_pro_semibold"
+                    android:text="Công dụng"
+                    android:textColor="@color/primary"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/ivChevronUsage"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:rotation="0"
+                    app:tint="@color/primary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutUsageOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="12dp"
+                android:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/cbUsageClean"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Làm sạch sâu"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+
+                <CheckBox
+                    android:id="@+id/cbUsageMoisturize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Dưỡng ẩm"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_light" />
+
+            <!-- Section: Thành phần -->
+            <LinearLayout
+                android:id="@+id/headerIngredients"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/be_vietnam_pro_semibold"
+                    android:text="Thành phần"
+                    android:textColor="@color/primary"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/ivChevronIngredients"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:rotation="0"
+                    app:tint="@color/primary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutIngredientsOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="12dp"
+                android:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/cbIngredientVegan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Thần chay"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+
+                <CheckBox
+                    android:id="@+id/cbIngredientNatural"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tự nhiên"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:buttonTint="@color/primary" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/dividerBottom"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light"
+        app:layout_constraintBottom_toTopOf="@id/layoutSummaryFooter" />
+
+    <!-- Bottom Summary & Buttons -->
+    <LinearLayout
+        android:id="@+id/layoutSummaryFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@color/neutral"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Lọc theo (count) and tags row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/tvActiveFiltersCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lọc theo (0)"
+                android:textColor="@color/gray_dark"
+                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:textSize="13sp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layoutFilterTags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <!-- Reset / Confirm Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReset"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Thiết lập lại"
+                android:textColor="@color/primary"
+                android:fontFamily="@font/be_vietnam_pro_semibold"
+                android:textAllCaps="false"
+                app:strokeColor="@color/primary"
+                app:cornerRadius="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirm"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1.2"
+                android:layout_marginStart="8dp"
+                android:text="Xác nhận"
+                android:textColor="@color/white"
+                android:fontFamily="@font/be_vietnam_pro_semibold"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/primary"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

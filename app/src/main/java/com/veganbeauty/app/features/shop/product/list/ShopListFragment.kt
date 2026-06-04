@@ -15,6 +15,8 @@ import com.veganbeauty.app.data.repository.ProductRepository
 import com.veganbeauty.app.databinding.ShopCategoryBinding
 import com.veganbeauty.app.features.shop.ShopViewModel
 import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class ShopListFragment : RootieFragment() {
 
@@ -31,10 +33,22 @@ class ShopListFragment : RootieFragment() {
             val bottomSheet = com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
                 product = product,
                 onAddToCartClick = { p, quantity ->
-                    android.widget.Toast.makeText(requireContext(), "Đã thêm $quantity ${p.name} vào giỏ", android.widget.Toast.LENGTH_SHORT).show()
+                    com.veganbeauty.app.features.shop.product.CartHelper.addToCart(requireContext(), lifecycleScope, p, quantity)
                 },
                 onBuyNowClick = { p, quantity ->
-                    android.widget.Toast.makeText(requireContext(), "Mua ngay $quantity ${p.name}", android.widget.Toast.LENGTH_SHORT).show()
+                    val checkoutItem = com.veganbeauty.app.data.local.entities.CartItemEntity(
+                        id = p.id,
+                        name = p.name,
+                        image = p.mainImage,
+                        price = p.price,
+                        quantity = quantity,
+                        isSelected = true
+                    )
+                    val checkoutFragment = com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(arrayListOf(checkoutItem))
+                    parentFragmentManager.beginTransaction()
+                        .replace(com.veganbeauty.app.R.id.main_container, checkoutFragment)
+                        .addToBackStack(null)
+                        .commit()
                 }
             )
             bottomSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.TAG)
@@ -69,9 +83,7 @@ class ShopListFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = ProductRepository(db.productDao(), LocalJsonReader(requireContext()))
         
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
@@ -94,6 +106,70 @@ class ShopListFragment : RootieFragment() {
         binding.btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
+
+        binding.btnSearch.setOnClickListener {
+            val searchFragment = com.veganbeauty.app.features.shop.search.ShopSearchFragment()
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, searchFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.btnFilterAdvanced.setOnClickListener {
+            val filterSheet = AdvancedFilterBottomSheet()
+            filterSheet.show(childFragmentManager, AdvancedFilterBottomSheet.TAG)
+        }
+
+        binding.btnFilterSkinType.setOnClickListener {
+            val skinTypeSheet = SkinTypeFilterBottomSheet()
+            skinTypeSheet.show(childFragmentManager, SkinTypeFilterBottomSheet.TAG)
+        }
+
+        binding.btnFilterPrice.setOnClickListener {
+            val priceSheet = PriceFilterBottomSheet()
+            priceSheet.show(childFragmentManager, PriceFilterBottomSheet.TAG)
+        }
+
+        binding.btnCart.setOnClickListener {
+            val cartSheet = com.veganbeauty.app.features.shop.product.CartBottomSheetFragment()
+            cartSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.TAG)
+        }
+
+        binding.btnSortToggle.setOnClickListener {
+            if (binding.layoutSortOptions.visibility == View.VISIBLE) {
+                binding.layoutSortOptions.visibility = View.GONE
+            } else {
+                binding.layoutSortOptions.visibility = View.VISIBLE
+            }
+        }
+        
+        fun selectSortOption(selectedView: android.widget.TextView, sortOrder: String) {
+            val medTypeface = androidx.core.content.res.ResourcesCompat.getFont(requireContext(), com.veganbeauty.app.R.font.be_vietnam_pro_medium)
+            val regTypeface = androidx.core.content.res.ResourcesCompat.getFont(requireContext(), com.veganbeauty.app.R.font.be_vietnam_pro_regular)
+            
+            val options = listOf(
+                binding.btnSortBestSelling to "BEST_SELLING",
+                binding.btnSortNewest to "NEWEST",
+                binding.btnSortPriceLow to "PRICE_LOW",
+                binding.btnSortPriceHigh to "PRICE_HIGH"
+            )
+            
+            for ((view, order) in options) {
+                if (view == selectedView) {
+                    view.setTextColor(android.graphics.Color.parseColor("#3E4D44"))
+                    view.typeface = medTypeface
+                } else {
+                    view.setTextColor(android.graphics.Color.parseColor("#888888"))
+                    view.typeface = regTypeface
+                }
+            }
+            viewModel.setSortOrder(sortOrder)
+        }
+        
+        binding.btnSortBestSelling.setOnClickListener { selectSortOption(binding.btnSortBestSelling, "BEST_SELLING") }
+        binding.btnSortNewest.setOnClickListener { selectSortOption(binding.btnSortNewest, "NEWEST") }
+        binding.btnSortPriceLow.setOnClickListener { selectSortOption(binding.btnSortPriceLow, "PRICE_LOW") }
+        binding.btnSortPriceHigh.setOnClickListener { selectSortOption(binding.btnSortPriceHigh, "PRICE_HIGH") }
         
         val categoryName = arguments?.getString("CATEGORY_NAME")
         if (categoryName != null) {
@@ -107,13 +183,28 @@ class ShopListFragment : RootieFragment() {
 
     override fun observeViewModel() {
         viewModel.products.observe(viewLifecycleOwner) { products ->
-            productAdapter.submitList(products)
+            productAdapter.submitList(products) {
+                binding.rvProducts.scrollToPosition(0)
+            }
         }
         
         viewModel.subcategories.observe(viewLifecycleOwner) { subcategories ->
             subcategoryAdapter.submitList(subcategories)
             // Reset to "Tất cả" whenever category changes
             subcategoryAdapter.selectedSubcategory = "Tất cả"
+        }
+
+        lifecycleScope.launch {
+            val db = RootieDatabase.getDatabase(requireContext())
+            db.cartDao().getAllCartItems().collect { items ->
+                val totalQty = items.sumOf { it.quantity }
+                if (totalQty > 0) {
+                    binding.tvCartBadge.visibility = View.VISIBLE
+                    binding.tvCartBadge.text = totalQty.toString()
+                } else {
+                    binding.tvCartBadge.visibility = View.GONE
+                }
+            }
         }
     }
 

@@ -12,6 +12,7 @@ class ShopViewModel(private val repository: ProductRepository) : RootieViewModel
 
     private val _categoryFilter = MutableStateFlow<String?>(null)
     private val _subcategoryFilter = MutableStateFlow<String?>("Tất cả")
+    private val _sortOrder = MutableStateFlow<String>("BEST_SELLING")
     
     private val _subcategories = MutableStateFlow<List<String>>(listOf("Tất cả"))
     val subcategories = _subcategories.asLiveData()
@@ -42,11 +43,45 @@ class ShopViewModel(private val repository: ProductRepository) : RootieViewModel
         "Chăm sóc môi" to "bd1c0ff76b19b1b5a3130a79"
     )
 
+    private val _skinTypesFilter = MutableStateFlow<Set<String>>(emptySet())
+    val skinTypesFilter = _skinTypesFilter.asLiveData()
+    val currentSkinTypes: Set<String> get() = _skinTypesFilter.value
+
+    private val _priceRangeFilter = MutableStateFlow<String?>(null)
+    val priceRangeFilter = _priceRangeFilter.asLiveData()
+    val currentPriceRange: String? get() = _priceRangeFilter.value
+
+    private val _benefitsFilter = MutableStateFlow<Set<String>>(emptySet())
+    val benefitsFilter = _benefitsFilter.asLiveData()
+    val currentBenefits: Set<String> get() = _benefitsFilter.value
+
+    private val _ingredientsFilter = MutableStateFlow<Set<String>>(emptySet())
+    val ingredientsFilter = _ingredientsFilter.asLiveData()
+    val currentIngredients: Set<String> get() = _ingredientsFilter.value
+
+    data class AdvancedFilterState(
+        val skinTypes: Set<String> = emptySet(),
+        val priceRange: String? = null,
+        val benefits: Set<String> = emptySet(),
+        val ingredients: Set<String> = emptySet()
+    )
+
+    private val advancedFilter = combine(
+        _skinTypesFilter,
+        _priceRangeFilter,
+        _benefitsFilter,
+        _ingredientsFilter
+    ) { skinTypes, priceRange, benefits, ingredients ->
+        AdvancedFilterState(skinTypes, priceRange, benefits, ingredients)
+    }
+
     val products = combine(
         repository.allProducts,
         _categoryFilter,
-        _subcategoryFilter
-    ) { list, category, subcategory ->
+        _subcategoryFilter,
+        _sortOrder,
+        advancedFilter
+    ) { list, category, subcategory, sortOrder, advFilter ->
         var filteredList = list
         if (category != null && category != "Tất cả") {
             val targetIds = when (category) {
@@ -87,6 +122,64 @@ class ShopViewModel(private val repository: ProductRepository) : RootieViewModel
                 filteredList = filteredList.filter { it.name.contains(subcategory, ignoreCase = true) || it.description.contains(subcategory, ignoreCase = true) }
             }
         }
+
+        // Apply skin types filter
+        if (advFilter.skinTypes.isNotEmpty()) {
+            filteredList = filteredList.filter { product ->
+                product.suitableFor.contains("Mọi loại da", ignoreCase = true) ||
+                advFilter.skinTypes.any { skinType -> product.suitableFor.contains(skinType, ignoreCase = true) }
+            }
+        }
+
+        // Apply price range filter
+        if (advFilter.priceRange != null) {
+            filteredList = filteredList.filter { product ->
+                when (advFilter.priceRange) {
+                    "Dưới 100.000đ" -> product.price < 100000
+                    "100.000đ - 300.000đ" -> product.price in 100000..300000
+                    "300.000đ - 500.000đ" -> product.price in 300000..500000
+                    "Trên 500.000đ" -> product.price > 500000
+                    else -> true
+                }
+            }
+        }
+
+        // Apply benefits filter
+        if (advFilter.benefits.isNotEmpty()) {
+            filteredList = filteredList.filter { product ->
+                advFilter.benefits.any { benefit ->
+                    product.description.contains(benefit, ignoreCase = true) ||
+                    product.benefits.any { it.contains(benefit, ignoreCase = true) }
+                }
+            }
+        }
+
+        // Apply ingredients filter
+        if (advFilter.ingredients.isNotEmpty()) {
+            filteredList = filteredList.filter { product ->
+                advFilter.ingredients.any { ingredient ->
+                    product.name.contains(ingredient, ignoreCase = true) ||
+                    product.description.contains(ingredient, ignoreCase = true) ||
+                    product.detailedIngredients.any { it.contains(ingredient, ignoreCase = true) }
+                }
+            }
+        }
+        
+        // Apply sorting
+        when (sortOrder) {
+            "NEWEST" -> {
+                filteredList = filteredList.sortedWith(compareByDescending<com.veganbeauty.app.data.local.entities.ProductEntity> { it.isNew }.thenBy { it.name })
+            }
+            "PRICE_LOW" -> {
+                filteredList = filteredList.sortedBy { it.price }
+            }
+            "PRICE_HIGH" -> {
+                filteredList = filteredList.sortedByDescending { it.price }
+            }
+            else -> {
+                // "BEST_SELLING" keeps default order
+            }
+        }
         
         filteredList
     }.asLiveData()
@@ -99,6 +192,29 @@ class ShopViewModel(private val repository: ProductRepository) : RootieViewModel
 
     fun setSubcategoryFilter(subcategory: String) {
         _subcategoryFilter.value = subcategory
+    }
+
+    fun setSortOrder(order: String) {
+        _sortOrder.value = order
+    }
+
+    fun setAdvancedFilters(
+        skinTypes: Set<String>,
+        priceRange: String?,
+        benefits: Set<String>,
+        ingredients: Set<String>
+    ) {
+        _skinTypesFilter.value = skinTypes
+        _priceRangeFilter.value = priceRange
+        _benefitsFilter.value = benefits
+        _ingredientsFilter.value = ingredients
+    }
+
+    fun clearAdvancedFilters() {
+        _skinTypesFilter.value = emptySet()
+        _priceRangeFilter.value = null
+        _benefitsFilter.value = emptySet()
+        _ingredientsFilter.value = emptySet()
     }
 
     private fun updateSubcategories(category: String) {

@@ -27,7 +27,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/be_vietnam_pro_semibold"
         android:text="Chọn số lượng"
-        android:textColor="#3E4D44"
+        android:textColor="@color/primary"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +61,7 @@
         android:ellipsize="end"
         android:fontFamily="@font/be_vietnam_pro_medium"
         android:maxLines="2"
-        android:textColor="#3E4D44"
+        android:textColor="@color/primary"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/cvProductImage"
@@ -86,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:fontFamily="@font/be_vietnam_pro_regular"
-        android:textColor="#807F7F"
+        android:textColor="@color/gray_dark"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@id/tvPrice"
         app:layout_constraintStart_toEndOf="@id/tvPrice"
@@ -101,7 +101,7 @@
         android:layout_marginTop="32dp"
         android:fontFamily="@font/be_vietnam_pro_medium"
         android:text="Số lượng"
-        android:textColor="#3E4D44"
+        android:textColor="@color/primary"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cvProductImage" />
@@ -123,7 +123,7 @@
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_minus"
-            app:tint="#3E4D44" />
+            app:tint="@color/primary" />
 
         <TextView
             android:id="@+id/tvQuantityValue"
@@ -132,7 +132,7 @@
             android:fontFamily="@font/be_vietnam_pro_medium"
             android:gravity="center"
             android:text="1"
-            android:textColor="#3E4D44"
+            android:textColor="@color/primary"
             android:textSize="16sp" />
 
         <ImageButton
@@ -141,7 +141,7 @@
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_plus"
-            app:tint="#3E4D44" />
+            app:tint="@color/primary" />
     </LinearLayout>
 
     <View
@@ -149,7 +149,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="24dp"
-        android:background="#E0E0E0"
+        android:background="@color/gray_light"
         app:layout_constraintTop_toBottomOf="@id/tvQuantityLabel"
         android:visibility="gone" /> <!-- Based on the image, there's no divider, but spacing. I will leave spacing -->
 
@@ -161,7 +161,7 @@
         android:layout_marginTop="24dp"
         android:fontFamily="@font/be_vietnam_pro_medium"
         android:text="Tạm tính"
-        android:textColor="#3E4D44"
+        android:textColor="@color/primary"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/llQuantityControl" />
@@ -222,9 +222,9 @@
             android:fontFamily="@font/be_vietnam_pro_medium"
             android:text="Thêm vào giỏ"
             android:textAllCaps="false"
-            android:textColor="#3E4D44"
-            app:cornerRadius="24dp"
-            app:strokeColor="#3E4D44"
+            android:textColor="@color/primary"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/primary"
             app:strokeWidth="1dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -233,12 +233,12 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:backgroundTint="#3E4D44"
+            android:backgroundTint="@color/primary"
             android:fontFamily="@font/be_vietnam_pro_medium"
             android:text="Mua ngay"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            app:cornerRadius="24dp" />
+            app:cornerRadius="12dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

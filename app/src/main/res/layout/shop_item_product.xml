@@ -33,6 +33,7 @@
                 android:paddingVertical="2dp"
                 android:text="Mới"
                 android:textColor="@android:color/white"
+                android:fontFamily="@font/be_vietnam_pro_bold"
                 android:textSize="10sp"
                 android:visibility="gone" />
         </FrameLayout>
@@ -45,7 +46,8 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:text="Tên sản phẩm"
-            android:textColor="@android:color/black"
+            android:textColor="@color/primary"
+            android:fontFamily="@font/be_vietnam_pro_bold"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -61,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:text="241.000đ"
                 android:textColor="#FF5252"
+                android:fontFamily="@font/be_vietnam_pro_bold"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -70,7 +73,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="325.000đ"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/gray_dark"
+                android:fontFamily="@font/be_vietnam_pro_regular"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -79,12 +83,14 @@
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:layout_marginTop="8dp"
-            android:backgroundTint="#4E594F"
+            android:backgroundTint="@color/primary"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Chọn mua"
+            android:fontFamily="@font/be_vietnam_pro_medium"
             android:textAllCaps="false"
-            android:textSize="12sp" />
+            android:textSize="12sp" 
+        app:cornerRadius="12dp"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
