@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FCF9F4">
+    android:background="@color/neutral">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,9 +43,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Tên sản phẩm"
-                android:textColor="@android:color/black"
+                android:textColor="@color/primary"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                android:fontFamily="@font/be_vietnam_pro_bold"/>
 
             <TextView
                 android:id="@+id/tvCategory"
@@ -52,7 +54,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Chăm sóc da"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="@color/gray_dark" 
+                android:fontFamily="@font/lexend"/>
 
             <TextView
                 android:id="@+id/tvPrice"
@@ -62,21 +65,23 @@
                 android:text="241.000đ"
                 android:textColor="#FF5252"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                android:fontFamily="@font/be_vietnam_pro_bold"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="20dp"
-                android:background="#EEEEEE" />
+                android:background="@color/gray_light" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mô tả sản phẩm"
-                android:textColor="@android:color/black"
+                android:textColor="@color/primary"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                android:fontFamily="@font/be_vietnam_pro_bold"/>
 
             <TextView
                 android:id="@+id/tvDescription"
@@ -85,16 +90,19 @@
                 android:layout_marginTop="8dp"
                 android:lineSpacingExtra="4dp"
                 android:text="Mô tả chi tiết về sản phẩm sẽ được hiển thị ở đây..."
-                android:textColor="#444444" />
+                android:textColor="@color/content" 
+                android:fontFamily="@font/lexend"/>
 
             <Button
                 android:id="@+id/btnAddToCart"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="32dp"
-                android:backgroundTint="#4E594F"
+                android:backgroundTint="@color/primary"
                 android:text="Thêm vào giỏ hàng"
-                android:textAllCaps="false" />
+                android:textAllCaps="false" 
+                android:fontFamily="@font/be_vietnam_pro_bold"
+        app:cornerRadius="12dp"/>
 
         </LinearLayout>
     </LinearLayout>

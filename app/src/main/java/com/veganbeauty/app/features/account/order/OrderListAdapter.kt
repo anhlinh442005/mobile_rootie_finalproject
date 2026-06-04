@@ -145,15 +145,16 @@ class OrderListAdapter(
                     binding.btnActionFilled.setOnClickListener { onTrackClick(order) }
                 }
                 "Thành công" -> {
-                    // Outlined: Đánh giá, Filled: Mua lại
+                    // Outlined: Đánh giá/Xem đánh giá, Filled: Mua lại
                     binding.btnActionOutlined.visibility = View.VISIBLE
-                    binding.btnActionOutlined.text = "Đánh giá"
+                    binding.btnActionOutlined.text = if (order.hasReview) "Xem đánh giá" else "Đánh giá"
                     binding.btnActionOutlined.setOnClickListener { onReviewClick(order) }
 
                     binding.btnActionFilled.visibility = View.VISIBLE
                     binding.btnActionFilled.text = "Mua lại"
                     binding.btnActionFilled.setOnClickListener { onReorderClick(order) }
                 }
+
                 "Đã hủy" -> {
                     // Outlined: (Gone) - Chi tiết is removed, Filled: Mua lại
                     binding.btnActionOutlined.visibility = View.GONE

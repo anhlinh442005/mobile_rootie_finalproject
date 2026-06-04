@@ -8,5 +8,6 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="8dp"
     android:text="Subcategory"
-    android:textColor="#555555"
+    android:textColor="@color/content"
+    android:fontFamily="@font/be_vietnam_pro_regular"
     android:textSize="13sp" />

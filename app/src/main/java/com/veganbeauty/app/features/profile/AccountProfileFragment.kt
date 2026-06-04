@@ -12,6 +12,12 @@ import com.veganbeauty.app.databinding.AccountProfileBinding
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment
 import com.veganbeauty.app.features.account.order.AccountOrderListFragment
 import com.veganbeauty.app.features.quiz.QuizTestIntroFragment
+import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
+import com.veganbeauty.app.data.local.RootieDatabase
+import com.veganbeauty.app.data.local.LocalJsonReader
+import com.veganbeauty.app.data.repository.OrderRepository
+import kotlinx.coroutines.launch
 
 class AccountProfileFragment : RootieFragment() {
 
@@ -68,6 +74,13 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        binding.btnExpiryShelf.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.account.expiry.AccountProductExpiryFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Navigate to Order List Fragment
         binding.btnAllOrders.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -116,6 +129,22 @@ class AccountProfileFragment : RootieFragment() {
         binding.btnEditProfile.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountProfileEditFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Loyalty Reward & Exchange Fragment
+        binding.btnRewardExchange.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.account.reward.AccountRewardFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Daily Check-in Fragment
+        binding.layoutCoinsBadge.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.account.checkin.AccountCheckinFragment())
                 .addToBackStack(null)
                 .commit()
         }
@@ -176,6 +205,20 @@ class AccountProfileFragment : RootieFragment() {
                     .replace(com.veganbeauty.app.R.id.main_container, QuizTestIntroFragment())
                     .addToBackStack(null)
                     .commit()
+            }
+        }
+
+        // Retrieve and observe dynamic reward points count from Room database
+        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
+            .fallbackToDestructiveMigration()
+            .build()
+        val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
+        viewLifecycleOwner.lifecycleScope.launch {
+            repository.refreshOrders()
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            db.rewardPointDao().getTotalPointsFlow().collect { points ->
+                binding.tvCoins.text = (points ?: 0).toString()
             }
         }
     }

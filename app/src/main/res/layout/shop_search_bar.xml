@@ -14,7 +14,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:src="@android:drawable/ic_menu_search"
-        app:tint="#666666" />
+        app:tint="@color/gray_dark" />
 
     <TextView
         android:id="@+id/tvText"
@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="Suggestion"
-        android:textColor="#444444"
-        android:textSize="14sp" />
+        android:textColor="@color/content"
+        android:textSize="14sp" 
+        android:fontFamily="@font/lexend"/>
 </LinearLayout>

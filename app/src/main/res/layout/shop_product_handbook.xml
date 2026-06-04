@@ -38,7 +38,8 @@
                 android:paddingVertical="2dp"
                 android:text="14:26"
                 android:textColor="@android:color/white"
-                android:textSize="10sp" />
+                android:textSize="10sp" 
+                android:fontFamily="@font/lexend"/>
         </FrameLayout>
 
         <LinearLayout
@@ -54,9 +55,10 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:text="Cách trị mụn trứng cá bằng thuốc đông y hiệu quả"
-                android:textColor="#333333"
+                android:textColor="@color/primary"
                 android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                android:fontFamily="@font/be_vietnam_pro_bold"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -73,15 +75,16 @@
                         android:layout_width="14dp"
                         android:layout_height="14dp"
                         android:src="@android:drawable/ic_menu_myplaces"
-                        app:tint="#888888" />
+                        app:tint="@color/gray_dark" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:text="12.3k"
-                        android:textColor="#888888"
-                        android:textSize="11sp" />
+                        android:textColor="@color/gray_dark"
+                        android:textSize="11sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
 
                 <TextView
@@ -90,8 +93,9 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:text="Xem chi tiết →"
-                    android:textColor="#888888"
-                    android:textSize="11sp" />
+                    android:textColor="@color/gray_dark"
+                    android:textSize="11sp" 
+                    android:fontFamily="@font/lexend"/>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

@@ -36,6 +36,52 @@ class LocalJsonReader(private val context: Context) {
                     else -> ""
                 }
 
+                val albumArr = obj.optJSONArray("album")
+                val albumList = mutableListOf<String>()
+                if (albumArr != null) {
+                    for (j in 0 until albumArr.length()) {
+                        albumList.add(albumArr.getString(j))
+                    }
+                }
+
+                val keyArr = obj.optJSONArray("keyIngredients")
+                val keyIngredientsList = mutableListOf<com.veganbeauty.app.data.local.entities.KeyIngredient>()
+                if (keyArr != null) {
+                    for (j in 0 until keyArr.length()) {
+                        val keyObj = keyArr.getJSONObject(j)
+                        keyIngredientsList.add(
+                            com.veganbeauty.app.data.local.entities.KeyIngredient(
+                                name = keyObj.optString("name", ""),
+                                description = keyObj.optString("description", "")
+                            )
+                        )
+                    }
+                }
+
+                val detailedArr = obj.optJSONArray("detailedIngredients")
+                val detailedIngredientsList = mutableListOf<String>()
+                if (detailedArr != null) {
+                    for (j in 0 until detailedArr.length()) {
+                        detailedIngredientsList.add(detailedArr.getString(j))
+                    }
+                }
+
+                val idealArr = obj.optJSONArray("idealFor")
+                val idealForList = mutableListOf<String>()
+                if (idealArr != null) {
+                    for (j in 0 until idealArr.length()) {
+                        idealForList.add(idealArr.getString(j))
+                    }
+                }
+
+                val benefitsArr = obj.optJSONArray("benefits")
+                val benefitsList = mutableListOf<String>()
+                if (benefitsArr != null) {
+                    for (j in 0 until benefitsArr.length()) {
+                        benefitsList.add(benefitsArr.getString(j))
+                    }
+                }
+
                 productList.add(
                     ProductEntity(
                         id = obj.getString("id"),
@@ -49,7 +95,21 @@ class LocalJsonReader(private val context: Context) {
                         mainImage = obj.optString("mainImage", ""),
                         suitableFor = obj.optString("suitableFor", ""),
                         origin = obj.optString("origin", ""),
-                        expiryDate = obj.optString("expiryDate", "")
+                        expiryDate = obj.optString("expiryDate", ""),
+                        
+                        album = albumList,
+                        mainIngredientsSummary = obj.optString("mainIngredientsSummary", ""),
+                        allergyInformation = obj.optString("allergyInformation", ""),
+                        keyIngredients = keyIngredientsList,
+                        detailedIngredients = detailedIngredientsList,
+                        storyDescription = obj.optString("storyDescription", ""),
+                        storyImage = obj.optString("storyImage", ""),
+                        idealFor = idealForList,
+                        benefits = benefitsList,
+                        usage = obj.optString("usage", ""),
+                        usageAmount = obj.optString("usageAmount", ""),
+                        scent = obj.optString("scent", ""),
+                        notes = obj.optString("notes", "")
                     )
                 )
             }
