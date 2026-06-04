@@ -57,11 +57,13 @@ class ExploreVideoAdapter(
 
     inner class ExploreVideoViewHolder(val itemBinding: ComItemExploreVideoBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         private var mediaPlayer: MediaPlayer? = null
+        private var isPlayRequested = false
         private var isLiked = false
         private var isFollowing = false
         private var discAnimator: ObjectAnimator? = null
 
         fun bind(video: YtVideoEntity) {
+            isPlayRequested = false
             itemBinding.llLeftContent.translationY = contentTranslationY
             itemBinding.llRightIcons.translationY = contentTranslationY
 
@@ -208,6 +210,36 @@ class ExploreVideoAdapter(
                 mediaPlayer = mp
                 itemBinding.pbLoading.visibility = View.GONE
                 mp.isLooping = true
+                
+                // Áp dụng tỷ lệ Center Crop để video lấp đầy chiều ngang (fit width)
+                val videoWidth = mp.videoWidth.toFloat()
+                val videoHeight = mp.videoHeight.toFloat()
+                val viewWidth = itemBinding.videoView.width.toFloat()
+                val viewHeight = itemBinding.videoView.height.toFloat()
+                
+                if (videoWidth > 0 && videoHeight > 0 && viewWidth > 0 && viewHeight > 0) {
+                    val videoRatio = videoWidth / videoHeight
+                    val viewRatio = viewWidth / viewHeight
+                    
+                    if (videoRatio > viewRatio) {
+                        // Video rộng hơn màn hình -> scale chiều ngang
+                        itemBinding.videoView.scaleX = videoRatio / viewRatio
+                        itemBinding.videoView.scaleY = 1f
+                    } else {
+                        // Video cao hơn màn hình -> scale chiều dọc để khớp chiều ngang
+                        itemBinding.videoView.scaleX = 1f
+                        itemBinding.videoView.scaleY = viewRatio / videoRatio
+                    }
+                }
+
+                if (isPlayRequested) {
+                    itemBinding.videoView.start()
+                    if (discAnimator?.isStarted == true) {
+                        discAnimator?.resume()
+                    } else {
+                        discAnimator?.start()
+                    }
+                }
             }
 
             itemBinding.videoView.setOnErrorListener { _, _, _ ->
@@ -217,6 +249,7 @@ class ExploreVideoAdapter(
         }
 
         fun playVideo() {
+            isPlayRequested = true
             if (mediaPlayer != null) {
                 itemBinding.videoView.start()
                 if (discAnimator?.isStarted == true) {
@@ -230,6 +263,7 @@ class ExploreVideoAdapter(
         }
 
         fun stopVideo() {
+            isPlayRequested = false
             try {
                 if (itemBinding.videoView.isPlaying) {
                     itemBinding.videoView.pause()

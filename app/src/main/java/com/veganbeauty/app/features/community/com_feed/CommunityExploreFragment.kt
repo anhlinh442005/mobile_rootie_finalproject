@@ -151,16 +151,22 @@ class CommunityExploreFragment : RootieFragment() {
         binding.comBottomNav.navComProfile.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, HomeFragment())
+                .replace(R.id.main_container, com.veganbeauty.app.features.profile.AccountProfileFragment())
                 .commit()
         }
 
         binding.comBottomNav.navComHub.setOnClickListener {
-            android.widget.Toast.makeText(context, "Beauty Hub đang được phát triển!", android.widget.Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.beauty_hub.CommunityBeautyHubFragment())
+                .commit()
         }
 
         binding.comBottomNav.navComChat.setOnClickListener {
-            android.widget.Toast.makeText(context, "Mục Tin nhắn đang được phát triển!", android.widget.Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.message.CommunityMessageFragment())
+                .commit()
         }
 
         // Keep Khám phá active visually

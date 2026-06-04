@@ -14,6 +14,7 @@ import com.veganbeauty.app.data.remote.FirestoreService
 import com.veganbeauty.app.data.repository.CommunityRepository
 import com.veganbeauty.app.databinding.ComFragmentFeedBinding
 import com.veganbeauty.app.R
+import coil.load
 
 class CommunityFeedFragment : RootieFragment() {
 
@@ -54,6 +55,16 @@ class CommunityFeedFragment : RootieFragment() {
                 .commit()
         }
 
+        // Open Side Menu
+        binding.ivMenu.setOnClickListener {
+            view.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)?.openDrawer(androidx.core.view.GravityCompat.START)
+        }
+
+        // Close Side Menu
+        view.findViewById<View>(R.id.ivCloseMenu)?.setOnClickListener {
+            view.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)?.closeDrawer(androidx.core.view.GravityCompat.START)
+        }
+
         // Set click listeners for the specialized community navbar
         binding.comBottomNav.navComFeed.setOnClickListener {
             // Scroll back to top immediately
@@ -61,24 +72,33 @@ class CommunityFeedFragment : RootieFragment() {
             
             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                 // Shuffle lists to create a randomized feed
-                val shuffledPosts = viewModel.posts.value?.shuffled() ?: emptyList()
-                val shuffledUsers = viewModel.users.value?.shuffled() ?: emptyList()
-                val shuffledReels = viewModel.reels.value?.shuffled() ?: emptyList()
-                val productsList = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getProducts()
+                val posts = viewModel.posts.value
+                val users = viewModel.users.value
+                val reels = viewModel.reels.value
                 
-                postAdapter.updateData(shuffledPosts, shuffledUsers.take(10), shuffledReels, productsList)
+                if (!posts.isNullOrEmpty()) {
+                    val shuffledPosts = posts.shuffled()
+                    val shuffledUsers = (users ?: emptyList()).shuffled()
+                    val shuffledReels = (reels ?: emptyList()).shuffled()
+                    val productsList = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getProducts()
+                    
+                    postAdapter.updateData(shuffledPosts, shuffledUsers.take(10), shuffledReels, productsList)
+                }
             }, 800)
         }
 
         binding.comBottomNav.navComProfile.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, com.veganbeauty.app.features.home.HomeFragment())
+                .replace(R.id.main_container, com.veganbeauty.app.features.profile.AccountProfileFragment())
                 .commit()
         }
 
         binding.comBottomNav.navComHub.setOnClickListener {
-            android.widget.Toast.makeText(context, "Beauty Hub đang được phát triển!", android.widget.Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.beauty_hub.CommunityBeautyHubFragment())
+                .commit()
         }
 
         binding.comBottomNav.navComExplore.setOnClickListener {
@@ -89,7 +109,10 @@ class CommunityFeedFragment : RootieFragment() {
         }
 
         binding.comBottomNav.navComChat.setOnClickListener {
-            android.widget.Toast.makeText(context, "Mục Tin nhắn đang được phát triển!", android.widget.Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.message.CommunityMessageFragment())
+                .commit()
         }
 
         // Hide/Show bottom navbar on scroll
@@ -111,14 +134,60 @@ class CommunityFeedFragment : RootieFragment() {
         // Pull to refresh logic
         binding.swipeRefreshLayout.setOnRefreshListener {
             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                val shuffledPosts = viewModel.posts.value?.shuffled() ?: emptyList()
-                val shuffledUsers = viewModel.users.value?.shuffled() ?: emptyList()
-                val shuffledReels = viewModel.reels.value?.shuffled() ?: emptyList()
-                val productsList = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getProducts()
+                val posts = viewModel.posts.value
+                val users = viewModel.users.value
+                val reels = viewModel.reels.value
                 
-                postAdapter.updateData(shuffledPosts, shuffledUsers.take(10), shuffledReels, productsList)
+                if (!posts.isNullOrEmpty()) {
+                    val shuffledPosts = posts.shuffled()
+                    val shuffledUsers = (users ?: emptyList()).shuffled()
+                    val shuffledReels = (reels ?: emptyList()).shuffled()
+                    val productsList = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getProducts()
+                    
+                    postAdapter.updateData(shuffledPosts, shuffledUsers.take(10), shuffledReels, productsList)
+                }
                 binding.swipeRefreshLayout.isRefreshing = false
             }, 800)
+        }
+
+        binding.ivPlus.setOnClickListener {
+            val bottomSheet = ComCreatePostBottomSheet()
+            bottomSheet.show(parentFragmentManager, ComCreatePostBottomSheet.TAG)
+        }
+        
+        // Initialize Side Menu User Info
+        updateSideMenuUserInfo(null)
+    }
+
+    private fun updateSideMenuUserInfo(user: com.veganbeauty.app.data.local.entities.UserEntity?) {
+        val navView = view?.findViewById<com.google.android.material.navigation.NavigationView>(R.id.navView)
+        val ivAvatar = navView?.findViewById<android.widget.ImageView>(R.id.ivSideMenuAvatar)
+        val tvDisplayName = navView?.findViewById<android.widget.TextView>(R.id.tvSideMenuDisplayName)
+        val tvUsername = navView?.findViewById<android.widget.TextView>(R.id.tvSideMenuUsername)
+
+        if (user != null) {
+            tvDisplayName?.text = user.username // Replace with displayName if added to UserEntity later
+            tvUsername?.text = "@${user.username.lowercase().replace(" ", "_")}"
+            
+            if (!user.avatarUrl.isNullOrEmpty() && ivAvatar != null) {
+                // Use Coil to load avatar if logged in
+                ivAvatar.load(user.avatarUrl) {
+                    crossfade(true)
+                    transformations(coil.transform.CircleCropTransformation())
+                    placeholder(R.drawable.img_avatar) // fallback
+                }
+            }
+        } else {
+            // Default placeholder if not logged in
+            tvDisplayName?.text = "Ánh Linh"
+            tvUsername?.text = "@eng_lyns"
+            if (ivAvatar != null) {
+                ivAvatar.load("https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg") {
+                    crossfade(true)
+                    transformations(coil.transform.CircleCropTransformation())
+                    placeholder(R.drawable.img_avatar)
+                }
+            }
         }
     }
 
@@ -205,6 +274,10 @@ class CommunityFeedFragment : RootieFragment() {
             if (allStories.isNotEmpty()) {
                 val myStory = allStories[0].copy(username = "Tin của bạn")
                 allStories.add(0, myStory)
+                
+                // TODO: When Authentication is implemented, replace this with actual logged-in user data.
+                // For now, we update the side menu with the first user's data from Firebase as a mock.
+                // updateSideMenuUserInfo(allStories[1]) 
             }
             storyAdapter.updateData(allStories)
             updateFeedData()

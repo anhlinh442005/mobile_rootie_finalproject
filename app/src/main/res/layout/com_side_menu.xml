@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9FAFB"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="32dp">
+
+        <!-- Header -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingHorizontal="16dp">
+            
+            <!-- Rootie Logo -->
+            <ImageView
+                android:layout_width="90dp"
+                android:layout_height="32dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo_name"
+                app:tint="@color/primary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <!-- Hamburger Close -->
+            <ImageView
+                android:id="@+id/ivCloseMenu"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_menu_sort"
+                app:tint="#6B7280"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- User Info Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/com_bg_filter_selected"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@android:color/transparent">
+                
+                <ImageView
+                    android:id="@+id/ivSideMenuAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_avatar" />
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+                <TextView
+                    android:id="@+id/tvSideMenuDisplayName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ánh Linh"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:textStyle="bold"
+                    android:textColor="#3E4D44"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tvSideMenuUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@eng_lyns"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:textColor="#6B7280"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_chevron_down"
+                app:tint="#6B7280"
+                android:background="@drawable/com_bg_filter_normal"
+                android:padding="4dp" />
+        </LinearLayout>
+
+        <!-- Lối tắt của bạn -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="16dp"
+            android:text="Lối tắt của bạn"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:textStyle="bold"
+            android:textColor="#374151"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:weightSum="4">
+            
+            <!-- Shortcut 1 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginEnd="8dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_shortcut_1" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GenZ làm đẹp"
+                    android:textSize="10sp"
+                    android:textColor="#4B5563"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:layout_marginTop="4dp"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <!-- Shortcut 2 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginEnd="8dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_shortcut_2" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hội da dầu"
+                    android:textSize="10sp"
+                    android:textColor="#4B5563"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:layout_marginTop="4dp"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <!-- Shortcut 3 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginEnd="8dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_shortcut_3" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hội những n..."
+                    android:textSize="10sp"
+                    android:textColor="#4B5563"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:layout_marginTop="4dp"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <!-- Shortcut 4 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_shortcut_4" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Yêu da"
+                    android:textSize="10sp"
+                    android:textColor="#4B5563"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:layout_marginTop="4dp"
+                    android:singleLine="true" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E5E7EB" android:layout_marginVertical="16dp" />
+
+        <!-- Menu Items -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_friends_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bạn bè" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textSize="14sp" />
+        </LinearLayout>
+        
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_bookmark_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Đã lưu" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textSize="14sp" />
+        </LinearLayout>
+        
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_heart_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Yêu thích" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textSize="14sp" />
+        </LinearLayout>
+        
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_clipboard_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nhật ký lưu trữ tin" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textSize="14sp" />
+        </LinearLayout>
+        
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_calendar_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sự kiện" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Settings Group -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_settings_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Cài đặt và quyền riêng tư" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textStyle="bold" android:textSize="14sp" />
+            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
+        </LinearLayout>
+
+        <!-- Sub Items Settings -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="40dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
+                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_lock_outline" app:tint="#4B5563" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Quyền riêng tư" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
+                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_globe_outline" app:tint="#4B5563" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ngôn ngữ ứng dụng" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
+                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_moon_outline" app:tint="#4B5563" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chế độ tối" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Account Group -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_user_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Tài khoản cá nhân" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textStyle="bold" android:textSize="14sp" />
+            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
+        </LinearLayout>
+
+        <!-- Sub Items Account -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="40dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
+                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_user_card_outline" app:tint="#4B5563" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hồ sơ cá nhân" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
+                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_user_edit_outline" app:tint="#4B5563" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chỉnh sửa thông tin cá nhân" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Terms Item -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_shield_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Điều khoản và chính sách" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textStyle="bold" android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Store Group -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_store_outline" app:tint="#4B5563" />
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Phần trưng bày" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textStyle="bold" android:textSize="14sp" />
+            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
+        </LinearLayout>
+
+        <!-- Sub Items Store -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="40dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
+                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_basket_outline" app:tint="#4B5563" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sản phẩm trưng bày" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
+                <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_coin_outline" app:tint="#4B5563" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Quỹ thưởng bán hàng" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Logout Button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/com_bg_filter_selected"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_logout_outline" app:tint="#3E4D44" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Đăng xuất" android:textColor="#3E4D44" android:fontFamily="@font/be_vietnam_pro" android:textStyle="bold" android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

@@ -13,8 +13,6 @@
     <color name="gray_light">#E0E4E2</color>
     <color name="gray_dark">#7E8A83</color>
 
-    <color name="secondary">#677559</color>
-
     <!-- Status Pending (Chờ xác nhận) -->
     <color name="status_pending_bg">#FFF6E5</color>
     <color name="status_pending_text">#FF9F00</color>

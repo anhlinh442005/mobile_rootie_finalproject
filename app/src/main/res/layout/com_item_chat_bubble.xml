@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="4dp">
+
+    <!-- Timestamp -->
+    <TextView
+        android:id="@+id/tvTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:text="8:24 4 THG 4"
+        android:textColor="@color/gray_dark"
+        android:textSize="10sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom">
+
+        <!-- Partner Avatar (Only for received messages) -->
+        <ImageView
+            android:id="@+id/ivPartnerAvatar"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="8dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <!-- Spacer for left side of my messages -->
+        <View
+            android:id="@+id/vLeftSpacer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="gone" />
+
+        <!-- Message Bubble -->
+        <LinearLayout
+            android:id="@+id/llBubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/com_bg_card_rounded"
+            android:backgroundTint="#758864"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp">
+            
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="260dp"
+                android:text="Message text"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:fontFamily="@font/be_vietnam_pro" />
+        </LinearLayout>
+
+        <!-- Spacer for right side of partner messages -->
+        <View
+            android:id="@+id/vRightSpacer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="gone" />
+            
+    </LinearLayout>
+
+    <!-- Status (Đã xem) for my messages -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="4dp"
+        android:text="Đã xem"
+        android:textColor="@color/gray_dark"
+        android:textSize="10sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -66,11 +66,11 @@ class ShopSearchFragment : RootieFragment() {
     }
 
     private fun setupRecyclerViews() {
-        hotDealsAdapter = HotDealsAdapter { navigateToDetail(it) }
+        hotDealsAdapter = HotDealsAdapter(onItemClick = { navigateToDetail(it) })
         binding.rvHotDeals.layoutManager = LinearLayoutManager(requireContext())
         binding.rvHotDeals.adapter = hotDealsAdapter
 
-        searchResultsAdapter = HotDealsAdapter { navigateToDetail(it) }
+        searchResultsAdapter = HotDealsAdapter(onItemClick = { navigateToDetail(it) })
         binding.rvSearchResults.layoutManager = LinearLayoutManager(requireContext())
         binding.rvSearchResults.adapter = searchResultsAdapter
         

@@ -22,14 +22,6 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        View navCommunity = view.findViewById(R.id.nav_community);
-        if (navCommunity != null) {
-            navCommunity.setOnClickListener(v -> {
-                getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.main_container, new ComLoadingFragment())
-                    .commit();
-            });
-        }
+        com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, R.id.nav_home);
     }
 }

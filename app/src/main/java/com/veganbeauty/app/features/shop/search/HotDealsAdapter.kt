@@ -11,7 +11,8 @@ import java.text.NumberFormat
 import java.util.Locale
 
 class HotDealsAdapter(
-    private val onItemClick: (ProductEntity) -> Unit
+    private val onItemClick: (ProductEntity) -> Unit,
+    private val onAddToCartClick: (ProductEntity) -> Unit = {}
 ) : RecyclerView.Adapter<HotDealsAdapter.ViewHolder>() {
 
     private val items = mutableListOf<ProductEntity>()

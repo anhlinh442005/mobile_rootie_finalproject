@@ -222,6 +222,17 @@ class PostAdapter(
                 val usersHolder = holder as SuggestedUsersViewHolder
                 val suggestionAdapter = SuggestionAdapter(item.users)
                 usersHolder.binding.rvSuggestions.adapter = suggestionAdapter
+
+                usersHolder.binding.tvSeeAllSuggestions.setOnClickListener {
+                    val context = it.context
+                    if (context is androidx.fragment.app.FragmentActivity) {
+                        context.supportFragmentManager.beginTransaction()
+                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                            .replace(R.id.main_container, CommunityDiscoverPeopleFragment())
+                            .addToBackStack(null)
+                            .commit()
+                    }
+                }
             }
             is CommunityFeedItem.SuggestedReels -> {
                 val reelsHolder = holder as SuggestedReelsViewHolder

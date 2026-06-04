@@ -14,9 +14,9 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
     val posts = repository.allPosts.asLiveData()
     val users = repository.allUsers.asLiveData()
     val reels = repository.allReels.asLiveData()
-
-    private val _exploreVideos = MutableLiveData<List<YtVideoEntity>>()
-    val exploreVideos: androidx.lifecycle.LiveData<List<YtVideoEntity>> get() = _exploreVideos
+    val exploreVideos = repository.exploreVideos.asLiveData()
+    val ingredients = repository.allIngredients.asLiveData()
+    val blogs = repository.allBlogs.asLiveData()
 
     init {
         refreshData()
@@ -25,10 +25,6 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
     fun refreshData() {
         viewModelScope.launch {
             repository.refreshCommunityData()
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            val videos = repository.getExploreVideos()
-            _exploreVideos.postValue(videos)
         }
     }
 }

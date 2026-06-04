@@ -1,7 +1,7 @@
 package com.veganbeauty.app.data.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.veganbeauty.app.data.local.entities.ProductEntity
+import com.veganbeauty.app.data.local.entities.*
 import kotlinx.coroutines.tasks.await
 
 class FirestoreService {
@@ -11,23 +11,253 @@ class FirestoreService {
         return try {
             val snapshot = db.collection("products").get().await()
             snapshot.documents.mapNotNull { doc ->
-                // Mapping Firestore document to ProductEntity
                 ProductEntity(
                     id = doc.id,
                     name = doc.getString("name") ?: "",
                     sku = doc.getString("sku") ?: "",
                     price = doc.getLong("price") ?: 0L,
                     category = doc.getString("category") ?: "",
+                    brand = doc.getString("brand") ?: "",
                     stock = doc.getLong("stock")?.toInt() ?: 0,
                     description = doc.getString("description") ?: "",
                     mainImage = doc.getString("mainImage") ?: "",
                     suitableFor = doc.getString("suitableFor") ?: "",
                     origin = doc.getString("origin") ?: "",
-                    expiryDate = doc.getString("expiryDate") ?: ""
+                    expiryDate = doc.getString("expiryDate") ?: "",
+                    isNew = doc.getBoolean("isNew") ?: false
                 )
             }
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun fetchAllUsers(): List<UserEntity> {
+        return try {
+            val snapshot = db.collection("users").get().await()
+            snapshot.documents.mapNotNull { doc ->
+                UserEntity(
+                    userId = doc.id,
+                    username = doc.getString("username") ?: "",
+                    avatarUrl = doc.getString("avatar") ?: doc.getString("avatar_url") ?: ""
+                )
+            }
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun fetchAllCommunityPosts(): List<CommunityPostEntity> {
+        return try {
+            val snapshot = db.collection("community_posts").get().await()
+            snapshot.documents.mapNotNull { doc ->
+                val authorMap = doc.get("author") as? Map<String, Any>
+                
+                val mediaRaw = doc.get("media") as? List<Any>
+                val mediaUrls = mediaRaw?.mapNotNull { 
+                    if (it is String) it
+                    else if (it is Map<*, *>) it["url"] as? String
+                    else null
+                }?.joinToString(",") ?: ""
+
+                val productsRaw = doc.get("linked_products") as? List<Any>
+                val linkedProductIds = productsRaw?.mapNotNull {
+                    if (it is String) it
+                    else if (it is Map<*, *>) it["product_id"] as? String
+                    else null
+                }?.joinToString(",") ?: ""
+                
+                val reactionsMap = doc.get("reactions") as? Map<String, Any>
+                val likesCount = (reactionsMap?.get("like") as? Number)?.toInt() ?: 0
+
+                CommunityPostEntity(
+                    postId = doc.id,
+                    authorId = authorMap?.get("user_id")?.toString() ?: "",
+                    authorUsername = authorMap?.get("username")?.toString() ?: "",
+                    authorDisplayName = authorMap?.get("display_name")?.toString() ?: "",
+                    authorAvatarUrl = authorMap?.get("avatar_url")?.toString() ?: authorMap?.get("avatar")?.toString() ?: "",
+                    content = doc.getString("content") ?: "",
+                    mediaUrlsString = mediaUrls,
+                    createdAt = doc.getString("created_at") ?: "",
+                    likesCount = likesCount,
+                    commentsCount = doc.getLong("comments_count")?.toInt() ?: 0,
+                    skinType = doc.getString("skin_type") ?: "",
+                    concern = doc.getString("concern") ?: "",
+                    type = doc.getString("type") ?: "",
+                    linkedProductIds = linkedProductIds
+                )
+            }
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun fetchAllReels(): List<ReelEntity> {
+        return try {
+            val snapshot = db.collection("community_reels_fb").get().await()
+            snapshot.documents.mapNotNull { doc ->
+                val authorMap = doc.get("author") as? Map<String, Any>
+                val statsMap = doc.get("stats") as? Map<String, Any>
+                val videoMap = doc.get("video") as? Map<String, Any>
+                
+                ReelEntity(
+                    videoId = doc.id,
+                    caption = doc.getString("caption") ?: "",
+                    authorId = authorMap?.get("user_id")?.toString() ?: "",
+                    authorUsername = authorMap?.get("username")?.toString() ?: "",
+                    authorDisplayName = authorMap?.get("display_name")?.toString() ?: "",
+                    authorAvatarUrl = authorMap?.get("avatar_url")?.toString() ?: authorMap?.get("avatar")?.toString() ?: "",
+                    likesCount = doc.getLong("likes_count")?.toInt() ?: 0,
+                    commentsCount = doc.getLong("comments_count")?.toInt() ?: 0,
+                    shareCount = (statsMap?.get("shares") as? Number)?.toInt() ?: 0,
+                    thumbnailUrl = videoMap?.get("thumbnail")?.toString() ?: doc.getString("thumbnail_url") ?: ""
+                )
+            }
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun fetchAllExploreVideos(): List<YtVideoEntity> {
+        return try {
+            val snapshot = db.collection("community_video_yt").get().await()
+            snapshot.documents.mapNotNull { doc ->
+                val typeRaw = doc.get("Type") as? List<String>
+                val typeStr = typeRaw?.joinToString(",") ?: ""
+                YtVideoEntity(
+                    id = doc.id,
+                    title = doc.getString("title") ?: "",
+                    url = doc.getString("url") ?: "",
+                    description = doc.getString("short_description") ?: doc.getString("title") ?: "",
+                    username = doc.getString("username") ?: "",
+                    avatarUrl = doc.getString("avatar") ?: "",
+                    type = typeStr
+                )
+            }
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun uploadAllExploreVideos(videos: List<YtVideoEntity>): Boolean {
+        return try {
+            val collection = db.collection("community_video_yt")
+            
+            // Delete old documents
+            val snapshot = collection.get().await()
+            for (doc in snapshot.documents) {
+                collection.document(doc.id).delete().await()
+            }
+            
+            for (video in videos) {
+                val data = hashMapOf(
+                    "title" to video.title,
+                    "url" to video.url,
+                    "short_description" to video.description,
+                    "username" to video.username,
+                    "avatar" to video.avatarUrl,
+                    "Type" to video.type.split(",")
+                )
+                collection.document(video.id).set(data).await()
+            }
+            true
         } catch (e: Exception) {
-            emptyList()
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun uploadAllCommunityMessages(messagesJson: String): Boolean {
+        return try {
+            val collection = db.collection("community_message")
+            
+            val snapshot = collection.get().await()
+            for (doc in snapshot.documents) {
+                collection.document(doc.id).delete().await()
+            }
+            
+            val jsonArray = org.json.JSONArray(messagesJson)
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val map = hashMapOf<String, Any>()
+                val keys = obj.keys()
+                while (keys.hasNext()) {
+                    val key = keys.next()
+                    val value = obj.get(key)
+                    if (value is org.json.JSONArray) {
+                        val list = mutableListOf<Map<String, Any>>()
+                        for (j in 0 until value.length()) {
+                            val childObj = value.getJSONObject(j)
+                            val childMap = hashMapOf<String, Any>()
+                            val childKeys = childObj.keys()
+                            while (childKeys.hasNext()) {
+                                val childKey = childKeys.next()
+                                childMap[childKey] = childObj.get(childKey)
+                            }
+                            list.add(childMap)
+                        }
+                        map[key] = list
+                    } else {
+                        map[key] = value
+                    }
+                }
+                collection.document(obj.optString("id")).set(map).await()
+            }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun fetchAllIngredients(): List<IngredientEntity> {
+        return try {
+            val snapshot = db.collection("ingredients").get().await()
+            snapshot.documents.mapNotNull { doc ->
+                IngredientEntity(
+                    slug = doc.getString("slug") ?: doc.id,
+                    name = doc.getString("name") ?: "",
+                    scientificName = doc.getString("scientificName") ?: doc.getString("scientific_name") ?: "",
+                    image = doc.getString("image") ?: doc.getString("imageUrl") ?: doc.getString("image_url") ?: "",
+                    description = doc.getString("description") ?: "",
+                    uses = doc.getString("uses") ?: ""
+                )
+            }
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun uploadCommunityPost(post: CommunityPostEntity): Boolean {
+        return try {
+            val postMap = hashMapOf(
+                "author" to mapOf(
+                    "user_id" to post.authorId,
+                    "username" to post.authorUsername,
+                    "display_name" to post.authorDisplayName,
+                    "avatar" to post.authorAvatarUrl
+                ),
+                "content" to post.content,
+                "media" to post.mediaUrlsString.split(",").filter { it.isNotBlank() },
+                "created_at" to post.createdAt,
+                "reactions" to mapOf("like" to post.likesCount),
+                "comments_count" to post.commentsCount,
+                "skin_type" to post.skinType,
+                "concern" to post.concern,
+                "type" to post.type,
+                "linked_products" to (post.linkedProductIds ?: "").split(",").filter { it.isNotBlank() }
+            )
+            db.collection("community_posts").document(post.postId).set(postMap).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun uploadUserMemory(memory: UserMemoryEntity): Boolean {
+        return try {
+            val memoryMap = hashMapOf(
+                "actionType" to memory.actionType,
+                "targetUserId" to memory.targetUserId,
+                "targetUsername" to memory.targetUsername,
+                "targetAvatar" to memory.targetAvatar,
+                "content" to memory.content,
+                "timestamp" to memory.timestamp
+            )
+            db.collection("user_memory").document(memory.id).set(memoryMap).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 }
