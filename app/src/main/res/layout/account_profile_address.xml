@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FEFBF4">
+
+    <!-- HEADER BAR -->
+    <RelativeLayout
+        android:id="@+id/header_bar"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:background="@drawable/bg_header_security_gradient">
+
+        <!-- Back Button -->
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="11dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_back"
+            app:tint="#02542D" />
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/lexend"
+            android:text="Địa chỉ của tôi"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Notification Bell -->
+        <FrameLayout
+            android:id="@+id/btn_notification"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="11dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_notification" />
+
+            <!-- Yellow status dot indicator -->
+            <View
+                android:layout_width="9dp"
+                android:layout_height="9dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/bg_circle_green"
+                android:backgroundTint="#FFCC00" />
+        </FrameLayout>
+    </RelativeLayout>
+
+    <!-- CONTENT BODY -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btn_add_address_container"
+        android:layout_below="@id/header_bar"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp">
+
+        <!-- Subtitle -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="21dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="@font/lexend"
+            android:text="Quản lý các địa chỉ giao hàng của bạn để thanh toán nhanh chóng hơn."
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp">
+
+                <!-- CARD 1: NHÀ RIÊNG -->
+                <RelativeLayout
+                    android:id="@+id/card_home"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_card_white"
+                    android:elevation="2dp"
+                    android:padding="16dp">
+
+                    <!-- Header Row inside Card -->
+                    <RelativeLayout
+                        android:id="@+id/card_home_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <!-- Icon Home Frame -->
+                        <FrameLayout
+                            android:id="@+id/frame_home_icon"
+                            android:layout_width="29dp"
+                            android:layout_height="29dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/bg_circle_light_green">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="17dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_address_home" />
+                        </FrameLayout>
+
+                        <!-- Title -->
+                        <TextView
+                            android:id="@+id/tv_home_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="8dp"
+                            android:layout_toEndOf="@id/frame_home_icon"
+                            android:fontFamily="@font/lexend"
+                            android:text="Nhà riêng"
+                            android:textColor="#000000"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <!-- Default Badge (Active / Green Background) -->
+                        <TextView
+                            android:id="@+id/badge_home_default"
+                            android:layout_width="wrap_content"
+                            android:layout_height="23dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="8dp"
+                            android:layout_toEndOf="@id/tv_home_title"
+                            android:background="@drawable/bg_badge_default_active"
+                            android:fontFamily="@font/lexend"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="10dp"
+                            android:text="MẶC ĐỊNH"
+                            android:textColor="#D9D9D9"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <!-- Action Buttons -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="horizontal">
+
+                            <!-- Edit Button -->
+                            <FrameLayout
+                                android:id="@+id/btn_home_edit"
+                                android:layout_width="29dp"
+                                android:layout_height="29dp"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_circle_light_green"
+                                android:clickable="true"
+                                android:focusable="true">
+
+                                <ImageView
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_address_edit" />
+                            </FrameLayout>
+
+                            <!-- Delete Button -->
+                            <FrameLayout
+                                android:id="@+id/btn_home_delete"
+                                android:layout_width="29dp"
+                                android:layout_height="29dp"
+                                android:background="@drawable/bg_circle_edit_button"
+                                android:backgroundTint="#D73B35"
+                                android:clickable="true"
+                                android:focusable="true">
+
+                                <ImageView
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_address_trash" />
+                            </FrameLayout>
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <!-- Info Rows -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/card_home_header"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical">
+
+                        <!-- Recipient Name -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_address_user" />
+
+                            <TextView
+                                android:id="@+id/tv_home_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="Ánh Linh"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Phone Number -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_address_phone" />
+
+                            <TextView
+                                android:id="@+id/tv_home_phone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="0999 999 999"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- Address detail -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="top"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginTop="2dp"
+                                android:src="@drawable/ic_address_location_pin" />
+
+                            <TextView
+                                android:id="@+id/tv_home_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="123 Đường Bến Nghé, Phường Bến Nghé, TP.Hồ Chí Minh"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                android:lineSpacingExtra="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <!-- CARD 2: VĂN PHÒNG -->
+                <RelativeLayout
+                    android:id="@+id/card_office"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_card_white"
+                    android:elevation="2dp"
+                    android:padding="16dp">
+
+                    <!-- Header Row inside Card -->
+                    <RelativeLayout
+                        android:id="@+id/card_office_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <!-- Icon Office Frame -->
+                        <FrameLayout
+                            android:id="@+id/frame_office_icon"
+                            android:layout_width="29dp"
+                            android:layout_height="29dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/bg_circle_edit_button"
+                            android:backgroundTint="#B3B3B3">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_address_office" />
+                        </FrameLayout>
+
+                        <!-- Title -->
+                        <TextView
+                            android:id="@+id/tv_office_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="8dp"
+                            android:layout_toEndOf="@id/frame_office_icon"
+                            android:fontFamily="@font/lexend"
+                            android:text="Văn phòng"
+                            android:textColor="#000000"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <!-- Default Badge (Inactive / White Background with Black Border) -->
+                        <TextView
+                            android:id="@+id/badge_office_default"
+                            android:layout_width="wrap_content"
+                            android:layout_height="23dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="8dp"
+                            android:layout_toEndOf="@id/tv_office_title"
+                            android:background="@drawable/bg_badge_default_inactive"
+                            android:fontFamily="@font/lexend"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="10dp"
+                            android:text="MẶC ĐỊNH"
+                            android:textColor="#000000"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <!-- Action Buttons -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="horizontal">
+
+                            <!-- Edit Button -->
+                            <FrameLayout
+                                android:id="@+id/btn_office_edit"
+                                android:layout_width="29dp"
+                                android:layout_height="29dp"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_circle_light_green"
+                                android:clickable="true"
+                                android:focusable="true">
+
+                                <ImageView
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_address_edit" />
+                            </FrameLayout>
+
+                            <!-- Delete Button -->
+                            <FrameLayout
+                                android:id="@+id/btn_office_delete"
+                                android:layout_width="29dp"
+                                android:layout_height="29dp"
+                                android:background="@drawable/bg_circle_edit_button"
+                                android:backgroundTint="#D73B35"
+                                android:clickable="true"
+                                android:focusable="true">
+
+                                <ImageView
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_address_trash" />
+                            </FrameLayout>
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <!-- Info Rows -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/card_office_header"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical">
+
+                        <!-- Recipient Name -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_address_user" />
+
+                            <TextView
+                                android:id="@+id/tv_office_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="Khánh Xuân"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Phone Number -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_address_phone" />
+
+                            <TextView
+                                android:id="@+id/tv_office_phone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="0868 888 888"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- Address detail -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="top"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginTop="2dp"
+                                android:src="@drawable/ic_address_location_pin" />
+
+                            <TextView
+                                android:id="@+id/tv_office_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="Bitexco Financial Tower, 2 Hải Triều, Phường Bến Nghé, TP.Hồ Chí Minh"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                android:lineSpacingExtra="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- BUTTON: ADD NEW ADDRESS -->
+    <RelativeLayout
+        android:id="@+id/btn_add_address_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_nav"
+        android:background="#FEFBF4"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp">
+
+        <RelativeLayout
+            android:id="@+id/btn_add_address"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/bg_btn_solid"
+            android:backgroundTint="#375633"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_address_add_location" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/lexend"
+                    android:text="Thêm địa chỉ mới"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!-- BOTTOM NAVIGATION BAR SHELL -->
+    <LinearLayout
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:background="#FDFAF4"
+        android:baselineAligned="false"
+        android:elevation="8dp"
+        android:orientation="horizontal">
+
+        <!-- Trang chủ -->
+        <LinearLayout
+            android:id="@+id/nav_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_home"
+                app:tint="#DDDFC4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/lexend"
+                android:text="Trang chủ"
+                android:textColor="#DDDFC4"
+                android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- Mua sắm -->
+        <LinearLayout
+            android:id="@+id/nav_shop"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_shop"
+                app:tint="#DDDFC4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/lexend"
+                android:text="Mua sắm"
+                android:textColor="#DDDFC4"
+                android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- My skin -->
+        <LinearLayout
+            android:id="@+id/nav_myskin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_myskin"
+                app:tint="#DDDFC4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/lexend"
+                android:text="My skin"
+                android:textColor="#DDDFC4"
+                android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- Cộng đồng -->
+        <LinearLayout
+            android:id="@+id/nav_community"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_community"
+                app:tint="#DDDFC4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/lexend"
+                android:text="Cộng đồng"
+                android:textColor="#DDDFC4"
+                android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- Tài khoản (Active) -->
+        <LinearLayout
+            android:id="@+id/nav_account"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_account"
+                app:tint="#677559" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/lexend"
+                android:text="Tài khoản"
+                android:textColor="#677559"
+                android:textSize="9sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

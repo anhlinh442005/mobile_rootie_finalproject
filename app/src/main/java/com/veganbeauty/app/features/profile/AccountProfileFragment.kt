@@ -11,6 +11,7 @@ import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.AccountProfileBinding
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment
 import com.veganbeauty.app.features.account.order.AccountOrderListFragment
+import com.veganbeauty.app.features.quiz.QuizTestIntroFragment
 
 class AccountProfileFragment : RootieFragment() {
 
@@ -32,6 +33,23 @@ class AccountProfileFragment : RootieFragment() {
             crossfade(true)
             transformations(CircleCropTransformation())
             placeholder(android.R.color.darker_gray)
+        }
+
+        // Load dynamic values from ProfileSession
+        val ctx = requireContext()
+        val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
+        val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
+        binding.tvUsername.text = fullName
+        binding.tvEmail.text = email
+
+        // Load skin type from SharedPreferences saved by Quiz
+        val prefs = ctx.getSharedPreferences("RootieQuizPrefs", android.content.Context.MODE_PRIVATE)
+        val savedSkinType = prefs.getString("SAVED_USER_SKIN_TYPE", null)
+        if (savedSkinType != null) {
+            binding.tvProfileSkinType.text = savedSkinType
+            binding.llProfileSkinBadge.visibility = android.view.View.VISIBLE
+        } else {
+            binding.tvProfileSkinType.text = "Chưa làm quiz"
         }
 
         // Set click listeners for interactive feel
@@ -120,6 +138,45 @@ class AccountProfileFragment : RootieFragment() {
             // Set active green color and bold style to the text label
             label?.setTextColor(android.graphics.Color.parseColor("#677559"))
             label?.setTypeface(null, android.graphics.Typeface.BOLD)
+        }
+
+        // Navigate to Skin Quiz on nav_myskin click
+        view.findViewById<android.widget.LinearLayout>(com.veganbeauty.app.R.id.nav_myskin)?.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, QuizTestIntroFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Skin Profile (Quiz Result) if skin analysis exists, otherwise navigate to start Quiz
+        binding.btnSkinProfile.setOnClickListener {
+            val savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null)
+            if (savedSkin != null) {
+                val recommendation = prefs.getString("SAVED_RECOMMENDATION", null)
+                val flaggedGroups = prefs.getStringSet("SAVED_FLAGGED_GROUPS", null)
+                
+                prefs.edit().apply {
+                    putString("SKIN_TYPE_RESULT", savedSkin)
+                    if (recommendation != null) {
+                        putString("RECOMMENDATION", recommendation)
+                    }
+                    if (flaggedGroups != null) {
+                        putStringSet("FLAGGED_GROUPS", flaggedGroups)
+                    }
+                    apply()
+                }
+
+                parentFragmentManager.beginTransaction()
+                    .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.quiz.QuizTestResultFragment())
+                    .addToBackStack(null)
+                    .commit()
+            } else {
+                Toast.makeText(context, "Bạn chưa thực hiện khảo sát da. Đang chuyển hướng đến bài test...", Toast.LENGTH_LONG).show()
+                parentFragmentManager.beginTransaction()
+                    .replace(com.veganbeauty.app.R.id.main_container, QuizTestIntroFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
     }
 
