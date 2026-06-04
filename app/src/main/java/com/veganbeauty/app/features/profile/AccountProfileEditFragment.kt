@@ -32,8 +32,24 @@ class AccountProfileEditFragment : RootieFragment() {
             placeholder(android.R.color.darker_gray)
         }
 
+        // Load values from ProfileSession
+        val ctx = requireContext()
+        val username = com.veganbeauty.app.data.local.ProfileSession.getUsername(ctx)
+        val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
+        val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
+        val phone = com.veganbeauty.app.data.local.ProfileSession.getPhone(ctx)
+
+        binding.tvUsername.text = fullName
+        binding.etEmail.setText(email)
+        binding.etFullname.setText(fullName)
+        binding.etPhone.setText(phone)
+
         // Back button action
         binding.btnBack.setOnClickListener {
+            val saveCtx = requireContext()
+            com.veganbeauty.app.data.local.ProfileSession.setFullName(saveCtx, binding.etFullname.text.toString())
+            com.veganbeauty.app.data.local.ProfileSession.setEmail(saveCtx, binding.etEmail.text.toString())
+            com.veganbeauty.app.data.local.ProfileSession.setPhone(saveCtx, binding.etPhone.text.toString())
             parentFragmentManager.popBackStack()
         }
 
@@ -71,7 +87,10 @@ class AccountProfileEditFragment : RootieFragment() {
         }
 
         binding.btnAccountSettings.setOnClickListener {
-            Toast.makeText(context, "Thiết lập tài khoản của bạn", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountProfileSetupFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         binding.btnChangePassword.setOnClickListener {

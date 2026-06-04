@@ -9,26 +9,28 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.veganbeauty.app.data.local.entities.ProductEntity
-import com.veganbeauty.app.databinding.ShopItemProductBinding
+import com.veganbeauty.app.databinding.ShopProductCardBinding
 import java.text.NumberFormat
 import java.util.Locale
 
 class ShopListAdapter(
-    private val onItemClick: (ProductEntity) -> Unit = {}
+    private val onItemClick: (ProductEntity) -> Unit = {},
+    private val onAddToCartClick: (ProductEntity) -> Unit = {}
 ) : ListAdapter<ProductEntity, ShopListAdapter.ProductViewHolder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val binding = ShopItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ShopProductCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ProductViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        holder.bind(getItem(position), onItemClick)
+        holder.bind(getItem(position), onItemClick, onAddToCartClick)
     }
 
-    class ProductViewHolder(private val binding: ShopItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(product: ProductEntity, onItemClick: (ProductEntity) -> Unit) {
+    class ProductViewHolder(private val binding: ShopProductCardBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(product: ProductEntity, onItemClick: (ProductEntity) -> Unit, onAddToCartClick: (ProductEntity) -> Unit) {
             binding.root.setOnClickListener { onItemClick(product) }
+            binding.btnAddToCart.setOnClickListener { onAddToCartClick(product) }
             binding.tvProductName.text = product.name
             
             // Định dạng tiền Việt Nam

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="64dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/quiz_bg_option"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="8dp">
+
+    <!-- Square rounded icon background -->
+    <FrameLayout
+        android:id="@+id/fl_option_icon_bg"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/quiz_bg_icon_rounded"
+        android:backgroundTint="#EAF2E3">
+
+        <ImageView
+            android:id="@+id/iv_option_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/quiz_ic_option_normal"
+            app:tint="#3E4D44" />
+    </FrameLayout>
+
+    <!-- Option Text -->
+    <TextView
+        android:id="@+id/tv_option_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="14dp"
+        android:fontFamily="@font/lexend"
+        android:text="Option text here"
+        android:textColor="#3E4D44"
+        android:textSize="14sp" />
+</LinearLayout>

@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.main_container, fragment)
-            .commit();
+                .replace(R.id.main_container, fragment)
+                .commit();
     }
 }

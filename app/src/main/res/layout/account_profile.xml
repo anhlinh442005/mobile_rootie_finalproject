@@ -223,8 +223,9 @@
                                 android:textSize="12sp" />
                         </LinearLayout>
 
-                        <!-- Dry skin badge -->
+                        <!-- Skin type badge -->
                         <LinearLayout
+                            android:id="@+id/ll_profile_skin_badge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
@@ -240,6 +241,7 @@
                                 android:src="@drawable/ic_water_drop" />
 
                             <TextView
+                                android:id="@+id/tv_profile_skin_type"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -252,6 +254,7 @@
 
                 <!-- Coins Badge (Aligned to top-right of the profile section, shifted up) -->
                 <LinearLayout
+                    android:id="@+id/layoutCoinsBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
@@ -270,6 +273,7 @@
                         android:src="@drawable/ic_coin" />
 
                     <TextView
+                        android:id="@+id/tvCoins"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -409,11 +413,15 @@
 
                 <!-- Skin Profile -->
                 <LinearLayout
+                    android:id="@+id/btn_skin_profile"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <FrameLayout
                         android:layout_width="52dp"
@@ -434,6 +442,41 @@
                         android:gravity="center"
                         android:maxLines="2"
                         android:text="Hồ sơ da"
+                        android:textColor="#000000"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Expiry Shelf Reminder -->
+                <LinearLayout
+                    android:id="@+id/btn_expiry_shelf"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <FrameLayout
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_circle_green"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_clock" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:maxLines="2"
+                        android:text="Nhắc hết hạn"
                         android:textColor="#000000"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -467,10 +510,14 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/btn_all_orders"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
                         android:text="Xem tất cả đơn hàng >"
                         android:textColor="#879578"
                         android:textSize="12sp" />
@@ -485,9 +532,13 @@
 
                     <!-- Step 1: Chờ xác nhận -->
                     <LinearLayout
+                        android:id="@+id/btn_status_pending"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -515,9 +566,13 @@
 
                     <!-- Step 2: Đang xử lý -->
                     <LinearLayout
+                        android:id="@+id/btn_status_processing"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -545,9 +600,13 @@
 
                     <!-- Step 3: Đang giao -->
                     <LinearLayout
+                        android:id="@+id/btn_status_delivering"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -575,9 +634,13 @@
 
                     <!-- Step 4: Hoàn tất -->
                     <LinearLayout
+                        android:id="@+id/btn_status_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -605,9 +668,13 @@
 
                     <!-- Step 5: Đã hủy -->
                     <LinearLayout
+                        android:id="@+id/btn_status_cancelled"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -750,10 +817,14 @@
 
                     <!-- item 4: Đổi quà -->
                     <LinearLayout
+                        android:id="@+id/btnRewardExchange"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:orientation="vertical">
 
                         <ImageView
@@ -793,39 +864,8 @@
                             android:textColor="#000000"
                             android:textSize="10sp" />
                     </LinearLayout>
-                </LinearLayout>
 
-                <!-- Grid - Row 2 (5 items) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <!-- item 6: Thiết lập tài khoản -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_settings" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:gravity="center"
-                            android:text="Thiết lập\ntài khoản"
-                            android:textColor="#000000"
-                            android:textSize="9sp" />
-                    </LinearLayout>
-
-                    <!-- item 7: Sản phẩm mới -->
+                    <!-- item 5: Sản phẩm mới -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -847,8 +887,16 @@
                             android:textColor="#000000"
                             android:textSize="9sp" />
                     </LinearLayout>
+                </LinearLayout>
 
-                    <!-- item 8: Sản phẩm bán chạy -->
+                <!-- Grid - Row 2 (4 items) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <!-- item 6: Sản phẩm bán chạy -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -871,7 +919,7 @@
                             android:textSize="9sp" />
                     </LinearLayout>
 
-                    <!-- item 9: Rootie deal -->
+                    <!-- item 7: Rootie deal -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -894,7 +942,7 @@
                             android:textSize="10sp" />
                     </LinearLayout>
 
-                    <!-- item 10: Tuyển dụng -->
+                    <!-- item 8: Tuyển dụng -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -915,6 +963,29 @@
                             android:text="Tuyển dụng"
                             android:textColor="#000000"
                             android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <!-- item 9: Thiết lập tài khoản -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_settings" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center"
+                            android:text="Thiết lập\ntài khoản"
+                            android:textColor="#000000"
+                            android:textSize="9sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
