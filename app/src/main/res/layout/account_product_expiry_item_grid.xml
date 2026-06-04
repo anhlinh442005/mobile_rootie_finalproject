@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Image Container -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F5F5F0">
+
+            <ImageView
+                android:id="@+id/ivProductImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@android:color/darker_gray" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Product Name -->
+        <TextView
+            android:id="@+id/tvProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Gel tắm đường thốt nốt An Giang 500ml"
+            android:textColor="#28362E"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/be_vietnam_pro" />
+
+        <!-- Expiry Row -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/tvHsdLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HSD"
+                android:textColor="#7E8A83"
+                android:textSize="10sp"
+                android:fontFamily="@font/lexend" />
+
+            <TextView
+                android:id="@+id/tvExpiryDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="Còn 18 tháng"
+                android:textColor="#677559"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/lexend" />
+        </RelativeLayout>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/pbExpiry"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="15"
+            android:progressTint="#677559"
+            android:progressBackgroundTint="#E8EBE9" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

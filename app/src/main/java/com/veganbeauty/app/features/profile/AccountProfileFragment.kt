@@ -56,6 +56,13 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        binding.btnExpiryShelf.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.account.expiry.AccountProductExpiryFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Navigate to Order List Fragment
         binding.btnAllOrders.setOnClickListener {
             parentFragmentManager.beginTransaction()
