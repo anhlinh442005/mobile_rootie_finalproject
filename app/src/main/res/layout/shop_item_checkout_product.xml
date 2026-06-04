@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="8dp"
+    android:background="@android:color/transparent">
+
+    <!-- Product Image Container -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvProductImage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivProduct"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F5F5F5"
+            android:scaleType="centerInside"
+            tools:src="@android:color/darker_gray" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Product Name -->
+    <TextView
+        android:id="@+id/tvProductName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/be_vietnam_pro_bold"
+        android:maxLines="2"
+        android:textColor="@color/primary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/tvQuantity"
+        app:layout_constraintStart_toEndOf="@id/cvProductImage"
+        app:layout_constraintTop_toTopOf="@id/cvProductImage"
+        tools:text="Gel tắm đường thốt nốt An Giang 500ml" />
+
+    <!-- Current Price -->
+    <TextView
+        android:id="@+id/tvPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/be_vietnam_pro_semibold"
+        android:textColor="#B4202A"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/tvProductName"
+        app:layout_constraintTop_toBottomOf="@id/tvProductName"
+        tools:text="241.000đ" />
+
+    <!-- Original Price -->
+    <TextView
+        android:id="@+id/tvOriginalPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/be_vietnam_pro_regular"
+        android:textColor="@color/gray_dark"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPrice"
+        app:layout_constraintStart_toEndOf="@id/tvPrice"
+        tools:text="325.000đ" />
+
+    <!-- Quantity -->
+    <TextView
+        android:id="@+id/tvQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/be_vietnam_pro_regular"
+        android:textColor="@color/gray_dark"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="x1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

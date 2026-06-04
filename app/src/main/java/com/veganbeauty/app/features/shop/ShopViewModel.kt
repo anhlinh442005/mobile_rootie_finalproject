@@ -4,13 +4,245 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.veganbeauty.app.data.local.entities.ProductEntity
 import com.veganbeauty.app.data.repository.ProductRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
 class ShopViewModel(private val repository: ProductRepository) : ViewModel() {
-    val products: LiveData<List<ProductEntity>> = repository.allProducts.asLiveData()
+    private val _categoryFilter = MutableStateFlow<String?>(null)
+    private val _subcategoryFilter = MutableStateFlow<String?>("Tất cả")
+    private val _sortOrder = MutableStateFlow<String>("BEST_SELLING")
+    
+    private val _subcategories = MutableStateFlow<List<String>>(listOf("Tất cả"))
+    val subcategories = _subcategories.asLiveData()
 
-    fun setProduct(product: ProductEntity) {
-        // Implementation
+    private val subcategoryToIdMap = mapOf(
+        "Sữa rửa mặt" to "f5877af6a55f88bcf57c17b4",
+        "Tẩy trang" to "389971929086b2ce7fba9dd0",
+        "Chống nắng" to "36cbf3f5c4b7a299ce2a2d0c",
+        "Nước cân bằng" to "4e20d6bbc1203015ee2ecd48",
+        "Tinh chất" to "b1b6cd208332d4f1e015a26c",
+        "Mặt nạ" to "7667d982515426a9d88b787b",
+        "Kem dưỡng" to "bb88a3306cf95af20d073594",
+        "Xịt khoáng" to "9882d5fa14c74dd053e17f33",
+        "Tẩy da chết mặt" to "c211afa24702f5d1ff86fe42",
+        
+        "Sữa tắm" to "7c70e845e829b374e57ee7b1",
+        "Tẩy da chết cơ thể" to "b703bb813e660aa88076ee5a",
+        "Dưỡng thể" to "8fce5340c618672aa1ae7fb3",
+        
+        "Chăm sóc tóc" to "24a75aa9d541feed638b1970",
+        
+        "Tẩy da chết môi" to "755731e01d8c579c633ae4d2",
+        "Dưỡng ẩm môi" to "ded17e0716783c133b1a5b9a",
+        
+        "Chăm sóc da mặt" to "7176b5e7966be88daf95cfd4",
+        "Chăm sóc cơ thể" to "f40c1f05dcf4059f25fb89a1",
+        "Chăm sóc mái tóc" to "e0754dabb88699e92481e123",
+        "Chăm sóc môi" to "bd1c0ff76b19b1b5a3130a79"
+    )
+
+    private val _skinTypesFilter = MutableStateFlow<Set<String>>(emptySet())
+    val skinTypesFilter = _skinTypesFilter.asLiveData()
+    val currentSkinTypes: Set<String> get() = _skinTypesFilter.value
+
+    private val _priceRangeFilter = MutableStateFlow<String?>(null)
+    val priceRangeFilter = _priceRangeFilter.asLiveData()
+    val currentPriceRange: String? get() = _priceRangeFilter.value
+
+    private val _benefitsFilter = MutableStateFlow<Set<String>>(emptySet())
+    val benefitsFilter = _benefitsFilter.asLiveData()
+    val currentBenefits: Set<String> get() = _benefitsFilter.value
+
+    private val _ingredientsFilter = MutableStateFlow<Set<String>>(emptySet())
+    val ingredientsFilter = _ingredientsFilter.asLiveData()
+    val currentIngredients: Set<String> get() = _ingredientsFilter.value
+
+    data class AdvancedFilterState(
+        val skinTypes: Set<String> = emptySet(),
+        val priceRange: String? = null,
+        val benefits: Set<String> = emptySet(),
+        val ingredients: Set<String> = emptySet()
+    )
+
+    private val advancedFilter = combine(
+        _skinTypesFilter,
+        _priceRangeFilter,
+        _benefitsFilter,
+        _ingredientsFilter
+    ) { skinTypes, priceRange, benefits, ingredients ->
+        AdvancedFilterState(skinTypes, priceRange, benefits, ingredients)
+    }
+
+    val products = combine(
+        repository.allProducts,
+        _categoryFilter,
+        _subcategoryFilter,
+        _sortOrder,
+        advancedFilter
+    ) { list, category, subcategory, sortOrder, advFilter ->
+        var filteredList = list
+        if (category != null && category != "Tất cả") {
+            val targetIds = when (category) {
+                "Chăm sóc da" -> listOf(
+                    "f5877af6a55f88bcf57c17b4", "389971929086b2ce7fba9dd0",
+                    "36cbf3f5c4b7a299ce2a2d0c", "4e20d6bbc1203015ee2ecd48",
+                    "b1b6cd208332d4f1e015a26c", "7667d982515426a9d88b787b",
+                    "bb88a3306cf95af20d073594", "9882d5fa14c74dd053e17f33",
+                    "c211afa24702f5d1ff86fe42"
+                )
+                "Tắm & Dưỡng thể" -> listOf(
+                    "7c70e845e829b374e57ee7b1", "b703bb813e660aa88076ee5a",
+                    "8fce5340c618672aa1ae7fb3"
+                )
+                "Chăm sóc tóc" -> listOf("24a75aa9d541feed638b1970")
+                "Dưỡng môi" -> listOf("755731e01d8c579c633ae4d2", "ded17e0716783c133b1a5b9a")
+                "Combo/Giftbox" -> listOf(
+                    "7176b5e7966be88daf95cfd4", "f40c1f05dcf4059f25fb89a1",
+                    "e0754dabb88699e92481e123", "bd1c0ff76b19b1b5a3130a79"
+                )
+                else -> emptyList()
+            }
+
+            filteredList = filteredList.filter { product ->
+                val productCategoryIds = product.categoryIds.split(",")
+                productCategoryIds.any { id -> id in targetIds }
+            }
+        }
+        
+        if (subcategory != null && subcategory != "Tất cả") {
+            val subcategoryId = subcategoryToIdMap[subcategory]
+            if (subcategoryId != null) {
+                filteredList = filteredList.filter { product ->
+                    val productCategoryIds = product.categoryIds.split(",")
+                    productCategoryIds.contains(subcategoryId)
+                }
+            } else {
+                filteredList = filteredList.filter { it.name.contains(subcategory, ignoreCase = true) || it.description.contains(subcategory, ignoreCase = true) }
+            }
+        }
+
+        // Apply skin types filter
+        if (advFilter.skinTypes.isNotEmpty()) {
+            filteredList = filteredList.filter { product ->
+                product.suitableFor.contains("Mọi loại da", ignoreCase = true) ||
+                advFilter.skinTypes.any { skinType -> product.suitableFor.contains(skinType, ignoreCase = true) }
+            }
+        }
+
+        // Apply price range filter
+        if (advFilter.priceRange != null) {
+            filteredList = filteredList.filter { product ->
+                when (advFilter.priceRange) {
+                    "Dưới 100.000đ" -> product.price < 100000
+                    "100.000đ - 300.000đ" -> product.price in 100000..300000
+                    "300.000đ - 500.000đ" -> product.price in 300000..500000
+                    "Trên 500.000đ" -> product.price > 500000
+                    else -> true
+                }
+            }
+        }
+
+        // Apply benefits filter
+        if (advFilter.benefits.isNotEmpty()) {
+            filteredList = filteredList.filter { product ->
+                advFilter.benefits.any { benefit ->
+                    product.description.contains(benefit, ignoreCase = true) ||
+                    product.benefits.any { it.contains(benefit, ignoreCase = true) }
+                }
+            }
+        }
+
+        // Apply ingredients filter
+        if (advFilter.ingredients.isNotEmpty()) {
+            filteredList = filteredList.filter { product ->
+                advFilter.ingredients.any { ingredient ->
+                    product.name.contains(ingredient, ignoreCase = true) ||
+                    product.description.contains(ingredient, ignoreCase = true) ||
+                    product.detailedIngredients.any { it.contains(ingredient, ignoreCase = true) }
+                }
+            }
+        }
+        
+        // Apply sorting
+        when (sortOrder) {
+            "NEWEST" -> {
+                filteredList = filteredList.sortedWith(compareByDescending<com.veganbeauty.app.data.local.entities.ProductEntity> { it.isNew }.thenBy { it.name })
+            }
+            "PRICE_LOW" -> {
+                filteredList = filteredList.sortedBy { it.price }
+            }
+            "PRICE_HIGH" -> {
+                filteredList = filteredList.sortedByDescending { it.price }
+            }
+            else -> {
+                // "BEST_SELLING" keeps default order
+            }
+        }
+        
+        filteredList
+    }.asLiveData()
+
+    fun setCategoryFilter(category: String?) {
+        _categoryFilter.value = category
+        _subcategoryFilter.value = "Tất cả"
+        updateSubcategories(category ?: "Tất cả")
+    }
+
+    fun setSubcategoryFilter(subcategory: String) {
+        _subcategoryFilter.value = subcategory
+    }
+
+    fun setSortOrder(order: String) {
+        _sortOrder.value = order
+    }
+
+    fun setAdvancedFilters(
+        skinTypes: Set<String>,
+        priceRange: String?,
+        benefits: Set<String>,
+        ingredients: Set<String>
+    ) {
+        _skinTypesFilter.value = skinTypes
+        _priceRangeFilter.value = priceRange
+        _benefitsFilter.value = benefits
+        _ingredientsFilter.value = ingredients
+    }
+
+    fun clearAdvancedFilters() {
+        _skinTypesFilter.value = emptySet()
+        _priceRangeFilter.value = null
+        _benefitsFilter.value = emptySet()
+        _ingredientsFilter.value = emptySet()
+    }
+
+    private fun updateSubcategories(category: String) {
+        val list = mutableListOf("Tất cả")
+        when (category) {
+            "Chăm sóc da" -> list.addAll(listOf("Chống nắng", "Tẩy trang", "Sữa rửa mặt", "Tẩy da chết mặt", "Mặt nạ", "Nước cân bằng", "Tinh chất", "Kem dưỡng", "Xịt khoáng"))
+            "Tắm & Dưỡng thể" -> list.addAll(listOf("Tẩy da chết cơ thể", "Sữa tắm", "Dưỡng thể"))
+            "Dưỡng môi" -> list.addAll(listOf("Tẩy da chết môi", "Dưỡng ẩm môi"))
+            "Combo/Giftbox" -> list.addAll(listOf("Chăm sóc da mặt", "Chăm sóc cơ thể", "Chăm sóc mái tóc", "Chăm sóc môi"))
+        }
+        _subcategories.value = list
+    }
+
+    init {
+        refreshProducts()
+    }
+
+    fun refreshProducts() {
+        viewModelScope.launch {
+            try {
+                repository.refreshProducts()
+            } catch (e: Exception) {
+                // Xử lý lỗi nếu cần
+            }
+        }
+        }
     }
 }

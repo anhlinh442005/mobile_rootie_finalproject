@@ -5,12 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FAF9F4">
+    android:background="@color/neutral">
 
     <!-- Header -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:background="@color/neutral"
+        android:elevation="2dp"
         android:paddingHorizontal="16dp">
 
         <ImageView
@@ -21,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:src="@drawable/ic_back"
-            app:tint="#455B49" />
+            app:tint="@color/primary" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -32,9 +34,10 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:text="Chăm sóc da"
-            android:textColor="#455B49"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textColor="@color/primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/be_vietnam_pro_bold" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -42,6 +45,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
@@ -49,22 +53,53 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
-                android:src="@android:drawable/ic_menu_search"
-                app:tint="#455B49" />
+                android:src="@drawable/ic_search"
+                app:tint="@color/primary" />
 
-            <ImageView
+            <FrameLayout
                 android:id="@+id/btnCart"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_gallery"
-                app:tint="#455B49" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:padding="4dp">
+
+                <ImageView
+                    android:id="@+id/ivCart"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_cart"
+                    app:tint="@color/primary" />
+
+                <TextView
+                    android:id="@+id/tvCartBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="14dp"
+                    android:minHeight="14dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="-2dp"
+                    android:layout_marginEnd="-2dp"
+                    android:background="@drawable/badge_dot"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="8sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:paddingHorizontal="2dp"
+                    android:visibility="gone"
+                    tools:text="3"
+                    tools:visibility="visible" />
+            </FrameLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#E0E0E0" />
+        android:background="@color/gray_light" />
 
     <!-- Subcategories -->
     <androidx.recyclerview.widget.RecyclerView
@@ -76,101 +111,213 @@
         android:clipToPadding="false"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/shop_item_subcategory_chip" />
+        tools:listitem="@layout/shop_category_subcategory" />
 
-    <!-- Filters (Lọc, Loại da, Giá bán) -->
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="12dp"
-        android:scrollbars="none">
-        
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp">
-            
-            <!-- Filter Button -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_chip_stroke"
-                android:orientation="horizontal"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                android:gravity="center_vertical">
-                
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:src="@android:drawable/ic_menu_sort_by_size"
-                    app:tint="#555555"
-                    android:layout_marginEnd="6dp" />
-                    
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lọc"
-                    android:textColor="#555555"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_chip_stroke"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="6dp"
-                android:text="Loại da"
-                android:textColor="#555555"
-                android:textSize="13sp" />
-                
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_chip_stroke"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="6dp"
-                android:text="Giá bán"
-                android:textColor="#555555"
-                android:textSize="13sp" />
-        </LinearLayout>
-    </HorizontalScrollView>
-
-    <!-- Sort Row -->
+    <!-- Filters & Sort Container -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="12dp"
-        android:gravity="center_vertical">
-        
-        <TextView
-            android:layout_width="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Filters (Lọc, Loại da, Giá bán, Sort Icon) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sắp xếp theo:"
-            android:textColor="#333333"
-            android:textStyle="bold"
-            android:textSize="13sp" />
-            
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:paddingBottom="12dp"
+            android:paddingHorizontal="16dp">
+
+            <HorizontalScrollView
+                android:id="@+id/hsvFilters"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnSortToggle"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+                
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    
+                    <!-- Filter Button -->
+                    <LinearLayout
+                        android:id="@+id/btnFilterAdvanced"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_stroke"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="6dp"
+                        android:gravity="center_vertical">
+                        
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_filter"
+                            app:tint="@color/content"
+                            android:layout_marginEnd="6dp" />
+                            
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lọc"
+                            android:textColor="@color/content"
+                            android:fontFamily="@font/be_vietnam_pro_regular"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/btnFilterSkinType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_stroke"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="6dp"
+                        android:text="Loại da"
+                        android:textColor="@color/content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:textSize="13sp" />
+                        
+                    <TextView
+                        android:id="@+id/btnFilterPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_stroke"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="6dp"
+                        android:text="Giá bán"
+                        android:textColor="@color/content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <FrameLayout
+                android:id="@+id/btnSortToggle"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_chip_stroke"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+                
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_sort"
+                    app:tint="@color/content" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Sorting Options Row -->
+        <LinearLayout
+            android:id="@+id/layoutSortOptions"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Bán chạy | Mới nhất | Giá thấp | Giá cao"
-            android:textColor="#666666"
-            android:textSize="13sp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sắp xếp theo:"
+                android:textColor="@color/content"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Bán chạy -->
+            <TextView
+                android:id="@+id/btnSortBestSelling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bán chạy"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:textSize="11sp"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="|"
+                android:textColor="#CCCCCC"
+                android:paddingHorizontal="4dp" 
+                android:fontFamily="@font/lexend"/>
+
+            <!-- Mới nhất -->
+            <TextView
+                android:id="@+id/btnSortNewest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mới nhất"
+                android:textColor="@color/gray_dark"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:textSize="11sp"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="|"
+                android:textColor="#CCCCCC"
+                android:paddingHorizontal="4dp" 
+                android:fontFamily="@font/lexend"/>
+
+            <!-- Giá thấp -->
+            <TextView
+                android:id="@+id/btnSortPriceLow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Giá thấp"
+                android:textColor="@color/gray_dark"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:textSize="11sp"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="|"
+                android:textColor="#CCCCCC"
+                android:paddingHorizontal="4dp" 
+                android:fontFamily="@font/lexend"/>
+
+            <!-- Giá cao -->
+            <TextView
+                android:id="@+id/btnSortPriceHigh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Giá cao"
+                android:textColor="@color/gray_dark"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:textSize="11sp"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="4dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#EAEAEA" />
+        android:background="@color/gray_light" />
 
     <!-- Product List -->
     <androidx.recyclerview.widget.RecyclerView
@@ -181,6 +328,6 @@
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2"
-        tools:listitem="@layout/shop_item_product" />
+        tools:listitem="@layout/shop_product_card" />
 
 </LinearLayout>

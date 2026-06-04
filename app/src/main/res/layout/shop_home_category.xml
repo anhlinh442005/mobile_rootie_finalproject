@@ -35,7 +35,7 @@
             android:gravity="center"
             android:maxLines="2"
             android:ellipsize="end"
-            android:textColor="#3E4D44"
+            android:textColor="@color/primary"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -39,10 +39,22 @@ class ShopHomeFragment : RootieFragment() {
             val bottomSheet = com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
                 product = product,
                 onAddToCartClick = { p, quantity ->
-                    android.widget.Toast.makeText(requireContext(), "Đã thêm $quantity ${p.name} vào giỏ", android.widget.Toast.LENGTH_SHORT).show()
+                    com.veganbeauty.app.features.shop.product.CartHelper.addToCart(requireContext(), lifecycleScope, p, quantity)
                 },
                 onBuyNowClick = { p, quantity ->
-                    android.widget.Toast.makeText(requireContext(), "Mua ngay $quantity ${p.name}", android.widget.Toast.LENGTH_SHORT).show()
+                    val checkoutItem = com.veganbeauty.app.data.local.entities.CartItemEntity(
+                        id = p.id,
+                        name = p.name,
+                        image = p.mainImage,
+                        price = p.price,
+                        quantity = quantity,
+                        isSelected = true
+                    )
+                    val checkoutFragment = com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(arrayListOf(checkoutItem))
+                    parentFragmentManager.beginTransaction()
+                        .replace(com.veganbeauty.app.R.id.main_container, checkoutFragment)
+                        .addToBackStack(null)
+                        .commit()
                 }
             )
             bottomSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.TAG)
@@ -56,9 +68,7 @@ class ShopHomeFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = ProductRepository(db.productDao(), LocalJsonReader(requireContext()))
 
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
@@ -79,6 +89,12 @@ class ShopHomeFragment : RootieFragment() {
         // Thiết lập Adapter cho Sản phẩm gợi ý (2 cột)
         binding.rvSuggestedProducts.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvSuggestedProducts.adapter = productAdapter
+
+        // Open Cart when Cart Container is clicked
+        binding.flCartContainer.setOnClickListener {
+            val cartSheet = com.veganbeauty.app.features.shop.product.CartBottomSheetFragment()
+            cartSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.TAG)
+        }
 
         // Xử lý click thanh tìm kiếm
         val searchClickListener = View.OnClickListener {
@@ -117,6 +133,20 @@ class ShopHomeFragment : RootieFragment() {
         viewModel.suggestedProducts.observe(viewLifecycleOwner) { products ->
             // Chỉ hiển thị 4 sản phẩm đầu tiên cho phần "Gợi ý" theo thiết kế
             productAdapter.submitList(products.take(4))
+        }
+
+        // Observe cart items to update badge count
+        lifecycleScope.launch {
+            val db = RootieDatabase.getDatabase(requireContext())
+            db.cartDao().getAllCartItems().collect { items ->
+                val totalQty = items.sumOf { it.quantity }
+                if (totalQty > 0) {
+                    binding.tvCartBadge.visibility = View.VISIBLE
+                    binding.tvCartBadge.text = totalQty.toString()
+                } else {
+                    binding.tvCartBadge.visibility = View.GONE
+                }
+            }
         }
     }
 

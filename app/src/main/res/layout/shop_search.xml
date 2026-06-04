@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FAF9F4">
+    android:background="@color/neutral">
 
     <!-- Header -->
     <LinearLayout
@@ -14,14 +14,14 @@
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:gravity="center_vertical"
-        android:background="#FAF9F4">
+        android:background="@color/neutral">
 
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_back"
-            app:tint="#455B49" />
+            app:tint="@color/primary" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -37,7 +37,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@android:drawable/ic_menu_search"
-                app:tint="#555555" />
+                app:tint="@color/content" />
 
             <EditText
                 android:id="@+id/etSearch"
@@ -49,9 +49,10 @@
                 android:hint="Tìm kiếm sản phẩm"
                 android:inputType="text"
                 android:singleLine="true"
-                android:textColor="#333333"
-                android:textColorHint="#999999"
-                android:textSize="14sp" />
+                android:textColor="@color/primary"
+                android:textColorHint="@color/gray_dark"
+                android:textSize="14sp" 
+                android:fontFamily="@font/lexend"/>
 
             <ImageView
                 android:id="@+id/btnClear"
@@ -61,7 +62,7 @@
                 android:padding="2dp"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
                 android:background="@drawable/bg_circle_grey"
-                app:tint="#555555" />
+                app:tint="@color/content" />
         </LinearLayout>
 
         <!-- Placeholder cho QR Scan icon -->
@@ -70,7 +71,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@android:drawable/ic_menu_camera"
-            app:tint="#455B49" />
+            app:tint="@color/primary" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -107,9 +108,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tra cứu hàng đầu"
-                    android:textColor="#455B49"
+                    android:textColor="@color/primary"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" 
+                    android:fontFamily="@font/be_vietnam_pro_bold"/>
 
                 <!-- Mock Chips Row 1 -->
                 <LinearLayout
@@ -125,8 +127,9 @@
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="6dp"
                         android:text="Chống nắng"
-                        android:textColor="#455B49"
-                        android:textSize="13sp" />
+                        android:textColor="@color/primary"
+                        android:textSize="13sp" 
+                        android:fontFamily="@font/lexend"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -136,8 +139,9 @@
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="6dp"
                         android:text="Chống nắng"
-                        android:textColor="#455B49"
-                        android:textSize="13sp" />
+                        android:textColor="@color/primary"
+                        android:textSize="13sp" 
+                        android:fontFamily="@font/lexend"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -147,8 +151,9 @@
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="6dp"
                         android:text="Tẩy trang"
-                        android:textColor="#455B49"
-                        android:textSize="13sp" />
+                        android:textColor="@color/primary"
+                        android:textSize="13sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
 
                 <!-- Mock Chips Row 2 -->
@@ -165,8 +170,9 @@
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="6dp"
                         android:text="Chống nắng"
-                        android:textColor="#455B49"
-                        android:textSize="13sp" />
+                        android:textColor="@color/primary"
+                        android:textSize="13sp" 
+                        android:fontFamily="@font/lexend"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -176,8 +182,9 @@
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="6dp"
                         android:text="Chống nắng"
-                        android:textColor="#455B49"
-                        android:textSize="13sp" />
+                        android:textColor="@color/primary"
+                        android:textSize="13sp" 
+                        android:fontFamily="@font/lexend"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -187,8 +194,9 @@
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="6dp"
                         android:text="Chống nắng"
-                        android:textColor="#455B49"
-                        android:textSize="13sp" />
+                        android:textColor="@color/primary"
+                        android:textSize="13sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -208,9 +216,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
                     android:text="Ưu đãi hot hôm nay"
-                    android:textColor="#3D5A40"
+                    android:textColor="@color/primary"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" 
+                    android:fontFamily="@font/be_vietnam_pro_bold"/>
 
                 <!-- Inner White Container for list -->
                 <LinearLayout
@@ -255,7 +264,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="4dp"
-                    android:background="#EEEEEE" />
+                    android:background="@color/gray_light" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCategorySuggestions"
@@ -268,7 +277,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="4dp"
-                    android:background="#EEEEEE" />
+                    android:background="@color/gray_light" />
             </LinearLayout>
 
             <!-- Search Results RecyclerView -->

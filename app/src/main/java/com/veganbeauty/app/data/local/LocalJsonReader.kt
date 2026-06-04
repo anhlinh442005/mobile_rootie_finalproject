@@ -14,21 +14,97 @@ class LocalJsonReader(private val context: Context) {
             val productList = mutableListOf<ProductEntity>()
             for (i in 0 until jsonArray.length()) {
                 val obj = jsonArray.getJSONObject(i)
-                productList.add(ProductEntity(
-                    id = obj.getString("id"),
-                    name = obj.getString("name"),
-                    sku = obj.getString("sku"),
-                    price = obj.getLong("price"),
-                    category = obj.getString("category"),
-                    brand = obj.optString("brand", ""),
-                    stock = obj.getInt("stock"),
-                    description = obj.optString("description", ""),
-                    mainImage = obj.optString("mainImage", ""),
-                    suitableFor = obj.optString("suitableFor", ""),
-                    origin = obj.optString("origin", ""),
-                    expiryDate = obj.optString("expiryDate", ""),
-                    isNew = obj.optBoolean("isNew", false)
-                ))
+                val categoryIdRaw = obj.opt("categoryId")
+                val categoryIdsStr = when (categoryIdRaw) {
+                    is org.json.JSONArray -> {
+                        val list = mutableListOf<String>()
+                        for (j in 0 until categoryIdRaw.length()) {
+                            list.add(categoryIdRaw.getString(j))
+                        }
+                        list.joinToString(",")
+                    }
+                    is String -> categoryIdRaw
+                    else -> ""
+                }
+
+                val albumArr = obj.optJSONArray("album")
+                val albumList = mutableListOf<String>()
+                if (albumArr != null) {
+                    for (j in 0 until albumArr.length()) {
+                        albumList.add(albumArr.getString(j))
+                    }
+                }
+
+                val keyArr = obj.optJSONArray("keyIngredients")
+                val keyIngredientsList = mutableListOf<com.veganbeauty.app.data.local.entities.KeyIngredient>()
+                if (keyArr != null) {
+                    for (j in 0 until keyArr.length()) {
+                        val keyObj = keyArr.getJSONObject(j)
+                        keyIngredientsList.add(
+                            com.veganbeauty.app.data.local.entities.KeyIngredient(
+                                name = keyObj.optString("name", ""),
+                                description = keyObj.optString("description", "")
+                            )
+                        )
+                    }
+                }
+
+                val detailedArr = obj.optJSONArray("detailedIngredients")
+                val detailedIngredientsList = mutableListOf<String>()
+                if (detailedArr != null) {
+                    for (j in 0 until detailedArr.length()) {
+                        detailedIngredientsList.add(detailedArr.getString(j))
+                    }
+                }
+
+                val idealArr = obj.optJSONArray("idealFor")
+                val idealForList = mutableListOf<String>()
+                if (idealArr != null) {
+                    for (j in 0 until idealArr.length()) {
+                        idealForList.add(idealArr.getString(j))
+                    }
+                }
+
+                val benefitsArr = obj.optJSONArray("benefits")
+                val benefitsList = mutableListOf<String>()
+                if (benefitsArr != null) {
+                    for (j in 0 until benefitsArr.length()) {
+                        benefitsList.add(benefitsArr.getString(j))
+                    }
+                }
+
+                productList.add(
+                    ProductEntity(
+                        id = obj.getString("id"),
+                        name = obj.getString("name"),
+                        sku = obj.getString("sku"),
+                        price = obj.getLong("price"),
+                        category = obj.getString("category"),
+                        categoryIds = categoryIdsStr,
+                        brand = obj.optString("brand", ""),
+                        stock = obj.getInt("stock"),
+                        description = obj.optString("description", ""),
+                        mainImage = obj.optString("mainImage", ""),
+                        suitableFor = obj.optString("suitableFor", ""),
+                        origin = obj.optString("origin", ""),
+                        expiryDate = obj.optString("expiryDate", ""),
+                        isNew = obj.optBoolean("isNew", false),
+                        
+                        album = albumList,
+                        mainIngredientsSummary = obj.optString("mainIngredientsSummary", ""),
+                        allergyInformation = obj.optString("allergyInformation", ""),
+                        keyIngredients = keyIngredientsList,
+                        detailedIngredients = detailedIngredientsList,
+                        storyDescription = obj.optString("storyDescription", ""),
+                        storyImage = obj.optString("storyImage", ""),
+                        idealFor = idealForList,
+                        benefits = benefitsList,
+                        usage = obj.optString("usage", ""),
+                        usageAmount = obj.optString("usageAmount", ""),
+                        scent = obj.optString("scent", ""),
+                        notes = obj.optString("notes", "")
+                    )
+                )
             }
             productList
         } catch (e: Exception) { emptyList() }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white">
+    android:background="@color/white">
 
     <!-- Header / Top Bar -->
     <LinearLayout
@@ -14,14 +14,14 @@
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:gravity="center_vertical"
-        android:background="#FAF9F4">
+        android:background="@color/neutral">
 
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_back"
-            app:tint="#455B49" />
+            app:tint="@color/primary" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -42,9 +42,10 @@
                 android:hint="Tìm kiếm sản phẩm"
                 android:inputType="text"
                 android:text="Da"
-                android:textColor="#333333"
-                android:textColorHint="#999999"
-                android:textSize="14sp" />
+                android:textColor="@color/primary"
+                android:textColorHint="@color/gray_dark"
+                android:textSize="14sp" 
+                android:fontFamily="@font/lexend"/>
 
             <ImageView
                 android:id="@+id/btnClear"
@@ -53,14 +54,14 @@
                 android:padding="2dp"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
                 android:background="@drawable/bg_circle_grey"
-                app:tint="#555555" />
+                app:tint="@color/content" />
         </LinearLayout>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#E0E0E0" />
+        android:background="@color/gray_light" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -91,14 +92,15 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@android:drawable/ic_menu_search"
-                        app:tint="#666666" />
+                        app:tint="@color/gray_dark" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="Mặt nạ bí đao"
-                        android:textColor="#444444"
-                        android:textSize="14sp" />
+                        android:textColor="@color/content"
+                        android:textSize="14sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
 
                 <!-- Item 2 -->
@@ -113,14 +115,15 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@android:drawable/ic_menu_search"
-                        app:tint="#666666" />
+                        app:tint="@color/gray_dark" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="Nước dưỡng tóc tinh dầu bưởi"
-                        android:textColor="#444444"
-                        android:textSize="14sp" />
+                        android:textColor="@color/content"
+                        android:textSize="14sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
 
                 <!-- Item 3 -->
@@ -135,14 +138,15 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@android:drawable/ic_menu_search"
-                        app:tint="#666666" />
+                        app:tint="@color/gray_dark" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="Gel bí đao rửa mặt"
-                        android:textColor="#444444"
-                        android:textSize="14sp" />
+                        android:textColor="@color/content"
+                        android:textSize="14sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
 
                 <!-- Item 4 -->
@@ -157,14 +161,15 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@android:drawable/ic_menu_search"
-                        app:tint="#666666" />
+                        app:tint="@color/gray_dark" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="Gel bí đao rửa mặt"
-                        android:textColor="#444444"
-                        android:textSize="14sp" />
+                        android:textColor="@color/content"
+                        android:textSize="14sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -173,7 +178,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="4dp"
-                android:background="#EEEEEE" />
+                android:background="@color/gray_light" />
 
             <!-- Category Suggestions -->
             <LinearLayout
@@ -194,14 +199,15 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@android:drawable/ic_menu_send"
-                        app:tint="#666666" />
+                        app:tint="@color/gray_dark" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="Danh mục Chăm sóc da"
-                        android:textColor="#444444"
-                        android:textSize="14sp" />
+                        android:textColor="@color/content"
+                        android:textSize="14sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
 
                 <!-- Item 2 -->
@@ -216,14 +222,15 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@android:drawable/ic_menu_send"
-                        app:tint="#666666" />
+                        app:tint="@color/gray_dark" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="Cẩm nang chăm da"
-                        android:textColor="#444444"
-                        android:textSize="14sp" />
+                        android:textColor="@color/content"
+                        android:textSize="14sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
 
                 <!-- Item 3 -->
@@ -238,14 +245,15 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@android:drawable/ic_menu_send"
-                        app:tint="#666666" />
+                        app:tint="@color/gray_dark" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="Routine cho da dầu mụn"
-                        android:textColor="#444444"
-                        android:textSize="14sp" />
+                        android:textColor="@color/content"
+                        android:textSize="14sp" 
+                        android:fontFamily="@font/lexend"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -254,7 +262,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="4dp"
-                android:background="#EEEEEE" />
+                android:background="@color/gray_light" />
 
             <!-- Product Suggestions -->
             <LinearLayout

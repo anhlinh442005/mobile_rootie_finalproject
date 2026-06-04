@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/neutral">
+
+    <!-- Top Action Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clHeader"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/neutral"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:id="@+id/tvHeaderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro_semibold"
+            android:text="Xác nhận đơn hàng"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Header Divider Line -->
+    <View
+        android:id="@+id/vHeaderDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light"
+        app:layout_constraintTop_toBottomOf="@id/clHeader" />
+
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/clBottomBar"
+        app:layout_constraintTop_toBottomOf="@id/vHeaderDivider">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- 1. Hình thức nhận hàng -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/lexend_medium"
+                    android:text="Hình thức nhận hàng"
+                    android:textColor="@color/primary"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:id="@+id/llDeliveryType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingStart="12dp">
+
+                    <TextView
+                        android:id="@+id/tvDeliveryTypeValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend_semibold"
+                        android:text="Giao hàng tận nơi"
+                        android:textColor="@color/content"
+                        android:textSize="14sp"
+                        android:layout_marginEnd="4dp" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 2. Giao hàng tới / Địa chỉ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="Giao hàng tới"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="14sp"
+                        android:layout_alignParentStart="true" />
+
+                    <TextView
+                        android:id="@+id/btnChangeAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Thay đổi"
+                        android:textColor="#3E4D44"
+                        android:textSize="14sp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+
+                <!-- Name & Phone & Default badge -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/tvRecipientNamePhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Bảo Nguyên - 0123456789"
+                        android:textColor="@color/primary"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_cart_voucher_bar"
+                        android:backgroundTint="#EDF3ED"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:text="Mặc định"
+                        android:textColor="@color/primary"
+                        android:textSize="10sp"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvRecipientAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:text="123 Lê Lợi, phường 5, quận 1, Hồ Chí Minh"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <!-- Note input -->
+                <EditText
+                    android:id="@+id/etNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card_white"
+                    android:hint="Thêm ghi chú..."
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:textColorHint="@color/gray_dark"
+                    android:textColor="@color/primary"
+                    android:maxLines="3"
+                    android:inputType="textMultiLine" />
+            </LinearLayout>
+
+            <!-- 3. Yêu cầu xuất hóa đơn điện tử -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Yêu cầu xuất hóa đơn điện tử"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchInvoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:thumbTint="@color/white"
+                    app:trackTint="@color/gray_light" />
+            </LinearLayout>
+
+            <!-- 4. Danh sách sản phẩm title -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:text="Danh sách sản phẩm"
+                android:textColor="@color/gray_dark"
+                android:textSize="14sp"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp" />
+
+            <!-- 4. Danh sách sản phẩm list container -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:padding="8dp"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCheckoutItems"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/shop_item_checkout_product" />
+            </LinearLayout>
+
+            <!-- 5. Khuyến mãi & Vouchers -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp">
+
+                <!-- Apply Voucher Bar -->
+                <LinearLayout
+                    android:id="@+id/llVoucherRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_cart_voucher_bar"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:backgroundTint="#EDF3ED"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:text="Áp dụng ưu đãi để được giảm giá"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/primary" />
+                </LinearLayout>
+
+                <!-- Coin Redemption Row -->
+                <LinearLayout
+                    android:id="@+id/llPointsRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_coin" />
+
+                    <TextView
+                        android:id="@+id/tvPointsText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:text="Đổi 2400 điểm (≈ 2400đ)"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchPoints"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbTint="@color/white"
+                        app:trackTint="@color/gray_light" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 6. Phương thức thanh toán -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="Phương thức thanh toán"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="14sp"
+                        android:layout_alignParentStart="true" />
+
+                    <TextView
+                        android:id="@+id/btnChangePaymentMethod"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Thay đổi"
+                        android:textColor="#3E4D44"
+                        android:textSize="14sp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+
+                <!-- Selected payment details -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="12dp">
+
+                    <ImageView
+                        android:id="@+id/ivPaymentRadio"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_cart_checked" />
+
+                    <ImageView
+                        android:id="@+id/ivPaymentMethodIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:src="@drawable/ic_cash" />
+
+                    <TextView
+                        android:id="@+id/tvPaymentMethod"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:text="Thanh toán tiền mặt khi nhận hàng"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 7. Thông tin thanh toán title -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:text="Thông tin thanh toán"
+                android:textColor="@color/gray_dark"
+                android:textSize="14sp"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp" />
+
+            <!-- 7. Thông tin thanh toán container -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp">
+
+                <!-- Tổng tiền row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="Tổng tiền"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetailSubtotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        tools:text="325.000đ" />
+                </LinearLayout>
+
+                <!-- Giảm giá trực tiếp row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="Giảm giá trực tiếp"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetailDirectDiscount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        tools:text="-81.000đ" />
+                </LinearLayout>
+
+                <!-- Giảm giá voucher row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="Giảm giá voucher"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetailVoucherDiscount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        android:text="0đ" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/gray_light"
+                    android:layout_marginVertical="10dp" />
+
+                <!-- Thành tiền row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="6dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Thành tiền"
+                        android:textColor="@color/primary"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvOriginalTotalPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="14sp"
+                        android:layout_marginEnd="8dp"
+                        tools:text="325.000đ" />
+
+                    <TextView
+                        android:id="@+id/tvTotalValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:textColor="#B4202A"
+                        android:textSize="18sp"
+                        tools:text="241.000đ" />
+                </LinearLayout>
+
+                <!-- Tiết kiệm được row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="Tiết kiệm được"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tvSavingsValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        tools:text="81.000đ" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 8. Terms disclaimer -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="24dp"
+                android:gravity="center"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:textColor="@color/gray_dark"
+                android:textSize="12sp"
+                android:text="Bằng việc tiến hành đặt mua hàng, bạn đồng ý với Điều khoản dịch vụ của Rootie Vietnam" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Sticky Bottom Bar -->
+    <LinearLayout
+        android:id="@+id/clBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Hide info toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:text="Ẩn thông tin sản phẩm khi giao hàng"
+                android:textColor="@color/primary"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchHideProductInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:thumbTint="@color/white"
+                app:trackTint="@color/gray_light" />
+        </LinearLayout>
+
+        <!-- Checkout Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCheckout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="@color/primary"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:text="Thanh toán"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

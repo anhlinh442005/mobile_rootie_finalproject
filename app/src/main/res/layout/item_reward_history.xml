@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://tools.android.com/apk/res/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:background="#FAFAF4">
+
+    <!-- Timeline left section -->
+    <!-- Top vertical line -->
+    <View
+        android:id="@+id/timelineLineTop"
+        android:layout_width="2dp"
+        android:layout_height="16dp"
+        android:background="#E2E8F0"
+        app:layout_constraintStart_toStartOf="@id/timelineDot"
+        app:layout_constraintEnd_toEndOf="@id/timelineDot"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Timeline dot -->
+    <View
+        android:id="@+id/timelineDot"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_circle_green"
+        android:backgroundTint="@color/primary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Bottom vertical line -->
+    <View
+        android:id="@+id/timelineLineBottom"
+        android:layout_width="2dp"
+        android:layout_height="0dp"
+        android:background="#E2E8F0"
+        app:layout_constraintStart_toStartOf="@id/timelineDot"
+        app:layout_constraintEnd_toEndOf="@id/timelineDot"
+        app:layout_constraintTop_toBottomOf="@id/timelineDot"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Transaction info (Middle) -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/timelineDot"
+        app:layout_constraintEnd_toStartOf="@id/tvHistoryPoints"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/tvHistoryTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#1A202C"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Voucher Giảm 50K" />
+
+        <TextView
+            android:id="@+id/tvHistoryDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/gray_dark"
+            android:textSize="11sp"
+            tools:text="10/11/2023 • 14:30" />
+
+        <!-- Status badge "Đã đổi quà" -->
+        <TextView
+            android:id="@+id/tvHistoryStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/status_badge_bg"
+            android:backgroundTint="#E8F5E9"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="Đã đổi quà"
+            android:textColor="#2E7D32"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <!-- Points change (Right aligned) -->
+    <TextView
+        android:id="@+id/tvHistoryPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="#1A202C"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="- 500" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
