@@ -13,14 +13,14 @@ interface CartDao {
     suspend fun getCartItemById(itemId: String): CartItemEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCartItem(item: CartItemEntity)
+    suspend fun insertCartItem(item: CartItemEntity): Long
 
     @Update
-    suspend fun updateCartItem(item: CartItemEntity)
+    suspend fun updateCartItem(item: CartItemEntity): Int
 
     @Delete
-    suspend fun deleteCartItem(item: CartItemEntity)
+    suspend fun deleteCartItem(item: CartItemEntity): Int
 
     @Query("DELETE FROM cart_items")
-    suspend fun clearCart()
+    suspend fun clearCart(): Int
 }
