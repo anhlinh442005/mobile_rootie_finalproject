@@ -59,7 +59,7 @@ class HomeFragment : RootieFragment() {
 
   private fun setupViewModel() {
     val db =
-        Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db").fallbackToDestructiveMigration().build()
+        RootieDatabase.getDatabase(requireContext())
     val repository = ProductRepository(db.productDao(), LocalJsonReader(requireContext()))
 
     viewModel =
@@ -275,3 +275,4 @@ class HomeFragment : RootieFragment() {
     _binding = null
   }
 }
+

@@ -55,9 +55,7 @@ class CommunityDiscoverPeopleFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         communityDao = db.communityDao()
         val repository = CommunityRepository(communityDao, LocalJsonReader(requireContext()), FirestoreService())
         val factory = CommunityViewModelFactory(repository)
@@ -90,3 +88,4 @@ class CommunityDiscoverPeopleFragment : RootieFragment() {
         _binding = null
     }
 }
+

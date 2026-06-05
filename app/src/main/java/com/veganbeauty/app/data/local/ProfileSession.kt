@@ -11,6 +11,9 @@ object ProfileSession {
     private const val KEY_FAST_LOGIN = "fast_login"
     private const val KEY_CCCD = "cccd"
     private const val KEY_ADDRESS = "address"
+    private const val KEY_IS_LOGGED_IN = "is_logged_in"
+    private const val KEY_LAST_LOGIN = "last_login"
+    private const val KEY_AVATAR = "avatar"
 
     fun getUsername(context: Context): String {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -93,6 +96,34 @@ object ProfileSession {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(KEY_ADDRESS, address)
+            .apply()
+    }
+
+    fun isLoggedIn(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val isLoggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+        val lastLogin = prefs.getLong(KEY_LAST_LOGIN, 0L)
+        val oneHour = 60 * 60 * 1000L
+        return isLoggedIn && (System.currentTimeMillis() - lastLogin < oneHour)
+    }
+
+    fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_IS_LOGGED_IN, isLoggedIn)
+            .putLong(KEY_LAST_LOGIN, System.currentTimeMillis())
+            .apply()
+    }
+
+    fun getAvatar(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_AVATAR, "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg") ?: "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg"
+    }
+
+    fun setAvatar(context: Context, avatarUrl: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_AVATAR, avatarUrl)
             .apply()
     }
 }

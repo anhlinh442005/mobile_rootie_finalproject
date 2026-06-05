@@ -170,7 +170,7 @@
                             <ImageView
                                 android:layout_width="28dp"
                                 android:layout_height="28dp"
-                                android:src="@drawable/ic_logo_ol"
+                                android:src="@drawable/ic_leaf"
                                 app:tint="@color/primary" />
                             <TextView
                                 android:layout_width="wrap_content"

@@ -35,9 +35,7 @@ class CommunityFeedFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = CommunityRepository(db.communityDao(), LocalJsonReader(requireContext()), FirestoreService())
         val factory = CommunityViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[CommunityViewModel::class.java]
@@ -270,13 +268,16 @@ class CommunityFeedFragment : RootieFragment() {
 
     override fun observeViewModel() {
         viewModel.users.observe(viewLifecycleOwner) { users ->
-            val allStories = users.toMutableList()
+            var allStories = users.toMutableList()
+            val myFriendsIds = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getFriendsForUser("test_001")
+            
+            // Sort stories so that friends appear first
+            allStories = allStories.sortedByDescending { myFriendsIds.contains(it.user_id) }.toMutableList()
+            
             if (allStories.isNotEmpty()) {
-                val myStory = allStories[0].copy(username = "Tin của bạn")
+                val myStory = allStories[0].copy(username = "Tin của bạn", user_id = "test_001", avatar = "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg")
                 allStories.add(0, myStory)
                 
-                // TODO: When Authentication is implemented, replace this with actual logged-in user data.
-                // For now, we update the side menu with the first user's data from Firebase as a mock.
                 // updateSideMenuUserInfo(allStories[1]) 
             }
             storyAdapter.updateData(allStories)
@@ -297,3 +298,4 @@ class CommunityFeedFragment : RootieFragment() {
         _binding = null
     }
 }
+

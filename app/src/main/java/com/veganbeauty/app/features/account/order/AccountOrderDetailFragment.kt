@@ -44,9 +44,7 @@ class AccountOrderDetailFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
         val orderId = arguments?.getString(ARG_ORDER_ID) ?: ""
 
@@ -103,7 +101,7 @@ class AccountOrderDetailFragment : RootieFragment() {
             "Chờ xác nhận" -> Pair(R.color.status_pending_bg, R.color.status_pending_text)
             "Đang xử lý" -> Pair(R.color.status_processing_bg, R.color.status_processing_text)
             "Đang giao" -> Pair(R.color.status_delivering_bg, R.color.status_delivering_text)
-            "Thành công" -> Pair(R.color.status_success_bg, R.color.status_success_text)
+            "Hoàn tất" -> Pair(R.color.status_success_bg, R.color.status_success_text)
             "Đã hủy" -> Pair(R.color.status_cancelled_bg, R.color.status_cancelled_text)
             else -> Pair(R.color.status_pending_bg, R.color.status_pending_text)
         }
@@ -206,8 +204,8 @@ class AccountOrderDetailFragment : RootieFragment() {
                     Toast.makeText(context, "Tính năng Theo dõi đơn cho mã ${order.orderId} đang được tải...", Toast.LENGTH_SHORT).show()
                 }
             }
-            "Thành công" -> {
-                binding.tvBannerStatus.text = "● Thành công"
+            "Hoàn tất" -> {
+                binding.tvBannerStatus.text = "● Hoàn tất"
                 binding.tvBannerDesc.text = "Đơn hàng đã giao thành công"
                 binding.btnBannerSubAction.visibility = View.VISIBLE
                 
@@ -273,7 +271,7 @@ class AccountOrderDetailFragment : RootieFragment() {
                     showConfirmReceivedDialog(order)
                 }
             }
-            "Thành công" -> {
+            "Hoàn tất" -> {
                 binding.btnActionLeft.visibility = View.VISIBLE
                 binding.btnActionLeft.text = "Trả hàng/Hoàn tiền"
                 binding.btnActionLeft.setOnClickListener {
@@ -365,3 +363,4 @@ class AccountOrderDetailFragment : RootieFragment() {
         }
     }
 }
+

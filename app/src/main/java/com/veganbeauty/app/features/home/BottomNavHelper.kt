@@ -31,7 +31,7 @@ object BottomNavHelper {
     )
 
     tabs.forEach { (viewId, _) ->
-      root.findViewById<LinearLayout>(viewId)?.setOnClickListener {
+      root.findViewById<android.view.ViewGroup>(viewId)?.setOnClickListener {
         if (viewId != activeTabId) {
           onTabSelected(viewId)
         }
@@ -51,7 +51,7 @@ object BottomNavHelper {
     )
 
     tabIds.forEach { tabId ->
-      val tab = root.findViewById<LinearLayout>(tabId) ?: return@forEach
+      val tab = root.findViewById<android.view.ViewGroup>(tabId) ?: return@forEach
       val icon = tab.getChildAt(0) as? ImageView
       val label = tab.getChildAt(1) as? TextView
       val isActive = tabId == activeTabId
@@ -67,7 +67,9 @@ object BottomNavHelper {
     val target =
         when (tabId) {
           R.id.nav_home -> HomeFragment()
-          R.id.nav_shop -> ShopListFragment()
+          R.id.nav_shop -> com.veganbeauty.app.features.shop.home.ShopHomeFragment()
+          R.id.nav_myskin -> com.veganbeauty.app.features.myskin.MySkinFragment()
+          R.id.nav_community -> com.veganbeauty.app.features.community.com_feed.ComLoadingFragment()
           R.id.nav_account -> AccountProfileFragment()
           else -> null
         }

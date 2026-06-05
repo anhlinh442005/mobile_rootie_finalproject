@@ -42,9 +42,7 @@ class ShopSearchFragment : RootieFragment() {
     override fun setupUI(view: View) {
         searchViewModel = ViewModelProvider(this)[ShopSearchViewModel::class.java]
         
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = ProductRepository(db.productDao(), LocalJsonReader(requireContext()))
         shopViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
@@ -163,3 +161,4 @@ class ShopSearchFragment : RootieFragment() {
         _binding = null
     }
 }
+

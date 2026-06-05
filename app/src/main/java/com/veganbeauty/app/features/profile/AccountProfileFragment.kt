@@ -36,15 +36,16 @@ class AccountProfileFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
-        // Load elegant placeholder avatar from Unsplash using Coil with CircleCrop
-        binding.ivAvatar.load("https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80") {
+        // Load dynamic values from ProfileSession
+        val ctx = requireContext()
+        val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(ctx)
+        binding.ivAvatar.load(avatarUrl) {
             crossfade(true)
             transformations(CircleCropTransformation())
             placeholder(android.R.color.darker_gray)
         }
 
         // Load dynamic values from ProfileSession
-        val ctx = requireContext()
         val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
         val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
         binding.tvUsername.text = fullName
@@ -115,7 +116,7 @@ class AccountProfileFragment : RootieFragment() {
 
         binding.btnStatusSuccess.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Thành công"))
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Hoàn tất"))
                 .addToBackStack(null)
                 .commit()
         }
@@ -146,7 +147,7 @@ class AccountProfileFragment : RootieFragment() {
         // Navigate to Order List for Reviews
         binding.btnReviewProducts.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Thành công"))
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Hoàn tất"))
                 .addToBackStack(null)
                 .commit()
         }
@@ -170,7 +171,7 @@ class AccountProfileFragment : RootieFragment() {
         com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, com.veganbeauty.app.R.id.nav_account)
 
         // Navigate to Skin Quiz on nav_myskin click
-        view.findViewById<android.widget.LinearLayout>(com.veganbeauty.app.R.id.nav_myskin)?.setOnClickListener {
+        view.findViewById<android.view.ViewGroup>(com.veganbeauty.app.R.id.nav_myskin)?.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, QuizTestIntroFragment())
                 .addToBackStack(null)
@@ -209,9 +210,7 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Retrieve and observe dynamic reward points count from Room database
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
         viewLifecycleOwner.lifecycleScope.launch {
             repository.refreshOrders()

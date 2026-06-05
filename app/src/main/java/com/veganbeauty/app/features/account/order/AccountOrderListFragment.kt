@@ -71,9 +71,7 @@ class AccountOrderListFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
 
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
@@ -112,7 +110,7 @@ class AccountOrderListFragment : RootieFragment() {
         binding.tabPending.setOnClickListener { viewModel.setFilter("Chờ xác nhận") }
         binding.tabProcessing.setOnClickListener { viewModel.setFilter("Đang xử lý") }
         binding.tabDelivering.setOnClickListener { viewModel.setFilter("Đang giao") }
-        binding.tabSuccess.setOnClickListener { viewModel.setFilter("Thành công") }
+        binding.tabSuccess.setOnClickListener { viewModel.setFilter("Hoàn tất") }
         binding.tabCancelled.setOnClickListener { viewModel.setFilter("Đã hủy") }
     }
 
@@ -146,7 +144,7 @@ class AccountOrderListFragment : RootieFragment() {
             "Chờ xác nhận" to binding.tabPending,
             "Đang xử lý" to binding.tabProcessing,
             "Đang giao" to binding.tabDelivering,
-            "Thành công" to binding.tabSuccess,
+            "Hoàn tất" to binding.tabSuccess,
             "Đã hủy" to binding.tabCancelled
         )
 
@@ -194,3 +192,4 @@ class AccountOrderListFragment : RootieFragment() {
         }
     }
 }
+

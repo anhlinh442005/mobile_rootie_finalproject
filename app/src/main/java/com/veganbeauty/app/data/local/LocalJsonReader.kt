@@ -6,6 +6,27 @@ import org.json.JSONObject
 
 class LocalJsonReader(private val context: Context) {
 
+    fun getFriendsForUser(userId: String): List<String> {
+        return try {
+            val jsonString = context.assets.open("User_com_friend.json").bufferedReader().use { it.readText() }
+            val array = org.json.JSONArray(jsonString)
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                if (obj.getString("user_id") == userId) {
+                    val friendsArray = obj.getJSONArray("friends")
+                    val list = mutableListOf<String>()
+                    for (j in 0 until friendsArray.length()) {
+                        list.add(friendsArray.getString(j))
+                    }
+                    return list
+                }
+            }
+            emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     fun getAllProducts(): List<ProductEntity> {
         return try {
             val jsonString = context.assets.open("products.json").bufferedReader().use { it.readText() }

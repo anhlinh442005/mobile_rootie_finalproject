@@ -46,9 +46,7 @@ class CommunityBeautyHubFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = CommunityRepository(db.communityDao(), LocalJsonReader(requireContext()), FirestoreService())
         val factory = CommunityViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[CommunityViewModel::class.java]
@@ -194,3 +192,4 @@ class CommunityBeautyHubFragment : RootieFragment() {
         _binding = null
     }
 }
+

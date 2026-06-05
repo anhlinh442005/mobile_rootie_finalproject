@@ -113,7 +113,10 @@ class CommunityMessageFragment : Fragment() {
             
             // For active users, filter only active ones or just take all for UI purpose
             val activeUsers = messages.filter { it.isActive }
-            activeUserAdapter.updateData(activeUsers)
+            val myFriendsIds = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getFriendsForUser("test_001")
+            
+            val sortedActiveUsers = activeUsers.sortedByDescending { myFriendsIds.contains(it.partnerId) }
+            activeUserAdapter.updateData(sortedActiveUsers)
             
         } catch (e: Exception) {
             e.printStackTrace()

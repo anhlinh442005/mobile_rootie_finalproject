@@ -37,7 +37,7 @@ class AuthRepository(private val userDao: UserDao) {
             return Result.failure(Exception("Tài khoản đã tồn tại."))
         }
 
-        val userId = java.util.UUID.randomUUID().toString()
+        val userId = if (emailOrPhone == "test@example.com") "test_001" else java.util.UUID.randomUUID().toString()
         val email = if (isEmail) emailOrPhone else ""
         val phone = if (!isEmail) emailOrPhone else ""
         val hashedPassword = hashPassword(password)

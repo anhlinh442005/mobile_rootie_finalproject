@@ -16,6 +16,9 @@ interface UserDao {
     suspend fun insertUser(user: UserEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertUserSync(user: UserEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUsers(users: List<UserEntity>): List<Long>
 
     @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
@@ -29,4 +32,7 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE phone = :phone LIMIT 1")
     suspend fun getUserByPhone(phone: String): UserEntity?
+
+    @Query("DELETE FROM users WHERE username = :username")
+    fun deleteUserByUsernameSync(username: String)
 }

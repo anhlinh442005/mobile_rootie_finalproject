@@ -76,6 +76,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private HomeWelcomePagerAdapter pagerAdapter;
     private AuthViewModel authViewModel;
     private float sheetCornerRadiusPx;
+    private int bottomSystemInset = 0;
 
     private final int[] welcomeTitles = {
             R.string.home_welcome_1_title,
@@ -86,6 +87,11 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(this)) {
+            navigateToMain();
+            finish();
+            return;
+        }
         setContentView(R.layout.home_welcome_activity);
 
         sheetCornerRadiusPx = getResources().getDimension(R.dimen.home_sheet_corner_radius);
@@ -106,13 +112,22 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void setupViewModel() {
-        com.veganbeauty.app.data.local.RootieDatabase db = androidx.room.Room.databaseBuilder(this, com.veganbeauty.app.data.local.RootieDatabase.class, "rootie-db").fallbackToDestructiveMigration().build();
+        com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(this);
         com.veganbeauty.app.data.repository.AuthRepository repository = new com.veganbeauty.app.data.repository.AuthRepository(db.userDao());
         com.veganbeauty.app.features.auth.AuthViewModelFactory factory = new com.veganbeauty.app.features.auth.AuthViewModelFactory(repository);
         authViewModel = new androidx.lifecycle.ViewModelProvider(this, factory).get(com.veganbeauty.app.features.auth.AuthViewModel.class);
 
         authViewModel.getLoginState().observe(this, state -> {
             if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) {
+                com.veganbeauty.app.data.local.entities.UserEntity user =
+                    ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) state).getUser();
+                // Save all user info into ProfileSession so other screens can read it
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setLoggedIn(this, true);
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setFullName(this, user.getFull_name());
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setEmail(this, user.getEmail());
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPhone(this, user.getPhone());
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUsername(this, user.getUsername());
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(this, user.getAvatar() != null ? user.getAvatar() : "");
                 navigateToMain();
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
                 android.widget.Toast.makeText(this, ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(), android.widget.Toast.LENGTH_SHORT).show();
@@ -132,7 +147,39 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private void setupInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.home_coordinator), (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(v.getPaddingLeft(), bars.top, v.getPaddingRight(), bars.bottom);
+            bottomSystemInset = bars.bottom;
+            splashContent.setPadding(splashContent.getPaddingLeft(), bars.top, splashContent.getPaddingRight(), splashContent.getPaddingBottom());
+            
+            if (welcomeBinding != null) {
+                welcomeBinding.homeWelcomeBottomPanel.setPadding(
+                        welcomeBinding.homeWelcomeBottomPanel.getPaddingLeft(),
+                        welcomeBinding.homeWelcomeBottomPanel.getPaddingTop(),
+                        welcomeBinding.homeWelcomeBottomPanel.getPaddingRight(),
+                        (int) (24 * getResources().getDisplayMetrics().density) + bottomSystemInset
+                );
+            }
+            if (loginBinding != null) {
+                android.view.View container = ((android.view.ViewGroup) loginBinding.getRoot()).getChildAt(0);
+                if (container != null) {
+                    container.setPadding(
+                            container.getPaddingLeft(),
+                            container.getPaddingTop(),
+                            container.getPaddingRight(),
+                            (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset
+                    );
+                }
+            }
+            if (registerBinding != null) {
+                android.view.View container = ((android.view.ViewGroup) registerBinding.getRoot()).getChildAt(0);
+                if (container != null) {
+                    container.setPadding(
+                            container.getPaddingLeft(),
+                            container.getPaddingTop(),
+                            container.getPaddingRight(),
+                            (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset
+                    );
+                }
+            }
             return insets;
         });
     }
@@ -140,7 +187,6 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private void setupBottomSheet() {
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
         sheetBehavior.setHideable(false);
-        sheetBehavior.setFitToContents(true);
         sheetBehavior.setPeekHeight(getResources().getDimensionPixelSize(R.dimen.home_sheet_peek_height));
         sheetBehavior.setExpandedOffset(0);
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -202,26 +248,50 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void startSplashSequence() {
-        logoIcon.setAlpha(0f);
-        logoIcon.setScaleX(0.5f);
-        logoIcon.setScaleY(0.5f);
-        logoIcon.animate()
-                .alpha(1f)
-                .scaleX(1f)
-                .scaleY(1f)
-                .setDuration(600)
-                .setInterpolator(new android.view.animation.OvershootInterpolator())
-                .withEndAction(() -> {
-                    float distance = 40f * getResources().getDisplayMetrics().density;
-                    logoText.setAlpha(0f);
-                    logoText.setTranslationY(distance);
+        splashContent.post(() -> {
+            float density = getResources().getDisplayMetrics().density;
+            // Khoảng cách đẩy (push distance): Icon sẽ đứng thấp hơn 60dp so với vị trí cuối cùng
+            float pushDistance = 60f * density;
+            
+            logoIcon.setAlpha(0f);
+            logoIcon.setScaleX(0.5f);
+            logoIcon.setScaleY(0.5f);
+            logoIcon.setTranslationY(pushDistance); // Đứng ở vị trí trung tâm chờ
+            
+            logoText.setAlpha(1f);
+            logoText.setVisibility(View.INVISIBLE);
+            // Text bắt đầu từ tít bên dưới đáy màn hình
+            logoText.setTranslationY(splashContent.getHeight());
 
-                    logoText.animate().alpha(1f).translationY(0f).setDuration(800).setInterpolator(new DecelerateInterpolator()).start();
+            // Giai đoạn 1: Icon nảy ra ở vị trí trung tâm
+            logoIcon.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .translationY(pushDistance)
+                    .setDuration(600)
+                    .setInterpolator(new android.view.animation.OvershootInterpolator())
+                    .withEndAction(() -> {
+                        logoText.setVisibility(View.VISIBLE);
+                        
+                        // Giai đoạn 2: Text chạy nhanh từ đáy màn hình lên, "chạm" vào đít icon
+                        logoText.animate().translationY(pushDistance)
+                                .setDuration(350).setInterpolator(new android.view.animation.DecelerateInterpolator())
+                                .withEndAction(() -> {
+                                    // Giai đoạn 3: Text đẩy Icon cùng tiến lên vị trí cuối cùng (translationY = 0)
+                                    logoText.animate().translationY(0f)
+                                            .setDuration(450)
+                                            .setInterpolator(new android.view.animation.OvershootInterpolator())
+                                            .start();
 
-                    logoIcon.animate().translationY(-16f * getResources().getDisplayMetrics().density)
-                            .setDuration(800).setInterpolator(new DecelerateInterpolator())
-                            .withEndAction(this::showSplashPeekSheet).start();
-                }).start();
+                                    logoIcon.animate().translationY(0f)
+                                            .setDuration(450)
+                                            .setInterpolator(new android.view.animation.OvershootInterpolator())
+                                            .withEndAction(this::showSplashPeekSheet)
+                                            .start();
+                                }).start();
+                    }).start();
+        });
     }
 
     /** Trang logo: sheet peek + lớp phủ primary 30% + thanh 60x5. */
@@ -319,6 +389,13 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         );
         loginBinding = null;
         registerBinding = null;
+
+        welcomeBinding.homeWelcomeBottomPanel.setPadding(
+                welcomeBinding.homeWelcomeBottomPanel.getPaddingLeft(),
+                welcomeBinding.homeWelcomeBottomPanel.getPaddingTop(),
+                welcomeBinding.homeWelcomeBottomPanel.getPaddingRight(),
+                (int) (24 * getResources().getDisplayMetrics().density) + bottomSystemInset
+        );
 
         List<HomeWelcomePagerAdapter.WelcomePage> pages = Arrays.asList(
                 new HomeWelcomePagerAdapter.WelcomePage(R.drawable.ic_welcome_1),
@@ -479,6 +556,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             return;
         }
 
+        // Always keep the corners rounded
         float radius = sheetCornerRadiusPx;
 
         ShapeAppearanceModel shapeModel = ShapeAppearanceModel.builder()
@@ -536,6 +614,16 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 sheetContent,
                 true
         );
+
+        android.view.View loginContainer = ((android.view.ViewGroup) loginBinding.getRoot()).getChildAt(0);
+        if (loginContainer != null) {
+            loginContainer.setPadding(
+                    loginContainer.getPaddingLeft(),
+                    loginContainer.getPaddingTop(),
+                    loginContainer.getPaddingRight(),
+                    (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset
+            );
+        }
 
         String registerText = getString(R.string.home_no_account) + " " + getString(R.string.home_register);
         SpannableString spannable = new SpannableString(registerText);
@@ -606,6 +694,16 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 sheetContent,
                 true
         );
+
+        android.view.View registerContainer = ((android.view.ViewGroup) registerBinding.getRoot()).getChildAt(0);
+        if (registerContainer != null) {
+            registerContainer.setPadding(
+                    registerContainer.getPaddingLeft(),
+                    registerContainer.getPaddingTop(),
+                    registerContainer.getPaddingRight(),
+                    (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset
+            );
+        }
 
         String loginText = "Đã có tài khoản? Đăng nhập";
         SpannableString spannable = new SpannableString(loginText);

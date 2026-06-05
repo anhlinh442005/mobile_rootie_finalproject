@@ -68,9 +68,7 @@ class ShopSearchDetailFragment : RootieFragment() {
     }
 
     private fun setupViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = ProductRepository(db.productDao(), LocalJsonReader(requireContext()))
         
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
@@ -133,3 +131,4 @@ class ShopSearchDetailFragment : RootieFragment() {
         _binding = null
     }
 }
+

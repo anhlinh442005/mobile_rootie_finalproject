@@ -178,7 +178,7 @@ class AccountProfileAddressFragment : RootieFragment() {
         }
 
         // Highlight "Tài khoản" active tab in bottom navigation shell
-        view.findViewById<LinearLayout>(R.id.nav_account)?.let { navAccount ->
+        view.findViewById<android.view.ViewGroup>(R.id.nav_account)?.let { navAccount ->
             val icon = navAccount.getChildAt(0) as? ImageView
             val label = navAccount.getChildAt(1) as? TextView
             icon?.setColorFilter(Color.parseColor("#677559"))

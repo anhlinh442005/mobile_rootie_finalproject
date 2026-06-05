@@ -45,9 +45,7 @@ class CommunityCreatePostFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         communityDao = db.communityDao()
 
         binding.ivClose.setOnClickListener {
@@ -141,3 +139,4 @@ class CommunityCreatePostFragment : RootieFragment() {
         _binding = null
     }
 }
+

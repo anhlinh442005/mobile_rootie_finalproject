@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.veganbeauty.app.data.local.dao.*
 import com.veganbeauty.app.data.local.entities.*
+import kotlinx.coroutines.launch
 
 @Database(
     entities = [
@@ -21,7 +22,7 @@ import com.veganbeauty.app.data.local.entities.*
         UserGiftEntity::class,
         CartItemEntity::class
     ], 
-    version = 16
+    version = 19
 )
 @TypeConverters(OrderConverters::class, ProductConverters::class)
 abstract class RootieDatabase : RoomDatabase() {
@@ -37,6 +38,7 @@ abstract class RootieDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: RootieDatabase? = null
 
+        @JvmStatic
         fun getDatabase(context: android.content.Context): RootieDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = androidx.room.Room.databaseBuilder(
@@ -44,6 +46,30 @@ abstract class RootieDatabase : RoomDatabase() {
                     RootieDatabase::class.java,
                     "rootie-db"
                 )
+                .addCallback(object : androidx.room.RoomDatabase.Callback() {
+                    override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                        super.onCreate(db)
+                        try {
+                            val jsonString = context.assets.open("users.json").bufferedReader().use { it.readText() }
+                            val jsonArray = org.json.JSONArray(jsonString)
+                            for (i in 0 until jsonArray.length()) {
+                                val obj = jsonArray.getJSONObject(i)
+                                val values = android.content.ContentValues().apply {
+                                    put("user_id", obj.optString("user_id", java.util.UUID.randomUUID().toString()))
+                                    put("username", obj.optString("username", ""))
+                                    put("full_name", obj.optString("full_name", ""))
+                                    put("email", obj.optString("email", ""))
+                                    put("phone", obj.optString("phone", ""))
+                                    put("password", obj.optString("password", ""))
+                                    put("avatar", obj.optString("avatar", ""))
+                                }
+                                db.insert("users", android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE, values)
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                })
                 .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
