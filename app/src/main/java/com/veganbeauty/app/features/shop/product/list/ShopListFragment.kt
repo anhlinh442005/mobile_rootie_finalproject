@@ -183,9 +183,8 @@ class ShopListFragment : RootieFragment() {
 
     override fun observeViewModel() {
         viewModel.products.observe(viewLifecycleOwner) { products ->
-            productAdapter.submitList(products) {
-                binding.rvProducts.scrollToPosition(0)
-            }
+            productAdapter.submitList(products)
+            binding.rvProducts.scrollToPosition(0)
         }
         
         viewModel.subcategories.observe(viewLifecycleOwner) { subcategories ->

@@ -833,10 +833,14 @@
 
                     <!-- item 3: Đánh giá -->
                     <LinearLayout
+                        android:id="@+id/btn_review_products"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:orientation="vertical">
 
                         <ImageView
@@ -904,7 +908,16 @@
                             android:textSize="10sp" />
                     </LinearLayout>
 
-                    <!-- item 5: Sản phẩm mới -->
+                </LinearLayout>
+
+                <!-- Grid - Row 2 (5 items) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <!-- item 6: Sản phẩm mới -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -926,16 +939,8 @@
                             android:textColor="#000000"
                             android:textSize="9sp" />
                     </LinearLayout>
-                </LinearLayout>
 
-                <!-- Grid - Row 2 (4 items) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <!-- item 6: Sản phẩm bán chạy -->
+                    <!-- item 7: Sản phẩm bán chạy -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

@@ -1,11 +1,7 @@
 package com.veganbeauty.app.features.shop.product.list
 
-import android.graphics.Paint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.veganbeauty.app.data.local.entities.ProductEntity
@@ -14,48 +10,42 @@ import java.text.NumberFormat
 import java.util.Locale
 
 class ShopListAdapter(
-    private val onItemClick: (ProductEntity) -> Unit = {},
-    private val onAddToCartClick: (ProductEntity) -> Unit = {}
-) : ListAdapter<ProductEntity, ShopListAdapter.ProductViewHolder>(ProductDiffCallback()) {
+    private val onItemClick: (ProductEntity) -> Unit,
+    private val onAddToCartClick: (ProductEntity) -> Unit
+) : RecyclerView.Adapter<ShopListAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val binding = ShopProductCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ProductViewHolder(binding)
+    private val items = mutableListOf<ProductEntity>()
+
+    fun submitList(newItems: List<ProductEntity>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
     }
 
-    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        holder.bind(getItem(position), onItemClick, onAddToCartClick)
-    }
-
-    class ProductViewHolder(private val binding: ShopProductCardBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(product: ProductEntity, onItemClick: (ProductEntity) -> Unit, onAddToCartClick: (ProductEntity) -> Unit) {
-            binding.root.setOnClickListener { onItemClick(product) }
-            binding.btnAddToCart.setOnClickListener { onAddToCartClick(product) }
+    inner class ViewHolder(private val binding: ShopProductCardBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(product: ProductEntity) {
             binding.tvProductName.text = product.name
-            
-            // Định dạng tiền Việt Nam
             val formatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
             binding.tvPrice.text = formatter.format(product.price)
             
-            // Load ảnh bằng Coil
             binding.ivProduct.load(product.mainImage) {
                 crossfade(true)
                 placeholder(android.R.color.darker_gray)
             }
-
-            // Hiển thị badge "Mới"
-            binding.tvBadgeNew.visibility = if (product.isNew) View.VISIBLE else View.GONE
             
-            // Xử lý giá gốc (nếu có giảm giá)
-            // Tạm thời giả định giá gốc cao hơn 20% để test UI
-            val originalPrice = (product.price * 1.2).toLong()
-            binding.tvOriginalPrice.text = formatter.format(originalPrice)
-            binding.tvOriginalPrice.paintFlags = binding.tvOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            binding.root.setOnClickListener { onItemClick(product) }
+            binding.btnAddToCart.setOnClickListener { onAddToCartClick(product) }
         }
     }
 
-    class ProductDiffCallback : DiffUtil.ItemCallback<ProductEntity>() {
-        override fun areItemsTheSame(oldItem: ProductEntity, newItem: ProductEntity) = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: ProductEntity, newItem: ProductEntity) = oldItem == newItem
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ShopProductCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(items[position])
+    }
+
+    override fun getItemCount() = items.size
 }

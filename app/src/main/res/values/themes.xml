@@ -3,6 +3,7 @@
     <style name="Base.Theme.Rootie" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/secondary</item>
         <item name="colorTertiary">@color/tertiary</item>
         <item name="android:windowBackground">@color/neutral</item>
 
@@ -27,14 +28,19 @@
     </style>
 
     <style name="TextAppearance.Rootie.Content" parent="TextAppearance.Material3.BodyMedium">
-        <item name="fontFamily">@font/lexend</item>
-        <item name="android:fontFamily">@font/lexend</item>
+        <item name="fontFamily">@font/be_vietnam_pro</item>
+        <item name="android:fontFamily">@font/be_vietnam_pro</item>
         <item name="android:textColor">@color/content</item>
     </style>
 
     <style name="TextAppearance.Rootie.Label" parent="TextAppearance.Material3.LabelMedium">
         <item name="fontFamily">@font/be_vietnam_pro</item>
         <item name="android:fontFamily">@font/be_vietnam_pro</item>
+    </style>
+
+    <style name="TextAppearance.Rootie.Myriad" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/myriadpro</item>
+        <item name="android:fontFamily">@font/myriadpro</item>
     </style>
 
     <style name="Theme.Rootie" parent="Base.Theme.Rootie" />

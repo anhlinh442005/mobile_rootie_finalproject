@@ -34,9 +34,7 @@ class AccountCheckinFragment : RootieFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = AccountCheckinFragmentBinding.inflate(inflater, container, false)
-        db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        db = RootieDatabase.getDatabase(requireContext())
         return binding.root
     }
 
@@ -54,7 +52,7 @@ class AccountCheckinFragment : RootieFragment() {
         }
 
         // Highlight active tab
-        view.findViewById<android.widget.LinearLayout>(R.id.nav_account)?.let { navAccount ->
+        view.findViewById<android.view.ViewGroup>(R.id.nav_account)?.let { navAccount ->
             val icon = navAccount.getChildAt(0) as? android.widget.ImageView
             val label = navAccount.getChildAt(1) as? android.widget.TextView
             icon?.setColorFilter(android.graphics.Color.parseColor("#677559"))
@@ -345,3 +343,4 @@ class AccountCheckinFragment : RootieFragment() {
         override fun getItemCount(): Int = days.size
     }
 }
+

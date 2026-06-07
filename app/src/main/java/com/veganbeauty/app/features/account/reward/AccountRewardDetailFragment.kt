@@ -63,9 +63,7 @@ class AccountRewardDetailFragment : RootieFragment() {
     }
 
     private fun setupRepository() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
     }
 
@@ -137,9 +135,7 @@ class AccountRewardDetailFragment : RootieFragment() {
     }
 
     override fun observeViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         viewLifecycleOwner.lifecycleScope.launch {
             db.rewardPointDao().getTotalPointsFlow().collect { points ->
                 val pointsVal = points ?: 0
@@ -284,3 +280,4 @@ class AccountRewardDetailFragment : RootieFragment() {
         }
     }
 }
+

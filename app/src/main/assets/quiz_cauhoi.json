@@ -1,699 +1,372 @@
 {
   "questions": [
+
     {
       "id": "q1",
       "question": "Sau khi rửa mặt 30 phút, da bạn như thế nào?",
       "options": [
-        {
-          "text": "Khô, căng",
-          "score": {
-            "dry": 3
-          }
-        },
-        {
-          "text": "Bình thường",
-          "score": {
-            "normal": 2
-          }
-        },
-        {
-          "text": "Đổ dầu",
-          "score": {
-            "oily": 3
-          }
-        },
-        {
-          "text": "Vùng T dầu",
-          "score": {
-            "combination": 3
-          }
-        }
+        {"text": "Khô, căng", "score": {"dry": 3}},
+        {"text": "Bình thường", "score": {"normal": 2}},
+        {"text": "Đổ dầu", "score": {"oily": 3}},
+        {"text": "Vùng T dầu", "score": {"combination": 3}}
       ]
     },
+
     {
       "id": "q2",
       "question": "Lỗ chân lông của bạn?",
       "options": [
-        {
-          "text": "Nhỏ",
-          "score": {
-            "dry": 1
-          }
-        },
-        {
-          "text": "To",
-          "score": {
-            "oily": 2
-          }
-        },
-        {
-          "text": "Không đều",
-          "score": {
-            "combination": 2
-          }
-        }
+        {"text": "Nhỏ", "score": {"dry": 1}},
+        {"text": "To", "score": {"oily": 2}},
+        {"text": "Không đều", "score": {"combination": 2}}
       ]
     },
+
     {
       "id": "q3",
       "question": "Da bạn có dễ bị đỏ, rát khi dùng mỹ phẩm?",
       "options": [
-        {
-          "text": "Rất dễ",
-          "score": {
-            "sensitive": 3
-          }
-        },
-        {
-          "text": "Thỉnh thoảng",
-          "score": {
-            "sensitive": 1
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
+        {"text": "Rất dễ", "score": {"sensitive": 3}},
+        {"text": "Thỉnh thoảng", "score": {"sensitive": 1}},
+        {"text": "Không", "score": {}}
       ]
     },
+
     {
       "id": "q4",
       "question": "Da bạn có bị mụn không?",
       "options": [
-        {
-          "text": "Nhiều",
-          "score": {
-            "oily": 2,
-            "acne": 2
-          }
-        },
-        {
-          "text": "Ít",
-          "score": {
-            "combination": 1
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
+        {"text": "Nhiều", "score": {"oily": 2, "acne": 2}},
+        {"text": "Ít", "score": {"combination": 1}},
+        {"text": "Không", "score": {}}
       ]
     },
+
     {
       "id": "q5",
       "question": "Da bạn có bong tróc không?",
       "options": [
-        {
-          "text": "Có",
-          "score": {
-            "dry": 2,
-            "dehydrated": 2
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
+        {"text": "Có", "score": {"dry": 2, "dehydrated": 2}},
+        {"text": "Không", "score": {}}
       ]
     },
+
     {
       "id": "q6",
       "question": "Da bạn khi trời nóng?",
       "options": [
-        {
-          "text": "Đổ dầu nhiều",
-          "score": {
-            "oily": 2
-          }
-        },
-        {
-          "text": "Bình thường",
-          "score": {}
-        },
-        {
-          "text": "Khô hơn",
-          "score": {
-            "dry": 1
-          }
-        }
+        {"text": "Đổ dầu nhiều", "score": {"oily": 2}},
+        {"text": "Bình thường", "score": {}},
+        {"text": "Khô hơn", "score": {"dry": 1}}
       ]
     },
+
     {
       "id": "q7",
       "question": "Da khi trời lạnh?",
       "options": [
-        {
-          "text": "Khô, nứt",
-          "score": {
-            "dry": 2
-          }
-        },
-        {
-          "text": "Bình thường",
-          "score": {}
-        },
-        {
-          "text": "Ít thay đổi",
-          "score": {
-            "oily": 1
-          }
-        }
+        {"text": "Khô, nứt", "score": {"dry": 2}},
+        {"text": "Bình thường", "score": {}},
+        {"text": "Ít thay đổi", "score": {"oily": 1}}
       ]
     },
+
     {
       "id": "q8",
       "question": "Bạn có nếp nhăn không?",
       "options": [
-        {
-          "text": "Có",
-          "score": {
-            "aging": 2
-          }
-        },
-        {
-          "text": "Chưa",
-          "score": {}
-        }
+        {"text": "Có", "score": {"aging": 2}},
+        {"text": "Chưa", "score": {}}
       ]
     },
+
     {
       "id": "q9",
       "question": "Da bạn có cảm giác thiếu nước (khô bên trong)?",
       "options": [
-        {
-          "text": "Có",
-          "score": {
-            "dehydrated": 2
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
+        {"text": "Có", "score": {"dehydrated": 2}},
+        {"text": "Không", "score": {}}
       ]
     },
+
     {
       "id": "q10",
       "question": "Da bạn có dễ bị kích ứng với môi trường?",
       "options": [
-        {
-          "text": "Có",
-          "score": {
-            "reactive": 2
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
+        {"text": "Có", "score": {"reactive": 2}},
+        {"text": "Không", "score": {}}
       ]
     },
+
+
     {
       "id": "q11",
       "question": "Bạn có từng bị kích ứng với dầu thiên nhiên (dầu dừa, dầu ô liu)?",
       "options": [
-        {
-          "text": "Có",
-          "group": "oil"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "oil"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q12",
       "question": "Bạn có bị kích ứng với chất tạo bọt (sữa rửa mặt tạo bọt mạnh)?",
       "options": [
-        {
-          "text": "Có",
-          "group": "surfactant"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "surfactant"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q13",
       "question": "Bạn có bị kích ứng với sản phẩm có cồn (bay hơi nhanh)?",
       "options": [
-        {
-          "text": "Có",
-          "group": "alcohol"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "alcohol"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q14",
       "question": "Bạn có bị kích ứng với sản phẩm có mùi thơm (hương liệu)?",
       "options": [
-        {
-          "text": "Có",
-          "group": "fragrance"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "fragrance"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q15",
       "question": "Bạn có từng bị kích ứng với chất bảo quản?",
       "options": [
-        {
-          "text": "Có",
-          "group": "preservative"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "preservative"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q16",
       "question": "Bạn có từng bị kích ứng với sản phẩm dưỡng ẩm mạnh?",
       "options": [
-        {
-          "text": "Có",
-          "group": "humectant"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "humectant"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q17",
       "question": "Bạn có từng bị kích ứng với sản phẩm trị mụn?",
       "options": [
-        {
-          "text": "Có",
-          "group": "active"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "active"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q18",
       "question": "Bạn có bị kích ứng với chiết xuất thiên nhiên?",
       "options": [
-        {
-          "text": "Có",
-          "group": "extract"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "extract"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q19",
       "question": "Bạn có bị bí da khi dùng kem dưỡng dày?",
       "options": [
-        {
-          "text": "Có",
-          "group": "occlusive"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "occlusive"},
+        {"text": "Không", "group": null}
       ]
     },
+
     {
       "id": "q20",
       "question": "Bạn có bị kích ứng với silicone?",
       "options": [
-        {
-          "text": "Có",
-          "group": "occlusive"
-        },
-        {
-          "text": "Không",
-          "group": null
-        }
+        {"text": "Có", "group": "occlusive"},
+        {"text": "Không", "group": null}
       ]
     },
+
+
     {
       "id": "q21",
       "question": "Bạn rửa mặt bao nhiêu lần/ngày?",
       "options": [
-        {
-          "text": "1 lần",
-          "score": {
-            "dry": 1
-          }
-        },
-        {
-          "text": "2 lần",
-          "score": {}
-        },
-        {
-          "text": "3+ lần",
-          "score": {
-            "oily": 1
-          }
-        }
+        {"text": "1 lần", "score": {"dry": 1}},
+        {"text": "2 lần", "score": {}},
+        {"text": "3+ lần", "score": {"oily": 1}}
       ]
     },
+
     {
       "id": "q22",
       "question": "Bạn có dùng kem chống nắng?",
       "options": [
-        {
-          "text": "Có",
-          "score": {}
-        },
-        {
-          "text": "Không",
-          "score": {
-            "aging": 1
-          }
-        }
+        {"text": "Có", "score": {}},
+        {"text": "Không", "score": {"aging": 1}}
       ]
     },
+
     {
       "id": "q23",
       "question": "Bạn có tẩy tế bào chết?",
       "options": [
-        {
-          "text": "Thường xuyên",
-          "score": {
-            "sensitive": 1
-          }
-        },
-        {
-          "text": "Ít",
-          "score": {}
-        }
+        {"text": "Thường xuyên", "score": {"sensitive": 1}},
+        {"text": "Ít", "score": {}}
       ]
     },
+
     {
       "id": "q24",
       "question": "Bạn có skincare mỗi ngày?",
       "options": [
-        {
-          "text": "Có",
-          "score": {}
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
+        {"text": "Có", "score": {}},
+        {"text": "Không", "score": {}}
       ]
     },
     {
       "id": "q25",
       "question": "Bạn thường dùng sản phẩm dạng gì?",
       "options": [
-        {
-          "text": "Gel",
-          "score": {
-            "oily": 1
-          }
-        },
-        {
-          "text": "Cream",
-          "score": {
-            "dry": 1
-          }
-        },
-        {
-          "text": "Serum",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q26",
-      "question": "Sau khi dùng sản phẩm có cồn, da bạn như thế nào?",
-      "options": [
-        {
-          "text": "Khô, rát",
-          "score": {
-            "sensitive": 2
-          },
-          "group": "alcohol"
-        },
-        {
-          "text": "Bình thường",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q27",
-      "question": "Khi dùng sản phẩm có hương liệu, da bạn?",
-      "options": [
-        {
-          "text": "Dễ bị đỏ hoặc ngứa",
-          "score": {
-            "reactive": 2
-          },
-          "group": "fragrance"
-        },
-        {
-          "text": "Không vấn đề",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q28",
-      "question": "Bạn có bị châm chích khi dùng sản phẩm trị mụn (BHA, AHA)?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "sensitive": 2
-          },
-          "group": "active"
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q29",
-      "question": "Khi dùng kem dưỡng dày (cream), da bạn?",
-      "options": [
-        {
-          "text": "Dễ bí, nổi mụn",
-          "score": {
-            "oily": 1
-          },
-          "group": "occlusive"
-        },
-        {
-          "text": "Bình thường",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q30",
-      "question": "Sau khi dùng serum dưỡng ẩm (HA, glycerin), da bạn?",
-      "options": [
-        {
-          "text": "Dễ bị kích ứng",
-          "score": {
-            "sensitive": 1
-          },
-          "group": "humectant"
-        },
-        {
-          "text": "Ổn",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q31",
-      "question": "Bạn có thường xuyên đổi sản phẩm skincare không?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "reactive": 1
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q32",
-      "question": "Da bạn phản ứng thế nào khi dùng sản phẩm mới?",
-      "options": [
-        {
-          "text": "Dễ nổi mụn",
-          "score": {
-            "acne": 2
-          }
-        },
-        {
-          "text": "Dễ kích ứng",
-          "score": {
-            "sensitive": 2
-          }
-        },
-        {
-          "text": "Bình thường",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q33",
-      "question": "Bạn có bị đổ dầu giữa ngày không?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "oily": 2
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q34",
-      "question": "Da bạn có dễ bị đỏ khi ra nắng?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "sensitive": 2,
-            "reactive": 1
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q35",
-      "question": "Bạn có cảm giác da bị bí khi dùng kem chống nắng?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "oily": 1
-          },
-          "group": "occlusive"
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q36",
-      "question": "Bạn có bị khô da khi dùng sữa rửa mặt?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "dry": 2
-          },
-          "group": "surfactant"
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q37",
-      "question": "Da bạn có dễ bị kích ứng với sản phẩm thiên nhiên?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "reactive": 2
-          },
-          "group": "extract"
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q38",
-      "question": "Bạn có thấy da bị xỉn màu hoặc không đều màu?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "aging": 1
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q39",
-      "question": "Da bạn có dễ bị mất nước (căng nhưng vẫn đổ dầu)?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "dehydrated": 2,
-            "oily": 1
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    },
-    {
-      "id": "q40",
-      "question": "Bạn có từng bị dị ứng nặng với mỹ phẩm?",
-      "options": [
-        {
-          "text": "Có",
-          "score": {
-            "reactive": 3,
-            "sensitive": 2
-          }
-        },
-        {
-          "text": "Không",
-          "score": {}
-        }
-      ]
-    }
-  ]
-}
+        {"text": "Gel", "score": {"oily": 1}},
+        {"text": "Cream", "score": {"dry": 1}},
+        {"text": "Serum", "score": {}}
+        ],
+  {
+    "id": "q26",
+    "question": "Sau khi dùng sản phẩm có cồn, da bạn như thế nào?",
+    "options": [
+      { "text": "Khô, rát", "score": { "sensitive": 2 }, "group": "alcohol" },
+      { "text": "Bình thường", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q27",
+    "question": "Khi dùng sản phẩm có hương liệu, da bạn?",
+    "options": [
+      { "text": "Dễ bị đỏ hoặc ngứa", "score": { "reactive": 2 }, "group": "fragrance" },
+      { "text": "Không vấn đề", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q28",
+    "question": "Bạn có bị châm chích khi dùng sản phẩm trị mụn (BHA, AHA)?",
+    "options": [
+      { "text": "Có", "score": { "sensitive": 2 }, "group": "active" },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q29",
+    "question": "Khi dùng kem dưỡng dày (cream), da bạn?",
+    "options": [
+      { "text": "Dễ bí, nổi mụn", "score": { "oily": 1 }, "group": "occlusive" },
+      { "text": "Bình thường", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q30",
+    "question": "Sau khi dùng serum dưỡng ẩm (HA, glycerin), da bạn?",
+    "options": [
+      { "text": "Dễ bị kích ứng", "score": { "sensitive": 1 }, "group": "humectant" },
+      { "text": "Ổn", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q31",
+    "question": "Bạn có thường xuyên đổi sản phẩm skincare không?",
+    "options": [
+      { "text": "Có", "score": { "reactive": 1 } },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q32",
+    "question": "Da bạn phản ứng thế nào khi dùng sản phẩm mới?",
+    "options": [
+      { "text": "Dễ nổi mụn", "score": { "acne": 2 } },
+      { "text": "Dễ kích ứng", "score": { "sensitive": 2 } },
+      { "text": "Bình thường", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q33",
+    "question": "Bạn có bị đổ dầu giữa ngày không?",
+    "options": [
+      { "text": "Có", "score": { "oily": 2 } },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q34",
+    "question": "Da bạn có dễ bị đỏ khi ra nắng?",
+    "options": [
+      { "text": "Có", "score": { "sensitive": 2, "reactive": 1 } },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q35",
+    "question": "Bạn có cảm giác da bị bí khi dùng kem chống nắng?",
+    "options": [
+      { "text": "Có", "score": { "oily": 1 }, "group": "occlusive" },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q36",
+    "question": "Bạn có bị khô da khi dùng sữa rửa mặt?",
+    "options": [
+      { "text": "Có", "score": { "dry": 2 }, "group": "surfactant" },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q37",
+    "question": "Da bạn có dễ bị kích ứng với sản phẩm thiên nhiên?",
+    "options": [
+      { "text": "Có", "score": { "reactive": 2 }, "group": "extract" },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q38",
+    "question": "Bạn có thấy da bị xỉn màu hoặc không đều màu?",
+    "options": [
+      { "text": "Có", "score": { "aging": 1 } },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q39",
+    "question": "Da bạn có dễ bị mất nước (căng nhưng vẫn đổ dầu)?",
+    "options": [
+      { "text": "Có", "score": { "dehydrated": 2, "oily": 1 } },
+      { "text": "Không", "score": {} }
+    ]
+  },
+
+  {
+    "id": "q40",
+    "question": "Bạn có từng bị dị ứng nặng với mỹ phẩm?",
+    "options": [
+      { "text": "Có", "score": { "reactive": 3, "sensitive": 2 } },
+      { "text": "Không", "score": {} }
+    ]
+  }
+]

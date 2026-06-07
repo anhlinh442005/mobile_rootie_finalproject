@@ -54,7 +54,7 @@ class AccountProfileEditFragment : RootieFragment() {
         }
 
         // Highlight the "Tài khoản" tab as active in the bottom navigation menu
-        view.findViewById<android.widget.LinearLayout>(com.veganbeauty.app.R.id.nav_account)?.let { navAccount ->
+        view.findViewById<android.view.ViewGroup>(com.veganbeauty.app.R.id.nav_account)?.let { navAccount ->
             val icon = navAccount.getChildAt(0) as? android.widget.ImageView
             val label = navAccount.getChildAt(1) as? android.widget.TextView
             

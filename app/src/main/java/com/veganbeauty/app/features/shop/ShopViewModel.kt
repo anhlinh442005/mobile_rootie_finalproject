@@ -1,15 +1,18 @@
 package com.veganbeauty.app.features.shop
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.veganbeauty.app.core.base.RootieViewModel
+import com.veganbeauty.app.data.local.entities.ProductEntity
 import com.veganbeauty.app.data.repository.ProductRepository
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
-class ShopViewModel(private val repository: ProductRepository) : RootieViewModel() {
-
+class ShopViewModel(private val repository: ProductRepository) : ViewModel() {
     private val _categoryFilter = MutableStateFlow<String?>(null)
     private val _subcategoryFilter = MutableStateFlow<String?>("Tất cả")
     private val _sortOrder = MutableStateFlow<String>("BEST_SELLING")
@@ -242,4 +245,3 @@ class ShopViewModel(private val repository: ProductRepository) : RootieViewModel
         }
     }
 }
-

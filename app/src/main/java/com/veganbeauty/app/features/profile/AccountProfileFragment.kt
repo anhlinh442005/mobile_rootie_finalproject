@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import coil.load
 import coil.transform.CircleCropTransformation
+import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.AccountProfileBinding
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment
@@ -18,6 +19,7 @@ import com.veganbeauty.app.data.local.RootieDatabase
 import com.veganbeauty.app.data.local.LocalJsonReader
 import com.veganbeauty.app.data.repository.OrderRepository
 import kotlinx.coroutines.launch
+import com.veganbeauty.app.features.home.BottomNavHelper
 
 class AccountProfileFragment : RootieFragment() {
 
@@ -34,15 +36,16 @@ class AccountProfileFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
-        // Load elegant placeholder avatar from Unsplash using Coil with CircleCrop
-        binding.ivAvatar.load("https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80") {
+        // Load dynamic values from ProfileSession
+        val ctx = requireContext()
+        val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(ctx)
+        binding.ivAvatar.load(avatarUrl) {
             crossfade(true)
             transformations(CircleCropTransformation())
             placeholder(android.R.color.darker_gray)
         }
 
         // Load dynamic values from ProfileSession
-        val ctx = requireContext()
         val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
         val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
         binding.tvUsername.text = fullName
@@ -113,7 +116,7 @@ class AccountProfileFragment : RootieFragment() {
 
         binding.btnStatusSuccess.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Thành công"))
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Hoàn tất"))
                 .addToBackStack(null)
                 .commit()
         }
@@ -141,6 +144,14 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        // Navigate to Order List for Reviews
+        binding.btnReviewProducts.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Hoàn tất"))
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Navigate to Daily Check-in Fragment
         binding.layoutCoinsBadge.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -156,32 +167,10 @@ class AccountProfileFragment : RootieFragment() {
             }
         }
 
-        // Highlight the "Tài khoản" tab as active in the bottom navigation menu
-        view.findViewById<android.widget.LinearLayout>(com.veganbeauty.app.R.id.nav_account)?.let { navAccount ->
-            val icon = navAccount.getChildAt(0) as? android.widget.ImageView
-            val label = navAccount.getChildAt(1) as? android.widget.TextView
-            
-            // Set active green color tint to the icon (#677559)
-            icon?.setColorFilter(android.graphics.Color.parseColor("#677559"))
-            
-            // Set active green color and bold style to the text label
-            label?.setTextColor(android.graphics.Color.parseColor("#677559"))
-            label?.setTypeface(null, android.graphics.Typeface.BOLD)
-        }
+        // Highlight the "Tài khoản" tab as active in the bottom navigation menu and set up click listeners
+        com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, com.veganbeauty.app.R.id.nav_account)
 
-        // Navigate to Weather or Quiz on nav_myskin click depending on profile existence
-        view.findViewById<android.widget.LinearLayout>(com.veganbeauty.app.R.id.nav_myskin)?.setOnClickListener {
-            val savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null)
-            val destination = if (savedSkin != null) {
-                com.veganbeauty.app.features.weather.WeatherForecastFragment()
-            } else {
-                QuizTestIntroFragment()
-            }
-            parentFragmentManager.beginTransaction()
-                .replace(com.veganbeauty.app.R.id.main_container, destination)
-                .addToBackStack(null)
-                .commit()
-        }
+
 
         // Navigate to Weather & Skin page
         binding.btnWeatherSkin.setOnClickListener {
@@ -227,9 +216,7 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Retrieve and observe dynamic reward points count from Room database
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
         viewLifecycleOwner.lifecycleScope.launch {
             repository.refreshOrders()
@@ -239,6 +226,11 @@ class AccountProfileFragment : RootieFragment() {
                 binding.tvCoins.text = (points ?: 0).toString()
             }
         }
+        BottomNavHelper.setup(
+            fragment = this,
+            root = binding.root,
+            activeTabId = R.id.nav_account
+        ) { tabId -> BottomNavHelper.navigate(this, tabId) }
     }
 
     override fun observeViewModel() {

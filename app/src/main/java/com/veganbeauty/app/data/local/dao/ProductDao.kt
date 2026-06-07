@@ -1,18 +1,16 @@
 package com.veganbeauty.app.data.local.dao
 
-import com.veganbeauty.app.data.local.entities.ProductEntity
-
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
+import com.veganbeauty.app.data.local.entities.ProductEntity
 
 @Dao
 interface ProductDao {
     @Query("SELECT * FROM products")
-    fun getAllProducts(): Flow<List<ProductEntity>>
+    fun getAllProducts(): kotlinx.coroutines.flow.Flow<List<ProductEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProducts(products: List<ProductEntity>): List<Long>
 
-    @Query("SELECT * FROM products WHERE id = :productId")
+    @Query("SELECT * FROM products WHERE id = :productId LIMIT 1")
     suspend fun getProductById(productId: String): ProductEntity?
 }

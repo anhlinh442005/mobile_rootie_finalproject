@@ -29,7 +29,7 @@ class OrderDetailViewModel(
     fun confirmReceived() {
         viewModelScope.launch {
             try {
-                repository.updateOrderStatus(orderId, "Thành công")
+                repository.updateOrderStatus(orderId, "Hoàn tất")
             } catch (e: Exception) {
                 e.printStackTrace()
             }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="home_sheet_peek_height">96dp</dimen>
+    <dimen name="home_sheet_corner_radius">10dp</dimen>
+    <dimen name="home_logo_size">120dp</dimen>
+    <dimen name="home_button_radius">32dp</dimen>
+    <dimen name="home_banner_dot_size">8dp</dimen>
+    <dimen name="home_banner_dot_margin">6dp</dimen>
+</resources>

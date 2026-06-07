@@ -50,6 +50,8 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation(libs.viewpager2)
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     
     // Firebase
     implementation(platform(libs.firebase.bom))
@@ -62,6 +64,7 @@ dependencies {
     
     // Coil
     implementation(libs.coil)
+    implementation("io.coil-kt:coil-svg:2.5.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)

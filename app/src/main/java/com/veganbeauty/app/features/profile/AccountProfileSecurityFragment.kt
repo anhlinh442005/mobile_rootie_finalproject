@@ -125,7 +125,7 @@ class AccountProfileSecurityFragment : RootieFragment() {
         }
 
         // Highlight the "Tài khoản" tab as active in bottom navigation
-        view.findViewById<LinearLayout>(R.id.nav_account)?.let { navAccount ->
+        view.findViewById<android.view.ViewGroup>(R.id.nav_account)?.let { navAccount ->
             val icon = navAccount.getChildAt(0) as? ImageView
             val label = navAccount.getChildAt(1) as? TextView
 

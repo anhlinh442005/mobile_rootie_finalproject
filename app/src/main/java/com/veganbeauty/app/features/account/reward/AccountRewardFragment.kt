@@ -105,9 +105,7 @@ class AccountRewardFragment : RootieFragment() {
     }
 
     private fun setupRepository() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
     }
 
@@ -176,9 +174,7 @@ class AccountRewardFragment : RootieFragment() {
     }
 
     override fun observeViewModel() {
-        val db = Room.databaseBuilder(requireContext(), RootieDatabase::class.java, "rootie-db")
-            .fallbackToDestructiveMigration()
-            .build()
+        val db = RootieDatabase.getDatabase(requireContext())
         viewLifecycleOwner.lifecycleScope.launch {
             db.rewardPointDao().getTotalPointsFlow().collect { points ->
                 val pointsVal = points ?: 0
@@ -507,7 +503,7 @@ class ExchangeGiftsAdapter(
                     "voucher" -> R.drawable.ic_voucher
                     "freeship" -> R.drawable.ic_truck
                     "gift" -> R.drawable.ic_gift
-                    "product" -> R.drawable.ic_leaf
+                    "product" -> R.drawable.ic_logo_ol
                     else -> R.drawable.ic_gift
                 }
                 img.setImageResource(iconRes)
@@ -527,7 +523,7 @@ class ExchangeGiftsAdapter(
                     "voucher" -> R.drawable.ic_voucher
                     "freeship" -> R.drawable.ic_truck
                     "gift" -> R.drawable.ic_gift
-                    "product" -> R.drawable.ic_leaf
+                    "product" -> R.drawable.ic_logo_ol
                     else -> R.drawable.ic_gift
                 }
                 img.setImageResource(iconRes)
@@ -623,7 +619,7 @@ class MyGiftsAdapter(
                 "voucher" -> R.drawable.ic_voucher
                 "freeship" -> R.drawable.ic_truck
                 "gift" -> R.drawable.ic_gift
-                "product" -> R.drawable.ic_leaf
+                "product" -> R.drawable.ic_logo_ol
                 else -> R.drawable.ic_gift
             }
             img.setImageResource(iconRes)
@@ -736,3 +732,4 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 }
+

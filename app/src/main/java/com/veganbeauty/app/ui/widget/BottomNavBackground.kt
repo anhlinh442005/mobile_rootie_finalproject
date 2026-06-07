@@ -13,10 +13,9 @@ class BottomNavBackground @JvmOverloads constructor(
 
     private val bgColor       = context.getColor(com.veganbeauty.app.R.color.neutral) // Fetching from colors.xml
     private val cornerRadius  = dp(24f)   // Top corners radius
-    private val bumpRadius    = dp(28f)   // Radius of the circle bump
     private val shadowRadius  = dp(12f)
     private val shadowDy      = dp(-2f) 
-    private val shadowColor   = Color.parseColor("#1A000000") // Soft shadow
+    private val shadowColor   = Color.parseColor("#10000000") // Very soft shadow
 
     private val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = bgColor
@@ -35,13 +34,13 @@ class BottomNavBackground @JvmOverloads constructor(
 
         val w = width.toFloat()
         val h = height.toFloat()
-        // The bottom nav layout height is 72dp, we assume view height is 100dp.
-        // So the flat top of the rectangle starts at height - 72dp.
-        val bodyHeight = dp(72f)
+        val bodyHeight = dp(64f) 
         val p = h - bodyHeight 
         val r = cornerRadius
-        val br = bumpRadius
         val cx = w / 2f
+
+        val bumpWidth = dp(76f)
+        val bumpHeight = dp(16f)
 
         path.reset()
         // Top-left corner
@@ -49,11 +48,19 @@ class BottomNavBackground @JvmOverloads constructor(
         path.arcTo(RectF(0f, p, r * 2, p + r * 2), 180f, 90f)
 
         // Line to the start of the bump
-        path.lineTo(cx - br, p)
+        path.lineTo(cx - bumpWidth / 2f, p)
 
-        // The bump (perfect semi-circle upwards)
-        val bumpOval = RectF(cx - br, p - br, cx + br, p + br)
-        path.arcTo(bumpOval, 180f, 180f)
+        // Smooth Bezier wave
+        path.cubicTo(
+            cx - bumpWidth / 3f, p,
+            cx - bumpWidth / 4f, p - bumpHeight,
+            cx, p - bumpHeight
+        )
+        path.cubicTo(
+            cx + bumpWidth / 4f, p - bumpHeight,
+            cx + bumpWidth / 3f, p,
+            cx + bumpWidth / 2f, p
+        )
 
         // Line to top-right corner
         path.lineTo(w - r, p)

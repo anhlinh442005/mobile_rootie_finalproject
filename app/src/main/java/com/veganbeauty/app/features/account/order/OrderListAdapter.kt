@@ -72,7 +72,7 @@ class OrderListAdapter(
                 "Chờ xác nhận" -> Pair(R.color.status_pending_bg, R.color.status_pending_text)
                 "Đang xử lý" -> Pair(R.color.status_processing_bg, R.color.status_processing_text)
                 "Đang giao" -> Pair(R.color.status_delivering_bg, R.color.status_delivering_text)
-                "Thành công" -> Pair(R.color.status_success_bg, R.color.status_success_text)
+                "Hoàn tất" -> Pair(R.color.status_success_bg, R.color.status_success_text)
                 "Đã hủy" -> Pair(R.color.status_cancelled_bg, R.color.status_cancelled_text)
                 else -> Pair(R.color.status_pending_bg, R.color.status_pending_text)
             }
@@ -144,7 +144,7 @@ class OrderListAdapter(
                     binding.btnActionFilled.text = "Theo dõi"
                     binding.btnActionFilled.setOnClickListener { onTrackClick(order) }
                 }
-                "Thành công" -> {
+                "Hoàn tất" -> {
                     // Outlined: Đánh giá/Xem đánh giá, Filled: Mua lại
                     binding.btnActionOutlined.visibility = View.VISIBLE
                     binding.btnActionOutlined.text = if (order.hasReview) "Xem đánh giá" else "Đánh giá"

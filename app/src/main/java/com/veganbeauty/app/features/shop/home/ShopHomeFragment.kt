@@ -109,6 +109,9 @@ class ShopHomeFragment : RootieFragment() {
         binding.etSearch.isFocusable = false
         binding.etSearch.isClickable = true
         binding.etSearch.setOnClickListener(searchClickListener)
+
+        // Navigation
+        com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, com.veganbeauty.app.R.id.nav_shop)
     }
 
     override fun observeViewModel() {
