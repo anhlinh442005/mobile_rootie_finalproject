@@ -382,11 +382,15 @@
 
                 <!-- Treatment History -->
                 <LinearLayout
+                    android:id="@+id/btn_treatment_history"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <FrameLayout
                         android:layout_width="52dp"
@@ -407,6 +411,41 @@
                         android:gravity="center"
                         android:maxLines="2"
                         android:text="Lịch sử liệu trình"
+                        android:textColor="#000000"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Weather & Skin (formerly Treatment History) -->
+                <LinearLayout
+                    android:id="@+id/btn_weather_skin"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <FrameLayout
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_circle_green"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_weather_sun_outlined" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:maxLines="2"
+                        android:text="Thời tiết &amp; Da"
                         android:textColor="#000000"
                         android:textSize="12sp" />
                 </LinearLayout>

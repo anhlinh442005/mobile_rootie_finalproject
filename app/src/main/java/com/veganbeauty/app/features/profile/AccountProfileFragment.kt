@@ -169,12 +169,30 @@ class AccountProfileFragment : RootieFragment() {
             label?.setTypeface(null, android.graphics.Typeface.BOLD)
         }
 
-        // Navigate to Skin Quiz on nav_myskin click
+        // Navigate to Weather or Quiz on nav_myskin click depending on profile existence
         view.findViewById<android.widget.LinearLayout>(com.veganbeauty.app.R.id.nav_myskin)?.setOnClickListener {
+            val savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null)
+            val destination = if (savedSkin != null) {
+                com.veganbeauty.app.features.weather.WeatherForecastFragment()
+            } else {
+                QuizTestIntroFragment()
+            }
             parentFragmentManager.beginTransaction()
-                .replace(com.veganbeauty.app.R.id.main_container, QuizTestIntroFragment())
+                .replace(com.veganbeauty.app.R.id.main_container, destination)
                 .addToBackStack(null)
                 .commit()
+        }
+
+        // Navigate to Weather & Skin page
+        binding.btnWeatherSkin.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.weather.WeatherForecastFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.btnTreatmentHistory.setOnClickListener {
+            Toast.makeText(context, "Tính năng Lịch sử liệu trình đang được phát triển", Toast.LENGTH_SHORT).show()
         }
 
         // Navigate to Skin Profile (Quiz Result) if skin analysis exists, otherwise navigate to start Quiz

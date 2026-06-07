@@ -14,8 +14,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
+            android.content.SharedPreferences prefs = getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE);
+            String savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null);
+            androidx.fragment.app.Fragment destination;
+            if (savedSkin != null) {
+                destination = new com.veganbeauty.app.features.weather.WeatherForecastFragment();
+            } else {
+                destination = new QuizTestIntroFragment();
+            }
             getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new QuizTestIntroFragment())
+                .replace(R.id.main_container, destination)
                 .commit();
         }
     }
