@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/neutral"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
+        android:layout_height="56dp"
+        android:background="@color/neutral"
         android:gravity="center_vertical"
-        android:background="@color/neutral">
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -24,35 +24,43 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="36dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
             android:background="@drawable/bg_search_bar"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="12dp">
 
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_search"
+                app:tint="@color/content" />
+
             <EditText
                 android:id="@+id/etSearch"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:background="@null"
+                android:fontFamily="@font/lexend"
                 android:hint="Tìm kiếm sản phẩm"
+                android:imeOptions="actionSearch"
                 android:inputType="text"
-                android:text="Da"
+                android:singleLine="true"
                 android:textColor="@color/primary"
                 android:textColorHint="@color/gray_dark"
-                android:textSize="14sp" 
-                android:fontFamily="@font/lexend"/>
+                android:textSize="14sp" />
 
             <ImageView
                 android:id="@+id/btnClear"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
+                android:background="@drawable/bg_circle_grey"
                 android:padding="2dp"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:background="@drawable/bg_circle_grey"
                 app:tint="@color/content" />
         </LinearLayout>
     </LinearLayout>
@@ -71,216 +79,45 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Keyword Suggestions -->
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvKeywordSuggestions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:nestedScrollingEnabled="false"
                 android:paddingTop="12dp"
-                android:paddingBottom="4dp">
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/shop_search_bar" />
 
-                <!-- Item 1 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/gray_dark" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Mặt nạ bí đao"
-                        android:textColor="@color/content"
-                        android:textSize="14sp" 
-                        android:fontFamily="@font/lexend"/>
-                </LinearLayout>
-
-                <!-- Item 2 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/gray_dark" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Nước dưỡng tóc tinh dầu bưởi"
-                        android:textColor="@color/content"
-                        android:textSize="14sp" 
-                        android:fontFamily="@font/lexend"/>
-                </LinearLayout>
-
-                <!-- Item 3 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/gray_dark" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Gel bí đao rửa mặt"
-                        android:textColor="@color/content"
-                        android:textSize="14sp" 
-                        android:fontFamily="@font/lexend"/>
-                </LinearLayout>
-
-                <!-- Item 4 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/gray_dark" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Gel bí đao rửa mặt"
-                        android:textColor="@color/content"
-                        android:textSize="14sp" 
-                        android:fontFamily="@font/lexend"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Divider -->
             <View
+                android:id="@+id/dividerContent"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="4dp"
                 android:background="@color/gray_light" />
 
-            <!-- Category Suggestions -->
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCategorySuggestions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingVertical="4dp">
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/shop_search_bar" />
 
-                <!-- Item 1 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_menu_send"
-                        app:tint="@color/gray_dark" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Danh mục Chăm sóc da"
-                        android:textColor="@color/content"
-                        android:textSize="14sp" 
-                        android:fontFamily="@font/lexend"/>
-                </LinearLayout>
-
-                <!-- Item 2 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_menu_send"
-                        app:tint="@color/gray_dark" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Cẩm nang chăm da"
-                        android:textColor="@color/content"
-                        android:textSize="14sp" 
-                        android:fontFamily="@font/lexend"/>
-                </LinearLayout>
-
-                <!-- Item 3 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_menu_send"
-                        app:tint="@color/gray_dark" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Routine cho da dầu mụn"
-                        android:textColor="@color/content"
-                        android:textSize="14sp" 
-                        android:fontFamily="@font/lexend"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Divider -->
             <View
+                android:id="@+id/dividerProducts"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="4dp"
                 android:background="@color/gray_light" />
 
-            <!-- Product Suggestions -->
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSearchResults"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="8dp"
-                android:paddingBottom="24dp">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvSearchResults"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/shop_item_product_horizontal" />
-
-            </LinearLayout>
-
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="24dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/shop_item_product_horizontal" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

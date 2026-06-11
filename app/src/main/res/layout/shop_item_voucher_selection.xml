@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_card_white"
+    android:elevation="1dp"
+    android:padding="16dp">
+
+    <!-- Ticket Icon Container (left) -->
+    <FrameLayout
+        android:id="@+id/flIconContainer"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_circle_light_green"
+        android:backgroundTint="#EDF3ED"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivVoucherIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_voucher"
+            app:tint="@color/primary" />
+    </FrameLayout>
+
+    <!-- Details Container (middle) -->
+    <LinearLayout
+        android:id="@+id/llDetails"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivSelectIndicator"
+        app:layout_constraintStart_toEndOf="@id/flIconContainer"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvVoucherTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:textColor="@color/primary"
+            android:textSize="15sp"
+            tools:text="Giảm 50k cho lần đầu tiên mua hàng" />
+
+        <TextView
+            android:id="@+id/tvVoucherMinSpend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:textColor="@color/gray_dark"
+            android:textSize="13sp"
+            tools:text="Đơn tối thiểu : 70.000đ" />
+
+        <TextView
+            android:id="@+id/tvVoucherExpiry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:textColor="@color/gray_dark"
+            android:textSize="13sp"
+            tools:text="Hết hạn trong: 2 ngày" />
+    </LinearLayout>
+
+    <!-- Selection Check Circle (right) -->
+    <ImageView
+        android:id="@+id/ivSelectIndicator"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_cart_unchecked"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/primary" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

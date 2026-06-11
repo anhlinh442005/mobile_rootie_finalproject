@@ -68,7 +68,10 @@ class AccountProfileSetupFragment : RootieFragment() {
             Toast.makeText(context, "Cài đặt chat (Đang phát triển)", Toast.LENGTH_SHORT).show()
         }
         binding.btnNotificationSettings.setOnClickListener {
-            Toast.makeText(context, "Cài đặt thông báo (Đang phát triển)", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountProfileNotiSettingFragment())
+                .addToBackStack(null)
+                .commit()
         }
         binding.btnPrivacySettings.setOnClickListener {
             Toast.makeText(context, "Cài đặt riêng tư (Đang phát triển)", Toast.LENGTH_SHORT).show()

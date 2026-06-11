@@ -62,6 +62,7 @@ class ExploreVideoAdapter(
         private var isFollowing = false
         private var discAnimator: ObjectAnimator? = null
 
+        @SuppressLint("ClickableViewAccessibility")
         fun bind(video: YtVideoEntity) {
             isPlayRequested = false
             itemBinding.llLeftContent.translationY = contentTranslationY
@@ -197,7 +198,6 @@ class ExploreVideoAdapter(
                 }
             })
 
-            @SuppressLint("ClickableViewAccessibility")
             itemBinding.viewClickZone.setOnTouchListener { _, event ->
                 gestureDetector.onTouchEvent(event)
                 true

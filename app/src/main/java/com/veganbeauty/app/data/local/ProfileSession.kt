@@ -14,6 +14,18 @@ object ProfileSession {
     private const val KEY_IS_LOGGED_IN = "is_logged_in"
     private const val KEY_LAST_LOGIN = "last_login"
     private const val KEY_AVATAR = "avatar"
+    
+    // Notification setting keys
+    private const val KEY_NOTI_ENABLED = "noti_enabled"
+    private const val KEY_NOTI_SOUND = "noti_sound"
+    private const val KEY_NOTI_VIBRATE = "noti_vibrate"
+    private const val KEY_NOTI_LOCK_SCREEN = "noti_lock_screen"
+    private const val KEY_NOTI_ORDER_STATUS = "noti_order_status"
+    private const val KEY_NOTI_PROMOTION = "noti_promotion"
+    private const val KEY_NOTI_PROMOTION_FREQUENCY = "noti_promotion_frequency"
+    private const val KEY_NOTI_PROMOTION_TIME_RANGE = "noti_promotion_time_range"
+    private const val KEY_NOTI_STAFF_MESSAGE = "noti_staff_message"
+    private const val KEY_NOTI_COMPLAINT_RESPONSE = "noti_complaint_response"
 
     fun getUsername(context: Context): String {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -330,5 +342,126 @@ object ProfileSession {
     fun setEveningRewardAwarded(context: Context, date: String, awarded: Boolean) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
             .putBoolean("evening_reward_awarded_$date", awarded).apply()
+    }
+
+    // Accessors for notification settings
+    fun isNotiEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_ENABLED, true)
+    }
+
+    fun setNotiEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_ENABLED, enabled)
+            .apply()
+    }
+
+    fun isSoundEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_SOUND, true)
+    }
+
+    fun setSoundEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_SOUND, enabled)
+            .apply()
+    }
+
+    fun isVibrateEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_VIBRATE, true)
+    }
+
+    fun setVibrateEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_VIBRATE, enabled)
+            .apply()
+    }
+
+    fun isLockScreenEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_LOCK_SCREEN, false)
+    }
+
+    fun setLockScreenEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_LOCK_SCREEN, enabled)
+            .apply()
+    }
+
+    fun isOrderStatusEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_ORDER_STATUS, false)
+    }
+
+    fun setOrderStatusEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_ORDER_STATUS, enabled)
+            .apply()
+    }
+
+    fun isPromotionEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_PROMOTION, true)
+    }
+
+    fun setPromotionEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_PROMOTION, enabled)
+            .apply()
+    }
+
+    fun getPromotionFrequency(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_NOTI_PROMOTION_FREQUENCY, "Mỗi ngày") ?: "Mỗi ngày"
+    }
+
+    fun setPromotionFrequency(context: Context, freq: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_NOTI_PROMOTION_FREQUENCY, freq)
+            .apply()
+    }
+
+    fun getPromotionTimeRange(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_NOTI_PROMOTION_TIME_RANGE, "08:00 - 21:00") ?: "08:00 - 21:00"
+    }
+
+    fun setPromotionTimeRange(context: Context, range: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_NOTI_PROMOTION_TIME_RANGE, range)
+            .apply()
+    }
+
+    fun isStaffMessageEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_STAFF_MESSAGE, true)
+    }
+
+    fun setStaffMessageEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_STAFF_MESSAGE, enabled)
+            .apply()
+    }
+
+    fun isComplaintResponseEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_COMPLAINT_RESPONSE, true)
+    }
+
+    fun setComplaintResponseEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_COMPLAINT_RESPONSE, enabled)
+            .apply()
     }
 }

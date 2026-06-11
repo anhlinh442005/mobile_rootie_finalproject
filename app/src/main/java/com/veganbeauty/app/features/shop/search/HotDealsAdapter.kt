@@ -35,7 +35,17 @@ class HotDealsAdapter(
             binding.tvOriginalPrice.text = formatter.format(originalPrice)
             binding.tvOriginalPrice.paintFlags = binding.tvOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             
-            binding.tvBadgeNew.visibility = if (product.isNew) android.view.View.VISIBLE else android.view.View.GONE
+            if (product.isNew) {
+                binding.tvBadgeNew.visibility = android.view.View.VISIBLE
+                binding.tvBadgeNew.text = "Mới"
+                binding.tvBadgeNew.setBackgroundResource(com.veganbeauty.app.R.drawable.bg_badge_new)
+            } else if (product.price >= 500000 || product.category.contains("Combo", ignoreCase = true)) {
+                binding.tvBadgeNew.visibility = android.view.View.VISIBLE
+                binding.tvBadgeNew.text = "Hot"
+                binding.tvBadgeNew.setBackgroundResource(com.veganbeauty.app.R.drawable.bg_badge_hot)
+            } else {
+                binding.tvBadgeNew.visibility = android.view.View.GONE
+            }
             
             binding.ivProduct.load(product.mainImage) {
                 crossfade(true)

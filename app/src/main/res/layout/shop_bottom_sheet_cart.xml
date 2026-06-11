@@ -118,6 +118,7 @@
             android:backgroundTint="#EDF3ED">
 
             <TextView
+                android:id="@+id/tvVoucherDesc"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

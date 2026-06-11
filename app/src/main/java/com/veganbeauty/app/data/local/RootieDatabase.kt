@@ -20,9 +20,10 @@ import kotlinx.coroutines.launch
         CommunityBlogEntity::class,
         RewardPointEntity::class,
         UserGiftEntity::class,
-        CartItemEntity::class
+        CartItemEntity::class,
+        StoreEntity::class
     ], 
-    version = 19
+    version = 21
 )
 @TypeConverters(OrderConverters::class, ProductConverters::class)
 abstract class RootieDatabase : RoomDatabase() {
@@ -33,6 +34,7 @@ abstract class RootieDatabase : RoomDatabase() {
     abstract fun userGiftDao(): UserGiftDao
     abstract fun cartDao(): CartDao
     abstract fun userDao(): UserDao
+    abstract fun storeDao(): StoreDao
 
     companion object {
         @Volatile
