@@ -94,15 +94,18 @@ class ShopListFragment : RootieFragment() {
         })[ShopViewModel::class.java]
     }
 
+    private var cartVoucherCode: String? = null
+    private var cartVoucherDiscount = 0L
+
     override fun setupUI(view: View) {
         binding.rvProducts.adapter = productAdapter
-        
+
         subcategoryAdapter = SubcategoryAdapter { subcategory ->
             subcategoryAdapter.selectedSubcategory = subcategory
             viewModel.setSubcategoryFilter(subcategory)
         }
         binding.rvSubcategories.adapter = subcategoryAdapter
-        
+
         binding.btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -131,7 +134,27 @@ class ShopListFragment : RootieFragment() {
         }
 
         binding.btnCart.setOnClickListener {
-            val cartSheet = com.veganbeauty.app.features.shop.product.CartBottomSheetFragment()
+            val cartSheet = com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.newInstance(
+                cartVoucherCode,
+                cartVoucherDiscount
+            )
+            cartSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.TAG)
+        }
+
+        // Voucher result listener to re-open cart
+        parentFragmentManager.setFragmentResultListener(
+            com.veganbeauty.app.features.shop.product.ShopVoucherFragment.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val code = bundle.getString(com.veganbeauty.app.features.shop.product.ShopVoucherFragment.RESULT_VOUCHER_CODE)
+            val discount = bundle.getLong(com.veganbeauty.app.features.shop.product.ShopVoucherFragment.RESULT_VOUCHER_DISCOUNT, 0L)
+            cartVoucherCode = code
+            cartVoucherDiscount = discount
+
+            val cartSheet = com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.newInstance(
+                cartVoucherCode,
+                cartVoucherDiscount
+            )
             cartSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.TAG)
         }
 
@@ -172,9 +195,13 @@ class ShopListFragment : RootieFragment() {
         binding.btnSortPriceHigh.setOnClickListener { selectSortOption(binding.btnSortPriceHigh, "PRICE_HIGH") }
         
         val categoryName = arguments?.getString("CATEGORY_NAME")
+        val subcategoryName = arguments?.getString("SUBCATEGORY_NAME")
         if (categoryName != null) {
             viewModel.setCategoryFilter(categoryName)
             binding.tvTitle.text = categoryName
+            if (!subcategoryName.isNullOrEmpty()) {
+                viewModel.setSubcategoryFilter(subcategoryName)
+            }
         } else {
             viewModel.setCategoryFilter("Tất cả")
             binding.tvTitle.text = "Tất cả sản phẩm"
@@ -189,8 +216,14 @@ class ShopListFragment : RootieFragment() {
         
         viewModel.subcategories.observe(viewLifecycleOwner) { subcategories ->
             subcategoryAdapter.submitList(subcategories)
-            // Reset to "Tất cả" whenever category changes
-            subcategoryAdapter.selectedSubcategory = "Tất cả"
+            val subcategoryName = arguments?.getString("SUBCATEGORY_NAME")
+            subcategoryAdapter.selectedSubcategory = if (
+                !subcategoryName.isNullOrEmpty() && subcategories.contains(subcategoryName)
+            ) {
+                subcategoryName
+            } else {
+                "Tất cả"
+            }
         }
 
         lifecycleScope.launch {
