@@ -36,7 +36,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@android:drawable/ic_menu_search"
+                android:src="@drawable/ic_search"
                 app:tint="@color/content" />
 
             <EditText
@@ -47,6 +47,7 @@
                 android:layout_marginStart="8dp"
                 android:background="@null"
                 android:hint="Tìm kiếm sản phẩm"
+                android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:singleLine="true"
                 android:textColor="@color/primary"
@@ -113,92 +114,64 @@
                     android:textStyle="bold" 
                     android:fontFamily="@font/be_vietnam_pro_bold"/>
 
-                <!-- Mock Chips Row 1 -->
-                <LinearLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvTopSearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_search"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="6dp"
-                        android:text="Chống nắng"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp" 
-                        android:fontFamily="@font/lexend"/>
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:itemCount="6"
+                    tools:listitem="@layout/shop_item_search_chip" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_chip_search"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="6dp"
-                        android:text="Chống nắng"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp" 
-                        android:fontFamily="@font/lexend"/>
+            </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_chip_search"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="6dp"
-                        android:text="Tẩy trang"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp" 
-                        android:fontFamily="@font/lexend"/>
-                </LinearLayout>
+            <!-- Lịch sử tìm kiếm -->
+            <LinearLayout
+                android:id="@+id/llSearchHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
 
-                <!-- Mock Chips Row 2 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_search"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="6dp"
-                        android:text="Chống nắng"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp" 
-                        android:fontFamily="@font/lexend"/>
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_chip_search"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="6dp"
-                        android:text="Chống nắng"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Lịch sử tìm kiếm"
                         android:textColor="@color/primary"
-                        android:textSize="13sp" 
-                        android:fontFamily="@font/lexend"/>
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/btnClearHistory"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_chip_search"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="6dp"
-                        android:text="Chống nắng"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp" 
-                        android:fontFamily="@font/lexend"/>
+                        android:fontFamily="@font/lexend"
+                        android:padding="4dp"
+                        android:text="Xóa tất cả"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="12sp" />
                 </LinearLayout>
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSearchHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/shop_item_search_history" />
             </LinearLayout>
 
             <!-- Ưu đãi hot hôm nay -->
