@@ -180,6 +180,14 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        // Navigate to Skincare Routine Reminder page
+        binding.btnSkinReminder.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.routine.SkinReminderFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         binding.btnTreatmentHistory.setOnClickListener {
             Toast.makeText(context, "Tính năng Lịch sử liệu trình đang được phát triển", Toast.LENGTH_SHORT).show()
         }
@@ -203,7 +211,7 @@ class AccountProfileFragment : RootieFragment() {
                 }
 
                 parentFragmentManager.beginTransaction()
-                    .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.quiz.QuizTestResultFragment())
+                    .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.profile.SkinAllergyProfileFragment())
                     .addToBackStack(null)
                     .commit()
             } else {

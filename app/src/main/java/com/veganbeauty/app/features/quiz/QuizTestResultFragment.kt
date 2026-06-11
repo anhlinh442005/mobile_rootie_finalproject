@@ -15,6 +15,7 @@ import coil.transform.RoundedCornersTransformation
 import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.QuizTestResultBinding
+import com.veganbeauty.app.features.home.BottomNavHelper
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -65,17 +66,30 @@ class QuizTestResultFragment : RootieFragment() {
 
         // Setup done button (RETAKE QUIZ text button)
         binding.btnDone.setOnClickListener {
-            // LÀM LẠI QUIZ: pop back stack to clear result/questions and return to intro or start again
-            parentFragmentManager.popBackStack()
+            // LÀM LẠI QUIZ: navigate directly to start Quiz
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, QuizTestIntroFragment())
+                .commit()
         }
 
         // Setup save profile button
         binding.btnSaveProfile.setOnClickListener {
+            val sensitivity = prefs.getInt("SENSITIVITY_PERCENT", 50)
+            val hydration = prefs.getInt("HYDRATION_PERCENT", 50)
+            val elasticity = prefs.getInt("ELASTICITY_PERCENT", 75)
+            val sebum = prefs.getInt("SEBUM_PERCENT", 50)
+            val skinAreas = prefs.getString("SKIN_AREAS_DESC", "Độ ẩm và bã nhờn phân bổ tương đối đồng đều trên các vùng da.")
+
             // Save active skin type, recommendations and flagged groups
             prefs.edit().apply {
                 putString("SAVED_USER_SKIN_TYPE", skinType)
                 putString("SAVED_RECOMMENDATION", recommendation)
                 putStringSet("SAVED_FLAGGED_GROUPS", flaggedSet)
+                putInt("SAVED_SENSITIVITY", sensitivity)
+                putInt("SAVED_HYDRATION", hydration)
+                putInt("SAVED_ELASTICITY", elasticity)
+                putInt("SAVED_SEBUM", sebum)
+                putString("SAVED_SKIN_AREAS", skinAreas)
                 apply()
             }
 
@@ -99,9 +113,12 @@ class QuizTestResultFragment : RootieFragment() {
             Toast.makeText(context, "Đã cập nhật $skinType vào hồ sơ da và lịch sử!", Toast.LENGTH_SHORT).show()
         }
 
-        // Setup suggest routine button
+        // Setup suggest routine button (now opens SkinReminderFragment)
         binding.btnSuggestRoutine.setOnClickListener {
-            showRoutineDialog(skinType)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.routine.SkinReminderFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         // Process ingredients lists from quiz_thanhphan.json
@@ -109,6 +126,13 @@ class QuizTestResultFragment : RootieFragment() {
 
         // Process recommended products with risk evaluation
         recommendProducts(flaggedSet)
+
+        // Setup bottom navigation bar
+        BottomNavHelper.setup(
+            fragment = this,
+            root = binding.root,
+            activeTabId = R.id.nav_myskin
+        ) { tabId -> BottomNavHelper.navigate(this, tabId) }
     }
 
     private fun addPill(container: ViewGroup, text: String, backgroundResId: Int, textColorStr: String) {

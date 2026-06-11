@@ -340,186 +340,222 @@
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Spa/Routine 3 Circular Buttons (SPA, Treatment, Skin Profile) -->
-            <LinearLayout
+            <!-- Spa/Routine Circular Buttons Scrollable (HorizontalScrollView) -->
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="12dp"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp">
+                android:scrollbars="none"
+                android:overScrollMode="never">
 
-                <!-- Spa Appointment -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_circle_green"
-                        android:padding="12dp">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_calendar" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Spa Appointment -->
+                    <LinearLayout
+                        android:layout_width="82dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:maxLines="2"
-                        android:text="Lịch sử đặt hẹn SPA"
-                        android:textColor="#000000"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                        android:orientation="vertical">
 
-                <!-- Treatment History -->
-                <LinearLayout
-                    android:id="@+id/btn_treatment_history"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                        <FrameLayout
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:padding="12dp">
 
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_circle_green"
-                        android:padding="12dp">
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_calendar" />
+                        </FrameLayout>
 
-                        <ImageView
+                        <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_checklist" />
-                    </FrameLayout>
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="Lịch sử đặt hẹn SPA"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Treatment History -->
+                    <LinearLayout
+                        android:id="@+id/btn_treatment_history"
+                        android:layout_width="82dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:maxLines="2"
-                        android:text="Lịch sử liệu trình"
-                        android:textColor="#000000"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
 
-                <!-- Weather & Skin (formerly Treatment History) -->
-                <LinearLayout
-                    android:id="@+id/btn_weather_skin"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                        <FrameLayout
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:padding="12dp">
 
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_circle_green"
-                        android:padding="12dp">
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_checklist" />
+                        </FrameLayout>
 
-                        <ImageView
+                        <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_weather_sun_outlined" />
-                    </FrameLayout>
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="Lịch sử liệu trình"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Weather & Skin -->
+                    <LinearLayout
+                        android:id="@+id/btn_weather_skin"
+                        android:layout_width="82dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:maxLines="2"
-                        android:text="Thời tiết &amp; Da"
-                        android:textColor="#000000"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
 
-                <!-- Skin Profile -->
-                <LinearLayout
-                    android:id="@+id/btn_skin_profile"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                        <FrameLayout
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:padding="12dp">
 
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_circle_green"
-                        android:padding="10dp">
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_weather_skin" />
+                        </FrameLayout>
 
-                        <ImageView
+                        <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_face" />
-                    </FrameLayout>
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="Thời tiết &amp; Da"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Skincare Routine Reminder (NEW) -->
+                    <LinearLayout
+                        android:id="@+id/btn_skin_reminder"
+                        android:layout_width="82dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:maxLines="2"
-                        android:text="Hồ sơ da"
-                        android:textColor="#000000"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
 
-                <!-- Expiry Shelf Reminder -->
-                <LinearLayout
-                    android:id="@+id/btn_expiry_shelf"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                        <FrameLayout
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:padding="12dp">
 
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_circle_green"
-                        android:padding="12dp">
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_skin_reminder" />
+                        </FrameLayout>
 
-                        <ImageView
+                        <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_clock" />
-                    </FrameLayout>
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="Nhắc hẹn chăm da"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Skin Profile -->
+                    <LinearLayout
+                        android:id="@+id/btn_skin_profile"
+                        android:layout_width="82dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:maxLines="2"
-                        android:text="Nhắc hết hạn"
-                        android:textColor="#000000"
-                        android:textSize="12sp" />
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <FrameLayout
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:padding="10dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_face" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="Hồ sơ da"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Expiry Shelf Reminder -->
+                    <LinearLayout
+                        android:id="@+id/btn_expiry_shelf"
+                        android:layout_width="82dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <FrameLayout
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:padding="12dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_clock" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="Nhắc hết hạn"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </HorizontalScrollView>
 
             <!-- Thin Divider -->
             <View

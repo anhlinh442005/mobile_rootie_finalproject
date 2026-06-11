@@ -12,6 +12,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import android.content.Context
+import org.json.JSONObject
+import com.veganbeauty.app.core.view.FlowLayout
 import coil.load
 import com.google.android.material.tabs.TabLayout
 import com.veganbeauty.app.core.base.RootieFragment
@@ -315,6 +318,169 @@ class ShopDetailFragment : RootieFragment() {
             binding.tvNotes.text = product.notes
         } else {
             binding.cvNotes.visibility = View.GONE
+        }
+
+        checkProductCompatibility(product)
+    }
+
+    private fun checkProductCompatibility(product: ProductEntity) {
+        val ctx = context ?: return
+        val prefs = ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
+        val hasQuiz = prefs.contains("SAVED_USER_SKIN_TYPE")
+        
+        if (!hasQuiz) {
+            binding.cvSkinCompatibility.visibility = View.VISIBLE
+            binding.cvSkinCompatibility.setCardBackgroundColor(Color.parseColor("#FEFBF4"))
+            binding.cvSkinCompatibility.strokeColor = Color.parseColor("#DDDFC4")
+            binding.ivCompatibilityIcon.setImageResource(com.veganbeauty.app.R.drawable.quiz_ic_sparkles)
+            binding.ivCompatibilityIcon.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#677559"))
+            binding.tvCompatibilityTitle.text = "Kiểm tra độ phù hợp làn da"
+            binding.tvCompatibilityTitle.setTextColor(Color.parseColor("#677559"))
+            binding.tvCompatibilitySubtitle.text = "Làm quiz test da để nhận phân tích chi tiết độ phù hợp của sản phẩm này."
+            binding.flIrritatingPills.visibility = View.GONE
+            binding.vCompatibilityDivider.visibility = View.GONE
+            binding.llCompatibilityReasons.visibility = View.GONE
+            binding.cvSkinCompatibility.setOnClickListener {
+                parentFragmentManager.beginTransaction()
+                    .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.quiz.QuizTestIntroFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+            return
+        }
+
+        binding.cvSkinCompatibility.setOnClickListener(null)
+        val flaggedSet = prefs.getStringSet("SAVED_FLAGGED_GROUPS", emptySet()) ?: emptySet()
+
+        val avoidChemicals = mutableSetOf<String>()
+        val cautionChemicals = mutableSetOf<String>()
+
+        try {
+            val tpString = ctx.assets.open("quiz_thanhphan.json").bufferedReader().use { it.readText() }
+            val tpObject = JSONObject(tpString)
+            val tpArray = tpObject.getJSONArray("ingredients")
+
+            for (i in 0 until tpArray.length()) {
+                val ing = tpArray.getJSONObject(i)
+                val name = ing.getString("name")
+                val category = ing.getString("category")
+                val risk = ing.getString("risk")
+
+                if (flaggedSet.contains(category)) {
+                    if (risk == "avoid") {
+                        avoidChemicals.add(name.lowercase())
+                    } else if (risk == "caution") {
+                        cautionChemicals.add(name.lowercase())
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val detailedIngredientsList = product.detailedIngredients.map { it.lowercase() }
+        val triggeredAvoids = mutableListOf<String>()
+        val triggeredCautions = mutableListOf<String>()
+
+        for (chem in avoidChemicals) {
+            for (ing in detailedIngredientsList) {
+                if (ing.contains(chem)) {
+                    triggeredAvoids.add(getViName(chem))
+                }
+            }
+        }
+
+        for (chem in cautionChemicals) {
+            for (ing in detailedIngredientsList) {
+                if (ing.contains(chem)) {
+                    triggeredCautions.add(getViName(chem))
+                }
+            }
+        }
+
+        binding.cvSkinCompatibility.visibility = View.VISIBLE
+
+        if (triggeredAvoids.isNotEmpty() || triggeredCautions.isNotEmpty()) {
+            binding.cvSkinCompatibility.setCardBackgroundColor(Color.parseColor("#FFF2DF"))
+            binding.cvSkinCompatibility.strokeColor = Color.parseColor("#D2945D")
+            binding.ivCompatibilityIcon.setImageResource(com.veganbeauty.app.R.drawable.quiz_ic_warning_triangle)
+            binding.ivCompatibilityIcon.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#FE851A"))
+            
+            binding.tvCompatibilityTitle.text = "Cảnh báo thành phần không phù hợp"
+            binding.tvCompatibilityTitle.setTextColor(Color.parseColor("#FE851A"))
+            
+            val totalCount = triggeredAvoids.distinct().size + triggeredCautions.distinct().size
+            binding.tvCompatibilitySubtitle.text = "Sản phẩm chứa $totalCount thành phần gây kích ứng cho làn da của bạn."
+
+            binding.flIrritatingPills.visibility = View.VISIBLE
+            binding.flIrritatingPills.removeAllViews()
+            
+            (triggeredAvoids.distinct() + triggeredCautions.distinct()).forEach { name ->
+                val pillView = LayoutInflater.from(ctx).inflate(com.veganbeauty.app.R.layout.quiz_item_pill, binding.flIrritatingPills, false) as TextView
+                pillView.text = name
+                pillView.setBackgroundResource(com.veganbeauty.app.R.drawable.quiz_bg_pill_avoid)
+                pillView.setTextColor(Color.parseColor("#EB862D"))
+                binding.flIrritatingPills.addView(pillView)
+            }
+
+            binding.vCompatibilityDivider.visibility = View.VISIBLE
+            binding.llCompatibilityReasons.visibility = View.VISIBLE
+
+            val avoidCount = triggeredAvoids.distinct().size
+            if (avoidCount > 0) {
+                binding.llReason1.visibility = View.VISIBLE
+                binding.tvReason1Title.text = "$avoidCount thành phần có nguy cơ kích ứng cao"
+                binding.tvReason1Desc.text = "Dựa trên hồ sơ dị ứng và biểu hiện da của bạn."
+            } else {
+                binding.llReason1.visibility = View.GONE
+            }
+
+            val skinType = prefs.getString("SAVED_USER_SKIN_TYPE", "") ?: ""
+            if (skinType.lowercase().contains("nhạy cảm")) {
+                binding.llReason2.visibility = View.VISIBLE
+                binding.tvReason2Title.text = "Làn da đang nhạy cảm"
+                binding.tvReason2Desc.text = "Hồ sơ da của bạn cho thấy hàng rào bảo vệ da đang yếu."
+            } else {
+                binding.llReason2.visibility = View.GONE
+            }
+        } else {
+            binding.cvSkinCompatibility.setCardBackgroundColor(Color.parseColor("#EDF3ED"))
+            binding.cvSkinCompatibility.strokeColor = Color.parseColor("#A2B5A2")
+            binding.ivCompatibilityIcon.setImageResource(com.veganbeauty.app.R.drawable.quiz_ic_wavy_check)
+            binding.ivCompatibilityIcon.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#12B76A"))
+            
+            binding.tvCompatibilityTitle.text = "Sản phẩm phù hợp với da của bạn"
+            binding.tvCompatibilityTitle.setTextColor(Color.parseColor("#67814D"))
+            binding.tvCompatibilitySubtitle.text = "Bảng thành phần cực kỳ lành tính và hoàn toàn phù hợp với nền da hiện tại."
+            
+            binding.flIrritatingPills.visibility = View.GONE
+            binding.vCompatibilityDivider.visibility = View.GONE
+            binding.llCompatibilityReasons.visibility = View.GONE
+        }
+    }
+
+    private fun getViName(chemicalName: String): String {
+        return when (chemicalName.lowercase()) {
+            "alcohol denat", "ethanol" -> "Alcohol"
+            "fragrance" -> "Fragrance"
+            "parfum" -> "Parfum"
+            "essential oil" -> "Tinh dầu"
+            "sodium lauryl sulfate" -> "SLS"
+            "sodium laureth sulfate" -> "Sulfate"
+            "cocamidopropyl betaine" -> "Cocamidopropyl"
+            "retinol" -> "Retinol"
+            "salicylic acid" -> "BHA"
+            "glycolic acid" -> "AHA"
+            "phenoxyethanol", "paraben" -> "Paraben"
+            "propylene glycol" -> "Propylene Glycol"
+            "glycerin" -> "Glycerin"
+            "hyaluronic acid" -> "HA"
+            "centella asiatica" -> "Rau má"
+            "green tea" -> "Trà xanh"
+            "aloe vera" -> "Nha đam"
+            "silicone" -> "Silicone"
+            "petrolatum" -> "Petrolatum"
+            else -> chemicalName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         }
     }
 

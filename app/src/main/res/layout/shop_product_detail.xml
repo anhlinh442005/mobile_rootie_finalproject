@@ -228,6 +228,150 @@
                         android:textSize="16sp" />
                 </LinearLayout>
 
+                <!-- Skin Compatibility warning / suitable card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvSkinCompatibility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#D2945D"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/llCompatibilityContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="top">
+
+                            <ImageView
+                                android:id="@+id/ivCompatibilityIcon"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginEnd="12dp"
+                                android:src="@drawable/quiz_ic_warning_triangle" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvCompatibilityTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/be_vietnam_pro_bold"
+                                    android:text="Cảnh báo thành phần không phù hợp"
+                                    android:textColor="#FE851A"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvCompatibilitySubtitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Sản phẩm chứa 2 thành phần gây kích ứng cho làn da của bạn."
+                                    android:textColor="#888888"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Irritating Ingredients Pills Container -->
+                        <com.veganbeauty.app.core.view.FlowLayout
+                            android:id="@+id/flIrritatingPills"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Divider line inside card -->
+                        <View
+                            android:id="@+id/vCompatibilityDivider"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            android:background="#D2945D"
+                            android:layout_marginVertical="8dp" />
+
+                        <!-- Reasons -->
+                        <LinearLayout
+                            android:id="@+id/llCompatibilityReasons"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <!-- Reason 1 -->
+                            <LinearLayout
+                                android:id="@+id/llReason1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginBottom="8dp">
+
+                                <TextView
+                                    android:id="@+id/tvReason1Title"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/be_vietnam_pro_bold"
+                                    android:text="Thành phần có nguy cơ kích ứng cao"
+                                    android:textColor="#677559"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvReason1Desc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Dựa trên hồ sơ dị ứng và biểu hiện da của bạn."
+                                    android:textColor="#97A49C"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+
+                            <!-- Reason 2 -->
+                            <LinearLayout
+                                android:id="@+id/llReason2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvReason2Title"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/be_vietnam_pro_bold"
+                                    android:text="Làn da đang nhạy cảm"
+                                    android:textColor="#677559"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvReason2Desc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Hồ sơ da của bạn cho thấy hàng rào bảo vệ da đang yếu."
+                                    android:textColor="#97A49C"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <!-- Tabs (Thông tin, Thành phần, Câu chuyện, Công dụng, Cách sử dụng) -->
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/tabLayout"
