@@ -926,10 +926,14 @@
 
                     <!-- item 7: Rootie deal -->
                     <LinearLayout
+                        android:id="@+id/btn_rootie_deal"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:orientation="vertical">
 
                         <ImageView
@@ -972,10 +976,14 @@
 
                     <!-- item 9: Thiết lập tài khoản -->
                     <LinearLayout
+                        android:id="@+id/btn_account_setup"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:orientation="vertical">
 
                         <ImageView

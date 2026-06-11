@@ -160,6 +160,22 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        // Navigate to Account Setup Fragment
+        binding.btnAccountSetup.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountProfileSetupFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Voucher Wallet Fragment
+        binding.btnRootieDeal.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountVoucherFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Action Buttons Click Listeners
         view.findViewById<View>(com.veganbeauty.app.R.id.iv_pin)?.parent?.let { parentLayout ->
             (parentLayout as View).setOnClickListener {
