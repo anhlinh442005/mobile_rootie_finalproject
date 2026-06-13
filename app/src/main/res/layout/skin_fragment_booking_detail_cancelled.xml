@@ -347,7 +347,7 @@
                         android:paddingVertical="8dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:gravity="center_vertical">
+                        android:gravity="bottom">
                         <ImageView
                             android:layout_width="14dp"
                             android:layout_height="14dp"

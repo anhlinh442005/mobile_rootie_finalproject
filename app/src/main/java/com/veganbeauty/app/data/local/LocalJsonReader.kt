@@ -370,11 +370,13 @@ class LocalJsonReader(private val context: Context) {
                 list.add(
                     StoreEntity(
                         id = id,
-                        storeCode = storeCode,
-                        storeName = storeName,
-                        address = address,
-                        province = province,
-                        openHours = openHours,
+                        maCuaHang = storeCode,
+                        tenCuaHang = storeName,
+                        loaiHinh = obj.optString("loai_hinh", "Cửa hàng"),
+                        diaChiDayDu = address,
+                        tinhThanh = province,
+                        moCua = thu26Obj?.optString("mo_cua", "08:00") ?: "08:00",
+                        dongCua = thu26Obj?.optString("dong_cua", "22:00") ?: "22:00",
                         imageUrl = imageUrl,
                         distance = mockDistance
                     )
@@ -388,6 +390,46 @@ class LocalJsonReader(private val context: Context) {
 
     companion object {
         private var cachedBookings: MutableList<BookingHistoryEntity>? = null
+        private var cachedSkinHistory: org.json.JSONArray? = null
+    }
+
+    fun getSkinHistory(): org.json.JSONArray {
+        if (cachedSkinHistory == null) {
+            try {
+                val file = java.io.File(context.filesDir, "skin_history.json")
+                val jsonString = if (file.exists()) {
+                    file.readText()
+                } else {
+                    context.assets.open("skin_history.json").bufferedReader().use { it.readText() }
+                }
+                cachedSkinHistory = org.json.JSONArray(jsonString)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                cachedSkinHistory = org.json.JSONArray()
+            }
+        }
+        return cachedSkinHistory!!
+    }
+
+    fun addSkinHistory(item: org.json.JSONObject) {
+        if (cachedSkinHistory == null) {
+            getSkinHistory()
+        }
+        // Thêm vào đầu danh sách
+        val newArray = org.json.JSONArray()
+        newArray.put(item)
+        for (i in 0 until cachedSkinHistory!!.length()) {
+            newArray.put(cachedSkinHistory!!.getJSONObject(i))
+        }
+        cachedSkinHistory = newArray
+
+        // Lưu vào bộ nhớ trong để giữ data
+        try {
+            val file = java.io.File(context.filesDir, "skin_history.json")
+            file.writeText(newArray.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun getUserBookingHistory(email: String): List<BookingHistoryEntity> {
@@ -399,6 +441,39 @@ class LocalJsonReader(private val context: Context) {
                 val jsonArray = root.getJSONArray("bookings")
                 for (i in 0 until jsonArray.length()) {
                     val histObj = jsonArray.getJSONObject(i)
+                    val dateDisplay = histObj.optString("dateDisplay", "")
+                    val time = histObj.optString("time", "")
+                    var status = histObj.optString("status", "")
+                    var cancelReason = histObj.optString("cancelReason", "")
+
+                    if (status == "Sắp diễn ra") {
+                        try {
+                            val regex = Regex("(\\d+)\\s+tháng\\s+(\\d+),\\s+(\\d+)")
+                            val match = regex.find(dateDisplay)
+                            if (match != null) {
+                                val day = match.groupValues[1].toInt()
+                                val month = match.groupValues[2].toInt()
+                                val year = match.groupValues[3].toInt()
+
+                                val timeParts = time.split(" - ").firstOrNull()?.trim()?.split(":")
+                                val hour = timeParts?.getOrNull(0)?.toIntOrNull() ?: 0
+                                val minute = timeParts?.getOrNull(1)?.toIntOrNull() ?: 0
+
+                                val bookingCal = java.util.Calendar.getInstance()
+                                bookingCal.set(year, month - 1, day, hour, minute, 0)
+
+                                if (bookingCal.time.before(java.util.Date())) {
+                                    status = "Đã huỷ"
+                                    if (cancelReason.isEmpty()) {
+                                        cancelReason = "Hệ thống tự động huỷ do đã quá hạn lịch hẹn."
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
                     list.add(
                         BookingHistoryEntity(
                             id = histObj.optString("id", ""),
@@ -407,17 +482,17 @@ class LocalJsonReader(private val context: Context) {
                             userPhone = histObj.optString("userPhone", ""),
                             userEmail = histObj.optString("userEmail", ""),
                             serviceName = histObj.optString("serviceName", ""),
-                            dateDisplay = histObj.optString("dateDisplay", ""),
+                            dateDisplay = dateDisplay,
                             monthDisplay = histObj.optString("monthDisplay", ""),
                             dayOfWeek = histObj.optString("dayOfWeek", ""),
-                            time = histObj.optString("time", ""),
+                            time = time,
                             duration = histObj.optString("duration", ""),
                             storeName = histObj.optString("storeName", ""),
                             storeAddress = histObj.optString("storeAddress", ""),
                             storePhone = histObj.optString("storePhone", ""),
                             storeImage = histObj.optString("storeImage", ""),
                             note = histObj.optString("note", ""),
-                            status = histObj.optString("status", ""),
+                            status = status,
                             policy = histObj.optString("policy", ""),
                             createdAt = histObj.optString("createdAt", ""),
                             completedAt = histObj.optString("completedAt", ""),
@@ -441,7 +516,7 @@ class LocalJsonReader(private val context: Context) {
                             nextAppointmentDate = histObj.optString("nextAppointmentDate", ""),
                             nextAppointmentText = histObj.optString("nextAppointmentText", ""),
                             cancelledAt = histObj.optString("cancelledAt", ""),
-                            cancelReason = histObj.optString("cancelReason", "")
+                            cancelReason = cancelReason
                         )
                     )
                 }

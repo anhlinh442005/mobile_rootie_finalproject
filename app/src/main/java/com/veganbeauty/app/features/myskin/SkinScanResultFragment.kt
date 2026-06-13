@@ -22,8 +22,21 @@ import org.json.JSONArray
 
 class SkinScanResultFragment : Fragment() {
 
+    companion object {
+        private const val ARG_IMAGE_URI = "arg_image_uri"
+
+        fun newInstance(imageUri: String): SkinScanResultFragment {
+            val fragment = SkinScanResultFragment()
+            val args = Bundle()
+            args.putString(ARG_IMAGE_URI, imageUri)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     private var _binding: SkinFragmentScanResultBinding? = null
     private val binding get() = _binding!!
+    private var currentData: org.json.JSONObject? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,24 +59,57 @@ class SkinScanResultFragment : Fragment() {
         }
 
         binding.skinResultBtnSave.setOnClickListener {
-            Toast.makeText(requireContext(), "Đã lưu kết quả!", Toast.LENGTH_SHORT).show()
+            currentData?.let {
+                com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).addSkinHistory(it)
+                Toast.makeText(requireContext(), "Đã lưu kết quả phân tích vào Lịch sử!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.skinScanBtnTopHistory.setOnClickListener {
-            Toast.makeText(requireContext(), "Xem lịch sử phân tích", Toast.LENGTH_SHORT).show()
+            openHistory()
         }
 
         binding.skinResultBtnHistoryBottom.setOnClickListener {
-            Toast.makeText(requireContext(), "Xem lịch sử phân tích", Toast.LENGTH_SHORT).show()
+            openHistory()
         }
+    }
+
+    private fun openHistory() {
+        parentFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                android.R.anim.slide_in_left,
+                android.R.anim.fade_out,
+                android.R.anim.fade_in,
+                android.R.anim.slide_out_right
+            )
+            .replace(R.id.main_container, SkinHistoryFragment())
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun loadData() {
         try {
-            val jsonString = requireContext().assets.open("skin_history.json").bufferedReader().use { it.readText() }
-            val jsonArray = JSONArray(jsonString)
-            if (jsonArray.length() > 0) {
-                val data = jsonArray.getJSONObject(0) // Lấy data mới nhất (mock)
+            val historyArray = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getSkinHistory()
+            if (historyArray.length() > 0) {
+                // Lấy data mới nhất (mock) để dùng làm kết quả phân tích
+                val data = org.json.JSONObject(historyArray.getJSONObject(0).toString())
+                
+                // Cập nhật thời gian hiện tại cho kết quả quét mới
+                val cal = java.util.Calendar.getInstance()
+                val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale("vi"))
+                val timeFormat = java.text.SimpleDateFormat("HH:mm", java.util.Locale("vi"))
+                data.put("date", dateFormat.format(cal.time))
+                data.put("time", timeFormat.format(cal.time))
+                
+                // Cập nhật id mới
+                data.put("id", "sh_" + System.currentTimeMillis())
+                
+                val imageUri = arguments?.getString(ARG_IMAGE_URI)
+                if (imageUri != null) {
+                    data.put("imageUrl", imageUri)
+                }
+
+                currentData = data
                 bindData(data)
             }
         } catch (e: Exception) {
@@ -80,6 +126,21 @@ class SkinScanResultFragment : Fragment() {
         
         val datetime = "${data.getString("date")} - ${data.getString("time")}"
         binding.skinResultDateTime.text = datetime
+
+        val imageUrl = data.optString("imageUrl", "")
+        if (imageUrl.isNotEmpty()) {
+            try {
+                if (imageUrl.startsWith("/")) {
+                    binding.skinResultImage.setImageURI(android.net.Uri.fromFile(java.io.File(imageUrl)))
+                } else {
+                    binding.skinResultImage.setImageURI(android.net.Uri.parse(imageUrl))
+                }
+            } catch (e: Exception) {
+                binding.skinResultImage.setImageResource(R.drawable.about_us_pd)
+            }
+        } else {
+            binding.skinResultImage.setImageResource(R.drawable.about_us_pd)
+        }
 
         // Progress bar
         val fillParams = binding.skinResultProgressFill.layoutParams as LinearLayout.LayoutParams

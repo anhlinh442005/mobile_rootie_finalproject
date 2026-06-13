@@ -40,4 +40,5 @@
     <color name="home_overlay_dark">#66000000</color>
     <!-- ~70% neutral — hiệu ứng kính mờ trên ảnh peek -->
     <color name="home_peek_overlay">#B3FEFBF4</color>
+    <color name="about_us_bg">#F4F7ED</color>
 </resources>

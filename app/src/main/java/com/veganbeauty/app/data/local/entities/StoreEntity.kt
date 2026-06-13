@@ -24,5 +24,12 @@ data class StoreEntity(
     val dongCua: String = "21:00",
     val trangThai: String = "Đang hoạt động",
     val isActive: Boolean = true,
-    val tienNghi: String = ""
-) : Serializable
+    val tienNghi: String = "",
+    val imageUrl: String = "",
+    val distance: Double = 0.0
+) : Serializable {
+    val storeName: String get() = tenCuaHang
+    val address: String get() = diaChiDayDu
+    val province: String get() = tinhThanh
+    val openHours: String get() = "$moCua - $dongCua"
+}

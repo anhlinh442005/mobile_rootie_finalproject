@@ -45,7 +45,7 @@ class SkinScanFragment : Fragment() {
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                openResultFragment()
+                openResultFragment(it.toString())
             }
         }
 
@@ -156,13 +156,13 @@ class SkinScanFragment : Fragment() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    openResultFragment()
+                    openResultFragment(photoFile.absolutePath)
                 }
             }
         )
     }
 
-    private fun openResultFragment() {
+    private fun openResultFragment(imageUri: String) {
         parentFragmentManager.beginTransaction()
             .setCustomAnimations(
                 android.R.anim.fade_in,
@@ -170,7 +170,7 @@ class SkinScanFragment : Fragment() {
                 android.R.anim.fade_in,
                 android.R.anim.slide_out_right
             )
-            .replace(R.id.main_container, SkinScanResultFragment())
+            .replace(R.id.main_container, SkinScanResultFragment.newInstance(imageUri))
             .addToBackStack(null)
             .commit()
     }

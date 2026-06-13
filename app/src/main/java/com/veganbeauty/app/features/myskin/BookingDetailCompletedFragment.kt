@@ -62,11 +62,17 @@ class BookingDetailCompletedFragment : Fragment() {
         }
         
         binding.skinDetailBtnRebook.setOnClickListener {
-            Toast.makeText(context, "Đặt lại lịch hẹn clicked", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, BookingFragment())
+                .addToBackStack(null)
+                .commit()
         }
         
         binding.skinDetailBtnBookOther.setOnClickListener {
-            Toast.makeText(context, "Đặt dịch vụ khác clicked", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, BookingFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 

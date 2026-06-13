@@ -11,8 +11,8 @@ import com.veganbeauty.app.R
 
 // --- Data Classes ---
 data class BookingService(val id: String, val name: String, val description: String, val duration: String)
-data class BookingDate(val id: String, val dayOfWeek: String, val date: String)
-data class BookingTime(val id: String, val time: String)
+data class BookingDate(val id: String, val dayOfWeek: String, val date: String, val fullDate: java.util.Calendar? = null)
+data class BookingTime(val id: String, val time: String, val isLocked: Boolean = false)
 
 // --- BookingServiceAdapter ---
 class BookingServiceAdapter(
@@ -103,11 +103,18 @@ class BookingDateAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+    
+    fun setSelectedIndex(index: Int) {
+        val oldIndex = selectedIndex
+        selectedIndex = index
+        notifyItemChanged(oldIndex)
+        notifyItemChanged(selectedIndex)
+    }
 }
 
 // --- BookingTimeAdapter ---
 class BookingTimeAdapter(
-    private val items: List<BookingTime>,
+    private var items: List<BookingTime>,
     private val onItemSelected: (BookingTime) -> Unit
 ) : RecyclerView.Adapter<BookingTimeAdapter.ViewHolder>() {
 
@@ -129,13 +136,25 @@ class BookingTimeAdapter(
         holder.tvTime.text = item.time
 
         val isSelected = position == selectedIndex
-        if (isSelected) {
-            holder.container.setBackgroundResource(R.drawable.skin_bg_store_card)
-        } else {
+        
+        if (item.isLocked) {
             holder.container.setBackgroundResource(R.drawable.skin_bg_outline)
+            holder.container.alpha = 0.4f
+            holder.tvTime.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.content))
+        } else {
+            holder.container.alpha = 1.0f
+            if (isSelected) {
+                holder.container.setBackgroundResource(R.drawable.skin_bg_store_card)
+                holder.tvTime.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.primary))
+            } else {
+                holder.container.setBackgroundResource(R.drawable.skin_bg_outline)
+                holder.tvTime.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.content))
+            }
         }
 
         holder.container.setOnClickListener {
+            if (item.isLocked) return@setOnClickListener
+            
             val oldIndex = selectedIndex
             selectedIndex = position
             notifyItemChanged(oldIndex)
@@ -145,4 +164,10 @@ class BookingTimeAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+    
+    fun updateData(newItems: List<BookingTime>) {
+        items = newItems
+        selectedIndex = -1
+        notifyDataSetChanged()
+    }
 }

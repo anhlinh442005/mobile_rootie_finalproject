@@ -5,40 +5,42 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingVertical="6dp">
+    android:paddingVertical="4dp">
 
     <TextView
         android:id="@+id/tvRank"
-        android:layout_width="32dp"
+        android:layout_width="20dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="#526053"
-        android:textSize="32sp"
-        android:fontFamily="@font/be_vietnam_pro_bold" />
+        android:textSize="20sp"
+        android:text="1"
+        android:fontFamily="@font/be_vietnam_pro_italic" />
 
     <ImageView
         android:id="@+id/ivProduct"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="4dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="0dp"
         android:scaleType="centerCrop"
-        android:src="@android:color/darker_gray" />
+        android:src="@drawable/mascot_star"/>
 
     <TextView
         android:id="@+id/tvProductName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:layout_weight="1"
         android:ellipsize="end"
+        android:text="Sua rua mat"
         android:maxLines="2"
         android:textColor="#28362E"
         android:textSize="10sp" />
 
     <ImageView
         android:id="@+id/btnSearch"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:contentDescription="@null"
         android:src="@drawable/ic_search"
         app:tint="@color/primary" />

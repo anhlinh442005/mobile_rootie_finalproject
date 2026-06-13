@@ -28,6 +28,7 @@
                 android:id="@+id/ivFlashProduct"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:src="@drawable/mascot_thank"
                 android:scaleType="fitCenter" />
 
         </FrameLayout>
@@ -40,6 +41,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:minLines="2"
+            android:text="Sua rua mat"
             android:fontFamily="@font/be_vietnam_pro_medium"
             android:textColor="#28362E"
             android:textSize="11sp" />
@@ -57,6 +59,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro_bold"
                 android:textColor="#D32F2F"
+                android:text="100.000 d"
                 android:textSize="10sp" />
 
             <TextView
@@ -64,6 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
+                android:text="200.000d"
                 android:fontFamily="@font/be_vietnam_pro_regular"
                 android:textColor="#888888"
                 android:textSize="8sp" />

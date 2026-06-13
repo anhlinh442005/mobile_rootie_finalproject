@@ -40,8 +40,9 @@
                         android:id="@+id/vpBanner"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:clipChildren="true"
                         android:clipToPadding="true"
-                        android:clipChildren="true" />
+                        />
                 </androidx.cardview.widget.CardView>
 
                 <LinearLayout
@@ -161,7 +162,8 @@
                     android:id="@+id/vvPromoSunscreen"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:layout_gravity="center"/>
             </LinearLayout>
 
             <TextView
@@ -257,28 +259,24 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/flFlashSaleContainer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="20dp">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/ivFlashsaleBg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/homepage_flashsale_bg"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    android:src="@drawable/homepage_flashsale_bg"/>
 
                 <!-- The cards container -->
                 <FrameLayout
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:layout_constraintWidth_percent="0.92"
+                    app:layout_constraintWidth_percent="0.85"
                     app:layout_constraintHeight_percent="0.51"
                     app:layout_constraintVertical_bias="0.59"
+                    android:layout_marginTop="55dp"
+                    android:layout_gravity="center_horizontal"
                     app:layout_constraintTop_toTopOf="@id/ivFlashsaleBg"
                     app:layout_constraintBottom_toBottomOf="@id/ivFlashsaleBg"
                     app:layout_constraintStart_toStartOf="@id/ivFlashsaleBg"
@@ -557,7 +555,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="120dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_home_bestseller_card"
                     android:padding="12dp"
@@ -573,8 +571,8 @@
                             android:layout_height="wrap_content"
                             android:text="@string/home_bestsellers"
                             android:textColor="#4A564A"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/be_vietnam_pro_bold" />
+                            android:textSize="10sp"
+                            android:fontFamily="@font/be_vietnam_pro_bolditalic" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -583,7 +581,7 @@
                             android:layout_centerVertical="true"
                             android:text="Xem tất cả >"
                             android:textColor="#7A8B7B"
-                            android:textSize="10sp"
+                            android:textSize="8sp"
                             android:fontFamily="@font/be_vietnam_pro_regular" />
                     </RelativeLayout>
 
@@ -601,7 +599,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="120dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_home_bestseller_card"
                     android:padding="12dp"
@@ -617,8 +615,8 @@
                             android:layout_height="wrap_content"
                             android:text="@string/home_top_search"
                             android:textColor="#4A564A"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/be_vietnam_pro_bold" />
+                            android:textSize="10sp"
+                            android:fontFamily="@font/be_vietnam_pro_bolditalic" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -627,7 +625,7 @@
                             android:layout_centerVertical="true"
                             android:text="Xem tất cả >"
                             android:textColor="#7A8B7B"
-                            android:textSize="10sp"
+                            android:textSize="8sp"
                             android:fontFamily="@font/be_vietnam_pro_regular" />
                     </RelativeLayout>
 

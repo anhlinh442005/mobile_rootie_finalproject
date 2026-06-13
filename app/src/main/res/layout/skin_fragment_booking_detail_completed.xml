@@ -473,7 +473,7 @@
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
                     android:gravity="center_vertical">
-                    
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -548,16 +548,17 @@
                             android:layout_height="14dp"
                             android:src="@drawable/ic_edit"
                             app:tint="@color/primary"/>
+
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:fontFamily="@font/be_vietnam_pro"
                             android:text="Chỉnh sửa\nđánh giá"
+                            android:textAlignment="center"
                             android:textColor="@color/primary"
                             android:textSize="10sp"
-                            android:textStyle="bold"
-                            android:textAlignment="center"
-                            android:fontFamily="@font/be_vietnam_pro"
-                            android:layout_marginStart="4dp"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -599,7 +600,7 @@
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
                     android:gravity="center_vertical">
-                    
+
                     <androidx.cardview.widget.CardView
                         android:layout_width="80dp"
                         android:layout_height="60dp"
@@ -738,7 +739,7 @@
                             android:textSize="10sp"
                             android:fontFamily="@font/be_vietnam_pro"/>
                     </LinearLayout>
-                    
+
                     <TextView
                         android:id="@+id/skin_detail_total_points"
                         android:layout_width="wrap_content"
@@ -823,7 +824,7 @@
                 android:layout_height="wrap_content"
                 android:text="🔔 Đặt lịch sớm để được tư vấn &amp; chăm sóc tốt nhất cho làn da của bạn!"
                 android:textColor="@color/primary"
-                android:textSize="11sp"
+                android:textSize="8sp"
                 android:textAlignment="center"
                 android:background="@drawable/skin_bg_btn_book"
                 android:paddingVertical="8dp"
