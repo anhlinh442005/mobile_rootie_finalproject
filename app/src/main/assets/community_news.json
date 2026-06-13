@@ -11,7 +11,7 @@
       "TinhChatBiDaoN7"
     ],
     "timestamp": 1778072437,
-    "comments_count": 9,
+    "comments_count": 3,
     "reactions_count": 23,
     "author": {
       "id": "rootie_official",
@@ -20,7 +20,7 @@
       "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/689974895_984600047260764_3551421181423845518_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=107&ccb=1-7&_nc_sid=13d280&_nc_ohc=U1Dl8ZS4BMwQ7kNvwERlCa-&_nc_oc=AdrBJrp_MqhZK8rdRN8UgEaLetSwm_m0Y-RAWqOUQd1wu49xoO3htY9TRUdBGFgyt3Y&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=3MuqV96Pqh4t-dgifRmpqA&_nc_ss=7f289&oh=00_Af46OLoXUabVu_8naWkKt4vB_jgpnlSQYgslGj7vDJeD9A&oe=6A012D35",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780847612/1_txxvyz.jpg",
       "height": 1350,
       "width": 1080,
       "id": "984625947258174"
@@ -29,49 +29,49 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "5fddf997-5cee-42c6-b3b7-de39dcc255b2",
+        "comment_id": "32f3e9eb-027e-4bd3-a324-310599aefa99",
         "post_id": "984625953924840",
         "author": {
-          "username": "Ánh Đặng",
-          "user_id": "46937260",
-          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=458",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "E đang dùng n7 trvia đỡ mụn lắm sốp",
-        "created_at": "2026-05-06T08:00:00.000Z",
-        "likes_count": 0,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 14,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "6d8f4c21-9b57-4a2e-93f2-1c7e8b5a6d33",
+        "comment_id": "50e42431-b853-4f50-8016-0d86598b9aee",
         "post_id": "984625953924840",
         "author": {
-          "username": "Ánh Đỗ",
-          "user_id": "71248799",
-          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=497",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "Mới dùng thấy thấm nhanh với kiềm dầu ok, hi vọng đỡ mụn",
-        "created_at": "2026-05-06T09:00:00.000Z",
-        "likes_count": 0,
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 20,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "b1c9e7a4-3f62-4d8e-a5c1-9e2f6b7d8c44",
+        "comment_id": "4eb3fa36-96c1-429c-bdf5-199cc542d62d",
         "post_id": "984625953924840",
         "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Rootie cảm ơn bạn đã tin dùng và chia sẻ trải nghiệm sử dụng sản phẩm ❤️",
-        "created_at": "2026-05-06T10:00:00.000Z",
-        "likes_count": 0,
-        "parent_id": "5fddf997-5cee-42c6-b3b7-de39dcc255b2",
-        "depth": 1
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 9,
+        "parent_id": null,
+        "depth": 0
       }
     ]
   },
@@ -87,16 +87,16 @@
       "TinhChatBiDaoN7"
     ],
     "timestamp": 1777986048,
-    "comments_count": 26,
+    "comments_count": 2,
     "reactions_count": 108,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=106&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwF9BwYe&_nc_oc=AdpGyGK7q_6YkiPW3yVanXvrgoQMd9XZi8kAI_OxTM9KgAb5YY2M5gyE6zgBK677vZQ&_nc_zt=24&_nc_ht=scontent-ord5-3.xx&_nc_gid=3MuqV96Pqh4t-dgifRmpqA&_nc_ss=7f289&oh=00_Af4EsrXfHovd577pP_gCMZz-kpo44nQz2iCsZote3WdjBA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/687040360_983840347336734_750400290632898965_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=102&ccb=1-7&_nc_sid=13d280&_nc_ohc=TJhjzt1k6hYQ7kNvwEvk33d&_nc_oc=Adrs9cPeLFUhjFe0Kx8_pTk13zyXwF6bkg96wsP0UIcYwQ0eHyWGRE_Bbxj1FTofmR0&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=3MuqV96Pqh4t-dgifRmpqA&_nc_ss=7f289&oh=00_Af6-G0AEqqz5xXaBzVf7tcB9ucfZdjaNPo9k7kskwn5_HQ&oe=6A011834",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780847733/2_rrkvld.jpg",
       "height": 1350,
       "width": 1080,
       "id": "983840344003401"
@@ -105,62 +105,32 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "2f6d8a91-5b3c-4e7f-9c21-8d4a6b2f7e55",
+        "comment_id": "43e2e14b-cc50-40ba-8107-f35b3f6d9e63",
         "post_id": "983842784003157",
         "author": {
-          "user_id": "10705185",
-          "username": "Ahh Haha",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=601",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Giải thích cơ chế chi tiết như vầy mà không thấy ở đâu hết, Rootie content chất lượng quá 👏",
-        "created_at": "2026-05-05T08:20:00.000Z",
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 5,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "c7a1b2d3-4e5f-4a9b-b6d1-2c3f7e8a9b66",
+        "comment_id": "8a30dc72-50c5-4bdd-9cc9-d8acf49f5a48",
         "post_id": "983842784003157",
         "author": {
-          "username": "Ánh Lê",
-          "user_id": "94336601",
-          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=397",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Cho mình hỏi nếu đang dùng retinol thì có kết hợp được với N7 không ạ?",
-        "created_at": "2026-05-05T09:15:00.000Z",
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 2,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e3b5c7d9-8a21-4c6f-a9d3-5b7e2c1a8f77",
-        "post_id": "983842784003157",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, Niacinamide và Retinol hoàn toàn có thể dùng chung nhé! Bạn có thể dùng N7 buổi sáng và retinol buổi tối để tối ưu hiệu quả ạ 🌿",
-        "created_at": "2026-05-05T10:00:00.000Z",
-        "likes_count": 8,
-        "parent_id": "c7a1b2d3-4e5f-4a9b-b6d1-2c3f7e8a9b66",
-        "depth": 1
-      },
-      {
-        "comment_id": "4a9c2e1f-6d7b-4b3a-8c5e-1f2a7d9c6b88",
-        "post_id": "983842784003157",
-        "author": {
-          "username": "Ánh Phạm",
-          "user_id": "02478276",
-          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=333",
-          "is_anonymous": false
-        },
-        "content": "Dùng được 3 tuần rồi, vết thâm mụn mờ đi thấy rõ luôn, mình rất thích sản phẩm này ❤️",
-        "created_at": "2026-05-05T11:30:00.000Z",
-        "likes_count": 12,
         "parent_id": null,
         "depth": 0
       }
@@ -175,75 +145,50 @@
       "ThuHoiPinCu2026"
     ],
     "timestamp": 1777899509,
-    "comments_count": 83,
+    "comments_count": 2,
     "reactions_count": 408,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=106&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwF9BwYe&_nc_oc=AdpGyGK7q_6YkiPW3yVanXvrgoQMd9XZi8kAI_OxTM9KgAb5YY2M5gyE6zgBK677vZQ&_nc_zt=24&_nc_ht=scontent-ord5-3.xx&_nc_gid=3MuqV96Pqh4t-dgifRmpqA&_nc_ss=7f289&oh=00_Af4EsrXfHovd577pP_gCMZz-kpo44nQz2iCsZote3WdjBA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
-    "image": null,
+    "image": {
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780847824/3_z4bvrl.jpg",
+      "height": 1350,
+      "width": 1080,
+      "id": "983840344003401"
+    },
     "video": null,
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "7d3e5f1a-9b2c-4a8e-b6d4-3c1f9a7e2d99",
+        "comment_id": "a8f82b16-5322-49f8-93e0-bed8220859a6",
         "post_id": "983067447414024",
         "author": {
-          "username": "Anh Thu",
-          "user_id": "56971337",
-          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=5",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "Nhà mình có cả đống pin cũ, mang đi liền thôi! Cho hỏi quận Bình Thạnh có điểm thu hồi không ạ?",
-        "created_at": "2026-05-04T08:00:00.000Z",
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 20,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "eb514eed-a42e-4e6d-b11d-8414774a04e6",
+        "post_id": "983067447414024",
+        "author": {
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
+          "is_anonymous": false
+        },
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 4,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "a5f2c7d8-1b3e-4c6a-9d5f-8a2c7b1e3f10",
-        "post_id": "983067447414024",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, bạn kiểm tra danh sách 116 điểm thu hồi tại link này nhé: https://tinyurl.com/RootieTHPC2026 💚 Có cả điểm ở Bình Thạnh đó ạ!",
-        "created_at": "2026-05-04T08:45:00.000Z",
-        "likes_count": 6,
-        "parent_id": "7d3e5f1a-9b2c-4a8e-b6d4-3c1f9a7e2d99",
-        "depth": 1
-      },
-      {
-        "comment_id": "3c9b1e7a-5d2f-4a6c-b8e3-7f1a2d9c6b21",
-        "post_id": "983067447414024",
-        "author": {
-          "username": "Ánh Trần",
-      "user_id": "52376017",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=380",
-          "is_anonymous": false
-        },
-        "content": "Đã mang 40 viên pin đến điểm xanh ở trường rồi, nhận được dầu gội bưởi xinh lắm 🥰 Cảm ơn Rootie!",
-        "created_at": "2026-05-04T10:20:00.000Z",
-        "likes_count": 18,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "8f2a3c1d-7b5e-4a9f-9c6d-2e1a7b3c5d32",
-        "post_id": "983067447414024",
-        "author": {
-          "username": "Ánh Tuyết",
-      "user_id": "19489243",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=363",
-          "is_anonymous": false
-        },
-        "content": "Chương trình ý nghĩa quá, vừa được quà vừa bảo vệ môi trường, Rootie làm nhiều chương trình kiểu này đi ạ 💚",
-        "created_at": "2026-05-04T13:00:00.000Z",
-        "likes_count": 9,
         "parent_id": null,
         "depth": 0
       }
@@ -260,16 +205,16 @@
       "ChongNangThuanChay"
     ],
     "timestamp": 1777726822,
-    "comments_count": 27,
+    "comments_count": 1,
     "reactions_count": 637,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent-for2-2.xx.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwF61LPc&_nc_oc=AdpgwoKBQq1mpKlw3PXkbG15tQMmmHlOMNljveTlg_etbIAJpCsxu3P1NqyxE30fC6o&_nc_zt=24&_nc_ht=scontent-for2-2.xx&_nc_gid=achfEcvgDt3Ja1CsZZLNEA&_nc_ss=7f289&oh=00_Af7-U_PsDL7SjzrVuyXbGvzOwksLRSsk9n0xq_feVVGDfQ&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent-for2-1.xx.fbcdn.net/v/t39.30808-6/686030804_978963784491057_7735617106725162095_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=110&ccb=1-7&_nc_sid=13d280&_nc_ohc=L2BDJJQdXbUQ7kNvwFeOh5l&_nc_oc=Adrtk1mDMHwVW1Xnszw_ZcR4P1Bt9T8hEgBzWq6W2FYlB-AyhX1LEEj9V9RDMO_9Hdg&_nc_zt=23&_nc_ht=scontent-for2-1.xx&_nc_gid=achfEcvgDt3Ja1CsZZLNEA&_nc_ss=7f289&oh=00_Af7d6HEgK_cXjzX1wFpMFRCemmMESwQ22Yo9jrnNNsgQ2A&oe=6A00FADF",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780847870/4_pvvph4.jpg",
       "height": 1350,
       "width": 1080,
       "id": "981508984236537"
@@ -278,64 +223,19 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "d1c7e3b5-9a2f-4b6d-a8c3-5f7e2a1d9c43",
+        "comment_id": "9e9d8834-10ad-4627-8ed4-2652baa7a491",
         "post_id": "981509020903200",
         "author": {
-          "username": "Ánh Võ",
-      "user_id": "46152525",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=384",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Xịt chống nắng kháng nước 80 phút mà lại an toàn cho san hô, Rootie đúng là thương hiệu Việt tự hào 🪸",
-        "created_at": "2026-05-03T09:00:00.000Z",
-        "likes_count": 21,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 0,
         "parent_id": null,
         "depth": 0
-      },
-      {
-        "comment_id": "5b2e9d1c-3f7a-4c8e-b6d1-9a2f7c3e5d54",
-        "post_id": "981509020903200",
-        "author": {
-          "username": "Bích Ngọc",
-      "user_id": "11797393",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "Mang theo đi Đà Nẵng tuần trước, bôi sáng không bị trắng bệch như mấy cái khác, chống nắng được cả ngày nữa",
-        "created_at": "2026-05-03T10:30:00.000Z",
-        "likes_count": 14,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "1e7c3a5d-9b2f-4a6c-8d5e-2c7f1a3b6d65",
-        "post_id": "981509020903200",
-        "author": {
-          "username": "Bông Skincare",
-      "user_id": "43183622",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=141",
-          "is_anonymous": false
-        },
-        "content": "Cho hỏi cái này thoa được lên môi không ạ? Da mặt hay bị khô khi đi biển lắm",
-        "created_at": "2026-05-03T11:45:00.000Z",
-        "likes_count": 1,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f2a1d3c5-7e9b-4c6f-a8d2-3b7c5e1a9d76",
-        "post_id": "981509020903200",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, sản phẩm được dùng cho vùng mặt và cổ bạn nhé, không khuyến khích thoa trực tiếp lên môi ạ. Bạn có thể dùng thêm son dưỡng có SPF để bảo vệ vùng môi nha 💛",
-        "created_at": "2026-05-03T12:30:00.000Z",
-        "likes_count": 7,
-        "parent_id": "1e7c3a5d-9b2f-4a6c-8d5e-2c7f1a3b6d65",
-        "depth": 1
       }
     ]
   },
@@ -349,16 +249,16 @@
       "RootieTuhaonguyenlieuViet"
     ],
     "timestamp": 1777640250,
-    "comments_count": 14,
+    "comments_count": 1,
     "reactions_count": 501,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent-for2-2.xx.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwF61LPc&_nc_oc=AdpgwoKBQq1mpKlw3PXkbG15tQMmmHlOMNljveTlg_etbIAJpCsxu3P1NqyxE30fC6o&_nc_zt=24&_nc_ht=scontent-for2-2.xx&_nc_gid=achfEcvgDt3Ja1CsZZLNEA&_nc_ss=7f289&oh=00_Af7-U_PsDL7SjzrVuyXbGvzOwksLRSsk9n0xq_feVVGDfQ&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent-for2-2.xx.fbcdn.net/v/t39.30808-6/684283779_980724440981658_5745439458345802086_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=7b2446&_nc_ohc=Vuy4mhqBuY8Q7kNvwEsSucE&_nc_oc=Adod_MGJkfmKff3aeXQgZQoEuou4-PZ04cwcpMBsi0qQZmzViTvpVO7IiEc9ri1a0pc&_nc_zt=23&_nc_ht=scontent-for2-2.xx&_nc_gid=achfEcvgDt3Ja1CsZZLNEA&_nc_ss=7f289&oh=00_Af4i6r3S6B0OqQBk3f0boo3oQI0G8WZ8UvD2hMF5HaTy5w&oe=6A011283",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780847875/5_rsufph.jpg",
       "height": 1080,
       "width": 1080,
       "id": "980724437648325"
@@ -367,49 +267,19 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "6a5c3e1d-2b7f-4a9c-8d3e-1f7b2c5a9d87",
+        "comment_id": "16e5a368-40d2-4264-8cd0-0f6e5643fb75",
         "post_id": "980724480981654",
         "author": {
-          "username": "Châu Giang Hoàng",
-      "user_id": "27692209",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=21",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "Tự hào là người Việt Nam quá! Mỹ phẩm thuần chay Việt mà được quốc tế công nhận, xứng đáng lắm Rootie ơi 🇻🇳❤️",
-        "created_at": "2026-05-02T09:10:00.000Z",
-        "likes_count": 33,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9c2f5a1e-7b3d-4a6f-b8c1-5e2d7a3c9f98",
-        "post_id": "980724480981654",
-        "author": {
-          "username": "Conmeohayhoi_211",
-      "user_id": "17243225",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=77",
-          "is_anonymous": false
-        },
-        "content": "Người nước ngoài thích nhất sản phẩm nào của Rootie vậy shop?",
-        "created_at": "2026-05-02T10:00:00.000Z",
-        "likes_count": 5,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2a7e5c3b-1d9f-4c6a-8b3e-7f2d1a5c9e09",
-        "post_id": "980724480981654",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, Tẩy tế bào chết Cà phê và Sữa chống nắng Bí Đao được bạn bè quốc tế yêu thích nhất đó ạ! Đặc biệt là cà phê Đắk Lắk - nguyên liệu Việt luôn gây ấn tượng mạnh 🤎",
-        "created_at": "2026-05-02T10:45:00.000Z",
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 19,
-        "parent_id": "9c2f5a1e-7b3d-4a6f-b8c1-5e2d7a3c9f98",
-        "depth": 1
+        "parent_id": null,
+        "depth": 0
       }
     ]
   },
@@ -422,60 +292,79 @@
       "ThuHoiPinCu2026"
     ],
     "timestamp": 1777381240,
-    "comments_count": 814,
+    "comments_count": 3,
     "reactions_count": 3891,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent-gru2-1.xx.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwEskLoN&_nc_oc=AdqFrXejpFRSm6TFmf7PHAFQlWXEcfjY3g44GZSK09669nAHYEQ2vEiz8uok4YomAWU&_nc_zt=24&_nc_ht=scontent-gru2-1.xx&_nc_gid=7CZm-BxPtfh9pjOyO5FFVA&_nc_ss=7f289&oh=00_Af7Y9vt3Z1kw7qwktbUE2FqRVGWDUsbpoq1JS1XYWuNkkA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
-    "image": null,
+    "image": [
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901344/6_1_whapt9.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901343/6_2_yfrj0z.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901348/6_3_i9s7i3.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      }
+    ],
     "video": null,
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "3e5b1a7d-9c2f-4a6e-b8d3-1f7c2a5e9d11",
+        "comment_id": "4fb2adb8-04c3-4362-95ef-94f30fe91e8d",
         "post_id": "978077077913061",
         "author": {
-          "username": "Cười Khúc Khích",
-      "user_id": "03913167",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=53",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Đà Nẵng có không shop ơi? Mình gom được cả túi pin rồi muốn đi sớm 🔋",
-        "created_at": "2026-04-29T08:05:00.000Z",
-        "likes_count": 7,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 16,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "b7c5d3e1-2a9f-4c6b-8d1e-3f7a2c5e9d22",
+        "comment_id": "9b0c29ba-d48d-4e4b-b213-a4d4687f6c27",
         "post_id": "978077077913061",
         "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Bạn ơi, Đà Nẵng có nhé! Bạn xem danh sách chi tiết tại https://tinyurl.com/RootieTHPC2026 để tìm điểm gần nhất bạn ơi 💚",
-        "created_at": "2026-04-29T08:30:00.000Z",
-        "likes_count": 12,
-        "parent_id": "3e5b1a7d-9c2f-4a6e-b8d3-1f7c2a5e9d11",
-        "depth": 1
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 18,
+        "parent_id": null,
+        "depth": 0
       },
       {
-        "comment_id": "1f3a5c7e-9b2d-4a6c-b8e1-7d2f3c5a9e33",
+        "comment_id": "e7be29cd-478b-489e-a0bb-4fc616f5e369",
         "post_id": "978077077913061",
         "author": {
-          "username": "Đăng Khoa",
-      "user_id": "01965099",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=156",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "5 năm rồi vẫn kiên trì làm chương trình này, Rootie xứng đáng là thương hiệu xanh nhất Việt Nam 💚",
-        "created_at": "2026-04-29T09:00:00.000Z",
-        "likes_count": 45,
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 12,
         "parent_id": null,
         "depth": 0
       }
@@ -492,16 +381,16 @@
       "coffeescrub"
     ],
     "timestamp": 1777208514,
-    "comments_count": 25,
+    "comments_count": 3,
     "reactions_count": 1001,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.ftun8-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwEcsqiD&_nc_oc=Ado8ZXbhCkBhlaoiYZVafM-n922_l4A2UnMPshqKWsL0wj6XopM-HdCXYgbpZ2T0W6E&_nc_zt=24&_nc_ht=scontent.ftun8-1.fna&_nc_gid=XbN_yXrbIyh6L2CGCPzliQ&_nc_ss=7f289&oh=00_Af7ubuuk-M8UUrzSeyflnRTPEavJyt-CHsT7whTdSxBzAA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.ftun8-1.fna.fbcdn.net/v/t39.30808-6/680231985_976482778072491_8967572549725211434_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=104&ccb=1-7&_nc_sid=7b2446&_nc_ohc=sngraLCQvdIQ7kNvwE4XJlh&_nc_oc=AdoMz_Tc0jVq82Lp0gL2ZuqrkQUDcHP7MO-Dzq2nDn7F-7p6HS-pJTUSgTR4T9W-gLA&_nc_zt=23&_nc_ht=scontent.ftun8-1.fna&_nc_gid=XbN_yXrbIyh6L2CGCPzliQ&_nc_ss=7f289&oh=00_Af4YQ9ymvyKMX15h0OA50FdVZKDNLpfsEiMsihE7FHo6Lw&oe=6A010E6B",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901351/7_yy5slq.jpg",
       "height": 1080,
       "width": 1080,
       "id": "976600791394023"
@@ -510,32 +399,47 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "5e7d3c1a-2b9f-4a6e-8c3d-1f7a5c2e9b44",
+        "comment_id": "4b7bb8a0-f8c1-4fe0-a830-30337117e04b",
         "post_id": "976600831394019",
         "author": {
-          "username": "Diệu Linh",
-      "user_id": "43982923",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=375",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "Cà phê Đắk Lắk mà lên được tận Nhật, Pháp - người Việt mình tự hào quá đi 🤎🇻🇳",
-        "created_at": "2026-04-28T08:00:00.000Z",
-        "likes_count": 38,
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 17,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "8c1a5e7d-3b9f-4a6c-8d2e-7f3a5c1b9d55",
+        "comment_id": "8e432626-b185-4476-a084-37f0697f654d",
         "post_id": "976600831394019",
         "author": {
-          "username": "Diệu Phạm",
-      "user_id": "85860942",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=858609",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Tầy tế bào chết cà phê của Rootie mình mua cho bạn ở Mỹ, bạn ấy thích lắm, khen mùi thơm và da mịn hẳn sau dùng",
-        "created_at": "2026-04-28T09:30:00.000Z",
-        "likes_count": 22,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 8,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "a6d11b3e-47a6-4eb3-b451-5a5e9b7bfee1",
+        "post_id": "976600831394019",
+        "author": {
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
+          "is_anonymous": false
+        },
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 1,
         "parent_id": null,
         "depth": 0
       }
@@ -551,7 +455,7 @@
       "ComingSoon"
     ],
     "timestamp": 1777179625,
-    "comments_count": 217,
+    "comments_count": 2,
     "reactions_count": 2487,
     "author": {
       "id": "rootie_official",
@@ -559,54 +463,58 @@
       "url": "https://www.facebook.com/RootieVietnamOfficial",
       "profile_picture_url": "https://scontent.ftun8-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwEcsqiD&_nc_oc=Ado8ZXbhCkBhlaoiYZVafM-n922_l4A2UnMPshqKWsL0wj6XopM-HdCXYgbpZ2T0W6E&_nc_zt=24&_nc_ht=scontent.ftun8-1.fna&_nc_gid=XbN_yXrbIyh6L2CGCPzliQ&_nc_ss=7f289&oh=00_Af7ubuuk-M8UUrzSeyflnRTPEavJyt-CHsT7whTdSxBzAA&oe=6A00FC74"
     },
-    "image": null,
+    "image": [
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901351/8_1_btkm0p.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901345/8_2_gs50ws.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901346/8_3_qitq39.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      }
+    ],
     "video": null,
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "7b5e3c1a-2d9f-4a6c-8e3d-1f7a5c2b9e66",
+        "comment_id": "02ec26a4-6c02-4314-8a5c-5666246b8a85",
         "post_id": "976320004755435",
         "author": {
-          "username": "Diệu Phan",
-      "user_id": "48267543",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=311",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Nhân vật Pin của Rootie cute quá trời ơi 🔋😍 Đang gom pin ở nhà để chờ ngày 29/4 rồi!",
-        "created_at": "2026-04-26T08:10:00.000Z",
-        "likes_count": 29,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 16,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "4c7a1e5d-9b2f-4a6c-b8d3-2f1a7c5e9d77",
+        "comment_id": "9760c11d-12f5-4309-b897-e5cb338a8260",
         "post_id": "976320004755435",
         "author": {
-          "username": "Diệu Trần",
-      "user_id": "13848100",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=178",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Cho hỏi pin sạc dự phòng hỏng có thu không ạ?",
-        "created_at": "2026-04-26T09:00:00.000Z",
-        "likes_count": 4,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 20,
         "parent_id": null,
         "depth": 0
-      },
-      {
-        "comment_id": "2e5a7c1d-3b9f-4a6c-8d1e-7f5a2c3b9d88",
-        "post_id": "976320004755435",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, chương trình áp dụng cho pin tiểu (AA, AAA, C, D...) trở lên nhé. Pin sạc dự phòng thì chưa nằm trong danh mục lần này bạn ơi, mong bạn thông cảm ạ 💚",
-        "created_at": "2026-04-26T09:30:00.000Z",
-        "likes_count": 8,
-        "parent_id": "4c7a1e5d-9b2f-4a6c-b8d3-2f1a7c5e9d77",
-        "depth": 1
       }
     ]
   },
@@ -619,60 +527,100 @@
       "ThuHoiPin2026"
     ],
     "timestamp": 1777122123,
-    "comments_count": 71,
+    "comments_count": 2,
     "reactions_count": 2559,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fdac207-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwHb_QHr&_nc_oc=AdoIIZNjpkrYG-BDsy9_yZ7yT2Fp7UM5x7_mqPcR1bB-T2gUEI1dtIEwiF2LhDUCzVY&_nc_zt=24&_nc_ht=scontent.fdac207-1.fna&_nc_gid=4ipRhcNFoSd_Sh4QlUJo0Q&_nc_ss=7f289&oh=00_Af6fOcEAuPmQjuAjC14uevvssKNdOCVCxpYDi9QesS7pvA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
-    "image": null,
+    "image": [
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901344/9_1_xvlaq6.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901346/9_2_dhqetp.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901345/9_3_jnqzfw.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901348/9_4_fnq1pg.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901346/9_5_vqxs4l.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901349/9_6_q4gnhf.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901348/9_7_scsbaz.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901349/9_8_japgii.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      },
+      {
+        "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901348/9_9_atdyqa.jpg",
+        "height": 1080,
+        "width": 1080,
+        "id": "980724437648325"
+      }
+    ],
     "video": null,
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "9d3c5a7e-1b2f-4a6c-8e3d-7f2a5c1b9e99",
+        "comment_id": "33fe3b1f-5375-4e2b-bbdc-22bd2d491e06",
         "post_id": "975775968143172",
         "author": {
-          "username": "Đỗ Thảo Linh",
-      "user_id": "86807329",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=74",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Bộ truyện tranh về pin này ý nghĩa và dễ thương quá, xem xong muốn đi gom pin ngay 🥹💚",
-        "created_at": "2026-04-25T08:00:00.000Z",
-        "likes_count": 47,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 2,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "6f1a5c7e-3b9d-4a6c-8d2e-1f7a5c2b9e10",
+        "comment_id": "ac77dad0-3380-47e9-b8bd-fee19d0bf0eb",
         "post_id": "975775968143172",
         "author": {
-          "username": "Đức Anh",
-      "user_id": "18769187",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=500",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Rootie làm content sáng tạo và ý nghĩa nhất trong các thương hiệu mỹ phẩm Việt luôn á, follow từ lâu mà cứ phải khen hoài 👏",
-        "created_at": "2026-04-25T09:15:00.000Z",
-        "likes_count": 31,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "1a5e7c3d-9b2f-4a6c-8d1e-7f3a5c2b9d21",
-        "post_id": "975775968143172",
-        "author": {
-          "username": "Đức Lê",
-      "user_id": "69793799",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=346",
-          "is_anonymous": false
-        },
-        "content": "Mình sẽ share cho cả phòng lab biết, ở đây pin cũ nhiều lắm mà không biết vứt đâu cho đúng",
-        "created_at": "2026-04-25T11:00:00.000Z",
-        "likes_count": 14,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 20,
         "parent_id": null,
         "depth": 0
       }
@@ -688,62 +636,32 @@
       "RootieInFrance"
     ],
     "timestamp": 1777034524,
-    "comments_count": 12,
+    "comments_count": 1,
     "reactions_count": 1086,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fdac207-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwHb_QHr&_nc_oc=AdoIIZNjpkrYG-BDsy9_yZ7yT2Fp7UM5x7_mqPcR1bB-T2gUEI1dtIEwiF2LhDUCzVY&_nc_zt=24&_nc_ht=scontent.fdac207-1.fna&_nc_gid=4ipRhcNFoSd_Sh4QlUJo0Q&_nc_ss=7f289&oh=00_Af6fOcEAuPmQjuAjC14uevvssKNdOCVCxpYDi9QesS7pvA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": null,
-    "video": "https://www.facebook.com/reel/2935465516660824/",
+    "video": "https://res.cloudinary.com/dupvkczml/video/upload/v1780901411/10_dypq6g.mp4",
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "e7c5a3d1-2b9f-4a6c-8d3e-1f7a5c2b9d32",
+        "comment_id": "11968dd5-b950-408c-a672-e6de555450d0",
         "post_id": "974906921563410",
         "author": {
-          "username": "Đức Phạm",
-      "user_id": "93677940",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=357",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Rootie ở Pháp rồi! Mỹ phẩm Việt Nam đi khắp thế giới, quá tự hào 🇻🇳🇫🇷",
-        "created_at": "2026-04-24T09:00:00.000Z",
-        "likes_count": 52,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 6,
         "parent_id": null,
         "depth": 0
-      },
-      {
-        "comment_id": "3f8a2c1d-7b6e-4a9c-8d3f-2e1a7b5c9d41",
-        "post_id": "974906921563410",
-        "author": {
-          "username": "Đức Trần",
-      "user_id": "93692474",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
-          "is_anonymous": false
-        },
-        "content": "Mình đang du học ở Pháp, bao giờ mua được Rootie bên này nhỉ? Rất muốn giới thiệu cho bạn bè quốc tế ạ",
-        "created_at": "2026-04-24T10:30:00.000Z",
-        "likes_count": 24,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9b5c1a7e-3d2f-4a6c-b8e1-7d3f2c5a9e52",
-        "post_id": "974906921563410",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, Rootie đang mở rộng kênh phân phối tại Pháp rồi đó! Bạn theo dõi fanpage để cập nhật thông tin sớm nhất nhé 💚🇫🇷",
-        "created_at": "2026-04-24T11:00:00.000Z",
-        "likes_count": 31,
-        "parent_id": "3f8a2c1d-7b6e-4a9c-8d3f-2e1a7b5c9d41",
-        "depth": 1
       }
     ]
   },
@@ -756,16 +674,16 @@
       "ComingSoon"
     ],
     "timestamp": 1776862887,
-    "comments_count": 64,
+    "comments_count": 3,
     "reactions_count": 2118,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent-man2-1.xx.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=106&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwG4q6a3&_nc_oc=AdptZDmdtsad1BH2SX0Yhzg4mm4aG7uHqKfNSuGM8kq62-xD2Tp8cd6K8YnessLnE0AyIHLF9OXlD7ylJr3j9RO_&_nc_zt=24&_nc_ht=scontent-man2-1.xx&_nc_gid=VYv1h0RUYRkRuRmqY8BoKw&_nc_ss=7f289&oh=00_Af5M8ZBEy5bee8Zo89dZQwU5Jw92SyDLCvgsfZCPfb0uAQ&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent-man2-1.xx.fbcdn.net/v/t39.30808-6/678539963_973802155007220_8856264888068018973_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=106&ccb=1-7&_nc_sid=7b2446&_nc_ohc=9SgtwvgyWjYQ7kNvwGoUfYM&_nc_oc=AdrI4F74lE5v-MZG78R0Ov_BjUB2EhHHWbnYxvo13nPJ4jjRhhjB3N7-ShX7Nr2Hy7GvaaiMc8jeZttXZGQilI2rP&_nc_zt=23&_nc_ht=scontent-man2-1.xx&_nc_gid=VYv1h0RUYRkRuRmqY8BoKw&_nc_ss=7f289&oh=00_Af750Xb-wODsLHhlf7DzXpm_TRMwd7yatotA2tLyIgJPvQ&oe=6A01044D",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901349/11_fvld9n.jpg",
       "height": 1353,
       "width": 1080,
       "id": "973802151673887"
@@ -774,32 +692,47 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "a7c3e1d5-9b2f-4c6a-8d1e-3f7a5c2b9d63",
+        "comment_id": "1c2040c2-7694-4d43-acc9-cac0577590dc",
         "post_id": "973322625055173",
         "author": {
-          "username": "Flora Ngo",
-      "user_id": "74736926",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=48",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Nhìn bóng nhân vật trong ảnh đoán là... pin!? 🔋 Rootie làm mình tò mò quá đi",
-        "created_at": "2026-04-22T08:00:00.000Z",
-        "likes_count": 38,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 2,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "5d1e7c3a-2b9f-4a6c-8d3e-1f7a5c2b9d74",
+        "comment_id": "45172e31-f416-4148-97e9-eac46c24f288",
         "post_id": "973322625055173",
         "author": {
-          "username": "Hà Đỗ",
-      "user_id": "85838482",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=110",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Teaser kiểu này hấp dẫn ghê, chắc chắn là chương trình liên quan đến môi trường rồi 🌿",
-        "created_at": "2026-04-22T09:30:00.000Z",
-        "likes_count": 15,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 1,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "ea4b4e3b-275a-482b-8a1f-8375737d779a",
+        "post_id": "973322625055173",
+        "author": {
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
+          "is_anonymous": false
+        },
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 2,
         "parent_id": null,
         "depth": 0
       }
@@ -815,62 +748,47 @@
       "Earthday2026"
     ],
     "timestamp": 1776690083,
-    "comments_count": 21,
+    "comments_count": 2,
     "reactions_count": 363,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fdli1-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwGVxv1Y&_nc_oc=AdpYy0MtKv6lQWDVMFsK-CRBVRnLwiybqVwNTFK4ELO-UQM5QVcnp34HMYBACOvAOWY&_nc_zt=24&_nc_ht=scontent.fdli1-1.fna&_nc_gid=wwylX4tmKb6dCXTQMcxWIA&_nc_ss=7f289&oh=00_Af5zCTRbF6XyVEZaqCkXvnu-43z_QjNFe3k6pv9tQrlqmQ&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": null,
-    "video": "https://www.facebook.com/reel/1285792680320353/",
+    "video": "https://res.cloudinary.com/dupvkczml/video/upload/v1780901417/12_ospoei.mp4",
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "c1a5e7d3-9b2f-4a6c-b8d3-2f1a7c5e9d85",
+        "comment_id": "b0b56de4-a0f4-4ccc-9ac7-5df1754127f9",
         "post_id": "971511821902920",
         "author": {
-          "username": "Hà Ngô",
-      "user_id": "04085909",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Tái sử dụng vỏ chai cũ làm chậu cây, ý tưởng hay và ý nghĩa quá Rootie ơi 🌱♻️",
-        "created_at": "2026-04-21T08:00:00.000Z",
-        "likes_count": 19,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 16,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "7e3c5a1d-2b9f-4a6c-8d1e-7f5a2c3b9d96",
+        "comment_id": "9812ad73-e2ef-48c1-a9c8-b397334226b5",
         "post_id": "971511821902920",
         "author": {
-          "username": "Hà Võ",
-      "user_id": "88777844",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=394",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Cái kit này có bán không ạ hay chỉ tặng thôi? Muốn mua làm quà Ngày Trái Đất cho bạn bè",
-        "created_at": "2026-04-21T09:00:00.000Z",
-        "likes_count": 6,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 20,
         "parent_id": null,
         "depth": 0
-      },
-      {
-        "comment_id": "2a5c7e1d-3b9f-4a6c-8d2e-1f7a5c2b9d07",
-        "post_id": "971511821902920",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, bộ kit Mầm Xanh Hạnh Phúc là quà tặng đặc biệt nhân Ngày Trái Đất bạn nhé 🌱 Rootie sẽ thông báo chi tiết cách nhận sớm thôi ạ!",
-        "created_at": "2026-04-21T09:45:00.000Z",
-        "likes_count": 11,
-        "parent_id": "7e3c5a1d-2b9f-4a6c-8d1e-7f5a2c3b9d96",
-        "depth": 1
       }
     ]
   },
@@ -884,16 +802,16 @@
       "Myphamthuanchay"
     ],
     "timestamp": 1776517737,
-    "comments_count": 21,
+    "comments_count": 3,
     "reactions_count": 1518,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fipn1-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=106&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwGqKt4g&_nc_oc=AdpvD-o71OaGo7s8znjhAEKgEd9nRt_Zv9Z-UpeRA2-xWgFEjvXPo6xBmST0PMgaKK4&_nc_zt=24&_nc_ht=scontent.fipn1-1.fna&_nc_gid=EgJdGJdxF5xq3zKEogptKw&_nc_ss=7f289&oh=00_Af5In68Svibs9i8M5Fyd9_IA3WejHjUE8vdxZbzi-A1Bcg&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.fipn1-1.fna.fbcdn.net/v/t39.30808-6/672249556_970267328694036_7051083671733706255_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=111&ccb=1-7&_nc_sid=13d280&_nc_ohc=6Fsl8LyFre8Q7kNvwHnIxQR&_nc_oc=Ado54K7yW3tlq2NVCa9aD-MBsXdL79IIDJjyVFEuM6isUGJxJMaXS0s8tIap0VaPn7Q&_nc_zt=23&_nc_ht=scontent.fipn1-1.fna&_nc_gid=EgJdGJdxF5xq3zKEogptKw&_nc_ss=7f289&oh=00_Af5OwHbCpbSmujiojyKveoW6gOBUOqibwrVlnuh2niRIrw&oe=6A011F8D",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901350/13_fi0mlo.jpg",
       "height": 1350,
       "width": 1080,
       "id": "970267325360703"
@@ -902,17 +820,47 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "1a5e7c3d-9b2f-4a6c-8d1e-7f3a5c2b9d30",
+        "comment_id": "3ece1fff-9594-4ae3-9427-4763e5269222",
         "post_id": "970267858693983",
         "author": {
-          "username": "hhi08",
-      "user_id": "97090713",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=185",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Đang cần đúng thứ này cho mùa hè! Xịt dưỡng mà còn fix makeup được luôn, quá tiện 😍",
-        "created_at": "2026-04-19T08:00:00.000Z",
-        "likes_count": 34,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 20,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "4fe8e5b4-6658-47f0-95f6-f6de8cd29522",
+        "post_id": "970267858693983",
+        "author": {
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
+          "is_anonymous": false
+        },
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 1,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "be4a75fd-bfd6-47d4-9b6d-577708fd83a2",
+        "post_id": "970267858693983",
+        "author": {
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
+          "is_anonymous": false
+        },
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 11,
         "parent_id": null,
         "depth": 0
       }
@@ -929,16 +877,16 @@
       "coffeescrub"
     ],
     "timestamp": 1776431602,
-    "comments_count": 24,
+    "comments_count": 2,
     "reactions_count": 4414,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fipn1-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=106&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwGqKt4g&_nc_oc=AdpvD-o71OaGo7s8znjhAEKgEd9nRt_Zv9Z-UpeRA2-xWgFEjvXPo6xBmST0PMgaKK4&_nc_zt=24&_nc_ht=scontent.fipn1-1.fna&_nc_gid=EgJdGJdxF5xq3zKEogptKw&_nc_ss=7f289&oh=00_Af5In68Svibs9i8M5Fyd9_IA3WejHjUE8vdxZbzi-A1Bcg&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.fipn1-1.fna.fbcdn.net/v/t39.30808-6/672348377_969513605436075_2007335542386049340_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=7b2446&_nc_ohc=F0_ydM6i6F0Q7kNvwGLG-Hb&_nc_oc=AdqoLicC06WQOW6JnyWNZIwbrLF3Kva_1f6vWle_Khb3uTRWIdlXIntCgy_o2ANzSxw&_nc_zt=23&_nc_ht=scontent.fipn1-1.fna&_nc_gid=EgJdGJdxF5xq3zKEogptKw&_nc_ss=7f289&oh=00_Af71OSaIY9C-CawhqnFI_Wh59xGmS0ZHV5ZjR2DpluM_8Q&oe=6A00FF27",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901349/14_qntduz.jpg",
       "height": 1288,
       "width": 1029,
       "id": "969513602102742"
@@ -947,47 +895,32 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "4b7e3c1a-2d9f-4a6c-8e3d-1f7a5c2b9e52",
+        "comment_id": "8e8f4bfb-0d60-4c88-94dd-38be66962dbc",
         "post_id": "969513622102740",
         "author": {
-          "username": "Hoàng Linh",
-      "user_id": "56312738",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Copy mùi cà phê pha với bơ cacao thơm đến mức dùng xong không muốn rửa tay 🤣☕",
-        "created_at": "2026-04-18T08:00:00.000Z",
-        "likes_count": 86,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 13,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "8c1a5e7d-3b9f-4a6c-8d2e-7f3a5c1b9d63",
+        "comment_id": "e0e97d30-8fa6-4583-9a5c-4e5818bddc93",
         "post_id": "969513622102740",
         "author": {
-          "username": "Hùng Bùi",
-      "user_id": "63214138",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=458",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Da mặt mình nhạy cảm nhưng dùng coffee scrub của Rootie thấy không bị kích ứng gì, da sáng hơn hẳn sau 2 tuần 😊",
-        "created_at": "2026-04-18T09:30:00.000Z",
-        "likes_count": 41,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "7b5e3c1a-2d9f-4a6c-8e3d-1f7a5c2b9e74",
-        "post_id": "969513622102740",
-        "author": {
-          "username": "Hùng Đặng",
-      "user_id": "00281910",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=428",
-          "is_anonymous": false
-        },
-        "content": "Dùng mấy lần rồi, da căng bóng và mịn thật sự, nhất là sau khi dùng xong thấy da sáng hẳn luôn ❤️",
-        "created_at": "2026-04-18T11:00:00.000Z",
-        "likes_count": 29,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 6,
         "parent_id": null,
         "depth": 0
       }
@@ -1004,16 +937,16 @@
       "Vegancosmetics"
     ],
     "timestamp": 1776344410,
-    "comments_count": 32,
+    "comments_count": 2,
     "reactions_count": 1732,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fipn1-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=106&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwGqKt4g&_nc_oc=AdpvD-o71OaGo7s8znjhAEKgEd9nRt_Zv9Z-UpeRA2-xWgFEjvXPo6xBmST0PMgaKK4&_nc_zt=24&_nc_ht=scontent.fipn1-1.fna&_nc_gid=EgJdGJdxF5xq3zKEogptKw&_nc_ss=7f289&oh=00_Af5In68Svibs9i8M5Fyd9_IA3WejHjUE8vdxZbzi-A1Bcg&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.fipn1-1.fna.fbcdn.net/v/t39.30808-6/671317299_968751982178904_6228633582867585928_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=108&ccb=1-7&_nc_sid=13d280&_nc_ohc=nwQFYRUS65IQ7kNvwHS30e5&_nc_oc=AdptVjGzTXg9ioB3BZMqk4xO3SKJCUehJbSEA-oWUxj2iasKHy5ruZ8wM_Q4W36O48g&_nc_zt=23&_nc_ht=scontent.fipn1-1.fna&_nc_gid=EgJdGJdxF5xq3zKEogptKw&_nc_ss=7f289&oh=00_Af5vnv9UOtC0MgqJa4UxAQx9dcIJwTOjsSXvTzoIbaY1Wg&oe=6A00FEF9",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901350/15_orgxuk.jpg",
       "height": 1350,
       "width": 1080,
       "id": "968751978845571"
@@ -1022,17 +955,32 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "4c7a1e5d-9b2f-4a6c-b8d3-2f1a7c5e9d85",
+        "comment_id": "e9b37bc1-8720-4d60-aad4-6a9b1f8061b7",
         "post_id": "968753485512087",
         "author": {
-          "username": "Hùng Đỗ",
-      "user_id": "68957465",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=136",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "Gel rửa mặt này mình dùng du lịch hay lắm, nhẹ mà sạch, không khô da, size nhỏ nhét vali tiện lợi 🧳",
-        "created_at": "2026-04-17T08:30:00.000Z",
-        "likes_count": 22,
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 13,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "517c65cb-8eae-47ad-aa18-6ee7a4610851",
+        "post_id": "968753485512087",
+        "author": {
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
+          "is_anonymous": false
+        },
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 8,
         "parent_id": null,
         "depth": 0
       }
@@ -1049,16 +997,16 @@
       "MatNaBiDao"
     ],
     "timestamp": 1776171488,
-    "comments_count": 31,
+    "comments_count": 2,
     "reactions_count": 1073,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fbkk6-2.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwHhoNQA&_nc_oc=Ado6WYGagRxw-Ll5vh7srb1NDlGPj4K_GLmup4_J78XwwiTtoMbX0sZMsTR_eAjZ31w&_nc_zt=24&_nc_ht=scontent.fbkk6-2.fna&_nc_gid=pPVxdqSKquyWe84gUjQEQg&_nc_ss=7f289&oh=00_Af4GBClq8Vhe-f28WnrqOgP_CFQ0d_4-LokKPs8XRA6tHg&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.fbkk6-2.fna.fbcdn.net/v/t39.30808-6/672090586_967103022343800_5857772239270782194_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=107&ccb=1-7&_nc_sid=7b2446&_nc_ohc=anpsdDMPMb4Q7kNvwHfMAbJ&_nc_oc=AdpLCBUJKeZlJP-rf3mqsDp6-SB89HuUIhqi3eoTe5oPckE5LfKWbfB3lRIWISd80PA&_nc_zt=23&_nc_ht=scontent.fbkk6-2.fna&_nc_gid=pPVxdqSKquyWe84gUjQEQg&_nc_ss=7f289&oh=00_Af5qWTfqXb-pDpeNbDBFFtqVEm1egXdmohB7MCS2vT_vpA&oe=6A010530",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901345/16_mikj4b.jpg",
       "height": 1350,
       "width": 1080,
       "id": "967162382337864"
@@ -1067,64 +1015,34 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "2e5a7c1d-3b9f-4a6c-8d1e-7f5a2c3b9d96",
+        "comment_id": "e7f8fe30-5aba-40dc-a497-11321ca03f5b",
         "post_id": "967162402337862",
         "author": {
-          "username": "Hùng Nguyễn",
-      "user_id": "80340339",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=265",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Mùa hè ở Sài Gòn mà có mặt nạ này là cứu tinh luôn, đắp xong mát lịm 🍃❄️",
-        "created_at": "2026-04-16T08:00:00.000Z",
-        "likes_count": 31,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 6,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "9d3c5a7e-1b2f-4a6c-8e3d-7f2a5c1b9e07",
+        "comment_id": "47f0a121-2811-4ac6-be15-a6894fab0e93",
         "post_id": "967162402337862",
         "author": {
-          "username": "Hùng Trần",
-      "user_id": "56219127",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=476",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Dùng sau khi đi nắng về thấy da dịu ngay tức thì, không còn bị ửng đỏ nữa. Mặt nạ bí đao xứng đáng là staple mùa hè rồi 🌿",
-        "created_at": "2026-04-16T09:30:00.000Z",
-        "likes_count": 24,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 8,
         "parent_id": null,
         "depth": 0
-      },
-      {
-        "comment_id": "6a5c3e1d-2b7f-4a9c-8d3e-1f7b2c5a9d18",
-        "post_id": "967162402337862",
-        "author": {
-          "username": "Hùng Võ",
-      "user_id": "44319532",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=273",
-          "is_anonymous": false
-        },
-        "content": "Đắp lúc 15 phút hay để qua đêm được không ạ?",
-        "created_at": "2026-04-16T10:00:00.000Z",
-        "likes_count": 3,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e7f8a9b0-0017-0001-0001-000000000004",
-        "post_id": "967162402337862",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, mặt nạ này khuyến khích đắp khoảng 15-20 phút rồi rửa sạch bạn nhé, không nên để qua đêm vì có thể gây bít tắc lỗ chân lông ạ 🌿",
-        "created_at": "2026-04-16T10:30:00.000Z",
-        "likes_count": 10,
-        "parent_id": "6a5c3e1d-2b7f-4a9c-8d3e-1f7b2c5a9d18",
-        "depth": 1
       }
     ]
   },
@@ -1141,16 +1059,16 @@
       "Vegancosmetic"
     ],
     "timestamp": 1775998820,
-    "comments_count": 32,
+    "comments_count": 3,
     "reactions_count": 1623,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fbkk6-2.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwHhoNQA&_nc_oc=Ado6WYGagRxw-Ll5vh7srb1NDlGPj4K_GLmup4_J78XwwiTtoMbX0sZMsTR_eAjZ31w&_nc_zt=24&_nc_ht=scontent.fbkk6-2.fna&_nc_gid=pPVxdqSKquyWe84uGjQEQg&_nc_ss=7f289&oh=00_Af4GBClq8Vhe-f28WnrqOgP_CFQ0d_4-LokKPs8XRA6tHg&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.fbkk6-2.fna.fbcdn.net/v/t39.30808-6/670858967_965489795838456_5517962099958158437_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=101&ccb=1-7&_nc_sid=13d280&_nc_ohc=yrZG3h6kZs4Q7kNvwGRXq0h&_nc_oc=AdqDi581wOEg3m1h_JI7VxNBjFjgOSMAjYTwSQcfNPV18V-x9iKpluijjOjO14vChus&_nc_zt=23&_nc_ht=scontent.fbkk6-2.fna&_nc_gid=pPVxdqSKquyWe84gUjQEQg&_nc_ss=7f289&oh=00_Af7c-lxA3HgbsMonXC01XNy4H0TnlVJaYbPoJfTnN3_ZNg&oe=6A0124DD",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901347/17_ru8v2p.jpg",
       "height": 1350,
       "width": 1080,
       "id": "965655795821856"
@@ -1159,32 +1077,47 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "f2a1d3c5-7e9b-4c6f-a8d2-3b7c5e1a9d29",
+        "comment_id": "1485214b-6106-4df6-9baa-8ef9dceacfa9",
         "post_id": "965655825821853",
         "author": {
-          "username": "Hương Đặng",
-      "user_id": "17264345",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=161",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "Giải thích rõ cơ chế vòng lặp dầu bù quá hay, giờ mình mới hiểu tại sao tẩy trang kỹ quá lại càng ra nhiều dầu hơn 🤯",
-        "created_at": "2026-04-13T08:00:00.000Z",
-        "likes_count": 43,
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 0,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "1e7c3a5d-9b2f-4a6c-8d5e-2c7f1a3b6d30",
+        "comment_id": "6ab73ca6-e5bd-4497-afc7-f896410f1808",
         "post_id": "965655825821853",
         "author": {
-          "username": "Hương Phạm",
-      "user_id": "17390683",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Dùng nước tẩy trang bí đao này được 1 tháng, da ít dầu hẳn và mụn cũng bớt nhiều, mình rất hài lòng 🌿",
-        "created_at": "2026-04-13T09:15:00.000Z",
-        "likes_count": 28,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 18,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "365579b8-f455-4be1-8839-71cfbd6929cc",
+        "post_id": "965655825821853",
+        "author": {
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
+          "is_anonymous": false
+        },
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 2,
         "parent_id": null,
         "depth": 0
       }
@@ -1201,16 +1134,16 @@
       "sugarscrub"
     ],
     "timestamp": 1775912488,
-    "comments_count": 56,
+    "comments_count": 2,
     "reactions_count": 2237,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fdac175-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwF9E3BE&_nc_oc=AdqowYWOHdfiCp4wSF3QeRijCUwu2jvYiGylAuQVMlSfT2N9B84UmkByiVQZCalS768&_nc_zt=24&_nc_ht=scontent.fdac175-1.fna&_nc_gid=sfkSBiFWCLMUvM0lPAb1xg&_nc_ss=7f289&oh=00_Af7M3b02hA05vCy9CjNWBObNTKggDkZPHTxo3sWIDIxPaA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.fdac175-1.fna.fbcdn.net/v/t39.30808-6/668596962_964755769245192_2113276378109858319_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_ohc=Qn71oyfIaSMQ7kNvwHCIIE7&_nc_oc=AdoPvX7snw21PSuqZK6ZCACvgBMmaC67dP8-2cTo5ytLiRbzCbCKlL-fUSUpDj13UWQ&_nc_zt=23&_nc_ht=scontent.fdac175-1.fna&_nc_gid=sfkSBiFWCLMUvM0lPAb1xg&_nc_ss=7f289&oh=00_Af7le_GDewAigrTkGKnA1y-yY9SinCZW0fyltZ-MnllYgA&oe=6A012FEF",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901342/18_pgieva.jpg",
       "height": 1350,
       "width": 1080,
       "id": "964914545895981"
@@ -1219,47 +1152,32 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "5b2e9d1c-3f7a-4c8e-b6d1-9a2f7c3e5d41",
+        "comment_id": "a1e10b40-c4b4-4a6a-b256-f6299e4f05cc",
         "post_id": "964914565895979",
         "author": {
-          "username": "Hương Phan",
-      "user_id": "80155853",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=801558",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Coffee scrub hay sugar scrub nhỉ? Mình đang phân vân quá, da thường dùng cái nào tốt hơn ạ?",
-        "created_at": "2026-04-12T08:10:00.000Z",
-        "likes_count": 12,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 8,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "d1c7e3b5-9a2f-4b6d-a8c3-5f7e2a1d9c52",
+        "comment_id": "b70da45d-5a7a-40af-a046-400eef95e91f",
         "post_id": "964914565895979",
         "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "Bạn ơi, da thường dùng được cả hai nhé! Coffee scrub cho cảm giác tỉnh táo, sạch sâu hơn, còn sugar scrub dịu nhẹ và dưỡng ẩm hơn. Bạn có thể thử coffee scrub trước xem da phản ứng thế nào ạ 🌿",
-        "created_at": "2026-04-12T09:00:00.000Z",
-        "likes_count": 18,
-        "parent_id": "5b2e9d1c-3f7a-4c8e-b6d1-9a2f7c3e5d41",
-        "depth": 1
-      },
-      {
-        "comment_id": "8f2a3c1d-7b5e-4a9f-9c6d-2e1a7b3c5d63",
-        "post_id": "964914565895979",
-        "author": {
-          "username": "Huyền Trang",
-      "user_id": "38832638",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=35",
-          "is_anonymous": false
-        },
-        "content": "Mua cả 2 về dùng luân phiên, coffee scrub sáng với sugar scrub tối, da mịn hơn hẳn sau 1 tuần 😍",
-        "created_at": "2026-04-12T10:30:00.000Z",
-        "likes_count": 35,
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 12,
         "parent_id": null,
         "depth": 0
       }
@@ -1275,16 +1193,16 @@
       "Myphamthuanchay"
     ],
     "timestamp": 1775825702,
-    "comments_count": 77,
+    "comments_count": 2,
     "reactions_count": 2781,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fdac175-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwF9E3BE&_nc_oc=AdqowYWOHdfiCp4wSF3QeRijCUwu2jvYiGylAuQVMlSfT2N9B84UmkByiVQZCalS768&_nc_zt=24&_nc_ht=scontent.fdac175-1.fna&_nc_gid=sfkSBiFWCLMUvM0lPAb1xg&_nc_ss=7f289&oh=00_Af7M3b02hA05vCy9CjNWBObNTKggDkZPHTxo3sWIDIxPaA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.fdac175-1.fna.fbcdn.net/v/t39.30808-6/669070995_964617792592323_8671436180252219762_n.jpg?stp=cp6_dst-jpg_s1080x2048_tt6&_nc_cat=109&ccb=1-7&_nc_sid=13d280&_nc_ohc=RG_Q8eX18dAQ7kNvwHFAAB4&_nc_oc=AdrIu8ixDku6zV0BE6LQ9kKXzs6YcqmLqJ4lxGB9SW1xIOmb6AHjsVDYM5w9IdZjMNo&_nc_zt=23&_nc_ht=scontent.fdac175-1.fna&_nc_gid=sfkSBiFWCLMUvM0lPAb1xg&_nc_ss=7f289&oh=00_Af4F5BzTh7qssjouVO7mri-2CGfoRgVOJxPY8QxGscMzxg&oe=6A01240C",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901343/19_rswge9.jpg",
       "height": 1350,
       "width": 1080,
       "id": "964617789258990"
@@ -1293,32 +1211,32 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "3c9b1e7a-5d2f-4a6c-b8e3-7f1a2d9c6b74",
+        "comment_id": "58ff72d4-5bed-4db9-a49e-a281826b561d",
         "post_id": "964166315970804",
         "author": {
-          "username": "Kieuu Ann",
-      "user_id": "58343670",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=175",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
           "is_anonymous": false
         },
-        "content": "Dầu gội bưởi của Rootie là số một, gội xong tóc thơm cả ngày mà không bết chút nào 🍋💚",
-        "created_at": "2026-04-11T08:00:00.000Z",
-        "likes_count": 52,
+        "content": "Tuyệt vời, hy vọng có nhiều thông tin như này hơn",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 3,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "a5f2c7d8-1b3e-4c6a-9d5f-8a2c7b1e3f85",
+        "comment_id": "59e1110c-c165-468d-ae6f-c77e2e2f6b39",
         "post_id": "964166315970804",
         "author": {
-          "username": "Kim Anh",
-      "user_id": "26716842",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=282",
+          "username": "Mai Thy",
+          "user_id": "112",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
           "is_anonymous": false
         },
-        "content": "Tóc dầu gội ngày 2 lần vẫn bết, thử dầu gội bưởi Rootie thấy gội 1 lần/ngày vẫn ổn, không ngờ khác biệt đến vậy",
-        "created_at": "2026-04-11T09:00:00.000Z",
-        "likes_count": 37,
+        "content": "Cảm ơn admin đã chia sẻ!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 12,
         "parent_id": null,
         "depth": 0
       }
@@ -1335,16 +1253,16 @@
       "ChongNangThuanChay"
     ],
     "timestamp": 1775739734,
-    "comments_count": 42,
+    "comments_count": 1,
     "reactions_count": 1474,
     "author": {
       "id": "rootie_official",
       "username": "Rootie Vietnam",
       "url": "https://www.facebook.com/RootieVietnamOfficial",
-      "profile_picture_url": "https://scontent.fdac175-1.fna.fbcdn.net/v/t39.30808-1/491924929_692703149783790_3592867284548589768_n.jpg?stp=cp0_dst-jpg_s80x80_tt6&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=bSg_M1PSKEEQ7kNvwF9E3BE&_nc_oc=AdqowYWOHdfiCp4wSF3QeRijCUwu2jvYiGylAuQVMlSfT2N9B84UmkByiVQZCalS768&_nc_zt=24&_nc_ht=scontent.fdac175-1.fna&_nc_gid=sfkSBiFWCLMUvM0lPAb1xg&_nc_ss=7f289&oh=00_Af7M3b02hA05vCy9CjNWBObNTKggDkZPHTxo3sWIDIxPaA&oe=6A00FC74"
+      "profile_picture_url": ""
     },
     "image": {
-      "uri": "https://scontent.fdac175-1.fna.fbcdn.net/v/t39.30808-6/665938473_963401302713972_95158531286351046_n.jpg?stp=dst-jpg_s1080x2048_tt6&_nc_cat=105&ccb=1-7&_nc_sid=7b2446&_nc_ohc=mBmpO1p2riUQ7kNvwEB6IFo&_nc_oc=AdqchZElac5_Qc-ThZ_AYh-hfhg_wkKsL2clSuDQJxGyjq6ynEo88anHDi9tNtS5d9E&_nc_zt=23&_nc_ht=scontent.fdac175-1.fna&_nc_gid=sfkSBiFWCLMUvM0lPAb1xg&_nc_ss=7f289&oh=00_Af5hBjE_z6C0J8Bfi-9Xm_DTTp1YTtkdRBUfuKs4G6r06g&oe=6A010778",
+      "uri": "https://res.cloudinary.com/dupvkczml/image/upload/v1780901343/20_fqylp1.jpg",
       "height": 1350,
       "width": 1080,
       "id": "963426002711502"
@@ -1353,62 +1271,17 @@
     "attached_post_url": null,
     "comments": [
       {
-        "comment_id": "7d3e5f1a-9b2c-4a8e-b6d4-3c1f9a7e2d96",
+        "comment_id": "47e7d5de-ca5c-41fd-8b6b-c25782613001",
         "post_id": "963426022711500",
         "author": {
-          "username": "Kim Hoàng",
-      "user_id": "68343295",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=283",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://i.pinimg.com/736x/19/67/e2/1967e25a3aac9452bace230397d15d1a.jpg",
           "is_anonymous": false
         },
-        "content": "Thương hiệu Việt đầu tiên đạt EcoSun Pass, quá tự hào! Chống nắng mà còn bảo vệ san hô được nữa 🪸",
-        "created_at": "2026-04-10T08:00:00.000Z",
-        "likes_count": 47,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4a9c2e1f-6d7b-4b3a-8c5e-1f2a7d9c6b07",
-        "post_id": "963426022711500",
-        "author": {
-          "username": "Kim Phan",
-      "user_id": "07727077",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=485",
-          "is_anonymous": false
-        },
-        "content": "Chống nắng này có bị trắng cast không ạ? Da ngăm dùng hay bị trắng bệch",
-        "created_at": "2026-04-10T09:00:00.000Z",
-        "likes_count": 9,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e3b5c7d9-8a21-4c6f-a9d3-5b7e2c1a8f18",
-        "post_id": "963426022711500",
-        "author": {
-          "user_id": "rootie_official",
-          "username": "Rootie Vietnam",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "Bạn ơi, Sữa Chống Nắng Bí Đao dùng màng lọc hóa học nên kết cấu mỏng, thấm nhanh và gần như không để lại white cast bạn nhé! Da ngăm dùng được rất tốt ạ 🌿",
-        "created_at": "2026-04-10T09:30:00.000Z",
-        "likes_count": 21,
-        "parent_id": "4a9c2e1f-6d7b-4b3a-8c5e-1f2a7d9c6b07",
-        "depth": 1
-      },
-      {
-        "comment_id": "c7a1b2d3-4e5f-4a9b-b6d1-2c3f7e8a9b29",
-        "post_id": "963426022711500",
-        "author": {
-          "username": "Kim Trần",
-      "user_id": "93240498",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=300",
-          "is_anonymous": false
-        },
-        "content": "Dùng đi biển Phú Quốc, bôi lúc 8h đến 12h không bị cháy nắng, thoa lại một lần nữa xài đến chiều. Rất hài lòng với sản phẩm ❤️",
-        "created_at": "2026-04-10T11:00:00.000Z",
-        "likes_count": 33,
+        "content": "Tin tức này hữu ích quá",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 7,
         "parent_id": null,
         "depth": 0
       }

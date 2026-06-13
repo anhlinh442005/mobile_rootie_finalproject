@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
         UserGiftEntity::class,
         CartItemEntity::class
     ], 
-    version = 19
+    version = 30   // ← bumped: forces destructive migration → wipes all old cached posts/users
 )
 @TypeConverters(OrderConverters::class, ProductConverters::class)
 abstract class RootieDatabase : RoomDatabase() {

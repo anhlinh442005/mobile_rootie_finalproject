@@ -63,7 +63,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="6dp"
-                    android:src="@drawable/ic_notification" />
+                    android:src="@drawable/home_ic_notification" />
             </RelativeLayout>
 
             <!-- Group 1: Tài Khoản Của Tôi -->

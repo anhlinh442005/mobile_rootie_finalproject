@@ -16,9 +16,9 @@ class ShopSearchViewModel : ViewModel() {
 
     private fun loadMockHotDeals() {
         val mockData = listOf(
-            ProductEntity("1", "Gel tắm đường thốt nốt An Giang 500ml", "SKU01", 241000, "Sữa tắm", "", 100, "", "https://picsum.photos/200/300", "Mọi loại da", "An Giang", "2025", true),
-            ProductEntity("2", "Gel tắm đường thốt nốt An Giang 500ml", "SKU02", 241000, "Sữa tắm", "", 100, "", "https://picsum.photos/200/301", "Mọi loại da", "An Giang", "2025", false),
-            ProductEntity("3", "Gel tắm đường thốt nốt An Giang 500ml", "SKU03", 241000, "Sữa tắm", "", 100, "", "https://picsum.photos/200/302", "Mọi loại da", "An Giang", "2025", false)
+            ProductEntity("1", "Gel tắm đường thốt nốt An Giang 500ml", "SKU01", 241000, null, "Sữa tắm", "", 100, "", "https://picsum.photos/200/300", "Mọi loại da", "An Giang", "2025", true),
+            ProductEntity("2", "Gel tắm đường thốt nốt An Giang 500ml", "SKU02", 241000, null, "Sữa tắm", "", 100, "", "https://picsum.photos/200/301", "Mọi loại da", "An Giang", "2025", false),
+            ProductEntity("3", "Gel tắm đường thốt nốt An Giang 500ml", "SKU03", 241000, null, "Sữa tắm", "", 100, "", "https://picsum.photos/200/302", "Mọi loại da", "An Giang", "2025", false)
         )
         _hotDeals.value = mockData
     }

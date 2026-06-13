@@ -46,7 +46,9 @@
       "createdAt": "2026-04-28T15:20:30.474Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "01/05/2027"
+      "expiryDate": "01/05/2027",
+      "rating": 4.7,
+      "sold": 6761
     },
     {
       "id": "55cb3638da4889f9acfb3884",
@@ -60,7 +62,7 @@
       "description": "Với công thức dịu nhẹ không chứa sulfate, gel rửa mặt cà phê Đắk Lắk có khả năng làm sạch hiệu quả mà không gây khô da, mang lại cảm giác sảng khoái cùng một làn da tươi mới, sạch thoáng và trông tràn đầy sinh lực để bắt đầu một ngày mới.\nNhững hạt cà phê Đắk Lắk xay nhuyễn giàu cafeine hòa quyện với bơ cacao Tiền Giang giúp bạn loại bỏ lớp tế bào chết già cỗi và xỉn màu, đánh thức làn da tươi mới đầy năng lượng cùng cảm giác mượt mà và mềm mịn lan tỏa.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/z4131327118937_575ed3235169c72f56aa0cff8427240e_fe1f41d628.jpg",
       "suitableFor": "Mọi loại da",
-      "mainIngredientsSummary": "Dầu cà phê, caffeine & các axít amin.",
+      "mainIngredientsSummary": "Dầu cà phê, caffeine & các axít amin., Dầu dừa",
       "idealFor": [
         "Dành cho da vào buổi sáng",
         "Làn da mệt mỏi, thiếu sức sống"
@@ -142,7 +144,9 @@
       "createdAt": "2026-04-28T15:23:37.571Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "02/05/2027"
+      "expiryDate": "02/05/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "50c50369a5552d24a4c319b6",
@@ -160,7 +164,7 @@
       "description": "Với thành phần chủ đạo là bí đao thanh mát, bổ sung thêm 7% Niacinamide (Vitamin B3), Centella Cast từ rau má và tinh dầu tràm trà, chiết xuất chất bí đao sẽ phục hồi mạnh mẽ tình trạng mụn, kiểm soát bã nhờn, làm thông thoáng lỗ chân lông giúp giảm tình trạng mụn ẩn, cải thiện bề mặt da và làm mờ vết thâm.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Artboard_26_copy_5_ad72a3b272.png",
       "suitableFor": "Da dầu, da hỗn hợp thiên dầu, da mụn",
-      "mainIngredientsSummary": "Với chiết xuất bí đao, 7% Niacinamide, Tràm trà và TECA",
+      "mainIngredientsSummary": "Với chiết xuất bí đao, 7% Niacinamide, Tràm trà và TECA, Trà xanh",
       "idealFor": [
         "Da dầu, da có mụn ẩn, mụn trứng cá cần sản phẩm chăm sóc chuyên biệt để phục hồi nhanh chóng"
       ],
@@ -250,7 +254,9 @@
       "createdAt": "2026-04-28T16:03:59.198Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "03/05/2027"
+      "expiryDate": "03/05/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "f00e6cba6c5b59f11d69eb54",
@@ -327,7 +333,9 @@
       "createdAt": "2026-04-28T16:06:15.242Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "04/05/2027"
+      "expiryDate": "04/05/2027",
+      "rating": 4.4,
+      "sold": 7820
     },
     {
       "id": "246c3c1f2c0ec26df7a0f42c",
@@ -432,7 +440,9 @@
       "createdAt": "2026-04-28T16:09:01.214Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "05/05/2027"
+      "expiryDate": "05/05/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "11a64d9f24eaa29ea09465dc",
@@ -556,7 +566,9 @@
       "createdAt": "2026-04-28T16:13:25.089Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "06/05/2027"
+      "expiryDate": "06/05/2027",
+      "rating": 4.4,
+      "sold": 1465
     },
     {
       "id": "6c6e8df9ce95c82add761dd8",
@@ -576,7 +588,7 @@
       "description": "Những hạt cà phê Đắk Lắk xay nhuyễn giàu cafeine hòa quyện với bơ cacao Tiền Giang giúp bạn loại bỏ lớp tế bào chết già cỗi và xỉn màu, đánh thức làn da tươi mới đầy năng lượng cùng cảm giác mượt mà và mềm mịn lan tỏa.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Artboard_25_5a0ff85ac4.png",
       "suitableFor": "Mọi loại da cơ",
-      "mainIngredientsSummary": "Với hạt cà phê nguyên chất và Bơ ca cao",
+      "mainIngredientsSummary": "Với hạt cà phê nguyên chất và Bơ ca cao, Bồ hòn",
       "idealFor": [
         "Da cơ thể, mặt nhiều tế bào chết",
         "Da xỉn màu, khô sần cần được làm sạch da chết để trở nên mềm mịn, rạng rỡ"
@@ -680,7 +692,9 @@
       "createdAt": "2026-04-28T16:32:32.653Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "07/05/2027"
+      "expiryDate": "07/05/2027",
+      "rating": 5.0,
+      "sold": 653
     },
     {
       "id": "61756027ad622b26ec5f111a",
@@ -698,7 +712,7 @@
       "description": "Hạt cà phê nguyên chất từ Đắk Lắk kết hợp với bơ ca cao Tiền Giang giúp làm sạch da chết cơ thể hiệu quả, làm đều màu da, khơi dậy năng lượng giúp da trở nên mềm mịn và rạng rỡ.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Artboard_26_copy_4_62c6d42f96.png",
       "suitableFor": "Mọi loại da cơ thể",
-      "mainIngredientsSummary": "Với hạt cà phê nguyên chất và Bơ ca cao",
+      "mainIngredientsSummary": "Với hạt cà phê nguyên chất và Bơ ca cao, Bồ kết",
       "idealFor": [
         "Da cơ thể nhiều tế bào chết",
         "Da xỉn màu, khô sần cần được làm sạch da chết để trở nên mềm mịn, rạng rỡ"
@@ -766,7 +780,9 @@
       "createdAt": "2026-04-28T16:36:16.618Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "08/05/2027"
+      "expiryDate": "08/05/2027",
+      "rating": 5.0,
+      "sold": 1195
     },
     {
       "id": "8c6488c3de04d7f8a13a38d6",
@@ -784,7 +800,7 @@
       "description": "Hạt cà phê nguyên chất từ Đắk Lắk kết hợp với bơ ca cao Tiền Giang giúp làm sạch da chết cơ thể hiệu quả, làm đều màu da, khơi dậy năng lượng giúp da trở nên mềm mịn và rạng rỡ.\nDầu cà phê Đắk Lắk rất giàu cafein, kết hợp với dầu mù u và bơ cacao, tất cả hòa quyện nên một thể bơ sánh mịn giúp dưỡng ẩm, làm mềm và chống oxi hóa, mang lại làn da cơ thể luôn mượt mà, tươi mới rạng rỡ.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Artboard_39_652313d6c8.png",
       "suitableFor": "Mọi loại da cơ thể",
-      "mainIngredientsSummary": "Với hạt cà phê nguyên chất, Bơ ca cao, Dầu cà phê, Dầu mù u",
+      "mainIngredientsSummary": "Với hạt cà phê nguyên chất, Bơ ca cao, Dầu cà phê, Dầu mù u, Tràm trà",
       "idealFor": [
         "Da cơ thể nhiều tế bào chết.",
         "Da xỉn màu, khô sần cần được làm sạch da chết để trở nên mềm mịn, rạng rỡ.",
@@ -898,7 +914,9 @@
       "createdAt": "2026-04-28T16:40:25.254Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "09/05/2027"
+      "expiryDate": "09/05/2027",
+      "rating": 4.9,
+      "sold": 5255
     },
     {
       "id": "1bbc4d3419ce83e47ca773db",
@@ -1005,7 +1023,9 @@
       "createdAt": "2026-04-28T17:24:29.309Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "10/05/2027"
+      "expiryDate": "10/05/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "d663acaac65ac724f075c83e",
@@ -1045,7 +1065,9 @@
       "createdAt": "2026-04-28T17:26:01.877Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "11/05/2027"
+      "expiryDate": "11/05/2027",
+      "rating": 4.2,
+      "sold": 5522
     },
     {
       "id": "b81d48373a196e182f0f6d8c",
@@ -1219,7 +1241,9 @@
       "createdAt": "2026-04-28T17:29:06.126Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "12/05/2027"
+      "expiryDate": "12/05/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "f1a45fe87438cab9c9aac7ad",
@@ -1344,7 +1368,9 @@
       "createdAt": "2026-04-28T17:31:27.282Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "13/05/2027"
+      "expiryDate": "13/05/2027",
+      "rating": 4.2,
+      "sold": 4386
     },
     {
       "id": "ee980571ca44bdd5bff68f30",
@@ -1518,7 +1544,9 @@
       "createdAt": "2026-04-28T17:33:39.661Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "14/05/2027"
+      "expiryDate": "14/05/2027",
+      "rating": 4.8,
+      "sold": 6425
     },
     {
       "id": "1e499ed75a31e4a02af2d962",
@@ -1663,7 +1691,9 @@
       "createdAt": "2026-04-26T18:49:15.922Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "15/05/2028"
+      "expiryDate": "15/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "24c454b0d57a53fe4be37964",
@@ -1681,7 +1711,7 @@
       "description": "Kết hợp các màng lọc thế hệ mới, chiết xuất bí đao, Synoxyl AZ và Melanin, sữa chống nắng bí đao giúp bảo vệ da trước tia UVA, UVB và ánh sáng năng lượng cao nhìn thấy được.\nVới kết cấu không trọng lượng, lướt nhẹ và thấm nhanh vào da mà không để lại vệt trắng, sữa chống nắng bí đao mang lại lớp nền trong trẻo, khoẻ khoắn và cảm giác thoải mái khi sử dụng. Sản phẩm phù hợp cho mọi loại da, kể cả da dầu và da nhạy cảm.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Ecom_Skin_BD_Sua_chong_nang_bi_dao_15ml_01_2_777849abe3.png",
       "suitableFor": "Da dầu, da mụn, nhạy cảm",
-      "mainIngredientsSummary": "Các màng lọc UV thế hệ mới, chiết xuất bí đao, Synoxyl AZ và Melanin.",
+      "mainIngredientsSummary": "Các màng lọc UV thế hệ mới, chiết xuất bí đao, Synoxyl AZ và Melanin., Bí đao",
       "idealFor": [
         "Da cần bảo vệ trước tia UV mỗi ngày"
       ],
@@ -1808,7 +1838,9 @@
       "createdAt": "2026-04-29T10:02:21.525Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "16/05/2028"
+      "expiryDate": "16/05/2028",
+      "rating": 4.3,
+      "sold": 8247
     },
     {
       "id": "3ec85dfb4eba9ccb5d808c02",
@@ -1826,7 +1858,7 @@
       "description": "Với công thức đột phá kết hợp các màng lọc thế hệ mới, chiết xuất bí đao và các thành phần chống oxi hoá, kem chống nắng bí đao mang lại khả năng bảo vệ phổ rộng chống lại bức xạ UVA và UVB là nguyên nhân gây ra tác hại lên da như bỏng rát, cháy nắng, kích ứng, lão hoá và tổn thương tế bào da.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/z4389424986730_1e574bdd58278206885aaafd9cf54665_f04a0b7f9b.jpg",
       "suitableFor": "Mọi loại da, da mụn, nhạy cảm",
-      "mainIngredientsSummary": "Chiết xuất bí đao và các thành phần chống ôxi hoá gồm: Vitamin E, Vitamin B3, Hydroxymethoxyphenyl Decanone, Tetrahexyldecul Ascorbate. Hệ thống màng lọc gồm: Tinosorb S, Tinosorb A2B, Uvinul T150, Uvinul A+, Parsol 1789",
+      "mainIngredientsSummary": "Chiết xuất bí đao và các thành phần chống ôxi hoá gồm: Vitamin E, Vitamin B3, Hydroxymethoxyphenyl Decanone, Tetrahexyldecul Ascorbate. Hệ thống màng lọc gồm: Tinosorb S, Tinosorb A2B, Uvinul T150, Uvinul A+, Parsol 1789, Bí đao",
       "idealFor": [
         "Da cần bảo vệ trước tia UV mỗi ngày"
       ],
@@ -1939,7 +1971,9 @@
       "createdAt": "2026-04-29T10:06:07.572Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "17/05/2028"
+      "expiryDate": "17/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "a2ba6a40610e099f10b42d7f",
@@ -1957,7 +1991,7 @@
       "description": "Khai thác sức mạnh từ những đóa sen tinh khiết vùng Hậu Giang, kết hợp công nghệ micellar và NatraGem™ S150, phức hợp prebiotics cùng các hoạt chất làm dịu chuyên sâu, Nước Tẩy Trang Sen Hậu Giang dành riêng cho làn da rất nhạy cảm, giúp làm sạch hiệu quả lớp trang điểm, bụi bẩn, dầu thừa nhưng vẫn duy trì độ ẩm tự nhiên, bảo vệ hàng rào độ ẩm và hỗ trợ cân bằng hệ vi sinh cho da.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Avatar_Website_Nuoc_tay_trang_sen_Hau_Giang_1_L_7ccca1e254.png",
       "suitableFor": "Da thường tới da khô, da nhạy cảm tới rất nhạy cảm",
-      "mainIngredientsSummary": "Chiết xuất sen, NatraGem™ S150 và phức hợp prebiotics.",
+      "mainIngredientsSummary": "Chiết xuất sen, NatraGem™ S150 và phức hợp prebiotics., Bồ hòn",
       "idealFor": [
         "Da nhạy cảm tới rất nhạy cảm",
         "Da thường tới da khô",
@@ -2029,7 +2063,9 @@
       "createdAt": "2026-04-29T10:09:17.835Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "18/05/2028"
+      "expiryDate": "18/05/2028",
+      "rating": 4.0,
+      "sold": 1740
     },
     {
       "id": "9c60e218100d013418e3eb91",
@@ -2118,7 +2154,9 @@
       "createdAt": "2026-04-29T10:10:49.911Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "19/05/2028"
+      "expiryDate": "19/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "0b8fadbc1bd44562f75704e6",
@@ -2136,7 +2174,7 @@
       "description": "Khai thác sức mạnh từ những đóa sen tinh khiết vùng Hậu Giang, kết hợp công nghệ micellar và NatraGem™ S150, phức hợp prebiotics cùng các hoạt chất làm dịu chuyên sâu, Nước Tẩy Trang Sen Hậu Giang dành riêng cho làn da rất nhạy cảm, giúp làm sạch hiệu quả lớp trang điểm, bụi bẩn, dầu thừa nhưng vẫn duy trì độ ẩm tự nhiên, bảo vệ hàng rào độ ẩm và hỗ trợ cân bằng hệ vi sinh cho da.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Avatar_Website_Nuoc_tay_trang_sen_Artboard_7_copy_ac0bf66b46.jpg",
       "suitableFor": "Da thường tới da khô, da nhạy cảm tới rất nhạy cảm",
-      "mainIngredientsSummary": "Chiết xuất sen, NatraGem™ S150 và phức hợp prebiotics.",
+      "mainIngredientsSummary": "Chiết xuất sen, NatraGem™ S150 và phức hợp prebiotics., Bí đao",
       "idealFor": [
         "Da nhạy cảm tới rất nhạy cảm",
         "Da thường tới da khô",
@@ -2208,7 +2246,9 @@
       "createdAt": "2026-04-29T10:14:17.408Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "20/05/2028"
+      "expiryDate": "20/05/2028",
+      "rating": 5.0,
+      "sold": 1366
     },
     {
       "id": "98ec272ca4f37e7a6550cccd",
@@ -2300,7 +2340,9 @@
       "createdAt": "2026-04-29T10:18:38.060Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "21/05/2028"
+      "expiryDate": "21/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "dc312be5eec4d740ae26acbb",
@@ -2318,7 +2360,7 @@
       "description": "Làn da dầu và mụn rất nhạy cảm nên cần được thiết kế một loại nước tẩy trang phù hợp. Với công nghệ Micellar, nước tẩy trang bí đao giúp làm sạch hiệu quả lớp trang điểm, bụi bẩn và dầu thừa, mang lại làn da sạch hoàn toàn và mềm mịn.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/z4394607766854_2aca12462b79836bb49c3bf9aeef6bd1_1_fe9bcfe8db.jpg",
       "suitableFor": "Da dầu, da mụn, da hỗn hợp thiên dầu",
-      "mainIngredientsSummary": "Chiết xuất bí đao, rau má, tinh dầu tràm trà và NatraGem™ S150",
+      "mainIngredientsSummary": "Chiết xuất bí đao, rau má, tinh dầu tràm trà và NatraGem™ S150, Bồ kết",
       "idealFor": [
         "Làn da cần tẩy sạch nhanh lớp trang điểm",
         "Da dầu, mụn thường xuyên trang điểm cần một sản phẩm tẩy trang phù hợp"
@@ -2392,7 +2434,9 @@
       "createdAt": "2026-04-29T10:21:13.714Z",
       "skinConcerns": "Da Dầu Mụn, Da Nhạy Cảm",
       "newProduct": false,
-      "expiryDate": "22/05/2028"
+      "expiryDate": "22/05/2028",
+      "rating": 4.1,
+      "sold": 3637
     },
     {
       "id": "edd9e4ecece58a82a253e4a8",
@@ -2483,7 +2527,9 @@
       "createdAt": "2026-04-29T10:22:59.337Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "23/05/2028"
+      "expiryDate": "23/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "dd23909f6a123054c8cf62f4",
@@ -2551,7 +2597,9 @@
       "createdAt": "2026-04-29T10:26:25.719Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "24/05/2028"
+      "expiryDate": "24/05/2028",
+      "rating": 4.8,
+      "sold": 9146
     },
     {
       "id": "5c5672e9b67657a2b86069fe",
@@ -2569,7 +2617,7 @@
       "description": "Dầu tẩy trang hoa hồng giúp làm sạch sâu lớp trang điểm, bụi bẩn và dầu thừa, dưỡng ẩm mà không để lại cảm giác nhờn rít khó chịu.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Artboard_5_57602693f6.jpg",
       "suitableFor": "Da khô, Da hỗn hợp thiên khô, Da thường",
-      "mainIngredientsSummary": "Dầu hoa hồng và Vitamin E",
+      "mainIngredientsSummary": "Dầu hoa hồng và Vitamin E, Bồ kết",
       "idealFor": [
         "Làn da cần tẩy sạch các sản phẩm trang điểm lâu trôi"
       ],
@@ -2620,7 +2668,9 @@
       "createdAt": "2026-04-29T10:27:55.705Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "25/05/2028"
+      "expiryDate": "25/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "d9054c76d1034d593bea440c",
@@ -2705,7 +2755,9 @@
       "createdAt": "2026-04-29T10:34:08.697Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "26/05/2028"
+      "expiryDate": "26/05/2028",
+      "rating": 4.9,
+      "sold": 7316
     },
     {
       "id": "6d7d02a9276d5114489a48c3",
@@ -2790,7 +2842,9 @@
       "createdAt": "2026-04-29T10:36:59.569Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "27/05/2028"
+      "expiryDate": "27/05/2028",
+      "rating": 4.6,
+      "sold": 1043
     },
     {
       "id": "812ea7faa15bac41e52d4170",
@@ -2899,7 +2953,9 @@
       "createdAt": "2026-04-29T10:40:49.677Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "28/05/2028"
+      "expiryDate": "28/05/2028",
+      "rating": 4.1,
+      "sold": 3533
     },
     {
       "id": "87ca86128c249a4e52690db8",
@@ -2999,7 +3055,9 @@
       "createdAt": "2026-04-29T10:43:29.303Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "01/05/2028"
+      "expiryDate": "01/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "25b93e7dda9397da3b212b63",
@@ -3099,7 +3157,9 @@
       "createdAt": "2026-04-29T10:44:50.673Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "02/05/2028"
+      "expiryDate": "02/05/2028",
+      "rating": 4.9,
+      "sold": 4105
     },
     {
       "id": "8d4ab3d4fb9c1ee4077c8d1d",
@@ -3201,7 +3261,9 @@
       "createdAt": "2026-04-29T10:47:28.741Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "03/05/2028"
+      "expiryDate": "03/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "13afaa472ab5642f72112123",
@@ -3303,7 +3365,9 @@
       "createdAt": "2026-04-29T10:49:10.762Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "04/05/2028"
+      "expiryDate": "04/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "7df6fb8720d3cc5566f0c4ca",
@@ -3390,7 +3454,9 @@
       "createdAt": "2026-04-29T10:51:49.006Z",
       "skinConcerns": "Da Khô",
       "newProduct": false,
-      "expiryDate": "05/05/2028"
+      "expiryDate": "05/05/2028",
+      "rating": 4.6,
+      "sold": 5300
     },
     {
       "id": "947e0b2bbd933756c73469b4",
@@ -3498,7 +3564,9 @@
       "createdAt": "2026-04-29T10:54:31.892Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "06/05/2028"
+      "expiryDate": "06/05/2028",
+      "rating": 4.3,
+      "sold": 4197
     },
     {
       "id": "5f29c9fa19873eb44aedced4",
@@ -3606,7 +3674,9 @@
       "createdAt": "2026-04-29T10:56:22.187Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "07/05/2028"
+      "expiryDate": "07/05/2028",
+      "rating": 4.2,
+      "sold": 9786
     },
     {
       "id": "f2f170af25caff6973113648",
@@ -3624,7 +3694,7 @@
       "description": "Những hạt cà phê Đắk Lắk xay nhuyễn giàu cafeine hòa quyện với bơ cacao Tiền Giang giúp bạn loại bỏ lớp tế bào chết già cỗi và xỉn màu, đánh thức làn da tươi mới đầy năng lượng cùng cảm giác mượt mà và mềm mịn lan tỏa.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/26fb6ffcb3c3709d29d2_436613e656.jpg",
       "suitableFor": "Mọi loại da",
-      "mainIngredientsSummary": "Hạt cà phê nguyên chất và bơ ca cao",
+      "mainIngredientsSummary": "Hạt cà phê nguyên chất và bơ ca cao, Trà xanh",
       "idealFor": [
         "Da xỉn màu",
         "Da có nhiều tế bào chết cần được làm sạch để trở nên mềm mại, sáng mịn"
@@ -3702,7 +3772,9 @@
       "createdAt": "2026-04-29T10:59:04.751Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "08/11/2027"
+      "expiryDate": "08/11/2027",
+      "rating": 4.3,
+      "sold": 1036
     },
     {
       "id": "8fe068265d7f674a7dd86f84",
@@ -3809,7 +3881,9 @@
       "createdAt": "2026-04-29T11:01:52.944Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "09/11/2027"
+      "expiryDate": "09/11/2027",
+      "rating": 4.2,
+      "sold": 9337
     },
     {
       "id": "2b8ad283ba0fe39ef106880f",
@@ -3916,7 +3990,9 @@
       "createdAt": "2026-04-29T11:03:25.275Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "10/11/2027"
+      "expiryDate": "10/11/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "813455e9fcaaa2178c222614",
@@ -4018,7 +4094,9 @@
       "createdAt": "2026-04-29T11:06:11.440Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "11/11/2027"
+      "expiryDate": "11/11/2027",
+      "rating": 4.8,
+      "sold": 6695
     },
     {
       "id": "3c691929f72b07a51ab8df27",
@@ -4119,7 +4197,9 @@
       "createdAt": "2026-04-29T11:07:44.539Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "12/11/2027"
+      "expiryDate": "12/11/2027",
+      "rating": 5.0,
+      "sold": 5864
     },
     {
       "id": "9be4bb818bdad1c0cff402b7",
@@ -4208,7 +4288,9 @@
       "createdAt": "2026-04-29T18:35:00.052Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "13/11/2027"
+      "expiryDate": "13/11/2027",
+      "rating": 4.4,
+      "sold": 9004
     },
     {
       "id": "c1c6def56e82dfbd16743d83",
@@ -4294,7 +4376,9 @@
       "createdAt": "2026-04-29T18:44:29.175Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "14/11/2027"
+      "expiryDate": "14/11/2027",
+      "rating": 4.1,
+      "sold": 9375
     },
     {
       "id": "178545ef04bc12afd653231c",
@@ -4383,7 +4467,9 @@
       "createdAt": "2026-04-29T18:48:58.726Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "15/11/2027"
+      "expiryDate": "15/11/2027",
+      "rating": 4.1,
+      "sold": 9748
     },
     {
       "id": "7007b8b1425c64a7af919b72",
@@ -4401,7 +4487,7 @@
       "description": "Hạt cà phê nguyên chất từ Đắk Lắk kết hợp với bơ ca cao Tiền Giang giúp làm sạch da chết cơ thể hiệu quả, làm đều màu da, khơi dậy năng lượng giúp da trở nên mềm mịn và rạng rỡ.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/z4028306601775_35e36d34450fdaaea3a65a8c3f8526f4_806289b3f3.jpg",
       "suitableFor": "Mọi loại da cơ thể",
-      "mainIngredientsSummary": "Với hạt cà phê nguyên chất và Bơ ca cao",
+      "mainIngredientsSummary": "Với hạt cà phê nguyên chất và Bơ ca cao, Dầu dừa",
       "idealFor": [
         "Da cơ thể nhiều tế bào chết",
         "Da xỉn màu, khô sần cần được làm sạch da chết để trở nên mềm mịn, rạng rỡ"
@@ -4469,7 +4555,9 @@
       "createdAt": "2026-04-29T18:51:32.950Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "16/11/2027"
+      "expiryDate": "16/11/2027",
+      "rating": 4.6,
+      "sold": 7807
     },
     {
       "id": "63fbeb4b71d9be046f8cd2e4",
@@ -4487,7 +4575,7 @@
       "description": "Hạt cà phê nguyên chất từ Đắk Lắk kết hợp với bơ ca cao Tiền Giang giúp làm sạch da chết cơ thể hiệu quả, làm đều màu da, khơi dậy năng lượng giúp da trở nên mềm mịn và rạng rỡ.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/z4147355364575_e4b88c65711b8261d9c996e6797b60a1_83f203bec3.jpg",
       "suitableFor": "Mọi loại da cơ thể",
-      "mainIngredientsSummary": "Với hạt cà phê nguyên chất và Bơ ca cao",
+      "mainIngredientsSummary": "Với hạt cà phê nguyên chất và Bơ ca cao, Dầu dừa",
       "idealFor": [
         "Da cơ thể nhiều tế bào chết",
         "Da xỉn màu, khô sần cần được làm sạch da chết để trở nên mềm mịn, rạng rỡ"
@@ -4556,7 +4644,9 @@
       "createdAt": "2026-04-29T18:54:31.957Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "17/11/2027"
+      "expiryDate": "17/11/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "a185202d2cc44ecd80397574",
@@ -4644,7 +4734,9 @@
       "createdAt": "2026-04-29T19:00:13.196Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "19/05/2028"
+      "expiryDate": "19/05/2028",
+      "rating": 4.0,
+      "sold": 2363
     },
     {
       "id": "67ac81895e29370aa758f466",
@@ -4730,7 +4822,9 @@
       "createdAt": "2026-04-29T19:03:27.480Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "20/05/2028"
+      "expiryDate": "20/05/2028",
+      "rating": 4.6,
+      "sold": 7939
     },
     {
       "id": "c4ffadcfbb7ab91d5edcc360",
@@ -4748,7 +4842,7 @@
       "description": "Với sức mạnh của chiết xuất hoa sen, bơ hạt mỡ, madecassoside, vitamin B5, B12 và phức hợp dầu chưng cất phân tử Passioline và Soline, Sáp Dưỡng Ấm Đa Năng Sen Hậu Giang giúp dưỡng ẩm sâu, làm dịu tình trạng mẫn đỏ do khô da, mang lại làn da mềm mại, mịn màng.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Avatar_Website_Sap_Duong_Am_Sen_Hau_Giang_30ml_00f70209be.jpg",
       "suitableFor": "Mọi loại da, môi, vùng da cơ thể cần được dưỡng ẩm.",
-      "mainIngredientsSummary": "Chiết xuất sen, bơ hạt mỡ, Soline, Madecassoside, Vitamin b5, Vitamin b12, Passioline.",
+      "mainIngredientsSummary": "Chiết xuất sen, bơ hạt mỡ, Soline, Madecassoside, Vitamin b5, Vitamin b12, Passioline., Hoa hồng",
       "idealFor": [
         "Da thường đến da khô, bong tróc",
         "Môi khô hoặc gót chân nức nẻ",
@@ -4840,7 +4934,9 @@
       "createdAt": "2026-04-29T19:05:58.593Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "21/05/2028"
+      "expiryDate": "21/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "fa9faa32eb09f2a48bb19fc8",
@@ -4858,7 +4954,7 @@
       "description": "Dầu cà phê Đắk Lắk rất giàu cafein, kết hợp với dầu mù u và bơ cacao, tất cả hòa quyện nên một thể bơ sánh mịn giúp dưỡng ẩm, làm mềm và chống oxi hóa, mang lại làn da cơ thể luôn mượt mà, tươi mới rạng rỡ.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Ecom_Body_CP_Bo_duong_the_200ml_4a14a2094c.png",
       "suitableFor": "Mọi loại da cơ thể",
-      "mainIngredientsSummary": "Dầu cà phê, Dầu mù u, Bơ ca cao",
+      "mainIngredientsSummary": "Dầu cà phê, Dầu mù u, Bơ ca cao, Hoa hồng",
       "idealFor": [
         "Da bị thiếu ẩm, bong tróc",
         "Da có nhiều vết chai sần ở khủy tay, đầu gối, gót chân cần được làm mềm"
@@ -4935,7 +5031,9 @@
       "createdAt": "2026-04-29T19:08:06.949Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "22/05/2028"
+      "expiryDate": "22/05/2028",
+      "rating": 4.3,
+      "sold": 7258
     },
     {
       "id": "0270231fcfee24f5205ecfee",
@@ -4953,7 +5051,7 @@
       "description": "Chúng tôi tự hào khi mang những hạt cà phê Đắk Lắk được rang xay bằng tay vào sản phẩm chăm sóc môi đặc biệt này, những hạt cà phê li ti hòa quyện vào dầu mắc-ca và bơ hạt mỡ sẽ nhẹ nhàng làm bong những tế bào da chết ở môi, đem lại làn môi mềm và mịn màng.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/CP_Ca_phe_moi_1a1b8ddbf1.jpg",
       "suitableFor": "Da môi",
-      "mainIngredientsSummary": "Với hạt cà phê nguyên chất xay mịn, dầu mắc - ca và bơ hạt mỡ",
+      "mainIngredientsSummary": "Với hạt cà phê nguyên chất xay mịn, dầu mắc - ca và bơ hạt mỡ, Bồ hòn",
       "idealFor": [
         "Môi xuất hiện nhiều da chết bong tróc",
         "Môi thường xuyên dùng son màu, bị khô và thiếu ẩm"
@@ -5006,7 +5104,9 @@
       "createdAt": "2026-04-29T19:10:32.787Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "23/11/2027"
+      "expiryDate": "23/11/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "6c1f36304287d148fdd36144",
@@ -5063,7 +5163,9 @@
       "createdAt": "2026-04-29T19:12:18.892Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "24/05/2028"
+      "expiryDate": "24/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "ca6e1382ef917a9d2cb0031a",
@@ -5164,7 +5266,9 @@
       "createdAt": "2026-04-30T09:56:20.008Z",
       "skinConcerns": null,
       "newProduct": true,
-      "expiryDate": "25/11/2027"
+      "expiryDate": "25/11/2027",
+      "rating": 4.8,
+      "sold": 8804
     },
     {
       "id": "f4d2089a9b35bb5d6845764f",
@@ -5274,7 +5378,9 @@
       "createdAt": "2026-04-30T09:58:53.880Z",
       "skinConcerns": null,
       "newProduct": true,
-      "expiryDate": "26/11/2027"
+      "expiryDate": "26/11/2027",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "85aaa24b4e80e35fdf3e0892",
@@ -5367,7 +5473,9 @@
       "createdAt": "2026-04-30T10:01:38.463Z",
       "skinConcerns": null,
       "newProduct": true,
-      "expiryDate": "27/05/2028"
+      "expiryDate": "27/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "9806f8679f1abada0a0e6378",
@@ -5462,7 +5570,9 @@
       "createdAt": "2026-04-28T15:19:55.265Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "28/05/2028"
+      "expiryDate": "28/05/2028",
+      "rating": 4.5,
+      "sold": 2192
     },
     {
       "id": "d6049a26f5e640bdd69cda40",
@@ -5557,7 +5667,9 @@
       "createdAt": "2026-04-28T15:25:55.838Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "01/05/2028"
+      "expiryDate": "01/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "d7b2542d9f43256d944d854a",
@@ -5653,7 +5765,9 @@
       "createdAt": "2026-04-28T15:34:33.503Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "02/05/2028"
+      "expiryDate": "02/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "58990d055eb566f37e3c5d80",
@@ -5667,7 +5781,7 @@
       "description": "Được chiết xuất từ củ nghệ canh tác tại Hưng Yên, kết hợp với AHA và hoạt chất dưỡng ẩm betaine, nước nghệ cung cấp độ ẩm cần thiết, mang lại làn da sáng mịn và đều màu.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/z3491780045590_9f9ef20c543913f117fa94cdb8ab11ed_a4435b1ccd.jpg",
       "suitableFor": "Mọi loại da",
-      "mainIngredientsSummary": "Chiết xuất nghệ, AHA 5%, Betaine",
+      "mainIngredientsSummary": "Chiết xuất nghệ, AHA 5%, Betaine, Bồ kết",
       "idealFor": [
         "Da nhiều vết thâm",
         "Da xỉn màu, thiếu sức sống"
@@ -5732,7 +5846,9 @@
       "createdAt": "2026-04-28T15:43:45.571Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "03/05/2028"
+      "expiryDate": "03/05/2028",
+      "rating": 4.1,
+      "sold": 3595
     },
     {
       "id": "0ed27f8f8207d06b3cd04db3",
@@ -5815,7 +5931,9 @@
       "createdAt": "2026-04-28T16:17:01.081Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "04/05/2028"
+      "expiryDate": "04/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "0066feeceaba62d09860f05c",
@@ -5910,7 +6028,9 @@
       "createdAt": "2026-04-28T16:21:29.261Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "05/05/2028"
+      "expiryDate": "05/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "5ee9a1e82a48994b6e401a29",
@@ -5924,7 +6044,7 @@
       "description": "Nhờ các thành phần gồm bí đao, rau má và tràm trà, nước bí đao với công thức không chứa cồn có tác dụng cân bằng pH, giảm dầu, làm sạch lỗ chân lông, cải thiện tình trạng mụn. Sản phẩm còn được bổ sung thêm Vitamin B3, HA và chiết xuất cam thảo giúp cấp ẩm cho làn da luôn mịn màng và giảm thiểu các vết đỏ trên da.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/z3526520920649_985aed4836bd72ca168fba71c86b4fce_36dbdab1c6.jpg",
       "suitableFor": "Da dầu, da mụn, da hỗn hợp thiên dầu",
-      "mainIngredientsSummary": "Với rau má và Tràm trà",
+      "mainIngredientsSummary": "Với rau má và Tràm trà, Tràm trà",
       "idealFor": [
         "Da tiết nhiều dầu thừa",
         "Da có mụn ẩn, mụn trứng cá"
@@ -6005,7 +6125,9 @@
       "createdAt": "2026-04-28T16:27:17.226Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "06/05/2028"
+      "expiryDate": "06/05/2028",
+      "rating": 4.8,
+      "sold": 5815
     },
     {
       "id": "641cdf538114d9cb102d9ab2",
@@ -6122,7 +6244,9 @@
       "createdAt": "2026-04-28T16:50:15.727Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "09/11/2027"
+      "expiryDate": "09/11/2027",
+      "rating": 4.2,
+      "sold": 1931
     },
     {
       "id": "c4b7cebcaf1a27611a9395af",
@@ -6213,7 +6337,9 @@
       "createdAt": "2026-04-28T16:54:15.276Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "10/11/2027"
+      "expiryDate": "10/11/2027",
+      "rating": 4.5,
+      "sold": 8478
     },
     {
       "id": "568e1a3abfd97d6406cd3db9",
@@ -6308,7 +6434,9 @@
       "createdAt": "2026-04-28T16:58:40.137Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "11/11/2027"
+      "expiryDate": "11/11/2027",
+      "rating": 4.1,
+      "sold": 6616
     },
     {
       "id": "09f0912f3bc5246ed851a7ae",
@@ -6433,7 +6561,9 @@
       "createdAt": "2026-04-28T17:03:12.645Z",
       "skinConcerns": "Da Khô",
       "newProduct": false,
-      "expiryDate": "12/11/2027"
+      "expiryDate": "12/11/2027",
+      "rating": 4.0,
+      "sold": 2854
     },
     {
       "id": "afacd99996f7d76b3c0c7f88",
@@ -6516,7 +6646,9 @@
       "createdAt": "2026-04-28T17:07:07.212Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "13/05/2027"
+      "expiryDate": "13/05/2027",
+      "rating": 4.1,
+      "sold": 6009
     },
     {
       "id": "44e410999cfeae6eedd37038",
@@ -6620,7 +6752,9 @@
       "createdAt": "2026-04-28T17:11:19.064Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "14/11/2027"
+      "expiryDate": "14/11/2027",
+      "rating": 4.5,
+      "sold": 5144
     },
     {
       "id": "ead1d3ea6f03b685eb8ca0d4",
@@ -6634,7 +6768,7 @@
       "description": "Một lớp sương mịn từ chiết xuất củ nghệ, muối khoáng kết hợp cùng enzym SOD, EGCG và các axit amin sẽ bao phủ làn da giúp cấp ẩm tức thời, giúp làm sáng, chống oxi hóa mạnh mẽ và bảo vệ da khỏi các tác nhân gây hại từ môi trường.",
       "mainImage": "https://image.cocoonvietnam.com/uploads/Artboard_16_2d4e366728.jpg",
       "suitableFor": "Mọi loại da",
-      "mainIngredientsSummary": "Chiết xuất nghệ, Muối khoáng, Enzyme SOD (Superoxide Dismutase), EGCG, Axit amin",
+      "mainIngredientsSummary": "Chiết xuất nghệ, Muối khoáng, Enzyme SOD (Superoxide Dismutase), EGCG, Axit amin, Trà xanh",
       "idealFor": [
         "Làn da cần cấp ẩm tức thì",
         "Da sau khi trang điểm cần 1 sản phẩm chống oxi hóa và giữ lớp trang điểm lâu hơn"
@@ -6725,7 +6859,9 @@
       "createdAt": "2026-04-28T17:15:28.982Z",
       "skinConcerns": "Da Xỉn Màu",
       "newProduct": false,
-      "expiryDate": "15/05/2028"
+      "expiryDate": "15/05/2028",
+      "rating": 4.0,
+      "sold": 592
     },
     {
       "id": "e3b8810d7bb90e696e5f43c7",
@@ -6827,7 +6963,9 @@
       "createdAt": "2026-04-28T17:22:32.725Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "16/05/2028"
+      "expiryDate": "16/05/2028",
+      "rating": 4.3,
+      "sold": 590
     },
     {
       "id": "0c8e0704cf2997ca8560441a",
@@ -6922,7 +7060,9 @@
       "createdAt": "2026-04-28T17:28:04.886Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "17/05/2028"
+      "expiryDate": "17/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "ef39d32a96ce292d1e83a7ab",
@@ -7021,7 +7161,9 @@
       "createdAt": "2026-04-28T17:32:22.446Z",
       "skinConcerns": null,
       "newProduct": false,
-      "expiryDate": "18/05/2028"
+      "expiryDate": "18/05/2028",
+      "rating": 4.9,
+      "sold": 8020
     },
     {
       "id": "fdc1ca708d8cf2225c9d9697",
@@ -7130,7 +7272,9 @@
       "createdAt": "2026-04-28T17:36:02.098Z",
       "skinConcerns": "Da Khô",
       "newProduct": false,
-      "expiryDate": "19/05/2028"
+      "expiryDate": "19/05/2028",
+      "rating": 5.0,
+      "sold": 463
     },
     {
       "id": "ca192eb70b03e780dc19d872",
@@ -7239,7 +7383,9 @@
       "createdAt": "2026-04-28T17:39:26.053Z",
       "skinConcerns": "Da Khô",
       "newProduct": false,
-      "expiryDate": "20/05/2028"
+      "expiryDate": "20/05/2028",
+      "rating": 5.0,
+      "sold": 8495
     },
     {
       "id": "113023f9cf480dbe4182e96c",
@@ -7338,7 +7484,9 @@
       "createdAt": "2026-04-28T17:43:30.420Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "21/05/2028"
+      "expiryDate": "21/05/2028",
+      "rating": 0.0,
+      "sold": 0
     },
     {
       "id": "1ba0d34dab3627b376a567c7",
@@ -7437,7 +7585,9 @@
       "createdAt": "2026-04-28T17:46:56.445Z",
       "skinConcerns": "Da Dầu Mụn",
       "newProduct": false,
-      "expiryDate": "22/05/2028"
+      "expiryDate": "22/05/2028",
+      "rating": 0.0,
+      "sold": 0
     }
   ]
 }

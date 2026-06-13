@@ -19,7 +19,11 @@ class MySkinFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
-        NavAppUtils.setupNavApp(this, view, R.id.nav_myskin)
+        com.veganbeauty.app.features.home.BottomNavHelper.setup(
+            fragment = this,
+            root = view,
+            activeTabId = R.id.nav_myskin
+        ) { tabId -> com.veganbeauty.app.features.home.BottomNavHelper.navigate(this, tabId) }
     }
 
     override fun observeViewModel() {

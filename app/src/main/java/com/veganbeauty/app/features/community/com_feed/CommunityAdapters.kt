@@ -26,7 +26,7 @@ sealed class CommunityFeedItem {
     data class SuggestedReels(val reels: List<ReelEntity>) : CommunityFeedItem()
 }
 
-class ImageSliderAdapter(private val imageUrls: List<String>) : RecyclerView.Adapter<ImageSliderAdapter.ImageViewHolder>() {
+class ImageSliderAdapter(var imageUrls: List<String>) : RecyclerView.Adapter<ImageSliderAdapter.ImageViewHolder>() {
 
     class ImageViewHolder(val imageView: ImageView) : RecyclerView.ViewHolder(imageView)
 
@@ -44,14 +44,32 @@ class ImageSliderAdapter(private val imageUrls: List<String>) : RecyclerView.Ada
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         val url = imageUrls[position]
-        holder.imageView.load(url) {
-            crossfade(true)
-            placeholder(android.R.color.darker_gray)
-            error(android.R.color.darker_gray)
+        try {
+            if (url.startsWith("content://") || url.startsWith("file://")) {
+                // Local URI - use Coil to handle gracefully and avoid SecurityException on expired URIs
+                holder.imageView.load(android.net.Uri.parse(url)) {
+                    crossfade(true)
+                    placeholder(android.R.color.darker_gray)
+                    error(android.R.color.darker_gray)
+                }
+            } else {
+                holder.imageView.load(url) {
+                    crossfade(true)
+                    placeholder(android.R.color.darker_gray)
+                    error(android.R.color.darker_gray)
+                }
+            }
+        } catch (e: Exception) {
+            holder.imageView.setBackgroundColor(android.graphics.Color.DKGRAY)
         }
     }
 
     override fun getItemCount() = imageUrls.size
+
+    fun updateData(newUrls: List<String>) {
+        imageUrls = newUrls
+        notifyDataSetChanged()
+    }
 }
 
 class StoryAdapter(private var stories: List<UserEntity>) : RecyclerView.Adapter<StoryAdapter.StoryViewHolder>() {
@@ -137,17 +155,46 @@ class PostAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = items[position]) {
-            is CommunityFeedItem.Post -> {
+                is CommunityFeedItem.Post -> {
                 val postHolder = holder as PostViewHolder
                 val post = item.post
-                postHolder.binding.tvAuthorName.text = post.authorUsername
-                val tagList = mutableListOf<String>()
-                post.skinType?.takeIf { it.isNotBlank() && it != "Không xác định" }?.let { tagList.add("✨ $it") }
-                post.concern?.takeIf { it.isNotBlank() && it != "Khác" && it != "Chung" }?.let { tagList.add("🌿 $it") }
-                post.type?.takeIf { it.isNotBlank() }?.let { tagList.add("🌿 $it") }
-                postHolder.binding.tvSkinType.text = tagList.joinToString(" • ")
+                postHolder.binding.tvAuthorName.text = post.authorDisplayName.ifEmpty { post.authorUsername }
                 
-                postHolder.binding.tvCreatedAt.text = com.veganbeauty.app.utils.TimeFormatter.getTimeAgo(post.createdAt)
+                // Add verified icon for rootie
+                if (post.authorId == "rootie_official" || post.authorId == "rootie_vn") {
+                    val verifiedIcon = androidx.core.content.ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_verified)
+                    verifiedIcon?.setBounds(0, 0, 36, 36) // Resize to match text
+                    postHolder.binding.tvAuthorName.setCompoundDrawables(null, null, verifiedIcon, null)
+                    postHolder.binding.tvAuthorName.compoundDrawablePadding = 8
+                    
+                    // Format date for official post
+                    val timestamp = post.createdAt.toLongOrNull() ?: 0L
+                    var dateStr = "11 thg 3"
+                    if (timestamp > 0) {
+                        val sdf = java.text.SimpleDateFormat("d 'thg' M", java.util.Locale("vi"))
+                        dateStr = sdf.format(java.util.Date(timestamp * 1000))
+                    }
+                    val text = "$dateStr •  "
+                    val spannable = android.text.SpannableStringBuilder(text)
+                    val publicIcon = androidx.core.content.ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_public)
+                    publicIcon?.setBounds(0, 0, 36, 36)
+                    if (publicIcon != null) {
+                        val imageSpan = android.text.style.ImageSpan(publicIcon, android.text.style.ImageSpan.ALIGN_BASELINE)
+                        spannable.setSpan(imageSpan, text.length - 1, text.length, android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+                    }
+                    postHolder.binding.tvSkinType.text = spannable
+                    postHolder.binding.tvCreatedAt.visibility = View.GONE
+                } else {
+                    postHolder.binding.tvAuthorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                    val tagList = mutableListOf<String>()
+                    post.skinType?.takeIf { it.isNotBlank() && it != "Không xác định" }?.let { tagList.add(it) }
+                    post.concern?.takeIf { it.isNotBlank() && it != "Khác" && it != "Chung" }?.let { tagList.add(it) }
+                    post.type?.takeIf { it.isNotBlank() }?.let { tagList.add(it) }
+                    postHolder.binding.tvSkinType.text = tagList.joinToString(" • ")
+                    
+                    postHolder.binding.tvCreatedAt.visibility = View.VISIBLE
+                    postHolder.binding.tvCreatedAt.text = com.veganbeauty.app.utils.TimeFormatter.getTimeAgo(post.createdAt)
+                }
                 
                 postHolder.binding.tvLikes.text = post.likesCount.toString()
                 postHolder.binding.tvComments.text = post.commentsCount.toString()
@@ -159,10 +206,14 @@ class PostAdapter(
                         decoderFactory(SvgDecoder.Factory())
                         crossfade(true)
                         placeholder(android.R.color.darker_gray)
-                        error(R.drawable.logo)
+                        error(R.drawable.img_avatar)
                     }
                 } else {
-                    postHolder.binding.ivAuthorAvatar.setImageResource(android.R.color.darker_gray)
+                    if (post.authorId == "rootie_official" || post.authorId == "rootie_vn") {
+                        postHolder.binding.ivAuthorAvatar.setImageResource(R.drawable.imv_logo)
+                    } else {
+                        postHolder.binding.ivAuthorAvatar.setImageResource(android.R.color.darker_gray)
+                    }
                 }
 
                 // Linked Products
@@ -182,14 +233,20 @@ class PostAdapter(
                 // Load post images slider (ViewPager2)
                 val urls = post.mediaUrlsString.split(",").filter { it.isNotBlank() }
                 val rootLayout = postHolder.binding.root
-                rootLayout.removeView(postHolder.binding.llContentContainer)
+                val contentContainer = postHolder.binding.llContentContainer
+                val currentIdx = rootLayout.indexOfChild(contentContainer)
 
                 if (urls.isNotEmpty()) {
-                    val sliderAdapter = ImageSliderAdapter(urls)
-                    postHolder.binding.vpPostImages.adapter = sliderAdapter
-                    
-                    // Connect TabLayout dots indicator with ViewPager2
-                    TabLayoutMediator(postHolder.binding.tabIndicator, postHolder.binding.vpPostImages) { _, _ -> }.attach()
+                    var sliderAdapter = postHolder.binding.vpPostImages.adapter as? ImageSliderAdapter
+                    if (sliderAdapter == null) {
+                        sliderAdapter = ImageSliderAdapter(urls)
+                        postHolder.binding.vpPostImages.adapter = sliderAdapter
+                        TabLayoutMediator(postHolder.binding.tabIndicator, postHolder.binding.vpPostImages) { _, _ -> }.attach()
+                    } else {
+                        if (sliderAdapter.imageUrls != urls) {
+                            sliderAdapter.updateData(urls)
+                        }
+                    }
                     
                     // If only 1 image, hide dots indicator to look clean
                     if (urls.size <= 1) {
@@ -198,11 +255,19 @@ class PostAdapter(
                         postHolder.binding.tabIndicator.visibility = View.VISIBLE
                     }
                     postHolder.binding.flPostImagesContainer.visibility = View.VISIBLE
-                    rootLayout.addView(postHolder.binding.llContentContainer)
+                    
+                    val expectedIdx = rootLayout.childCount - 1
+                    if (currentIdx != expectedIdx) {
+                        rootLayout.removeView(contentContainer)
+                        rootLayout.addView(contentContainer)
+                    }
                 } else {
                     postHolder.binding.flPostImagesContainer.visibility = View.GONE
                     postHolder.binding.tabIndicator.visibility = View.GONE
-                    rootLayout.addView(postHolder.binding.llContentContainer, 1)
+                    if (currentIdx != 1) {
+                        rootLayout.removeView(contentContainer)
+                        rootLayout.addView(contentContainer, 1)
+                    }
                 }
 
                 // Like toggle micro-interaction
@@ -217,6 +282,47 @@ class PostAdapter(
                         postHolder.binding.tvLikes.text = post.likesCount.toString()
                     }
                 }
+
+                postHolder.binding.tvComments.text = post.commentsCount.toString()
+                postHolder.binding.tvReups.text = post.reupsCount.toString()
+
+                postHolder.binding.ivComment.setOnClickListener {
+                    val context = it.context
+                    if (context is androidx.fragment.app.FragmentActivity) {
+                        val bottomSheet = CommunityCommentBottomSheet.newInstance(post.postId, post.commentsCount)
+                        bottomSheet.show(context.supportFragmentManager, CommunityCommentBottomSheet.TAG)
+                    }
+                }
+
+                // Profile Click listener
+                val onProfileClick = View.OnClickListener {
+                    val context = it.context
+                    if (context is androidx.fragment.app.FragmentActivity) {
+                        if (post.authorId == "rootie_official" || post.authorId == "rootie_vn" || post.authorDisplayName.contains("Rootie", ignoreCase = true)) {
+                            val newsFragment = com.veganbeauty.app.features.community.beauty_hub.CommunityNewsFragment()
+                            context.supportFragmentManager.beginTransaction()
+                                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                                .replace(R.id.main_container, newsFragment)
+                                .addToBackStack(null)
+                                .commit()
+                        } else {
+                            val profileFragment = com.veganbeauty.app.features.community.profile.CommunityProfileFragment().apply {
+                                arguments = android.os.Bundle().apply {
+                                    putString("USER_ID", post.authorId)
+                                    putString("AVATAR_URL", post.authorAvatarUrl)
+                                    putString("USER_NAME", post.authorDisplayName)
+                                }
+                            }
+                            context.supportFragmentManager.beginTransaction()
+                                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                                .replace(R.id.main_container, profileFragment)
+                                .addToBackStack(null)
+                                .commit()
+                        }
+                    }
+                }
+                postHolder.binding.tvAuthorName.setOnClickListener(onProfileClick)
+                postHolder.binding.ivAuthorAvatar.setOnClickListener(onProfileClick)
             }
             is CommunityFeedItem.SuggestedUsers -> {
                 val usersHolder = holder as SuggestedUsersViewHolder
@@ -304,6 +410,86 @@ class SuggestionAdapter(private var users: List<UserEntity>) : RecyclerView.Adap
             }
         } else {
             holder.binding.ivAvatar.setImageResource(android.R.color.darker_gray)
+        }
+        
+        if (user.mutualCount > 0) {
+            val friendName = user.firstMutualFriendName ?: "Ai đó"
+            if (user.mutualCount == 1) {
+                holder.binding.tvMutualCount.text = "Có $friendName đang theo dõi"
+            } else {
+                holder.binding.tvMutualCount.text = "Có $friendName và ${user.mutualCount - 1} người khác đang theo dõi"
+            }
+            holder.binding.llMutualInfo.visibility = View.VISIBLE
+            
+            // Show avatars if available
+            val avatars = user.mutualFriendAvatars
+            if (avatars.isNotEmpty()) {
+                holder.binding.flMutualAvatars.visibility = View.VISIBLE
+                
+                // Show up to 3 avatars
+                if (avatars.size >= 1) {
+                    holder.binding.cvMutual1.visibility = View.VISIBLE
+                    holder.binding.ivMutual1.load(avatars[0]) {
+                        decoderFactory(SvgDecoder.Factory())
+                        transformations(coil.transform.CircleCropTransformation())
+                        crossfade(true)
+                        error(R.drawable.img_avatar)
+                    }
+                } else holder.binding.cvMutual1.visibility = View.GONE
+                
+                if (avatars.size >= 2) {
+                    holder.binding.cvMutual2.visibility = View.VISIBLE
+                    holder.binding.ivMutual2.load(avatars[1]) {
+                        decoderFactory(SvgDecoder.Factory())
+                        transformations(coil.transform.CircleCropTransformation())
+                        crossfade(true)
+                        error(R.drawable.img_avatar)
+                    }
+                } else holder.binding.cvMutual2.visibility = View.GONE
+                
+                if (avatars.size >= 3) {
+                    holder.binding.cvMutual3.visibility = View.VISIBLE
+                    holder.binding.ivMutual3.load(avatars[2]) {
+                        decoderFactory(SvgDecoder.Factory())
+                        transformations(coil.transform.CircleCropTransformation())
+                        crossfade(true)
+                        error(R.drawable.img_avatar)
+                    }
+                } else holder.binding.cvMutual3.visibility = View.GONE
+                
+            } else {
+                holder.binding.flMutualAvatars.visibility = View.GONE
+            }
+        } else {
+            holder.binding.llMutualInfo.visibility = View.GONE
+            holder.binding.flMutualAvatars.visibility = View.GONE
+        }
+        
+        holder.binding.root.setOnClickListener {
+            val context = it.context
+            if (context is androidx.fragment.app.FragmentActivity) {
+                if (user.user_id == "rootie_official" || user.user_id == "rootie_vn" || user.username.contains("Rootie", ignoreCase = true)) {
+                    val newsFragment = com.veganbeauty.app.features.community.beauty_hub.CommunityNewsFragment()
+                    context.supportFragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.main_container, newsFragment)
+                        .addToBackStack(null)
+                        .commit()
+                } else {
+                    val profileFragment = com.veganbeauty.app.features.community.profile.CommunityProfileFragment().apply {
+                        arguments = android.os.Bundle().apply {
+                            putString("USER_ID", user.user_id)
+                            putString("AVATAR_URL", user.avatar)
+                            putString("USER_NAME", user.username)
+                        }
+                    }
+                    context.supportFragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.main_container, profileFragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            }
         }
     }
 

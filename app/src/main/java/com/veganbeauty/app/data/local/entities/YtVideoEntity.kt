@@ -15,4 +15,7 @@ data class YtVideoEntity(
     val likesCount: Int = (100..5000).random(),
     val commentsCount: Int = (10..500).random(),
     val shareCount: Int = (5..100).random()
-)
+) {
+    @androidx.room.Ignore var hashtags: String = ""
+    @androidx.room.Ignore var keywords: String = ""
+}

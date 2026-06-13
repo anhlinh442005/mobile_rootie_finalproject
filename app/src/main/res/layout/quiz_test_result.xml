@@ -25,7 +25,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            android:src="@drawable/ic_back"
+            android:src="@drawable/ic_chevron_left"
             app:tint="#02542D" />
 
         <!-- Title -->
@@ -55,7 +55,7 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_notification"
+                android:src="@drawable/home_ic_notification"
                 app:tint="#3E4D44" />
 
             <FrameLayout

@@ -14,6 +14,7 @@ data class CommunityPostEntity(
     val createdAt: String,
     val likesCount: Int,
     val commentsCount: Int,
+    val reupsCount: Int,
     val skinType: String?,
     val concern: String?,
     val mediaUrlsString: String, // Comma separated URLs

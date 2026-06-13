@@ -126,4 +126,32 @@ object ProfileSession {
             .putString(KEY_AVATAR, avatarUrl)
             .apply()
     }
+
+    private const val KEY_PRIMARY_IMAGE = "primary_image"
+
+    fun getPrimaryImage(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_PRIMARY_IMAGE, "https://i.pinimg.com/1200x/21/2e/de/212ede6c525fcf95dbfa0a7d976beaa2.jpg") ?: "https://i.pinimg.com/1200x/21/2e/de/212ede6c525fcf95dbfa0a7d976beaa2.jpg"
+    }
+
+    fun setPrimaryImage(context: Context, primaryImage: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_PRIMARY_IMAGE, primaryImage)
+            .apply()
+    }
+
+    private const val KEY_BIO = "bio"
+
+    fun getBio(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_BIO, "Làm đẹp không phải để ai ngắm, mà để mình vui.") ?: "Làm đẹp không phải để ai ngắm, mà để mình vui."
+    }
+
+    fun setBio(context: Context, bio: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_BIO, bio)
+            .apply()
+    }
 }

@@ -18,6 +18,18 @@ interface CommunityDao {
     @Query("SELECT * FROM community_posts ORDER BY createdAt DESC")
     fun getAllPosts(): Flow<List<CommunityPostEntity>>
 
+    @Query("DELETE FROM community_posts WHERE content LIKE :keyword")
+    suspend fun deletePostByContent(keyword: String): Int
+
+    @Query("DELETE FROM community_posts WHERE authorId = :authorId")
+    suspend fun deletePostsByAuthorId(authorId: String): Int
+
+    @Query("DELETE FROM community_posts")
+    suspend fun deleteAllPosts(): Int
+
+    @Query("DELETE FROM users")
+    suspend fun deleteAllUsers(): Int
+
     @Query("SELECT * FROM users")
     fun getAllUsers(): Flow<List<UserEntity>>
 

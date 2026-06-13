@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="140dp"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="8dp"
+    android:background="@color/white"
+    android:layout_marginBottom="4dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp">
+        
+        <ImageView
+            android:id="@+id/ivProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+            
+        <TextView android:fontFamily="@font/be_vietnam_pro"
+            android:id="@+id/tvDiscountBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:background="@drawable/bg_tag_discount"
+            android:layout_margin="8dp"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:text="-59%"
+            android:textColor="@color/primary"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="12dp">
+
+        <TextView android:fontFamily="@font/be_vietnam_pro"
+            android:id="@+id/tvProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tên sản phẩm"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:gravity="bottom">
+            
+            <TextView android:fontFamily="@font/be_vietnam_pro"
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0đ"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+                
+            <TextView android:fontFamily="@font/be_vietnam_pro"
+                android:id="@+id/tvSold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="Đã bán 0"
+                android:textColor="#888888"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical">
+            
+            <ImageView
+                android:id="@+id/ivStar"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/ic_star_gold" />
+            <TextView android:fontFamily="@font/be_vietnam_pro"
+                android:id="@+id/tvRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:text="5.0"
+                android:textColor="#888888"
+                android:textSize="11sp" />
+                
+            <TextView android:fontFamily="@font/be_vietnam_pro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="#E8F5E9"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:text="Freeship"
+                android:textColor="#2E7D32"
+                android:textSize="10sp" />
+                
+            <TextView android:fontFamily="@font/be_vietnam_pro"
+                android:id="@+id/tvDiscountTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:background="#FDE8EE"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:text="Ưu đãi"
+                android:textColor="@color/primary"
+                android:textSize="10sp" />
+        </LinearLayout>
+        
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/logo" />
+            <TextView android:fontFamily="@font/be_vietnam_pro"
+                android:id="@+id/tvShopName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="Cocoon Vietnam >"
+                android:textColor="#555555"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+                
+            <ImageView
+                android:id="@+id/ivAddToCart"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_btn_cart_showcase"
+                android:padding="8dp"
+                android:src="@drawable/ic_cart"
+                app:tint="@color/primary" />
+                
+            <TextView android:fontFamily="@font/be_vietnam_pro"
+                android:id="@+id/tvBuy"
+                android:layout_width="60dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_btn_buy"
+                android:gravity="center"
+                android:text="Mua"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

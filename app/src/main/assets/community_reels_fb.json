@@ -41,210 +41,17 @@
     ],
     "comments": [
       {
-        "comment_id": "7241c47b-6c4f-4974-894c-c325bf875e77",
-        "video_id": "7635630904483859719",
+        "comment_id": "a6514877-77e1-4918-b918-a678d4ce0873",
+        "post_id": "",
         "author": {
-          "user_id": "93692474",
-          "username": "Đức Trần",
-          "display_name": "Đức Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-05-03T14:09:45.000Z",
-        "likes_count": 74,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "8d375faf-8c44-47cb-ab03-9ff4daa64091",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "44319532",
-          "username": "Hùng Võ",
-          "display_name": "Hùng Võ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=273",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-05-03T20:34:45.000Z",
-        "likes_count": 48,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e4424f1b-49a7-40d1-bfc3-2346f2752dfd",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "85838482",
-          "username": "Hà Đỗ",
-          "display_name": "Hà Đỗ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=110",
-          "is_anonymous": false
-        },
-        "content": "da mình vừa khô vừa hay mụn không biết dùng gì",
-        "created_at": "2026-05-04T02:36:45.000Z",
-        "likes_count": 49,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "3817f305-af85-40b7-ab1e-789b1d382f83",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "61947408",
-          "username": "Thu Hoàng",
-          "display_name": "Thu Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=336",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-05-04T11:36:45.000Z",
-        "likes_count": 7,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "49fba6c2-6e5d-40c6-9291-d4a70785d545",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-05-04T11:46:45.000Z",
-        "likes_count": 74,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "57b43644-ec0c-428a-bdda-fa0ac73efaa8",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-05-04T13:14:45.000Z",
-        "likes_count": 67,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "fcee18f5-15d7-46d7-b408-31f42c9bd878",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "19489243",
-          "username": "Ánh Tuyết",
-          "display_name": "Ánh Tuyết",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=363",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-05-04T19:07:45.000Z",
-        "likes_count": 25,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c8f74dee-1bd1-4de7-a61a-8b8c803651b0",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "96590584",
-          "username": "Mai Phan",
-          "display_name": "Mai Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=350",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi sp này phù hợp da hỗn hợp ko?",
-        "created_at": "2026-05-05T11:25:45.000Z",
-        "likes_count": 42,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "3a5e999d-c2b2-4a13-b928-15ac95f3ae8d",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "ủa hay quá, cho mình share nha",
-        "created_at": "2026-05-05T19:50:45.000Z",
-        "likes_count": 41,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d1ccf10b-de69-481c-99f2-9b70b6259454",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "11206911",
-          "username": "Lan Võ",
-          "display_name": "Lan Võ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=441",
-          "is_anonymous": false
-        },
-        "content": "Cảm ơn bạn đã chia sẻ nhé 💚",
-        "created_at": "2026-05-05T21:06:45.000Z",
-        "likes_count": 9,
-        "parent_id": "e9e72b4d-5d75-4455-99e3-c99296cb2c81",
-        "depth": 1
-      },
-      {
-        "comment_id": "2b0fe130-b1a9-4df3-a1ae-7c8e5f3744a0",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "38200891",
-          "username": "Phúc Nguyễn",
-          "display_name": "Phúc Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=255",
-          "is_anonymous": false
-        },
-        "content": "da mình vừa khô vừa hay mụn không biết dùng gì",
-        "created_at": "2026-05-05T22:02:45.000Z",
-        "likes_count": 26,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "026926c3-6543-4be8-a8a8-3797a6ac4a80",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "39729274",
-          "username": "Ngọc Hân",
-          "display_name": "Ngọc Hân",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-05-06T03:57:45.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e9e72b4d-5d75-4455-99e3-c99296cb2c81",
-        "video_id": "7635630904483859719",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-05-06T07:35:45.000Z",
-        "likes_count": 9,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 12,
         "parent_id": null,
         "depth": 0
       }
@@ -255,7 +62,8 @@
       "duration": 34,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7634420409449925906",
@@ -298,258 +106,17 @@
     ],
     "comments": [
       {
-        "comment_id": "04529258-45a8-453f-bd9b-2bd3c4c29d0b",
-        "video_id": "7634420409449925906",
+        "comment_id": "35ed5240-4066-4d8a-a532-a9894ea68a89",
+        "post_id": "",
         "author": {
-          "user_id": "18769187",
-          "username": "Đức Anh",
-          "display_name": "Đức Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=500",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "Ừ bạn ơi, mình cũng thấy vậy!",
-        "created_at": "2026-04-30T09:08:24.000Z",
-        "likes_count": 14,
-        "parent_id": "dc588d79-3878-4c74-bb98-7f1885431827",
-        "depth": 1
-      },
-      {
-        "comment_id": "35586a66-9a66-429d-ac9b-f9bbda43f83a",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "56219127",
-          "username": "Hùng Trần",
-          "display_name": "Hùng Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=476",
-          "is_anonymous": false
-        },
-        "content": "dòng Rootie này hợp lắm, dùng 2 tháng rồi thấy khác hẳn",
-        "created_at": "2026-04-30T09:34:24.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4f1c8c43-9885-4af7-b1c2-38698eb44791",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "94336601",
-          "username": "Ánh Lê",
-          "display_name": "Ánh Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=397",
-          "is_anonymous": false
-        },
-        "content": "Bạn nói chuẩn rồi đó!",
-        "created_at": "2026-04-30T10:02:24.000Z",
-        "likes_count": 30,
-        "parent_id": "da0027da-fd27-4b5e-ae13-3433a8528c40",
-        "depth": 1
-      },
-      {
-        "comment_id": "3f10250b-f53d-4c44-9dc9-873c7b3ca364",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "38200891",
-          "username": "Phúc Nguyễn",
-          "display_name": "Phúc Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=255",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-30T22:58:24.000Z",
-        "likes_count": 31,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d3161064-8243-4610-9f0a-ffb4b37e841a",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "thương hiệu Việt mà chất lượng quá á, ủng hộ Rootie",
-        "created_at": "2026-05-01T00:44:24.000Z",
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 4,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "dc588d79-3878-4c74-bb98-7f1885431827",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "Rootie thuần chay nên mình yên tâm dùng hơn",
-        "created_at": "2026-05-01T10:31:24.000Z",
-        "likes_count": 54,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "da0027da-fd27-4b5e-ae13-3433a8528c40",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "71248799",
-          "username": "Ánh Đỗ",
-          "display_name": "Ánh Đỗ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=497",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-05-01T13:07:24.000Z",
-        "likes_count": 69,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "44467296-3432-4c9e-a34f-1c433280048b",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "65888882",
-          "username": "Thảo Trần",
-          "display_name": "Thảo Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-05-01T15:04:24.000Z",
-        "likes_count": 22,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4cedab84-2f65-4aae-b407-b2be3baadfc1",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "11687812",
-          "username": "Thảo Quyênn",
-          "display_name": "Thảo Quyênn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=99",
-          "is_anonymous": false
-        },
-        "content": "thương hiệu Việt mà chất lượng quá á, ủng hộ Rootie",
-        "created_at": "2026-05-01T16:14:24.000Z",
-        "likes_count": 62,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "94bce97f-78f7-4457-b4bb-2db5008d09b2",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "02478276",
-          "username": "Ánh Phạm",
-          "display_name": "Ánh Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=333",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-05-01T17:35:24.000Z",
-        "likes_count": 8,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "565e9350-934b-457e-813c-62b882e38217",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "61947408",
-          "username": "Thu Hoàng",
-          "display_name": "Thu Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=336",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-05-01T21:01:24.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "7148efef-346f-44ee-a4c4-d0a9cd7debce",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "80703734",
-          "username": "Phạm Thị Thu Hà",
-          "display_name": "Phạm Thị Thu Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=124",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-05-02T00:22:24.000Z",
-        "likes_count": 76,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "85485775-19c5-4e3b-86da-d658be523e09",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "56219127",
-          "username": "Hùng Trần",
-          "display_name": "Hùng Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=476",
-          "is_anonymous": false
-        },
-        "content": "mình da nhạy cảm dùng được không ạ?",
-        "created_at": "2026-05-02T08:58:24.000Z",
-        "likes_count": 23,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "79bb4f06-8329-4ce5-b86f-378fbc1a0a1a",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "34088892",
-          "username": "Minh Khoa",
-          "display_name": "Minh Khoa",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=467",
-          "is_anonymous": false
-        },
-        "content": "nước dưỡng tóc bưởi xịt vào thấy tóc mềm mại hẳn",
-        "created_at": "2026-05-02T22:29:24.000Z",
-        "likes_count": 1,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9094894c-241f-4e6b-a2b0-526bd23371ee",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "12935595",
-          "username": "Nguyễn Thị Mỹ Dung",
-          "display_name": "Nguyễn Thị Mỹ Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=137",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-05-03T00:04:24.000Z",
-        "likes_count": 32,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "19ff71fe-2d07-411f-977c-65d622a0a172",
-        "video_id": "7634420409449925906",
-        "author": {
-          "user_id": "61947408",
-          "username": "Thu Hoàng",
-          "display_name": "Thu Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=336",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-05-03T03:18:24.000Z",
-        "likes_count": 57,
         "parent_id": null,
         "depth": 0
       }
@@ -560,7 +127,8 @@
       "duration": 61,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7634392610756365575",
@@ -603,306 +171,32 @@
     ],
     "comments": [
       {
-        "comment_id": "ee1ed99a-2116-41f1-9d94-172880af3b57",
-        "video_id": "7634392610756365575",
+        "comment_id": "03a12298-955a-43da-8163-bf87851bc325",
+        "post_id": "",
         "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "dòng Rootie này hợp lắm, dùng 2 tháng rồi thấy khác hẳn",
-        "created_at": "2026-04-30T09:00:34.000Z",
-        "likes_count": 64,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 11,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "1b5a1514-e5e1-4d4c-8fdc-f00b799d3bb9",
-        "video_id": "7634392610756365575",
+        "comment_id": "1ef912b6-54a7-4e90-b9c5-cfa10a0542df",
+        "post_id": "",
         "author": {
-          "user_id": "54066397",
-          "username": "Hoài Thu",
-          "display_name": "Hoài Thu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=106",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-30T17:04:34.000Z",
-        "likes_count": 16,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2eea4662-5627-4370-a66c-5f8e41a2c58d",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "ủa hay quá, cho mình share nha",
-        "created_at": "2026-04-30T22:54:34.000Z",
-        "likes_count": 31,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2f22549f-7502-4924-997a-df85531b84d4",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "80703734",
-          "username": "Phạm Thị Thu Hà",
-          "display_name": "Phạm Thị Thu Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=124",
-          "is_anonymous": false
-        },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-05-01T00:30:34.000Z",
-        "likes_count": 33,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f6d70225-eaa4-426e-90bc-aa9c45b53be3",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-05-01T03:14:34.000Z",
-        "likes_count": 5,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e46d4e39-69a7-4ce7-88af-75e718a91d4b",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-05-01T03:34:34.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "8a0433be-d871-48a8-bf6e-c7f921093571",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "lo ngại quá, dùng thử sản phẩm này mà chưa thấy hiệu quả",
-        "created_at": "2026-05-01T03:55:34.000Z",
-        "likes_count": 59,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "bf4dc11b-fa49-4e43-a954-0546413154b5",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "48483879",
-          "username": "Thanh Bùi",
-          "display_name": "Thanh Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=369",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-05-01T04:49:34.000Z",
-        "likes_count": 15,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "3f4dbc6f-0b15-4619-a7ca-44b6993f7674",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-05-01T05:43:34.000Z",
-        "likes_count": 29,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "ab928d92-e887-4bb6-8684-1283a3b364a8",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "Ohhh thế ah, để mình thử xem",
-        "created_at": "2026-05-01T06:08:34.000Z",
-        "likes_count": 18,
-        "parent_id": "8a0433be-d871-48a8-bf6e-c7f921093571",
-        "depth": 1
-      },
-      {
-        "comment_id": "ded304af-54aa-4269-a9b4-935ffb130cc9",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-05-01T07:00:34.000Z",
-        "likes_count": 70,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f13e2438-c022-4728-a2b4-526ee3308031",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "68343295",
-          "username": "Kim Hoàng",
-          "display_name": "Kim Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=283",
-          "is_anonymous": false
-        },
-        "content": "dòng Rootie này hợp lắm, dùng 2 tháng rồi thấy khác hẳn",
-        "created_at": "2026-05-01T08:17:34.000Z",
-        "likes_count": 18,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "06781df4-2354-415d-86d9-546de7ee4e3f",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "Cảm ơn bạn đã chia sẻ nhé 💚",
-        "created_at": "2026-05-01T18:44:34.000Z",
-        "likes_count": 23,
-        "parent_id": "2eea4662-5627-4370-a66c-5f8e41a2c58d",
-        "depth": 1
-      },
-      {
-        "comment_id": "4d8e7797-8279-4143-b747-061fd5060cce",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "78557508",
-          "username": "Thiên Thư",
-          "display_name": "Thiên Thư",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=8",
-          "is_anonymous": false
-        },
-        "content": "da mụn viêm dùng được không ạ?",
-        "created_at": "2026-05-01T20:49:34.000Z",
-        "likes_count": 13,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "99d08cf2-bd62-44ed-bcbb-02bd4147b47e",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-05-02T02:24:34.000Z",
-        "likes_count": 75,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "138c158f-915d-44b1-8592-0607cc84dd63",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "07992969",
-          "username": "Vân Đỗ",
-          "display_name": "Vân Đỗ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=367",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-05-02T02:42:34.000Z",
-        "likes_count": 69,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9cc6a9de-919c-4223-be30-7758569c08fc",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "56312738",
-          "username": "Hoàng Linh",
-          "display_name": "Hoàng Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
-          "is_anonymous": false
-        },
-        "content": "da mụn viêm dùng được không ạ?",
-        "created_at": "2026-05-02T19:17:34.000Z",
-        "likes_count": 7,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "cf822520-a08f-4878-a144-140be5d695e7",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-05-02T20:58:34.000Z",
-        "likes_count": 57,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "75d2631b-c8b5-41d4-828c-c2ffa3d9e0e7",
-        "video_id": "7634392610756365575",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "lo ngại quá, dùng thử sản phẩm này mà chưa thấy hiệu quả",
-        "created_at": "2026-05-03T00:53:34.000Z",
-        "likes_count": 39,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 11,
         "parent_id": null,
         "depth": 0
       }
@@ -913,7 +207,8 @@
       "duration": 23,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7634150212252044551",
@@ -956,178 +251,32 @@
     ],
     "comments": [
       {
-        "comment_id": "00693d08-a93d-4e95-9aee-4d6affffb37d",
-        "video_id": "7634150212252044551",
+        "comment_id": "238b7a3b-a33f-4885-9e12-c68d02c34a2a",
+        "post_id": "",
         "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-29T14:00:53.000Z",
-        "likes_count": 66,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "3f0ba4e5-b4fb-4e0a-acdb-73035941d0c2",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "Cảm ơn bạn đã chia sẻ nhé 💚",
-        "created_at": "2026-04-29T14:35:53.000Z",
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 9,
-        "parent_id": "00693d08-a93d-4e95-9aee-4d6affffb37d",
-        "depth": 1
-      },
-      {
-        "comment_id": "c59634e3-39e7-4e2e-b6b4-a1cf5ff87b86",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "81826403",
-          "username": "Vân Đặng",
-          "display_name": "Vân Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "lo ngại quá, dùng thử sản phẩm này mà chưa thấy hiệu quả",
-        "created_at": "2026-04-30T02:12:53.000Z",
-        "likes_count": 48,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "52869b81-4f63-4fe1-8a91-e09871ac02b3",
-        "video_id": "7634150212252044551",
+        "comment_id": "ac812a05-40a7-4ec5-a225-02f5be0857a9",
+        "post_id": "",
         "author": {
-          "user_id": "39729274",
-          "username": "Ngọc Hân",
-          "display_name": "Ngọc Hân",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-30T02:16:53.000Z",
-        "likes_count": 69,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6deb32a0-babe-4fa4-a53b-d0870247fbb0",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "18769187",
-          "username": "Đức Anh",
-          "display_name": "Đức Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=500",
-          "is_anonymous": false
-        },
-        "content": "mình đang bị mụn đầu đen, sp nào phù hợp?",
-        "created_at": "2026-04-30T06:15:53.000Z",
-        "likes_count": 3,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "27a9b827-1693-4a44-be84-a8a19fcea1f0",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "17264345",
-          "username": "Hương Đặng",
-          "display_name": "Hương Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=161",
-          "is_anonymous": false
-        },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-04-30T11:05:53.000Z",
-        "likes_count": 1,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "82c90efa-6fdb-404c-871c-d2657da249d4",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "34088892",
-          "username": "Minh Khoa",
-          "display_name": "Minh Khoa",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=467",
-          "is_anonymous": false
-        },
-        "content": "mình đang bị mụn đầu đen, sp nào phù hợp?",
-        "created_at": "2026-05-01T02:42:53.000Z",
-        "likes_count": 74,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2140a468-336f-411d-a463-6fddf0a5ef97",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "54155228",
-          "username": "Ngọc Lê",
-          "display_name": "Ngọc Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=150",
-          "is_anonymous": false
-        },
-        "content": "mình đang bị mụn đầu đen, sp nào phù hợp?",
-        "created_at": "2026-05-02T02:28:53.000Z",
-        "likes_count": 64,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4d7d1430-7f69-4c29-80ca-99f71089734a",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "63214138",
-          "username": "Hùng Bùi",
-          "display_name": "Hùng Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=458",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-05-02T03:12:53.000Z",
-        "likes_count": 48,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "5e343efe-c4ce-45dc-856c-9a8d25156a8d",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-05-02T03:17:53.000Z",
-        "likes_count": 23,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "468935a1-2f35-4f03-a4b4-2e863cd7ac2e",
-        "video_id": "7634150212252044551",
-        "author": {
-          "user_id": "78557508",
-          "username": "Thiên Thư",
-          "display_name": "Thiên Thư",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=8",
-          "is_anonymous": false
-        },
-        "content": "mình da nhạy cảm dùng được không ạ?",
-        "created_at": "2026-05-02T07:43:53.000Z",
-        "likes_count": 41,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 13,
         "parent_id": null,
         "depth": 0
       }
@@ -1138,7 +287,8 @@
       "duration": 26,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7633804519448595730",
@@ -1181,210 +331,17 @@
     ],
     "comments": [
       {
-        "comment_id": "4e31712d-77a2-42a2-ad90-c2a722c631ab",
-        "video_id": "7633804519448595730",
+        "comment_id": "c7b10801-5762-40ab-9cf2-48b06b1f3557",
+        "post_id": "",
         "author": {
-          "user_id": "48267543",
-          "username": "Diệu Phan",
-          "display_name": "Diệu Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=311",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-28T22:18:25.000Z",
-        "likes_count": 30,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e64c438f-0f3b-4fe8-9524-4c605fe4ad13",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "00281910",
-          "username": "Hùng Đặng",
-          "display_name": "Hùng Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=428",
-          "is_anonymous": false
-        },
-        "content": "Bạn nói chuẩn rồi đó!",
-        "created_at": "2026-04-29T01:27:25.000Z",
-        "likes_count": 25,
-        "parent_id": "39aa9408-94f4-4346-aeb5-43d29d66566e",
-        "depth": 1
-      },
-      {
-        "comment_id": "316fd458-59c1-44b5-8956-f5e15ce87afb",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-29T05:45:25.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c6302424-0717-4c37-b13f-942de877f1cc",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "12935595",
-          "username": "Nguyễn Thị Mỹ Dung",
-          "display_name": "Nguyễn Thị Mỹ Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=137",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-29T05:56:25.000Z",
-        "likes_count": 71,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4518fa96-b358-4afd-8544-2c5ff05e3ea0",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-29T08:14:25.000Z",
-        "likes_count": 25,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "683622e9-669b-45fa-a90b-80d6d71f74cd",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "19489243",
-          "username": "Ánh Tuyết",
-          "display_name": "Ánh Tuyết",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=363",
-          "is_anonymous": false
-        },
-        "content": "Ohhh thế ah, để mình thử xem",
-        "created_at": "2026-04-29T14:32:25.000Z",
-        "likes_count": 24,
-        "parent_id": "ebeac841-b44f-432a-bed9-db3f2be845e0",
-        "depth": 1
-      },
-      {
-        "comment_id": "ebeac841-b44f-432a-bed9-db3f2be845e0",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "87978918",
-          "username": "Linh Nguyễn",
-          "display_name": "Linh Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=364",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-29T17:48:25.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d17da2bb-ffa8-47f6-b74e-11f588275d34",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "74137310",
-          "username": "Minh Lê",
-          "display_name": "Minh Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=366",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-29T18:09:25.000Z",
-        "likes_count": 49,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "adbf55ec-ff8a-4bd4-9d57-d6bc644348a7",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-04-30T00:33:25.000Z",
-        "likes_count": 42,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "ad1d3028-fe64-488f-8a6c-f5ae89dc1443",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "36773660",
-          "username": "Một đời cá mặn an nhiên",
-          "display_name": "Một đời cá mặn an nhiên",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=152",
-          "is_anonymous": false
-        },
-        "content": "nước dưỡng tóc bưởi xịt vào thấy tóc mềm mại hẳn",
-        "created_at": "2026-04-30T01:18:25.000Z",
-        "likes_count": 38,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "3c3e1c74-1434-43f8-a518-0ac6dfb1ec6f",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "38200891",
-          "username": "Phúc Nguyễn",
-          "display_name": "Phúc Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=255",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-30T13:45:25.000Z",
-        "likes_count": 24,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "39aa9408-94f4-4346-aeb5-43d29d66566e",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "lo ngại quá, dùng thử sản phẩm này mà chưa thấy hiệu quả",
-        "created_at": "2026-05-01T04:58:25.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "b5f6c4b4-d766-4b06-85c7-3cbdcb1bbdd3",
-        "video_id": "7633804519448595730",
-        "author": {
-          "user_id": "81826403",
-          "username": "Vân Đặng",
-          "display_name": "Vân Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-05-01T05:25:25.000Z",
-        "likes_count": 72,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 6,
         "parent_id": null,
         "depth": 0
       }
@@ -1393,7 +350,8 @@
     "video": {
       "url": "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423182/tiktok_nwm_7559978021822713106_ojcm1u.mp4",
       "thumbnail": ""
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7633425303960079634",
@@ -1436,306 +394,32 @@
     ],
     "comments": [
       {
-        "comment_id": "1d79c1c0-34f2-4d7c-a399-111d5d8448fb",
-        "video_id": "7633425303960079634",
+        "comment_id": "c05bb070-1e9e-49c7-8fb7-df9ccd78d3ca",
+        "post_id": "",
         "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "da mụn viêm dùng được không ạ?",
-        "created_at": "2026-04-27T17:04:53.000Z",
-        "likes_count": 55,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 12,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "97259cc8-38f8-41f2-8392-73199cb44b81",
-        "video_id": "7633425303960079634",
+        "comment_id": "aadc4f70-e2c3-4999-8724-b328744d5cfb",
+        "post_id": "",
         "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-27T19:35:53.000Z",
-        "likes_count": 67,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "96fdbb40-271e-4404-be2a-dee91a2dfd16",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "Rootie thuần chay nên mình yên tâm dùng hơn",
-        "created_at": "2026-04-27T21:19:53.000Z",
-        "likes_count": 17,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "aee1c78a-8f60-4fc7-ad71-b635a68b78e3",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-27T23:47:53.000Z",
-        "likes_count": 71,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "cdf63461-40c8-4f26-bb33-c97891be6c19",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "21764840",
-          "username": "Thu Thủy",
-          "display_name": "Thu Thủy",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=29",
-          "is_anonymous": false
-        },
-        "content": "mình lo quá, da đang bị thâm nhiều",
-        "created_at": "2026-04-28T00:42:53.000Z",
-        "likes_count": 25,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "32e07e1e-a737-4871-996e-a3ff3961b774",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "69267753",
-          "username": "Phúc Phan",
-          "display_name": "Phúc Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=292",
-          "is_anonymous": false
-        },
-        "content": "Bạn nói chuẩn rồi đó!",
-        "created_at": "2026-04-28T07:32:53.000Z",
-        "likes_count": 18,
-        "parent_id": "97259cc8-38f8-41f2-8392-73199cb44b81",
-        "depth": 1
-      },
-      {
-        "comment_id": "1559f782-5946-4622-b637-b0abc74debdf",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "39729274",
-          "username": "Ngọc Hân",
-          "display_name": "Ngọc Hân",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-28T10:08:53.000Z",
-        "likes_count": 4,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "cfeb6d0e-21dc-4c97-b49d-4a6dd25ec472",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-28T16:49:53.000Z",
-        "likes_count": 56,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d60bf977-5e8f-48a0-b894-677dc10e750b",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "39729274",
-          "username": "Ngọc Hân",
-          "display_name": "Ngọc Hân",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
-          "is_anonymous": false
-        },
-        "content": "mình da nhạy cảm dùng được không ạ?",
-        "created_at": "2026-04-28T17:00:53.000Z",
-        "likes_count": 4,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "545a9e7a-2a13-48a4-9de9-4913288e59ef",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "54066397",
-          "username": "Hoài Thu",
-          "display_name": "Hoài Thu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=106",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-28T17:28:53.000Z",
-        "likes_count": 17,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "803d9136-b0c3-4f55-b366-de349cfa30e8",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "68957465",
-          "username": "Hùng Đỗ",
-          "display_name": "Hùng Đỗ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=136",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-28T18:23:53.000Z",
-        "likes_count": 33,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "afd2da24-5cf3-4a26-acba-e90a81277041",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "84889072",
-          "username": "Linh Phan",
-          "display_name": "Linh Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=250",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-28T23:45:53.000Z",
-        "likes_count": 55,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "eb19384c-cc55-425b-a447-b9de720d148f",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "82522606",
-          "username": "Mai Lan",
-          "display_name": "Mai Lan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=50",
-          "is_anonymous": false
-        },
-        "content": "Wow mình không biết cái này luôn, cảm ơn b",
-        "created_at": "2026-04-29T01:47:53.000Z",
-        "likes_count": 0,
-        "parent_id": "d60bf977-5e8f-48a0-b894-677dc10e750b",
-        "depth": 1
-      },
-      {
-        "comment_id": "089509d5-7ab1-43bd-9734-89454bc38406",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-04-29T02:27:53.000Z",
-        "likes_count": 24,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "087581c1-02b3-464e-a9b6-3c14e61bfb72",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "34088892",
-          "username": "Minh Khoa",
-          "display_name": "Minh Khoa",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=467",
-          "is_anonymous": false
-        },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-29T09:00:53.000Z",
-        "likes_count": 31,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e6fbfcfd-318f-4d31-83e9-abd4648ecdb4",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "56219127",
-          "username": "Hùng Trần",
-          "display_name": "Hùng Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=476",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-29T10:56:53.000Z",
-        "likes_count": 28,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6f7587bd-69ec-4dd7-b688-1902a81322d3",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "56312738",
-          "username": "Hoàng Linh",
-          "display_name": "Hoàng Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-30T01:04:53.000Z",
-        "likes_count": 52,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2a69f699-398e-488d-beb1-4a5cfd789676",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "19489243",
-          "username": "Ánh Tuyết",
-          "display_name": "Ánh Tuyết",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=363",
-          "is_anonymous": false
-        },
-        "content": "Rootie thuần chay nên mình yên tâm dùng hơn",
-        "created_at": "2026-04-30T12:03:53.000Z",
-        "likes_count": 34,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e05fe727-aeae-42d2-9356-2f5219792504",
-        "video_id": "7633425303960079634",
-        "author": {
-          "user_id": "04112607",
-          "username": "Hương Phạm",
-          "display_name": "Hương Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=377",
-          "is_anonymous": false
-        },
-        "content": "mình đang bị mụn đầu đen, sp nào phù hợp?",
-        "created_at": "2026-04-30T12:45:53.000Z",
-        "likes_count": 18,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 5,
         "parent_id": null,
         "depth": 0
       }
@@ -1746,7 +430,8 @@
       "duration": 55,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7633316493349981447",
@@ -1789,290 +474,17 @@
     ],
     "comments": [
       {
-        "comment_id": "39da834c-1071-4cd9-a2b7-295227d6f94a",
-        "video_id": "7633316493349981447",
+        "comment_id": "b0652653-f74e-4ec6-a800-f5142dcc8d83",
+        "post_id": "",
         "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-27T18:04:41.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "54f61ce0-0ba6-41f9-83e1-442955ec4c17",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-28T02:56:41.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "51e9647e-fb8e-43b1-a781-f34bd013b711",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "08308308",
-          "username": "Minh Han",
-          "display_name": "Minh Han",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=193",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-28T08:07:41.000Z",
-        "likes_count": 62,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "1a558bc6-cbc0-4827-aa9e-37a410cc0a7d",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-28T10:04:41.000Z",
-        "likes_count": 30,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c437549f-d208-4f7f-918b-b0ecef0f7731",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "12461521",
-          "username": "Yến Võ",
-          "display_name": "Yến Võ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=113",
-          "is_anonymous": false
-        },
-        "content": "Rootie thuần chay nên mình yên tâm dùng hơn",
-        "created_at": "2026-04-28T17:14:41.000Z",
-        "likes_count": 74,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "ac2b4339-f664-44c6-ae47-9207fe118a6e",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "nước dưỡng tóc bưởi xịt vào thấy tóc mềm mại hẳn",
-        "created_at": "2026-04-28T21:52:41.000Z",
-        "likes_count": 38,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9c22ea4e-f798-41df-80b9-b7939ad8b380",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "Mình cũng đang thắc mắc điều này 😅",
-        "created_at": "2026-04-28T23:29:41.000Z",
-        "likes_count": 30,
-        "parent_id": "2b2efa61-f7eb-4665-b474-ceb9ca91b262",
-        "depth": 1
-      },
-      {
-        "comment_id": "c6df8c9d-dba1-4bff-ac63-9af1da343bde",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-29T00:39:41.000Z",
-        "likes_count": 39,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e096b24b-566d-46b6-8a5a-73d5a8577581",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-29T03:34:41.000Z",
-        "likes_count": 0,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "5db51a03-3c03-4f11-9921-68a7005bbe1e",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-29T09:12:41.000Z",
-        "likes_count": 75,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e6043a7b-3591-4076-9bf7-86aa63fe11e4",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-29T12:54:41.000Z",
-        "likes_count": 75,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4bb4342b-27d1-4b3f-a856-8f0e71209f8c",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "Ừ bạn ơi, mình cũng thấy vậy!",
-        "created_at": "2026-04-29T13:09:41.000Z",
-        "likes_count": 28,
-        "parent_id": "c437549f-d208-4f7f-918b-b0ecef0f7731",
-        "depth": 1
-      },
-      {
-        "comment_id": "484a2d44-bc6c-4e93-8b31-bf7d3f02ece7",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "18769187",
-          "username": "Đức Anh",
-          "display_name": "Đức Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=500",
-          "is_anonymous": false
-        },
-        "content": "mình đang bị mụn đầu đen, sp nào phù hợp?",
-        "created_at": "2026-04-29T13:18:41.000Z",
-        "likes_count": 49,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2769e57f-b061-4a32-a038-75087f61122f",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "61947408",
-          "username": "Thu Hoàng",
-          "display_name": "Thu Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=336",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-29T22:34:41.000Z",
-        "likes_count": 66,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "ca16a01f-fa46-4df2-b76e-5d95caaee457",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "61947408",
-          "username": "Thu Hoàng",
-          "display_name": "Thu Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=336",
-          "is_anonymous": false
-        },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-04-29T23:30:41.000Z",
-        "likes_count": 37,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2b2efa61-f7eb-4665-b474-ceb9ca91b262",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "04112607",
-          "username": "Hương Phạm",
-          "display_name": "Hương Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=377",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-30T01:02:41.000Z",
-        "likes_count": 77,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "67d55ef6-eb70-46e4-a9e7-76aa20da009b",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "52376017",
-          "username": "Ánh Trần",
-          "display_name": "Ánh Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=380",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-30T01:44:41.000Z",
-        "likes_count": 54,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "646fd0f7-b116-4794-a331-597f8685e378",
-        "video_id": "7633316493349981447",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-30T03:40:41.000Z",
-        "likes_count": 64,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 2,
         "parent_id": null,
         "depth": 0
       }
@@ -2083,7 +495,8 @@
       "duration": 23,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7633050270955523346",
@@ -2126,226 +539,17 @@
     ],
     "comments": [
       {
-        "comment_id": "183a4ed7-420e-4e44-8b0c-bb0205ecaf34",
-        "video_id": "7633050270955523346",
+        "comment_id": "b5a7bb7f-fd00-43ba-8698-cde095bc8fbd",
+        "post_id": "",
         "author": {
-          "user_id": "18769187",
-          "username": "Đức Anh",
-          "display_name": "Đức Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=500",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-26T14:05:35.000Z",
-        "likes_count": 44,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "5eaaa662-707d-41f7-974f-1beca2fa037a",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "81826403",
-          "username": "Vân Đặng",
-          "display_name": "Vân Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-26T15:26:35.000Z",
-        "likes_count": 40,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "be5be061-81db-4898-a655-2326c238f34c",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "70809287",
-          "username": "Linh Phạm",
-          "display_name": "Linh Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=708092",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-26T19:12:35.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "48fa11b1-badb-4e9d-8f79-06535ff15eae",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-26T20:01:35.000Z",
-        "likes_count": 45,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "0fd74ad5-8055-413e-b1f8-78640ec52865",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-04-27T08:50:35.000Z",
-        "likes_count": 44,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "5018c251-80a7-49cd-99f1-4eea12ce06b8",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "Wow mình không biết cái này luôn, cảm ơn b",
-        "created_at": "2026-04-28T00:41:35.000Z",
-        "likes_count": 23,
-        "parent_id": "2514df3a-c854-468e-bc50-f42675f0a65a",
-        "depth": 1
-      },
-      {
-        "comment_id": "68a2a64e-eae7-4061-9dca-6f3f5f361954",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-28T02:52:35.000Z",
-        "likes_count": 15,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "49bb067a-f467-4373-8774-24979220787d",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "61947408",
-          "username": "Thu Hoàng",
-          "display_name": "Thu Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=336",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-28T06:07:35.000Z",
-        "likes_count": 20,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "34770a58-0a77-4cb0-ad6c-ff49c2a6713e",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-28T06:22:35.000Z",
-        "likes_count": 42,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "48f1e8f0-c5d2-4ac8-ac1a-3094c7f1b71c",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "54066397",
-          "username": "Hoài Thu",
-          "display_name": "Hoài Thu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=106",
-          "is_anonymous": false
-        },
-        "content": "da mụn viêm dùng được không ạ?",
-        "created_at": "2026-04-28T07:40:35.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "30793607-3009-415f-a9ae-5c81d2ae49e4",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "34088892",
-          "username": "Minh Khoa",
-          "display_name": "Minh Khoa",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=467",
-          "is_anonymous": false
-        },
-        "content": "da mình vừa khô vừa hay mụn không biết dùng gì",
-        "created_at": "2026-04-28T23:50:35.000Z",
-        "likes_count": 4,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "0d2f3276-8696-43ea-b3c1-00821788b822",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-29T03:04:35.000Z",
-        "likes_count": 20,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "5f18febd-41d6-40a1-a582-f3e43db7dc08",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-29T09:05:35.000Z",
-        "likes_count": 33,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2514df3a-c854-468e-bc50-f42675f0a65a",
-        "video_id": "7633050270955523346",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-29T09:22:35.000Z",
-        "likes_count": 55,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 8,
         "parent_id": null,
         "depth": 0
       }
@@ -2356,7 +560,8 @@
       "duration": 10,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7632935026614684935",
@@ -2399,306 +604,17 @@
     ],
     "comments": [
       {
-        "comment_id": "0285b9e2-6709-4821-8db2-6501c0ce8a99",
-        "video_id": "7632935026614684935",
+        "comment_id": "194b6c68-8f86-4f69-863b-7f34e5d68ab7",
+        "post_id": "",
         "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-26T13:42:25.000Z",
-        "likes_count": 40,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c8a4d816-5755-4661-8221-c8d79ef15e21",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "18769187",
-          "username": "Đức Anh",
-          "display_name": "Đức Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=500",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-26T16:23:25.000Z",
-        "likes_count": 64,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2c168e19-fb77-455b-b596-9468431917df",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "13358497",
-          "username": "Nguyễn Ngọc Trâm",
-          "display_name": "Nguyễn Ngọc Trâm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=179",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-27T00:06:25.000Z",
-        "likes_count": 64,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "b698a8ea-1dde-428e-b299-8814f3f0e607",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "04112607",
-          "username": "Hương Phạm",
-          "display_name": "Hương Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=377",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi sp này phù hợp da hỗn hợp ko?",
-        "created_at": "2026-04-27T01:17:25.000Z",
-        "likes_count": 70,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "a907466e-df09-4bde-8ad0-c2387792182d",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "26716842",
-          "username": "Kim Anh",
-          "display_name": "Kim Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=282",
-          "is_anonymous": false
-        },
-        "content": "Mình cũng đang thắc mắc điều này 😅",
-        "created_at": "2026-04-27T04:18:25.000Z",
-        "likes_count": 21,
-        "parent_id": "1e93546f-f3aa-478d-b864-27deccba1bce",
-        "depth": 1
-      },
-      {
-        "comment_id": "86037105-9a64-4d7d-8c95-6c31561b2590",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "20004605",
-          "username": "Phương Thảo",
-          "display_name": "Phương Thảo",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=403",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-27T04:45:25.000Z",
-        "likes_count": 53,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "925fc8a7-b2cd-4b96-b2eb-010d1d8e057c",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "54066397",
-          "username": "Hoài Thu",
-          "display_name": "Hoài Thu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=106",
-          "is_anonymous": false
-        },
-        "content": "ai đã thử Rootie rồi share kinh nghiệm với mình nha",
-        "created_at": "2026-04-27T05:34:25.000Z",
-        "likes_count": 78,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2d35e743-efc9-4266-b396-36d86605500a",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "mình lo quá, da đang bị thâm nhiều",
-        "created_at": "2026-04-27T09:23:25.000Z",
-        "likes_count": 19,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6562f519-c9ce-4c04-883c-a2735f6867b0",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "31359486",
-          "username": "Phương Lê",
-          "display_name": "Phương Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=423",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-27T22:20:25.000Z",
-        "likes_count": 59,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "a8cc7fd6-c3a4-4a7a-971f-35d0b49f3b2f",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "29191208",
-          "username": "Thắm Nguyễn",
-          "display_name": "Thắm Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=187",
-          "is_anonymous": false
-        },
-        "content": "nước dưỡng tóc bưởi xịt vào thấy tóc mềm mại hẳn",
-        "created_at": "2026-04-27T22:39:25.000Z",
-        "likes_count": 17,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4443930f-87fb-4c04-97fc-6460d9a78c59",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "11206911",
-          "username": "Lan Võ",
-          "display_name": "Lan Võ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=441",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi sp này phù hợp da hỗn hợp ko?",
-        "created_at": "2026-04-28T00:48:25.000Z",
-        "likes_count": 40,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "81308599-0cf8-44e2-9f16-c88da29cc6a2",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-28T01:43:25.000Z",
-        "likes_count": 61,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "1e93546f-f3aa-478d-b864-27deccba1bce",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "20004605",
-          "username": "Phương Thảo",
-          "display_name": "Phương Thảo",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=403",
-          "is_anonymous": false
-        },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-04-28T04:18:25.000Z",
-        "likes_count": 70,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f8a1487b-0e61-487a-bf95-f97810bf1ba8",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "44732021",
-          "username": "Phúc Lê",
-          "display_name": "Phúc Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=184",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi sp này phù hợp da hỗn hợp ko?",
-        "created_at": "2026-04-28T05:12:25.000Z",
-        "likes_count": 44,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "ae5fd973-233c-4f63-a3e2-86cd316f8ed1",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "36773660",
-          "username": "Một đời cá mặn an nhiên",
-          "display_name": "Một đời cá mặn an nhiên",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=152",
-          "is_anonymous": false
-        },
-        "content": "Uh rồi mình thử xem sao",
-        "created_at": "2026-04-28T07:14:25.000Z",
-        "likes_count": 25,
-        "parent_id": "1e93546f-f3aa-478d-b864-27deccba1bce",
-        "depth": 1
-      },
-      {
-        "comment_id": "63eddc08-745c-4828-9a51-507a86eedcb3",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "38200891",
-          "username": "Phúc Nguyễn",
-          "display_name": "Phúc Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=255",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-28T13:59:25.000Z",
-        "likes_count": 52,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "77899ba0-7835-49a8-9f42-e2f64d2dc7ba",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi sp này phù hợp da hỗn hợp ko?",
-        "created_at": "2026-04-28T19:29:25.000Z",
-        "likes_count": 37,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "75e0a71e-268a-47eb-a838-b78ed235b251",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-28T22:39:25.000Z",
-        "likes_count": 75,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "678d19af-4051-43af-869e-67dec73b0127",
-        "video_id": "7632935026614684935",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-29T03:09:25.000Z",
-        "likes_count": 48,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 7,
         "parent_id": null,
         "depth": 0
       }
@@ -2709,7 +625,8 @@
       "duration": 13,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7632685469569912082",
@@ -2751,322 +668,32 @@
     ],
     "comments": [
       {
-        "comment_id": "420421b2-f660-47be-a7f3-1badcd3acfc5",
-        "video_id": "7632685469569912082",
+        "comment_id": "0c0f303f-4e2d-4485-899e-eea4489381d7",
+        "post_id": "",
         "author": {
-          "user_id": "07992969",
-          "username": "Vân Đỗ",
-          "display_name": "Vân Đỗ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=367",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-25T16:20:55.000Z",
-        "likes_count": 54,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "0246b286-7fe1-4617-9612-710f493f0740",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-25T16:36:55.000Z",
-        "likes_count": 13,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "adce0aa8-b873-4eb8-aef0-6492394485db",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "11206911",
-          "username": "Lan Võ",
-          "display_name": "Lan Võ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=441",
-          "is_anonymous": false
-        },
-        "content": "Uh rồi mình thử xem sao",
-        "created_at": "2026-04-25T17:19:55.000Z",
-        "likes_count": 16,
-        "parent_id": "c945056b-f139-4607-83b9-51752d384204",
-        "depth": 1
-      },
-      {
-        "comment_id": "7f924102-f4c9-49cd-82de-ffe2ea6846a5",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-25T21:12:55.000Z",
-        "likes_count": 36,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "1b0f7ce7-7081-4bc6-9c2a-b5891757b8a9",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "46937260",
-          "username": "Ánh Đặng",
-          "display_name": "Ánh Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=458",
-          "is_anonymous": false
-        },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-04-26T06:58:55.000Z",
-        "likes_count": 61,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "65d47512-6d8d-4868-94b3-45f971b35715",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "18769187",
-          "username": "Đức Anh",
-          "display_name": "Đức Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=500",
-          "is_anonymous": false
-        },
-        "content": "Mình cũng đang thắc mắc điều này 😅",
-        "created_at": "2026-04-26T09:52:55.000Z",
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 9,
-        "parent_id": "f22976a1-03f9-452e-b0af-5e89d8115b46",
-        "depth": 1
-      },
-      {
-        "comment_id": "2303e4d0-753d-4208-8168-31920b8b2761",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "43183622",
-          "username": "Bông Skincare",
-          "display_name": "Bông Skincare",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=141",
-          "is_anonymous": false
-        },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-04-26T10:07:55.000Z",
-        "likes_count": 36,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "271714a6-b5ab-403e-b3a1-d6880b6815f1",
-        "video_id": "7632685469569912082",
+        "comment_id": "28a8341a-eeed-4f91-9ce4-587c572abb21",
+        "post_id": "",
         "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-26T14:03:55.000Z",
-        "likes_count": 55,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "40e222cb-311d-4b33-bace-17fd857c0ab0",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-04-26T14:56:55.000Z",
-        "likes_count": 17,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "30322575-684b-4133-8fd6-44da8b81a92c",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "87978918",
-          "username": "Linh Nguyễn",
-          "display_name": "Linh Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=364",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-04-26T22:10:55.000Z",
-        "likes_count": 62,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "a7f314eb-96be-43ab-870b-d4ec772419e8",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "26716842",
-          "username": "Kim Anh",
-          "display_name": "Kim Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=282",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-26T23:29:55.000Z",
-        "likes_count": 62,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "0a32fd6d-3f4a-4f68-b473-5113284a2c00",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "96590584",
-          "username": "Mai Phan",
-          "display_name": "Mai Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=350",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-04-27T01:36:55.000Z",
-        "likes_count": 26,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "936cdc83-8fc4-426c-b140-d0ff862ac40a",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "68813581",
-          "username": "Trang Võ",
-          "display_name": "Trang Võ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=116",
-          "is_anonymous": false
-        },
-        "content": "Cảm ơn bạn đã chia sẻ nhé 💚",
-        "created_at": "2026-04-27T06:36:55.000Z",
-        "likes_count": 3,
-        "parent_id": "f22976a1-03f9-452e-b0af-5e89d8115b46",
-        "depth": 1
-      },
-      {
-        "comment_id": "f1f0e187-661d-47fe-b5de-37682001b793",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "nước dưỡng tóc bưởi xịt vào thấy tóc mềm mại hẳn",
-        "created_at": "2026-04-27T07:13:55.000Z",
-        "likes_count": 3,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "824d69ec-8011-4096-a0e5-3bed2029b956",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "34213317",
-          "username": "Minh Đặng",
-          "display_name": "Minh Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=289",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-27T08:07:55.000Z",
-        "likes_count": 25,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "976108dc-628a-4d43-9808-55c8c531c684",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "mình da nhạy cảm dùng được không ạ?",
-        "created_at": "2026-04-27T08:08:55.000Z",
-        "likes_count": 69,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "8ac48bc9-6c62-4f81-b651-a12dd63831e2",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "27721155",
-          "username": "Thùy Hoàng",
-          "display_name": "Thùy Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=278",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-04-27T08:25:55.000Z",
-        "likes_count": 16,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "7023ed2b-813b-4de7-9461-91393af05b85",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "da mình vừa khô vừa hay mụn không biết dùng gì",
-        "created_at": "2026-04-27T22:38:55.000Z",
-        "likes_count": 7,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c945056b-f139-4607-83b9-51752d384204",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
-          "is_anonymous": false
-        },
-        "content": "tóc mình đang rụng nhiều, sp bưởi có giúp ích ko nhỉ",
-        "created_at": "2026-04-28T01:08:55.000Z",
-        "likes_count": 67,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f22976a1-03f9-452e-b0af-5e89d8115b46",
-        "video_id": "7632685469569912082",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-28T06:50:55.000Z",
-        "likes_count": 1,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 4,
         "parent_id": null,
         "depth": 0
       }
@@ -3075,7 +702,8 @@
     "video": {
       "url": "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423182/tiktok_nwm_7559978021822713106_ojcm1u.mp4",
       "thumbnail": ""
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7632559427106770194",
@@ -3119,210 +747,17 @@
     ],
     "comments": [
       {
-        "comment_id": "defee633-612c-4ab1-aff7-2aed48870e93",
-        "video_id": "7632559427106770194",
+        "comment_id": "50659dda-d308-490b-8f12-1b3f5ca90118",
+        "post_id": "",
         "author": {
-          "user_id": "65888882",
-          "username": "Thảo Trần",
-          "display_name": "Thảo Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-25T08:26:48.000Z",
-        "likes_count": 70,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f1420af5-a18a-4304-9fa3-c24200230e0c",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "thương hiệu Việt mà chất lượng quá á, ủng hộ Rootie",
-        "created_at": "2026-04-25T10:05:48.000Z",
-        "likes_count": 52,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6cc95c8e-0ab1-4c5d-8d60-c5c4de975a52",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "54066397",
-          "username": "Hoài Thu",
-          "display_name": "Hoài Thu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=106",
-          "is_anonymous": false
-        },
-        "content": "ai đã thử Rootie rồi share kinh nghiệm với mình nha",
-        "created_at": "2026-04-25T12:44:48.000Z",
-        "likes_count": 35,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "589b84ef-b3d0-47c5-acf2-cd2060cd4908",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "19489243",
-          "username": "Ánh Tuyết",
-          "display_name": "Ánh Tuyết",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=363",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-25T22:52:48.000Z",
-        "likes_count": 42,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2142cb09-2f02-4524-8a26-5bdbda432a14",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "04112607",
-          "username": "Hương Phạm",
-          "display_name": "Hương Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=377",
-          "is_anonymous": false
-        },
-        "content": "dòng Rootie này hợp lắm, dùng 2 tháng rồi thấy khác hẳn",
-        "created_at": "2026-04-26T09:00:48.000Z",
-        "likes_count": 70,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f1942193-ac41-41d8-b7fd-d10de74e1f0b",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-26T10:41:48.000Z",
-        "likes_count": 3,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "53232bc5-26bd-437f-8357-94af2fb132f5",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "75568714",
-          "username": "Nguyễn Kha",
-          "display_name": "Nguyễn Kha",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=138",
-          "is_anonymous": false
-        },
-        "content": "Ohhh thế ah, để mình thử xem",
-        "created_at": "2026-04-26T13:21:48.000Z",
-        "likes_count": 27,
-        "parent_id": "41f651ec-8d6a-42c7-bc3b-3e9513def2c0",
-        "depth": 1
-      },
-      {
-        "comment_id": "cd1c48e1-d18e-4234-bd5e-e75fdfdf84d8",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "03415818",
-          "username": "Thanh Đàm",
-          "display_name": "Thanh Đàm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=64",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-26T22:04:48.000Z",
-        "likes_count": 80,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "a8a0b4aa-c426-49da-85e2-e073d8cb686a",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "61947408",
-          "username": "Thu Hoàng",
-          "display_name": "Thu Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=336",
-          "is_anonymous": false
-        },
-        "content": "mình da nhạy cảm dùng được không ạ?",
-        "created_at": "2026-04-26T23:17:48.000Z",
-        "likes_count": 18,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "3e76c9db-6f34-44ce-b449-f7c48459aebf",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "56219127",
-          "username": "Hùng Trần",
-          "display_name": "Hùng Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=476",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-27T14:40:48.000Z",
-        "likes_count": 75,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "41f651ec-8d6a-42c7-bc3b-3e9513def2c0",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "56312738",
-          "username": "Hoàng Linh",
-          "display_name": "Hoàng Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
-          "is_anonymous": false
-        },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-27T23:15:48.000Z",
-        "likes_count": 5,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2512b0a8-79f0-49c0-bb76-2baa1b71ff1f",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "88777844",
-          "username": "Hà Võ",
-          "display_name": "Hà Võ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=394",
-          "is_anonymous": false
-        },
-        "content": "lo ngại quá, dùng thử sản phẩm này mà chưa thấy hiệu quả",
-        "created_at": "2026-04-28T00:55:48.000Z",
-        "likes_count": 56,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "498f68ac-9119-4d5a-abd4-35912151de06",
-        "video_id": "7632559427106770194",
-        "author": {
-          "user_id": "61484649",
-          "username": "Trần Thị Hồng Ngọc",
-          "display_name": "Trần Thị Hồng Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-28T02:13:48.000Z",
-        "likes_count": 51,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 10,
         "parent_id": null,
         "depth": 0
       }
@@ -3333,7 +768,8 @@
       "duration": 66,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7632311143658212626",
@@ -3376,306 +812,32 @@
     ],
     "comments": [
       {
-        "comment_id": "9fd9f75f-608c-408d-9029-7c7c5c4806e9",
-        "video_id": "7632311143658212626",
+        "comment_id": "4247375b-bcb5-44b7-b634-851d1964a300",
+        "post_id": "",
         "author": {
-          "user_id": "26716842",
-          "username": "Kim Anh",
-          "display_name": "Kim Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=282",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-04-24T18:14:28.000Z",
-        "likes_count": 8,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "2a90335a-03a4-4a9c-b692-2c322cc8ac87",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "20004605",
-          "username": "Phương Thảo",
-          "display_name": "Phương Thảo",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=403",
-          "is_anonymous": false
-        },
-        "content": "ai đã thử Rootie rồi share kinh nghiệm với mình nha",
-        "created_at": "2026-04-24T18:28:28.000Z",
-        "likes_count": 65,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "13bfd86f-2d09-44df-9c15-428cf2308aa5",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "Rootie thuần chay nên mình yên tâm dùng hơn",
-        "created_at": "2026-04-25T04:10:28.000Z",
-        "likes_count": 20,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "0a780806-3b24-40ef-9ba1-60a67348b5a5",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "46083310",
-          "username": "Nam Phan",
-          "display_name": "Nam Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=317",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-25T07:07:28.000Z",
-        "likes_count": 2,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9de91b22-e3a2-4c3a-b04c-ee0109515432",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "85649059",
-          "username": "Trag Chany",
-          "display_name": "Trag Chany",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=57",
-          "is_anonymous": false
-        },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-25T09:01:28.000Z",
-        "likes_count": 26,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "398c6915-b609-44a1-9811-33604893df22",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "Uh rồi mình thử xem sao",
-        "created_at": "2026-04-25T13:47:28.000Z",
-        "likes_count": 4,
-        "parent_id": "cdf18d70-67e5-4557-887b-02874f41f1cd",
-        "depth": 1
-      },
-      {
-        "comment_id": "428f509b-9c66-4ed2-93a3-9fb99989d131",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-25T17:44:28.000Z",
-        "likes_count": 8,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "de6d6a42-c0ac-45cf-8a47-bc48579a3891",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "65888882",
-          "username": "Thảo Trần",
-          "display_name": "Thảo Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-25T19:42:28.000Z",
-        "likes_count": 15,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "78460357-1291-490b-a18c-93a8dbd87c57",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "65888882",
-          "username": "Thảo Trần",
-          "display_name": "Thảo Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-04-26T08:34:28.000Z",
-        "likes_count": 35,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "cdf18d70-67e5-4557-887b-02874f41f1cd",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "04112607",
-          "username": "Hương Phạm",
-          "display_name": "Hương Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=377",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-26T08:56:28.000Z",
-        "likes_count": 20,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6362116c-1b8c-48f2-adcc-5c97e75c115e",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "Mình cũng đang thắc mắc điều này 😅",
-        "created_at": "2026-04-26T09:27:28.000Z",
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 12,
-        "parent_id": "76dc4511-fa1b-4074-af7e-7150b8db162d",
-        "depth": 1
-      },
-      {
-        "comment_id": "32848702-4526-4736-8223-d2239b772f0a",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-26T10:03:28.000Z",
-        "likes_count": 51,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "7fb0ea13-0e7e-4cbe-a996-2457b09dccc9",
-        "video_id": "7632311143658212626",
+        "comment_id": "8a84c05a-0ea9-4fc8-a618-b44de77e6cd6",
+        "post_id": "",
         "author": {
-          "user_id": "07727077",
-          "username": "Kim Phan",
-          "display_name": "Kim Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=485",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-26T11:06:28.000Z",
-        "likes_count": 67,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "7bf5adda-4356-4511-b6c1-84a2479a7e10",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "Ừ bạn ơi, mình cũng thấy vậy!",
-        "created_at": "2026-04-26T13:16:28.000Z",
-        "likes_count": 3,
-        "parent_id": "7fb0ea13-0e7e-4cbe-a996-2457b09dccc9",
-        "depth": 1
-      },
-      {
-        "comment_id": "b4e65ea3-91f5-41a7-b02c-34b414c5da45",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-27T00:06:28.000Z",
-        "likes_count": 80,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f0bc504f-8ef9-49de-a611-f97248e90c0c",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-27T00:08:28.000Z",
-        "likes_count": 9,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "76dc4511-fa1b-4074-af7e-7150b8db162d",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "22136674",
-          "username": "Tuấn Anh",
-          "display_name": "Tuấn Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=443",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-27T00:21:28.000Z",
-        "likes_count": 76,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "be43f248-e24b-454f-8d37-132d9b2f492c",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-04-27T01:36:28.000Z",
-        "likes_count": 50,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "842f6954-882d-46b0-b566-9991de89327d",
-        "video_id": "7632311143658212626",
-        "author": {
-          "user_id": "19489243",
-          "username": "Ánh Tuyết",
-          "display_name": "Ánh Tuyết",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=363",
-          "is_anonymous": false
-        },
-        "content": "tóc mình đang rụng nhiều, sp bưởi có giúp ích ko nhỉ",
-        "created_at": "2026-04-27T11:42:28.000Z",
-        "likes_count": 61,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 4,
         "parent_id": null,
         "depth": 0
       }
@@ -3686,7 +848,8 @@
       "duration": 34,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7631943525176937735",
@@ -3730,274 +893,32 @@
     ],
     "comments": [
       {
-        "comment_id": "97ffcceb-0ea3-4cb8-8add-0a7e0ee36bf7",
-        "video_id": "7631943525176937735",
+        "comment_id": "8219d4b7-107b-427a-befb-5ceb02cd9a9b",
+        "post_id": "",
         "author": {
-          "user_id": "93677940",
-          "username": "Đức Phạm",
-          "display_name": "Đức Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=357",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "Rootie thuần chay nên mình yên tâm dùng hơn",
-        "created_at": "2026-04-23T14:08:48.000Z",
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 7,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "3c7df8e2-5c99-4793-b669-c211b042751c",
-        "video_id": "7631943525176937735",
+        "comment_id": "eaff2a9a-2eb6-479b-a3ca-628498f20093",
+        "post_id": "",
         "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-23T16:50:48.000Z",
-        "likes_count": 52,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "0788e884-f022-4690-826d-745e9d9e6305",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-23T17:57:48.000Z",
-        "likes_count": 11,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "85215329-c2d8-411e-b9c8-e218d6ef7736",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-24T00:25:48.000Z",
-        "likes_count": 53,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "889149cb-ec43-4047-921b-e2d093515817",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-24T07:41:48.000Z",
-        "likes_count": 36,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "421974f8-b0ba-4a0a-810e-008962d1720a",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "Cảm ơn bạn đã chia sẻ nhé 💚",
-        "created_at": "2026-04-24T08:45:48.000Z",
-        "likes_count": 27,
-        "parent_id": "85215329-c2d8-411e-b9c8-e218d6ef7736",
-        "depth": 1
-      },
-      {
-        "comment_id": "49d3c7a8-2cae-48c5-adf5-a1b2d4f45f93",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "26716842",
-          "username": "Kim Anh",
-          "display_name": "Kim Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=282",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-24T12:05:48.000Z",
-        "likes_count": 2,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "eea26195-eb9a-4ef1-948a-d44606512ef6",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-24T12:07:48.000Z",
-        "likes_count": 37,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4da6d5a1-6dbd-4d99-a559-2b6c28c2d6d3",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-24T12:33:48.000Z",
-        "likes_count": 54,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "7b2b174b-fb96-4abf-93d6-b7f75c928931",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-04-24T17:42:48.000Z",
-        "likes_count": 7,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "17a3e591-d63b-4e09-bdd0-f237ef29157b",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-25T08:59:48.000Z",
-        "likes_count": 39,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9524abf4-dbf5-4412-851a-dbdb131bad63",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "mình đang bị mụn đầu đen, sp nào phù hợp?",
-        "created_at": "2026-04-25T12:51:48.000Z",
-        "likes_count": 9,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f8e08943-d7e3-41cb-83f5-4f0e589ce88d",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "mình da nhạy cảm dùng được không ạ?",
-        "created_at": "2026-04-25T15:28:48.000Z",
-        "likes_count": 65,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "b2e68d07-55b3-4771-8848-564ce20f2986",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "26716842",
-          "username": "Kim Anh",
-          "display_name": "Kim Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=282",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-25T20:58:48.000Z",
-        "likes_count": 41,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "13a3412f-e6ac-4c0d-affd-01ed9b10d65d",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-25T23:39:48.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4ecfa40c-efbe-44dc-8251-d22bb46409ec",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "43982923",
-          "username": "Diệu Linh",
-          "display_name": "Diệu Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=375",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-26T07:46:48.000Z",
-        "likes_count": 51,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "1fa31ef1-b074-4ec5-8237-409a66c941e4",
-        "video_id": "7631943525176937735",
-        "author": {
-          "user_id": "26716842",
-          "username": "Kim Anh",
-          "display_name": "Kim Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=282",
-          "is_anonymous": false
-        },
-        "content": "lo ngại quá, dùng thử sản phẩm này mà chưa thấy hiệu quả",
-        "created_at": "2026-04-26T07:49:48.000Z",
-        "likes_count": 69,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 13,
         "parent_id": null,
         "depth": 0
       }
@@ -4008,7 +929,8 @@
       "duration": 61,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7631575604625804552",
@@ -4050,322 +972,17 @@
     ],
     "comments": [
       {
-        "comment_id": "4dfc24da-f99a-4c6b-8de9-f2a24d807abb",
-        "video_id": "7631575604625804552",
+        "comment_id": "90ba4087-577c-4729-9847-5a6da496f812",
+        "post_id": "",
         "author": {
-          "user_id": "04112607",
-          "username": "Hương Phạm",
-          "display_name": "Hương Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=377",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-22T14:58:04.000Z",
-        "likes_count": 70,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "139a826a-4f33-48b8-a152-7d8af67f88c4",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "39537874",
-          "username": "Quỳnh Anh",
-          "display_name": "Quỳnh Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "video này quá chất lượng!",
-        "created_at": "2026-04-22T19:26:04.000Z",
-        "likes_count": 57,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "5846ec9b-7be2-4dda-9697-7823ccb69db7",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "17765221",
-          "username": "TrustworthyPersimmon268",
-          "display_name": "TrustworthyPersimmon268",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=84",
-          "is_anonymous": false
-        },
-        "content": "Ohhh thế ah, để mình thử xem",
-        "created_at": "2026-04-22T20:35:04.000Z",
-        "likes_count": 19,
-        "parent_id": "4e6a41c7-df26-4b53-9d1e-cade9564bc66",
-        "depth": 1
-      },
-      {
-        "comment_id": "60fb9dac-5571-454a-82fc-ad4a1944b661",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "93240498",
-          "username": "Kim Trần",
-          "display_name": "Kim Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=300",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-23T05:53:04.000Z",
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
         "likes_count": 17,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6b0e8c8b-af56-479f-a0f9-7be7d3aa4d52",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "08308308",
-          "username": "Minh Han",
-          "display_name": "Minh Han",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=193",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-23T06:22:04.000Z",
-        "likes_count": 80,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c5658e7b-760c-40a5-84a0-72b51527d3b9",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "13358497",
-          "username": "Nguyễn Ngọc Trâm",
-          "display_name": "Nguyễn Ngọc Trâm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=179",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-23T07:03:04.000Z",
-        "likes_count": 60,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "fd7a7094-d6ce-4bd7-a9b2-db618e227ee5",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "39729274",
-          "username": "Ngọc Hân",
-          "display_name": "Ngọc Hân",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
-          "is_anonymous": false
-        },
-        "content": "thương hiệu Việt mà chất lượng quá á, ủng hộ Rootie",
-        "created_at": "2026-04-23T12:01:04.000Z",
-        "likes_count": 67,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "255e2ea2-e1e2-41cf-acbc-a00f060aabfe",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "05570028",
-          "username": "Nam Trần",
-          "display_name": "Nam Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=349",
-          "is_anonymous": false
-        },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-04-23T16:14:04.000Z",
-        "likes_count": 20,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4e6a41c7-df26-4b53-9d1e-cade9564bc66",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "81826403",
-          "username": "Vân Đặng",
-          "display_name": "Vân Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=303",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-23T23:20:04.000Z",
-        "likes_count": 62,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6ea80090-30d7-4950-9429-2816ef79674b",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "11068028",
-          "username": "Yến Phạm",
-          "display_name": "Yến Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=374",
-          "is_anonymous": false
-        },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-04-24T01:24:04.000Z",
-        "likes_count": 25,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6793f701-8fcb-453a-9245-1e21a283c2cc",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "56219127",
-          "username": "Hùng Trần",
-          "display_name": "Hùng Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=476",
-          "is_anonymous": false
-        },
-        "content": "có bị kích ứng ko mn?",
-        "created_at": "2026-04-24T02:50:04.000Z",
-        "likes_count": 37,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "1f01b75a-ef03-40b1-9f9f-3b877d5fd8e8",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "mình lo quá, da đang bị thâm nhiều",
-        "created_at": "2026-04-24T03:48:04.000Z",
-        "likes_count": 57,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "cc966153-e3dd-4166-8282-9b00aaaa58c1",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "32190643",
-          "username": "Nam Hoàng",
-          "display_name": "Nam Hoàng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=198",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-24T11:24:04.000Z",
-        "likes_count": 17,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9b79e39c-63de-46be-a68e-934d6fe73b61",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "33208139",
-          "username": "Tuấn Nguyễn",
-          "display_name": "Tuấn Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-24T18:58:04.000Z",
-        "likes_count": 44,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f02e6a07-75f2-4c18-951e-9fffbb0385f1",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "26786948",
-          "username": "Quỳnh Phạm",
-          "display_name": "Quỳnh Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=186",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi sp này phù hợp da hỗn hợp ko?",
-        "created_at": "2026-04-24T21:26:04.000Z",
-        "likes_count": 48,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e71f7139-eb88-461a-a200-b40ee4f602d3",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "Ừ bạn ơi, mình cũng thấy vậy!",
-        "created_at": "2026-04-25T04:51:04.000Z",
-        "likes_count": 19,
-        "parent_id": "6b0e8c8b-af56-479f-a0f9-7be7d3aa4d52",
-        "depth": 1
-      },
-      {
-        "comment_id": "cd46a0c8-b846-4ff3-b0a5-b0b91885a1e9",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-25T06:58:04.000Z",
-        "likes_count": 54,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6a4324ce-e3ba-4246-a0bc-a2930e837c8d",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
-          "is_anonymous": false
-        },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-04-25T08:02:04.000Z",
-        "likes_count": 8,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "b42cac46-4201-4289-8d83-08a39360e5c4",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-25T08:10:04.000Z",
-        "likes_count": 34,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "43445c32-25eb-41fa-a087-d757db2cac60",
-        "video_id": "7631575604625804552",
-        "author": {
-          "user_id": "20351430",
-          "username": "Phương Bùi",
-          "display_name": "Phương Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=150",
-          "is_anonymous": false
-        },
-        "content": "ai đã thử Rootie rồi share kinh nghiệm với mình nha",
-        "created_at": "2026-04-25T08:12:04.000Z",
-        "likes_count": 19,
         "parent_id": null,
         "depth": 0
       }
@@ -4374,7 +991,8 @@
     "video": {
       "url": "https://res.cloudinary.com/dpjkzxjl2/video/upload/v1779423182/tiktok_nwm_7559978021822713106_ojcm1u.mp4",
       "thumbnail": ""
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7630833697217875218",
@@ -4417,308 +1035,19 @@
     ],
     "comments": [
       {
-        "comment_id": "f9d75749-d35d-47b5-a81b-df44e13dc3e7",
-        "video_id": "7630833697217875218",
+        "comment_id": "05a98dfb-a4de-4abb-8730-f935d1c15888",
+        "post_id": "",
         "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-04-20T14:05:05.000Z",
-        "likes_count": 78,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 15,
         "parent_id": null,
         "depth": 0
-      },
-      {
-        "comment_id": "b0ca87a3-9ee6-4965-bdfe-c345b27247b5",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-20T16:56:05.000Z",
-        "likes_count": 38,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "0ce63109-4626-457e-a014-e752cf7650d9",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "dòng Rootie này hợp lắm, dùng 2 tháng rồi thấy khác hẳn",
-        "created_at": "2026-04-21T03:01:05.000Z",
-        "likes_count": 27,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f0356314-cef2-47fc-acad-879b6f7e21df",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "34502186",
-          "username": "Vân Lê",
-          "display_name": "Vân Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=372",
-          "is_anonymous": false
-        },
-        "content": "Cảm ơn bạn đã chia sẻ nhé 💚",
-        "created_at": "2026-04-21T04:02:05.000Z",
-        "likes_count": 28,
-        "parent_id": "27c043d1-8a0a-41d1-b775-23289f415f6d",
-        "depth": 1
-      },
-      {
-        "comment_id": "32c94201-d4e5-4b67-b53a-29201d283d86",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "46152525",
-          "username": "Ánh Võ",
-          "display_name": "Ánh Võ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=384",
-          "is_anonymous": false
-        },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-04-21T12:14:05.000Z",
-        "likes_count": 32,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "88416a03-8d29-4ff2-9fc1-88d99e18dade",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "87327790",
-          "username": "Yến Bùi",
-          "display_name": "Yến Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=112",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi sp này phù hợp da hỗn hợp ko?",
-        "created_at": "2026-04-21T12:38:05.000Z",
-        "likes_count": 64,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4a2e9032-18c9-44aa-a7dd-5664b137b8d7",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "ai đã thử Rootie rồi share kinh nghiệm với mình nha",
-        "created_at": "2026-04-21T13:15:05.000Z",
-        "likes_count": 23,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "502bf473-56d8-4804-aabc-9ecd5aa32055",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-21T14:08:05.000Z",
-        "likes_count": 70,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d7e891cc-6ea5-446b-80a2-a78230a07b5b",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "04085909",
-          "username": "Hà Ngô",
-          "display_name": "Hà Ngô",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-21T14:47:05.000Z",
-        "likes_count": 76,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "986df58b-a279-4407-a142-469bfef92150",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "80155853",
-          "username": "Hương Phan",
-          "display_name": "Hương Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=801558",
-          "is_anonymous": false
-        },
-        "content": "ai đã thử Rootie rồi share kinh nghiệm với mình nha",
-        "created_at": "2026-04-21T15:05:05.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "27c043d1-8a0a-41d1-b775-23289f415f6d",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "10705185",
-          "username": "Ahh Haha",
-          "display_name": "Ahh Haha",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=48",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-21T15:33:05.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "fac15b97-6f38-4bc7-b1e9-d8c091dd391f",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "39729274",
-          "username": "Ngọc Hân",
-          "display_name": "Ngọc Hân",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
-          "is_anonymous": false
-        },
-        "content": "Wow mình không biết cái này luôn, cảm ơn b",
-        "created_at": "2026-04-22T04:23:05.000Z",
-        "likes_count": 4,
-        "parent_id": "40c20a31-37d2-4d12-ab2f-1b260296561c",
-        "depth": 1
-      },
-      {
-        "comment_id": "40c20a31-37d2-4d12-ab2f-1b260296561c",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-22T11:18:05.000Z",
-        "likes_count": 78,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "736de7de-0025-4c1f-bcd5-5215f1cb1134",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "36773660",
-          "username": "Một đời cá mặn an nhiên",
-          "display_name": "Một đời cá mặn an nhiên",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=152",
-          "is_anonymous": false
-        },
-        "content": "thương hiệu Việt mà chất lượng quá á, ủng hộ Rootie",
-        "created_at": "2026-04-22T15:44:05.000Z",
-        "likes_count": 69,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "65bd7884-c2af-46c1-ae1f-dada4fdd1363",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "dòng Rootie này hợp lắm, dùng 2 tháng rồi thấy khác hẳn",
-        "created_at": "2026-04-22T19:21:05.000Z",
-        "likes_count": 13,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d99f9717-d936-4ce5-a1b0-edf4df9f4d0b",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "34847802",
-          "username": "Yến Lê",
-          "display_name": "Yến Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=332",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-22T22:13:05.000Z",
-        "likes_count": 35,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6263d41b-7ef5-443b-9a45-9e15aaefc71c",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "04112607",
-          "username": "Hương Phạm",
-          "display_name": "Hương Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=377",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-22T22:17:05.000Z",
-        "likes_count": 57,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "15906e1c-6880-4cdc-a651-8e2799c52fe9",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "tóc mình đang rụng nhiều, sp bưởi có giúp ích ko nhỉ",
-        "created_at": "2026-04-23T06:47:05.000Z",
-        "likes_count": 45,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "26a5ac74-1555-458d-b2d0-99ddf3de4a04",
-        "video_id": "7630833697217875218",
-        "author": {
-          "user_id": "13848100",
-          "username": "Diệu Trần",
-          "display_name": "Diệu Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=178",
-          "is_anonymous": false
-        },
-        "content": "Ừ bạn ơi, mình cũng thấy vậy!",
-        "created_at": "2026-04-23T08:13:05.000Z",
-        "likes_count": 12,
-        "parent_id": "40c20a31-37d2-4d12-ab2f-1b260296561c",
-        "depth": 1
       }
     ],
     "video": {
@@ -4727,7 +1056,8 @@
       "duration": 23,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7630454831584464146",
@@ -4770,178 +1100,32 @@
     ],
     "comments": [
       {
-        "comment_id": "7019b74a-8ad4-4eb6-94be-e2488464bc8d",
-        "video_id": "7630454831584464146",
+        "comment_id": "29347a4e-80c4-4c4a-837c-d3cdc5f8bf2f",
+        "post_id": "",
         "author": {
-          "user_id": "13358497",
-          "username": "Nguyễn Ngọc Trâm",
-          "display_name": "Nguyễn Ngọc Trâm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=179",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "da mình vừa khô vừa hay mụn không biết dùng gì",
-        "created_at": "2026-04-19T23:49:55.000Z",
-        "likes_count": 48,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 6,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "d94e8f72-9aed-4d50-a953-be5be7d69275",
-        "video_id": "7630454831584464146",
+        "comment_id": "4d4638a2-2a6c-4124-b1a1-d8bfe5d5b345",
+        "post_id": "",
         "author": {
-          "user_id": "38200891",
-          "username": "Phúc Nguyễn",
-          "display_name": "Phúc Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=255",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "da mình vừa khô vừa hay mụn không biết dùng gì",
-        "created_at": "2026-04-20T04:30:55.000Z",
-        "likes_count": 11,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c9fdc171-bd0d-4b76-b8f1-efd580f27cbf",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
-          "is_anonymous": false
-        },
-        "content": "da mụn viêm dùng được không ạ?",
-        "created_at": "2026-04-20T11:05:55.000Z",
-        "likes_count": 12,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "3e53ad19-2138-437d-9b21-2a6c8dfcac2f",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "85860942",
-          "username": "Diệu Phạm",
-          "display_name": "Diệu Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=858609",
-          "is_anonymous": false
-        },
-        "content": "mình bookmark lại để xem lần nữa",
-        "created_at": "2026-04-21T00:49:55.000Z",
-        "likes_count": 16,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c1c7861a-4a1b-4bb7-9632-a57934cd49fa",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "22136674",
-          "username": "Tuấn Anh",
-          "display_name": "Tuấn Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=443",
-          "is_anonymous": false
-        },
-        "content": "da mụn viêm dùng được không ạ?",
-        "created_at": "2026-04-21T01:38:55.000Z",
-        "likes_count": 10,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "85ca0b02-e5fc-40db-ae07-8d670efb0ff4",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "69793799",
-          "username": "Đức Lê",
-          "display_name": "Đức Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=346",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-21T04:55:55.000Z",
-        "likes_count": 23,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "948170b1-8f65-4f0f-b504-24acf354b7c1",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "Bạn nói chuẩn rồi đó!",
-        "created_at": "2026-04-21T06:50:55.000Z",
-        "likes_count": 3,
-        "parent_id": "c8f40a3c-3289-43d4-ab5c-8f75ec313226",
-        "depth": 1
-      },
-      {
-        "comment_id": "ec6bf9a1-9e2a-4f6b-ae5c-f362fbbea932",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "Rootie thuần chay nên mình yên tâm dùng hơn",
-        "created_at": "2026-04-21T11:35:55.000Z",
-        "likes_count": 12,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "3588b333-5681-4003-86cc-4a6b00baa543",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-21T21:18:55.000Z",
-        "likes_count": 40,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c8f40a3c-3289-43d4-ab5c-8f75ec313226",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
-          "is_anonymous": false
-        },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-22T04:45:55.000Z",
-        "likes_count": 57,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "1f8087ae-eb86-4693-acf6-97a4bbc23f6e",
-        "video_id": "7630454831584464146",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "nước dưỡng tóc bưởi xịt vào thấy tóc mềm mại hẳn",
-        "created_at": "2026-04-22T09:01:55.000Z",
-        "likes_count": 50,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 15,
         "parent_id": null,
         "depth": 0
       }
@@ -4952,7 +1136,8 @@
       "duration": 22,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7629593054495689991",
@@ -4995,242 +1180,32 @@
     ],
     "comments": [
       {
-        "comment_id": "29e053ee-78fc-41bf-9614-a0992ee8c497",
-        "video_id": "7629593054495689991",
+        "comment_id": "e08243a0-a441-4708-9358-162f04fae49d",
+        "post_id": "",
         "author": {
-          "user_id": "22136674",
-          "username": "Tuấn Anh",
-          "display_name": "Tuấn Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=443",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-17T10:40:47.000Z",
-        "likes_count": 68,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 20,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "f79decd0-1c44-4a8e-9799-148f828c9eb7",
-        "video_id": "7629593054495689991",
+        "comment_id": "e1be15c7-dbd3-4b5e-bde9-9080489b1af2",
+        "post_id": "",
         "author": {
-          "user_id": "87978918",
-          "username": "Linh Nguyễn",
-          "display_name": "Linh Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=364",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "da mình vừa khô vừa hay mụn không biết dùng gì",
-        "created_at": "2026-04-17T18:14:47.000Z",
-        "likes_count": 60,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "70342476-c3c0-48b9-af7c-c53366bb101e",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "42365054",
-          "username": "Mai Lê",
-          "display_name": "Mai Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=277",
-          "is_anonymous": false
-        },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-18T00:19:47.000Z",
-        "likes_count": 65,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d93a84f8-df5b-466c-aa66-0e4de8415ecc",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "mình đang dùng combo nghệ, da sáng hơn thật sự luôn",
-        "created_at": "2026-04-18T03:13:47.000Z",
-        "likes_count": 22,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f192f099-0927-4cd8-9bf3-fe932623ac6f",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "74699352",
-          "username": "Thùy Đỗ",
-          "display_name": "Thùy Đỗ",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=417",
-          "is_anonymous": false
-        },
-        "content": "Uh rồi mình thử xem sao",
-        "created_at": "2026-04-18T13:55:47.000Z",
-        "likes_count": 27,
-        "parent_id": "f79decd0-1c44-4a8e-9799-148f828c9eb7",
-        "depth": 1
-      },
-      {
-        "comment_id": "feded672-3f3f-48c0-9c1d-2310c2f1e0a5",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "20004605",
-          "username": "Phương Thảo",
-          "display_name": "Phương Thảo",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=403",
-          "is_anonymous": false
-        },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-04-18T22:15:47.000Z",
-        "likes_count": 33,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "cfe15b8b-d52d-43cb-a121-ad15fbcc6732",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-19T00:27:47.000Z",
-        "likes_count": 40,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f17b7054-7203-4db1-ba99-8bd41abcff5d",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "dùng được 1 tháng, mụn ẩn giảm rõ rệt luôn á",
-        "created_at": "2026-04-19T03:51:47.000Z",
-        "likes_count": 32,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "df8eb7f0-9c01-46e0-aaa0-0377ced582d5",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "48267543",
-          "username": "Diệu Phan",
-          "display_name": "Diệu Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=311",
-          "is_anonymous": false
-        },
-        "content": "da mình vừa khô vừa hay mụn không biết dùng gì",
-        "created_at": "2026-04-19T05:50:47.000Z",
-        "likes_count": 13,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d6f69b95-ee6c-45fe-b310-b8d58244c432",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "04112607",
-          "username": "Hương Phạm",
-          "display_name": "Hương Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=377",
-          "is_anonymous": false
-        },
-        "content": "mình da nhạy cảm dùng được không ạ?",
-        "created_at": "2026-04-19T06:55:47.000Z",
-        "likes_count": 0,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9de2dd90-f55f-46d8-b78c-587833caafd5",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "20004605",
-          "username": "Phương Thảo",
-          "display_name": "Phương Thảo",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=403",
-          "is_anonymous": false
-        },
-        "content": "bạn ơi mình da nhạy cảm xài được ko?",
-        "created_at": "2026-04-19T14:03:47.000Z",
-        "likes_count": 43,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6da7eb8d-d038-47f2-8a0d-5007a12916e9",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "39729274",
-          "username": "Ngọc Hân",
-          "display_name": "Ngọc Hân",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=339",
-          "is_anonymous": false
-        },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-04-19T14:07:47.000Z",
-        "likes_count": 55,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "88f07f60-ea8b-41cb-ab8a-c8db2bd3e88c",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "36773660",
-          "username": "Một đời cá mặn an nhiên",
-          "display_name": "Một đời cá mặn an nhiên",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=152",
-          "is_anonymous": false
-        },
-        "content": "Wow mình không biết cái này luôn, cảm ơn b",
-        "created_at": "2026-04-19T16:31:47.000Z",
-        "likes_count": 24,
-        "parent_id": "d6f69b95-ee6c-45fe-b310-b8d58244c432",
-        "depth": 1
-      },
-      {
-        "comment_id": "5888eb0f-d4d7-43a7-9238-dc375ff53a78",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-04-20T00:59:47.000Z",
-        "likes_count": 50,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "8b1ccfdb-851c-4c78-a3c4-26ca7d975ca3",
-        "video_id": "7629593054495689991",
-        "author": {
-          "user_id": "19489243",
-          "username": "Ánh Tuyết",
-          "display_name": "Ánh Tuyết",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=363",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-20T04:07:47.000Z",
-        "likes_count": 4,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 15,
         "parent_id": null,
         "depth": 0
       }
@@ -5241,7 +1216,8 @@
       "duration": 11,
       "width": 576,
       "height": 1022
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7628821097374289159",
@@ -5284,178 +1260,32 @@
     ],
     "comments": [
       {
-        "comment_id": "75fa65ad-0b95-44cb-99f2-70f0dd2cae23",
-        "video_id": "7628821097374289159",
+        "comment_id": "b3a42159-d9e3-4b72-a9b5-2c936cb045ee",
+        "post_id": "",
         "author": {
-          "user_id": "54066397",
-          "username": "Hoài Thu",
-          "display_name": "Hoài Thu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=106",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-04-15T06:31:11.000Z",
-        "likes_count": 66,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 17,
         "parent_id": null,
         "depth": 0
       },
       {
-        "comment_id": "2ab76005-5c9c-4e7d-bf8c-82a0ec58201e",
-        "video_id": "7628821097374289159",
+        "comment_id": "180f47d9-7bbd-48b7-926e-e69e8360441b",
+        "post_id": "",
         "author": {
-          "user_id": "22136674",
-          "username": "Tuấn Anh",
-          "display_name": "Tuấn Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=443",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "Ừ bạn ơi, mình cũng thấy vậy!",
-        "created_at": "2026-04-15T08:51:11.000Z",
-        "likes_count": 20,
-        "parent_id": "28200936-c951-4696-a63b-caa55bac54a7",
-        "depth": 1
-      },
-      {
-        "comment_id": "8b04d619-bf2e-44fd-808d-67a24b207da7",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "38200891",
-          "username": "Phúc Nguyễn",
-          "display_name": "Phúc Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=255",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-15T12:57:11.000Z",
-        "likes_count": 34,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "71acbef0-baab-43c7-9a86-17f3a049514a",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "23161512",
-          "username": "Linh Bùi",
-          "display_name": "Linh Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=480",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-15T17:34:11.000Z",
-        "likes_count": 57,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4daa19d3-6e70-45d8-bac6-e44cc66edb20",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "22136674",
-          "username": "Tuấn Anh",
-          "display_name": "Tuấn Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=443",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-16T05:03:11.000Z",
-        "likes_count": 65,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "21fb01a5-beee-416f-8bf8-259ba909665b",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "10705185",
-          "username": "Ahh Haha",
-          "display_name": "Ahh Haha",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=48",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-16T21:53:11.000Z",
-        "likes_count": 57,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "28200936-c951-4696-a63b-caa55bac54a7",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "61024297",
-          "username": "Thanh Phạm",
-          "display_name": "Thanh Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=404",
-          "is_anonymous": false
-        },
-        "content": "ủa hay quá, cho mình share nha",
-        "created_at": "2026-04-17T08:35:11.000Z",
-        "likes_count": 76,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "444933e6-443a-4f95-acd1-7b10f52eb926",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "56219127",
-          "username": "Hùng Trần",
-          "display_name": "Hùng Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=476",
-          "is_anonymous": false
-        },
-        "content": "cà phê tẩy da chết thơm cực, da mịn hơn sau 2 lần đầu",
-        "created_at": "2026-04-17T10:06:11.000Z",
-        "likes_count": 40,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "82fd43de-5d87-4b09-b776-54e0b9a5ee72",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "56971337",
-          "username": "Anh Thu",
-          "display_name": "Anh Thu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=5",
-          "is_anonymous": false
-        },
-        "content": "bạn dùng sp này bao lâu rồi?",
-        "created_at": "2026-04-17T10:32:11.000Z",
-        "likes_count": 71,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "231e2a37-00ff-4e9a-b115-5ab7ea3d6321",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "cảm ơn bạn đã chia sẻ, hữu ích lắm 😍",
-        "created_at": "2026-04-17T21:42:11.000Z",
-        "likes_count": 65,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4fc7ba01-ce56-4c46-9588-f225c989764b",
-        "video_id": "7628821097374289159",
-        "author": {
-          "user_id": "22136674",
-          "username": "Tuấn Anh",
-          "display_name": "Tuấn Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=443",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-18T02:08:11.000Z",
-        "likes_count": 14,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 8,
         "parent_id": null,
         "depth": 0
       }
@@ -5466,7 +1296,8 @@
       "duration": 10,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 2
   },
   {
     "video_id": "7628197443334720776",
@@ -5521,290 +1352,17 @@
     ],
     "comments": [
       {
-        "comment_id": "7b4e7b5c-a8e5-44d2-962b-9e9546a6fb55",
-        "video_id": "7628197443334720776",
+        "comment_id": "af0c3ee8-9e04-45bf-a83b-a65ffc1dde2f",
+        "post_id": "",
         "author": {
-          "user_id": "56312738",
-          "username": "Hoàng Linh",
-          "display_name": "Hoàng Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
+          "username": "Ngọc Mai",
+          "user_id": "102",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=102",
           "is_anonymous": false
         },
-        "content": "size nhỏ có không ạ, mình muốn thử trước?",
-        "created_at": "2026-04-13T16:52:05.000Z",
-        "likes_count": 22,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9ebd90d9-044d-47fa-bc8c-d10bdb96496a",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "20004605",
-          "username": "Phương Thảo",
-          "display_name": "Phương Thảo",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=403",
-          "is_anonymous": false
-        },
-        "content": "Bạn nói chuẩn rồi đó!",
-        "created_at": "2026-04-13T18:22:05.000Z",
-        "likes_count": 23,
-        "parent_id": "d77d5f6e-471e-4070-93ff-2b6765c0465d",
-        "depth": 1
-      },
-      {
-        "comment_id": "defb3431-490b-4451-916e-41aa92528e51",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-13T19:36:05.000Z",
-        "likes_count": 79,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "85fc79d8-dbcb-49eb-a200-926fc59c9051",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "16585547",
-          "username": "Vân Anh ShiBi",
-          "display_name": "Vân Anh ShiBi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=85",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-13T20:44:05.000Z",
-        "likes_count": 41,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "a891961e-d74c-49ee-a3bb-e6a797756b6f",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "Rootie Rose thạch hoa hồng này dùng mềm da lắm, đặc biệt mùa hanh khô",
-        "created_at": "2026-04-14T02:47:05.000Z",
-        "likes_count": 10,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "a6b04a8e-4be4-4c3e-908c-23e0b7afe93f",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "19315010",
-          "username": "Vũ Hiền",
-          "display_name": "Vũ Hiền",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=23",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-14T05:35:05.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "30f7025d-1c35-4167-910e-90c1c7f61e8e",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "16585547",
-          "username": "Vân Anh ShiBi",
-          "display_name": "Vân Anh ShiBi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=85",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-14T13:47:05.000Z",
-        "likes_count": 63,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "6480a06f-8bf3-4869-9613-4d285a76e53c",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
-          "is_anonymous": false
-        },
-        "content": "Mình cũng đang thắc mắc điều này 😅",
-        "created_at": "2026-04-14T15:07:05.000Z",
-        "likes_count": 14,
-        "parent_id": "7b4e7b5c-a8e5-44d2-962b-9e9546a6fb55",
-        "depth": 1
-      },
-      {
-        "comment_id": "84c362db-63db-4e97-acc5-96cc2ff4c8e6",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-14T16:04:05.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "522acff0-6e96-4ab7-9758-799ea2c405b4",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "03647244",
-          "username": "Ngân Hà",
-          "display_name": "Ngân Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=478",
-          "is_anonymous": false
-        },
-        "content": "nhìn da bạn đẹp thật, dùng sp gì vậy?",
-        "created_at": "2026-04-14T20:32:05.000Z",
-        "likes_count": 32,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "52df2cda-45d9-4453-90c7-4317e532e283",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "07369948",
-          "username": "Trang Bùi",
-          "display_name": "Trang Bùi",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=345",
-          "is_anonymous": false
-        },
-        "content": "mình lo quá, da đang bị thâm nhiều",
-        "created_at": "2026-04-14T22:01:05.000Z",
-        "likes_count": 70,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "e5bf7747-e332-4d7e-ac6d-45e1375758dd",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "30158763",
-          "username": "Yến Phan",
-          "display_name": "Yến Phan",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=410",
-          "is_anonymous": false
-        },
-        "content": "tui dùng serum bí đao Rootie thấy ok á, mụn giảm hẳn sau 3 tuần",
-        "created_at": "2026-04-14T22:10:05.000Z",
-        "likes_count": 50,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "c30fc000-f231-4df2-84f4-217e0e3ecd78",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "63294957",
-          "username": "Nam Đặng",
-          "display_name": "Nam Đặng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=324",
-          "is_anonymous": false
-        },
-        "content": "ủa hay quá, cho mình share nha",
-        "created_at": "2026-04-15T02:14:05.000Z",
-        "likes_count": 59,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "d77d5f6e-471e-4070-93ff-2b6765c0465d",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "06502909",
-          "username": "Nam Phong",
-          "display_name": "Nam Phong",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=445",
-          "is_anonymous": false
-        },
-        "content": "ai đã thử Rootie rồi share kinh nghiệm với mình nha",
-        "created_at": "2026-04-15T03:45:05.000Z",
-        "likes_count": 34,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "403a1b38-f308-457f-9209-9960f85b3e9a",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "31359486",
-          "username": "Phương Lê",
-          "display_name": "Phương Lê",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=423",
-          "is_anonymous": false
-        },
-        "content": "Bạn nói chuẩn rồi đó!",
-        "created_at": "2026-04-15T09:02:05.000Z",
-        "likes_count": 25,
-        "parent_id": "84c362db-63db-4e97-acc5-96cc2ff4c8e6",
-        "depth": 1
-      },
-      {
-        "comment_id": "efb5bf85-acac-45d0-87db-1e0503bd8400",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "44217040",
-          "username": "Hải Đăng",
-          "display_name": "Hải Đăng",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=229",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-15T17:09:05.000Z",
-        "likes_count": 8,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4e4829e0-fb3f-4c9d-b1e9-244b1b6a0c41",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "05570028",
-          "username": "Nam Trần",
-          "display_name": "Nam Trần",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=349",
-          "is_anonymous": false
-        },
-        "content": "dòng Rootie này hợp lắm, dùng 2 tháng rồi thấy khác hẳn",
-        "created_at": "2026-04-15T22:33:05.000Z",
-        "likes_count": 67,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "df9f8b77-0a21-43f9-84d9-2d0e3136e585",
-        "video_id": "7628197443334720776",
-        "author": {
-          "user_id": "48105030",
-          "username": "Minh Châu",
-          "display_name": "Minh Châu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=267",
-          "is_anonymous": false
-        },
-        "content": "nước dưỡng tóc bưởi xịt vào thấy tóc mềm mại hẳn",
-        "created_at": "2026-04-16T00:08:05.000Z",
-        "likes_count": 14,
+        "content": "Reel hay quá!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 2,
         "parent_id": null,
         "depth": 0
       }
@@ -5815,7 +1373,8 @@
       "duration": 58,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   },
   {
     "video_id": "7626596711120653586",
@@ -5857,162 +1416,17 @@
     ],
     "comments": [
       {
-        "comment_id": "883fdc10-e5f3-4058-b277-70b9d999a011",
-        "video_id": "7626596711120653586",
+        "comment_id": "4bea5031-c26a-4e12-8e58-3916031405ef",
+        "post_id": "",
         "author": {
-          "user_id": "11797393",
-          "username": "Bích Ngọc",
-          "display_name": "Bích Ngọc",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=411",
+          "username": "Hải Yến",
+          "user_id": "103",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=103",
           "is_anonymous": false
         },
-        "content": "Ừ bạn ơi, mình cũng thấy vậy!",
-        "created_at": "2026-04-09T12:02:28.000Z",
-        "likes_count": 9,
-        "parent_id": "24a85b3b-e186-4862-8ecd-480e99640627",
-        "depth": 1
-      },
-      {
-        "comment_id": "97a38b2b-fbc7-418e-803d-d17c16a26f75",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "02478276",
-          "username": "Ánh Phạm",
-          "display_name": "Ánh Phạm",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=333",
-          "is_anonymous": false
-        },
-        "content": "da mụn viêm dùng được không ạ?",
-        "created_at": "2026-04-09T13:39:28.000Z",
-        "likes_count": 1,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "f77ab4b1-8478-4182-9ae3-e6cbd22846c6",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "51360893",
-          "username": "Thanh Hà",
-          "display_name": "Thanh Hà",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=313",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi da khô có nên dùng ko?",
-        "created_at": "2026-04-10T03:11:28.000Z",
-        "likes_count": 15,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "48405d19-a59b-4452-a843-f99e041d4f9c",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "87978918",
-          "username": "Linh Nguyễn",
-          "display_name": "Linh Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=364",
-          "is_anonymous": false
-        },
-        "content": "tui mới order Rootie hôm qua, chờ hàng về thử coi",
-        "created_at": "2026-04-10T12:50:28.000Z",
-        "likes_count": 66,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "24a85b3b-e186-4862-8ecd-480e99640627",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "61869167",
-          "username": "Mỹ Linh",
-          "display_name": "Mỹ Linh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=393",
-          "is_anonymous": false
-        },
-        "content": "đỉnh quá!!",
-        "created_at": "2026-04-10T14:54:28.000Z",
-        "likes_count": 64,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "7ea1d6f0-2083-4525-9521-43806cdb3828",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "18769187",
-          "username": "Đức Anh",
-          "display_name": "Đức Anh",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=500",
-          "is_anonymous": false
-        },
-        "content": "Rootie thuần chay nên mình yên tâm dùng hơn",
-        "created_at": "2026-04-10T16:01:28.000Z",
-        "likes_count": 17,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "0bb8a0bd-d1b7-4f9a-afe3-ad5e3a2ba6b6",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "12935595",
-          "username": "Nguyễn Thị Mỹ Dung",
-          "display_name": "Nguyễn Thị Mỹ Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=137",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-10T20:18:28.000Z",
-        "likes_count": 21,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "9865dddb-5514-42e5-b31a-c771535ac3d0",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "54066397",
-          "username": "Hoài Thu",
-          "display_name": "Hoài Thu",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=106",
-          "is_anonymous": false
-        },
-        "content": "mình da nhạy cảm dùng được không ạ?",
-        "created_at": "2026-04-11T06:16:28.000Z",
-        "likes_count": 24,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "4f4f30ca-7e70-45a4-9574-bcd9137d13fd",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "80340339",
-          "username": "Hùng Nguyễn",
-          "display_name": "Hùng Nguyễn",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=265",
-          "is_anonymous": false
-        },
-        "content": "da dầu dùng cái này ổn ko ạ?",
-        "created_at": "2026-04-11T17:00:28.000Z",
-        "likes_count": 19,
-        "parent_id": null,
-        "depth": 0
-      },
-      {
-        "comment_id": "21be1962-9b16-4da3-8720-1881b73fd68e",
-        "video_id": "7626596711120653586",
-        "author": {
-          "user_id": "84466642",
-          "username": "Thùy Dung",
-          "display_name": "Thùy Dung",
-          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=362",
-          "is_anonymous": false
-        },
-        "content": "cho mình hỏi mua ở đâu vậy ạ?",
-        "created_at": "2026-04-11T23:38:28.000Z",
-        "likes_count": 20,
+        "content": "Video xịn sò ghê",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 13,
         "parent_id": null,
         "depth": 0
       }
@@ -6023,6 +1437,7 @@
       "duration": 63,
       "width": 576,
       "height": 1024
-    }
+    },
+    "comments_count": 1
   }
 ]

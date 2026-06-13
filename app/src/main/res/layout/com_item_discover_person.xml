@@ -45,51 +45,60 @@
             android:gravity="center_vertical">
             
             <FrameLayout
-                android:layout_width="48dp"
-                android:layout_height="18dp">
+                android:id="@+id/flMutualAvatars"
+                android:layout_width="wrap_content"
+                android:layout_height="18dp"
+                android:minWidth="18dp"
+                android:visibility="gone">
                 <!-- Stacked Avatars Mockup -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cvMutual3"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_marginStart="24dp"
                     app:cardCornerRadius="9dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="@android:color/white">
+                    app:cardBackgroundColor="@android:color/white"
+                    android:visibility="gone">
                     <ImageView
+                        android:id="@+id/ivMutual3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="1dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/img_avatar"/>
+                        android:scaleType="centerCrop"/>
                 </androidx.cardview.widget.CardView>
                 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cvMutual2"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_marginStart="12dp"
                     app:cardCornerRadius="9dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="@android:color/white">
+                    app:cardBackgroundColor="@android:color/white"
+                    android:visibility="gone">
                     <ImageView
+                        android:id="@+id/ivMutual2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="1dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/img_avatar"/>
+                        android:scaleType="centerCrop"/>
                 </androidx.cardview.widget.CardView>
                 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cvMutual1"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     app:cardCornerRadius="9dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="@android:color/white">
+                    app:cardBackgroundColor="@android:color/white"
+                    android:visibility="gone">
                     <ImageView
+                        android:id="@+id/ivMutual1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="1dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/img_avatar"/>
+                        android:scaleType="centerCrop"/>
                 </androidx.cardview.widget.CardView>
             </FrameLayout>
 

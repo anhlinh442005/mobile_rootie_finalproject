@@ -18,6 +18,9 @@ public class MainActivity extends AppCompatActivity {
             loadFragment(new HomeFragment());
         }
 
+        // Trigger ONE-TIME SYNC of all mock data to Firebase
+        com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncAllLocalDataToFirebase(this);
+
         // Sync team users from users.json into SQLite + Firebase on background thread
         new Thread(() -> {
             try {
@@ -65,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
                             obj.optString("email", ""),
                             obj.optString("phone", ""),
                             obj.optString("password", ""),
-                            obj.optString("avatar", null)
+                            obj.optString("avatar", null),
+                            obj.optString("primary_image", null)
                         );
 
                     // Update avatar in SQLite (upsert) using the sync method

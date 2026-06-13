@@ -167,17 +167,6 @@ class AccountProfileFragment : RootieFragment() {
             }
         }
 
-        // Highlight the "Tài khoản" tab as active in the bottom navigation menu and set up click listeners
-        com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, com.veganbeauty.app.R.id.nav_account)
-
-        // Navigate to Skin Quiz on nav_myskin click
-        view.findViewById<android.view.ViewGroup>(com.veganbeauty.app.R.id.nav_myskin)?.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(com.veganbeauty.app.R.id.main_container, QuizTestIntroFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
         // Navigate to Skin Profile (Quiz Result) if skin analysis exists, otherwise navigate to start Quiz
         binding.btnSkinProfile.setOnClickListener {
             val savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null)

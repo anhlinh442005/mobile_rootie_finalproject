@@ -113,6 +113,33 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
     private void setupViewModel() {
         com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(this);
+        
+        // Force sync users.json to ensure test accounts are available after destructive migration
+        new Thread(() -> {
+            try {
+                String jsonString = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(getAssets().open("users.json")))
+                    .lines().collect(java.util.stream.Collectors.joining("\n"));
+                org.json.JSONArray jsonArray = new org.json.JSONArray(jsonString);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    org.json.JSONObject obj = jsonArray.getJSONObject(i);
+                    com.veganbeauty.app.data.local.entities.UserEntity user = new com.veganbeauty.app.data.local.entities.UserEntity(
+                        obj.optString("user_id", java.util.UUID.randomUUID().toString()),
+                        obj.optString("username", ""),
+                        obj.optString("full_name", ""),
+                        obj.optString("email", ""),
+                        obj.optString("phone", ""),
+                        obj.optString("password", ""),
+                        obj.optString("avatar", null),
+                        obj.optString("primary_image", null)
+                    );
+                    db.userDao().insertUserSync(user);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
         com.veganbeauty.app.data.repository.AuthRepository repository = new com.veganbeauty.app.data.repository.AuthRepository(db.userDao());
         com.veganbeauty.app.features.auth.AuthViewModelFactory factory = new com.veganbeauty.app.features.auth.AuthViewModelFactory(repository);
         authViewModel = new androidx.lifecycle.ViewModelProvider(this, factory).get(com.veganbeauty.app.features.auth.AuthViewModel.class);
@@ -128,6 +155,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPhone(this, user.getPhone());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUsername(this, user.getUsername());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(this, user.getAvatar() != null ? user.getAvatar() : "");
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPrimaryImage(this, user.getPrimary_image() != null ? user.getPrimary_image() : "");
                 navigateToMain();
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
                 android.widget.Toast.makeText(this, ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(), android.widget.Toast.LENGTH_SHORT).show();

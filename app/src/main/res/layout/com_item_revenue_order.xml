@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="12dp">
+    
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivProductImage"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="#F5F5F5"
+        android:scaleType="centerCrop"
+        android:padding="4dp"
+        app:shapeAppearanceOverlay="@style/RoundedSquareImageView" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvOrderId"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RT240531-0001"
+            android:textSize="11sp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvOrderDate"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="31/05/2026"
+            android:textSize="10sp"
+            android:textColor="@color/gray_dark" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvOrderValue"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:text="520.000đ"
+        android:textSize="12sp"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thành công"
+        android:textSize="10sp"
+        android:textColor="#6E846A"
+        android:background="@drawable/com_bg_chip_normal"
+        android:backgroundTint="#EAF1E7"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:drawableStart="@drawable/ic_check"
+        android:drawablePadding="4dp"
+        android:drawableTint="#6E846A"
+        android:gravity="center" />
+        
+</LinearLayout>

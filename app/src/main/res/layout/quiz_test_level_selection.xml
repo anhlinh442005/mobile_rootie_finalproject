@@ -24,7 +24,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            android:src="@drawable/ic_back"
+            android:src="@drawable/ic_chevron_left"
             app:tint="#02542D" />
 
         <TextView
@@ -54,7 +54,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_notification"
+                android:src="@drawable/home_ic_notification"
                 app:tint="#3E4D44" />
 
             <!-- Yellow badge dot with "1" inside -->
