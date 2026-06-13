@@ -141,6 +141,7 @@ class FirestoreService {
                     createdAt = doc.getString("created_at") ?: "",
                     likesCount = likesCount,
                     commentsCount = doc.getLong("comments_count")?.toInt() ?: 0,
+                    reupsCount = doc.getLong("reups_count")?.toInt() ?: 0,
                     skinType = doc.getString("skin_type") ?: "",
                     concern = doc.getString("concern") ?: "",
                     type = doc.getString("type") ?: "",
@@ -325,6 +326,118 @@ class FirestoreService {
         }
     }
 
+
+    suspend fun addCommentToPost(postId: String, commentMap: Map<String, Any>): Boolean {
+        return try {
+            // Append to comments array and increment comments_count
+            db.collection("community_posts").document(postId)
+                .update(
+                    "comments", com.google.firebase.firestore.FieldValue.arrayUnion(commentMap),
+                    "comments_count", com.google.firebase.firestore.FieldValue.increment(1)
+                ).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun forceSyncLocalPostsToFirebase(postsJson: String, newsJson: String): Boolean {
+        return try {
+            val collection = db.collection("community_posts")
+            
+            // Delete old documents
+            val snapshot = collection.get().await()
+            for (doc in snapshot.documents) {
+                collection.document(doc.id).delete().await()
+            }
+            
+            // Upload Posts
+            val postsArray = org.json.JSONObject(postsJson).getJSONArray("posts")
+            for (i in 0 until postsArray.length()) {
+                val obj = postsArray.getJSONObject(i)
+                val map = jsonObjectToMap(obj)
+                val id = obj.optString("post_id", java.util.UUID.randomUUID().toString())
+                collection.document(id).set(map).await()
+            }
+
+            // Upload News
+            val newsArray = org.json.JSONArray(newsJson)
+            for (i in 0 until newsArray.length()) {
+                val obj = newsArray.getJSONObject(i)
+                val map = jsonObjectToMap(obj)
+                val id = obj.optString("post_id", java.util.UUID.randomUUID().toString())
+                collection.document(id).set(map).await()
+            }
+            
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun forceSyncCollection(collectionName: String, jsonStr: String, idKey: String, arrayKey: String? = null): Boolean {
+        return try {
+            val collection = db.collection(collectionName)
+            
+            // Delete old documents
+            val snapshot = collection.get().await()
+            for (doc in snapshot.documents) {
+                collection.document(doc.id).delete().await()
+            }
+            
+            // Upload new documents
+            val jsonArray = if (arrayKey != null) {
+                org.json.JSONObject(jsonStr).getJSONArray(arrayKey)
+            } else {
+                org.json.JSONArray(jsonStr)
+            }
+            
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val map = jsonObjectToMap(obj)
+                val id = obj.optString(idKey).takeIf { it.isNotBlank() } ?: java.util.UUID.randomUUID().toString()
+                collection.document(id).set(map).await()
+            }
+            
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun jsonObjectToMap(obj: org.json.JSONObject): Map<String, Any> {
+        val map = hashMapOf<String, Any>()
+        val keys = obj.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val value = obj.get(key)
+            map[key] = when (value) {
+                is org.json.JSONArray -> jsonArrayToList(value)
+                is org.json.JSONObject -> jsonObjectToMap(value)
+                org.json.JSONObject.NULL -> null
+                else -> value
+            } ?: ""
+        }
+        return map
+    }
+
+    private fun jsonArrayToList(arr: org.json.JSONArray): List<Any> {
+        val list = mutableListOf<Any>()
+        for (i in 0 until arr.length()) {
+            val value = arr.get(i)
+            list.add(when (value) {
+                is org.json.JSONArray -> jsonArrayToList(value)
+                is org.json.JSONObject -> jsonObjectToMap(value)
+                org.json.JSONObject.NULL -> null
+                else -> value
+            } ?: "")
+        }
+        return list
+    }
+
     suspend fun fetchAllStores(): List<StoreEntity> {
         return try {
             val snapshot = db.collection("stores").get().await()
@@ -333,14 +446,11 @@ class FirestoreService {
                 val toaDoMap = doc.get("toa_do") as? Map<String, Any>
                 val lienHeMap = doc.get("thong_tin_lien_he") as? Map<String, Any>
                 val hoatDongMap = doc.get("thoi_gian_hoat_dong") as? Map<String, Any>
-                
                 val thu26Map = hoatDongMap?.get("thu_2_6") as? Map<String, Any>
                 val moCua = thu26Map?.get("mo_cua") as? String ?: "07:00"
                 val dongCua = thu26Map?.get("dong_cua") as? String ?: "21:00"
-
                 val phoneList = lienHeMap?.get("so_dien_thoai") as? List<*>
                 val phoneStr = phoneList?.filterIsInstance<String>()?.joinToString(", ") ?: ""
-
                 StoreEntity(
                     id = doc.id,
                     maCuaHang = doc.getString("ma_cua_hang") ?: "",

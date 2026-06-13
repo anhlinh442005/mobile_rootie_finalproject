@@ -216,10 +216,7 @@ class ShopCheckoutFragment : RootieFragment() {
                 binding.ivPaymentMethodIcon.setImageResource(R.drawable.ic_cash)
                 binding.ivPaymentMethodIcon.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#3E4D44"))
             }
-            "Thẻ ATM nội địa/Internet Banking" -> {
-                binding.ivPaymentMethodIcon.setImageResource(R.drawable.ic_card)
-                binding.ivPaymentMethodIcon.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#3E4D44"))
-            }
+
             "Thanh toán trực tuyến MoMo" -> {
                 binding.ivPaymentMethodIcon.setImageResource(R.drawable.ic_momo)
                 binding.ivPaymentMethodIcon.imageTintList = null
@@ -466,21 +463,16 @@ class ShopCheckoutFragment : RootieFragment() {
         bottomSheetDialog.setContentView(sheetView)
 
         val ivRadioCash = sheetView.findViewById<android.widget.ImageView>(R.id.ivRadioCash)
-        val ivRadioATM = sheetView.findViewById<android.widget.ImageView>(R.id.ivRadioATM)
         val ivRadioMoMo = sheetView.findViewById<android.widget.ImageView>(R.id.ivRadioMoMo)
         val ivRadioVNPay = sheetView.findViewById<android.widget.ImageView>(R.id.ivRadioVNPay)
 
         val llOptionCash = sheetView.findViewById<View>(R.id.llOptionCash)
-        val llOptionATM = sheetView.findViewById<View>(R.id.llOptionATM)
         val llOptionMoMo = sheetView.findViewById<View>(R.id.llOptionMoMo)
         val llOptionVNPay = sheetView.findViewById<View>(R.id.llOptionVNPay)
 
-        fun updateRadioStates(cash: Boolean, atm: Boolean, momo: Boolean, vnpay: Boolean) {
+        fun updateRadioStates(cash: Boolean, momo: Boolean, vnpay: Boolean) {
             ivRadioCash.setImageResource(if (cash) R.drawable.ic_cart_checked else R.drawable.ic_cart_unchecked)
             ivRadioCash.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(if (cash) "#3E4D44" else "#807F7F"))
-
-            ivRadioATM.setImageResource(if (atm) R.drawable.ic_cart_checked else R.drawable.ic_cart_unchecked)
-            ivRadioATM.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(if (atm) "#3E4D44" else "#807F7F"))
 
             ivRadioMoMo.setImageResource(if (momo) R.drawable.ic_cart_checked else R.drawable.ic_cart_unchecked)
             ivRadioMoMo.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(if (momo) "#3E4D44" else "#807F7F"))
@@ -492,19 +484,12 @@ class ShopCheckoutFragment : RootieFragment() {
         // Set initial state
         updateRadioStates(
             cash = paymentMethod == "Thanh toán tiền mặt khi nhận hàng",
-            atm = paymentMethod == "Thẻ ATM nội địa/Internet Banking",
             momo = paymentMethod == "Thanh toán trực tuyến MoMo",
             vnpay = paymentMethod == "Thanh toán trực tuyến VNPay"
         )
 
         llOptionCash.setOnClickListener {
             paymentMethod = "Thanh toán tiền mặt khi nhận hàng"
-            updatePaymentMethodUI()
-            bottomSheetDialog.dismiss()
-        }
-
-        llOptionATM.setOnClickListener {
-            paymentMethod = "Thẻ ATM nội địa/Internet Banking"
             updatePaymentMethodUI()
             bottomSheetDialog.dismiss()
         }

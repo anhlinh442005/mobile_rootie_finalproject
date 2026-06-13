@@ -18,6 +18,18 @@ interface CommunityDao {
     @Query("SELECT * FROM community_posts ORDER BY createdAt DESC")
     fun getAllPosts(): Flow<List<CommunityPostEntity>>
 
+    @Query("DELETE FROM community_posts WHERE content LIKE :keyword")
+    suspend fun deletePostByContent(keyword: String): Int
+
+    @Query("DELETE FROM community_posts WHERE authorId = :authorId")
+    suspend fun deletePostsByAuthorId(authorId: String): Int
+
+    @Query("DELETE FROM community_posts")
+    suspend fun deleteAllPosts(): Int
+
+    @Query("DELETE FROM users")
+    suspend fun deleteAllUsers(): Int
+
     @Query("SELECT * FROM users")
     fun getAllUsers(): Flow<List<UserEntity>>
 
@@ -59,4 +71,13 @@ interface CommunityDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBlogs(blogs: List<CommunityBlogEntity>): List<Long>
+
+    @Query("UPDATE community_posts SET commentsCount = commentsCount + 1 WHERE postId = :postId")
+    suspend fun incrementCommentsCount(postId: String)
+
+    @Query("UPDATE community_posts SET likesCount = likesCount + 1 WHERE postId = :postId")
+    suspend fun incrementLikesCount(postId: String)
+
+    @Query("UPDATE community_posts SET likesCount = MAX(0, likesCount - 1) WHERE postId = :postId")
+    suspend fun decrementLikesCount(postId: String)
 }

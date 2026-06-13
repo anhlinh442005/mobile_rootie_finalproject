@@ -1,5 +1,6 @@
 package com.veganbeauty.app.data.repository
 
+import kotlin.coroutines.*
 import com.veganbeauty.app.data.local.dao.UserDao
 import com.veganbeauty.app.data.local.entities.UserEntity
 import kotlinx.coroutines.CoroutineScope

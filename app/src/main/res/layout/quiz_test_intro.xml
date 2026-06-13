@@ -25,7 +25,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            android:src="@drawable/ic_back"
+            android:src="@drawable/ic_chevron_left"
             app:tint="#02542D" />
 
         <!-- Centered Logo Slogan -->

@@ -190,24 +190,20 @@ class SkinScanResultFragment : Fragment() {
         dataSet.setDrawHighlightIndicators(false)
 
         val radarData = RadarData(dataSet)
-        radarData.setValueTextSize(9f)
+        radarData.setDrawValues(false) // Hide overlapping data point values
         radarData.setValueTextColor(Color.parseColor("#333333"))
 
         binding.skinResultRadarChart.apply {
             data = radarData
             description.isEnabled = false
-            webLineWidth = 0.5f
-            webColor = Color.LTGRAY
-            webLineWidthInner = 0.5f
-            webColorInner = Color.LTGRAY
-            webAlpha = 100
+            webLineWidth = 1f
+            webColor = Color.parseColor("#E6EBE6")
+            webLineWidthInner = 1f
+            webColorInner = Color.parseColor("#E6EBE6")
+            webAlpha = 255
 
             val xAxis = xAxis
-            xAxis.textSize = 10f
-            xAxis.yOffset = 0f
-            xAxis.xOffset = 0f
-            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-            xAxis.textColor = Color.parseColor("#555555")
+            xAxis.setDrawLabels(false)
 
             val yAxis = yAxis
             yAxis.setLabelCount(5, false)

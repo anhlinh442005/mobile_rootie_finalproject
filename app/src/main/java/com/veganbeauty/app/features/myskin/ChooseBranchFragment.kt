@@ -87,9 +87,9 @@ class ChooseBranchFragment : RootieFragment() {
         btnContinue.setOnClickListener {
             if (selectedStore != null) {
                 val bookingFragment = BookingFragment.newInstance(
-                    selectedStore!!.storeName,
-                    selectedStore!!.address,
-                    selectedStore!!.imageUrl
+                    selectedStore!!.tenCuaHang,
+                    selectedStore!!.diaChiDayDu,
+                    ""
                 )
                 parentFragmentManager.beginTransaction()
                     .setCustomAnimations(
@@ -143,16 +143,16 @@ class ChooseBranchFragment : RootieFragment() {
         // Filter by province
         if (currentFilter != "ALL") {
             filteredList = filteredList.filter { 
-                it.province.contains(currentFilter, ignoreCase = true) || 
-                it.address.contains(currentFilter, ignoreCase = true)
+                it.tinhThanh.contains(currentFilter, ignoreCase = true) || 
+                it.diaChiDayDu.contains(currentFilter, ignoreCase = true)
             }
         }
 
         // Filter by search query
         if (currentQuery.isNotEmpty()) {
             filteredList = filteredList.filter {
-                it.storeName.contains(currentQuery, ignoreCase = true) || 
-                it.address.contains(currentQuery, ignoreCase = true)
+                it.tenCuaHang.contains(currentQuery, ignoreCase = true) || 
+                it.diaChiDayDu.contains(currentQuery, ignoreCase = true)
             }
         }
 

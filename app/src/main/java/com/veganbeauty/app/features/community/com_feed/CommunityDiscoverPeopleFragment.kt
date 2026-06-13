@@ -75,10 +75,46 @@ class CommunityDiscoverPeopleFragment : RootieFragment() {
     override fun observeViewModel() {
         viewModel.users.observe(viewLifecycleOwner) { users ->
             if (users.isNotEmpty()) {
-                val shuffled = users.shuffled()
-                suggestAdapter.updateData(shuffled.take(5))
-                requestAdapter.updateData(shuffled.drop(5).take(3))
-                followBackAdapter.updateData(shuffled.drop(8).take(3))
+                val jsonReader = com.veganbeauty.app.data.local.LocalJsonReader(requireContext())
+                val mySocialData = jsonReader.getSocialDataForUser("test_001")
+                val myFriends = (mySocialData["friends"] ?: emptyList()).toSet()
+                
+                val suggestIds = mySocialData["suggested"] ?: emptyList()
+                val requestIds = mySocialData["friend_requests"] ?: emptyList()
+                // For "Follow Back" (Theo dõi lại), these are people in "followers" but NOT in "following" and NOT "friends"
+                val followers = (mySocialData["followers"] ?: emptyList()).toSet()
+                val following = (mySocialData["following"] ?: emptyList()).toSet()
+                val followBackIds = followers.subtract(following).subtract(myFriends).toList()
+                
+                val suggestions = users.filter { it.user_id in suggestIds && it.user_id != "test_001" }
+                val requests = users.filter { it.user_id in requestIds && it.user_id != "test_001" }
+                val followBacks = users.filter { it.user_id in followBackIds && it.user_id != "test_001" }
+                
+                // Calculate mutual friends
+                val allTargetIds = suggestions.map { it.user_id } + requests.map { it.user_id } + followBacks.map { it.user_id }
+                val mutualMap = jsonReader.getMutualFriendsForUsers(myFriends, allTargetIds)
+                
+                val applyMutualData = { list: List<com.veganbeauty.app.data.local.entities.UserEntity> ->
+                    list.forEach { user ->
+                        val mutualIds = mutualMap[user.user_id] ?: emptyList()
+                        user.mutualCount = mutualIds.size
+                        if (mutualIds.isNotEmpty()) {
+                            val mutualUsers = users.filter { it.user_id in mutualIds }
+                            if (mutualUsers.isNotEmpty()) {
+                                user.firstMutualFriendName = mutualUsers[0].full_name.ifBlank { mutualUsers[0].username }
+                                user.mutualFriendAvatars = mutualUsers.mapNotNull { it.avatar }.take(3)
+                            }
+                        }
+                    }
+                }
+                
+                applyMutualData(suggestions)
+                applyMutualData(requests)
+                applyMutualData(followBacks)
+                
+                suggestAdapter.updateData(suggestions)
+                requestAdapter.updateData(requests)
+                followBackAdapter.updateData(followBacks)
             }
         }
     }

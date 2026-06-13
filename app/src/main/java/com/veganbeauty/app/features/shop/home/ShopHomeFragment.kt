@@ -164,7 +164,11 @@ class ShopHomeFragment : RootieFragment() {
         binding.etSearch.setOnClickListener(searchClickListener)
 
         // Navigation
-        com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, com.veganbeauty.app.R.id.nav_shop)
+        com.veganbeauty.app.features.home.BottomNavHelper.setup(
+            fragment = this,
+            root = binding.root,
+            activeTabId = com.veganbeauty.app.R.id.nav_shop
+        ) { tabId -> com.veganbeauty.app.features.home.BottomNavHelper.navigate(this, tabId) }
     }
 
     override fun observeViewModel() {

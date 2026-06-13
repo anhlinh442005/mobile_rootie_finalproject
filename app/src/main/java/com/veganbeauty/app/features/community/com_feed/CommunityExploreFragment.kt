@@ -135,7 +135,11 @@ class CommunityExploreFragment : RootieFragment() {
         }
 
         binding.ivSearch.setOnClickListener {
-            android.widget.Toast.makeText(context, "Tìm kiếm đang được phát triển!", android.widget.Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_container, ExploreSearchFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         // Setup Bottom Nav Navigation
@@ -149,7 +153,7 @@ class CommunityExploreFragment : RootieFragment() {
         binding.comBottomNav.navComProfile.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, com.veganbeauty.app.features.profile.AccountProfileFragment())
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.profile.CommunityProfileFragment())
                 .commit()
         }
 
@@ -183,11 +187,22 @@ class CommunityExploreFragment : RootieFragment() {
 
     override fun observeViewModel() {
         viewModel.exploreVideos.observe(viewLifecycleOwner) { videos ->
-            val shuffledVideos = videos.shuffled()
-            exploreAdapter.updateData(shuffledVideos)
+            var finalVideos = videos.shuffled()
+            
+            val targetId = arguments?.getString("target_video_id")
+            if (targetId != null) {
+                val targetVideo = finalVideos.find { it.id == targetId }
+                if (targetVideo != null) {
+                    val listWithoutTarget = finalVideos.filter { it.id != targetId }.toMutableList()
+                    listWithoutTarget.add(0, targetVideo)
+                    finalVideos = listWithoutTarget
+                }
+            }
+
+            exploreAdapter.updateData(finalVideos)
             
             // Start playing first video if possible
-            if (shuffledVideos.isNotEmpty()) {
+            if (finalVideos.isNotEmpty()) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     val rv = binding.viewPagerExplore.getChildAt(0) as? RecyclerView
                     val holder = rv?.findViewHolderForAdapterPosition(0) as? ExploreVideoAdapter.ExploreVideoViewHolder

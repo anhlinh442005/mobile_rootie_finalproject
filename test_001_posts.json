@@ -1,0 +1,364 @@
+[
+  {
+    "post_id": "a5bc7ea3-785d-4fb6-9089-8e1e9c6e3f60",
+    "author": {
+      "user_id": "test_001",
+      "username": "Test User",
+      "display_name": "Test User",
+      "avatar_url": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
+      "is_anonymous": false
+    },
+    "content": "Cuối tuần rồi, tạm gác lại những bộn bề công việc để tự thưởng cho mình một buổi chiều thư giãn tại quán cà phê quen thuộc. ☕️🍃 Thật tuyệt khi được nhâm nhi một tách trà ấm, đọc vài trang sách hay và tận hưởng không gian yên tĩnh này. Thỉnh thoảng chúng ta cũng cần sống chậm lại một chút để nạp lại năng lượng và làm mới bản thân phải không mọi người? Chúc cả nhà một ngày nghỉ cuối tuần thật an nhiên và trọn vẹn nhé! ✨ #WeekendVibes #RelaxingTime #SelfCare",
+    "created_at": "2026-05-18T16:13:23.126143Z",
+    "reactions": {
+      "like": 125,
+      "love": 45
+    },
+    "comments_count": 2,
+    "skin_type": "Da hỗn hợp",
+    "concern": "Thư giãn",
+    "type": "Lifestyle",
+    "media": [
+      {
+        "url": "https://i.pinimg.com/1200x/32/01/da/3201dab6227cedabc056fd8553fd0d55.jpg"
+      },
+      {
+        "url": "https://i.pinimg.com/736x/39/a9/3e/39a93e60ff13bc3d4b2f393c891bfc76.jpg"
+      },
+      {
+        "url": "https://i.pinimg.com/736x/c3/a1/13/c3a113f28c3be85ca7e20a99367a1482.jpg"
+      }
+    ],
+    "linked_products": [],
+    "reups_count": 8,
+    "comments": [
+      {
+        "comment_id": "cmt_6977",
+        "post_id": "a5bc7ea3-785d-4fb6-9089-8e1e9c6e3f60",
+        "author": {
+          "username": "Hùng Bùi",
+          "user_id": "63214138",
+          "avatar": "https://i.pinimg.com/736x/b6/d7/cc/b6d7ccd0c1e842825d1976a4ba25df8e.jpg",
+          "is_anonymous": false
+        },
+        "content": "Bà review có tâm quá, tui cũng rinh 1 em về dùng rồi nè =)))",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 5,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_8979",
+        "post_id": "a5bc7ea3-785d-4fb6-9089-8e1e9c6e3f60",
+        "author": {
+          "username": "Bác sĩ Nguyên",
+          "user_id": "30907687",
+          "avatar": "https://i.pinimg.com/736x/f5/bd/79/f5bd792ccdf6d003c25e1019fd0f5c31.jpg",
+          "is_anonymous": false
+        },
+        "content": "Hữu ích lắm, mình đã học theo routine này và giờ da mình trộm vía vía hơn rất nhiều!!!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 46,
+        "parent_id": null,
+        "depth": 0
+      }
+    ]
+  },
+  {
+    "post_id": "03295fdf-05f3-4dfa-8cbc-302a7f69ab65",
+    "author": {
+      "user_id": "test_001",
+      "username": "Test User",
+      "display_name": "Test User",
+      "avatar_url": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
+      "is_anonymous": false
+    },
+    "content": "Lần đầu tiên thử sức với bộ môn vẽ tranh acrylic! 🎨 Nghệ thuật thực sự là một liệu pháp chữa lành tuyệt vời. Từng nét cọ quệt lên mặt canvas khiến mình cảm thấy mọi áp lực dường như tan biến hết. Dù bức tranh đầu tay chưa thực sự hoàn hảo, nhưng mình cực kỳ ưng ý với thành quả này vì nó mang đậm dấu ấn cá nhân. Sắp tới chắc chắn mình sẽ theo đuổi bộ môn này lâu dài. Có ai đam mê hội hoạ giống mình không, cùng giao lưu chia sẻ kinh nghiệm nhé! 🖌️✨",
+    "created_at": "2026-05-14T16:13:23.126199Z",
+    "reactions": {
+      "like": 240,
+      "love": 88
+    },
+    "comments_count": 5,
+    "skin_type": "Da hỗn hợp",
+    "concern": "Nghệ thuật",
+    "type": "Lifestyle",
+    "media": [
+      {
+        "url": "https://i.pinimg.com/736x/75/60/c5/7560c5e421f79c98d2f072ceaa8bfd59.jpg"
+      },
+      {
+        "url": "https://i.pinimg.com/736x/03/a8/8f/03a88fe45d52512cc174c08f605074e7.jpg"
+      }
+    ],
+    "linked_products": [],
+    "reups_count": 7,
+    "comments": [
+      {
+        "comment_id": "cmt_5682",
+        "post_id": "03295fdf-05f3-4dfa-8cbc-302a7f69ab65",
+        "author": {
+          "username": "Mel Robbins",
+          "user_id": "94561616",
+          "avatar": "https://i.pinimg.com/736x/ab/32/b1/ab32b13edefed48f94d93ee4b6f12f6b.jpg",
+          "is_anonymous": false
+        },
+        "content": "Ui xịn xò quá, đúng thứ mình đang tìm kiếm.",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 7,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_4088",
+        "post_id": "03295fdf-05f3-4dfa-8cbc-302a7f69ab65",
+        "author": {
+          "username": "Ngọc Lê",
+          "user_id": "54155228",
+          "avatar": "https://i.pinimg.com/736x/f5/bd/79/f5bd792ccdf6d003c25e1019fd0f5c31.jpg",
+          "is_anonymous": false
+        },
+        "content": "Tuyệt vời quá, cảm ơn bạn đã chia sẻ nhé 💕",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 28,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_7863",
+        "post_id": "03295fdf-05f3-4dfa-8cbc-302a7f69ab65",
+        "author": {
+          "username": "THVL Tổng Hợp",
+          "user_id": "69536202",
+          "avatar": "https://i.pinimg.com/736x/f5/bd/79/f5bd792ccdf6d003c25e1019fd0f5c31.jpg",
+          "is_anonymous": false
+        },
+        "content": "Cho mình hỏi bạn mua sản phẩm này ở đâu vậy ạ?",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 23,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_3876",
+        "post_id": "03295fdf-05f3-4dfa-8cbc-302a7f69ab65",
+        "author": {
+          "username": "Thiên Thư",
+          "user_id": "78557508",
+          "avatar": "https://i.pinimg.com/736x/52/f9/a0/52f9a02638cbaa0610a0a7afb61f4db0.jpg",
+          "is_anonymous": false
+        },
+        "content": "Cái này có tác dụng trị thâm mụn không mọi người?",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 42,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_8284",
+        "post_id": "03295fdf-05f3-4dfa-8cbc-302a7f69ab65",
+        "author": {
+          "username": "Bs Nguyễn Ngọc",
+          "user_id": "76594598",
+          "avatar": "https://i.pinimg.com/736x/1f/ab/6e/1fab6e3d9a95bc71bb0ee965bfc51320.jpg",
+          "is_anonymous": false
+        },
+        "content": "Post chất lượng ghê, mong bạn ra thêm nhiều bài như này nữa.",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 49,
+        "parent_id": null,
+        "depth": 0
+      }
+    ]
+  },
+  {
+    "post_id": "d07544cf-108b-4a8d-bb7d-0df7c5120ae6",
+    "author": {
+      "user_id": "test_001",
+      "username": "Test User",
+      "display_name": "Test User",
+      "avatar_url": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
+      "is_anonymous": false
+    },
+    "content": "Cuối cùng cũng có dịp ghé thăm góc sống ảo hot hit nhất dạo gần đây! 📸 Chỗ này không gian siêu đỉnh, decor theo phong cách tối giản nhưng từng góc nhỏ đều cực kỳ có gu. Ánh sáng tự nhiên ngập tràn nên chụp bằng điện thoại thôi cũng có ngay những bức ảnh ngàn like rồi. Đồ uống ở đây cũng khá ngon và lạ miệng, menu đa dạng để trải nghiệm. Mình re-commend các bạn nên đi vào buổi sáng sớm hoặc chiều mát để bắt được hoàng hôn nha. Tranh thủ lên kèo cùng hội bạn thân ngay thôi nào! 👯‍♀️🍹",
+    "created_at": "2026-05-11T16:13:23.126229Z",
+    "reactions": {
+      "like": 532,
+      "love": 105
+    },
+    "comments_count": 4,
+    "skin_type": "Da hỗn hợp",
+    "concern": "Check-in",
+    "type": "Review",
+    "media": [
+      {
+        "url": "https://i.pinimg.com/736x/83/e3/f4/83e3f4acc924e05d1ae1c81c6fae1c37.jpg"
+      },
+      {
+        "url": "https://i.pinimg.com/736x/b8/1b/1e/b81b1e599a77e338b96457c8ed65f26a.jpg"
+      },
+      {
+        "url": "https://i.pinimg.com/736x/2d/e2/12/2de21235dfd640c84e9322f65e27b258.jpg"
+      }
+    ],
+    "linked_products": [],
+    "reups_count": 11,
+    "comments": [
+      {
+        "comment_id": "cmt_4489",
+        "post_id": "d07544cf-108b-4a8d-bb7d-0df7c5120ae6",
+        "author": {
+          "username": "Bs Nguyễn Ngọc",
+          "user_id": "76594598",
+          "avatar": "https://i.pinimg.com/736x/1f/ab/6e/1fab6e3d9a95bc71bb0ee965bfc51320.jpg",
+          "is_anonymous": false
+        },
+        "content": "Hữu ích lắm, mình đã học theo routine này và giờ da mình trộm vía vía hơn rất nhiều!!!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 38,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_7699",
+        "post_id": "d07544cf-108b-4a8d-bb7d-0df7c5120ae6",
+        "author": {
+          "username": "Ngọc Lê",
+          "user_id": "54155228",
+          "avatar": "https://i.pinimg.com/736x/f5/bd/79/f5bd792ccdf6d003c25e1019fd0f5c31.jpg",
+          "is_anonymous": false
+        },
+        "content": "Bài viết hữu ích, đã save!",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 31,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_7699_reply_63257419",
+        "post_id": "d07544cf-108b-4a8d-bb7d-0df7c5120ae6",
+        "author": {
+          "username": "Video AloBacsi",
+          "user_id": "63257419",
+          "avatar": "https://i.pinimg.com/736x/32/fa/81/32fa81622bd6f125026938d2f6fb39f6.jpg",
+          "is_anonymous": false
+        },
+        "content": "@Ngọc Lê thiệt hông bà mai tui mua về xài luôn nè",
+        "created_at": "2026-06-12T11:00:00Z",
+        "likes_count": 18,
+        "parent_id": "cmt_7699",
+        "depth": 1
+      },
+      {
+        "comment_id": "cmt_1507",
+        "post_id": "d07544cf-108b-4a8d-bb7d-0df7c5120ae6",
+        "author": {
+          "username": "Thạc sĩ - Bác sĩ Phương Quý",
+          "user_id": "87547751",
+          "avatar": "https://i.pinimg.com/736x/dd/c0/65/ddc065473a41e106cdb858aaeb0d7c78.jpg",
+          "is_anonymous": false
+        },
+        "content": "Mình dùng cái này bị kích ứng nhẹ, có ai giống mình không?",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 39,
+        "parent_id": null,
+        "depth": 0
+      }
+    ]
+  },
+  {
+    "post_id": "b780ce16-b39f-4c5f-8039-5e1e304363cf",
+    "author": {
+      "user_id": "test_001",
+      "username": "Test User",
+      "display_name": "Test User",
+      "avatar_url": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
+      "is_anonymous": false
+    },
+    "content": "Chuyến đi chữa lành xách balo lên và đi... 🌊🌴 Rời xa khói bụi thành phố để tìm về với biển cả mênh mông thực sự là một quyết định đúng đắn. Gió biển mát rượi, tiếng sóng vỗ rì rào và bầu trời xanh ngắt đã cuốn trôi mọi mệt mỏi trong những tháng ngày làm việc vất vả vừa qua. Ẩm thực ở đây cũng vô cùng tươi ngon, người dân thì cực kỳ thân thiện và nhiệt tình. Điểm đến lần này mang lại cho mình vô vàn kỷ niệm đẹp và những phút giây thảnh thơi hiếm có. Hẹn gặp lại vào một ngày không xa nhé! Xách vali lên và đi thôi thanh xuân ngắn lắm! ✈️🏖️",
+    "created_at": "2026-05-08T16:13:23.126246Z",
+    "reactions": {
+      "like": 890,
+      "love": 320
+    },
+    "comments_count": 4,
+    "skin_type": "Da hỗn hợp",
+    "concern": "Du lịch",
+    "type": "Lifestyle",
+    "media": [
+      {
+        "url": "https://i.pinimg.com/736x/02/c4/3a/02c43a9c3ba51aee183c39e8d0a76338.jpg"
+      },
+      {
+        "url": "https://i.pinimg.com/1200x/1e/13/dd/1e13dd1bd8bfb22ac5890dcb5143562b.jpg"
+      },
+      {
+        "url": "https://i.pinimg.com/1200x/9f/f9/65/9ff9654448f53d0054d662e676ed4f71.jpg"
+      }
+    ],
+    "linked_products": [],
+    "reups_count": 1,
+    "comments": [
+      {
+        "comment_id": "cmt_1264",
+        "post_id": "b780ce16-b39f-4c5f-8039-5e1e304363cf",
+        "author": {
+          "username": "Quỳnh Phạm",
+          "user_id": "26786948",
+          "avatar": "https://i1-c.pinimg.com/736x/fa/2f/05/fa2f05a7c8d9fce10d990802572972cf.jpg",
+          "is_anonymous": false
+        },
+        "content": "Sản phẩm này mình cũng đang dùng, rất hợp với da dầu mụn.",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 44,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_1264_reply_82487476",
+        "post_id": "b780ce16-b39f-4c5f-8039-5e1e304363cf",
+        "author": {
+          "username": "Handmade VN",
+          "user_id": "82487476",
+          "avatar": "https://i.pinimg.com/736x/52/f9/a0/52f9a02638cbaa0610a0a7afb61f4db0.jpg",
+          "is_anonymous": false
+        },
+        "content": "Da nhạy cảm nên test thử vùng nhỏ trước nha",
+        "created_at": "2026-06-12T11:00:00Z",
+        "likes_count": 4,
+        "parent_id": "cmt_1264",
+        "depth": 1
+      },
+      {
+        "comment_id": "cmt_1774",
+        "post_id": "b780ce16-b39f-4c5f-8039-5e1e304363cf",
+        "author": {
+          "username": "Mai Vân Trang",
+          "user_id": "50899342",
+          "avatar": "https://i.pinimg.com/736x/52/f9/a0/52f9a02638cbaa0610a0a7afb61f4db0.jpg",
+          "is_anonymous": false
+        },
+        "content": "Cái này có tác dụng trị thâm mụn không mọi người?",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 22,
+        "parent_id": null,
+        "depth": 0
+      },
+      {
+        "comment_id": "cmt_4049",
+        "post_id": "b780ce16-b39f-4c5f-8039-5e1e304363cf",
+        "author": {
+          "username": "Ánh Đỗ",
+          "user_id": "71248799",
+          "avatar": "https://i.pinimg.com/736x/ca/36/57/ca36573c75ab03bb970f9cc9afc3a2ef.jpg",
+          "is_anonymous": false
+        },
+        "content": "Bạn mua ở mall hay xách tay vậy ạ?",
+        "created_at": "2026-06-12T10:00:00Z",
+        "likes_count": 7,
+        "parent_id": null,
+        "depth": 0
+      }
+    ]
+  }
+]

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FCFBF4">
@@ -77,6 +81,7 @@
                         app:cardCornerRadius="24dp"
                         app:cardElevation="0dp">
                         <ImageView
+                            android:id="@+id/ivUserAvatar"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/img_avatar"
@@ -89,26 +94,30 @@
                         android:layout_marginStart="12dp"
                         android:orientation="vertical">
                         <TextView
+                            android:id="@+id/tvUserName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Ánh Linh"
                             android:textColor="@color/primary"
                             android:textStyle="bold"
                             android:textSize="15sp"/>
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="2dp"
-                            android:background="@drawable/com_bg_filter_normal"
-                            android:paddingHorizontal="8dp"
-                            android:paddingVertical="2dp"
-                            android:gravity="center_vertical">
-                            <TextView
+                            <LinearLayout
+                                android:id="@+id/llPrivacy"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Công khai"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="2dp"
+                                android:background="@drawable/com_bg_chip_solid_normal"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="4dp"
+                                android:gravity="center_vertical">
+                                <TextView
+                                    android:id="@+id/tvPrivacy"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Công khai"
                                 android:textColor="@color/content"
+                                android:textStyle="bold"
                                 android:textSize="12sp"/>
                             <ImageView
                                 android:layout_width="14dp"
@@ -125,7 +134,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@drawable/com_bg_filter_normal"
+                    android:background="@drawable/com_bg_post_options_container"
                     android:padding="12dp"
                     android:layout_marginTop="16dp">
                     <TextView
@@ -141,14 +150,17 @@
                         android:layout_height="wrap_content"
                         android:scrollbars="none">
                         <LinearLayout
+                            android:id="@+id/llTopicsContainer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Routine" android:textColor="@android:color/white" android:background="@drawable/com_bg_filter_selected" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Review" android:textColor="@color/content" android:background="@drawable/com_bg_filter_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reels" android:textColor="@android:color/white" android:background="@drawable/com_bg_filter_selected" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kiến thức" android:textColor="@color/content" android:background="@drawable/com_bg_filter_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hỏi đáp" android:textColor="@color/content" android:background="@drawable/com_bg_filter_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Routine" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Review" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reels" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kiến thức" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hỏi đáp" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cuộc sống" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:id="@+id/tvAddTopic" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:textStyle="bold"/>
                         </LinearLayout>
                     </HorizontalScrollView>
                 </LinearLayout>
@@ -158,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@drawable/com_bg_filter_normal"
+                    android:background="@drawable/com_bg_post_options_container"
                     android:padding="12dp"
                     android:layout_marginTop="12dp">
                     <TextView
@@ -174,14 +186,16 @@
                         android:layout_height="wrap_content"
                         android:scrollbars="none">
                         <LinearLayout
+                            android:id="@+id/llSkinIssuesContainer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Da dầu" android:textColor="@android:color/white" android:background="@drawable/com_bg_filter_selected" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mụn" android:textColor="@color/content" android:background="@drawable/com_bg_filter_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Da khô" android:textColor="@android:color/white" android:background="@drawable/com_bg_filter_selected" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thâm mụn" android:textColor="@color/content" android:background="@drawable/com_bg_filter_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dị ứng" android:textColor="@color/content" android:background="@drawable/com_bg_filter_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Da dầu" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mụn" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Da khô" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thâm mụn" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dị ứng" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:layout_marginEnd="8dp"/>
+                            <TextView android:id="@+id/tvAddSkinIssue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" android:textColor="@color/content" android:background="@drawable/com_bg_chip_solid_normal" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:textSize="12sp" android:textStyle="bold"/>
                         </LinearLayout>
                     </HorizontalScrollView>
                 </LinearLayout>
@@ -190,16 +204,30 @@
                 <EditText
                     android:id="@+id/etContent"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="150dp"
                     android:layout_marginTop="12dp"
-                    android:background="@drawable/com_bg_filter_normal"
+                    android:background="@drawable/com_bg_post_edit_text"
                     android:hint="Chia sẻ nội dung chăm da với cộng đồng Rootie..."
                     android:textColorHint="@color/content"
                     android:textColor="@color/primary"
                     android:textSize="14sp"
                     android:gravity="top|start"
-                    android:padding="12dp"
+                    android:padding="16dp"
                     android:inputType="textMultiLine"/>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:layout_marginTop="12dp">
+                    <LinearLayout
+                        android:id="@+id/llImagePreviewContainer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"/>
+                </HorizontalScrollView>
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
@@ -224,7 +252,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/com_bg_filter_selected"/>
+            android:background="@drawable/com_bg_filter_normal"/>
 
         <!-- Horizontal state -->
         <LinearLayout
@@ -237,11 +265,11 @@
             android:weightSum="7"
             android:visibility="visible">
             
-            <ImageView android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_camera" app:tint="@color/primary"/>
-            <ImageView android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_story_outline" app:tint="@color/primary"/>
+            <ImageView android:id="@+id/ivAddMediaHorizontal" android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_camera" app:tint="@color/primary"/>
             <ImageView android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_user_outline" app:tint="@color/primary"/>
-            <ImageView android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_bag" app:tint="@color/primary"/>
             <ImageView android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_location" app:tint="@color/primary"/>
+            <ImageView android:id="@+id/ivAddProductHorizontal" android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_bag" app:tint="@color/primary"/>
+            <ImageView android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_story_outline" app:tint="@color/primary"/>
             <ImageView android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_calendar" app:tint="@color/primary"/>
             <ImageView android:layout_width="0dp" android:layout_weight="1" android:layout_height="28dp" android:src="@drawable/ic_face" app:tint="@color/primary"/>
         </LinearLayout>
@@ -256,7 +284,7 @@
             android:paddingBottom="24dp"
             android:visibility="gone">
             
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="12dp">
+            <LinearLayout android:id="@+id/llAddMedia" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="12dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_camera" app:tint="@color/primary"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ảnh/Video" android:textColor="@color/primary" android:textSize="15sp" android:layout_marginStart="16dp"/>
             </LinearLayout>
@@ -268,7 +296,7 @@
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_user_outline" app:tint="@color/primary"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gắn thẻ" android:textColor="@color/primary" android:textSize="15sp" android:layout_marginStart="16dp"/>
             </LinearLayout>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="12dp">
+            <LinearLayout android:id="@+id/llAddProduct" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="12dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_bag" app:tint="@color/primary"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gắn giỏ hàng sản phẩm" android:textColor="@color/primary" android:textSize="15sp" android:layout_marginStart="16dp"/>
             </LinearLayout>
@@ -289,3 +317,20 @@
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    
+    <!-- Loading Overlay -->
+    <FrameLayout
+        android:id="@+id/flLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/primary"/>
+    </FrameLayout>
+</FrameLayout>

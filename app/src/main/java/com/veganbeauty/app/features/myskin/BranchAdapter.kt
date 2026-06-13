@@ -39,12 +39,16 @@ class BranchAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val store = stores[position]
-        holder.name.text = store.storeName
-        holder.address.text = store.address
-        holder.distance.text = String.format("%.1fkm", store.distance)
+        holder.name.text = store.tenCuaHang
+        holder.address.text = store.diaChiDayDu
         
-        if (store.imageUrl.isNotEmpty()) {
-            holder.image.load(store.imageUrl) {
+        val randomSeed = store.id.hashCode()
+        val mockDistance = 1.0 + (Math.abs(randomSeed) % 140) / 10.0
+        holder.distance.text = String.format("%.1fkm", mockDistance)
+        
+        val imageUrl = ""
+        if (imageUrl.isNotEmpty()) {
+            holder.image.load(imageUrl) {
                 placeholder(R.drawable.imv_logo)
                 error(R.drawable.imv_logo)
                 crossfade(true)

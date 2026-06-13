@@ -14,6 +14,7 @@ data class ProductEntity(
     val name: String,
     val sku: String,
     val price: Long,
+    val originalPrice: Long? = null,
     val category: String,
     val brand: String = "",
     val stock: Int,
@@ -38,6 +39,8 @@ data class ProductEntity(
     val usage: String = "",
     val usageAmount: String = "",
     val scent: String = "",
-    val notes: String = ""
+    val notes: String = "",
+    val rating: Float = 0f,
+    val sold: Int = 0
 )
 

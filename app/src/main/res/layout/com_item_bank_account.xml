@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/com_bg_post"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/ivRadio"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_radio_unselected" />
+
+    <ImageView
+        android:id="@+id/ivBankLogo"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="12dp"
+        android:src="@drawable/img_logo_vietcombank" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvBankName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Vietcombank"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvAccountNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="**** 1234"
+            android:textColor="@color/gray_dark"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvAccountHolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Nguyễn Thị Linh"
+            android:textColor="@color/gray_dark"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvDefaultBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/com_bg_chip_normal"
+        android:backgroundTint="#F2F2F2"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="Mặc định"
+        android:textColor="@color/gray_dark"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
+</LinearLayout>

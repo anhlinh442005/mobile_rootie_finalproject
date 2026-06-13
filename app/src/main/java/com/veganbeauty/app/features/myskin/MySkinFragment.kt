@@ -34,8 +34,11 @@ class MySkinFragment : RootieFragment() {
             binding.skinGreetingName.text = "Xin chào, $firstName"
         }
 
-        // Cài đặt bottom nav
-        NavAppUtils.setupNavApp(this, view, R.id.nav_myskin)
+        com.veganbeauty.app.features.home.BottomNavHelper.setup(
+            fragment = this,
+            root = view,
+            activeTabId = R.id.nav_myskin
+        ) { tabId -> com.veganbeauty.app.features.home.BottomNavHelper.navigate(this, tabId) }
 
         // Banner và shortcut Quét da AI → mở SkinScanFragment
         binding.skinBannerContainer.setOnClickListener { openScanFragment() }
@@ -61,9 +64,9 @@ class MySkinFragment : RootieFragment() {
         binding.rvSkinStores.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val adapter = SkinStoreAdapter(topStores) { store ->
             val bookingFragment = BookingFragment.newInstance(
-                store.storeName,
-                store.address,
-                store.imageUrl
+                store.tenCuaHang,
+                store.diaChiDayDu,
+                ""
             )
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(

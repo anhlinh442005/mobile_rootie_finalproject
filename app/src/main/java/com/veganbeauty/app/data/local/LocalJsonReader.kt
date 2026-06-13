@@ -6,6 +6,66 @@ import org.json.JSONObject
 
 class LocalJsonReader(private val context: Context) {
 
+    fun getSocialDataForUser(userId: String): Map<String, List<String>> {
+        val result = mutableMapOf<String, List<String>>(
+            "friends" to emptyList(),
+            "following" to emptyList(),
+            "followers" to emptyList(),
+            "friend_requests" to emptyList(),
+            "suggested" to emptyList()
+        )
+        try {
+            val jsonString = context.assets.open("User_com_friend.json").bufferedReader().use { it.readText() }
+            val array = org.json.JSONArray(jsonString)
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                if (obj.getString("user_id") == userId) {
+                    val keys = listOf("friends", "following", "followers", "friend_requests", "suggested")
+                    for (key in keys) {
+                        if (obj.has(key)) {
+                            val jsonArray = obj.getJSONArray(key)
+                            val list = mutableListOf<String>()
+                            for (j in 0 until jsonArray.length()) {
+                                list.add(jsonArray.getString(j))
+                            }
+                            result[key] = list
+                        }
+                    }
+                    break
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return result
+    }
+
+    fun getMutualFriendsForUsers(myFriends: Set<String>, targetUserIds: List<String>): Map<String, List<String>> {
+        val result = mutableMapOf<String, List<String>>()
+        try {
+            val jsonString = context.assets.open("User_com_friend.json").bufferedReader().use { it.readText() }
+            val array = org.json.JSONArray(jsonString)
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val uid = obj.getString("user_id")
+                if (targetUserIds.contains(uid)) {
+                    val friendsArray = obj.getJSONArray("friends")
+                    val mutuals = mutableListOf<String>()
+                    for (j in 0 until friendsArray.length()) {
+                        val fid = friendsArray.getString(j)
+                        if (myFriends.contains(fid)) {
+                            mutuals.add(fid)
+                        }
+                    }
+                    result[uid] = mutuals
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return result
+    }
+
     fun getFriendsForUser(userId: String): List<String> {
         return try {
             val jsonString = context.assets.open("User_com_friend.json").bufferedReader().use { it.readText() }
@@ -17,6 +77,27 @@ class LocalJsonReader(private val context: Context) {
                     val list = mutableListOf<String>()
                     for (j in 0 until friendsArray.length()) {
                         list.add(friendsArray.getString(j))
+                    }
+                    return list
+                }
+            }
+            emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun getShowcaseProductsForUser(userId: String): List<String> {
+        return try {
+            val jsonString = context.assets.open("user_pro_display.json").bufferedReader().use { it.readText() }
+            val array = org.json.JSONArray(jsonString)
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                if (obj.getString("user_id") == userId) {
+                    val prodArray = obj.getJSONArray("product_ids")
+                    val list = mutableListOf<String>()
+                    for (j in 0 until prodArray.length()) {
+                        list.add(prodArray.getString(j))
                     }
                     return list
                 }
@@ -100,6 +181,7 @@ class LocalJsonReader(private val context: Context) {
                         name = obj.getString("name"),
                         sku = obj.getString("sku"),
                         price = obj.getLong("price"),
+                        originalPrice = if (obj.has("originalPrice")) obj.getLong("originalPrice") else null,
                         category = obj.getString("category"),
                         categoryIds = categoryIdsStr,
                         brand = obj.optString("brand", ""),
@@ -123,7 +205,9 @@ class LocalJsonReader(private val context: Context) {
                         usage = obj.optString("usage", ""),
                         usageAmount = obj.optString("usageAmount", ""),
                         scent = obj.optString("scent", ""),
-                        notes = obj.optString("notes", "")
+                        notes = obj.optString("notes", ""),
+                        rating = obj.optDouble("rating", 0.0).toFloat(),
+                        sold = obj.optInt("sold", 0)
                     )
                 )
             }
@@ -133,15 +217,157 @@ class LocalJsonReader(private val context: Context) {
 
     fun getProducts(): List<CommunityProduct> {
         return getAllProducts().map { 
-            CommunityProduct(it.id, it.name, it.mainImage, it.price.toInt()) 
+            CommunityProduct(it.id, it.name, it.mainImage, it.price.toInt(), it.originalPrice?.toInt(), it.rating, it.sold) 
         }
     }
-    fun getUsers(): List<UserEntity> = emptyList()
-    fun getCommunityPosts(): List<CommunityPostEntity> = emptyList()
+    fun getUsers(): List<UserEntity> {
+        return try {
+            val jsonString = context.assets.open("users.json").bufferedReader().use { it.readText() }
+            val jsonArray = org.json.JSONArray(jsonString)
+            val list = mutableListOf<UserEntity>()
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                list.add(
+                    UserEntity(
+                        user_id = obj.optString("user_id", obj.optString("id", java.util.UUID.randomUUID().toString())),
+                        username = obj.optString("username", ""),
+                        full_name = obj.optString("full_name", ""),
+                        email = obj.optString("email", ""),
+                        phone = obj.optString("phone", ""),
+                        password = obj.optString("password", ""),
+                        avatar = obj.optString("avatar", null),
+                        primary_image = obj.optString("primary_image", null)
+                    )
+                )
+            }
+            list
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+    fun getCommunityPosts(): List<CommunityPostEntity> {
+        return try {
+            val jsonString = context.assets.open("community_posts.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF")
+            val usersMap = getUsers().associateBy { it.user_id }
+            parsePosts(jsonString, usersMap)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+    
+    fun getCommunityNews(): List<CommunityPostEntity> {
+        return try {
+            val jsonString = context.assets.open("community_news.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF")
+            val usersMap = getUsers().associateBy { it.user_id }
+            parsePosts(jsonString, usersMap)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+    
+    private fun parsePosts(jsonString: String, usersMap: Map<String, UserEntity>): List<CommunityPostEntity> {
+        val jsonArray = try {
+            org.json.JSONArray(jsonString)
+        } catch (e: Exception) {
+            val root = org.json.JSONObject(jsonString)
+            root.getJSONArray("posts")
+        }
+        val postList = mutableListOf<CommunityPostEntity>()
+        for (i in 0 until jsonArray.length()) {
+            val obj = jsonArray.getJSONObject(i)
+            val authorObj = obj.optJSONObject("author")
+            val reactionsObj = obj.optJSONObject("reactions")
+            
+            val mediaArr = obj.optJSONArray("media")
+            val mediaUrls = mutableListOf<String>()
+            if (mediaArr != null) {
+                for (j in 0 until mediaArr.length()) {
+                    val mediaObj = mediaArr.getJSONObject(j)
+                    mediaUrls.add(mediaObj.getString("url"))
+                }
+            }
+            
+            val linkedProductsArr = obj.optJSONArray("linked_products")
+            val linkedProducts = mutableListOf<String>()
+            if (linkedProductsArr != null) {
+                for (j in 0 until linkedProductsArr.length()) {
+                    linkedProducts.add(linkedProductsArr.getString(j))
+                }
+            }
+            
+            val contentStr = if (obj.has("content")) obj.getString("content") else obj.optString("message", "")
+            
+            val mediaUrlsStr = if (mediaUrls.isNotEmpty()) {
+                mediaUrls.joinToString(",")
+            } else {
+                val imageObj = obj.optJSONObject("image")
+                if (imageObj != null) {
+                    imageObj.optString("uri", "")
+                } else {
+                    val imageArr = obj.optJSONArray("image")
+                    if (imageArr != null) {
+                        val arrUrls = mutableListOf<String>()
+                        for (j in 0 until imageArr.length()) {
+                            val imgItem = imageArr.getJSONObject(j)
+                            val uri = imgItem.optString("uri", "")
+                            if (uri.isNotEmpty()) arrUrls.add(uri)
+                        }
+                        arrUrls.joinToString(",")
+                    } else {
+                        ""
+                    }
+                }
+            }
+
+            val timestampInt = obj.optInt("timestamp", 0)
+            val createdAtStr = if (timestampInt > 0) timestampInt.toString() else obj.optString("created_at", "")
+
+            val reupsCount = obj.optInt("reups_count", 0)
+
+            val authorId = authorObj?.optString("user_id", authorObj.optString("id", "")) ?: ""
+            val realUser = usersMap[authorId]
+            
+            val authorUsername = realUser?.username ?: authorObj?.optString("username") ?: ""
+            val authorDisplayName = realUser?.full_name?.takeIf { it.isNotBlank() } ?: realUser?.username ?: authorObj?.optString("display_name", authorObj.optString("username", "")) ?: ""
+            
+            // Rootie official posts: always use the brand logo, never a random avatar
+            val authorAvatarUrl = if (authorId == "rootie_official" || authorId == "rootie_vn") {
+                "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1781257994/favicon_r7kqwf.png"
+            } else {
+                // Priority: avatar_url in the post's author object → usersMap avatar → profile_picture_url
+                val avatarFromPost = authorObj?.optString("avatar_url", "")?.takeIf { it.isNotEmpty() }
+                    ?: authorObj?.optString("profile_picture_url", "")?.takeIf { it.isNotEmpty() }
+                avatarFromPost ?: realUser?.avatar
+            }
+            
+            postList.add(CommunityPostEntity(
+                postId = obj.getString("post_id"),
+                authorId = authorId,
+                authorUsername = authorUsername,
+                authorDisplayName = authorDisplayName,
+                authorAvatarUrl = authorAvatarUrl,
+                content = contentStr,
+                createdAt = createdAtStr,
+                likesCount = reactionsObj?.optInt("like", obj.optInt("reactions_count", 0)) ?: obj.optInt("reactions_count", 0),
+                commentsCount = obj.optJSONArray("comments")?.length() ?: obj.optInt("comments_count", 0),
+                reupsCount = reupsCount,
+                skinType = obj.optString("skin_type"),
+                concern = obj.optString("concern"),
+                mediaUrlsString = mediaUrlsStr,
+                type = obj.optString("type"),
+                linkedProductIds = linkedProducts.joinToString(",")
+            ))
+        }
+        return postList
+    }
     
     fun getReels(): List<ReelEntity> {
         return try {
-            val jsonString = context.assets.open("community_reels_fb.json").bufferedReader().use { it.readText() }
+            val jsonString = context.assets.open("community_reels_fb.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF")
+            val usersMap = getUsers().associateBy { it.user_id }
             val jsonArray = org.json.JSONArray(jsonString)
             val reelList = mutableListOf<ReelEntity>()
             for (i in 0 until jsonArray.length()) {
@@ -149,13 +375,20 @@ class LocalJsonReader(private val context: Context) {
                 val authorObj = obj.optJSONObject("author")
                 val statsObj = obj.optJSONObject("stats")
                 val videoObj = obj.optJSONObject("video")
+                
+                val authorId = authorObj?.optString("user_id") ?: ""
+                val realUser = usersMap[authorId]
+                val authorUsername = realUser?.username ?: authorObj?.optString("username") ?: ""
+                val authorDisplayName = realUser?.full_name?.takeIf { it.isNotBlank() } ?: realUser?.username ?: authorObj?.optString("display_name") ?: ""
+                val authorAvatarUrl = realUser?.avatar ?: authorObj?.optString("avatar_url", authorObj?.optString("avatar"))
+                
                 reelList.add(ReelEntity(
                     videoId = obj.optString("video_id", java.util.UUID.randomUUID().toString()),
                     caption = obj.optString("caption", ""),
-                    authorId = authorObj?.optString("user_id") ?: "",
-                    authorUsername = authorObj?.optString("username") ?: "",
-                    authorDisplayName = authorObj?.optString("display_name") ?: "",
-                    authorAvatarUrl = authorObj?.optString("avatar_url", authorObj?.optString("avatar")),
+                    authorId = authorId,
+                    authorUsername = authorUsername,
+                    authorDisplayName = authorDisplayName,
+                    authorAvatarUrl = authorAvatarUrl,
                     likesCount = statsObj?.optInt("likes") ?: obj.optInt("likes_count", 0),
                     commentsCount = statsObj?.optInt("comments") ?: obj.optInt("comment_count", 0),
                     shareCount = statsObj?.optInt("shares") ?: obj.optInt("share_count", 0),
@@ -180,15 +413,32 @@ class LocalJsonReader(private val context: Context) {
                         types.add(typeArray.getString(j))
                     }
                 }
-                videoList.add(YtVideoEntity(
+                val entity = YtVideoEntity(
                     id = obj.optString("_id", java.util.UUID.randomUUID().toString()),
                     title = obj.optString("title", ""),
                     url = obj.optString("url", ""),
-                    description = obj.optString("short_description", obj.optString("title", "")),
+                    description = obj.optString("long_description", obj.optString("short_description", obj.optString("title", ""))),
                     username = obj.optString("username", "Unknown User"),
                     avatarUrl = obj.optString("avatar", null),
-                    type = types.joinToString(",")
-                ))
+                    type = types.joinToString(","),
+                    likesCount = obj.optInt("likes", (100..5000).random())
+                )
+                
+                val hashArr = obj.optJSONArray("hashtags")
+                val hashList = mutableListOf<String>()
+                if (hashArr != null) {
+                    for (j in 0 until hashArr.length()) { hashList.add(hashArr.getString(j)) }
+                }
+                entity.hashtags = hashList.joinToString(" ")
+                
+                val kwArr = obj.optJSONArray("keywords")
+                val kwList = mutableListOf<String>()
+                if (kwArr != null) {
+                    for (j in 0 until kwArr.length()) { kwList.add("#${kwArr.getString(j).replace(" ", "")}") }
+                }
+                entity.keywords = kwList.joinToString(" ")
+                
+                videoList.add(entity)
             }
             videoList
         } catch (e: Exception) { emptyList() }
@@ -263,26 +513,43 @@ class LocalJsonReader(private val context: Context) {
             val list = mutableListOf<IngredientEntity>()
             for (i in 0 until jsonArray.length()) {
                 val obj = jsonArray.getJSONObject(i)
+                val typesArr = obj.optJSONArray("types")
+                val typesList = mutableListOf<String>()
+                if (typesArr != null) {
+                    for (j in 0 until typesArr.length()) {
+                        typesList.add(typesArr.getString(j))
+                    }
+                }
                 list.add(IngredientEntity(
                     slug = obj.optString("slug", java.util.UUID.randomUUID().toString()),
                     name = obj.optString("name", ""),
                     scientificName = obj.optString("scientific_name", ""),
                     image = obj.optString("image", ""),
+                    origin = obj.optString("origin", ""),
                     description = obj.optString("description", ""),
-                    uses = obj.optString("uses", "")
+                    uses = obj.optString("uses", ""),
+                    types = typesList
                 ))
             }
             list
         } catch (e: Exception) { emptyList() }
     }
 
-    fun getCommunityBlogs(limit: Int = 10): List<CommunityBlogEntity> {
+    fun getCommunityBlogs(limit: Int = 10, offset: Int = 0): List<CommunityBlogEntity> {
         val list = mutableListOf<CommunityBlogEntity>()
         try {
             val inputStream = context.assets.open("community_blog.json")
             val reader = android.util.JsonReader(java.io.InputStreamReader(inputStream, "UTF-8"))
             reader.beginArray()
+            var skipped = 0
             while (reader.hasNext() && list.size < limit) {
+                // Skip các blog đã load (offset) mà không parse - chỉ skip qua để tiết kiệm RAM
+                if (skipped < offset) {
+                    reader.skipValue()
+                    skipped++
+                    continue
+                }
+                
                 var id = ""
                 var title = ""
                 var shortDesc = ""
@@ -330,6 +597,33 @@ class LocalJsonReader(private val context: Context) {
         return list
     }
 
+    fun getMessagesData(): String {
+        val file = java.io.File(context.filesDir, "community_message.json")
+        val prefs = context.getSharedPreferences("RootiePrefs", android.content.Context.MODE_PRIVATE)
+        val isRefreshed = prefs.getBoolean("is_msg_refreshed_v2", false)
+        if (!file.exists() || !isRefreshed) {
+            val assetStream = context.assets.open("community_message.json")
+            file.writeBytes(assetStream.readBytes())
+            assetStream.close()
+            prefs.edit().putBoolean("is_msg_refreshed_v2", true).apply()
+        }
+        return file.readText()
+    }
+
+    fun saveMessagesData(jsonString: String) {
+        val file = java.io.File(context.filesDir, "community_message.json")
+        file.writeText(jsonString)
+    }
+
+    fun getRawPostsJson(): String = try { context.assets.open("community_posts.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "{}" }
+    fun getRawNewsJson(): String = try { context.assets.open("community_news.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
+    fun getRawUsersJson(): String = try { context.assets.open("users.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
+    fun getRawReelsJson(): String = try { context.assets.open("community_reels_fb.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
+    fun getRawIngredientsJson(): String = try { context.assets.open("ingredient.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
+    fun getRawProductsJson(): String = try { context.assets.open("products.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "{}" }
+
+    fun getStores(): List<StoreEntity> = getAllStores()
+
     fun getAllStores(): List<StoreEntity> {
         val list = mutableListOf<StoreEntity>()
         try {
@@ -373,10 +667,21 @@ class LocalJsonReader(private val context: Context) {
                         maCuaHang = storeCode,
                         tenCuaHang = storeName,
                         loaiHinh = obj.optString("loai_hinh", "Cửa hàng"),
-                        diaChiDayDu = address,
+                        soNha = "",
+                        duong = "",
+                        phuongXa = "",
+                        quanHuyen = "",
                         tinhThanh = province,
+                        diaChiDayDu = address,
+                        lat = 0.0,
+                        lng = 0.0,
+                        soDienThoai = "",
+                        email = "",
                         moCua = thu26Obj?.optString("mo_cua", "08:00") ?: "08:00",
                         dongCua = thu26Obj?.optString("dong_cua", "22:00") ?: "22:00",
+                        trangThai = "Đang hoạt động",
+                        isActive = true,
+                        tienNghi = "",
                         imageUrl = imageUrl,
                         distance = mockDistance
                     )

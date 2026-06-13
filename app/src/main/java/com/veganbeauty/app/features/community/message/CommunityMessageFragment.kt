@@ -60,12 +60,8 @@ class CommunityMessageFragment : Fragment() {
 
     private fun loadData() {
         try {
-            val inputStream = requireContext().assets.open("community_message.json")
-            val size = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-            val jsonString = String(buffer, Charsets.UTF_8)
+            val jsonString = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getMessagesData()
+            val usersMap = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getUsers().associateBy { it.user_id }
             
             // Upload to Firestore in background
             kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
@@ -76,6 +72,7 @@ class CommunityMessageFragment : Fragment() {
             val messages = mutableListOf<MessageEntity>()
             for (i in 0 until jsonArray.length()) {
                 val obj = jsonArray.getJSONObject(i)
+                if (obj.optString("user_id") != "test_001") continue
                 
                 val chatItems = mutableListOf<ChatItemEntity>()
                 val messagesArray = obj.optJSONArray("messages")
@@ -95,12 +92,17 @@ class CommunityMessageFragment : Fragment() {
                     }
                 }
                 
+                val partnerId = obj.optString("partner_id")
+                val realUser = usersMap[partnerId]
+                val partnerName = realUser?.username ?: obj.optString("partner_name")
+                val partnerAvatar = realUser?.avatar ?: obj.optString("partner_avatar")
+
                 messages.add(
                     MessageEntity(
                         id = obj.optString("id"),
-                        partnerId = obj.optString("partner_id"),
-                        partnerName = obj.optString("partner_name"),
-                        partnerAvatar = obj.optString("partner_avatar"),
+                        partnerId = partnerId,
+                        partnerName = partnerName,
+                        partnerAvatar = partnerAvatar,
                         isActive = obj.optBoolean("is_active"),
                         isUnread = obj.optBoolean("is_unread"),
                         isTyping = obj.optBoolean("is_typing"),
@@ -154,7 +156,7 @@ class CommunityMessageFragment : Fragment() {
         binding.comBottomNav.navComProfile.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, com.veganbeauty.app.features.profile.AccountProfileFragment())
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.profile.CommunityProfileFragment())
                 .commit()
         }
 

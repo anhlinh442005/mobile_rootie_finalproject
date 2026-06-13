@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp">
+
+                <!-- Top Bar -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:background="@color/white">
+
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_chevron_left"
+                app:tint="@color/black" />
+                        
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+                        
+                    <ImageView
+                        android:id="@+id/ivBell"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/home_ic_notification"
+                        app:tint="@color/black"
+                        android:layout_marginEnd="16dp" />
+                        
+                    <ImageView
+                        android:id="@+id/ivSettings"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_menu"
+                        app:tint="@color/black" />
+                </LinearLayout>
+
+                <!-- Cover Image -->
+                <ImageView
+                    android:id="@+id/ivCover"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop"
+                    android:src="@color/primary" />
+
+                <!-- Profile Info Container -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_marginTop="-40dp"
+                    android:paddingHorizontal="16dp">
+
+                    <!-- Avatar -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cvAvatar"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/transparent">
+                        <ImageView
+                            android:id="@+id/ivAvatar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/img_avatar" />
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Name -->
+                    <TextView android:fontFamily="@font/be_vietnam_pro"
+                        android:id="@+id/tvName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Người dùng"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                        
+                    <!-- Username -->
+                    <TextView android:fontFamily="@font/be_vietnam_pro"
+                        android:id="@+id/tvUsername"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="\@username"
+                        android:textColor="#888888"
+                        android:textSize="14sp" />
+
+                    <!-- Stats -->
+                    <LinearLayout
+                        android:id="@+id/llStats"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <!-- Following -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="16dp">
+                            <TextView android:fontFamily="@font/be_vietnam_pro"
+                                android:id="@+id/tvFollowingCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                            <TextView android:fontFamily="@font/be_vietnam_pro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="đang theo dõi"
+                                android:textColor="#888888"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <!-- Followers -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="16dp">
+                            <TextView android:fontFamily="@font/be_vietnam_pro"
+                                android:id="@+id/tvFollowersCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                            <TextView android:fontFamily="@font/be_vietnam_pro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="người theo dõi"
+                                android:textColor="#888888"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <!-- Posts -->
+                        <LinearLayout
+                            android:id="@+id/llPostsCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="16dp">
+                            <TextView android:fontFamily="@font/be_vietnam_pro"
+                                android:id="@+id/tvPostCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                            <TextView android:fontFamily="@font/be_vietnam_pro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="bài viết"
+                                android:textColor="#888888"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Action Buttons -->
+                    <LinearLayout
+                        android:id="@+id/llActions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <TextView android:fontFamily="@font/be_vietnam_pro"
+                            android:id="@+id/btnEditProfile"
+                            android:layout_width="120dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/com_bg_btn_follow"
+                            android:backgroundTint="#6E846A"
+                            android:gravity="center"
+                            android:text="Theo dõi"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView android:fontFamily="@font/be_vietnam_pro"
+                            android:id="@+id/btnShareProfile"
+                            android:layout_width="120dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/com_bg_btn_follow"
+                            android:backgroundTint="#F1F1F1"
+                            android:gravity="center"
+                            android:text="Chia sẻ"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    
+                    <!-- Bio -->
+                    <TextView android:fontFamily="@font/be_vietnam_pro"
+                        android:id="@+id/tvBio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Giải trí thoi"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+
+                    <!-- Skin type badge and Phần trưng bày -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        
+                        <!-- Shop Bag (Phần trưng bày) -->
+                        <LinearLayout
+                            android:id="@+id/llShowcase"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_bag"
+                                app:tint="#FF2B55" />
+                                
+                            <TextView android:fontFamily="@font/be_vietnam_pro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="Phần trưng bày"
+                                android:textColor="@color/black"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                        
+                        <View android:layout_width="1dp" android:layout_height="12dp" android:background="#E0E0E0" android:layout_marginHorizontal="12dp" />
+                        
+                        <!-- Revenue (Doanh thu) -->
+                        <LinearLayout
+                            android:id="@+id/llRevenue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_coin"
+                                app:tint="#FFB800" />
+                                
+                            <TextView android:fontFamily="@font/be_vietnam_pro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="Doanh thu"
+                                android:textColor="@color/black"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    
+                    <!-- Skin type badge -->
+                    <LinearLayout
+                        android:id="@+id/llSkinBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_leaf"
+                            app:tint="#6E846A" />
+                            
+                        <TextView android:fontFamily="@font/be_vietnam_pro"
+                            android:id="@+id/tvProfileSkinType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="Sức khoẻ - Làm đẹp"
+                            android:textColor="#6E846A"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Highlights (Hidden as they break the Tiktok layout, but IDs kept) -->
+                    <LinearLayout
+                        android:id="@+id/llHighlights"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:visibility="gone"
+                        android:orientation="horizontal">
+                        <ImageView android:id="@+id/ivHighlight1" android:layout_width="1dp" android:layout_height="1dp" />
+                        <ImageView android:id="@+id/ivHighlight2" android:layout_width="1dp" android:layout_height="1dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Tabs -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_post"
+                            app:tint="#6E846A" />
+                        <View
+                            android:layout_width="32dp"
+                            android:layout_height="2dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="2dp"
+                            android:background="#6E846A" />
+                    </RelativeLayout>
+                        
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="24dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_reels"
+                        app:tint="#888888" />
+                        
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="24dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_reup"
+                        app:tint="#888888" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPosts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:clipToPadding="false"
+        android:paddingTop="0dp" />
+        
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

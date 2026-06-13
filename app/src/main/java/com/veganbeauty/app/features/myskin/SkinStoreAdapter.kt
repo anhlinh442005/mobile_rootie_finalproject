@@ -31,12 +31,13 @@ class SkinStoreAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val store = stores[position]
-        holder.storeName.text = store.storeName
-        holder.storeAddress.text = store.address
-        holder.storeHours.text = store.openHours
+        holder.storeName.text = store.tenCuaHang
+        holder.storeAddress.text = store.diaChiDayDu
+        holder.storeHours.text = "${store.moCua} - ${store.dongCua}"
         
-        if (store.imageUrl.isNotEmpty()) {
-            holder.storeImage.load(store.imageUrl) {
+        val imageUrl = ""
+        if (imageUrl.isNotEmpty()) {
+            holder.storeImage.load(imageUrl) {
                 placeholder(R.drawable.imv_logo)
                 error(R.drawable.imv_logo)
                 crossfade(true)
