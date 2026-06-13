@@ -80,10 +80,15 @@ class CommunityAffiliateProductsFragment : Fragment() {
                 val currentUserId = "test_001" // Or get from session
                 val jsonReader = com.veganbeauty.app.data.local.LocalJsonReader(requireContext())
                 
-                // Lấy danh sách sản phẩm trong showcase của user
-                val showcaseIds = jsonReader.getShowcaseProductsForUser(currentUserId)
+                // Nguồn lấy từ orders của chính currentUserId đã hoàn tất
+                val userOrders = jsonReader.getAllOrders().filter { it.userId == currentUserId && it.status == "Hoàn tất" }
+                val showcaseIds = mutableSetOf<String>()
+                for (order in userOrders) {
+                    for (item in order.items) {
+                        showcaseIds.add(item.productId)
+                    }
+                }
                 
-                // Khởi tạo productMap với count=0, commission=0 cho tất cả sản phẩm trong showcase
                 val allProducts = jsonReader.getAllProducts()
                 for (pId in showcaseIds) {
                     val pData = allProducts.find { it.id == pId }

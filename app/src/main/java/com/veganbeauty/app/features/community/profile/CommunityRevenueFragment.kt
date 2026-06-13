@@ -91,30 +91,29 @@ class CommunityRevenueFragment : Fragment() {
             // ── COMPUTE all metrics from order list ──────────────────────────
             val allOrders = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getAllOrders()
             val currentUserId = "test_001" // Or get from session
-            val affiliateOrders = allOrders.filter { it.affiliate != null && it.affiliate.referrerUserId == currentUserId }
+            val affiliateOrders = allOrders.filter { it.isAffiliate && it.affiliate?.referrerUserId == currentUserId }
             
             var totalRevenue = 0L
             var successCommission = 0L
             var pendingCommission = 0L
             var successfulOrders = 0
+            val newCustomerIds = mutableSetOf<String>()
 
             for (order in affiliateOrders) {
-                val status = order.status
                 val orderValue = order.totalAmount
                 val commission = order.affiliate?.commissionAmount ?: 0L
+                val cStatus = order.affiliate?.commissionStatus ?: ""
                 
-                if (status != "Đã hủy") {
+                if (order.status != "Đã hủy") {
                     totalRevenue += orderValue
+                    newCustomerIds.add(order.userId)
                 }
                 
-                when (status) {
-                    "Hoàn tất", "Thành công", "Đã duyệt" -> {
-                        successCommission += commission
-                        successfulOrders++
-                    }
-                    "Đang xử lý", "Chờ xác nhận", "Đang giao" -> {
-                        pendingCommission += commission
-                    }
+                if (cStatus == "confirmed") {
+                    successCommission += commission
+                    successfulOrders++
+                } else if (cStatus == "pending") {
+                    pendingCommission += commission
                 }
             }
 
@@ -122,13 +121,12 @@ class CommunityRevenueFragment : Fragment() {
             var totalWithdrawn = 0L
             val jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
             var affiliateData = org.json.JSONObject()
-            var newCustomers = 0
+            val newCustomers = newCustomerIds.size
             if (jsonArray.length() > 0) {
                 for (i in 0 until jsonArray.length()) {
                     val obj = jsonArray.getJSONObject(i)
                     if (obj.optString("userId") == currentUserId) {
                         affiliateData = obj
-                        newCustomers = obj.optInt("newCustomers", 0)
                         break
                     }
                 }
@@ -215,7 +213,7 @@ class CommunityRevenueFragment : Fragment() {
             
             for (order in affiliateOrders) {
                 if (order.status == "Đã hủy") continue
-                val orderId = order.orderId
+                val affiliateId = order.affiliate?.affiliate_id ?: order.orderId
                 val orderDate = order.orderDate
                 val orderValue = order.totalAmount
                 val status = order.status
@@ -223,7 +221,7 @@ class CommunityRevenueFragment : Fragment() {
                 
                 val rowView = LayoutInflater.from(context).inflate(R.layout.com_item_revenue_order, llOrdersContainer, false)
                 
-                rowView.findViewById<TextView>(R.id.tvOrderId).text = orderId
+                rowView.findViewById<TextView>(R.id.tvOrderId).text = affiliateId
                 rowView.findViewById<TextView>(R.id.tvOrderDate).text = orderDate.split(" ")[0]
                 rowView.findViewById<TextView>(R.id.tvOrderValue).text = format.format(orderValue)
                 

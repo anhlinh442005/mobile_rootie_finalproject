@@ -478,10 +478,11 @@ class LocalJsonReader(private val context: Context) {
                 val voucherDiscount = obj.optLong("voucherDiscount", 0L)
                 val finalTotal = totalAmount + shippingCost - voucherDiscount
                 
+                val isAffiliate = obj.optBoolean("isAffiliate", false)
                 val affObj = obj.optJSONObject("affiliate")
-                val affiliateInfo = if (affObj != null) {
+                val affiliateInfo = if (isAffiliate && affObj != null) {
                     com.veganbeauty.app.data.local.entities.AffiliateInfo(
-                        isAffiliateOrder = affObj.optBoolean("isAffiliateOrder", false),
+                        affiliate_id = affObj.optString("affiliate_id", ""),
                         affiliateCode = affObj.optString("affiliateCode", ""),
                         referrerUserId = affObj.optString("referrerUserId", ""),
                         referrerName = affObj.optString("referrerName", ""),
@@ -515,6 +516,7 @@ class LocalJsonReader(private val context: Context) {
                         reviewImage = if (obj.has("reviewImage")) obj.getString("reviewImage") else null,
                         isAnonymous = obj.optBoolean("isAnonymous", false),
                         recommendToFriends = obj.optBoolean("recommendToFriends", false),
+                        isAffiliate = isAffiliate,
                         affiliate = affiliateInfo
                     )
                 )

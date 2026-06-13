@@ -105,8 +105,9 @@ class CommunityAffiliateOrdersFragment : Fragment() {
             val orderValue = order.totalAmount
             val commission = order.affiliate?.commissionAmount ?: 0L
             val status = order.status
+            val affiliateId = order.affiliate?.affiliate_id ?: orderId
             
-            holder.tvOrderId.text = orderId
+            holder.tvOrderId.text = affiliateId
             
             if (status == "Hoàn tất" || status == "Đã duyệt" || status == "Thành công") {
                 holder.tvStatus.text = "Thành công"

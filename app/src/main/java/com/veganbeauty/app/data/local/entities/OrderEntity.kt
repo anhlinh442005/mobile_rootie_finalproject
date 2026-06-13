@@ -12,7 +12,7 @@ data class OrderItem(
 )
 
 data class AffiliateInfo(
-    val isAffiliateOrder: Boolean,
+    val affiliate_id: String,
     val affiliateCode: String,
     val referrerUserId: String,
     val referrerName: String,
@@ -45,6 +45,7 @@ data class OrderEntity(
     val reviewImage: String? = null,
     val isAnonymous: Boolean = false,
     val recommendToFriends: Boolean = false,
+    val isAffiliate: Boolean = false,
     @androidx.room.Embedded(prefix = "aff_")
     val affiliate: AffiliateInfo? = null
 )
