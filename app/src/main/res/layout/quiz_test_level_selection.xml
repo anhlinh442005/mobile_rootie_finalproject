@@ -178,7 +178,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:gravity="center"
-                        android:text="10 câu hỏi • ~1 phút • Phân tích nhanh"
+                        android:text="15 câu hỏi • ~2 phút • Phân tích nhanh"
                         android:textColor="#888888"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -254,7 +254,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:gravity="center"
-                        android:text="20 câu hỏi • Phân tích chi tiết"
+                        android:text="30 câu hỏi • Phân tích chi tiết"
                         android:textColor="#888888"
                         android:textSize="13sp" />
                 </LinearLayout>

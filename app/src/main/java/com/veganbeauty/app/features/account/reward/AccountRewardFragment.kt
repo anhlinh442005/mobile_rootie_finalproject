@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
@@ -29,7 +28,9 @@ import com.veganbeauty.app.data.repository.OrderRepository
 import com.veganbeauty.app.databinding.AccountRewardFragmentBinding
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -51,48 +52,7 @@ class AccountRewardFragment : RootieFragment() {
     private lateinit var giftsAdapter: MyGiftsAdapter
     private lateinit var historyAdapter: HistoryAdapter
 
-    private val redeemableGifts = listOf(
-        RedeemableGift(
-            giftId = "voucher_50k",
-            title = "Voucher Giảm 50K",
-            description = "Áp dụng cho đơn hàng từ 300K, sản phẩm nguyên giá.",
-            cost = 1200,
-            expiryDate = "15/12/2026",
-            code = "SAVE50K",
-            giftType = "voucher",
-            rankRequired = "Bạc"
-        ),
-        RedeemableGift(
-            giftId = "gift_rose_water",
-            title = "Nước Hoa Hồng Hữu Cơ",
-            description = "Phiên bản giới hạn",
-            cost = 5000,
-            expiryDate = "15/12/2026",
-            code = "ROSE5G",
-            giftType = "product",
-            rankRequired = "Bạc"
-        ),
-        RedeemableGift(
-            giftId = "gift_freeship",
-            title = "Miễn Phí Vận Chuyển Toàn Quốc",
-            description = "Tối đa 30K phí ship",
-            cost = 800,
-            expiryDate = "Hôm nay",
-            code = "FREESHIP",
-            giftType = "freeship",
-            rankRequired = "Đồng"
-        ),
-        RedeemableGift(
-            giftId = "gift_holiday_combo",
-            title = "Bộ Quà Tặng Mùa Lễ Hội",
-            description = "Bộ quà tặng đặc biệt",
-            cost = 5000,
-            expiryDate = "31/12/2026",
-            code = "HOLIDAY12",
-            giftType = "gift",
-            rankRequired = "Bạc"
-        )
-    )
+    private var redeemableGifts: List<RedeemableGift> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -106,10 +66,18 @@ class AccountRewardFragment : RootieFragment() {
 
     private fun setupRepository() {
         val db = RootieDatabase.getDatabase(requireContext())
-        repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
+        repository = OrderRepository(
+            db.orderDao(),
+            db.rewardPointDao(),
+            db.userGiftDao(),
+            LocalJsonReader(requireContext())
+        )
     }
 
     override fun setupUI(view: View) {
+        // Load dynamically from assets
+        redeemableGifts = loadGiftsFromAssets(requireContext())
+
         binding.btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -129,22 +97,20 @@ class AccountRewardFragment : RootieFragment() {
                 .commit()
         }
 
-        // Rich style warning banner
+        // Warning banner
         binding.tvAlertWarning.text = Html.fromHtml("Bạn có <b>500 điểm</b> sắp hết hạn vào 30/11.", Html.FROM_HTML_MODE_COMPACT)
 
-        // Setup Tab Selection
         setupTabs()
-
-        // Setup category chips for Exchange Tab
         setupExchangeChips()
-
-        // Setup filter chips for My Gifts Tab
         setupFilterChips()
 
         // Recycler View for Exchange tab
         exchangeAdapter = ExchangeGiftsAdapter(
             onItemClick = { gift ->
-                openGiftDetail(gift.giftId, gift.title, gift.description, gift.cost, gift.expiryDate, gift.code, gift.giftType, false, -1, gift.rankRequired)
+                val ownedItem = myGiftsList.find { it.giftId == gift.giftId }
+                val isOwned = ownedItem != null
+                val dbId = ownedItem?.id ?: -1
+                openGiftDetail(gift, isOwned, dbId)
             },
             onActionClick = { gift ->
                 performRedeemDirectly(gift)
@@ -156,12 +122,35 @@ class AccountRewardFragment : RootieFragment() {
 
         // Recycler View for My Gifts tab
         giftsAdapter = MyGiftsAdapter(
-            onItemClick = { gift ->
-                openGiftDetail(gift.giftId, gift.title, gift.description, gift.cost, gift.expiryDate, gift.code, gift.giftType, true, gift.id, "Đồng")
+            onItemClick = { userGift ->
+                val gift = RedeemableGift(
+                    giftId = userGift.giftId,
+                    title = userGift.title,
+                    description = userGift.description,
+                    cost = userGift.cost,
+                    expiryDate = userGift.expiryDate,
+                    code = userGift.code,
+                    giftType = userGift.giftType,
+                    status = "redeemed",
+                    productId = userGift.productId,
+                    minOrderValue = userGift.minOrderValue,
+                    applicableProducts = userGift.applicableProducts,
+                    offerType = userGift.offerType,
+                    discountValue = userGift.discountValue,
+                    rankRequired = "Đồng"
+                )
+                openGiftDetail(gift, true, userGift.id)
             },
-            onActionClick = { gift ->
-                copyToClipboard(requireContext(), gift.code)
-                Toast.makeText(context, "Đã sao chép mã voucher ${gift.code} thành công!", Toast.LENGTH_SHORT).show()
+            onActionClick = { userGift ->
+                copyToClipboard(requireContext(), userGift.code)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val success = repository.deleteUserGiftById(userGift.id)
+                    if (success) {
+                        Toast.makeText(context, "Mã quà tặng ${userGift.code} đã được áp dụng thành công!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Sử dụng quà tặng thất bại!", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         )
         binding.rvMyGifts.layoutManager = LinearLayoutManager(requireContext())
@@ -181,28 +170,32 @@ class AccountRewardFragment : RootieFragment() {
                 currentPoints = pointsVal
                 binding.tvCurrentPoints.text = String.format("%,d", pointsVal).replace(',', '.')
 
-                // Calculate progress to Gold rank (10,000 points) or Diamond rank (20,000 points)
+                // Range mapping: 0-4999 -> Thường, 5000-9999 -> Bạc, 10000-19999 -> Vàng, >=20000 -> VIP
                 val (rank, progressText, progressPct) = when {
-                    pointsVal >= 20000 -> Triple("Hạng Kim Cương", "Đạt hạng cao nhất", 100)
+                    pointsVal >= 20000 -> Triple("Hạng VIP", "Đạt hạng cao nhất", 100)
                     pointsVal >= 10000 -> {
                         val remaining = 20000 - pointsVal
                         val formattedRemaining = String.format("%,d", remaining).replace(',', '.')
                         val pct = (pointsVal - 10000) * 100 / 10000
-                        Triple("Hạng Vàng", "Còn $formattedRemaining xu để đến Kim Cương", pct)
+                        Triple("Hạng Vàng", "Còn $formattedRemaining xu để đến VIP", pct)
                     }
-                    else -> {
+                    pointsVal >= 5000 -> {
                         val remaining = 10000 - pointsVal
                         val formattedRemaining = String.format("%,d", remaining).replace(',', '.')
-                        val pct = if (pointsVal >= 1000) ((pointsVal - 1000) * 100 / 9000) else 0
-                        val adjustedPct = if (pointsVal == 8500) 56 else pct
-                        Triple("Hạng Bạc", "Còn $formattedRemaining xu để đến Vàng", adjustedPct)
+                        val pct = (pointsVal - 5000) * 100 / 5000
+                        Triple("Hạng Bạc", "Còn $formattedRemaining xu để đến Vàng", pct)
+                    }
+                    else -> {
+                        val remaining = 5000 - pointsVal
+                        val formattedRemaining = String.format("%,d", remaining).replace(',', '.')
+                        val pct = pointsVal * 100 / 5000
+                        Triple("Hạng Thường", "Còn $formattedRemaining xu để đến Bạc", pct)
                     }
                 }
                 binding.tvCurrentRank.text = rank
                 binding.tvNextRankHint.text = progressText
                 binding.pbRankProgress.progress = progressPct
                 
-                // Refresh exchange list in case points changed
                 applyExchangeFilter()
             }
         }
@@ -212,7 +205,19 @@ class AccountRewardFragment : RootieFragment() {
             repository.getAllUserGifts().collect { gifts ->
                 myGiftsList.clear()
                 myGiftsList.addAll(gifts)
+                
+                // Dynamically sync status in redeemableGifts
+                val ownedIds = gifts.map { it.giftId }.toSet()
+                for (g in redeemableGifts) {
+                    if (g.giftId in ownedIds) {
+                        g.status = "redeemed"
+                    } else {
+                        g.status = "unredeemed"
+                    }
+                }
+                
                 applyGiftsFilter()
+                applyExchangeFilter()
             }
         }
 
@@ -222,7 +227,6 @@ class AccountRewardFragment : RootieFragment() {
                 val logs = history.filter { it.orderId != "SYSTEM" }
                 val historyItems = mutableListOf<HistoryItem>()
                 
-                // Group by month
                 val sdfGroup = SimpleDateFormat("'Tháng' MM, yyyy", Locale.getDefault())
                 val grouped = logs.groupBy { sdfGroup.format(Date(it.timestamp)) }
                 
@@ -327,7 +331,7 @@ class AccountRewardFragment : RootieFragment() {
 
     private fun applyExchangeFilter() {
         val filtered = when (activeExchangeFilter) {
-            "Voucher giảm giá" -> redeemableGifts.filter { it.giftType == "voucher" || it.giftType == "freeship" }
+            "Voucher giảm giá" -> redeemableGifts.filter { it.giftType == "voucher_discount" || it.giftType == "voucher_freeship" }
             "Sản phẩm" -> redeemableGifts.filter { it.giftType == "product" }
             "Quà tặng" -> redeemableGifts.filter { it.giftType == "gift" }
             else -> redeemableGifts
@@ -339,10 +343,15 @@ class AccountRewardFragment : RootieFragment() {
         filteredGiftsList.clear()
         when (activeFilter) {
             "Còn hạn" -> {
-                filteredGiftsList.addAll(myGiftsList.filter { it.status == "Còn hạn" || it.status == "Hôm nay" })
+                filteredGiftsList.addAll(myGiftsList.filter { 
+                    val status = computeStatusFromExpiry(it.expiryDate)
+                    status == "valid" || status == "expiring"
+                })
             }
             "Hết hạn" -> {
-                filteredGiftsList.addAll(myGiftsList.filter { it.status == "Hết hạn" })
+                filteredGiftsList.addAll(myGiftsList.filter { 
+                    computeStatusFromExpiry(it.expiryDate) == "expired"
+                })
             }
             else -> {
                 filteredGiftsList.addAll(myGiftsList)
@@ -351,20 +360,91 @@ class AccountRewardFragment : RootieFragment() {
         giftsAdapter.submitList(filteredGiftsList)
     }
 
-    private fun openGiftDetail(
-        giftId: String,
-        title: String,
-        description: String,
-        cost: Int,
-        expiryDate: String,
-        code: String,
-        giftType: String,
-        isOwned: Boolean,
-        dbId: Int,
-        rankRequired: String = "Đồng"
-    ) {
+    private fun computeStatusFromExpiry(expiryStr: String): String {
+        return try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val expiryDate = sdf.parse(expiryStr) ?: return "valid"
+            
+            val today = Calendar.getInstance().apply {
+                set(Calendar.YEAR, 2026)
+                set(Calendar.MONTH, Calendar.JUNE)
+                set(Calendar.DAY_OF_MONTH, 11)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            
+            val expiry = Calendar.getInstance().apply {
+                time = expiryDate
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            
+            if (expiry.before(today)) {
+                "expired"
+            } else if (expiry.equals(today)) {
+                "expiring"
+            } else {
+                "valid"
+            }
+        } catch (e: Exception) {
+            "valid"
+        }
+    }
+
+    private fun loadGiftsFromAssets(ctx: Context): List<RedeemableGift> {
+        return try {
+            val jsonString = ctx.assets.open("gifts.json").bufferedReader().use { it.readText() }
+            val jsonArray = JSONArray(jsonString)
+            val list = mutableListOf<RedeemableGift>()
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                list.add(
+                    RedeemableGift(
+                        giftId = obj.optString("giftId", ""),
+                        title = obj.optString("title", ""),
+                        description = obj.optString("description", ""),
+                        cost = obj.optInt("cost", 0),
+                        expiryDate = obj.optString("expiryDate", ""),
+                        code = obj.optString("code", ""),
+                        giftType = obj.optString("giftType", "gift"),
+                        status = obj.optString("status", "unredeemed"),
+                        productId = if (obj.has("product_id")) obj.getString("product_id") else null,
+                        minOrderValue = obj.optInt("minOrderValue", 0),
+                        applicableProducts = obj.optString("applicableProducts", "Tất cả sản phẩm"),
+                        offerType = obj.optString("offerType", "fixed_amount"),
+                        discountValue = obj.optInt("discountValue", 0),
+                        rankRequired = obj.optString("rankRequired", "Đồng")
+                    )
+                )
+            }
+            list
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    private fun openGiftDetail(gift: RedeemableGift, isOwned: Boolean, dbId: Int) {
         val detailFrag = AccountRewardDetailFragment.newInstance(
-            giftId, title, description, cost, expiryDate, code, giftType, isOwned, dbId, rankRequired
+            giftId = gift.giftId,
+            title = gift.title,
+            description = gift.description,
+            cost = gift.cost,
+            expiryDate = gift.expiryDate,
+            code = gift.code,
+            giftType = gift.giftType,
+            isOwned = isOwned,
+            dbId = dbId,
+            rankRequired = gift.rankRequired,
+            minOrderValue = gift.minOrderValue,
+            applicableProducts = gift.applicableProducts,
+            offerType = gift.offerType,
+            productId = gift.productId,
+            discountValue = gift.discountValue
         )
         parentFragmentManager.beginTransaction()
             .replace(R.id.main_container, detailFrag)
@@ -385,7 +465,12 @@ class AccountRewardFragment : RootieFragment() {
                 cost = gift.cost,
                 expiryDate = gift.expiryDate,
                 code = gift.code,
-                giftType = gift.giftType
+                giftType = gift.giftType,
+                minOrderValue = gift.minOrderValue,
+                applicableProducts = gift.applicableProducts,
+                offerType = gift.offerType,
+                productId = gift.productId,
+                discountValue = gift.discountValue
             )
             if (success) {
                 MaterialAlertDialogBuilder(requireContext())
@@ -414,7 +499,6 @@ class AccountRewardFragment : RootieFragment() {
     }
 }
 
-// Model for redeemable gifts
 class RedeemableGift(
     val giftId: String,
     val title: String,
@@ -423,10 +507,15 @@ class RedeemableGift(
     val expiryDate: String,
     val code: String,
     val giftType: String,
+    var status: String,
+    val productId: String? = null,
+    val minOrderValue: Int = 0,
+    val applicableProducts: String = "Tất cả sản phẩm",
+    val offerType: String = "fixed_amount",
+    val discountValue: Int = 0,
     val rankRequired: String
 )
 
-// RecyclerView Adapter for Redeemable Gifts (Flat Card layout, Screenshot 1)
 class ExchangeGiftsAdapter(
     private val onItemClick: (RedeemableGift) -> Unit,
     private val onActionClick: (RedeemableGift) -> Unit
@@ -460,6 +549,7 @@ class ExchangeGiftsAdapter(
         private val img = view.findViewById<ImageView>(R.id.ivGiftIcon)
         private val imgCircle = view.findViewById<View>(R.id.layoutIconCircle)
         private val actionBtn = view.findViewById<TextView>(R.id.btnAction)
+        private val badge = view.findViewById<TextView>(R.id.tvGiftStatusBadge)
 
         fun bind(
             gift: RedeemableGift,
@@ -468,16 +558,29 @@ class ExchangeGiftsAdapter(
             onActionClick: (RedeemableGift) -> Unit
         ) {
             title.text = gift.title
-            subtitle.text = if (gift.expiryDate == "Hôm nay") gift.description else "HSD: ${gift.expiryDate}"
-            value.text = String.format("%,d đ", gift.cost).replace(',', '.')
+            
+            // Format expiryDate: check if today (2026-06-11)
+            val isExpiringToday = gift.expiryDate.startsWith("2026-06-11")
+            val datePart = if (gift.expiryDate.contains(" ")) gift.expiryDate.split(" ")[0] else gift.expiryDate
+            subtitle.text = if (isExpiringToday) "Hôm nay" else "HSD: $datePart"
+            value.text = String.format("%,d xu", gift.cost).replace(',', '.')
 
-            // Check rank condition. User points = 8500 (Silver/Bạc).
-            // "Vàng" rank requires 10,000 points.
-            val isLocked = (gift.rankRequired == "Vàng" && userPoints < 10000) || (gift.rankRequired == "Kim Cương" && userPoints < 20000)
+            val isLocked = (gift.rankRequired == "Vàng" && userPoints < 10000) || 
+                           (gift.rankRequired == "VIP" && userPoints < 20000) ||
+                           (gift.rankRequired == "Kim Cương" && userPoints < 20000)
             val isNotEnoughPoints = userPoints < gift.cost
 
-            // Allow access to gift detail even if conditions are not met
             itemView.setOnClickListener { onClick(gift) }
+
+            // Dynamic "Sắp hết hạn" status badge
+            if (isExpiringToday) {
+                badge.visibility = View.VISIBLE
+                badge.text = "Sắp hết hạn"
+                badge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFF3E0"))
+                badge.setTextColor(Color.parseColor("#D97706"))
+            } else {
+                badge.visibility = View.GONE
+            }
 
             if (isLocked) {
                 actionBtn.text = "Chưa đủ ĐK"
@@ -498,10 +601,9 @@ class ExchangeGiftsAdapter(
                 actionBtn.setBackgroundResource(R.drawable.status_badge_bg)
                 actionBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ECEFF0"))
 
-                // Select icon based on giftType
                 val iconRes = when (gift.giftType) {
-                    "voucher" -> R.drawable.ic_voucher
-                    "freeship" -> R.drawable.ic_truck
+                    "voucher_discount", "voucher" -> R.drawable.ic_voucher
+                    "voucher_freeship", "freeship" -> R.drawable.ic_truck
                     "gift" -> R.drawable.ic_gift
                     "product" -> R.drawable.ic_logo_ol
                     else -> R.drawable.ic_gift
@@ -516,12 +618,11 @@ class ExchangeGiftsAdapter(
                 actionBtn.isEnabled = true
                 actionBtn.setTextColor(Color.WHITE)
                 actionBtn.setBackgroundResource(R.drawable.tab_active_bg)
-                actionBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#2D3A34")) // Dark green button
+                actionBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#2D3A34"))
 
-                // Select icon based on giftType
                 val iconRes = when (gift.giftType) {
-                    "voucher" -> R.drawable.ic_voucher
-                    "freeship" -> R.drawable.ic_truck
+                    "voucher_discount", "voucher" -> R.drawable.ic_voucher
+                    "voucher_freeship", "freeship" -> R.drawable.ic_truck
                     "gift" -> R.drawable.ic_gift
                     "product" -> R.drawable.ic_logo_ol
                     else -> R.drawable.ic_gift
@@ -536,7 +637,6 @@ class ExchangeGiftsAdapter(
     }
 }
 
-// RecyclerView Adapter for My Gifts (Screenshot 2)
 class MyGiftsAdapter(
     private val onItemClick: (UserGiftEntity) -> Unit,
     private val onActionClick: (UserGiftEntity) -> Unit
@@ -577,19 +677,44 @@ class MyGiftsAdapter(
         ) {
             title.text = gift.title
             
-            val expiryText = if (gift.expiryDate == "Hôm nay") "HSD: Hôm nay" else "HSD: ${gift.expiryDate}"
-            subtitle.text = "${gift.description}\n$expiryText"
+            val displayHsd = if (gift.expiryDate.contains(" ")) gift.expiryDate.split(" ")[0] else gift.expiryDate
+            val isExpiringToday = gift.expiryDate.startsWith("2026-06-11")
             
-            // Hide price label for owned gifts
+            subtitle.text = "${gift.description}\nHSD: ${if (isExpiringToday) "Hôm nay" else displayHsd}"
+            
             value.visibility = View.GONE
             badge.visibility = View.VISIBLE
-            badge.text = gift.status
+
+            // Compute status dynamically
+            val isExpired = try {
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                val exp = sdf.parse(gift.expiryDate)
+                val today = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, 2026)
+                    set(Calendar.MONTH, Calendar.JUNE)
+                    set(Calendar.DAY_OF_MONTH, 11)
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.time
+                exp != null && exp.before(today)
+            } catch (e: Exception) {
+                false
+            }
+
+            val computedStatus = when {
+                isExpired -> "Hết hạn"
+                isExpiringToday -> "Hôm nay"
+                else -> "Còn hạn"
+            }
+            badge.text = computedStatus
 
             // Format status badge & action button
-            when (gift.status) {
+            when (computedStatus) {
                 "Hôm nay" -> {
-                    badge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFF3E0")) // Light orange
-                    badge.setTextColor(Color.parseColor("#D97706")) // Orange-red text
+                    badge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFF3E0"))
+                    badge.setTextColor(Color.parseColor("#D97706"))
                     
                     actionBtn.visibility = View.VISIBLE
                     actionBtn.text = "Sử dụng"
@@ -598,14 +723,14 @@ class MyGiftsAdapter(
                     actionBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#2D3A34"))
                 }
                 "Hết hạn" -> {
-                    badge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ECEFF1")) // Light gray
-                    badge.setTextColor(Color.parseColor("#7E8A83")) // Gray text
+                    badge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ECEFF1"))
+                    badge.setTextColor(Color.parseColor("#7E8A83"))
                     
-                    actionBtn.visibility = View.GONE // Expired gifts don't have use button
+                    actionBtn.visibility = View.GONE
                 }
                 else -> { // "Còn hạn"
-                    badge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E8F5E9")) // Light green
-                    badge.setTextColor(Color.parseColor("#2E7D32")) // Green text
+                    badge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E8F5E9"))
+                    badge.setTextColor(Color.parseColor("#2E7D32"))
                     
                     actionBtn.visibility = View.VISIBLE
                     actionBtn.text = "Sử dụng"
@@ -616,8 +741,8 @@ class MyGiftsAdapter(
             }
 
             val iconRes = when (gift.giftType) {
-                "voucher" -> R.drawable.ic_voucher
-                "freeship" -> R.drawable.ic_truck
+                "voucher_discount", "voucher" -> R.drawable.ic_voucher
+                "voucher_freeship", "freeship" -> R.drawable.ic_truck
                 "gift" -> R.drawable.ic_gift
                 "product" -> R.drawable.ic_logo_ol
                 else -> R.drawable.ic_gift
@@ -679,7 +804,6 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         when (val item = items[position]) {
             is HistoryItem.Header -> (holder as HeaderViewHolder).bind(item.title)
             is HistoryItem.Transaction -> {
-                // Check if first or last item in a timeline chain
                 val isFirst = position == 0 || items[position - 1] is HistoryItem.Header
                 val isLast = position == itemCount - 1 || items[position + 1] is HistoryItem.Header
                 
@@ -715,7 +839,6 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             value.text = if (item.points > 0) "+ $formattedVal" else "$formattedVal"
             value.setTextColor(Color.parseColor("#1A202C"))
 
-            // Most recent transaction dot is dark green, older ones are gray
             if (isMostRecent) {
                 dot.setBackgroundResource(R.drawable.bg_circle_green)
                 dot.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#3E4D44"))
@@ -724,7 +847,6 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 dot.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A0AEC0"))
             }
 
-            // Show/hide top and bottom vertical lines to make timeline clean
             lineTop.visibility = if (isFirst) View.INVISIBLE else View.VISIBLE
             lineBottom.visibility = if (isLast) View.INVISIBLE else View.VISIBLE
 
@@ -732,4 +854,3 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 }
-

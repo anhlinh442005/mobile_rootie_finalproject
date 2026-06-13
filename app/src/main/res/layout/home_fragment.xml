@@ -53,6 +53,51 @@
                     android:orientation="horizontal" />
             </FrameLayout>
 
+            <!-- Skincare Routine Banner Widget -->
+            <LinearLayout
+                android:id="@+id/cardHomeRoutineWidget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_streak_card_gradient"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chuỗi chăm da của bạn: 5 ngày 🔥"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Sáng nay bạn chưa hoàn thành Routine, bấm để bắt đầu!"
+                        android:textColor="#DDDFC4"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#FFFFFF"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
             <!-- Featured Sunscreen Promo -->
             <LinearLayout
                 android:layout_width="match_parent"

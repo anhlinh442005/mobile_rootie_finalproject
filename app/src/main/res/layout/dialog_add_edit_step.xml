@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog_container"
+    android:padding="20dp">
+
+    <!-- Dialog Title -->
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thêm bước dưỡng da mới"
+        android:textColor="#3E4D44"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Label: Tên bước -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tên bước dưỡng da"
+        android:textColor="#3E4D44"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:layout_marginBottom="6dp" />
+
+    <!-- Input: Tên bước -->
+    <EditText
+        android:id="@+id/etStepName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Ví dụ: Cleanser, Toner..."
+        android:textColor="#3E4D44"
+        android:textColorHint="#AEAEB2"
+        android:textSize="14sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:paddingHorizontal="12dp"
+        android:background="@drawable/home_bg_input"
+        android:layout_marginBottom="16dp"
+        android:inputType="textCapWords" />
+
+    <!-- Label: Mô tả -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mô tả chi tiết"
+        android:textColor="#3E4D44"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:layout_marginBottom="6dp" />
+
+    <!-- Input: Mô tả -->
+    <EditText
+        android:id="@+id/etStepDesc"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Ví dụ: Sữa rửa mặt dịu nhẹ..."
+        android:textColor="#3E4D44"
+        android:textColorHint="#AEAEB2"
+        android:textSize="14sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:paddingHorizontal="12dp"
+        android:background="@drawable/home_bg_input"
+        android:layout_marginBottom="24dp"
+        android:inputType="textCapSentences" />
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Button: Xóa bước (only visible when editing) -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackground"
+            android:text="Xóa bước"
+            android:textAllCaps="false"
+            android:textColor="#FF3B30"
+            android:textSize="14sp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Button: Hủy -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:background="?attr/selectableItemBackground"
+            android:text="Hủy"
+            android:textAllCaps="false"
+            android:textColor="#3E4D44"
+            android:textSize="14sp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:textStyle="bold" />
+
+        <!-- Button: Lưu / Thêm -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:paddingHorizontal="16dp"
+            android:background="@drawable/skin_bg_btn_dark_green"
+            android:text="Thêm"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

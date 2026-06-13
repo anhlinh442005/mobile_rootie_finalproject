@@ -25,6 +25,18 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var database: RootieDatabase
     private lateinit var adapter: CartAdapter
 
+    private var selectedVoucherCode: String? = null
+    private var voucherDiscountAmount = 0L
+    private val isVoucherApplied get() = !selectedVoucherCode.isNullOrEmpty()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            selectedVoucherCode = it.getString(ARG_SELECTED_VOUCHER_CODE)
+            voucherDiscountAmount = it.getLong(ARG_SELECTED_VOUCHER_DISCOUNT, 0L)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -85,7 +97,12 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
 
         // Voucher Row Click
         binding.llVoucherRow.setOnClickListener {
-            Toast.makeText(requireContext(), "Áp dụng mã giảm giá thành công!", Toast.LENGTH_SHORT).show()
+            val voucherFragment = ShopVoucherFragment.newInstance(selectedVoucherCode)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, voucherFragment)
+                .addToBackStack(null)
+                .commit()
+            dismiss()
         }
 
         // Toggle Price details click
@@ -116,7 +133,11 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
                 Toast.makeText(requireContext(), "Vui lòng chọn ít nhất 1 sản phẩm để thanh toán", Toast.LENGTH_SHORT).show()
             } else {
                 val checkoutItems = ArrayList(selectedItems)
-                val checkoutFragment = ShopCheckoutFragment.newInstance(checkoutItems)
+                val checkoutFragment = ShopCheckoutFragment.newInstance(
+                    checkoutItems,
+                    selectedVoucherCode,
+                    voucherDiscountAmount
+                )
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.main_container, checkoutFragment)
                     .addToBackStack(null)
@@ -150,15 +171,35 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
             finalPriceSum -= 2400
         }
 
+        // Voucher deduction
+        if (isVoucherApplied && finalPriceSum > voucherDiscountAmount) {
+            finalPriceSum -= voucherDiscountAmount
+        }
+
         val totalSavings = originalPriceSum - finalPriceSum
 
         // Update details values
         binding.tvDetailSubtotal.text = formatter.format(originalPriceSum)
         val directDiscount = originalPriceSum - finalPriceSum
-        binding.tvDetailDirectDiscount.text = if (directDiscount > 0) {
-            "-${formatter.format(directDiscount)}"
+        binding.tvDetailDirectDiscount.text = if (directDiscount - voucherDiscountAmount > 0) {
+            "-${formatter.format(directDiscount - voucherDiscountAmount)}"
         } else {
             "0đ"
+        }
+        
+        binding.tvDetailVoucherDiscount.text = if (voucherDiscountAmount > 0) {
+            "-${formatter.format(voucherDiscountAmount)}"
+        } else {
+            "0đ"
+        }
+
+        // Update Voucher row visual state
+        if (isVoucherApplied) {
+            binding.tvVoucherDesc.text = "Đã áp dụng mã: $selectedVoucherCode (-${formatter.format(voucherDiscountAmount)})"
+            binding.llVoucherRow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E5F2FF")))
+        } else {
+            binding.tvVoucherDesc.text = "Áp dụng ưu đãi để được giảm giá"
+            binding.llVoucherRow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#EDF3ED")))
         }
 
         // Update total values
@@ -187,5 +228,16 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "CartBottomSheetFragment"
+        const val ARG_SELECTED_VOUCHER_CODE = "selected_voucher_code"
+        const val ARG_SELECTED_VOUCHER_DISCOUNT = "selected_voucher_discount"
+
+        fun newInstance(selectedCode: String?, discount: Long): CartBottomSheetFragment {
+            return CartBottomSheetFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_SELECTED_VOUCHER_CODE, selectedCode)
+                    putLong(ARG_SELECTED_VOUCHER_DISCOUNT, discount)
+                }
+            }
+        }
     }
 }

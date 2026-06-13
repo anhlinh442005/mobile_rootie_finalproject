@@ -36,6 +36,9 @@ class NotebookVideoAdapter(private var items: List<YtVideoEntity>) :
         val videoId = extractYouTubeVideoId(item.url)
         val thumbnailUrl = if (videoId != null) {
             "https://img.youtube.com/vi/$videoId/hqdefault.jpg"
+        } else if (item.url.contains("cloudinary.com") && item.url.endsWith(".mp4", ignoreCase = true)) {
+            // Replace .mp4 extension with .jpg for Cloudinary video thumbnails
+            item.url.substringBeforeLast(".") + ".jpg"
         } else {
             item.url
         }

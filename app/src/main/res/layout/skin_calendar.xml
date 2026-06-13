@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FEFBF4">
+
+    <!-- Top Bar Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutHeader"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/skin_bg_top_bar_gradient"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Quay lại"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#02542D" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Lịch chăm da"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Notification container with a badge -->
+        <FrameLayout
+            android:id="@+id/btnNotification"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ivAvatar"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_notification" />
+        </FrameLayout>
+
+        <!-- User Avatar Circle -->
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_circle_avatar_border"
+            android:padding="2dp"
+            android:contentDescription="Avatar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutHeader">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Card: Chuỗi hiện tại -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#3E4D44"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvStreakLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chuỗi hiện tại"
+                        android:textColor="#97A49C"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvCurrentStreak"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12"
+                        android:textColor="#FFFFFF"
+                        android:textSize="48sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvStreakLabel" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="ngày liên tiếp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        app:layout_constraintBottom_toBottomOf="@id/tvCurrentStreak"
+                        app:layout_constraintStart_toEndOf="@id/tvCurrentStreak"
+                        app:layout_constraintTop_toTopOf="@id/tvCurrentStreak" />
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/ic_skin_fire"
+                        app:layout_constraintBottom_toBottomOf="@id/tvCurrentStreak"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvStreakLabel" />
+
+                    <!-- Custom Pill below -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_streak_pill_white"
+                        android:orientation="horizontal"
+                        android:padding="10dp"
+                        android:gravity="center_vertical"
+                        app:layout_constraintTop_toBottomOf="@id/tvCurrentStreak">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_skin_trend"
+                            android:layout_marginEnd="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvStreakPillText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Vượt 80% người dùng khác. Bạn hãy duy trì nhé!"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/be_vietnam_pro" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Stats Double Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <!-- Left Card: Chuỗi dài nhất -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/bg_circle_beige"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_skin_medal"
+                            android:layout_marginEnd="12dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chuỗi dài nhất"
+                                android:textColor="#3E4D44"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/be_vietnam_pro" />
+
+                            <TextView
+                                android:id="@+id/tvMaxStreak"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="24 ngày"
+                                android:textColor="#3E4D44"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/be_vietnam_pro" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Right Card: Hoàn thành -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/bg_circle_beige"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_skin_target"
+                            android:layout_marginEnd="12dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hoàn thành"
+                                android:textColor="#3E4D44"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/be_vietnam_pro" />
+
+                            <TextView
+                                android:id="@+id/tvTotalCompletedDays"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="156 ngày"
+                                android:textColor="#3E4D44"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/be_vietnam_pro" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <!-- Card: Calendar -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Calendar Header -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:id="@+id/tvMonthYear"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tháng 05, 2026"
+                            android:textColor="#3E4D44"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_centerVertical="true" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_alignParentEnd="true">
+
+                            <ImageButton
+                                android:id="@+id/btnPrevMonth"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:background="@drawable/bg_circle_grey_light"
+                                android:src="@drawable/ic_chevron_left"
+                                app:tint="#3E4D44" />
+
+                            <ImageButton
+                                android:id="@+id/btnNextMonth"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_circle_grey_light"
+                                android:src="@drawable/ic_chevron_right"
+                                app:tint="#3E4D44" />
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <!-- Days Header Grid -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T2" android:textColor="#AEAEB2" android:textSize="13sp" android:gravity="center" android:fontFamily="@font/be_vietnam_pro" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T3" android:textColor="#AEAEB2" android:textSize="13sp" android:gravity="center" android:fontFamily="@font/be_vietnam_pro" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T4" android:textColor="#AEAEB2" android:textSize="13sp" android:gravity="center" android:fontFamily="@font/be_vietnam_pro" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T5" android:textColor="#AEAEB2" android:textSize="13sp" android:gravity="center" android:fontFamily="@font/be_vietnam_pro" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T6" android:textColor="#AEAEB2" android:textSize="13sp" android:gravity="center" android:fontFamily="@font/be_vietnam_pro" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="T7" android:textColor="#AEAEB2" android:textSize="13sp" android:gravity="center" android:fontFamily="@font/be_vietnam_pro" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="CN" android:textColor="#AEAEB2" android:textSize="13sp" android:gravity="center" android:fontFamily="@font/be_vietnam_pro" />
+                    </LinearLayout>
+
+                    <!-- Days Number Grid Container -->
+                    <LinearLayout
+                        android:id="@+id/layoutCalendarGrid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E9EADF"
+                        android:layout_marginVertical="16dp" />
+
+                    <!-- Legend Bar -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <!-- Indicator 1 -->
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:background="@drawable/bg_circle_green_indicator"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Đủ"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginEnd="20dp" />
+
+                        <!-- Indicator 2 -->
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:background="@drawable/bg_circle_yellow_indicator"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Một phần"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginEnd="20dp" />
+
+                        <!-- Indicator 3 -->
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:background="@drawable/bg_circle_red_indicator"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bỏ lỡ"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/be_vietnam_pro" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Habit Analysis Header -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phân tích thói quen"
+                android:textColor="#3E4D44"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Habit Analysis Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Metric row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <ImageView
+                            android:layout_width="46dp"
+                            android:layout_height="46dp"
+                            android:background="@drawable/bg_circle_yellow_indicator"
+                            android:padding="11dp"
+                            android:src="@drawable/ic_skin_moon"
+                            android:layout_marginEnd="16dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvHabitAnalysisHeading"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Bạn thường hoàn thành Routine buổi tối tốt hơn buổi sáng."
+                                android:textColor="#3E4D44"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/be_vietnam_pro" />
+
+                            <TextView
+                                android:id="@+id/tvHabitAnalysisSub"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Tỷ lệ hoàn thành buổi tối đạt 94%, buổi sáng chỉ đạt 72%"
+                                android:textColor="#677559"
+                                android:textSize="13sp"
+                                android:fontFamily="@font/be_vietnam_pro" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Tip pill container -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#F5FFEA"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_skin_bulb"
+                            app:tint="#3E4D44"
+                            android:layout_marginEnd="12dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="MẸO CHO BẠN"
+                                android:textColor="#3E4D44"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/be_vietnam_pro" />
+
+                            <TextView
+                                android:id="@+id/tvHabitTip"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Hãy thử chuẩn bị đồ skincare từ tối hôm trước để duy trì routine sáng dễ dàng hơn nhé!"
+                                android:textColor="#3E4D44"
+                                android:textSize="13sp"
+                                android:fontFamily="@font/be_vietnam_pro" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Tabs/Filters Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <!-- Tab: Tháng này -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnTabMonth"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/com_bg_btn_dark_green"
+                    android:text="Tháng này"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:textStyle="bold" />
+
+                <!-- Tab: Tuần này -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnTabWeek"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@drawable/bg_pill_grey_translucent"
+                    android:text="Tuần này"
+                    android:textAllCaps="false"
+                    android:textColor="#3E4D44"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:textStyle="bold" />
+
+                <!-- Tab: Hôm nay -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnTabToday"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_pill_grey_translucent"
+                    android:text="Hôm nay"
+                    android:textAllCaps="false"
+                    android:textColor="#3E4D44"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Timeline/History List Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Timeline vertical line visual -->
+                <RelativeLayout
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp">
+
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:background="#EEEFEC"
+                        android:layout_centerHorizontal="true" />
+                </RelativeLayout>
+
+                <!-- Container of date routine cards -->
+                <LinearLayout
+                    android:id="@+id/layoutTimelineContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <!-- Bottom Button: Detailed History Link -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnDetailedHistory"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/bg_btn_outlined_beige"
+                android:text="Nhật ký chi tiết tháng 4 >"
+                android:textAllCaps="false"
+                android:textColor="#3E4D44"
+                android:textSize="15sp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

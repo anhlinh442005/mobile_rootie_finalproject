@@ -47,6 +47,16 @@ object NavAppUtils {
                         when (id) {
                             R.id.nav_home -> transaction.replace(R.id.main_container, HomeFragment())
                             R.id.nav_shop -> transaction.replace(R.id.main_container, ShopHomeFragment())
+                            R.id.nav_myskin -> {
+                                val prefs = context.getSharedPreferences("RootieQuizPrefs", android.content.Context.MODE_PRIVATE)
+                                val savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null)
+                                val dest = if (savedSkin != null) {
+                                    com.veganbeauty.app.features.weather.WeatherForecastFragment()
+                                } else {
+                                    com.veganbeauty.app.features.quiz.QuizTestIntroFragment()
+                                }
+                                transaction.replace(R.id.main_container, dest)
+                            }
                             R.id.nav_myskin -> transaction.replace(R.id.main_container, com.veganbeauty.app.features.myskin.MySkinFragment())
                             R.id.nav_community -> transaction.replace(R.id.main_container, ComLoadingFragment())
                             R.id.nav_account -> transaction.replace(R.id.main_container, AccountProfileFragment())

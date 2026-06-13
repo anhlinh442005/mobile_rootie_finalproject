@@ -109,7 +109,7 @@ class LocalJsonReader(private val context: Context) {
                         suitableFor = obj.optString("suitableFor", ""),
                         origin = obj.optString("origin", ""),
                         expiryDate = obj.optString("expiryDate", ""),
-                        isNew = obj.optBoolean("isNew", false),
+                        isNew = obj.optBoolean("newProduct", false) || obj.optBoolean("isNew", false),
                         
                         album = albumList,
                         mainIngredientsSummary = obj.optString("mainIngredientsSummary", ""),

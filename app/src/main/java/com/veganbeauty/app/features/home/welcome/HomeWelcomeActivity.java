@@ -118,29 +118,37 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         setupInsets();
         setupBottomSheet();
         setupViewModel();
+        syncTeamUsers();
         startSplashSequence();
     }
 
     private void setupViewModel() {
-        com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(this);
-        com.veganbeauty.app.data.repository.AuthRepository repository = new com.veganbeauty.app.data.repository.AuthRepository(db.userDao());
-        com.veganbeauty.app.features.auth.AuthViewModelFactory factory = new com.veganbeauty.app.features.auth.AuthViewModelFactory(repository);
-        authViewModel = new androidx.lifecycle.ViewModelProvider(this, factory).get(com.veganbeauty.app.features.auth.AuthViewModel.class);
+        com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase
+                .getDatabase(this);
+        com.veganbeauty.app.data.repository.AuthRepository repository = new com.veganbeauty.app.data.repository.AuthRepository(
+                db.userDao());
+        com.veganbeauty.app.features.auth.AuthViewModelFactory factory = new com.veganbeauty.app.features.auth.AuthViewModelFactory(
+                repository);
+        authViewModel = new androidx.lifecycle.ViewModelProvider(this, factory)
+                .get(com.veganbeauty.app.features.auth.AuthViewModel.class);
 
         authViewModel.getLoginState().observe(this, state -> {
             if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) {
-                com.veganbeauty.app.data.local.entities.UserEntity user =
-                    ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) state).getUser();
+                com.veganbeauty.app.data.local.entities.UserEntity user = ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) state)
+                        .getUser();
                 // Save all user info into ProfileSession so other screens can read it
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setLoggedIn(this, true);
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setFullName(this, user.getFull_name());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setEmail(this, user.getEmail());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPhone(this, user.getPhone());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUsername(this, user.getUsername());
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(this, user.getAvatar() != null ? user.getAvatar() : "");
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(this,
+                        user.getAvatar() != null ? user.getAvatar() : "");
                 navigateToMain();
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
-                android.widget.Toast.makeText(this, ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this,
+                        ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(),
+                        android.widget.Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -149,7 +157,9 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 android.widget.Toast.makeText(this, "Đăng ký thành công", android.widget.Toast.LENGTH_SHORT).show();
                 transitionToLogin();
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
-                android.widget.Toast.makeText(this, ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this,
+                        ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(),
+                        android.widget.Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -158,15 +168,15 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.home_coordinator), (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             bottomSystemInset = bars.bottom;
-            splashContent.setPadding(splashContent.getPaddingLeft(), bars.top, splashContent.getPaddingRight(), splashContent.getPaddingBottom());
-            
+            splashContent.setPadding(splashContent.getPaddingLeft(), bars.top, splashContent.getPaddingRight(),
+                    splashContent.getPaddingBottom());
+
             if (welcomeBinding != null) {
                 welcomeBinding.homeWelcomeBottomPanel.setPadding(
                         welcomeBinding.homeWelcomeBottomPanel.getPaddingLeft(),
                         welcomeBinding.homeWelcomeBottomPanel.getPaddingTop(),
                         welcomeBinding.homeWelcomeBottomPanel.getPaddingRight(),
-                        (int) (24 * getResources().getDisplayMetrics().density) + bottomSystemInset
-                );
+                        (int) (24 * getResources().getDisplayMetrics().density) + bottomSystemInset);
             }
             if (loginBinding != null) {
                 android.view.View container = ((android.view.ViewGroup) loginBinding.getRoot()).getChildAt(0);
@@ -175,8 +185,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             container.getPaddingLeft(),
                             container.getPaddingTop(),
                             container.getPaddingRight(),
-                            (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset
-                    );
+                            (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset);
                 }
             }
             if (registerBinding != null) {
@@ -186,8 +195,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             container.getPaddingLeft(),
                             container.getPaddingTop(),
                             container.getPaddingRight(),
-                            (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset
-                    );
+                            (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset);
                 }
             }
             return insets;
@@ -260,14 +268,15 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private void startSplashSequence() {
         splashContent.post(() -> {
             float density = getResources().getDisplayMetrics().density;
-            // Khoảng cách đẩy (push distance): Icon sẽ đứng thấp hơn 60dp so với vị trí cuối cùng
+            // Khoảng cách đẩy (push distance): Icon sẽ đứng thấp hơn 60dp so với vị trí
+            // cuối cùng
             float pushDistance = 60f * density;
-            
+
             logoIcon.setAlpha(0f);
             logoIcon.setScaleX(0.5f);
             logoIcon.setScaleY(0.5f);
             logoIcon.setTranslationY(pushDistance); // Đứng ở vị trí trung tâm chờ
-            
+
             logoText.setAlpha(1f);
             logoText.setVisibility(View.INVISIBLE);
             // Text bắt đầu từ tít bên dưới đáy màn hình
@@ -283,7 +292,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     .setInterpolator(new android.view.animation.OvershootInterpolator())
                     .withEndAction(() -> {
                         logoText.setVisibility(View.VISIBLE);
-                        
+
                         // Giai đoạn 2: Text chạy nhanh từ đáy màn hình lên, "chạm" vào đít icon
                         logoText.animate().translationY(pushDistance)
                                 .setDuration(350).setInterpolator(new android.view.animation.DecelerateInterpolator())
@@ -330,11 +339,13 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void enterOnboardingUi() {
-        if (phase == FlowPhase.ONBOARDING) return;
+        if (phase == FlowPhase.ONBOARDING)
+            return;
         phase = FlowPhase.ONBOARDING;
         setWelcomeBottomPanelVisible(true);
         if (welcomeBinding != null && welcomeBinding.homeWelcomeBottomPanel.getAlpha() < 1f) {
-            animateSlideUpFromBottom(welcomeBinding.homeWelcomeBottomPanel, () -> {});
+            animateSlideUpFromBottom(welcomeBinding.homeWelcomeBottomPanel, () -> {
+            });
         }
         if (welcomeSheetLockedExpanded) {
             ensureWelcomeSheetExpanded();
@@ -351,7 +362,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void ensureWelcomeSheetExpanded() {
-        if (phase != FlowPhase.ONBOARDING && phase != FlowPhase.SPLASH) return;
+        if (phase != FlowPhase.ONBOARDING && phase != FlowPhase.SPLASH)
+            return;
         if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
             sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
@@ -370,7 +382,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void setWelcomeBottomPanelVisible(boolean visible) {
-        if (welcomeBinding == null) return;
+        if (welcomeBinding == null)
+            return;
         welcomeBinding.homeWelcomeBottomPanel.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         if (!visible) {
             welcomeBinding.homeWelcomeBottomPanel.setAlpha(0f);
@@ -395,8 +408,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         welcomeBinding = HomeWelcomeSheetBinding.inflate(
                 LayoutInflater.from(this),
                 sheetContent,
-                true
-        );
+                true);
         loginBinding = null;
         registerBinding = null;
 
@@ -404,14 +416,12 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 welcomeBinding.homeWelcomeBottomPanel.getPaddingLeft(),
                 welcomeBinding.homeWelcomeBottomPanel.getPaddingTop(),
                 welcomeBinding.homeWelcomeBottomPanel.getPaddingRight(),
-                (int) (24 * getResources().getDisplayMetrics().density) + bottomSystemInset
-        );
+                (int) (24 * getResources().getDisplayMetrics().density) + bottomSystemInset);
 
         List<HomeWelcomePagerAdapter.WelcomePage> pages = Arrays.asList(
                 new HomeWelcomePagerAdapter.WelcomePage(R.drawable.ic_welcome_1),
                 new HomeWelcomePagerAdapter.WelcomePage(R.drawable.ic_welcome_2),
-                new HomeWelcomePagerAdapter.WelcomePage(R.drawable.ic_welcome_3)
-        );
+                new HomeWelcomePagerAdapter.WelcomePage(R.drawable.ic_welcome_3));
 
         pagerAdapter = new HomeWelcomePagerAdapter(pages);
 
@@ -457,7 +467,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void setupIndicators() {
-        if (welcomeBinding == null) return;
+        if (welcomeBinding == null)
+            return;
 
         LinearLayout container = welcomeBinding.homeWelcomeIndicators;
         container.removeAllViews();
@@ -469,8 +480,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             View dot = new View(this);
             dot.setBackground(ContextCompat.getDrawable(
                     this,
-                    isActive ? R.drawable.home_indicator_pill : R.drawable.home_indicator_dot
-            ));
+                    isActive ? R.drawable.home_indicator_pill : R.drawable.home_indicator_dot));
 
             int width = (int) ((isActive ? 24 : 8) * density);
             int height = (int) (8 * density);
@@ -484,12 +494,12 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void updateWelcomeUi(int position) {
-        if (welcomeBinding == null) return;
+        if (welcomeBinding == null)
+            return;
 
         welcomeBinding.homeWelcomeTitle.setText(welcomeTitles[position]);
         welcomeBinding.homeWelcomeBtnContinue.setText(getString(
-                position == 2 ? R.string.home_btn_continue_shopping : R.string.home_btn_continue
-        ));
+                position == 2 ? R.string.home_btn_continue_shopping : R.string.home_btn_continue));
         welcomeBinding.homeWelcomeBtnBack.setVisibility(position > 0 ? View.VISIBLE : View.GONE);
 
         LinearLayout container = welcomeBinding.homeWelcomeIndicators;
@@ -499,8 +509,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             boolean active = i == position;
             dot.setBackground(ContextCompat.getDrawable(
                     this,
-                    active ? R.drawable.home_indicator_pill : R.drawable.home_indicator_dot
-            ));
+                    active ? R.drawable.home_indicator_pill : R.drawable.home_indicator_dot));
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) dot.getLayoutParams();
             lp.width = (int) ((active ? 24 : 8) * density);
             dot.setLayoutParams(lp);
@@ -520,7 +529,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
         float offset = Math.max(0f, Math.min(1f, slideOffset));
         float overlayAlpha = 1f - offset;
-        
+
         boolean overlayVisible = overlayAlpha > 0.02f && !welcomeSheetLockedExpanded;
         showPeekOverlay(overlayVisible);
         if (overlayVisible) {
@@ -544,14 +553,17 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void updateSheetAlphaFromSlide() {
-        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER) return;
+        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER)
+            return;
 
         View parent = (View) bottomSheet.getParent();
-        if (parent == null) return;
+        if (parent == null)
+            return;
 
         float peek = sheetBehavior.getPeekHeight();
         float parentHeight = parent.getHeight();
-        if (parentHeight <= peek) return;
+        if (parentHeight <= peek)
+            return;
 
         float collapsedTop = parentHeight - peek;
         float range = Math.max(collapsedTop, 1f);
@@ -581,8 +593,9 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
         MaterialShapeDrawable drawable = new MaterialShapeDrawable(shapeModel);
         drawable.setFillColor(fillColor);
-        drawable.setStroke(1.5f * getResources().getDisplayMetrics().density, ContextCompat.getColor(this, R.color.black));
-        
+        drawable.setStroke(1.5f * getResources().getDisplayMetrics().density,
+                ContextCompat.getColor(this, R.color.black));
+
         sheetContent.setBackground(drawable);
         sheetContent.setClipToOutline(true);
     }
@@ -609,7 +622,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     bottomSheet.setVisibility(View.VISIBLE);
                     updateSheetCorners(0f);
                     if (loginBinding != null) {
-                        animateSlideUpFromBottom(loginBinding.getRoot(), () -> {});
+                        animateSlideUpFromBottom(loginBinding.getRoot(), () -> {
+                        });
                     }
                 })
                 .start();
@@ -624,8 +638,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         loginBinding = HomeLoginSheetBinding.inflate(
                 LayoutInflater.from(this),
                 sheetContent,
-                true
-        );
+                true);
 
         android.view.View loginContainer = ((android.view.ViewGroup) loginBinding.getRoot()).getChildAt(0);
         if (loginContainer != null) {
@@ -633,8 +646,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     loginContainer.getPaddingLeft(),
                     loginContainer.getPaddingTop(),
                     loginContainer.getPaddingRight(),
-                    (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset
-            );
+                    (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset);
         }
 
         String registerText = getString(R.string.home_no_account) + " " + getString(R.string.home_register);
@@ -648,7 +660,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                         public void onClick(@NonNull View widget) {
                             transitionToRegister();
                         }
-                        
+
                         @Override
                         public void updateDrawState(@NonNull android.text.TextPaint ds) {
                             super.updateDrawState(ds);
@@ -659,8 +671,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     },
                     start,
                     registerText.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            );
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         loginBinding.homeRegisterLink.setText(spannable);
         loginBinding.homeRegisterLink.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
@@ -669,8 +680,12 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         loginBinding.homeGuestLink.setOnClickListener(v -> navigateToMain());
         loginBinding.homeForgotPassword.setOnClickListener(v -> transitionToForgotPassword());
         loginBinding.homeBtnLogin.setOnClickListener(v -> {
-            String email = loginBinding.homeInputEmail.getText() != null ? loginBinding.homeInputEmail.getText().toString().trim() : "";
-            String password = loginBinding.homeInputPassword.getText() != null ? loginBinding.homeInputPassword.getText().toString().trim() : "";
+            String email = loginBinding.homeInputEmail.getText() != null
+                    ? loginBinding.homeInputEmail.getText().toString().trim()
+                    : "";
+            String password = loginBinding.homeInputPassword.getText() != null
+                    ? loginBinding.homeInputPassword.getText().toString().trim()
+                    : "";
             authViewModel.login(email, password);
         });
     }
@@ -695,7 +710,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     bottomSheet.setVisibility(View.VISIBLE);
                     updateSheetCorners(0f);
                     if (registerBinding != null) {
-                        animateSlideUpFromBottom(registerBinding.getRoot(), () -> {});
+                        animateSlideUpFromBottom(registerBinding.getRoot(), () -> {
+                        });
                     }
                 })
                 .start();
@@ -710,8 +726,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         registerBinding = com.veganbeauty.app.databinding.HomeRegisterSheetBinding.inflate(
                 LayoutInflater.from(this),
                 sheetContent,
-                true
-        );
+                true);
 
         android.view.View registerContainer = ((android.view.ViewGroup) registerBinding.getRoot()).getChildAt(0);
         if (registerContainer != null) {
@@ -719,8 +734,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     registerContainer.getPaddingLeft(),
                     registerContainer.getPaddingTop(),
                     registerContainer.getPaddingRight(),
-                    (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset
-            );
+                    (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset);
         }
 
         String loginText = "Đã có tài khoản? Đăng nhập";
@@ -745,8 +759,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     },
                     start,
                     loginText.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            );
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         registerBinding.homeLoginLink.setText(spannable);
         registerBinding.homeLoginLink.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
@@ -774,18 +787,25 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     },
                     termsStart,
                     termsText.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            );
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         registerBinding.homeCheckTerms.setText(termsSpannable);
         registerBinding.homeCheckTerms.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
         registerBinding.homeCheckTerms.setHighlightColor(Color.TRANSPARENT);
 
         registerBinding.homeBtnRegister.setOnClickListener(v -> {
-            String fullName = registerBinding.homeInputFullname.getText() != null ? registerBinding.homeInputFullname.getText().toString().trim() : "";
-            String emailOrPhone = registerBinding.homeInputEmailPhone.getText() != null ? registerBinding.homeInputEmailPhone.getText().toString().trim() : "";
-            String password = registerBinding.homeInputPassword.getText() != null ? registerBinding.homeInputPassword.getText().toString().trim() : "";
-            String confirmPassword = registerBinding.homeInputConfirmPassword.getText() != null ? registerBinding.homeInputConfirmPassword.getText().toString().trim() : "";
+            String fullName = registerBinding.homeInputFullname.getText() != null
+                    ? registerBinding.homeInputFullname.getText().toString().trim()
+                    : "";
+            String emailOrPhone = registerBinding.homeInputEmailPhone.getText() != null
+                    ? registerBinding.homeInputEmailPhone.getText().toString().trim()
+                    : "";
+            String password = registerBinding.homeInputPassword.getText() != null
+                    ? registerBinding.homeInputPassword.getText().toString().trim()
+                    : "";
+            String confirmPassword = registerBinding.homeInputConfirmPassword.getText() != null
+                    ? registerBinding.homeInputConfirmPassword.getText().toString().trim()
+                    : "";
             boolean acceptedTerms = registerBinding.homeCheckTerms.isChecked();
 
             if (!password.equals(confirmPassword)) {
@@ -793,7 +813,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 return;
             }
             if (!acceptedTerms) {
-                android.widget.Toast.makeText(this, "Bạn phải đồng ý với Điều khoản", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, "Bạn phải đồng ý với Điều khoản", android.widget.Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
 
@@ -805,15 +826,18 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         android.app.Dialog dialog = new android.app.Dialog(this);
         dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_terms_policy);
-        
+
         android.view.Window window = dialog.getWindow();
         if (window != null) {
-            window.setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT);
-            window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            window.setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT);
+            window.setBackgroundDrawable(
+                    new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
         TextView tvContent = dialog.findViewById(R.id.dialog_terms_content);
-        tvContent.setText(androidx.core.text.HtmlCompat.fromHtml(getString(R.string.terms_and_policies_text), androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY));
+        tvContent.setText(androidx.core.text.HtmlCompat.fromHtml(getString(R.string.terms_and_policies_text),
+                androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY));
 
         dialog.findViewById(R.id.dialog_btn_close).setOnClickListener(v -> dialog.dismiss());
         dialog.findViewById(R.id.dialog_btn_agree).setOnClickListener(v -> {
@@ -846,7 +870,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     bottomSheet.setVisibility(View.VISIBLE);
                     updateSheetCorners(0f);
                     if (forgotPasswordBinding != null) {
-                        animateSlideUpFromBottom(forgotPasswordBinding.getRoot(), () -> {});
+                        animateSlideUpFromBottom(forgotPasswordBinding.getRoot(), () -> {
+                        });
                     }
                 })
                 .start();
@@ -862,20 +887,22 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         forgotPasswordBinding = HomeForgotPasswordSheetBinding.inflate(
                 LayoutInflater.from(this),
                 sheetContent,
-                true
-        );
+                true);
 
         // Bước 1: Gửi OTP
         forgotPasswordBinding.fpBtnSendOtp.setOnClickListener(v -> {
             String email = forgotPasswordBinding.fpInputEmail.getText() != null
-                    ? forgotPasswordBinding.fpInputEmail.getText().toString().trim() : "";
+                    ? forgotPasswordBinding.fpInputEmail.getText().toString().trim()
+                    : "";
             if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                android.widget.Toast.makeText(this, "Vui lòng nhập email hợp lệ", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, "Vui lòng nhập email hợp lệ", android.widget.Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
             // Sinh mã OTP 6 chữ số (giả lập)
             generatedOtp = String.format(Locale.US, "%06d", new Random().nextInt(1000000));
-            android.widget.Toast.makeText(this, "[Demo] Mã OTP: " + generatedOtp, android.widget.Toast.LENGTH_LONG).show();
+            android.widget.Toast.makeText(this, "[Demo] Mã OTP: " + generatedOtp, android.widget.Toast.LENGTH_LONG)
+                    .show();
 
             // Chuyển sang bước 2
             forgotPasswordBinding.fpStep1Container.setVisibility(View.GONE);
@@ -893,11 +920,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         forgotPasswordBinding.fpBtnVerifyOtp.setOnClickListener(v -> {
             String entered = getEnteredOtp();
             if (entered.length() < 6) {
-                android.widget.Toast.makeText(this, "Vui lòng nhập đủ 6 số OTP", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, "Vui lòng nhập đủ 6 số OTP", android.widget.Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
             if (!entered.equals(generatedOtp)) {
-                android.widget.Toast.makeText(this, "Mã OTP không đúng, vui lòng thử lại", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast
+                        .makeText(this, "Mã OTP không đúng, vui lòng thử lại", android.widget.Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
             cancelOtpCountdown();
@@ -915,15 +945,19 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         // Bước 3: Đặt mật khẩu mới
         forgotPasswordBinding.fpBtnResetPassword.setOnClickListener(v -> {
             String newPw = forgotPasswordBinding.fpInputNewPassword.getText() != null
-                    ? forgotPasswordBinding.fpInputNewPassword.getText().toString() : "";
+                    ? forgotPasswordBinding.fpInputNewPassword.getText().toString()
+                    : "";
             String confirmPw = forgotPasswordBinding.fpInputConfirmPassword.getText() != null
-                    ? forgotPasswordBinding.fpInputConfirmPassword.getText().toString() : "";
+                    ? forgotPasswordBinding.fpInputConfirmPassword.getText().toString()
+                    : "";
             if (newPw.length() < 6) {
-                android.widget.Toast.makeText(this, "Mật khẩu phải có ít nhất 6 ký tự", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast
+                        .makeText(this, "Mật khẩu phải có ít nhất 6 ký tự", android.widget.Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!newPw.equals(confirmPw)) {
-                android.widget.Toast.makeText(this, "Mật khẩu nhập lại không khớp", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, "Mật khẩu nhập lại không khớp", android.widget.Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
             // TODO: Gọi ViewModel/Repository để cập nhật mật khẩu trong DB
@@ -936,18 +970,26 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private String getEnteredOtp() {
-        if (forgotPasswordBinding == null) return "";
-        String d1 = forgotPasswordBinding.fpOtp1.getText() != null ? forgotPasswordBinding.fpOtp1.getText().toString() : "";
-        String d2 = forgotPasswordBinding.fpOtp2.getText() != null ? forgotPasswordBinding.fpOtp2.getText().toString() : "";
-        String d3 = forgotPasswordBinding.fpOtp3.getText() != null ? forgotPasswordBinding.fpOtp3.getText().toString() : "";
-        String d4 = forgotPasswordBinding.fpOtp4.getText() != null ? forgotPasswordBinding.fpOtp4.getText().toString() : "";
-        String d5 = forgotPasswordBinding.fpOtp5.getText() != null ? forgotPasswordBinding.fpOtp5.getText().toString() : "";
-        String d6 = forgotPasswordBinding.fpOtp6.getText() != null ? forgotPasswordBinding.fpOtp6.getText().toString() : "";
+        if (forgotPasswordBinding == null)
+            return "";
+        String d1 = forgotPasswordBinding.fpOtp1.getText() != null ? forgotPasswordBinding.fpOtp1.getText().toString()
+                : "";
+        String d2 = forgotPasswordBinding.fpOtp2.getText() != null ? forgotPasswordBinding.fpOtp2.getText().toString()
+                : "";
+        String d3 = forgotPasswordBinding.fpOtp3.getText() != null ? forgotPasswordBinding.fpOtp3.getText().toString()
+                : "";
+        String d4 = forgotPasswordBinding.fpOtp4.getText() != null ? forgotPasswordBinding.fpOtp4.getText().toString()
+                : "";
+        String d5 = forgotPasswordBinding.fpOtp5.getText() != null ? forgotPasswordBinding.fpOtp5.getText().toString()
+                : "";
+        String d6 = forgotPasswordBinding.fpOtp6.getText() != null ? forgotPasswordBinding.fpOtp6.getText().toString()
+                : "";
         return d1 + d2 + d3 + d4 + d5 + d6;
     }
 
     private void setupOtpAutoFocus() {
-        if (forgotPasswordBinding == null) return;
+        if (forgotPasswordBinding == null)
+            return;
         android.widget.EditText[] otpFields = {
                 forgotPasswordBinding.fpOtp1,
                 forgotPasswordBinding.fpOtp2,
@@ -959,8 +1001,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         for (int i = 0; i < otpFields.length; i++) {
             final int index = i;
             otpFields[i].addTextChangedListener(new android.text.TextWatcher() {
-                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
                 @Override
                 public void afterTextChanged(android.text.Editable s) {
                     if (s.length() == 1 && index < otpFields.length - 1) {
@@ -977,15 +1025,18 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         otpCountDownTimer = new android.os.CountDownTimer(5 * 60 * 1000L, 1000L) {
             @Override
             public void onTick(long millisUntilFinished) {
-                if (forgotPasswordBinding == null) return;
+                if (forgotPasswordBinding == null)
+                    return;
                 long min = millisUntilFinished / 60000;
                 long sec = (millisUntilFinished % 60000) / 1000;
                 forgotPasswordBinding.fpOtpCountdown.setText(
                         String.format(Locale.US, "Gửi lại mã sau %02d:%02d", min, sec));
             }
+
             @Override
             public void onFinish() {
-                if (forgotPasswordBinding == null) return;
+                if (forgotPasswordBinding == null)
+                    return;
                 forgotPasswordBinding.fpOtpCountdown.setText("Gửi lại mã OTP");
                 forgotPasswordBinding.fpOtpCountdown.setOnClickListener(vv -> {
                     if (forgotPasswordBinding.fpStep2Container.getVisibility() == View.VISIBLE) {
@@ -1004,6 +1055,60 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             otpCountDownTimer.cancel();
             otpCountDownTimer = null;
         }
+    }
+
+    private void syncTeamUsers() {
+        new Thread(() -> {
+            try {
+                com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase
+                        .getDatabase(getApplicationContext());
+                com.veganbeauty.app.data.local.dao.UserDao userDao = db.userDao();
+
+                String jsonString = new java.io.BufferedReader(
+                        new java.io.InputStreamReader(getAssets().open("users.json")))
+                        .lines().collect(java.util.stream.Collectors.joining("\n"));
+
+                org.json.JSONArray jsonArray = new org.json.JSONArray(jsonString);
+
+                // Clean up old "Test Account" from SQLite
+                userDao.deleteUserByUsernameSync("Test Account");
+
+                // Clean up "Test Account" from Firebase
+                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .whereEqualTo("username", "Test Account")
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                                doc.getReference().delete();
+                            }
+                        });
+
+                // Only sync team member user IDs
+                java.util.Set<String> teamIds = new java.util.HashSet<>(java.util.Arrays.asList(
+                        "test_001", "39751498", "87962440", "68751659", "85097162", "48228004"));
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    org.json.JSONObject obj = jsonArray.getJSONObject(i);
+                    String userId = obj.optString("user_id", "");
+                    if (!teamIds.contains(userId))
+                        continue;
+
+                    com.veganbeauty.app.data.local.entities.UserEntity user = new com.veganbeauty.app.data.local.entities.UserEntity(
+                            userId,
+                            obj.optString("username", ""),
+                            obj.optString("full_name", ""),
+                            obj.optString("email", ""),
+                            obj.optString("phone", ""),
+                            obj.optString("password", ""),
+                            obj.optString("avatar", null));
+
+                    userDao.insertUserSync(user);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void navigateToMain() {

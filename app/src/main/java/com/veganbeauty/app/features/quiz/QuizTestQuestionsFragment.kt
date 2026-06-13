@@ -62,7 +62,7 @@ class QuizTestQuestionsFragment : RootieFragment() {
     private fun loadQuestions() {
         try {
             levelType = arguments?.getString(ARG_LEVEL_TYPE) ?: "advanced"
-            totalQuestionsLimit = if (levelType == "basic") 10 else 20
+            totalQuestionsLimit = if (levelType == "basic") 15 else 30
 
             val jsonString = requireContext().assets.open("quiz_cauhoi.json").bufferedReader().use { it.readText() }
             val jsonObject = JSONObject(jsonString)
@@ -75,15 +75,20 @@ class QuizTestQuestionsFragment : RootieFragment() {
                 questionsMap[q.getString("id")] = q
             }
 
-            // Curated question IDs to cover general skin diagnosis and ingredient mapping
+            // Curated question IDs:
+            // - Basic (15): Complete general skin profiling overview (oil, dryness, sensitivity, acne, dehydration, environmental response, skincare habits)
+            // - Advanced (30): General overview + 15 detailed ingredient irritation checks for high-fidelity routine & safety mapping
             val targetIds = if (levelType == "basic") {
-                // 10 key questions (5 general skin typing + 5 ingredient sensitivity checks)
-                listOf("q1", "q2", "q3", "q4", "q5", "q11", "q12", "q13", "q14", "q17")
-            } else {
-                // 20 comprehensive questions (10 general skin typing + 10 ingredient checks)
                 listOf(
                     "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10",
-                    "q11", "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20"
+                    "q21", "q22", "q23", "q33", "q39"
+                )
+            } else {
+                listOf(
+                    "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10",
+                    "q21", "q22", "q23", "q33", "q39",
+                    "q11", "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20",
+                    "q26", "q27", "q28", "q29", "q30"
                 )
             }
 
@@ -312,12 +317,38 @@ class QuizTestQuestionsFragment : RootieFragment() {
             else -> "Duy trì chế độ dưỡng ẩm cân bằng và làm sạch da dịu nhẹ hàng ngày."
         }
 
+        val dryScore = scores["dry"] ?: 0
+        val agingScore = scores["aging"] ?: 0
+        val oilyScore = scores["oily"] ?: 0
+
+        val sensitivityVal = (sensitiveScore * 20).coerceIn(10, 100)
+        val hydrationVal = (95 - (dryScore * 15) - (dehydratedScore * 10)).coerceIn(15, 95)
+        val elasticityVal = (98 - (agingScore * 15)).coerceIn(30, 98)
+        val sebumVal = (oilyScore * 20).coerceIn(10, 100)
+
+        val skinAreasVal = when (finalSkinTypeKey) {
+            "oily_sensitive" -> "Vùng chữ T (trán, mũi, cằm) tiết nhiều dầu thừa, bóng nhờn; hai bên má nhạy cảm, dễ nổi mẩn đỏ, châm chích."
+            "acne" -> "Vùng trán và cằm dễ bị bít tắc gây mụn; lượng dầu phân bổ không đều làm bít tắc cổ nang lông."
+            "dehydrated" -> "Vùng chữ U (mũi và má) căng khô, thiếu nước trầm trọng; vùng chữ T có thể đổ dầu nhẹ do phản ứng bù ẩm."
+            "sensitive" -> "Toàn bộ bề mặt da có lớp màng bảo vệ yếu, mỏng và dễ phản ứng châm chích với mọi mỹ phẩm mới."
+            "dry" -> "Khô ráp toàn mặt, vùng má căng chặt và có xu hướng bong tróc vảy da chết li ti."
+            "oily" -> "Lượng dầu hoạt động mạnh mẽ trên toàn bộ khuôn mặt, bóng loáng đặc biệt ở vùng chữ T và hai bên cánh mũi."
+            "combination" -> "Vùng chữ T đổ dầu nhiều và lỗ chân lông to; vùng chữ U (má) bình thường hoặc khô nhẹ."
+            "normal" -> "Độ ẩm phân bổ đều đặn, vùng chữ T dầu nhẹ không đáng kể, vùng má mịn màng đàn hồi tốt."
+            else -> "Độ ẩm và bã nhờn phân bổ tương đối đồng đều trên các vùng da."
+        }
+
         // 4. Save results to SharedPreferences
         val prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
         prefs.edit().apply {
             putString("SKIN_TYPE_RESULT", finalSkinTypeName)
             putString("RECOMMENDATION", recommendation)
             putStringSet("FLAGGED_GROUPS", flaggedGroups)
+            putInt("SENSITIVITY_PERCENT", sensitivityVal)
+            putInt("HYDRATION_PERCENT", hydrationVal)
+            putInt("ELASTICITY_PERCENT", elasticityVal)
+            putInt("SEBUM_PERCENT", sebumVal)
+            putString("SKIN_AREAS_DESC", skinAreasVal)
             apply()
         }
 

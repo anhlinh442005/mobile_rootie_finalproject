@@ -90,8 +90,9 @@
             android:paddingHorizontal="8dp"
             android:paddingVertical="3dp"
             android:background="@drawable/status_badge_bg"
+            android:layout_marginEnd="8dp"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvGiftValue"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Còn hạn"
             tools:visibility="visible" />

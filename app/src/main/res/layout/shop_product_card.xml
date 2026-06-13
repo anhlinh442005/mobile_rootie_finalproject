@@ -77,19 +77,22 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAddToCart"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:minHeight="36dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
             android:backgroundTint="@color/primary"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="Chọn mua"
             android:fontFamily="@font/be_vietnam_pro_semibold"
+            android:includeFontPadding="true"
+            android:text="Chọn mua"
             android:textAllCaps="false"
+            android:textColor="@android:color/white"
             android:textSize="12sp"
-            app:cornerRadius="8dp"/>
+            app:cornerRadius="8dp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

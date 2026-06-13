@@ -233,8 +233,9 @@
         {"text": "Gel", "score": {"oily": 1}},
         {"text": "Cream", "score": {"dry": 1}},
         {"text": "Serum", "score": {}}
-        ],
-  {
+      ]
+    },
+    {
     "id": "q26",
     "question": "Sau khi dùng sản phẩm có cồn, da bạn như thế nào?",
     "options": [
@@ -369,4 +370,4 @@
       { "text": "Không", "score": {} }
     ]
   }
-]
+]}

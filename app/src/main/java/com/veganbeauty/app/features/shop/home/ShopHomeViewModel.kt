@@ -30,10 +30,11 @@ class ShopHomeViewModel(private val productRepository: ProductRepository) : Root
     }
 
     private fun loadMockData() {
-        // Mock dữ liệu Banner (Tạm thời dùng màu xám làm hình nền)
+        // Mock dữ liệu Banner (Sử dụng 3 ảnh organic đã gen)
         _banners.value = listOf(
-            BannerUiModel("1", android.R.color.darker_gray), 
-            BannerUiModel("2", android.R.color.darker_gray)
+            BannerUiModel("1", com.veganbeauty.app.R.drawable.shop_banner_1), 
+            BannerUiModel("2", com.veganbeauty.app.R.drawable.shop_banner_2),
+            BannerUiModel("3", com.veganbeauty.app.R.drawable.shop_banner_3)
         )
 
         // Mock dữ liệu Danh mục (Dựa theo Figma)

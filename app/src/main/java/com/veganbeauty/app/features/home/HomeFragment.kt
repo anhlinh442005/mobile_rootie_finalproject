@@ -120,6 +120,13 @@ class HomeFragment : RootieFragment() {
     startFlashSaleTimer()
     setupVideoPromo()
     binding.tvHomeSloganMarquee.isSelected = true
+
+    binding.cardHomeRoutineWidget.setOnClickListener {
+      parentFragmentManager.beginTransaction()
+          .replace(R.id.main_container, com.veganbeauty.app.features.routine.SkinReminderFragment())
+          .addToBackStack(null)
+          .commit()
+    }
   }
 
   private fun setupShortcuts() {

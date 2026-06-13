@@ -13,7 +13,7 @@
         android:id="@+id/ivIcon"
         android:layout_width="18dp"
         android:layout_height="18dp"
-        android:src="@android:drawable/ic_menu_search"
+        android:src="@drawable/ic_search"
         app:tint="@color/gray_dark" />
 
     <TextView
