@@ -23,8 +23,7 @@ import kotlinx.coroutines.launch
         CartItemEntity::class,
         StoreEntity::class
     ], 
-    version = 31   // bumped to force destructive migration - wipes all old cached data
-
+    version = 32   // bumped to force destructive migration - wipes all old cached data
 )
 @TypeConverters(OrderConverters::class, ProductConverters::class)
 abstract class RootieDatabase : RoomDatabase() {
