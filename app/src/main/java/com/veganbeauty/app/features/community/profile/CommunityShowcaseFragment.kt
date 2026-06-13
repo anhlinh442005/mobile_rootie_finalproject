@@ -86,22 +86,41 @@ class CommunityShowcaseFragment : Fragment() {
         val followersCount = socialData["followers"]?.size ?: 867
         binding.tvFollowers.text = followersCount.toString()
 
-        // Read products from user_pro_display.json
-        val showcaseData = jsonReader.getShowcaseProductsForUser(userId ?: "test_001")
-        val productIds = showcaseData ?: emptyList()
-        binding.tvProductCount.text = productIds.size.toString()
-
-        val allProducts = jsonReader.getProducts()
-        val displayProducts = allProducts.filter { productIds.contains(it.id) }
+        // Read products from user orders (Hoàn tất)
+        val currentUserId = userId ?: "test_001"
+        val completedOrders = jsonReader.getAllOrders().filter { it.userId == currentUserId && it.status == "Hoàn tất" }
         
-        // Fallback if no products mapped, show some random ones
-        val finalProducts = if (displayProducts.isNotEmpty()) {
-            displayProducts
-        } else {
-            val fallback = allProducts.shuffled().take(5)
-            binding.tvProductCount.text = fallback.size.toString()
-            fallback
+        val allProducts = jsonReader.getProducts()
+        val finalProducts = mutableListOf<CommunityProduct>()
+        val addedProductIds = mutableSetOf<String>()
+
+        for (order in completedOrders) {
+            for (item in order.items) {
+                val pId = item.productId
+                if (!addedProductIds.contains(pId)) {
+                    val pData = allProducts.find { it.id == pId }
+                    if (pData != null) {
+                        finalProducts.add(pData)
+                    } else {
+                        // Create pseudo CommunityProduct if missing
+                        finalProducts.add(
+                            CommunityProduct(
+                                id = pId,
+                                name = item.productName,
+                                originalPrice = null,
+                                price = item.price.toInt(),
+                                rating = 0.0f,
+                                sold = 0,
+                                mainImage = item.productImage
+                            )
+                        )
+                    }
+                    addedProductIds.add(pId)
+                }
+            }
         }
+
+        binding.tvProductCount.text = finalProducts.size.toString()
 
         binding.rvProducts.layoutManager = LinearLayoutManager(context)
         binding.rvProducts.adapter = ShowcaseProductAdapter(finalProducts) { product, view ->
