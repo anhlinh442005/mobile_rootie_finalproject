@@ -31,6 +31,7 @@ import com.google.android.material.shape.MaterialShapeDrawable;
 import com.google.android.material.shape.ShapeAppearanceModel;
 import com.veganbeauty.app.MainActivity;
 import com.veganbeauty.app.R;
+import com.veganbeauty.app.databinding.HomeForgotPasswordSheetBinding;
 import com.veganbeauty.app.databinding.HomeLoginSheetBinding;
 import com.veganbeauty.app.databinding.HomeWelcomeSheetBinding;
 import com.veganbeauty.app.databinding.HomeRegisterSheetBinding;
@@ -38,6 +39,8 @@ import com.veganbeauty.app.features.auth.AuthViewModel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 public class HomeWelcomeActivity extends AppCompatActivity {
 
@@ -49,7 +52,9 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         /** Form đăng nhập — không dùng lớp phủ peek. */
         LOGIN,
         /** Form đăng ký. */
-        REGISTER
+        REGISTER,
+        /** Quên mật khẩu. */
+        FORGOT_PASSWORD
     }
 
     private FrameLayout bottomSheet;
@@ -70,6 +75,11 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private HomeLoginSheetBinding loginBinding;
     @Nullable
     private HomeRegisterSheetBinding registerBinding;
+    @Nullable
+    private HomeForgotPasswordSheetBinding forgotPasswordBinding;
+    @Nullable
+    private android.os.CountDownTimer otpCountDownTimer;
+    private String generatedOtp = "";
     @Nullable
     private ViewPager2 welcomePager;
     @Nullable
@@ -502,7 +512,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
      * ảnh nội dung sheet hiện dần theo cử chỉ kéo.
      */
     private void updateDragTransition(float slideOffset) {
-        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER) {
+        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER || phase == FlowPhase.FORGOT_PASSWORD) {
             showPeekOverlay(false);
             sheetContent.setAlpha(1f);
             return;
@@ -552,7 +562,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void updateSheetCorners(float slideOffset) {
-        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER) {
+        if (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER || phase == FlowPhase.FORGOT_PASSWORD) {
+            sheetContent.setBackground(null);
             return;
         }
 
@@ -566,15 +577,12 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 .setBottomRightCorner(CornerFamily.ROUNDED, 0f)
                 .build();
 
-        ColorStateList fillColor = (phase == FlowPhase.LOGIN || phase == FlowPhase.REGISTER)
-                ? ColorStateList.valueOf(ContextCompat.getColor(this, R.color.home_sheet_bg))
-                : ColorStateList.valueOf(Color.parseColor("#FEFBF4"));
+        ColorStateList fillColor = ColorStateList.valueOf(Color.parseColor("#FEFBF4"));
 
         MaterialShapeDrawable drawable = new MaterialShapeDrawable(shapeModel);
         drawable.setFillColor(fillColor);
-        if (phase != FlowPhase.LOGIN && phase != FlowPhase.REGISTER) {
-            drawable.setStroke(1.5f * getResources().getDisplayMetrics().density, ContextCompat.getColor(this, R.color.black));
-        }
+        drawable.setStroke(1.5f * getResources().getDisplayMetrics().density, ContextCompat.getColor(this, R.color.black));
+        
         sheetContent.setBackground(drawable);
         sheetContent.setClipToOutline(true);
     }
@@ -583,6 +591,10 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         phase = FlowPhase.LOGIN;
         welcomeSheetLockedExpanded = false;
         sheetBehavior.setSkipCollapsed(false);
+
+        splashContent.setVisibility(View.VISIBLE);
+        splashContent.setAlpha(1f);
+        splashContent.setTranslationY(0f);
 
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         bottomSheet.animate()
@@ -655,9 +667,10 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         loginBinding.homeRegisterLink.setHighlightColor(Color.TRANSPARENT);
 
         loginBinding.homeGuestLink.setOnClickListener(v -> navigateToMain());
+        loginBinding.homeForgotPassword.setOnClickListener(v -> transitionToForgotPassword());
         loginBinding.homeBtnLogin.setOnClickListener(v -> {
-            String email = loginBinding.homeInputEmail.getText() != null ? loginBinding.homeInputEmail.getText().toString() : "";
-            String password = loginBinding.homeInputPassword.getText() != null ? loginBinding.homeInputPassword.getText().toString() : "";
+            String email = loginBinding.homeInputEmail.getText() != null ? loginBinding.homeInputEmail.getText().toString().trim() : "";
+            String password = loginBinding.homeInputPassword.getText() != null ? loginBinding.homeInputPassword.getText().toString().trim() : "";
             authViewModel.login(email, password);
         });
     }
@@ -665,6 +678,11 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private void transitionToRegister() {
         phase = FlowPhase.REGISTER;
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        splashContent.setVisibility(View.VISIBLE);
+        splashContent.setAlpha(1f);
+        splashContent.setTranslationY(0f);
+
         bottomSheet.animate()
                 .alpha(0f)
                 .setDuration(300)
@@ -764,10 +782,10 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         registerBinding.homeCheckTerms.setHighlightColor(Color.TRANSPARENT);
 
         registerBinding.homeBtnRegister.setOnClickListener(v -> {
-            String fullName = registerBinding.homeInputFullname.getText() != null ? registerBinding.homeInputFullname.getText().toString() : "";
-            String emailOrPhone = registerBinding.homeInputEmailPhone.getText() != null ? registerBinding.homeInputEmailPhone.getText().toString() : "";
-            String password = registerBinding.homeInputPassword.getText() != null ? registerBinding.homeInputPassword.getText().toString() : "";
-            String confirmPassword = registerBinding.homeInputConfirmPassword.getText() != null ? registerBinding.homeInputConfirmPassword.getText().toString() : "";
+            String fullName = registerBinding.homeInputFullname.getText() != null ? registerBinding.homeInputFullname.getText().toString().trim() : "";
+            String emailOrPhone = registerBinding.homeInputEmailPhone.getText() != null ? registerBinding.homeInputEmailPhone.getText().toString().trim() : "";
+            String password = registerBinding.homeInputPassword.getText() != null ? registerBinding.homeInputPassword.getText().toString().trim() : "";
+            String confirmPassword = registerBinding.homeInputConfirmPassword.getText() != null ? registerBinding.homeInputConfirmPassword.getText().toString().trim() : "";
             boolean acceptedTerms = registerBinding.homeCheckTerms.isChecked();
 
             if (!password.equals(confirmPassword)) {
@@ -806,6 +824,186 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void transitionToForgotPassword() {
+        phase = FlowPhase.FORGOT_PASSWORD;
+        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        splashContent.setVisibility(View.VISIBLE);
+        splashContent.setAlpha(1f);
+        splashContent.setTranslationY(0f);
+
+        bottomSheet.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction(() -> {
+                    inflateForgotPasswordSheet();
+                    bottomSheet.setAlpha(1f);
+                    showPeekOverlay(false);
+                    sheetBehavior.setPeekHeight((int) (220 * getResources().getDisplayMetrics().density));
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    bottomSheet.setVisibility(View.VISIBLE);
+                    updateSheetCorners(0f);
+                    if (forgotPasswordBinding != null) {
+                        animateSlideUpFromBottom(forgotPasswordBinding.getRoot(), () -> {});
+                    }
+                })
+                .start();
+    }
+
+    private void inflateForgotPasswordSheet() {
+        sheetContent.removeAllViews();
+        welcomeBinding = null;
+        loginBinding = null;
+        registerBinding = null;
+        welcomePager = null;
+
+        forgotPasswordBinding = HomeForgotPasswordSheetBinding.inflate(
+                LayoutInflater.from(this),
+                sheetContent,
+                true
+        );
+
+        // Bước 1: Gửi OTP
+        forgotPasswordBinding.fpBtnSendOtp.setOnClickListener(v -> {
+            String email = forgotPasswordBinding.fpInputEmail.getText() != null
+                    ? forgotPasswordBinding.fpInputEmail.getText().toString().trim() : "";
+            if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                android.widget.Toast.makeText(this, "Vui lòng nhập email hợp lệ", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // Sinh mã OTP 6 chữ số (giả lập)
+            generatedOtp = String.format(Locale.US, "%06d", new Random().nextInt(1000000));
+            android.widget.Toast.makeText(this, "[Demo] Mã OTP: " + generatedOtp, android.widget.Toast.LENGTH_LONG).show();
+
+            // Chuyển sang bước 2
+            forgotPasswordBinding.fpStep1Container.setVisibility(View.GONE);
+            forgotPasswordBinding.fpStep2Container.setVisibility(View.VISIBLE);
+            String desc = "Mã OTP đã được gửi đến " + email + ". Mã có hiệu lực trong 5 phút.";
+            forgotPasswordBinding.fpOtpDesc.setText(desc);
+            setupOtpAutoFocus();
+            startOtpCountdown();
+        });
+
+        // Bước 1: Quay lại đăng nhập
+        forgotPasswordBinding.fpBackToLogin1.setOnClickListener(v -> transitionToLogin());
+
+        // Bước 2: Xác minh OTP
+        forgotPasswordBinding.fpBtnVerifyOtp.setOnClickListener(v -> {
+            String entered = getEnteredOtp();
+            if (entered.length() < 6) {
+                android.widget.Toast.makeText(this, "Vui lòng nhập đủ 6 số OTP", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!entered.equals(generatedOtp)) {
+                android.widget.Toast.makeText(this, "Mã OTP không đúng, vui lòng thử lại", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            cancelOtpCountdown();
+            // Chuyển sang bước 3
+            forgotPasswordBinding.fpStep2Container.setVisibility(View.GONE);
+            forgotPasswordBinding.fpStep3Container.setVisibility(View.VISIBLE);
+        });
+
+        // Bước 2: Quay lại đăng nhập
+        forgotPasswordBinding.fpBackToLogin2.setOnClickListener(v -> {
+            cancelOtpCountdown();
+            transitionToLogin();
+        });
+
+        // Bước 3: Đặt mật khẩu mới
+        forgotPasswordBinding.fpBtnResetPassword.setOnClickListener(v -> {
+            String newPw = forgotPasswordBinding.fpInputNewPassword.getText() != null
+                    ? forgotPasswordBinding.fpInputNewPassword.getText().toString() : "";
+            String confirmPw = forgotPasswordBinding.fpInputConfirmPassword.getText() != null
+                    ? forgotPasswordBinding.fpInputConfirmPassword.getText().toString() : "";
+            if (newPw.length() < 6) {
+                android.widget.Toast.makeText(this, "Mật khẩu phải có ít nhất 6 ký tự", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!newPw.equals(confirmPw)) {
+                android.widget.Toast.makeText(this, "Mật khẩu nhập lại không khớp", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // TODO: Gọi ViewModel/Repository để cập nhật mật khẩu trong DB
+            forgotPasswordBinding.fpStep3Container.setVisibility(View.GONE);
+            forgotPasswordBinding.fpStep4Container.setVisibility(View.VISIBLE);
+        });
+
+        // Bước 4: Đăng nhập ngay
+        forgotPasswordBinding.fpBtnGoLogin.setOnClickListener(v -> transitionToLogin());
+    }
+
+    private String getEnteredOtp() {
+        if (forgotPasswordBinding == null) return "";
+        String d1 = forgotPasswordBinding.fpOtp1.getText() != null ? forgotPasswordBinding.fpOtp1.getText().toString() : "";
+        String d2 = forgotPasswordBinding.fpOtp2.getText() != null ? forgotPasswordBinding.fpOtp2.getText().toString() : "";
+        String d3 = forgotPasswordBinding.fpOtp3.getText() != null ? forgotPasswordBinding.fpOtp3.getText().toString() : "";
+        String d4 = forgotPasswordBinding.fpOtp4.getText() != null ? forgotPasswordBinding.fpOtp4.getText().toString() : "";
+        String d5 = forgotPasswordBinding.fpOtp5.getText() != null ? forgotPasswordBinding.fpOtp5.getText().toString() : "";
+        String d6 = forgotPasswordBinding.fpOtp6.getText() != null ? forgotPasswordBinding.fpOtp6.getText().toString() : "";
+        return d1 + d2 + d3 + d4 + d5 + d6;
+    }
+
+    private void setupOtpAutoFocus() {
+        if (forgotPasswordBinding == null) return;
+        android.widget.EditText[] otpFields = {
+                forgotPasswordBinding.fpOtp1,
+                forgotPasswordBinding.fpOtp2,
+                forgotPasswordBinding.fpOtp3,
+                forgotPasswordBinding.fpOtp4,
+                forgotPasswordBinding.fpOtp5,
+                forgotPasswordBinding.fpOtp6
+        };
+        for (int i = 0; i < otpFields.length; i++) {
+            final int index = i;
+            otpFields[i].addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override
+                public void afterTextChanged(android.text.Editable s) {
+                    if (s.length() == 1 && index < otpFields.length - 1) {
+                        otpFields[index + 1].requestFocus();
+                    }
+                }
+            });
+        }
+        otpFields[0].requestFocus();
+    }
+
+    private void startOtpCountdown() {
+        cancelOtpCountdown();
+        otpCountDownTimer = new android.os.CountDownTimer(5 * 60 * 1000L, 1000L) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (forgotPasswordBinding == null) return;
+                long min = millisUntilFinished / 60000;
+                long sec = (millisUntilFinished % 60000) / 1000;
+                forgotPasswordBinding.fpOtpCountdown.setText(
+                        String.format(Locale.US, "Gửi lại mã sau %02d:%02d", min, sec));
+            }
+            @Override
+            public void onFinish() {
+                if (forgotPasswordBinding == null) return;
+                forgotPasswordBinding.fpOtpCountdown.setText("Gửi lại mã OTP");
+                forgotPasswordBinding.fpOtpCountdown.setOnClickListener(vv -> {
+                    if (forgotPasswordBinding.fpStep2Container.getVisibility() == View.VISIBLE) {
+                        generatedOtp = String.format(Locale.US, "%06d", new Random().nextInt(1000000));
+                        android.widget.Toast.makeText(HomeWelcomeActivity.this,
+                                "[Demo] Mã OTP mới: " + generatedOtp, android.widget.Toast.LENGTH_LONG).show();
+                        startOtpCountdown();
+                    }
+                });
+            }
+        }.start();
+    }
+
+    private void cancelOtpCountdown() {
+        if (otpCountDownTimer != null) {
+            otpCountDownTimer.cancel();
+            otpCountDownTimer = null;
+        }
     }
 
     private void navigateToMain() {

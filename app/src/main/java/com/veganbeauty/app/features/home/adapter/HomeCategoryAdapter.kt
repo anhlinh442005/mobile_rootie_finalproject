@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.veganbeauty.app.databinding.HomeItemCategoryBinding
 
-data class HomeCategoryItem(val name: String)
+data class HomeCategoryItem(val name: String, val iconResId: Int = com.veganbeauty.app.R.drawable.ic_grid)
 
 class HomeCategoryAdapter : ListAdapter<HomeCategoryItem, HomeCategoryAdapter.ViewHolder>(DiffCallback()) {
 
@@ -28,6 +28,7 @@ class HomeCategoryAdapter : ListAdapter<HomeCategoryItem, HomeCategoryAdapter.Vi
 
         fun bind(item: HomeCategoryItem) {
             binding.tvCategoryName.text = item.name
+            binding.ivCategory.setImageResource(item.iconResId)
         }
     }
 

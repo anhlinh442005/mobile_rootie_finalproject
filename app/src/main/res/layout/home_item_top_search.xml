@@ -9,12 +9,12 @@
 
     <TextView
         android:id="@+id/tvRank"
-        android:layout_width="20dp"
+        android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="#28362E"
-        android:textSize="13sp"
-        android:textStyle="bold" />
+        android:textColor="#526053"
+        android:textSize="32sp"
+        android:fontFamily="@font/be_vietnam_pro_bold" />
 
     <ImageView
         android:id="@+id/ivProduct"

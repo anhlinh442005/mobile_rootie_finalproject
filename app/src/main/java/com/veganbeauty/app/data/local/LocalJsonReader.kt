@@ -329,4 +329,142 @@ class LocalJsonReader(private val context: Context) {
         }
         return list
     }
+
+    fun getAllStores(): List<StoreEntity> {
+        val list = mutableListOf<StoreEntity>()
+        try {
+            val jsonString = context.assets.open("rootie_stores.json").bufferedReader().use { it.readText() }
+            val jsonArray = org.json.JSONArray(jsonString)
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                
+                val idObj = obj.optJSONObject("_id")
+                val id = idObj?.optString("\$oid", java.util.UUID.randomUUID().toString()) ?: java.util.UUID.randomUUID().toString()
+                
+                val storeCode = obj.optString("ma_cua_hang", "")
+                val storeName = obj.optString("ten_cua_hang", "")
+                
+                val addressObj = obj.optJSONObject("dia_chi")
+                val address = addressObj?.optString("dia_chi_day_du", "") ?: ""
+                val province = addressObj?.optString("tinh_thanh", "") ?: ""
+                
+                val timeObj = obj.optJSONObject("thoi_gian_hoat_dong")
+                val thu26Obj = timeObj?.optJSONObject("thu_2_6")
+                val openHours = if (thu26Obj != null) {
+                    "${thu26Obj.optString("mo_cua", "08:00")} - ${thu26Obj.optString("dong_cua", "22:00")}"
+                } else {
+                    "08:00 - 22:00"
+                }
+                
+                val imagesArray = obj.optJSONArray("hinh_anh")
+                val imageUrl = if (imagesArray != null && imagesArray.length() > 0) {
+                    imagesArray.getString(0)
+                } else {
+                    ""
+                }
+                
+                // Mock distance based on ID or random to make it look realistic (1.0 to 15.0 km)
+                val randomSeed = id.hashCode()
+                val mockDistance = 1.0 + (Math.abs(randomSeed) % 140) / 10.0
+                
+                list.add(
+                    StoreEntity(
+                        id = id,
+                        storeCode = storeCode,
+                        storeName = storeName,
+                        address = address,
+                        province = province,
+                        openHours = openHours,
+                        imageUrl = imageUrl,
+                        distance = mockDistance
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return list
+    }
+
+    companion object {
+        private var cachedBookings: MutableList<BookingHistoryEntity>? = null
+    }
+
+    fun getUserBookingHistory(email: String): List<BookingHistoryEntity> {
+        if (cachedBookings == null) {
+            val list = mutableListOf<BookingHistoryEntity>()
+            try {
+                val jsonString = context.assets.open("skin_bookings.json").bufferedReader().use { it.readText() }
+                val root = org.json.JSONObject(jsonString)
+                val jsonArray = root.getJSONArray("bookings")
+                for (i in 0 until jsonArray.length()) {
+                    val histObj = jsonArray.getJSONObject(i)
+                    list.add(
+                        BookingHistoryEntity(
+                            id = histObj.optString("id", ""),
+                            userId = histObj.optString("userId", ""),
+                            userName = histObj.optString("userName", ""),
+                            userPhone = histObj.optString("userPhone", ""),
+                            userEmail = histObj.optString("userEmail", ""),
+                            serviceName = histObj.optString("serviceName", ""),
+                            dateDisplay = histObj.optString("dateDisplay", ""),
+                            monthDisplay = histObj.optString("monthDisplay", ""),
+                            dayOfWeek = histObj.optString("dayOfWeek", ""),
+                            time = histObj.optString("time", ""),
+                            duration = histObj.optString("duration", ""),
+                            storeName = histObj.optString("storeName", ""),
+                            storeAddress = histObj.optString("storeAddress", ""),
+                            storePhone = histObj.optString("storePhone", ""),
+                            storeImage = histObj.optString("storeImage", ""),
+                            note = histObj.optString("note", ""),
+                            status = histObj.optString("status", ""),
+                            policy = histObj.optString("policy", ""),
+                            createdAt = histObj.optString("createdAt", ""),
+                            completedAt = histObj.optString("completedAt", ""),
+                            skinResults = histObj.optJSONArray("skinResults")?.let { resultsArray ->
+                                val results = mutableListOf<String>()
+                                for (j in 0 until resultsArray.length()) {
+                                    results.add(resultsArray.getString(j))
+                                }
+                                results
+                            } ?: emptyList(),
+                            consultantName = histObj.optString("consultantName", ""),
+                            consultantAvatar = histObj.optString("consultantAvatar", ""),
+                            consultantRating = histObj.optDouble("consultantRating", 0.0).toFloat(),
+                            userRating = histObj.optDouble("userRating", 0.0).toFloat(),
+                            userReview = histObj.optString("userReview", ""),
+                            reviewDate = histObj.optString("reviewDate", ""),
+                            beforeImage = histObj.optString("beforeImage", ""),
+                            afterImage = histObj.optString("afterImage", ""),
+                            earnedPoints = histObj.optInt("earnedPoints", 0),
+                            totalPoints = histObj.optInt("totalPoints", 0),
+                            nextAppointmentDate = histObj.optString("nextAppointmentDate", ""),
+                            nextAppointmentText = histObj.optString("nextAppointmentText", ""),
+                            cancelledAt = histObj.optString("cancelledAt", ""),
+                            cancelReason = histObj.optString("cancelReason", "")
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            cachedBookings = list
+        }
+        return cachedBookings!!.filter { it.userEmail == email }
+    }
+
+    fun updateBookingStatus(bookingId: String, newStatus: String, cancelReason: String = "") {
+        cachedBookings = cachedBookings?.map {
+            if (it.id == bookingId) it.copy(status = newStatus, cancelReason = cancelReason) else it
+        }?.toMutableList()
+    }
+
+    fun addBooking(booking: BookingHistoryEntity) {
+        if (cachedBookings == null) {
+            // Force initialize if it's null
+            getUserBookingHistory(booking.userEmail)
+        }
+        // Thêm lịch mới vào đầu danh sách
+        cachedBookings?.add(0, booking)
+    }
 }
