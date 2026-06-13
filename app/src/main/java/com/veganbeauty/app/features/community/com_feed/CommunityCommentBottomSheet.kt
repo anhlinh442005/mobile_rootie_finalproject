@@ -123,7 +123,24 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
                 } catch (e: Exception) { e.printStackTrace() }
             }
             
-            if (inlineCommentsArray != null && inlineCommentsArray.length() > 0) {
+            // 4. Check local_comments.json (User submitted comments during this session)
+            try {
+                val localFile = java.io.File(context.filesDir, "local_comments.json")
+                if (localFile.exists()) {
+                    val localArray = org.json.JSONArray(localFile.readText())
+                    for (i in 0 until localArray.length()) {
+                        val obj = localArray.getJSONObject(i)
+                        if (obj.optString("post_id") == postId) {
+                            if (inlineCommentsArray == null) {
+                                inlineCommentsArray = org.json.JSONArray()
+                            }
+                            inlineCommentsArray!!.put(obj)
+                        }
+                    }
+                }
+            } catch (e: Exception) { e.printStackTrace() }
+            
+            if (inlineCommentsArray != null && inlineCommentsArray!!.length() > 0) {
                 // Group top-level comments and their replies
                 val topLevelComments = mutableListOf<org.json.JSONObject>()
                 val repliesMap = mutableMapOf<String, org.json.JSONObject>()
@@ -251,18 +268,30 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
                     val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
                     imm.hideSoftInputFromWindow(etComment.windowToken, 0)
                     
-                    // Sync to Firestore
+                    val commentMap = hashMapOf<String, Any>(
+                        "comment_id" to java.util.UUID.randomUUID().toString(),
+                        "post_id" to postId!!,
+                        "user_id" to myUserId,
+                        "username" to myUsername,
+                        "avatar_url" to myAvatar,
+                        "content" to text,
+                        "created_at" to isoDate,
+                        "likes_count" to 0,
+                        "is_author" to false
+                    )
+
+                    // Save to local storage for persistence in session
+                    try {
+                        val localFile = java.io.File(requireContext().filesDir, "local_comments.json")
+                        val localArray = if (localFile.exists()) org.json.JSONArray(localFile.readText()) else org.json.JSONArray()
+                        val newCommentJson = org.json.JSONObject(commentMap as Map<*, *>)
+                        localArray.put(newCommentJson)
+                        localFile.writeText(localArray.toString())
+                    } catch (e: Exception) { e.printStackTrace() }
+
+                    // Increment in database & Sync to Firestore
                     viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                        val commentMap = hashMapOf(
-                            "comment_id" to java.util.UUID.randomUUID().toString(),
-                            "post_id" to postId!!,
-                            "user_id" to myUserId,
-                            "username" to myUsername,
-                            "avatar_url" to myAvatar,
-                            "content" to text,
-                            "created_at" to isoDate,
-                            "likes_count" to 0
-                        )
+                        com.veganbeauty.app.data.local.RootieDatabase.getDatabase(requireContext()).communityDao().incrementCommentsCount(postId!!)
                         com.veganbeauty.app.data.remote.FirestoreService().addCommentToPost(postId!!, commentMap)
                     }
                 }

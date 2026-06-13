@@ -19,6 +19,7 @@ import com.veganbeauty.app.databinding.ComItemSuggestedReelsFeedBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import android.widget.ImageView
 import coil.decode.SvgDecoder
+import kotlinx.coroutines.launch
 
 sealed class CommunityFeedItem {
     data class Post(val post: CommunityPostEntity) : CommunityFeedItem()
@@ -271,15 +272,34 @@ class PostAdapter(
                 }
 
                 // Like toggle micro-interaction
-                var isLiked = false
+                val sharedPrefs = postHolder.itemView.context.getSharedPreferences("rootie_prefs", android.content.Context.MODE_PRIVATE)
+                var isLiked = sharedPrefs.getBoolean("liked_${post.postId}", false)
+                var currentLikesCount = post.likesCount
+                
+                if (isLiked) {
+                    postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_filled)
+                } else {
+                    postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_outline)
+                }
+
                 postHolder.binding.ivLike.setOnClickListener {
                     isLiked = !isLiked
                     if (isLiked) {
                         postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_filled)
-                        postHolder.binding.tvLikes.text = (post.likesCount + 1).toString()
+                        currentLikesCount++
+                        postHolder.binding.tvLikes.text = currentLikesCount.toString()
+                        sharedPrefs.edit().putBoolean("liked_${post.postId}", true).apply()
+                        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                            com.veganbeauty.app.data.local.RootieDatabase.getDatabase(holder.itemView.context).communityDao().incrementLikesCount(post.postId)
+                        }
                     } else {
                         postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_outline)
-                        postHolder.binding.tvLikes.text = post.likesCount.toString()
+                        currentLikesCount = maxOf(0, currentLikesCount - 1)
+                        postHolder.binding.tvLikes.text = currentLikesCount.toString()
+                        sharedPrefs.edit().putBoolean("liked_${post.postId}", false).apply()
+                        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                            com.veganbeauty.app.data.local.RootieDatabase.getDatabase(holder.itemView.context).communityDao().decrementLikesCount(post.postId)
+                        }
                     }
                 }
 

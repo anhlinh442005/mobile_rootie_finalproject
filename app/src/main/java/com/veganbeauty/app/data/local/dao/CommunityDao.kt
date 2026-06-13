@@ -71,4 +71,13 @@ interface CommunityDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBlogs(blogs: List<CommunityBlogEntity>): List<Long>
+
+    @Query("UPDATE community_posts SET commentsCount = commentsCount + 1 WHERE postId = :postId")
+    suspend fun incrementCommentsCount(postId: String)
+
+    @Query("UPDATE community_posts SET likesCount = likesCount + 1 WHERE postId = :postId")
+    suspend fun incrementLikesCount(postId: String)
+
+    @Query("UPDATE community_posts SET likesCount = MAX(0, likesCount - 1) WHERE postId = :postId")
+    suspend fun decrementLikesCount(postId: String)
 }

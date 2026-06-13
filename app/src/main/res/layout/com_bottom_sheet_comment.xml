@@ -37,7 +37,7 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_share" />
+            android:src="@drawable/ic_post" />
     </RelativeLayout>
 
     <View
@@ -130,6 +130,16 @@
                 android:textSize="14sp"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="10dp" />
+
+            <ImageView
+                android:id="@+id/ivSubmitComment"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/com_bg_circle_blue"
+                android:src="@drawable/ic_post"
+                android:padding="8dp"
+                app:tint="@color/white" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -199,12 +199,24 @@ class CommunityFeedFragment : RootieFragment() {
             .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
             .setDuration(250)
             .start()
+            
+        binding.clHeader.animate()
+            .translationY(-binding.clHeader.height.toFloat())
+            .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
+            .setDuration(250)
+            .start()
     }
 
     private fun showBottomNavigation() {
         if (isNavVisible) return
         isNavVisible = true
         binding.comBottomNav.root.animate()
+            .translationY(0f)
+            .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
+            .setDuration(250)
+            .start()
+            
+        binding.clHeader.animate()
             .translationY(0f)
             .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
             .setDuration(250)
