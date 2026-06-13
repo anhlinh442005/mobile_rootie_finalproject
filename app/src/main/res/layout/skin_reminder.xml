@@ -1,0 +1,1135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FEFBF4">
+
+    <!-- Top App Bar with gradient background -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/skin_bg_top_bar_gradient"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Quay lại"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#02542D" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexend"
+            android:text="Nhắc hẹn chăm da"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btnNotification"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Thông báo"
+            android:src="@drawable/ic_notification"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Scrollable content area -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="32dp">
+
+            <!-- User Info Bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp">
+
+                <!-- Avatar frame: circular with border -->
+                <FrameLayout
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:background="@drawable/bg_circle_avatar_border"
+                    android:padding="2dp">
+
+                    <ImageView
+                        android:id="@+id/ivAvatar"
+                        android:layout_width="41dp"
+                        android:layout_height="41dp"
+                        android:src="@drawable/ic_nav_com_profile" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvUserGreeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Chào buổi sáng, Khánh Bình"
+                        android:textColor="#000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <!-- Coin Badge -->
+                    <LinearLayout
+                        android:layout_width="118dp"
+                        android:layout_height="15dp"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:background="@drawable/skin_bg_coin_badge"
+                        android:layout_marginTop="4dp">
+
+                        <ImageView
+                            android:layout_width="11dp"
+                            android:layout_height="11dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_coin" />
+
+                        <TextView
+                            android:id="@+id/tvUserCoins"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:text="170 ROOTIE COINS"
+                            android:textColor="#677559"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Streak card (Chuỗi chăm da của bạn) -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#3E4D44">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="Chuỗi chăm da của bạn"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="bottom"
+                        android:layout_marginTop="4dp">
+
+                        <TextView
+                            android:id="@+id/tvStreakDays"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:text="5"
+                            android:textColor="#D8E8C6"
+                            android:textSize="45sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="ngày"
+                            android:textColor="#FFFFFF"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginBottom="6dp" />
+                    </LinearLayout>
+
+                    <!-- Days row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="7"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="12dp">
+
+                        <!-- T2 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/ivDayMon"
+                                android:layout_width="37dp"
+                                android:layout_height="37dp"
+                                android:src="@drawable/ic_skin_calendar_todo" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="T2"
+                                android:textColor="#FFFFFF"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <!-- T3 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/ivDayTue"
+                                android:layout_width="37dp"
+                                android:layout_height="37dp"
+                                android:src="@drawable/ic_skin_calendar_todo" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="T3"
+                                android:textColor="#FFFFFF"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <!-- T4 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/ivDayWed"
+                                android:layout_width="37dp"
+                                android:layout_height="37dp"
+                                android:src="@drawable/ic_skin_calendar_todo" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="T4"
+                                android:textColor="#FFFFFF"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <!-- T5 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/ivDayThu"
+                                android:layout_width="37dp"
+                                android:layout_height="37dp"
+                                android:src="@drawable/ic_skin_calendar_todo" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="T5"
+                                android:textColor="#FFFFFF"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <!-- T6 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/ivDayFri"
+                                android:layout_width="37dp"
+                                android:layout_height="37dp"
+                                android:src="@drawable/ic_skin_calendar_todo" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="T6"
+                                android:textColor="#FFFFFF"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <!-- T7 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/ivDaySat"
+                                android:layout_width="37dp"
+                                android:layout_height="37dp"
+                                android:src="@drawable/ic_skin_calendar_todo" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="T7"
+                                android:textColor="#FFFFFF"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <!-- CN -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/ivDaySun"
+                                android:layout_width="37dp"
+                                android:layout_height="37dp"
+                                android:src="@drawable/ic_skin_calendar_todo" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="CN"
+                                android:textColor="#FFFFFF"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvStreakMotivation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Bạn đang duy trì thói quen rất tốt!"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Morning Routine Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_skin_sun"
+                    app:tint="#3E4D44" />
+
+                <TextView
+                    android:id="@+id/tvMorningHeaderStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="SÁNG NAY • CHƯA BẮT ĐẦU"
+                    android:textColor="#3E4D44"
+                    android:textSize="15sp"
+                    android:letterSpacing="0.05" />
+            </LinearLayout>
+
+            <!-- Morning Routine Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="302dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/skin_morning_routine_bg" />
+
+                    <!-- Bottom Info Box inside Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/lexend"
+                                android:text="Tiến trình hoàn thành"
+                                android:textColor="#979797"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/tvMorningProgressText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexend"
+                                android:text="0/5 BƯỚC"
+                                android:textColor="#979797"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <!-- Progress Bar Track -->
+                        <ProgressBar
+                            android:id="@+id/viewMorningProgressBar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/skin_routine_progress_drawable_horizontal"
+                            android:layout_marginBottom="6dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnStartMorningRoutine"
+                            android:layout_width="match_parent"
+                            android:layout_height="47dp"
+                            android:background="@drawable/skin_bg_btn_green"
+                            android:text="Bắt đầu Routine"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textSize="15sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:textStyle="bold"
+                            android:drawableStart="@drawable/ic_skin_routine_white"
+                            android:drawablePadding="8dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Evening Routine Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <!-- Using sparkle for evening routine to match the brand design theme -->
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_skin_sparkle"
+                    app:tint="#3E4D44" />
+
+                <TextView
+                    android:id="@+id/tvEveningHeaderStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="TỐI NAY • CHƯA BẮT ĐẦU"
+                    android:textColor="#3E4D44"
+                    android:textSize="15sp"
+                    android:letterSpacing="0.05" />
+            </LinearLayout>
+
+            <!-- Evening Routine Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="302dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/skin_evening_routine_bg" />
+
+                    <!-- Bottom Info Box inside Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/lexend"
+                                android:text="Tiến trình hoàn thành"
+                                android:textColor="#979797"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/tvEveningProgressText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexend"
+                                android:text="0/5 BƯỚC"
+                                android:textColor="#979797"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <!-- Progress Bar Track -->
+                        <ProgressBar
+                            android:id="@+id/viewEveningProgressBar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/skin_routine_progress_drawable_horizontal"
+                            android:layout_marginBottom="6dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnStartEveningRoutine"
+                            android:layout_width="match_parent"
+                            android:layout_height="47dp"
+                            android:background="@drawable/skin_bg_btn_green"
+                            android:text="Bắt đầu Routine"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textSize="15sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:textStyle="bold"
+                            android:drawableStart="@drawable/ic_skin_routine_white"
+                            android:drawablePadding="8dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Action: Setup Routine -->
+            <LinearLayout
+                android:id="@+id/btnSetupRoutine"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/skin_bg_button_light"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_skin_settings" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Cài đặt Routine"
+                    android:textColor="#3E4D44"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#C3C8C2" />
+            </LinearLayout>
+
+            <!-- Action: Skincare Calendar -->
+            <LinearLayout
+                android:id="@+id/btnSkincareCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/skin_bg_button_light"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="24dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_skin_calendar_grid" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Lịch chăm da"
+                    android:textColor="#3E4D44"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#C3C8C2" />
+            </LinearLayout>
+
+            <!-- Section Title: Tích xu & Giữ chuỗi -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="Tích xu &amp; Giữ chuỗi"
+                android:textColor="#3E4D44"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Reward Item 1: MORNING REWARD -->
+            <LinearLayout
+                android:id="@+id/layoutMorningReward"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/skin_bg_reward_white"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp">
+
+                <FrameLayout
+                    android:layout_width="41dp"
+                    android:layout_height="41dp"
+                    android:background="@drawable/skin_bg_circle_grey">
+
+                    <ImageView
+                        android:layout_width="17dp"
+                        android:layout_height="17dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_skin_sun"
+                        app:tint="#3E4D44" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="MORNING REWARD"
+                        android:textColor="#3E4D44"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Hoàn thành sáng"
+                        android:textColor="#3E4D44"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="12dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_coin" />
+
+                        <TextView
+                            android:id="@+id/tvMorningRewardXu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="+ 10 xu"
+                            android:textColor="#FFCC00"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvMorningRewardFrequency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="HÀNG NGÀY"
+                        android:textColor="#AEAEB2"
+                        android:textSize="9sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Reward Item 2: EVENING REWARD -->
+            <LinearLayout
+                android:id="@+id/layoutEveningReward"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/skin_bg_reward_white"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp">
+
+                <FrameLayout
+                    android:layout_width="41dp"
+                    android:layout_height="41dp"
+                    android:background="@drawable/skin_bg_circle_grey">
+
+                    <ImageView
+                        android:layout_width="17dp"
+                        android:layout_height="17dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_skin_sparkle"
+                        app:tint="#3E4D44" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="EVENING REWARD"
+                        android:textColor="#3E4D44"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Hoàn thành tối"
+                        android:textColor="#3E4D44"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="12dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_coin" />
+
+                        <TextView
+                            android:id="@+id/tvEveningRewardXu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="+ 10 xu"
+                            android:textColor="#FFCC00"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvEveningRewardFrequency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="HÀNG NGÀY"
+                        android:textColor="#AEAEB2"
+                        android:textSize="9sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Reward Item 3: WEEKLY BONUS (Highlighted in brand green) -->
+            <LinearLayout
+                android:id="@+id/layoutWeeklyReward"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/skin_bg_reward_green"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp">
+
+                <FrameLayout
+                    android:layout_width="41dp"
+                    android:layout_height="41dp"
+                    android:background="@drawable/skin_bg_circle_grey">
+
+                    <ImageView
+                        android:layout_width="13dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_skin_star" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="WEEKLY BONUS"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Chuỗi 7 ngày"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="12dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_coin" />
+
+                        <TextView
+                            android:id="@+id/tvWeeklyRewardXu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="+ 50 xu"
+                            android:textColor="#E1C02E"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvWeeklyRewardFrequency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="HÀNG TUẦN"
+                        android:textColor="#AEAEB2"
+                        android:textSize="9sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Reward Item 4: LOYALTY REWARD -->
+            <LinearLayout
+                android:id="@+id/layoutLoyaltyReward"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/skin_bg_reward_white"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp">
+
+                <FrameLayout
+                    android:layout_width="41dp"
+                    android:layout_height="41dp"
+                    android:background="@drawable/skin_bg_circle_grey">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_skin_sparkle" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="LOYALTY REWARD"
+                        android:textColor="#3E4D44"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Duy trì tháng"
+                        android:textColor="#3E4D44"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="12dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_coin" />
+
+                        <TextView
+                            android:id="@+id/tvLoyaltyRewardXu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="+ 200 xu"
+                            android:textColor="#FFCC00"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvLoyaltyRewardFrequency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="HÀNG THÁNG"
+                        android:textColor="#AEAEB2"
+                        android:textSize="9sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Reward Item 5: SOCIAL TASK -->
+            <LinearLayout
+                android:id="@+id/btnSocialTask"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/skin_bg_reward_white"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <FrameLayout
+                    android:layout_width="41dp"
+                    android:layout_height="41dp"
+                    android:background="@drawable/skin_bg_circle_grey">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_skin_share" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="SOCIAL TASK"
+                        android:textColor="#3E4D44"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Kết nối bạn bè"
+                        android:textColor="#3E4D44"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="12dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_coin" />
+
+                        <TextView
+                            android:id="@+id/tvSocialRewardXu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="+ 10 xu"
+                            android:textColor="#FFCC00"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvSocialRewardFrequency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="MỖI LƯỢT"
+                        android:textColor="#AEAEB2"
+                        android:textSize="9sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

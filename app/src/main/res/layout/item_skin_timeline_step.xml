@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginVertical="4dp">
+
+    <ImageView
+        android:id="@+id/imvStepCheck"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_check_circle"
+        android:layout_marginEnd="12dp" />
+
+    <TextView
+        android:id="@+id/tvStepName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sữa rửa mặt dịu nhẹ"
+        android:textColor="#3E4D44"
+        android:textSize="14sp"
+        android:fontFamily="@font/be_vietnam_pro" />
+
+</LinearLayout>

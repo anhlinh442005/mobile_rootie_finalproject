@@ -18,6 +18,11 @@ import com.veganbeauty.app.databinding.ShopHomeBinding
 import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment
 import com.veganbeauty.app.features.shop.product.list.ShopListAdapter
 import com.veganbeauty.app.features.shop.product.list.ShopListFragment
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.MarginPageTransformer
+import android.graphics.drawable.GradientDrawable
+import android.widget.LinearLayout
 import kotlinx.coroutines.launch
 
 class ShopHomeFragment : RootieFragment() {
@@ -26,6 +31,17 @@ class ShopHomeFragment : RootieFragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: ShopHomeViewModel
+    
+    private val sliderHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val sliderRunnable = Runnable {
+        if (_binding != null) {
+            val current = binding.vpBanner.currentItem
+            val total = binding.vpBanner.adapter?.itemCount ?: 0
+            if (total > 0) {
+                binding.vpBanner.currentItem = (current + 1) % total
+            }
+        }
+    }
     
     private val bannerAdapter = ShopHomeBannerAdapter()
     private val categoryAdapter = ShopHomeCategoryAdapter { category ->
@@ -79,9 +95,20 @@ class ShopHomeFragment : RootieFragment() {
         })[ShopHomeViewModel::class.java]
     }
 
+    private var cartVoucherCode: String? = null
+    private var cartVoucherDiscount = 0L
+
     override fun setupUI(view: View) {
         // Thiết lập Adapter cho ViewPager Banner
         binding.vpBanner.adapter = bannerAdapter
+        
+        binding.vpBanner.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                updateBannerDots(position)
+                sliderHandler.removeCallbacks(sliderRunnable)
+                sliderHandler.postDelayed(sliderRunnable, 4000)
+            }
+        })
 
         binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvCategories.adapter = categoryAdapter
@@ -90,9 +117,35 @@ class ShopHomeFragment : RootieFragment() {
         binding.rvSuggestedProducts.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvSuggestedProducts.adapter = productAdapter
 
+        // Set click listener for View All button to show SuggestedProductsBottomSheet
+        binding.btnViewAll.setOnClickListener {
+            val suggestedBottomSheet = com.veganbeauty.app.features.shop.product.SuggestedProductsBottomSheet.newInstance()
+            suggestedBottomSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.SuggestedProductsBottomSheet.TAG)
+        }
+
         // Open Cart when Cart Container is clicked
         binding.flCartContainer.setOnClickListener {
-            val cartSheet = com.veganbeauty.app.features.shop.product.CartBottomSheetFragment()
+            val cartSheet = com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.newInstance(
+                cartVoucherCode,
+                cartVoucherDiscount
+            )
+            cartSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.TAG)
+        }
+
+        // Voucher result listener to re-open cart
+        parentFragmentManager.setFragmentResultListener(
+            com.veganbeauty.app.features.shop.product.ShopVoucherFragment.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val code = bundle.getString(com.veganbeauty.app.features.shop.product.ShopVoucherFragment.RESULT_VOUCHER_CODE)
+            val discount = bundle.getLong(com.veganbeauty.app.features.shop.product.ShopVoucherFragment.RESULT_VOUCHER_DISCOUNT, 0L)
+            cartVoucherCode = code
+            cartVoucherDiscount = discount
+
+            val cartSheet = com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.newInstance(
+                cartVoucherCode,
+                cartVoucherDiscount
+            )
             cartSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.CartBottomSheetFragment.TAG)
         }
 
@@ -123,6 +176,7 @@ class ShopHomeFragment : RootieFragment() {
         lifecycleScope.launch {
             viewModel.banners.collect { banners ->
                 bannerAdapter.submitList(banners)
+                setupBannerDots(banners.size)
             }
         }
 
@@ -133,10 +187,12 @@ class ShopHomeFragment : RootieFragment() {
             }
         }
 
-        // Quan sát dữ liệu Sản phẩm gợi ý
+        // Quan sát dữ liệu Sản phẩm gợi ý (Lọc sản phẩm Hot hoặc Mới)
         viewModel.suggestedProducts.observe(viewLifecycleOwner) { products ->
-            // Chỉ hiển thị 4 sản phẩm đầu tiên cho phần "Gợi ý" theo thiết kế
-            productAdapter.submitList(products.take(4))
+            val filtered = products.filter {
+                it.isNew || it.price >= 500000 || it.category.contains("Combo", ignoreCase = true)
+            }.take(4)
+            productAdapter.submitList(filtered)
         }
 
         // Observe cart items to update badge count
@@ -186,7 +242,51 @@ class ShopHomeFragment : RootieFragment() {
             .commit()
     }
 
+    private fun setupBannerDots(count: Int) {
+        if (_binding == null) return
+        binding.llBannerDots.removeAllViews()
+        repeat(count) {
+            val dot = View(requireContext())
+            val size = resources.getDimensionPixelSize(com.veganbeauty.app.R.dimen.home_banner_dot_size)
+            val params = LinearLayout.LayoutParams(size, size).apply {
+                marginEnd = resources.getDimensionPixelSize(com.veganbeauty.app.R.dimen.home_banner_dot_margin)
+            }
+            dot.layoutParams = params
+            dot.background = createDotDrawable(false)
+            binding.llBannerDots.addView(dot)
+        }
+        updateBannerDots(0)
+    }
+
+    private fun updateBannerDots(activeIndex: Int) {
+        if (_binding == null) return
+        for (i in 0 until binding.llBannerDots.childCount) {
+            binding.llBannerDots.getChildAt(i).background = createDotDrawable(i == activeIndex)
+        }
+    }
+
+    private fun createDotDrawable(active: Boolean): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(if (active) 0xFFFFFFFF.toInt() else 0x88FFFFFF.toInt())
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (bannerAdapter.itemCount > 0) {
+            sliderHandler.removeCallbacks(sliderRunnable)
+            sliderHandler.postDelayed(sliderRunnable, 4000)
+        }
+    }
+
+    override fun onPause() {
+        sliderHandler.removeCallbacks(sliderRunnable)
+        super.onPause()
+    }
+
     override fun onDestroyView() {
+        sliderHandler.removeCallbacks(sliderRunnable)
         super.onDestroyView()
         _binding = null
     }

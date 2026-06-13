@@ -25,7 +25,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            android:src="@drawable/ic_chevron_left"
+            android:src="@drawable/ic_back"
             app:tint="#02542D" />
 
         <!-- Title -->
@@ -40,7 +40,7 @@
             android:textStyle="bold" />
 
         <!-- Notification Bell -->
-        <FrameLayout
+        <ImageView
             android:id="@+id/btn_notifications"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -49,24 +49,9 @@
             android:layout_marginEnd="12dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_gravity="center"
-                android:src="@drawable/home_ic_notification"
-                app:tint="#3E4D44" />
-
-            <FrameLayout
-                android:layout_width="9dp"
-                android:layout_height="9dp"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_circle_icon"
-                android:backgroundTint="#FFCC00" />
-        </FrameLayout>
+            android:focusable="true"
+            android:padding="9dp"
+            android:src="@drawable/ic_notification" />
     </RelativeLayout>
 
     <!-- Scrollable Content -->
@@ -390,7 +375,7 @@
         android:id="@+id/ll_footer_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/bottom_nav"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
         android:paddingBottom="16dp"
@@ -435,7 +420,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/lexend"
-                android:text="Gợi ý routine phù hợp"
+                android:text="Thiết lập Routine &amp; Nhắc hẹn"
                 android:textColor="#677559"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -456,5 +441,13 @@
             android:clickable="true"
             android:focusable="true" />
     </LinearLayout>
+
+    <!-- Bottom Navigation Bar -->
+    <include
+        android:id="@+id/bottom_nav"
+        layout="@layout/home_navapp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

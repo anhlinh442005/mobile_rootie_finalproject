@@ -68,7 +68,15 @@ object BottomNavHelper {
         when (tabId) {
           R.id.nav_home -> HomeFragment()
           R.id.nav_shop -> com.veganbeauty.app.features.shop.home.ShopHomeFragment()
-          R.id.nav_myskin -> com.veganbeauty.app.features.myskin.MySkinFragment()
+          R.id.nav_myskin -> {
+              val prefs = fragment.requireContext().getSharedPreferences("RootieQuizPrefs", android.content.Context.MODE_PRIVATE)
+              val savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null)
+              if (savedSkin != null) {
+                  com.veganbeauty.app.features.weather.WeatherForecastFragment()
+              } else {
+                  com.veganbeauty.app.features.quiz.QuizTestIntroFragment()
+              }
+          }
           R.id.nav_community -> com.veganbeauty.app.features.community.com_feed.ComLoadingFragment()
           R.id.nav_account -> AccountProfileFragment()
           else -> null

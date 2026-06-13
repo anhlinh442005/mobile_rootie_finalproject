@@ -82,10 +82,14 @@ class OrderRepository(
                             title = "Voucher Giảm 50K",
                             description = "Áp dụng cho đơn hàng từ 300K, sản phẩm nguyên giá.",
                             cost = 500,
-                            expiryDate = "30/12/2026",
+                            expiryDate = "2026-12-30 23:59:59",
                             status = "Còn hạn",
-                            giftType = "voucher",
+                            giftType = "voucher_discount",
                             code = "SAVE50K",
+                            minOrderValue = 300000,
+                            applicableProducts = "Chăm Sóc Da Mặt",
+                            offerType = "fixed_amount",
+                            discountValue = 50000,
                             acquiredTimestamp = 1775831400000L
                         ),
                         UserGiftEntity(
@@ -93,10 +97,15 @@ class OrderRepository(
                             title = "Quà tặng: Sữa rửa mặt",
                             description = "Nhận miễn phí 1 tuýp sữa rửa mặt bí đao mini 15ml.",
                             cost = 1000,
-                            expiryDate = "15/12/2026",
+                            expiryDate = "2026-12-15 23:59:59",
                             status = "Còn hạn",
                             giftType = "product",
                             code = "FREECLN",
+                            minOrderValue = 0,
+                            applicableProducts = "Sữa rửa mặt",
+                            offerType = "product_gift",
+                            productId = "p003",
+                            discountValue = 0,
                             acquiredTimestamp = 1772043600000L
                         ),
                         UserGiftEntity(
@@ -104,10 +113,14 @@ class OrderRepository(
                             title = "Freeship Đơn 0Đ",
                             description = "Miễn phí vận chuyển toàn quốc cho mọi đơn hàng.",
                             cost = 200,
-                            expiryDate = "Hôm nay",
+                            expiryDate = "2026-06-11 23:59:59",
                             status = "Hôm nay",
-                            giftType = "freeship",
+                            giftType = "voucher_freeship",
                             code = "FREESHIP",
+                            minOrderValue = 150000,
+                            applicableProducts = "Tất cả sản phẩm",
+                            offerType = "percentage",
+                            discountValue = 100,
                             acquiredTimestamp = 1772698500000L
                         ),
                         UserGiftEntity(
@@ -115,10 +128,14 @@ class OrderRepository(
                             title = "Giảm 10% Cho Sản Phẩm Bưởi",
                             description = "Áp dụng cho dòng sản phẩm tinh chất vỏ bưởi dưỡng tóc.",
                             cost = 300,
-                            expiryDate = "31/10/2026",
+                            expiryDate = "2026-10-31 23:59:59",
                             status = "Hết hạn",
-                            giftType = "voucher",
+                            giftType = "voucher_discount",
                             code = "GRAPE10",
+                            minOrderValue = 0,
+                            applicableProducts = "Tinh chất bưởi",
+                            offerType = "percentage",
+                            discountValue = 10,
                             acquiredTimestamp = 1767261600000L
                         )
                     )
@@ -137,7 +154,12 @@ class OrderRepository(
         cost: Int,
         expiryDate: String,
         code: String,
-        giftType: String
+        giftType: String,
+        minOrderValue: Int = 0,
+        applicableProducts: String = "Tất cả sản phẩm",
+        offerType: String = "fixed_amount",
+        productId: String? = null,
+        discountValue: Int = 0
     ): Boolean {
         val total = rewardPointDao.getTotalPointsFlow().first() ?: 0
         if (total >= cost) {
@@ -161,6 +183,11 @@ class OrderRepository(
                     status = "Còn hạn",
                     giftType = giftType,
                     code = code,
+                    minOrderValue = minOrderValue,
+                    applicableProducts = applicableProducts,
+                    offerType = offerType,
+                    productId = productId,
+                    discountValue = discountValue,
                     acquiredTimestamp = System.currentTimeMillis()
                 )
             )

@@ -17,6 +17,7 @@ import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.data.local.RootieDatabase
 import com.veganbeauty.app.data.local.entities.CartItemEntity
 import com.veganbeauty.app.databinding.ShopFragmentCheckoutBinding
+import com.veganbeauty.app.features.shop.store.ShopStoreSelectionFragment
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -43,12 +44,18 @@ class ShopCheckoutFragment : RootieFragment() {
     private var address2Phone = "0987654321"
     private var address2Details = "321 Lê Lợi, phường 5, quận 1, Hồ Chí Minh"
 
+    // Store list variables
+    private var selectedStoreId = "CH001"
+    private var selectedStoreName = "Cửa hàng mỹ phẩm Rootie - Cơ sở 1"
+    private var selectedStoreAddress = "235 Nguyễn Thị Minh Khai, P. Nguyễn Cư Trinh, Q.1, TP.HCM"
+
     private var recipientName = "Bảo Nguyên"
     private var recipientPhone = "0123456789"
     private var recipientAddress = "123 Lê Lợi, phường 5, quận 1, Hồ Chí Minh"
     private var paymentMethod = "Thanh toán tiền mặt khi nhận hàng"
     private var isVoucherApplied = false
     private var voucherDiscountAmount = 0L
+    private var selectedVoucherCode: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +63,9 @@ class ShopCheckoutFragment : RootieFragment() {
         arguments?.let {
             @Suppress("UNCHECKED_CAST")
             checkoutItems = it.getSerializable(ARG_CHECKOUT_ITEMS) as? ArrayList<CartItemEntity> ?: arrayListOf()
+            selectedVoucherCode = it.getString(ARG_INITIAL_VOUCHER_CODE)
+            voucherDiscountAmount = it.getLong(ARG_INITIAL_VOUCHER_DISCOUNT, 0L)
+            isVoucherApplied = !selectedVoucherCode.isNullOrEmpty()
         }
     }
 
@@ -73,6 +83,17 @@ class ShopCheckoutFragment : RootieFragment() {
         setupListeners()
         updateDeliveryUI()
         updatePaymentMethodUI()
+        
+        // Initial voucher UI state
+        if (isVoucherApplied) {
+            val formatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
+            binding.tvVoucherDesc.text = "Đã áp dụng mã: $selectedVoucherCode (-${formatter.format(voucherDiscountAmount)})"
+            binding.llVoucherRow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E5F2FF")))
+        } else {
+            binding.tvVoucherDesc.text = "Áp dụng ưu đãi để được giảm giá"
+            binding.llVoucherRow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#EDF3ED")))
+        }
+        
         calculatePrices()
     }
 
@@ -95,7 +116,34 @@ class ShopCheckoutFragment : RootieFragment() {
 
         // 2. Address Change
         binding.btnChangeAddress.setOnClickListener {
-            showAddressSelectionBottomSheet()
+            if (deliveryType == "Nhận tại cửa hàng") {
+                val storeFragment = ShopStoreSelectionFragment.newInstance(
+                    isSelectionMode = true,
+                    selectedStoreId = selectedStoreId
+                )
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_container, storeFragment)
+                    .addToBackStack(null)
+                    .commit()
+            } else {
+                showAddressSelectionBottomSheet()
+            }
+        }
+
+        // Store Result Listener
+        parentFragmentManager.setFragmentResultListener(
+            ShopStoreSelectionFragment.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val storeId = bundle.getString(ShopStoreSelectionFragment.RESULT_STORE_ID)
+            val storeName = bundle.getString(ShopStoreSelectionFragment.RESULT_STORE_NAME)
+            val storeAddress = bundle.getString(ShopStoreSelectionFragment.RESULT_STORE_ADDRESS)
+            if (storeId != null && storeName != null && storeAddress != null) {
+                selectedStoreId = storeId
+                selectedStoreName = storeName
+                selectedStoreAddress = storeAddress
+                updateDeliveryUI()
+            }
         }
 
         // 3. Payment Method Change
@@ -105,15 +153,31 @@ class ShopCheckoutFragment : RootieFragment() {
 
         // 4. Voucher Row click
         binding.llVoucherRow.setOnClickListener {
-            if (!isVoucherApplied) {
-                isVoucherApplied = true
-                voucherDiscountAmount = 20000L // mock 20k voucher discount
-                Toast.makeText(requireContext(), "Đã áp dụng mã giảm giá 20.000đ thành công!", Toast.LENGTH_SHORT).show()
+            val voucherFragment = ShopVoucherFragment.newInstance(selectedVoucherCode)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, voucherFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Voucher Result Listener
+        parentFragmentManager.setFragmentResultListener(
+            ShopVoucherFragment.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val code = bundle.getString(ShopVoucherFragment.RESULT_VOUCHER_CODE)
+            val discount = bundle.getLong(ShopVoucherFragment.RESULT_VOUCHER_DISCOUNT, 0L)
+            
+            selectedVoucherCode = code
+            voucherDiscountAmount = discount
+            isVoucherApplied = !code.isNullOrEmpty()
+
+            if (isVoucherApplied) {
+                val formatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
+                binding.tvVoucherDesc.text = "Đã áp dụng mã: $code (-${formatter.format(discount)})"
                 binding.llVoucherRow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E5F2FF")))
             } else {
-                isVoucherApplied = false
-                voucherDiscountAmount = 0L
-                Toast.makeText(requireContext(), "Đã hủy áp dụng mã giảm giá", Toast.LENGTH_SHORT).show()
+                binding.tvVoucherDesc.text = "Áp dụng ưu đãi để được giảm giá"
                 binding.llVoucherRow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#EDF3ED")))
             }
             calculatePrices()
@@ -132,8 +196,17 @@ class ShopCheckoutFragment : RootieFragment() {
 
     private fun updateDeliveryUI() {
         binding.tvDeliveryTypeValue.text = deliveryType
-        binding.tvRecipientNamePhone.text = "$recipientName - $recipientPhone"
-        binding.tvRecipientAddress.text = recipientAddress
+        if (deliveryType == "Nhận tại cửa hàng") {
+            binding.tvAddressTitle.text = "Nhận hàng tại"
+            binding.tvDefaultBadge.visibility = View.GONE
+            binding.tvRecipientNamePhone.text = selectedStoreName
+            binding.tvRecipientAddress.text = selectedStoreAddress
+        } else {
+            binding.tvAddressTitle.text = "Giao hàng tới"
+            binding.tvDefaultBadge.visibility = View.VISIBLE
+            binding.tvRecipientNamePhone.text = "$recipientName - $recipientPhone"
+            binding.tvRecipientAddress.text = recipientAddress
+        }
     }
 
     private fun updatePaymentMethodUI() {
@@ -436,6 +509,8 @@ class ShopCheckoutFragment : RootieFragment() {
         bottomSheetDialog.show()
     }
 
+
+
     private fun performCheckout() {
         val note = binding.etNote.text.toString().trim()
         val hideProductInfo = binding.switchHideProductInfo.isChecked
@@ -465,11 +540,19 @@ class ShopCheckoutFragment : RootieFragment() {
     companion object {
         const val TAG = "ShopCheckoutFragment"
         const val ARG_CHECKOUT_ITEMS = "checkout_items"
+        const val ARG_INITIAL_VOUCHER_CODE = "initial_voucher_code"
+        const val ARG_INITIAL_VOUCHER_DISCOUNT = "initial_voucher_discount"
 
-        fun newInstance(items: ArrayList<CartItemEntity>): ShopCheckoutFragment {
+        fun newInstance(
+            items: ArrayList<CartItemEntity>,
+            initialVoucherCode: String? = null,
+            initialVoucherDiscount: Long = 0L
+        ): ShopCheckoutFragment {
             return ShopCheckoutFragment().apply {
                 arguments = Bundle().apply {
                     putSerializable(ARG_CHECKOUT_ITEMS, items)
+                    putString(ARG_INITIAL_VOUCHER_CODE, initialVoucherCode)
+                    putLong(ARG_INITIAL_VOUCHER_DISCOUNT, initialVoucherDiscount)
                 }
             }
         }

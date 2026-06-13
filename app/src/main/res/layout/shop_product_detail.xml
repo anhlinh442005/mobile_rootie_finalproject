@@ -181,6 +181,7 @@
                         app:tint="#FFC107" />
 
                     <TextView
+                        android:id="@+id/tvRatingValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -191,6 +192,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvReviewsCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -227,6 +229,150 @@
                         android:fontFamily="@font/be_vietnam_pro_regular"
                         android:textSize="16sp" />
                 </LinearLayout>
+
+                <!-- Skin Compatibility warning / suitable card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvSkinCompatibility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#D2945D"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/llCompatibilityContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="top">
+
+                            <ImageView
+                                android:id="@+id/ivCompatibilityIcon"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginEnd="12dp"
+                                android:src="@drawable/quiz_ic_warning_triangle" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvCompatibilityTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/be_vietnam_pro_bold"
+                                    android:text="Cảnh báo thành phần không phù hợp"
+                                    android:textColor="#FE851A"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvCompatibilitySubtitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Sản phẩm chứa 2 thành phần gây kích ứng cho làn da của bạn."
+                                    android:textColor="#888888"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Irritating Ingredients Pills Container -->
+                        <com.veganbeauty.app.core.view.FlowLayout
+                            android:id="@+id/flIrritatingPills"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Divider line inside card -->
+                        <View
+                            android:id="@+id/vCompatibilityDivider"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            android:background="#D2945D"
+                            android:layout_marginVertical="8dp" />
+
+                        <!-- Reasons -->
+                        <LinearLayout
+                            android:id="@+id/llCompatibilityReasons"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <!-- Reason 1 -->
+                            <LinearLayout
+                                android:id="@+id/llReason1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginBottom="8dp">
+
+                                <TextView
+                                    android:id="@+id/tvReason1Title"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/be_vietnam_pro_bold"
+                                    android:text="Thành phần có nguy cơ kích ứng cao"
+                                    android:textColor="#677559"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvReason1Desc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Dựa trên hồ sơ dị ứng và biểu hiện da của bạn."
+                                    android:textColor="#97A49C"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+
+                            <!-- Reason 2 -->
+                            <LinearLayout
+                                android:id="@+id/llReason2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvReason2Title"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/be_vietnam_pro_bold"
+                                    android:text="Làn da đang nhạy cảm"
+                                    android:textColor="#677559"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvReason2Desc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Hồ sơ da của bạn cho thấy hàng rào bảo vệ da đang yếu."
+                                    android:textColor="#97A49C"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Tabs (Thông tin, Thành phần, Câu chuyện, Công dụng, Cách sử dụng) -->
                 <com.google.android.material.tabs.TabLayout
@@ -718,15 +864,6 @@
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:textSize="18sp"
                         android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="Xem tất cả"
-                        android:textColor="@color/gray_dark"
-                        android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:textSize="13sp" />
                 </RelativeLayout>
 
                 <!-- Mock horizontal list cho Cẩm nang -->
@@ -737,7 +874,7 @@
                     android:layout_marginTop="12dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/shop_item_handbook"
+                    tools:listitem="@layout/com_item_notebook_video"
                     tools:itemCount="3"/>
 
                 <!-- Reviews -->
@@ -754,6 +891,7 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
                     <TextView
+                        android:id="@+id/btnAllReviews"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
@@ -761,117 +899,21 @@
                         android:text="Xem tất cả"
                         android:textColor="@color/gray_dark"
                         android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:clickable="true"
+                        android:focusable="true" />
                 </RelativeLayout>
                 
-                <!-- Review List (Mock) -->
-                <com.google.android.material.card.MaterialCardView
+                <!-- Review List (Dynamic) -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvReviews"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    app:cardBackgroundColor="@android:color/white"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="#EAEAEA">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-                            <TextView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:background="@drawable/bg_chip_selected"
-                                android:gravity="center"
-                                android:text="N"
-                                android:textColor="@color/primary"
-                                android:textStyle="bold" 
-                                android:fontFamily="@font/be_vietnam_pro_bold"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:text="Bảo Nguyên"
-                                android:textColor="@color/primary"
-                                android:textStyle="bold" 
-                                android:fontFamily="@font/be_vietnam_pro_bold"/>
-                            <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                        </LinearLayout>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text='"Chất kem rất mỏng nhẹ, thấm nhanh và không để lại vệt trắng trên da. Rất ưng ý!"'
-                            android:textColor="@color/content"
-                            android:textSize="13sp" 
-                            android:fontFamily="@font/lexend"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    app:cardBackgroundColor="@android:color/white"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="#EAEAEA">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-                            <TextView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:background="@drawable/bg_chip_selected"
-                                android:gravity="center"
-                                android:text="N"
-                                android:textColor="@color/primary"
-                                android:textStyle="bold" 
-                                android:fontFamily="@font/be_vietnam_pro_bold"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:text="Bảo Nguyên"
-                                android:textColor="@color/primary"
-                                android:textStyle="bold" 
-                                android:fontFamily="@font/be_vietnam_pro_bold"/>
-                            <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@android:drawable/star_on" app:tint="#FFC107"/>
-                        </LinearLayout>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text='"Chất kem rất mỏng nhẹ, thấm nhanh và không để lại vệt trắng trên da. Rất ưng ý!"'
-                            android:textColor="@color/content"
-                            android:textSize="13sp" 
-                            android:fontFamily="@font/lexend"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/shop_item_review"
+                    tools:itemCount="2"/>
 
                 <!-- Related Products -->
                 <RelativeLayout
@@ -886,28 +928,18 @@
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:textSize="18sp"
                         android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="Xem tất cả"
-                        android:textColor="@color/gray_dark"
-                        android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:textSize="13sp" />
                 </RelativeLayout>
 
-                <!-- Mock grid cho SP liên quan -->
+                <!-- Related Products List (Horizontal) -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvRelatedProducts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="2"
-                    tools:listitem="@layout/shop_item_product"
-                    tools:itemCount="2"/>
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/shop_product_card"
+                    tools:itemCount="4"/>
 
                 <!-- Recently Viewed Products -->
                 <RelativeLayout
@@ -922,28 +954,18 @@
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:textSize="18sp"
                         android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="Xem tất cả"
-                        android:textColor="@color/gray_dark"
-                        android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:textSize="13sp" />
                 </RelativeLayout>
 
-                <!-- Mock grid cho SP vừa xem -->
+                <!-- Recently Viewed Products List (Horizontal) -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvRecentlyViewed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="2"
-                    tools:listitem="@layout/shop_item_product"
-                    tools:itemCount="2"/>
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/shop_product_card"
+                    tools:itemCount="4"/>
                     
             </LinearLayout>
         </LinearLayout>

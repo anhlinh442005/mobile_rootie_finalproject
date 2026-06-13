@@ -130,6 +130,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:id="@+id/tvAddressTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/be_vietnam_pro_regular"
@@ -170,6 +171,7 @@
                         android:textSize="16sp" />
 
                     <TextView
+                        android:id="@+id/tvDefaultBadge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -297,6 +299,7 @@
                     android:layout_marginBottom="12dp">
 
                     <TextView
+                        android:id="@+id/tvVoucherDesc"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

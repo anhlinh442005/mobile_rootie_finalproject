@@ -1,0 +1,1146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FEFBF4">
+
+    <!-- Scrollable Main Content -->
+    <ScrollView
+        android:id="@+id/scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/layout_bottom_nav"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- 1. Header Bar -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="66dp"
+                android:background="@drawable/bg_header_gradient"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:id="@+id/btn_back"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:tint="#02542D"
+                    android:padding="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:fontFamily="@font/lexend"
+                    android:text="Dự báo theo thời tiết"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <!-- Notification Bell Container -->
+                <FrameLayout
+                    android:id="@+id/btn_notification"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_notification"
+                        app:tint="#3E4D44" />
+
+                    <!-- Ellipse 1 Badge -->
+                    <FrameLayout
+                        android:layout_width="9dp"
+                        android:layout_height="9dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/badge_dot"
+                        android:backgroundTint="#FFCC00">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/lexend"
+                            android:text="1"
+                            android:textColor="#FFFFFF"
+                            android:textSize="7sp"
+                            android:textStyle="bold"
+                            android:gravity="center" />
+                    </FrameLayout>
+                </FrameLayout>
+            </RelativeLayout>
+
+            <!-- 2. Welcome Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="69dp"
+                android:background="#FFFFFF"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="17dp">
+
+                <!-- Avatar Frame with Border & Shadow -->
+                <FrameLayout
+                    android:layout_width="41dp"
+                    android:layout_height="41dp"
+                    android:background="@drawable/bg_avatar_border"
+                    android:padding="2dp">
+
+                    <ImageView
+                        android:id="@+id/iv_avatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_launcher_background" />
+                </FrameLayout>
+
+                <!-- Welcome Text Column -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="18dp">
+
+                    <TextView
+                        android:id="@+id/tv_greeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="CHÀO BUỔI SÁNG"
+                        android:textColor="#3E4D44"
+                        android:textSize="15sp"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/tv_username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Khánh Bình"
+                        android:textColor="#3E4D44"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 3. Welcome Alert General Message -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="17dp">
+
+                <TextView
+                    android:id="@+id/tv_alert_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lexend"
+                    android:text="Hôm nay da bạn cần chống nắng và cấp ẩm nhiều hơn. Đừng quên nhé!"
+                    android:textColor="#3E4D44"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:lineSpacingExtra="4dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/lexend"
+                    android:text="UV cao và độ ẩm thấp có thể khiến da nhạy cảm dễ mất nước. Rootie khuyên bạn nên tập trung vào hàng rào bảo vệ."
+                    android:textColor="#3E4D44"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="3dp" />
+            </LinearLayout>
+
+            <!-- 4. Weather Status Card (Sáng nay) -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="17dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#FAFAF4">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <!-- Temperature & Condition Status -->
+                        <LinearLayout
+                            android:id="@+id/layout_temp_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_alignParentStart="true">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tv_temperature"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="29"
+                                    android:textColor="#000000"
+                                    android:textSize="50sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="°C"
+                                    android:textColor="#000000"
+                                    android:textSize="32sp"
+                                    android:layout_marginTop="6dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_weather_condition"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="NẮNG NHIỀU, OI NHẸ"
+                                android:textColor="#808080"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_location"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="Thành phố Hồ Chí Minh"
+                                android:textColor="#808080"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <!-- Weather Sun Icon -->
+                        <ImageView
+                            android:id="@+id/iv_weather_icon"
+                            android:layout_width="42dp"
+                            android:layout_height="42dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_weather_sun"
+                            app:tint="#F0C43D" />
+                    </RelativeLayout>
+
+                    <!-- Weather Info Grid (Humidity, UV, Dust) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center">
+
+                        <!-- Box Humid -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:minHeight="85dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_card_white"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:elevation="2dp"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexend"
+                                android:text="Độ ẩm"
+                                android:textColor="#3E4D44"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_humidity"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="42%"
+                                android:textColor="#3E4D44"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_humidity_level"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="Thấp"
+                                android:textColor="#F04758"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <!-- Spacer -->
+                        <View
+                            android:layout_width="12dp"
+                            android:layout_height="match_parent" />
+
+                        <!-- Box UV -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:minHeight="85dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_card_white"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:elevation="2dp"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexend"
+                                android:text="Chỉ số UV"
+                                android:textColor="#3E4D44"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_uv_index"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="8.5"
+                                android:textColor="#3E4D44"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_uv_level"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="Nguy hiểm"
+                                android:textColor="#F04758"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <!-- Spacer -->
+                        <View
+                            android:layout_width="12dp"
+                            android:layout_height="match_parent" />
+
+                        <!-- Box Dust -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:minHeight="85dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_card_white"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:elevation="2dp"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexend"
+                                android:text="Bụi mịn"
+                                android:textColor="#3E4D44"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_dust_index"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="74"
+                                android:textColor="#3E4D44"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_dust_level"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/lexend"
+                                android:text="Trung bình"
+                                android:textColor="#BCCCAB"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Alert warning card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_warning_border"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_weather_warning"
+                            app:tint="#3E4D44" />
+
+                        <TextView
+                            android:id="@+id/tv_warning_text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="Hôm nay thời tiết khá nóng và độ ẩm thấp có thể khiến da mất nước nhanh hơn."
+                            android:textColor="#3E4D44"
+                            android:textSize="14sp"
+                            android:lineSpacingExtra="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 5. Rootie AI Insight Card Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="24dp"
+                android:layout_marginHorizontal="17dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_weather_sparkles"
+                    app:tint="#3E4D44" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/lexend"
+                    android:text="Rootie AI Insight"
+                    android:textColor="#3E4D44"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="17dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#3E4D44">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tv_ai_insight_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="“Da dầu nhạy nhạy cảm hôm nay có nguy cơ kích ứng cao hơn do nhiệt độ và UV tăng. Bạn chú ý khi ra ngoài nhé”"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="italic"
+                        android:lineSpacingExtra="4dp" />
+
+                    <!-- UV Impact Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="49dp"
+                        android:layout_marginTop="15dp"
+                        android:background="@drawable/bg_ai_metric"
+                        android:paddingHorizontal="15dp">
+
+                        <View
+                            android:id="@+id/dot_uv_impact"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/bg_circle_green"
+                            android:backgroundTint="#F04758" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/dot_uv_impact"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="UV Impact"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_uv_impact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:fontFamily="@font/lexend"
+                            android:text="Rủi ro đỏ da"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp" />
+                    </RelativeLayout>
+
+                    <!-- Hydration Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="49dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_ai_metric"
+                        android:paddingHorizontal="15dp">
+
+                        <View
+                            android:id="@+id/dot_hydration_impact"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/bg_circle_green"
+                            android:backgroundTint="#9ADDFA" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/dot_hydration_impact"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="Hydration"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_hydration_impact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:fontFamily="@font/lexend"
+                            android:text="Hàng rào yếu"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp" />
+                    </RelativeLayout>
+
+                    <!-- Pollution Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="49dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_ai_metric"
+                        android:paddingHorizontal="15dp">
+
+                        <View
+                            android:id="@+id/dot_dust_impact"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/bg_circle_green"
+                            android:backgroundTint="#F9FAEE" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/dot_dust_impact"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="Poullution"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_dust_impact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:fontFamily="@font/lexend"
+                            android:text="Tắc lỗ chân lông"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 6. Routine đề xuất hôm nay Card Section -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginHorizontal="17dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_alignParentStart="true">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_weather_wand"
+                        app:tint="#3E4D44" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/lexend"
+                        android:text="Routine đề xuất hôm nay"
+                        android:textColor="#3E4D44"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/lexend"
+                    android:text="7 : 30 AM"
+                    android:textColor="#3E4D44"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+            <!-- Recommended Items List -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="17dp">
+
+                <!-- Card 1: Cleanser -->
+                <LinearLayout
+                    android:id="@+id/layout_routine_item1"
+                    android:layout_width="match_parent"
+                    android:layout_height="71dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:elevation="3dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="12dp">
+
+                    <FrameLayout
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/bg_circle_green"
+                        android:backgroundTint="#D8E8C6"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_weather_drop"
+                            app:tint="#3E4D44" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="15dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="Cleanser"
+                            android:textColor="#3E4D44"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="Công thức nhẹ nhàng"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Card 2: Vitamin C Serum -->
+                <LinearLayout
+                    android:id="@+id/layout_routine_item2"
+                    android:layout_width="match_parent"
+                    android:layout_height="71dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:elevation="3dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="12dp">
+
+                    <FrameLayout
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/bg_circle_green"
+                        android:backgroundTint="#D8E8C6"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_weather_sun_outlined"
+                            app:tint="#3E4D44" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="15dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="Vitamin C Serum"
+                            android:textColor="#3E4D44"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="Bảo vệ da mặt khỏi tia UV"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Card 3: Moisturizer Gel -->
+                <LinearLayout
+                    android:id="@+id/layout_routine_item3"
+                    android:layout_width="match_parent"
+                    android:layout_height="71dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:elevation="3dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="12dp">
+
+                    <FrameLayout
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/bg_circle_green"
+                        android:backgroundTint="#D8E8C6"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_weather_lotion"
+                            app:tint="#3E4D44" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="15dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="Moisturizer Gel"
+                            android:textColor="#3E4D44"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="Tăng cường hydrat hóa nhẹ"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Card 4: SPF 50+ (Dark Green) -->
+                <LinearLayout
+                    android:id="@+id/layout_routine_item4"
+                    android:layout_width="match_parent"
+                    android:layout_height="71dp"
+                    android:background="@drawable/bg_btn_solid_feedback"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:elevation="3dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="16dp">
+
+                    <FrameLayout
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/bg_circle_green"
+                        android:backgroundTint="#C3C8C2"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_weather_protect" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="15dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="SPF 50+"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="Dặm lại mỗi 3h (Essential)"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Feedback Buttons Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="25dp"
+                android:gravity="center">
+
+                <!-- Phù hợp -->
+                <LinearLayout
+                    android:id="@+id/btn_suit_appropriate"
+                    android:layout_width="108dp"
+                    android:layout_height="39dp"
+                    android:background="@drawable/bg_btn_solid_feedback"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_weather_like"
+                        app:tint="#FFFFFF" />
+
+                    <TextView
+                        android:id="@+id/tv_suit_appropriate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="Phù hợp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+
+                <!-- Nhẹ hơn -->
+                <LinearLayout
+                    android:id="@+id/btn_suit_lighter"
+                    android:layout_width="85dp"
+                    android:layout_height="39dp"
+                    android:background="@drawable/bg_btn_outlined_feedback"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_weather_wand"
+                        app:tint="#67814D" />
+
+                    <TextView
+                        android:id="@+id/tv_suit_lighter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="Nhẹ hơn"
+                        android:textColor="#67814D"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+
+                <!-- Không hợp -->
+                <LinearLayout
+                    android:id="@+id/btn_suit_unsuitable"
+                    android:layout_width="108dp"
+                    android:layout_height="39dp"
+                    android:background="@drawable/bg_btn_outlined_feedback"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_weather_dislike"
+                        app:tint="#67814D" />
+
+                    <TextView
+                        android:id="@+id/tv_suit_unsuitable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="Không hợp"
+                        android:textColor="#67814D"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 7. Tình trạng da hôm nay Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginHorizontal="17dp"
+                android:fontFamily="@font/lexend"
+                android:text="TÌNH TRẠNG DA HÔM NAY"
+                android:textColor="#807F7F"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="17dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Oily Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:id="@+id/tv_oily_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="ĐỒ DẦU (OILY)"
+                            android:textColor="#807F7F"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_oily_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/lexend"
+                            android:text="75%"
+                            android:textColor="#807F7F"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <ProgressBar
+                            android:id="@+id/progress_oily"
+                            style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="6dp"
+                            android:layout_below="@id/tv_oily_label"
+                            android:layout_marginTop="6dp"
+                            android:max="100"
+                            android:progress="75"
+                            android:progressDrawable="@drawable/progress_oily" />
+                    </RelativeLayout>
+
+                    <!-- Hydration Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:id="@+id/tv_hydration_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="CẤP NƯỚC (HYDRATION)"
+                            android:textColor="#807F7F"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_hydration_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/lexend"
+                            android:text="50%"
+                            android:textColor="#879578"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <ProgressBar
+                            android:id="@+id/progress_hydration"
+                            style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="6dp"
+                            android:layout_below="@id/tv_hydration_label"
+                            android:layout_marginTop="6dp"
+                            android:max="100"
+                            android:progress="50"
+                            android:progressDrawable="@drawable/progress_hydration" />
+                    </RelativeLayout>
+
+                    <!-- Sensitivity Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tv_sensitivity_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="NHẠY CẢM (SENSITIVITY)"
+                            android:textColor="#807F7F"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_sensitivity_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/lexend"
+                            android:text="25%"
+                            android:textColor="#F04758"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <ProgressBar
+                            android:id="@+id/progress_sensitivity"
+                            style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="6dp"
+                            android:layout_below="@id/tv_sensitivity_label"
+                            android:layout_marginTop="6dp"
+                            android:max="100"
+                            android:progress="25"
+                            android:progressDrawable="@drawable/progress_sensitivity" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation Bar Include -->
+    <include
+        android:id="@+id/layout_bottom_nav"
+        layout="@layout/home_navapp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

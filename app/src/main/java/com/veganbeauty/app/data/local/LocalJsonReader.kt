@@ -191,7 +191,7 @@ class LocalJsonReader(private val context: Context) {
                         suitableFor = obj.optString("suitableFor", ""),
                         origin = obj.optString("origin", ""),
                         expiryDate = obj.optString("expiryDate", ""),
-                        isNew = obj.optBoolean("isNew", false),
+                        isNew = obj.optBoolean("newProduct", false) || obj.optBoolean("isNew", false),
                         
                         album = albumList,
                         mainIngredientsSummary = obj.optString("mainIngredientsSummary", ""),
@@ -621,4 +621,72 @@ class LocalJsonReader(private val context: Context) {
     fun getRawReelsJson(): String = try { context.assets.open("community_reels_fb.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
     fun getRawIngredientsJson(): String = try { context.assets.open("ingredient.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
     fun getRawProductsJson(): String = try { context.assets.open("products.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "{}" }
+
+    fun getStores(): List<StoreEntity> {
+        return try {
+            val jsonString = context.assets.open("rootie_stores.json").bufferedReader().use { it.readText() }
+            val jsonArray = org.json.JSONArray(jsonString)
+            val storeList = mutableListOf<StoreEntity>()
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val idObj = obj.optJSONObject("_id")
+                val id = idObj?.optString("\$oid") ?: obj.optString("ma_cua_hang")
+
+                val diaChiObj = obj.optJSONObject("dia_chi")
+                val toaDoObj = obj.optJSONObject("toa_do")
+                val lienHeObj = obj.optJSONObject("thong_tin_lien_he")
+                val hoatDongObj = obj.optJSONObject("thoi_gian_hoat_dong")
+
+                val thu26Obj = hoatDongObj?.optJSONObject("thu_2_6")
+                val moCua = thu26Obj?.optString("mo_cua") ?: "07:00"
+                val dongCua = thu26Obj?.optString("dong_cua") ?: "21:00"
+
+                val phoneArray = lienHeObj?.optJSONArray("so_dien_thoai")
+                val phoneList = mutableListOf<String>()
+                if (phoneArray != null) {
+                    for (j in 0 until phoneArray.length()) {
+                        phoneList.add(phoneArray.getString(j))
+                    }
+                }
+                val phoneStr = phoneList.joinToString(", ")
+
+                val tienNghiArray = obj.optJSONArray("tien_nghi")
+                val tienNghiList = mutableListOf<String>()
+                if (tienNghiArray != null) {
+                    for (j in 0 until tienNghiArray.length()) {
+                        tienNghiList.add(tienNghiArray.getString(j))
+                    }
+                }
+                val tienNghiStr = tienNghiList.joinToString(",")
+
+                storeList.add(
+                    StoreEntity(
+                        id = id,
+                        maCuaHang = obj.optString("ma_cua_hang", ""),
+                        tenCuaHang = obj.optString("ten_cua_hang", ""),
+                        loaiHinh = obj.optString("loai_hinh", ""),
+                        soNha = diaChiObj?.optString("so_nha", "") ?: "",
+                        duong = diaChiObj?.optString("duong", "") ?: "",
+                        phuongXa = diaChiObj?.optString("phuong_xa", "") ?: "",
+                        quanHuyen = diaChiObj?.optString("quan_huyen", "") ?: "",
+                        tinhThanh = diaChiObj?.optString("tinh_thanh", "") ?: "",
+                        diaChiDayDu = diaChiObj?.optString("dia_chi_day_du", "") ?: "",
+                        lat = toaDoObj?.optDouble("lat", 0.0) ?: 0.0,
+                        lng = toaDoObj?.optDouble("lng", 0.0) ?: 0.0,
+                        soDienThoai = phoneStr,
+                        email = lienHeObj?.optString("email", "") ?: "",
+                        moCua = moCua,
+                        dongCua = dongCua,
+                        trangThai = obj.optString("trang_thai", "Đang hoạt động"),
+                        isActive = obj.optBoolean("isActive", true),
+                        tienNghi = tienNghiStr
+                    )
+                )
+            }
+            storeList
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
 }

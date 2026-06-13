@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="24dp">
+
+    <!-- Header Day Indicator with small black bullet on the left -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <!-- Bullet -->
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/bg_circle_black"
+            android:layout_marginStart="-24dp"
+            android:layout_marginEnd="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTimelineDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="April 30, 2026"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/be_vietnam_pro" />
+
+            <TextView
+                android:id="@+id/tvTimelineDayOfWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="THỨ NĂM"
+                android:textColor="#3E4D44"
+                android:textSize="14sp"
+                android:fontFamily="@font/be_vietnam_pro" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Morning Card container -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardMorningTimeline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Routine Buổi Sáng"
+                    android:textColor="#3E4D44"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/be_vietnam_pro" />
+
+                <!-- Badge -->
+                <TextView
+                    android:id="@+id/tvMorningBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/bg_timeline_badge_completed"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:text="HOÀN THÀNH"
+                    android:textColor="#3E4D44"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/be_vietnam_pro" />
+            </RelativeLayout>
+
+            <!-- Steps layout -->
+            <LinearLayout
+                android:id="@+id/layoutMorningSteps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Evening Card container -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardEveningTimeline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Routine Buổi Tối"
+                    android:textColor="#3E4D44"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/be_vietnam_pro" />
+
+                <!-- Badge -->
+                <TextView
+                    android:id="@+id/tvEveningBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/bg_timeline_badge_partial"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:text="MỘT PHẦN"
+                    android:textColor="#F04758"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/be_vietnam_pro" />
+            </RelativeLayout>
+
+            <!-- Steps layout -->
+            <LinearLayout
+                android:id="@+id/layoutEveningSteps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Empty Session text (if nothing recorded for both) -->
+    <TextView
+        android:id="@+id/tvNoActivityMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0D3E4D44"
+        android:padding="16dp"
+        android:text="Bạn chưa ghi nhận hoạt động nào cho ngày này. Đừng bỏ lỡ lần sau nhé!"
+        android:textColor="#879578"
+        android:textSize="14sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:visibility="gone"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Coin reward pill for the day -->
+    <LinearLayout
+        android:id="@+id/layoutRewardPill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:background="#F5FFEA"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:gravity="center"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_coin"
+            android:layout_marginEnd="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+10 xu hoàn thành ngày"
+            android:textColor="#3E4D44"
+            android:textSize="13sp"
+            android:fontFamily="@font/be_vietnam_pro" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -326,6 +326,7 @@ class FirestoreService {
         }
     }
 
+<<<<<<< HEAD
     suspend fun addCommentToPost(postId: String, commentMap: Map<String, Any>): Boolean {
         return try {
             // Append to comments array and increment comments_count
@@ -435,5 +436,42 @@ class FirestoreService {
             } ?: "")
         }
         return list
+    }
+
+    suspend fun fetchAllStores(): List<StoreEntity> {
+        return try {
+            val snapshot = db.collection("stores").get().await()
+            snapshot.documents.mapNotNull { doc ->
+                val diaChiMap = doc.get("dia_chi") as? Map<String, Any>
+                val toaDoMap = doc.get("toa_do") as? Map<String, Any>
+                val lienHeMap = doc.get("thong_tin_lien_he") as? Map<String, Any>
+                val hoatDongMap = doc.get("thoi_gian_hoat_dong") as? Map<String, Any>
+                val thu26Map = hoatDongMap?.get("thu_2_6") as? Map<String, Any>
+                val moCua = thu26Map?.get("mo_cua") as? String ?: "07:00"
+                val dongCua = thu26Map?.get("dong_cua") as? String ?: "21:00"
+                val phoneList = lienHeMap?.get("so_dien_thoai") as? List<*>
+                val phoneStr = phoneList?.filterIsInstance<String>()?.joinToString(", ") ?: ""
+                StoreEntity(
+                    id = doc.id,
+                    maCuaHang = doc.getString("ma_cua_hang") ?: "",
+                    tenCuaHang = doc.getString("ten_cua_hang") ?: "",
+                    loaiHinh = doc.getString("loai_hinh") ?: "",
+                    soNha = diaChiMap?.get("so_nha") as? String ?: "",
+                    duong = diaChiMap?.get("duong") as? String ?: "",
+                    phuongXa = diaChiMap?.get("phuong_xa") as? String ?: "",
+                    quanHuyen = diaChiMap?.get("quan_huyen") as? String ?: "",
+                    tinhThanh = diaChiMap?.get("tinh_thanh") as? String ?: "",
+                    diaChiDayDu = diaChiMap?.get("dia_chi_day_du") as? String ?: doc.getString("dia_chi_day_du") ?: "",
+                    lat = (toaDoMap?.get("lat") as? Number)?.toDouble() ?: 0.0,
+                    lng = (toaDoMap?.get("lng") as? Number)?.toDouble() ?: 0.0,
+                    soDienThoai = phoneStr,
+                    email = lienHeMap?.get("email") as? String ?: "",
+                    moCua = moCua,
+                    dongCua = dongCua,
+                    trangThai = doc.getString("trang_thai") ?: "Đang hoạt động",
+                    isActive = doc.getBoolean("isActive") ?: doc.getBoolean("is_active") ?: true
+                )
+            }
+        } catch (e: Exception) { emptyList() }
     }
 }

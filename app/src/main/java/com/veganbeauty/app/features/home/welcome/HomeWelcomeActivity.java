@@ -108,6 +108,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         setupInsets();
         setupBottomSheet();
         setupViewModel();
+        syncTeamUsers();
         startSplashSequence();
     }
 
@@ -834,6 +835,62 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void syncTeamUsers() {
+        new Thread(() -> {
+            try {
+                com.veganbeauty.app.data.local.RootieDatabase db =
+                    com.veganbeauty.app.data.local.RootieDatabase.getDatabase(getApplicationContext());
+                com.veganbeauty.app.data.local.dao.UserDao userDao = db.userDao();
+
+                String jsonString = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(getAssets().open("users.json")))
+                    .lines().collect(java.util.stream.Collectors.joining("\n"));
+
+                org.json.JSONArray jsonArray = new org.json.JSONArray(jsonString);
+
+                // Clean up old "Test Account" from SQLite
+                userDao.deleteUserByUsernameSync("Test Account");
+
+                // Clean up "Test Account" from Firebase
+                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .whereEqualTo("username", "Test Account")
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                            doc.getReference().delete();
+                        }
+                    });
+
+                // Only sync team member user IDs
+                java.util.Set<String> teamIds = new java.util.HashSet<>(java.util.Arrays.asList(
+                    "test_001", "39751498", "87962440", "68751659", "85097162", "48228004"
+                ));
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    org.json.JSONObject obj = jsonArray.getJSONObject(i);
+                    String userId = obj.optString("user_id", "");
+                    if (!teamIds.contains(userId)) continue;
+
+                    com.veganbeauty.app.data.local.entities.UserEntity user =
+                        new com.veganbeauty.app.data.local.entities.UserEntity(
+                            userId,
+                            obj.optString("username", ""),
+                            obj.optString("full_name", ""),
+                            obj.optString("email", ""),
+                            obj.optString("phone", ""),
+                            obj.optString("password", ""),
+                            obj.optString("avatar", null)
+                        );
+
+                    userDao.insertUserSync(user);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void navigateToMain() {

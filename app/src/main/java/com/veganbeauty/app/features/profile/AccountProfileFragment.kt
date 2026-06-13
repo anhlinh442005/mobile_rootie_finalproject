@@ -160,11 +160,52 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        // Navigate to Account Setup Fragment
+        binding.btnAccountSetup.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountProfileSetupFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Voucher Wallet Fragment
+        binding.btnRootieDeal.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, AccountVoucherFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Action Buttons Click Listeners
         view.findViewById<View>(com.veganbeauty.app.R.id.iv_pin)?.parent?.let { parentLayout ->
             (parentLayout as View).setOnClickListener {
                 Toast.makeText(context, "Chọn địa chỉ giao hàng", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Highlight the "Tài khoản" tab as active in the bottom navigation menu and set up click listeners
+        com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, com.veganbeauty.app.R.id.nav_account)
+
+
+
+        // Navigate to Weather & Skin page
+        binding.btnWeatherSkin.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.weather.WeatherForecastFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Navigate to Skincare Routine Reminder page
+        binding.btnSkinReminder.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.routine.SkinReminderFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.btnTreatmentHistory.setOnClickListener {
+            Toast.makeText(context, "Tính năng Lịch sử liệu trình đang được phát triển", Toast.LENGTH_SHORT).show()
         }
 
         // Navigate to Skin Profile (Quiz Result) if skin analysis exists, otherwise navigate to start Quiz
@@ -186,7 +227,7 @@ class AccountProfileFragment : RootieFragment() {
                 }
 
                 parentFragmentManager.beginTransaction()
-                    .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.quiz.QuizTestResultFragment())
+                    .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.profile.SkinAllergyProfileFragment())
                     .addToBackStack(null)
                     .commit()
             } else {

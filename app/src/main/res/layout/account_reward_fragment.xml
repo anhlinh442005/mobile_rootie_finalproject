@@ -194,20 +194,19 @@
 
             <!-- Alert Warning Banner -->
             <LinearLayout
+                android:id="@+id/banner_warning"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/bg_alert_warning"
+                android:background="@drawable/bg_alert_red"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="10dp">
+                android:padding="12dp">
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_warning_red"
-                    app:tint="#D97706" />
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_warning_red" />
 
                 <!-- Rich styling for bold "500 điểm" text is handled dynamically in Kotlin -->
                 <TextView
@@ -215,10 +214,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:fontFamily="sans-serif"
+                    android:fontFamily="@font/lexend"
                     android:text="Bạn có 500 điểm sắp hết hạn vào 30/11."
-                    android:textColor="#B45309"
-                    android:textSize="12sp" />
+                    android:textColor="#C62828"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Tab Headers -->

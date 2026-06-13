@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Room
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
@@ -35,6 +34,11 @@ class AccountRewardDetailFragment : RootieFragment() {
     private var isOwned = false
     private var dbId = -1
     private var rankRequired = "Đồng"
+    private var minOrderValue = 0
+    private var applicableProducts = "Tất cả sản phẩm"
+    private var offerType = "fixed_amount"
+    private var productId: String? = null
+    private var discountValue = 0
 
     private var currentPoints = 8500
 
@@ -56,6 +60,11 @@ class AccountRewardDetailFragment : RootieFragment() {
             isOwned = it.getBoolean(ARG_IS_OWNED)
             dbId = it.getInt(ARG_DB_ID)
             rankRequired = it.getString(ARG_RANK_REQUIRED) ?: "Đồng"
+            minOrderValue = it.getInt(ARG_MIN_ORDER_VALUE)
+            applicableProducts = it.getString(ARG_APPLICABLE_PRODUCTS) ?: "Tất cả sản phẩm"
+            offerType = it.getString(ARG_OFFER_TYPE) ?: "fixed_amount"
+            productId = it.getString(ARG_PRODUCT_ID)
+            discountValue = it.getInt(ARG_DISCOUNT_VALUE)
         }
 
         setupRepository()
@@ -64,7 +73,12 @@ class AccountRewardDetailFragment : RootieFragment() {
 
     private fun setupRepository() {
         val db = RootieDatabase.getDatabase(requireContext())
-        repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
+        repository = OrderRepository(
+            db.orderDao(),
+            db.rewardPointDao(),
+            db.userGiftDao(),
+            LocalJsonReader(requireContext())
+        )
     }
 
     override fun setupUI(view: View) {
@@ -80,34 +94,55 @@ class AccountRewardDetailFragment : RootieFragment() {
         binding.tvGiftTitle.text = giftTitle
         binding.tvGiftSubtitle.text = giftDescription
         binding.tvGiftCost.text = String.format("%,d xu", giftCost).replace(',', '.')
-        binding.tvExpiryDate.text = giftExpiryDate
         
-        // Bind the code chip
-        binding.tvUsageCodeChip.text = giftCode
+        // Expiry date format split
+        val displayDate = if (giftExpiryDate.contains(" ")) giftExpiryDate.split(" ")[0] else giftExpiryDate
+        binding.tvExpiryDate.text = displayDate
         
-        val days = when (giftExpiryDate) {
-            "Hôm nay" -> "Hôm nay"
-            "15/12/2026" -> "15 ngày"
-            "30/11/2026" -> "Hết hạn"
-            "31/12/2026" -> "27 ngày"
-            "31/12/2027" -> "Còn 1 năm"
+        // Bind the code chip (Mask code if not owned!)
+        if (isOwned) {
+            binding.tvUsageCodeChip.text = giftCode
+        } else {
+            binding.tvUsageCodeChip.text = "******"
+        }
+        
+        val days = when (displayDate) {
+            "Hôm nay", "2026-06-11" -> "Hôm nay"
+            "2026-12-15" -> "Còn 6 tháng"
+            "2026-12-31" -> "Còn 6 tháng"
+            "2027-01-15" -> "Còn 7 tháng"
             else -> "Còn hiệu lực"
         }
         binding.tvRemainingDays.text = days
 
-        if (giftExpiryDate == "Hôm nay") {
+        if (days == "Hôm nay") {
             binding.tvRemainingDays.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_cancelled_text))
             binding.tvStatus.text = "Gấp"
-        } else if (days == "Hết hạn" || giftExpiryDate == "30/11/2026") {
+        } else if (days == "Hết hạn") {
             binding.tvRemainingDays.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark))
             binding.tvRemainingDays.text = "Hết hạn"
             binding.tvStatus.text = "Hết hiệu lực"
         } else {
-            binding.tvRemainingDays.setTextColor(Color.parseColor("#7A9161")) // Custom green color from screenshot
+            binding.tvRemainingDays.setTextColor(Color.parseColor("#7A9161"))
             binding.tvStatus.text = "Có hiệu lực"
         }
 
-        binding.tvUsageLimit.text = if (giftType == "voucher") "0/1" else "Chỉ nhận 1 lần"
+        binding.tvUsageLimit.text = if (giftType.startsWith("voucher")) "0/1" else "Chỉ nhận 1 lần"
+
+        // Setup dynamic applicability checkmark rules
+        binding.tvRuleApplicableProducts.text = "Áp dụng cho: $applicableProducts"
+        binding.tvRuleMinOrderValue.text = if (minOrderValue > 0) {
+            "Hóa đơn tối thiểu " + String.format("%,d đ", minOrderValue).replace(',', '.')
+        } else {
+            "Áp dụng cho mọi hóa đơn"
+        }
+        
+        binding.tvRuleOfferType.text = when (offerType) {
+            "percentage" -> "Ưu đãi: Giảm $discountValue%"
+            "fixed_amount" -> "Ưu đãi: Giảm " + String.format("%,d đ", discountValue).replace(',', '.')
+            "product_gift" -> "Ưu đãi: Tặng kèm sản phẩm"
+            else -> "Ưu đãi đặc quyền từ Rootie"
+        }
 
         // Setup owned details vs exchange details
         if (isOwned) {
@@ -142,10 +177,11 @@ class AccountRewardDetailFragment : RootieFragment() {
                 currentPoints = pointsVal
                 binding.tvUserBalance.text = "Bạn hiện có: ${String.format("%,d xu", pointsVal).replace(',', '.')}"
  
-                val isLockedByRank = (rankRequired == "Vàng" && pointsVal < 10000) || (rankRequired == "Kim Cương" && pointsVal < 20000)
+                val isLockedByRank = (rankRequired == "Vàng" && pointsVal < 10000) || 
+                                     (rankRequired == "VIP" && pointsVal < 20000) ||
+                                     (rankRequired == "Kim Cương" && pointsVal < 20000)
                 val isNotEnoughPoints = pointsVal < giftCost
  
-                // Progress Bar styling (100% if enough points)
                 if (pointsVal >= giftCost) {
                     binding.pbRedeemProgress.progress = 100
                     binding.tvQualifyStatus.text = "✓ Đủ điều kiện"
@@ -192,7 +228,12 @@ class AccountRewardDetailFragment : RootieFragment() {
                 cost = giftCost,
                 expiryDate = giftExpiryDate,
                 code = giftCode,
-                giftType = giftType
+                giftType = giftType,
+                minOrderValue = minOrderValue,
+                applicableProducts = applicableProducts,
+                offerType = offerType,
+                productId = productId,
+                discountValue = discountValue
             )
 
             if (success) {
@@ -247,8 +288,12 @@ class AccountRewardDetailFragment : RootieFragment() {
         private const val ARG_IS_OWNED = "arg_is_owned"
         private const val ARG_DB_ID = "arg_db_id"
         private const val ARG_RANK_REQUIRED = "arg_rank_required"
+        private const val ARG_MIN_ORDER_VALUE = "arg_min_order_value"
+        private const val ARG_APPLICABLE_PRODUCTS = "arg_applicable_products"
+        private const val ARG_OFFER_TYPE = "arg_offer_type"
+        private const val ARG_PRODUCT_ID = "arg_product_id"
+        private const val ARG_DISCOUNT_VALUE = "arg_discount_value"
 
-        // Global flag to redirect back to target tab
         var selectRewardTabOnResume = 0
 
         fun newInstance(
@@ -261,7 +306,12 @@ class AccountRewardDetailFragment : RootieFragment() {
             giftType: String,
             isOwned: Boolean,
             dbId: Int,
-            rankRequired: String
+            rankRequired: String,
+            minOrderValue: Int,
+            applicableProducts: String,
+            offerType: String,
+            productId: String?,
+            discountValue: Int
         ): AccountRewardDetailFragment {
             val fragment = AccountRewardDetailFragment()
             val args = Bundle()
@@ -275,9 +325,13 @@ class AccountRewardDetailFragment : RootieFragment() {
             args.putBoolean(ARG_IS_OWNED, isOwned)
             args.putInt(ARG_DB_ID, dbId)
             args.putString(ARG_RANK_REQUIRED, rankRequired)
+            args.putInt(ARG_MIN_ORDER_VALUE, minOrderValue)
+            args.putString(ARG_APPLICABLE_PRODUCTS, applicableProducts)
+            args.putString(ARG_OFFER_TYPE, offerType)
+            args.putString(ARG_PRODUCT_ID, productId)
+            args.putInt(ARG_DISCOUNT_VALUE, discountValue)
             fragment.arguments = args
             return fragment
         }
     }
 }
-
