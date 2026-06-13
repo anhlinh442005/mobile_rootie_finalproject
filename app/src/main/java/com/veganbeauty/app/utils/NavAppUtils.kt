@@ -24,21 +24,19 @@ object NavAppUtils {
             val navItem = view.findViewById<View>(id)
             if (navItem != null && navItem is ViewGroup) {
                 // Colorize
-                if (id != R.id.nav_myskin) {
-                    var imageView: ImageView? = null
-                    var textView: TextView? = null
-                    for (i in 0 until navItem.childCount) {
-                        val child = navItem.getChildAt(i)
-                        if (child is ImageView) imageView = child
-                        if (child is TextView) textView = child
-                    }
-                    if (id == activeTabId) {
-                        imageView?.setColorFilter(activeColor)
-                        textView?.setTextColor(activeColor)
-                    } else {
-                        imageView?.setColorFilter(inactiveColor)
-                        textView?.setTextColor(inactiveColor)
-                    }
+                var imageView: ImageView? = null
+                var textView: TextView? = null
+                for (i in 0 until navItem.childCount) {
+                    val child = navItem.getChildAt(i)
+                    if (child is ImageView) imageView = child
+                    if (child is TextView) textView = child
+                }
+                if (id == activeTabId) {
+                    imageView?.setColorFilter(activeColor)
+                    textView?.setTextColor(activeColor)
+                } else {
+                    imageView?.setColorFilter(inactiveColor)
+                    textView?.setTextColor(inactiveColor)
                 }
                 
                 // Set Click Listener
@@ -59,6 +57,7 @@ object NavAppUtils {
                                 }
                                 transaction.replace(R.id.main_container, dest)
                             }
+                            R.id.nav_myskin -> transaction.replace(R.id.main_container, com.veganbeauty.app.features.myskin.MySkinFragment())
                             R.id.nav_community -> transaction.replace(R.id.main_container, ComLoadingFragment())
                             R.id.nav_account -> transaction.replace(R.id.main_container, AccountProfileFragment())
                         }

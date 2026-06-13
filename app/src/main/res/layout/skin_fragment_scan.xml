@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/neutral">
+
+    <!-- ===== HEADER ===== -->
+    <LinearLayout
+        android:id="@+id/skin_scan_header"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Back button -->
+        <ImageView
+            android:id="@+id/skin_scan_btn_back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:contentDescription="Quay lại"
+            android:src="@drawable/ic_arrow_back"
+            android:tint="@color/primary"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="44dp"
+            android:gravity="center"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Quét da mặt"
+            android:textColor="@color/primary"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- ===== INSTRUCTION TEXT ===== -->
+    <TextView
+        android:id="@+id/skin_scan_instruction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginHorizontal="32dp"
+        android:gravity="center"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:lineSpacingExtra="3dp"
+        android:text="Đặt khuôn mặt vào khung hình\nGiữ thẳng và đảm bảo đủ ánh sáng"
+        android:textColor="@color/content"
+        android:textSize="13sp"
+        app:layout_constraintTop_toBottomOf="@id/skin_scan_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ===== CAMERA PREVIEW AREA ===== -->
+    <FrameLayout
+        android:id="@+id/skin_scan_preview_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="28dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/skin_bg_camera_preview"
+        android:clipToOutline="true"
+        app:layout_constraintTop_toBottomOf="@id/skin_scan_instruction"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="3:4">
+
+        <!-- Camera preview (CameraX PreviewView) -->
+        <androidx.camera.view.PreviewView
+            android:id="@+id/skin_scan_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:scaleType="fillCenter" />
+
+        <!-- Oval face guide overlay -->
+        <ImageView
+            android:id="@+id/skin_scan_face_guide"
+            android:layout_width="200dp"
+            android:layout_height="260dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/skin_face_oval_guide" />
+
+        <!-- Flip camera button (top-right corner) -->
+        <FrameLayout
+            android:id="@+id/skin_scan_btn_flip"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="12dp"
+            android:background="@drawable/skin_bg_btn_capture"
+            android:alpha="0.75"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="Đảo camera"
+                android:src="@drawable/ic_flip_camera"
+                android:tint="@color/neutral" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <!-- ===== BOTTOM ACTION BAR ===== -->
+    <LinearLayout
+        android:id="@+id/skin_scan_bottom_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="24dp"
+        app:layout_constraintTop_toBottomOf="@id/skin_scan_preview_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/skin_scan_tips">
+
+        <!-- Nút Hướng dẫn -->
+        <LinearLayout
+            android:id="@+id/skin_scan_btn_guide"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Hướng dẫn"
+                    android:src="@drawable/ic_article_outline"
+                    android:tint="@color/primary" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:gravity="center"
+                android:text="Hướng dẫn"
+                android:textColor="@color/primary"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <!-- Nút Camera (chụp) — to hơn ở giữa -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/skin_scan_btn_capture"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:background="@drawable/skin_bg_btn_capture"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Chụp ảnh"
+                    android:src="@drawable/ic_chat_camera"
+                    android:tint="@color/neutral" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <!-- Nút Album -->
+        <LinearLayout
+            android:id="@+id/skin_scan_btn_album"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Album"
+                    android:src="@drawable/ic_chat_gallery"
+                    android:tint="@color/primary" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:gravity="center"
+                android:text="Album"
+                android:textColor="@color/primary"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/skin_scan_tips"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:lineSpacingExtra="3dp"
+        android:text="Tips: Rửa mặt sạch và để mặt mộc để có\nkết quả chính xác nhất"
+        android:textColor="@color/content"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

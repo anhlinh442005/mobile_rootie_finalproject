@@ -9,12 +9,12 @@
 
     <TextView
         android:id="@+id/tvRank"
-        android:layout_width="20dp"
+        android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="#28362E"
-        android:textSize="13sp"
-        android:textStyle="bold" />
+        android:textColor="#526053"
+        android:textSize="32sp"
+        android:fontFamily="@font/be_vietnam_pro_bold" />
 
     <ImageView
         android:id="@+id/ivProduct"
@@ -48,14 +48,24 @@
             android:textColor="#E53935"
             android:textSize="10sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvOriginalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#9E9E9E"
+            android:textSize="8sp" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/btnAction"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_cart_button_green"
         android:contentDescription="@null"
-        android:src="@drawable/ic_bag"
-        app:tint="@color/primary" />
+        android:padding="6dp"
+        android:src="@drawable/ic_add_to_cart"
+        app:tint="@color/neutral" />
 
 </LinearLayout>

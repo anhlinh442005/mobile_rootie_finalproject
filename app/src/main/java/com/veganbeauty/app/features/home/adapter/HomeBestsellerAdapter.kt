@@ -37,6 +37,11 @@ class HomeBestsellerAdapter(
             binding.tvRank.text = rank.toString()
             binding.tvProductName.text = product.name
             binding.tvPrice.text = priceFormatter.format(product.price)
+            
+            val originalPrice = product.price / 0.75 // Assuming 25% discount to match design
+            binding.tvOriginalPrice.text = priceFormatter.format(originalPrice)
+            binding.tvOriginalPrice.paintFlags = binding.tvOriginalPrice.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+            
             binding.ivProduct.load(product.mainImage) {
                 crossfade(true)
                 placeholder(android.R.color.darker_gray)

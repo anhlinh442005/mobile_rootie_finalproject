@@ -12,6 +12,57 @@
     "brand": true
   },
   {
+    "username": "Xuân NK",
+    "user_id": "xuannk_001",
+    "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
+    "email": "xuannk23411@st.uel.edu.vn",
+    "phone": "0123456789",
+    "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "full_name": "Nguyễn Khánh Xuân",
+    "bookingHistory": [
+      {
+        "id": "b1",
+        "status": "Sắp diễn ra",
+        "dateDisplay": "20",
+        "monthDisplay": "Tháng 5\nT.2",
+        "serviceName": "Soi da cơ bản",
+        "time": "10:00 - 10:45",
+        "storeName": "Rootie Gò Vấp",
+        "storeAddress": "27 Quang Trung, P.10, Gò Vấp, Tp. Hồ Chí Minh"
+      },
+      {
+        "id": "b2",
+        "status": "Đã hoàn thành",
+        "dateDisplay": "05",
+        "monthDisplay": "Tháng 5\nCN",
+        "serviceName": "Soi da cơ bản",
+        "time": "10:00 - 10:45",
+        "storeName": "Rootie Gò Vấp",
+        "storeAddress": "27 Quang Trung, P.10, Gò Vấp, Tp. Hồ Chí Minh"
+      },
+      {
+        "id": "b3",
+        "status": "Đã hoàn thành",
+        "dateDisplay": "18",
+        "monthDisplay": "Tháng 4\nT.5",
+        "serviceName": "Soi da cơ bản",
+        "time": "10:00 - 10:45",
+        "storeName": "Rootie Gò Vấp",
+        "storeAddress": "27 Quang Trung, P.10, Gò Vấp, Tp. Hồ Chí Minh"
+      },
+      {
+        "id": "b4",
+        "status": "Đã huỷ",
+        "dateDisplay": "28",
+        "monthDisplay": "Tháng 4\nCN",
+        "serviceName": "Soi da cơ bản",
+        "time": "10:00 - 10:45",
+        "storeName": "Rootie Gò Vấp",
+        "storeAddress": "27 Quang Trung, P.10, Gò Vấp, Tp. Hồ Chí Minh"
+      }
+    ]
+  },
+  {
     "username": "Test User",
     "user_id": "test_001",
     "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
