@@ -37,7 +37,7 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_post" />
+            android:src="@drawable/ic_plane" />
     </RelativeLayout>
 
     <View
@@ -137,7 +137,7 @@
                 android:layout_height="36dp"
                 android:layout_marginStart="12dp"
                 android:background="@drawable/com_bg_circle_blue"
-                android:src="@drawable/ic_post"
+                android:src="@drawable/ic_plane"
                 android:padding="8dp"
                 app:tint="@color/white" />
         </LinearLayout>

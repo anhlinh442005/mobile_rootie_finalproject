@@ -377,53 +377,33 @@ class CommunityCreatePostFragment : RootieFragment() {
             val allProductsArray = jsonObject.optJSONArray("products") ?: org.json.JSONArray()
             
             // Read user's showcase products
-            // Read user's showcase products
+            // Read user's completed orders
             val productsMap = mutableMapOf<String, org.json.JSONObject>()
             try {
-                val prefs = requireContext().getSharedPreferences("AffiliatePrefs", android.content.Context.MODE_PRIVATE)
-                val hiddenProducts = prefs.getStringSet("hiddenProducts", mutableSetOf())?.toSet() ?: emptySet()
-                
-                // From orders.json
-                val jsonOrders = requireContext().assets.open("orders.json").bufferedReader().use { it.readText() }
-                val ordersData = org.json.JSONObject(jsonOrders)
-                val ordersArr = ordersData.optJSONArray("orders") ?: org.json.JSONArray()
-                for (i in 0 until ordersArr.length()) {
-                    val order = ordersArr.optJSONObject(i) ?: continue
-                    val status = order.optString("status")
-                    if (status != "Đã hủy") {
-                        val items = order.optJSONArray("items") ?: continue
-                        for (j in 0 until items.length()) {
-                            val item = items.optJSONObject(j) ?: continue
-                            val pId = item.optString("productId")
-                            if (pId.isNotEmpty() && !hiddenProducts.contains(pId)) {
-                                val obj = org.json.JSONObject()
-                                obj.put("id", pId)
-                                obj.put("name", item.optString("productName"))
-                                obj.put("thumbnail_url", item.optString("productImage"))
-                                productsMap[pId] = obj
-                            }
-                        }
+                val currentUserId = "test_001" // Or get from session
+                val completedOrders = LocalJsonReader(requireContext()).getAllOrders().filter { it.userId == currentUserId && it.status == "Hoàn tất" }
+                val purchasedProductIds = mutableSetOf<String>()
+                for (order in completedOrders) {
+                    for (item in order.items) {
+                        purchasedProductIds.add(item.productId)
                     }
                 }
-                
-                // From affiliate.json
-                val jsonAffiliate = requireContext().assets.open("affiliate.json").bufferedReader().use { it.readText() }
-                val jsonArray = org.json.JSONArray(jsonAffiliate)
-                if (jsonArray.length() > 0) {
-                    val data = jsonArray.getJSONObject(0)
-                    val orders = data.optJSONArray("orders") ?: org.json.JSONArray()
-                    for (i in 0 until orders.length()) {
-                        val order = orders.getJSONObject(i)
-                        val pId = order.optString("product_id")
-                        if (pId.isNotEmpty() && !hiddenProducts.contains(pId)) {
-                            if (!productsMap.containsKey(pId)) {
-                                val obj = org.json.JSONObject()
-                                obj.put("id", pId)
-                                obj.put("name", order.optString("product_name"))
-                                obj.put("thumbnail_url", order.optString("product_image"))
-                                productsMap[pId] = obj
-                            }
-                        }
+
+                // Map against products.json
+                val productsJsonStr = requireContext().assets.open("products.json").bufferedReader().use { it.readText() }
+                val productsData = org.json.JSONObject(productsJsonStr)
+                val allProductsArray = productsData.optJSONArray("products") ?: org.json.JSONArray(productsJsonStr)
+
+                for (i in 0 until allProductsArray.length()) {
+                    val p = allProductsArray.optJSONObject(i) ?: continue
+                    val pId = p.optString("id", p.optString("_id"))
+                    
+                    if (purchasedProductIds.contains(pId)) {
+                        val obj = org.json.JSONObject()
+                        obj.put("id", pId)
+                        obj.put("name", p.optString("name", "Sản phẩm"))
+                        obj.put("thumbnail_url", p.optString("mainImage", p.optString("image", "")))
+                        productsMap[pId] = obj
                     }
                 }
             } catch (e: Exception) {

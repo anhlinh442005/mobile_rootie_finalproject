@@ -47,39 +47,20 @@ class CommunityAffiliateOrdersFragment : Fragment() {
             symbols.groupingSeparator = '.'
             val format = DecimalFormat("#,###đ", symbols)
             
-            val jsonProducts = requireContext().assets.open("products.json").bufferedReader().use { it.readText() }
-            val productsData = org.json.JSONObject(jsonProducts)
-            val productsArr = productsData.optJSONArray("products") ?: org.json.JSONArray(jsonProducts)
+            val allProducts = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getAllProducts()
             val productImagesMap = mutableMapOf<String, String>()
-            for (i in 0 until productsArr.length()) {
-                val p = productsArr.optJSONObject(i) ?: continue
-                val categoryIds = p.optJSONArray("categoryId")
-                val catId = if (categoryIds != null && categoryIds.length() > 0) categoryIds.optString(0) else ""
-                val img = p.optString("mainImage", p.optString("image", ""))
-                if (catId.isNotEmpty() && img.isNotEmpty()) {
-                    productImagesMap[catId] = img
-                }
-                
-                val id = p.optString("id", p.optString("_id"))
-                if (id.isNotEmpty() && img.isNotEmpty()) {
-                    productImagesMap[id] = img
-                }
+            for (p in allProducts) {
+                productImagesMap[p.id] = p.mainImage
             }
             
-            val jsonStr = requireContext().assets.open("affiliate.json").bufferedReader().use { it.readText() }
-            val jsonArray = JSONArray(jsonStr)
-            if (jsonArray.length() == 0) return
-            
-            val data = jsonArray.getJSONObject(0)
-            val orders = data.optJSONArray("orders") ?: return
+            val allOrders = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getAllOrders()
             
             val rvOrders = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvOrders)
             rvOrders.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             
-            val orderList = mutableListOf<org.json.JSONObject>()
-            for (i in 0 until orders.length()) {
-                orderList.add(orders.getJSONObject(i))
-            }
+            val currentUserId = "test_001" // Or get from session
+            // Lọc ra các đơn hàng affiliate của user này không bị hủy
+            val orderList = allOrders.filter { it.status != "Đã hủy" && it.affiliate != null && it.affiliate.referrerUserId == currentUserId }
             
             rvOrders.adapter = AffiliateOrderAdapter(orderList, productImagesMap, format)
             
@@ -89,7 +70,7 @@ class CommunityAffiliateOrdersFragment : Fragment() {
     }
     
     inner class AffiliateOrderAdapter(
-        private val items: List<org.json.JSONObject>,
+        private val items: List<com.veganbeauty.app.data.local.entities.OrderEntity>,
         private val productImagesMap: Map<String, String>,
         private val format: DecimalFormat
     ) : androidx.recyclerview.widget.RecyclerView.Adapter<AffiliateOrderAdapter.ViewHolder>() {
@@ -118,18 +99,16 @@ class CommunityAffiliateOrdersFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val order = items[position]
-            val orderId = order.optString("order_id")
-            val orderDate = order.optString("order_date")
-            val customer = order.optString("customer")
-            val orderValue = order.optLong("order_value")
-            val commission = order.optLong("commission")
-            val status = order.optString("status")
-            val productId = order.optString("product_id")
-            val productImage = productImagesMap[productId] ?: order.optString("product_image")
+            val orderId = order.orderId
+            val orderDate = order.orderDate
+            val customer = order.shippingName
+            val orderValue = order.totalAmount
+            val commission = order.affiliate?.commissionAmount ?: 0L
+            val status = order.status
             
             holder.tvOrderId.text = orderId
             
-            if (status == "Đã duyệt" || status == "Thành công") {
+            if (status == "Hoàn tất" || status == "Đã duyệt" || status == "Thành công") {
                 holder.tvStatus.text = "Thành công"
                 holder.tvStatus.setTextColor(android.graphics.Color.parseColor("#56694E"))
                 holder.tvStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#EAF1E7"))
@@ -143,27 +122,38 @@ class CommunityAffiliateOrdersFragment : Fragment() {
                 holder.tvStatus.compoundDrawablePadding = 0
             }
             
-            holder.ivProduct1.visibility = View.VISIBLE
-            if (productImage.isNotEmpty()) {
-                holder.ivProduct1.load(productImage)
-            }
-            
-            // Faking item count logic for UI presentation
-            val itemCount = if (orderValue > 200000) 2 else 1
-            holder.tvItemCount.text = "$itemCount sản phẩm"
-            
-            if (itemCount > 1) {
-                holder.ivProduct2.visibility = View.VISIBLE
-                if (productImage.isNotEmpty()) {
-                    holder.ivProduct2.load(productImage)
-                }
-            } else {
-                holder.ivProduct2.visibility = View.GONE
-            }
-            
+            var itemCount = 0
+            holder.ivProduct1.visibility = View.GONE
+            holder.ivProduct2.visibility = View.GONE
             holder.ivProduct3.visibility = View.GONE
             holder.tvMoreImages.visibility = View.GONE
             
+            for (i in 0 until order.items.size) {
+                val item = order.items[i]
+                val pImg = productImagesMap[item.productId] ?: item.productImage
+                itemCount += item.quantity
+                
+                when (i) {
+                    0 -> {
+                        holder.ivProduct1.visibility = View.VISIBLE
+                        if (pImg.isNotEmpty()) holder.ivProduct1.load(pImg)
+                    }
+                    1 -> {
+                        holder.ivProduct2.visibility = View.VISIBLE
+                        if (pImg.isNotEmpty()) holder.ivProduct2.load(pImg)
+                    }
+                    2 -> {
+                        holder.ivProduct3.visibility = View.VISIBLE
+                        if (pImg.isNotEmpty()) holder.ivProduct3.load(pImg)
+                    }
+                }
+            }
+            if (order.items.size > 3) {
+                holder.tvMoreImages.visibility = View.VISIBLE
+                holder.tvMoreImages.text = "+${order.items.size - 3}"
+            }
+            
+            holder.tvItemCount.text = "$itemCount sản phẩm"
             holder.tvTotalValue.text = format.format(orderValue)
             holder.tvCustomer.text = customer
             holder.tvOrderDate.text = if (orderDate.contains(":")) orderDate else "$orderDate 10:30"

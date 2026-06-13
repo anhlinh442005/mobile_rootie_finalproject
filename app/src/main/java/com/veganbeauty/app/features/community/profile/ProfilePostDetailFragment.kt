@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.veganbeauty.app.R
 import com.veganbeauty.app.data.local.LocalJsonReader
 import com.veganbeauty.app.features.community.com_feed.PostAdapter
+import kotlinx.coroutines.launch
 
 class ProfilePostDetailFragment : Fragment() {
 
@@ -17,12 +19,15 @@ class ProfilePostDetailFragment : Fragment() {
     private var userId: String = "test_001"
     private var initialPosition: Int = 0
 
+    private var currentTab: Int = 0
+
     companion object {
-        fun newInstance(userId: String, initialPosition: Int): ProfilePostDetailFragment {
+        fun newInstance(userId: String, initialPosition: Int, currentTab: Int = 0): ProfilePostDetailFragment {
             val fragment = ProfilePostDetailFragment()
             val args = Bundle()
             args.putString("USER_ID", userId)
             args.putInt("INITIAL_POSITION", initialPosition)
+            args.putInt("CURRENT_TAB", currentTab)
             fragment.arguments = args
             return fragment
         }
@@ -33,6 +38,7 @@ class ProfilePostDetailFragment : Fragment() {
         arguments?.let {
             userId = it.getString("USER_ID") ?: "test_001"
             initialPosition = it.getInt("INITIAL_POSITION", 0)
+            currentTab = it.getInt("CURRENT_TAB", 0)
         }
     }
 
@@ -67,13 +73,40 @@ class ProfilePostDetailFragment : Fragment() {
         val jsonReader = LocalJsonReader(requireContext())
         val productsList = jsonReader.getProducts()
 
-        viewModel.posts.observe(viewLifecycleOwner) { allPosts ->
-            val myPosts = allPosts
-                .filter { it.authorId == userId }
-                .distinctBy { it.postId }  // deduplicate by post ID - never show same post twice
-                .sortedByDescending { it.createdAt }
-            adapter.updateData(myPosts, emptyList(), emptyList(), productsList)
-            layoutManager.scrollToPositionWithOffset(initialPosition, 0)
+        viewModel.posts.observe(viewLifecycleOwner) { dbPosts ->
+            viewLifecycleOwner.lifecycleScope.launch {
+                val newsList = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    jsonReader.getCommunityNews()
+                }
+                val allPostsCombined = dbPosts + newsList
+
+                var ownUserId = "test_001"
+                try {
+                    val loggedInEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext())
+                    val usersJsonStr = requireContext().assets.open("users.json").bufferedReader().use { it.readText() }
+                    val usersJsonArray = org.json.JSONArray(usersJsonStr)
+                    for (i in 0 until usersJsonArray.length()) {
+                        val obj = usersJsonArray.getJSONObject(i)
+                        if (obj.optString("email") == loggedInEmail) {
+                            ownUserId = obj.optString("user_id", "test_001")
+                            break
+                        }
+                    }
+                } catch(e: Exception) {}
+
+                val myPosts = allPostsCombined.filter { post ->
+                    when (currentTab) {
+                        0 -> post.authorId == userId
+                        1 -> post.authorId == userId
+                        2 -> com.veganbeauty.app.features.community.UserMemoryHelper.isPostReposted(requireContext(), ownUserId, post.postId)
+                        3 -> com.veganbeauty.app.features.community.UserMemoryHelper.isPostSaved(requireContext(), ownUserId, post.postId)
+                        else -> post.authorId == userId
+                    }
+                }.distinctBy { it.postId }.sortedByDescending { it.createdAt }
+
+                adapter.updateData(myPosts, emptyList(), emptyList(), productsList)
+                layoutManager.scrollToPositionWithOffset(initialPosition, 0)
+            }
         }
 
     }

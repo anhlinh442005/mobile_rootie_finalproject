@@ -344,16 +344,19 @@
                     android:gravity="center_vertical">
                     
                     <RelativeLayout
+                        android:id="@+id/rlTabGrid"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1">
                         <ImageView
+                            android:id="@+id/ivTabGrid"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_centerInParent="true"
                             android:src="@drawable/ic_post"
                             app:tint="#6E846A" />
                         <View
+                            android:id="@+id/vTabGridIndicator"
                             android:layout_width="32dp"
                             android:layout_height="2dp"
                             android:layout_alignParentBottom="true"
@@ -363,6 +366,7 @@
                     </RelativeLayout>
                         
                     <ImageView
+                        android:id="@+id/ivTabVideo"
                         android:layout_width="0dp"
                         android:layout_height="24dp"
                         android:layout_weight="1"
@@ -370,10 +374,19 @@
                         app:tint="#888888" />
                         
                     <ImageView
+                        android:id="@+id/ivTabReup"
                         android:layout_width="0dp"
                         android:layout_height="24dp"
                         android:layout_weight="1"
                         android:src="@drawable/ic_reup"
+                        app:tint="#888888" />
+
+                    <ImageView
+                        android:id="@+id/ivTabBookmark"
+                        android:layout_width="0dp"
+                        android:layout_height="24dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_bookmark_outline"
                         app:tint="#888888" />
                 </LinearLayout>
             </LinearLayout>

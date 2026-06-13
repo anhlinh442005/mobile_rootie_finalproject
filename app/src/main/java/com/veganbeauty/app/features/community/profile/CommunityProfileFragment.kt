@@ -18,6 +18,8 @@ import com.veganbeauty.app.data.local.RootieDatabase
 import com.veganbeauty.app.data.repository.CommunityRepository
 import com.veganbeauty.app.data.remote.FirestoreService
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class CommunityProfileFragment : Fragment() {
 
@@ -199,21 +201,45 @@ class CommunityProfileFragment : Fragment() {
         // Setup Grid RecyclerView for posts
         binding.rvPosts.layoutManager = GridLayoutManager(context, 3)
 
+        val initialTab = arguments?.getInt("SELECTED_TAB", 0) ?: 0
+        var currentTab = initialTab
+
+        val sharedPrefs = ctx.getSharedPreferences("rootie_prefs", android.content.Context.MODE_PRIVATE)
+
+        fun updateTabsUI() {
+            binding.ivTabGrid.setColorFilter(if (currentTab == 0) android.graphics.Color.parseColor("#6E846A") else android.graphics.Color.parseColor("#888888"))
+            binding.vTabGridIndicator.visibility = if (currentTab == 0) View.VISIBLE else View.INVISIBLE
+            
+            binding.ivTabVideo.setColorFilter(if (currentTab == 1) android.graphics.Color.parseColor("#6E846A") else android.graphics.Color.parseColor("#888888"))
+            
+            binding.ivTabReup.setColorFilter(if (currentTab == 2) android.graphics.Color.parseColor("#6E846A") else android.graphics.Color.parseColor("#888888"))
+            
+            binding.ivTabBookmark.setColorFilter(if (currentTab == 3) android.graphics.Color.parseColor("#6E846A") else android.graphics.Color.parseColor("#888888"))
+        }
+
         // Load Posts from ViewModel (Room DB)
         val db = RootieDatabase.getDatabase(requireContext())
         val repository = CommunityRepository(db.communityDao(), jsonReader, FirestoreService())
         val factory = CommunityViewModelFactory(repository)
         val viewModel = ViewModelProvider(requireActivity(), factory)[CommunityViewModel::class.java]
         
-        viewModel.posts.observe(viewLifecycleOwner) { allPosts ->
-            val myPosts = allPosts
-                .filter { it.authorId == currentUserId }
-                .distinctBy { it.postId }          // deduplicate - each post appears once
-                .sortedByDescending { it.createdAt }
-            binding.tvPostCount.text = myPosts.size.toString()
+        fun loadPostsForCurrentTab(allPosts: List<com.veganbeauty.app.data.local.entities.CommunityPostEntity>) {
+            val myPosts = allPosts.filter { post ->
+                when (currentTab) {
+                    0 -> post.authorId == currentUserId
+                    1 -> post.authorId == currentUserId // Implement video filter if needed
+                    2 -> com.veganbeauty.app.features.community.UserMemoryHelper.isPostReposted(ctx, ownUserId, post.postId)
+                    3 -> com.veganbeauty.app.features.community.UserMemoryHelper.isPostSaved(ctx, ownUserId, post.postId)
+                    else -> post.authorId == currentUserId
+                }
+            }.distinctBy { it.postId }.sortedByDescending { it.createdAt }
+
+            if (currentTab == 0) {
+                binding.tvPostCount.text = myPosts.size.toString()
+            }
             
             val adapter = ProfileGridAdapter(myPosts) { position ->
-                val fragment = ProfilePostDetailFragment.newInstance(currentUserId, position)
+                val fragment = ProfilePostDetailFragment.newInstance(currentUserId, position, currentTab)
                 parentFragmentManager.beginTransaction()
                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.main_container, fragment)
@@ -222,6 +248,41 @@ class CommunityProfileFragment : Fragment() {
             }
             binding.rvPosts.adapter = adapter
         }
+
+        var currentAllPosts: List<com.veganbeauty.app.data.local.entities.CommunityPostEntity> = emptyList()
+
+        viewModel.posts.observe(viewLifecycleOwner) { dbPosts ->
+            viewLifecycleOwner.lifecycleScope.launch {
+                val newsList = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    com.veganbeauty.app.data.local.LocalJsonReader(ctx).getCommunityNews()
+                }
+                currentAllPosts = dbPosts + newsList
+                loadPostsForCurrentTab(currentAllPosts)
+            }
+        }
+
+        binding.rlTabGrid.setOnClickListener {
+            currentTab = 0
+            updateTabsUI()
+            loadPostsForCurrentTab(currentAllPosts)
+        }
+        binding.ivTabVideo.setOnClickListener {
+            currentTab = 1
+            updateTabsUI()
+            loadPostsForCurrentTab(currentAllPosts)
+        }
+        binding.ivTabReup.setOnClickListener {
+            currentTab = 2
+            updateTabsUI()
+            loadPostsForCurrentTab(currentAllPosts)
+        }
+        binding.ivTabBookmark.setOnClickListener {
+            currentTab = 3
+            updateTabsUI()
+            loadPostsForCurrentTab(currentAllPosts)
+        }
+
+        updateTabsUI()
 
         // Handle showcase click
         binding.llShowcase.setOnClickListener {

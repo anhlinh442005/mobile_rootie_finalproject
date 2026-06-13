@@ -223,7 +223,7 @@ class PostAdapter(
                     val matchingProducts = globalProducts.filter { linkedIds.contains(it.id) }
                     if (matchingProducts.isNotEmpty()) {
                         postHolder.binding.llUsedProducts.visibility = View.VISIBLE
-                        postHolder.binding.rvLinkedProducts.adapter = PostLinkedProductAdapter(matchingProducts)
+                        postHolder.binding.rvLinkedProducts.adapter = PostLinkedProductAdapter(matchingProducts, post.postId, post.authorId)
                     } else {
                         postHolder.binding.llUsedProducts.visibility = View.GONE
                     }
@@ -341,6 +341,84 @@ class PostAdapter(
                         }
                     }
                 }
+                // Helper to get own user id
+                fun getOwnUserId(context: android.content.Context): String {
+                    var ownId = "test_001"
+                    try {
+                        val loggedInEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(context)
+                        val usersJsonStr = context.assets.open("users.json").bufferedReader().use { it.readText() }
+                        val usersJsonArray = org.json.JSONArray(usersJsonStr)
+                        for (i in 0 until usersJsonArray.length()) {
+                            val obj = usersJsonArray.getJSONObject(i)
+                            if (obj.optString("email") == loggedInEmail) {
+                                ownId = obj.optString("user_id", "test_001")
+                                break
+                            }
+                        }
+                    } catch(e: Exception) {}
+                    return ownId
+                }
+
+                // Reup toggle and action
+                val context = postHolder.itemView.context
+                val ownUserId = getOwnUserId(context)
+                var isReuped = com.veganbeauty.app.features.community.UserMemoryHelper.isPostReposted(context, ownUserId, post.postId)
+                var currentReupsCount = post.reupsCount
+                
+                if (isReuped) {
+                    postHolder.binding.ivReup.setColorFilter(android.graphics.Color.parseColor("#4CAF50"))
+                } else {
+                    postHolder.binding.ivReup.clearColorFilter()
+                }
+
+                fun navigateToMyProfile(tabIndex: Int) {
+                    if (context is androidx.fragment.app.FragmentActivity) {
+                        val profileFragment = com.veganbeauty.app.features.community.profile.CommunityProfileFragment().apply {
+                            arguments = android.os.Bundle().apply {
+                                putInt("SELECTED_TAB", tabIndex)
+                            }
+                        }
+                        context.supportFragmentManager.beginTransaction()
+                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                            .replace(R.id.main_container, profileFragment)
+                            .addToBackStack(null)
+                            .commit()
+                    }
+                }
+
+                postHolder.binding.ivReup.setOnClickListener {
+                    isReuped = com.veganbeauty.app.features.community.UserMemoryHelper.toggleRepost(context, ownUserId, post.postId)
+                    if (isReuped) {
+                        postHolder.binding.ivReup.setColorFilter(android.graphics.Color.parseColor("#4CAF50"))
+                        currentReupsCount++
+                    } else {
+                        postHolder.binding.ivReup.clearColorFilter()
+                        currentReupsCount = maxOf(0, currentReupsCount - 1)
+                    }
+                    postHolder.binding.tvReups.text = currentReupsCount.toString()
+                }
+
+                // Bookmark toggle and action
+                var isBookmarked = com.veganbeauty.app.features.community.UserMemoryHelper.isPostSaved(context, ownUserId, post.postId)
+                if (isBookmarked) {
+                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark)
+                    postHolder.binding.ivBookmark.setColorFilter(android.graphics.Color.parseColor("#FFC107"))
+                } else {
+                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark_outline)
+                    postHolder.binding.ivBookmark.clearColorFilter()
+                }
+
+                postHolder.binding.ivBookmark.setOnClickListener {
+                    isBookmarked = com.veganbeauty.app.features.community.UserMemoryHelper.toggleSave(context, ownUserId, post.postId)
+                    if (isBookmarked) {
+                        postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark)
+                        postHolder.binding.ivBookmark.setColorFilter(android.graphics.Color.parseColor("#FFC107"))
+                    } else {
+                        postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark_outline)
+                        postHolder.binding.ivBookmark.clearColorFilter()
+                    }
+                }
+
                 postHolder.binding.tvAuthorName.setOnClickListener(onProfileClick)
                 postHolder.binding.ivAuthorAvatar.setOnClickListener(onProfileClick)
             }

@@ -89,15 +89,18 @@ class LocalJsonReader(private val context: Context) {
 
     fun getShowcaseProductsForUser(userId: String): List<String> {
         return try {
-            val jsonString = context.assets.open("user_pro_display.json").bufferedReader().use { it.readText() }
-            val array = org.json.JSONArray(jsonString)
+            val jsonString = context.assets.open("user_showcases.json").bufferedReader().use { it.readText() }
+            val root = JSONObject(jsonString)
+            val array = root.optJSONArray("user_showcases") ?: return emptyList()
             for (i in 0 until array.length()) {
                 val obj = array.getJSONObject(i)
-                if (obj.getString("user_id") == userId) {
-                    val prodArray = obj.getJSONArray("product_ids")
+                if (obj.getString("userId") == userId) {
+                    val pIdsArray = obj.optJSONArray("showcaseProductIds")
                     val list = mutableListOf<String>()
-                    for (j in 0 until prodArray.length()) {
-                        list.add(prodArray.getString(j))
+                    if (pIdsArray != null) {
+                        for (j in 0 until pIdsArray.length()) {
+                            list.add(pIdsArray.getString(j))
+                        }
                     }
                     return list
                 }
@@ -475,9 +478,25 @@ class LocalJsonReader(private val context: Context) {
                 val voucherDiscount = obj.optLong("voucherDiscount", 0L)
                 val finalTotal = totalAmount + shippingCost - voucherDiscount
                 
+                val affObj = obj.optJSONObject("affiliate")
+                val affiliateInfo = if (affObj != null) {
+                    com.veganbeauty.app.data.local.entities.AffiliateInfo(
+                        isAffiliateOrder = affObj.optBoolean("isAffiliateOrder", false),
+                        affiliateCode = affObj.optString("affiliateCode", ""),
+                        referrerUserId = affObj.optString("referrerUserId", ""),
+                        referrerName = affObj.optString("referrerName", ""),
+                        sourceType = affObj.optString("sourceType", ""),
+                        sourcePostId = affObj.optString("sourcePostId", ""),
+                        commissionRate = affObj.optDouble("commissionRate", 0.0),
+                        commissionAmount = affObj.optLong("commissionAmount", 0L),
+                        commissionStatus = affObj.optString("commissionStatus", "")
+                    )
+                } else null
+                
                 orderList.add(
                     OrderEntity(
                         orderId = obj.getString("id"),
+                        userId = obj.optString("userId", "test_001"),
                         orderDate = obj.getString("orderDate"),
                         orderTime = obj.getString("orderTime"),
                         status = obj.getString("status"),
@@ -495,7 +514,8 @@ class LocalJsonReader(private val context: Context) {
                         reviewText = if (obj.has("reviewText")) obj.getString("reviewText") else null,
                         reviewImage = if (obj.has("reviewImage")) obj.getString("reviewImage") else null,
                         isAnonymous = obj.optBoolean("isAnonymous", false),
-                        recommendToFriends = obj.optBoolean("recommendToFriends", false)
+                        recommendToFriends = obj.optBoolean("recommendToFriends", false),
+                        affiliate = affiliateInfo
                     )
                 )
             }

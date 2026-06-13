@@ -224,81 +224,90 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
         
         // Handle sending new comment
         val etComment = view.findViewById<android.widget.EditText>(R.id.etComment)
+        val ivSubmitComment = view.findViewById<ImageView>(R.id.ivSubmitComment)
+
+        fun submitComment() {
+            val text = etComment.text.toString().trim()
+            if (text.isNotEmpty() && postId != null) {
+                val myUserId = "test_001" // Current logged-in user
+                val myUsername = "Test User"
+                val myAvatar = "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg"
+                
+                val timeStr = "Vừa xong"
+                val isoDate = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault()).apply { 
+                    timeZone = java.util.TimeZone.getTimeZone("UTC") 
+                }.format(java.util.Date())
+                
+                val newComment = CommentItem(
+                    userId = myUserId,
+                    avatarUrl = myAvatar,
+                    username = myUsername,
+                    timeStr = timeStr,
+                    content = text,
+                    likesCount = 0,
+                    isAuthor = false,
+                    hasReply = false
+                )
+                
+                commentsList.add(0, newComment)
+                
+                tvEmptyComments?.visibility = View.GONE
+                rvComments.visibility = View.VISIBLE
+                if (rvComments.adapter == null) {
+                    rvComments.adapter = CommentAdapter(commentsList)
+                } else {
+                    rvComments.adapter?.notifyItemInserted(0)
+                    rvComments.scrollToPosition(0)
+                }
+                tvCommentCount.text = "${commentsList.size} bình luận"
+                
+                etComment.setText("")
+                
+                // Hide keyboard
+                val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                imm.hideSoftInputFromWindow(etComment.windowToken, 0)
+                
+                val commentMap = hashMapOf<String, Any>(
+                    "comment_id" to java.util.UUID.randomUUID().toString(),
+                    "post_id" to postId!!,
+                    "user_id" to myUserId,
+                    "username" to myUsername,
+                    "avatar_url" to myAvatar,
+                    "content" to text,
+                    "created_at" to isoDate,
+                    "likes_count" to 0,
+                    "is_author" to false
+                )
+
+                // Save to local storage for persistence in session
+                try {
+                    val localFile = java.io.File(requireContext().filesDir, "local_comments.json")
+                    val localArray = if (localFile.exists()) org.json.JSONArray(localFile.readText()) else org.json.JSONArray()
+                    val newCommentJson = org.json.JSONObject(commentMap as Map<*, *>)
+                    localArray.put(newCommentJson)
+                    localFile.writeText(localArray.toString())
+                } catch (e: Exception) { e.printStackTrace() }
+
+                // Increment in database & Sync to Firestore
+                viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                    com.veganbeauty.app.data.local.RootieDatabase.getDatabase(requireContext()).communityDao().incrementCommentsCount(postId!!)
+                    com.veganbeauty.app.data.remote.FirestoreService().addCommentToPost(postId!!, commentMap)
+                }
+            }
+        }
+
         etComment.setOnEditorActionListener { v, actionId, event ->
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE || actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND || 
                 (event != null && event.action == android.view.KeyEvent.ACTION_DOWN && event.keyCode == android.view.KeyEvent.KEYCODE_ENTER)) {
-                
-                val text = etComment.text.toString().trim()
-                if (text.isNotEmpty() && postId != null) {
-                    val myUserId = "test_001" // Current logged-in user
-                    val myUsername = "Test User"
-                    val myAvatar = "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg"
-                    
-                    val timeStr = "Vừa xong"
-                    val isoDate = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault()).apply { 
-                        timeZone = java.util.TimeZone.getTimeZone("UTC") 
-                    }.format(java.util.Date())
-                    
-                    val newComment = CommentItem(
-                        userId = myUserId,
-                        avatarUrl = myAvatar,
-                        username = myUsername,
-                        timeStr = timeStr,
-                        content = text,
-                        likesCount = 0,
-                        isAuthor = false,
-                        hasReply = false
-                    )
-                    
-                    commentsList.add(0, newComment)
-                    
-                    tvEmptyComments?.visibility = View.GONE
-                    rvComments.visibility = View.VISIBLE
-                    if (rvComments.adapter == null) {
-                        rvComments.adapter = CommentAdapter(commentsList)
-                    } else {
-                        rvComments.adapter?.notifyItemInserted(0)
-                        rvComments.scrollToPosition(0)
-                    }
-                    tvCommentCount.text = "${commentsList.size} bình luận"
-                    
-                    etComment.setText("")
-                    
-                    // Hide keyboard
-                    val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-                    imm.hideSoftInputFromWindow(etComment.windowToken, 0)
-                    
-                    val commentMap = hashMapOf<String, Any>(
-                        "comment_id" to java.util.UUID.randomUUID().toString(),
-                        "post_id" to postId!!,
-                        "user_id" to myUserId,
-                        "username" to myUsername,
-                        "avatar_url" to myAvatar,
-                        "content" to text,
-                        "created_at" to isoDate,
-                        "likes_count" to 0,
-                        "is_author" to false
-                    )
-
-                    // Save to local storage for persistence in session
-                    try {
-                        val localFile = java.io.File(requireContext().filesDir, "local_comments.json")
-                        val localArray = if (localFile.exists()) org.json.JSONArray(localFile.readText()) else org.json.JSONArray()
-                        val newCommentJson = org.json.JSONObject(commentMap as Map<*, *>)
-                        localArray.put(newCommentJson)
-                        localFile.writeText(localArray.toString())
-                    } catch (e: Exception) { e.printStackTrace() }
-
-                    // Increment in database & Sync to Firestore
-                    viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                        com.veganbeauty.app.data.local.RootieDatabase.getDatabase(requireContext()).communityDao().incrementCommentsCount(postId!!)
-                        com.veganbeauty.app.data.remote.FirestoreService().addCommentToPost(postId!!, commentMap)
-                    }
-                }
+                submitComment()
                 true
             } else {
                 false
             }
+        }
+
+        ivSubmitComment?.setOnClickListener {
+            submitComment()
         }
     }
 

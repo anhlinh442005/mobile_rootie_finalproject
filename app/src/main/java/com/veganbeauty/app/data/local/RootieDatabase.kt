@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
         CartItemEntity::class,
         StoreEntity::class
     ], 
-    version = 30   // bumped to force destructive migration - wipes all old cached data
+    version = 31   // bumped to force destructive migration - wipes all old cached data
 
 )
 @TypeConverters(OrderConverters::class, ProductConverters::class)

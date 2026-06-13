@@ -53,9 +53,7 @@ class CommunityAffiliateWithdrawFragment : Fragment() {
             val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
             symbols.groupingSeparator = '.'
             val format = DecimalFormat("#,###đ", symbols)
-            
-            val jsonStr = requireContext().assets.open("affiliate.json").bufferedReader().use { it.readText() }
-            val jsonArray = JSONArray(jsonStr)
+            val jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
             if (jsonArray.length() == 0) return
             
             val data = jsonArray.getJSONObject(0)
@@ -259,8 +257,8 @@ class CommunityAffiliateWithdrawFragment : Fragment() {
         
         val llContainer = dialogView.findViewById<LinearLayout>(R.id.llWithdrawalsContainer)
         try {
-            val jsonStr = requireContext().assets.open("affiliate.json").bufferedReader().use { it.readText() }
-            val data = JSONArray(jsonStr).getJSONObject(0)
+            val jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
+            val data = jsonArray.getJSONObject(0)
             val withdrawals = data.optJSONArray("withdrawals")
             if (withdrawals != null) {
                 val symbols = DecimalFormatSymbols(Locale("vi", "VN"))

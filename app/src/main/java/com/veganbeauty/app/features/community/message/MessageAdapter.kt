@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.veganbeauty.app.R
-import com.veganbeauty.app.data.local.entities.MessageEntity
+import com.veganbeauty.app.data.local.entities.ConversationEntity
 
 class MessageAdapter(
-    private var items: List<MessageEntity>,
-    private val onItemClick: (MessageEntity) -> Unit
+    private var items: List<ConversationEntity>,
+    private val onItemClick: (ConversationEntity) -> Unit
 ) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
     class MessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -34,8 +34,9 @@ class MessageAdapter(
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val item = items[position]
         
-        val lastMsgText = item.messages.lastOrNull()?.text ?: ""
-        val lastTime = item.messages.lastOrNull()?.timestamp ?: ""
+        val lastMsgText = item.lastMessage?.text ?: ""
+        // Just mock some time string for UI purposes, could be formatted properly
+        val lastTime = "Vừa xong"
         
         holder.tvName.text = item.partnerName
         holder.tvLastMessage.text = lastMsgText
@@ -51,7 +52,9 @@ class MessageAdapter(
 
         holder.vActiveDot.visibility = if (item.isActive) View.VISIBLE else View.GONE
         
-        if (item.isUnread) {
+        val currentUserId = "test_001"
+        val unreadCount = item.unreadCount[currentUserId] ?: 0
+        if (unreadCount > 0) {
             holder.vUnreadDot.visibility = View.VISIBLE
             holder.tvName.setTypeface(null, android.graphics.Typeface.BOLD)
             holder.tvLastMessage.setTypeface(null, android.graphics.Typeface.BOLD)
@@ -70,7 +73,7 @@ class MessageAdapter(
 
     override fun getItemCount() = items.size
 
-    fun updateData(newItems: List<MessageEntity>) {
+    fun updateData(newItems: List<ConversationEntity>) {
         items = newItems
         notifyDataSetChanged()
     }

@@ -9,8 +9,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import org.json.JSONArray
 import com.veganbeauty.app.R
-import com.veganbeauty.app.data.local.entities.ChatItemEntity
-import com.veganbeauty.app.data.local.entities.MessageEntity
 import com.veganbeauty.app.databinding.ComFragmentMessageBinding
 import com.veganbeauty.app.features.community.com_feed.CommunityExploreFragment
 import com.veganbeauty.app.features.community.com_feed.CommunityFeedFragment
@@ -45,10 +43,10 @@ class CommunityMessageFragment : Fragment() {
     }
 
     private fun setupAdapters() {
-        messageAdapter = MessageAdapter(emptyList()) { message ->
+        messageAdapter = MessageAdapter(emptyList()) { conv ->
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .add(R.id.main_container, ChatDetailFragment.newInstance(message.id))
+                .replace(R.id.main_container, ChatDetailFragment.newInstance(conv.conversationId))
                 .addToBackStack(null)
                 .commit()
         }
@@ -60,61 +58,11 @@ class CommunityMessageFragment : Fragment() {
 
     private fun loadData() {
         try {
-            val jsonString = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getMessagesData()
-            val usersMap = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getUsers().associateBy { it.user_id }
-            
-            // Upload to Firestore in background
-            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
-                com.veganbeauty.app.data.remote.FirestoreService().uploadAllCommunityMessages(jsonString)
-            }
-            
-            val jsonArray = JSONArray(jsonString)
-            val messages = mutableListOf<MessageEntity>()
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-                if (obj.optString("user_id") != "test_001") continue
-                
-                val chatItems = mutableListOf<ChatItemEntity>()
-                val messagesArray = obj.optJSONArray("messages")
-                if (messagesArray != null) {
-                    for (j in 0 until messagesArray.length()) {
-                        val msgObj = messagesArray.getJSONObject(j)
-                        chatItems.add(
-                            ChatItemEntity(
-                                id = msgObj.optString("id"),
-                                senderId = msgObj.optString("sender_id"),
-                                text = msgObj.optString("text"),
-                                timestamp = msgObj.optString("timestamp"),
-                                isMine = msgObj.optBoolean("is_mine"),
-                                status = msgObj.optString("status")
-                            )
-                        )
-                    }
-                }
-                
-                val partnerId = obj.optString("partner_id")
-                val realUser = usersMap[partnerId]
-                val partnerName = realUser?.username ?: obj.optString("partner_name")
-                val partnerAvatar = realUser?.avatar ?: obj.optString("partner_avatar")
-
-                messages.add(
-                    MessageEntity(
-                        id = obj.optString("id"),
-                        partnerId = partnerId,
-                        partnerName = partnerName,
-                        partnerAvatar = partnerAvatar,
-                        isActive = obj.optBoolean("is_active"),
-                        isUnread = obj.optBoolean("is_unread"),
-                        isTyping = obj.optBoolean("is_typing"),
-                        messages = chatItems
-                    )
-                )
-            }
-            
-            messageAdapter.updateData(messages)
+            val conversations = MessageHelper.getConversations(requireContext())
+            messageAdapter.updateData(conversations)
             
             // For active users, filter only active ones or just take all for UI purpose
-            val activeUsers = messages.filter { it.isActive }
+            val activeUsers = conversations.filter { it.isActive }
             val myFriendsIds = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getFriendsForUser("test_001")
             
             val sortedActiveUsers = activeUsers.sortedByDescending { myFriendsIds.contains(it.partnerId) }

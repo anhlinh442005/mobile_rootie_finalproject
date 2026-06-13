@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.veganbeauty.app.R
-import com.veganbeauty.app.data.local.entities.MessageEntity
+import com.veganbeauty.app.data.local.entities.ConversationEntity
 
-class ActiveUserAdapter(private var items: List<MessageEntity>) :
+class ActiveUserAdapter(private var items: List<ConversationEntity>) :
     RecyclerView.Adapter<ActiveUserAdapter.ActiveUserViewHolder>() {
 
     class ActiveUserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -79,7 +79,7 @@ class ActiveUserAdapter(private var items: List<MessageEntity>) :
 
     override fun getItemCount() = items.size + 1 // +1 for "Tin của bạn"
 
-    fun updateData(newItems: List<MessageEntity>) {
+    fun updateData(newItems: List<ConversationEntity>) {
         items = newItems
         notifyDataSetChanged()
     }

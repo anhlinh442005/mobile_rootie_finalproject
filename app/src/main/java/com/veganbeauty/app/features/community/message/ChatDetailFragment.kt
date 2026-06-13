@@ -1,18 +1,18 @@
 package com.veganbeauty.app.features.community.message
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
-import org.json.JSONArray
 import com.veganbeauty.app.R
-import com.veganbeauty.app.data.local.entities.ChatItemEntity
-import com.veganbeauty.app.data.local.entities.MessageEntity
 import com.veganbeauty.app.databinding.ComFragmentChatDetailBinding
-import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
 
 class ChatDetailFragment : Fragment() {
 
@@ -21,6 +21,7 @@ class ChatDetailFragment : Fragment() {
 
     private var conversationId: String? = null
     private lateinit var chatAdapter: ChatDetailAdapter
+    private var partnerId: String = ""
 
     companion object {
         private const val ARG_CONVERSATION_ID = "conversation_id"
@@ -63,121 +64,58 @@ class ChatDetailFragment : Fragment() {
             }
         }
 
+        binding.etMessage.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty()) {
+                    binding.ivSend.visibility = View.VISIBLE
+                    binding.llRightIcons.visibility = View.GONE
+                } else {
+                    binding.ivSend.visibility = View.GONE
+                    binding.llRightIcons.visibility = View.VISIBLE
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         loadData()
     }
 
     private fun loadData() {
-        try {
-            val jsonString = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getMessagesData()
-            
-            val jsonArray = JSONArray(jsonString)
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-                if (obj.optString("id") == conversationId) {
-                    binding.tvName.text = obj.optString("partner_name")
-                    val avatarUrl = obj.optString("partner_avatar")
-                    if (avatarUrl.isNotEmpty()) {
-                        binding.ivAvatar.load(avatarUrl) {
-                            crossfade(true)
-                            placeholder(R.color.gray_light)
-                            transformations(CircleCropTransformation())
-                        }
+        conversationId?.let { convId ->
+            // Mark conversation as read when opening
+            MessageHelper.markAsRead(requireContext(), convId, "test_001")
+
+            val conv = MessageHelper.getConversation(requireContext(), convId)
+            if (conv != null) {
+                partnerId = conv.partnerId
+                binding.tvName.text = conv.partnerName
+                val avatarUrl = conv.partnerAvatar
+                if (avatarUrl.isNotEmpty()) {
+                    binding.ivAvatar.load(avatarUrl) {
+                        crossfade(true)
+                        placeholder(R.color.gray_light)
+                        transformations(CircleCropTransformation())
                     }
-                    val isActive = obj.optBoolean("is_active")
-                    binding.vActiveDot.visibility = if (isActive) View.VISIBLE else View.GONE
-                    binding.tvStatus.text = if (isActive) "Đang hoạt động" else "Ngoại tuyến"
-                    
-                    val chatItems = mutableListOf<ChatItemEntity>()
-                    val messagesArray = obj.optJSONArray("messages")
-                    if (messagesArray != null) {
-                        for (j in 0 until messagesArray.length()) {
-                            val msgObj = messagesArray.getJSONObject(j)
-                            chatItems.add(
-                                ChatItemEntity(
-                                    id = msgObj.optString("id"),
-                                    senderId = msgObj.optString("sender_id"),
-                                    text = msgObj.optString("text"),
-                                    timestamp = msgObj.optString("timestamp"),
-                                    isMine = msgObj.optBoolean("is_mine"),
-                                    status = msgObj.optString("status")
-                                )
-                            )
-                        }
-                    }
-                    
-                    chatAdapter.setPartnerAvatar(avatarUrl)
-                    chatAdapter.updateData(chatItems)
-                    binding.rvChat.scrollToPosition(chatItems.size - 1)
-                    break
                 }
+                binding.vActiveDot.visibility = if (conv.isActive) View.VISIBLE else View.GONE
+                binding.tvStatus.text = if (conv.isActive) "Đang hoạt động" else "Hoạt động 15 phút trước"
+
+                chatAdapter.setPartnerAvatar(avatarUrl)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+
+            val messages = MessageHelper.getMessages(requireContext(), convId)
+            chatAdapter.updateData(messages)
+            if (messages.isNotEmpty()) {
+                binding.rvChat.scrollToPosition(messages.size - 1)
+            }
         }
     }
 
     private fun sendMessage(text: String) {
-        val reader = com.veganbeauty.app.data.local.LocalJsonReader(requireContext())
-        val jsonString = reader.getMessagesData()
-        val jsonArray = org.json.JSONArray(jsonString)
-        var partnerId = ""
-        for (i in 0 until jsonArray.length()) {
-            val obj = jsonArray.getJSONObject(i)
-            if (obj.optString("id") == conversationId) {
-                partnerId = obj.optString("partner_id")
-                val messagesArray = obj.optJSONArray("messages") ?: org.json.JSONArray()
-                
-                val newMsg = org.json.JSONObject()
-                newMsg.put("id", "m" + System.currentTimeMillis())
-                newMsg.put("sender_id", "test_001")
-                newMsg.put("text", text)
-                newMsg.put("timestamp", "Vừa xong")
-                newMsg.put("is_mine", true)
-                newMsg.put("status", "Đã gửi")
-                
-                messagesArray.put(newMsg)
-                obj.put("messages", messagesArray)
-                break
-            }
-        }
-        
-        reader.saveMessagesData(jsonArray.toString())
-        loadData() // Reload UI
-        
-        // Simulate partner replying
-        if (partnerId.isNotEmpty()) {
-            simulateReply(partnerId)
-        }
-    }
-    
-    private fun simulateReply(partnerId: String) {
-        lifecycleScope.launchWhenStarted {
-            kotlinx.coroutines.delay(2000)
-            val reader = com.veganbeauty.app.data.local.LocalJsonReader(requireContext())
-            val jsonString = reader.getMessagesData()
-            val jsonArray = org.json.JSONArray(jsonString)
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-                if (obj.optString("id") == conversationId) {
-                    val messagesArray = obj.optJSONArray("messages") ?: org.json.JSONArray()
-                    
-                    val replyMsg = org.json.JSONObject()
-                    replyMsg.put("id", "m" + System.currentTimeMillis())
-                    replyMsg.put("sender_id", partnerId)
-                    replyMsg.put("text", "Dạ mình nhận được tin nhắn của bạn rồi nhé. Mình sẽ phản hồi bạn trong chốc lát ạ!")
-                    replyMsg.put("timestamp", "Vừa xong")
-                    replyMsg.put("is_mine", false)
-                    replyMsg.put("status", "")
-                    
-                    messagesArray.put(replyMsg)
-                    obj.put("messages", messagesArray)
-                    break
-                }
-            }
-            reader.saveMessagesData(jsonArray.toString())
-            if (isAdded) {
-                loadData() // Reload UI
-            }
+        conversationId?.let { convId ->
+            MessageHelper.sendMessage(requireContext(), convId, "test_001", partnerId, text)
+            loadData() // Reload UI
         }
     }
 

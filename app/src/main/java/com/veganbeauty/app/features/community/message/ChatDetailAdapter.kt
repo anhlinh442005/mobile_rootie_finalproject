@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.veganbeauty.app.R
-import com.veganbeauty.app.data.local.entities.ChatItemEntity
+import com.veganbeauty.app.data.local.entities.ChatMessageEntity
 
-class ChatDetailAdapter(private var items: List<ChatItemEntity>) :
+class ChatDetailAdapter(private var items: List<ChatMessageEntity>) :
     RecyclerView.Adapter<ChatDetailAdapter.ChatViewHolder>() {
 
     private var partnerAvatar: String = ""
@@ -40,17 +40,17 @@ class ChatDetailAdapter(private var items: List<ChatItemEntity>) :
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val item = items[position]
 
-        // Handle timestamp
-        if (item.timestamp.isNotEmpty()) {
-            holder.tvTimestamp.visibility = View.VISIBLE
-            holder.tvTimestamp.text = item.timestamp
-        } else {
-            holder.tvTimestamp.visibility = View.GONE
-        }
+        // Simple mock timestamp string logic since createdAt is Long
+        val timeStr = "Vừa xong"
+        holder.tvTimestamp.visibility = View.VISIBLE
+        holder.tvTimestamp.text = timeStr
 
         holder.tvMessage.text = item.text
 
-        if (item.isMine) {
+        val currentUserId = "test_001"
+        val isMine = item.senderId == currentUserId
+
+        if (isMine) {
             // My message
             holder.ivPartnerAvatar.visibility = View.GONE
             holder.vLeftSpacer.visibility = View.VISIBLE
@@ -58,9 +58,12 @@ class ChatDetailAdapter(private var items: List<ChatItemEntity>) :
             holder.llBubble.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#758864")) // Dark green
             holder.tvMessage.setTextColor(android.graphics.Color.WHITE)
 
-            if (item.status.isNotEmpty()) {
+            // Show status (e.g., "Đã xem" if partner read it)
+            val partnerId = if (item.receiverId == currentUserId) item.senderId else item.receiverId
+            val partnerStatus = item.status[partnerId]
+            if (partnerStatus == "read") {
                 holder.tvStatus.visibility = View.VISIBLE
-                holder.tvStatus.text = item.status
+                holder.tvStatus.text = "Đã xem"
             } else {
                 holder.tvStatus.visibility = View.GONE
             }
@@ -73,11 +76,12 @@ class ChatDetailAdapter(private var items: List<ChatItemEntity>) :
             holder.tvMessage.setTextColor(android.graphics.Color.BLACK)
             holder.tvStatus.visibility = View.GONE
 
-            // Load partner avatar only for the last message in a group (for simplicity, loading on all here, or checking if next is partner)
             val nextItem = if (position < items.size - 1) items[position + 1] else null
-            if (nextItem != null && !nextItem.isMine) {
+            val nextIsMine = nextItem?.senderId == currentUserId
+            if (nextItem != null && !nextIsMine) {
                 holder.ivPartnerAvatar.visibility = View.INVISIBLE // Reserve space but hide if not last
             } else {
+                holder.ivPartnerAvatar.visibility = View.VISIBLE
                 if (partnerAvatar.isNotEmpty()) {
                     holder.ivPartnerAvatar.load(partnerAvatar) {
                         crossfade(true)
@@ -90,7 +94,7 @@ class ChatDetailAdapter(private var items: List<ChatItemEntity>) :
 
     override fun getItemCount() = items.size
 
-    fun updateData(newItems: List<ChatItemEntity>) {
+    fun updateData(newItems: List<ChatMessageEntity>) {
         items = newItems
         notifyDataSetChanged()
     }

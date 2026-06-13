@@ -67,8 +67,7 @@ class CommunityAffiliateProductsFragment : Fragment() {
                 }
             }
             
-            val jsonStr = requireContext().assets.open("affiliate.json").bufferedReader().use { it.readText() }
-            val jsonArray = JSONArray(jsonStr)
+            val jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
             if (jsonArray.length() == 0) return
             
             val data = jsonArray.getJSONObject(0)
@@ -78,44 +77,41 @@ class CommunityAffiliateProductsFragment : Fragment() {
             val productMap = mutableMapOf<String, ProductStats>()
             
             try {
-                val jsonOrders = requireContext().assets.open("orders.json").bufferedReader().use { it.readText() }
-                val ordersData = org.json.JSONObject(jsonOrders)
-                val ordersArr = ordersData.optJSONArray("orders") ?: JSONArray()
-                for (i in 0 until ordersArr.length()) {
-                    val order = ordersArr.optJSONObject(i) ?: continue
-                    val status = order.optString("status")
-                    if (status != "Đã hủy") {
-                        val items = order.optJSONArray("items") ?: continue
-                        for (j in 0 until items.length()) {
-                            val item = items.optJSONObject(j) ?: continue
-                            val pId = item.optString("productId")
-                            val pName = item.optString("productName")
-                            val pImg = item.optString("productImage")
-                            val pPrice = item.optLong("price", 0L)
-                            if (pId.isNotEmpty() && !productMap.containsKey(pId)) {
-                                val resolvedImg = productImagesMap[pId] ?: pImg
-                                productMap[pId] = ProductStats(pName, 0, 0L, resolvedImg, pPrice)
+                val currentUserId = "test_001" // Or get from session
+                val jsonReader = com.veganbeauty.app.data.local.LocalJsonReader(requireContext())
+                
+                // Lấy danh sách sản phẩm trong showcase của user
+                val showcaseIds = jsonReader.getShowcaseProductsForUser(currentUserId)
+                
+                // Khởi tạo productMap với count=0, commission=0 cho tất cả sản phẩm trong showcase
+                val allProducts = jsonReader.getAllProducts()
+                for (pId in showcaseIds) {
+                    val pData = allProducts.find { it.id == pId }
+                    if (pData != null) {
+                        productMap[pId] = ProductStats(pData.name, 0, 0L, pData.mainImage, pData.price)
+                    }
+                }
+                
+                // Tính toán số liệu thống kê (Đã bán, Hoa hồng) từ những đơn hàng affiliate thành công
+                val completedOrders = jsonReader.getAllOrders().filter { it.status == "Hoàn tất" && it.affiliate != null && it.affiliate.referrerUserId == currentUserId }
+                for (order in completedOrders) {
+                    val commission = order.affiliate?.commissionAmount ?: 0L
+                    for (item in order.items) {
+                        val pId = item.productId
+                        
+                        // Kiểm tra sản phẩm phải tồn tại trong products chuẩn mới tính
+                        val pData = allProducts.find { it.id == pId }
+                        if (pData != null) {
+                            val itemComm = if (order.items.isNotEmpty()) commission / order.items.size else 0L
+                            val stats = productMap[pId]
+                            if (stats != null) {
+                                stats.count += item.quantity
+                                stats.commission += (itemComm * item.quantity)
                             }
                         }
                     }
                 }
             } catch(e: Exception) { e.printStackTrace() }
-            
-            for (i in 0 until orders.length()) {
-                val order = orders.getJSONObject(i)
-                val productName = order.optString("product_name")
-                val productId = order.optString("product_id")
-                val commission = order.optLong("commission")
-                val productImage = productImagesMap[productId] ?: order.optString("product_image")
-                
-                val stats = productMap[productId]
-                if (stats != null) {
-                    stats.count += 1
-                    stats.commission += commission
-                } else {
-                    productMap[productId] = ProductStats(productName, 1, commission, productImage, 0L)
-                }
-            }
             
             val prefs = requireContext().getSharedPreferences("AffiliatePrefs", android.content.Context.MODE_PRIVATE)
             val hiddenProducts = prefs.getStringSet("hiddenProducts", mutableSetOf())?.toMutableSet() ?: mutableSetOf()

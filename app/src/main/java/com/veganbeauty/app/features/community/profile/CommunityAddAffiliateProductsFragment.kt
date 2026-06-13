@@ -121,8 +121,7 @@ class CommunityAddAffiliateProductsFragment : Fragment() {
             }
             
             // Load showcased products
-            val jsonAffiliate = requireContext().assets.open("affiliate.json").bufferedReader().use { it.readText() }
-            val affiliateArr = JSONArray(jsonAffiliate)
+            val affiliateArr = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
             if (affiliateArr.length() > 0) {
                 val affData = affiliateArr.getJSONObject(0)
                 val affProducts = affData.optJSONArray("products") ?: JSONArray()

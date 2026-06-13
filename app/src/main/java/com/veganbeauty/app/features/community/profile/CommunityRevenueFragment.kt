@@ -84,49 +84,61 @@ class CommunityRevenueFragment : Fragment() {
 
     private fun loadAffiliateData(view: View) {
         try {
-            val jsonStr = requireContext().assets.open("affiliate.json").bufferedReader().use { it.readText() }
-            val jsonArray = JSONArray(jsonStr)
-            if (jsonArray.length() == 0) return
-            
-            val data = jsonArray.getJSONObject(0)
-            val newCustomers = data.optInt("new_customers", 0)
-            
             val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
             symbols.groupingSeparator = '.'
             val format = DecimalFormat("#,###đ", symbols)
             
             // ── COMPUTE all metrics from order list ──────────────────────────
-            val orders = data.optJSONArray("orders") ?: org.json.JSONArray()
-            var totalRevenue = 0L          // Tổng giá trị đơn hàng (mọi trạng thái)
-            var successCommission = 0L     // Hoa hồng từ đơn THÀNH CÔNG  → đây là số dư khả dụng
-            var pendingCommission = 0L     // Hoa hồng từ đơn ĐANG XỬ LÝ → tạm tính
+            val allOrders = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getAllOrders()
+            val currentUserId = "test_001" // Or get from session
+            val affiliateOrders = allOrders.filter { it.affiliate != null && it.affiliate.referrerUserId == currentUserId }
+            
+            var totalRevenue = 0L
+            var successCommission = 0L
+            var pendingCommission = 0L
             var successfulOrders = 0
 
-            for (i in 0 until orders.length()) {
-                val order = orders.getJSONObject(i)
-                val status = order.optString("status")
-                val commission = order.optLong("commission", 0)
-                val orderValue = order.optLong("order_value", 0)
-                totalRevenue += orderValue
+            for (order in affiliateOrders) {
+                val status = order.status
+                val orderValue = order.totalAmount
+                val commission = order.affiliate?.commissionAmount ?: 0L
+                
+                if (status != "Đã hủy") {
+                    totalRevenue += orderValue
+                }
+                
                 when (status) {
-                    "Thành công", "Đã duyệt" -> {
+                    "Hoàn tất", "Thành công", "Đã duyệt" -> {
                         successCommission += commission
                         successfulOrders++
                     }
-                    "Đang xử lý" -> {
+                    "Đang xử lý", "Chờ xác nhận", "Đang giao" -> {
                         pendingCommission += commission
                     }
                 }
             }
 
             // Trừ đi phần đã rút ra khỏi số dư khả dụng
-            val withdrawals = data.optJSONArray("withdrawals")
             var totalWithdrawn = 0L
-            if (withdrawals != null) {
-                for (i in 0 until withdrawals.length()) {
-                    val wd = withdrawals.getJSONObject(i)
-                    if (wd.optString("status") == "Đã chuyển") {
-                        totalWithdrawn += wd.optLong("amount", 0)
+            val jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
+            var affiliateData = org.json.JSONObject()
+            var newCustomers = 0
+            if (jsonArray.length() > 0) {
+                for (i in 0 until jsonArray.length()) {
+                    val obj = jsonArray.getJSONObject(i)
+                    if (obj.optString("userId") == currentUserId) {
+                        affiliateData = obj
+                        newCustomers = obj.optInt("newCustomers", 0)
+                        break
+                    }
+                }
+                val withdrawals = affiliateData.optJSONArray("withdrawals")
+                if (withdrawals != null) {
+                    for (i in 0 until withdrawals.length()) {
+                        val wd = withdrawals.getJSONObject(i)
+                        if (wd.optString("status") == "Đã chuyển") {
+                            totalWithdrawn += wd.optLong("amount", 0)
+                        }
                     }
                 }
             }
@@ -190,30 +202,7 @@ class CommunityRevenueFragment : Fragment() {
             view.findViewById<TextView>(R.id.tvAvailableBalance)?.text = format.format(availableBalance)
             view.findViewById<TextView>(R.id.tvWithdrawBalance)?.text = format.format(availableBalance)
             
-            // Load products image map using categoryId as foreign key to match affiliate.json product_id
-            val productImagesMap = mutableMapOf<String, String>()
-            try {
-                val jsonProducts = requireContext().assets.open("products.json").bufferedReader().use { it.readText() }
-                val productsData = org.json.JSONObject(jsonProducts)
-                val productsArr = productsData.optJSONArray("products") ?: org.json.JSONArray(jsonProducts)
-                for (i in 0 until productsArr.length()) {
-                    val p = productsArr.optJSONObject(i) ?: continue
-                    val categoryIds = p.optJSONArray("categoryId")
-                    val catId = if (categoryIds != null && categoryIds.length() > 0) categoryIds.optString(0) else ""
-                    val img = p.optString("mainImage", p.optString("image", ""))
-                    if (catId.isNotEmpty() && img.isNotEmpty()) {
-                        productImagesMap[catId] = img
-                    }
-                    
-                    // Also map by primary ID just in case
-                    val id = p.optString("id", p.optString("_id"))
-                    if (id.isNotEmpty() && img.isNotEmpty()) {
-                        productImagesMap[id] = img
-                    }
-                }
-            } catch (e: Exception) { e.printStackTrace() }
-            
-            val affiliateOrders = data.optJSONArray("orders") ?: return
+            val allProducts = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getAllProducts()
             
             val llProductsSoldContainer = view.findViewById<LinearLayout>(R.id.llProductsSoldContainer)
             llProductsSoldContainer?.removeAllViews()
@@ -221,22 +210,16 @@ class CommunityRevenueFragment : Fragment() {
             val llOrdersContainer = view.findViewById<LinearLayout>(R.id.llOrdersContainer)
             llOrdersContainer?.removeAllViews()
             
-            val productMap = mutableMapOf<String, Triple<Int, Long, String>>() // name -> (count, commission, image)
+            val productMap = mutableMapOf<String, Triple<Int, Long, String>>() // id -> (count, commission, image)
+            val productNameMap = mutableMapOf<String, String>() // id -> name
             
-            for (i in 0 until affiliateOrders.length()) {
-                val order = affiliateOrders.getJSONObject(i)
-                val orderId = order.optString("order_id")
-                val orderDate = order.optString("order_date")
-                val productName = order.optString("product_name")
-                val productId = order.optString("product_id")
-                val productImage = productImagesMap[productId] ?: order.optString("product_image")
-                val orderValue = order.optLong("order_value")
-                val commission = order.optLong("commission")
-                val status = order.optString("status")
-                
-                // Aggregate for products list
-                val existing = productMap[productName] ?: Triple(0, 0L, productImage)
-                productMap[productName] = Triple(existing.first + 1, existing.second + commission, productImage)
+            for (order in affiliateOrders) {
+                if (order.status == "Đã hủy") continue
+                val orderId = order.orderId
+                val orderDate = order.orderDate
+                val orderValue = order.totalAmount
+                val status = order.status
+                val commission = order.affiliate?.commissionAmount ?: 0L
                 
                 val rowView = LayoutInflater.from(context).inflate(R.layout.com_item_revenue_order, llOrdersContainer, false)
                 
@@ -245,7 +228,7 @@ class CommunityRevenueFragment : Fragment() {
                 rowView.findViewById<TextView>(R.id.tvOrderValue).text = format.format(orderValue)
                 
                 val tvStatus = rowView.findViewById<TextView>(R.id.tvStatus)
-                if (status == "Đã duyệt" || status == "Thành công") {
+                if (status == "Hoàn tất" || status == "Đã duyệt" || status == "Thành công") {
                     tvStatus.text = "Thành công"
                     tvStatus.setTextColor(android.graphics.Color.parseColor("#6E846A"))
                     tvStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#EAF1E7"))
@@ -258,16 +241,34 @@ class CommunityRevenueFragment : Fragment() {
                 }
                 
                 val ivProductImage = rowView.findViewById<ImageView>(R.id.ivProductImage)
-                if (productImage.isNotEmpty()) {
-                    ivProductImage.load(productImage)
+                if (order.items.isNotEmpty()) {
+                    val firstItem = order.items.first()
+                    val pData = allProducts.find { it.id == firstItem.productId }
+                    val productImage = pData?.mainImage ?: ""
+                    if (productImage.isNotEmpty()) {
+                        ivProductImage.load(productImage)
+                    }
                 }
                 
                 llOrdersContainer?.addView(rowView)
+                
+                for (item in order.items) {
+                    val productId = item.productId
+                    val pData = allProducts.find { it.id == productId }
+                    
+                    if (pData != null) {
+                        val itemComm = if (order.items.isNotEmpty()) commission / order.items.size else 0L
+                        val existing = productMap[productId] ?: Triple(0, 0L, pData.mainImage)
+                        productMap[productId] = Triple(existing.first + item.quantity, existing.second + itemComm, pData.mainImage)
+                        productNameMap[productId] = pData.name
+                    }
+                }
             }
             
-            for ((prodName, stats) in productMap) {
+            for ((prodId, stats) in productMap) {
+                val pName = productNameMap[prodId] ?: "Sản phẩm"
                 val prodView = LayoutInflater.from(context).inflate(R.layout.com_item_revenue_product, llProductsSoldContainer, false)
-                prodView.findViewById<TextView>(R.id.tvProductName).text = prodName
+                prodView.findViewById<TextView>(R.id.tvProductName).text = pName
                 prodView.findViewById<TextView>(R.id.tvProductSold).text = "Đã bán: ${stats.first}"
                 prodView.findViewById<TextView>(R.id.tvProductCommission).text = "Hoa hồng: ${format.format(stats.second)}"
                 
@@ -280,7 +281,7 @@ class CommunityRevenueFragment : Fragment() {
             }
             
             // Withdrawals
-            val affiliateWithdrawals = data.optJSONArray("withdrawals")
+            val affiliateWithdrawals = affiliateData.optJSONArray("withdrawals")
             val llWithdrawalsContainer = view.findViewById<LinearLayout>(R.id.llWithdrawalsContainer)
             llWithdrawalsContainer?.removeAllViews()
             

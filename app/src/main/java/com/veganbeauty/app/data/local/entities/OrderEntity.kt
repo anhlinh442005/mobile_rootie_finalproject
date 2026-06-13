@@ -11,9 +11,22 @@ data class OrderItem(
     val price: Long
 )
 
+data class AffiliateInfo(
+    val isAffiliateOrder: Boolean,
+    val affiliateCode: String,
+    val referrerUserId: String,
+    val referrerName: String,
+    val sourceType: String,
+    val sourcePostId: String,
+    val commissionRate: Double,
+    val commissionAmount: Long,
+    val commissionStatus: String
+)
+
 @Entity(tableName = "orders")
 data class OrderEntity(
     @PrimaryKey val orderId: String,
+    val userId: String = "test_001",
     val orderDate: String,
     val orderTime: String,
     val status: String,
@@ -31,5 +44,7 @@ data class OrderEntity(
     val reviewText: String? = null,
     val reviewImage: String? = null,
     val isAnonymous: Boolean = false,
-    val recommendToFriends: Boolean = false
+    val recommendToFriends: Boolean = false,
+    @androidx.room.Embedded(prefix = "aff_")
+    val affiliate: AffiliateInfo? = null
 )
