@@ -547,6 +547,7 @@ class ShopCheckoutFragment : RootieFragment() {
                             val itemValue = item.price * item.quantity
                             val commissionAmount = (itemValue * commissionRate).toLong()
                             
+                            /* 
                             com.veganbeauty.app.features.community.affiliate.AffiliateHelper.addAffiliateOrder(
                                 context = requireContext(),
                                 referrerUserId = referrerUserId,
@@ -557,6 +558,7 @@ class ShopCheckoutFragment : RootieFragment() {
                                 commissionAmount = commissionAmount,
                                 customerEmail = currentEmail ?: "Khách ẩn danh"
                             )
+                            */
                         }
                     } catch(e: Exception) {}
                     

@@ -117,29 +117,10 @@ class CommunityRevenueFragment : Fragment() {
                 }
             }
 
-            // Trừ đi phần đã rút ra khỏi số dư khả dụng
+            // Trừ đi phần đã rút ra khỏi số dư khả dụng (MOCK or read from separate withdrawals.json if available)
+            // For now, assume 0 as per user instructions to clear old data
             var totalWithdrawn = 0L
-            val jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
-            var affiliateData = org.json.JSONObject()
             val newCustomers = newCustomerIds.size
-            if (jsonArray.length() > 0) {
-                for (i in 0 until jsonArray.length()) {
-                    val obj = jsonArray.getJSONObject(i)
-                    if (obj.optString("userId") == currentUserId) {
-                        affiliateData = obj
-                        break
-                    }
-                }
-                val withdrawals = affiliateData.optJSONArray("withdrawals")
-                if (withdrawals != null) {
-                    for (i in 0 until withdrawals.length()) {
-                        val wd = withdrawals.getJSONObject(i)
-                        if (wd.optString("status") == "Đã chuyển") {
-                            totalWithdrawn += wd.optLong("amount", 0)
-                        }
-                    }
-                }
-            }
             val availableBalance = (successCommission - totalWithdrawn).coerceAtLeast(0L)
             // ────────────────────────────────────────────────────────────────
             
@@ -279,7 +260,7 @@ class CommunityRevenueFragment : Fragment() {
             }
             
             // Withdrawals
-            val affiliateWithdrawals = affiliateData.optJSONArray("withdrawals")
+            val affiliateWithdrawals = org.json.JSONArray()
             val llWithdrawalsContainer = view.findViewById<LinearLayout>(R.id.llWithdrawalsContainer)
             llWithdrawalsContainer?.removeAllViews()
             

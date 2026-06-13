@@ -113,14 +113,16 @@ class CommunityAffiliateProductsFragment : Fragment() {
                 }
             } catch(e: Exception) { e.printStackTrace() }
             
-            val prefs = requireContext().getSharedPreferences("AffiliatePrefs", android.content.Context.MODE_PRIVATE)
-            val hiddenProducts = prefs.getStringSet("hiddenProducts", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+            // Get display state from AffiliateProductsHelper
+            val currentUserId = "test_001" // Same as used above
+            val helper = com.veganbeauty.app.features.community.affiliate.AffiliateProductsHelper
             
             val llProductsContainer = view.findViewById<LinearLayout>(R.id.llProductsContainer)
             llProductsContainer?.removeAllViews()
             
             for ((prodId, stats) in productMap) {
-                if (hiddenProducts.contains(prodId)) continue
+                val isDisplayed = helper.isProductDisplayed(requireContext(), currentUserId, prodId)
+                if (!isDisplayed) continue
                 
                 val prodView = LayoutInflater.from(context).inflate(R.layout.com_item_affiliate_product_card, llProductsContainer, false)
                 
@@ -161,8 +163,7 @@ class CommunityAffiliateProductsFragment : Fragment() {
                         
                         dialogView.findViewById<View>(R.id.btnConfirm).setOnClickListener {
                             llProductsContainer?.removeView(prodView)
-                            hiddenProducts.add(prodId)
-                            prefs.edit().putStringSet("hiddenProducts", hiddenProducts).apply()
+                            helper.setProductDisplayed(requireContext(), currentUserId, prodId, false)
                             dialog.dismiss()
                         }
                         

@@ -104,6 +104,7 @@ class CommunityAffiliateOrdersFragment : Fragment() {
             val customer = order.shippingName
             val orderValue = order.totalAmount
             val commission = order.affiliate?.commissionAmount ?: 0L
+            val commissionStatus = order.affiliate?.commissionStatus ?: ""
             val status = order.status
             val affiliateId = order.affiliate?.affiliate_id ?: orderId
             
@@ -159,7 +160,9 @@ class CommunityAffiliateOrdersFragment : Fragment() {
             holder.tvCustomer.text = customer
             holder.tvOrderDate.text = if (orderDate.contains(":")) orderDate else "$orderDate 10:30"
             holder.tvOrderValue.text = format.format(orderValue)
-            holder.tvCommission.text = format.format(commission)
+            
+            val commStatusText = if (commissionStatus == "confirmed") "(Đã duyệt)" else if (commissionStatus == "pending") "(Chờ duyệt)" else ""
+            holder.tvCommission.text = "${format.format(commission)} $commStatusText"
         }
     }
 }

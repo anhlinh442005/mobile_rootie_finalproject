@@ -120,17 +120,7 @@ class CommunityAddAffiliateProductsFragment : Fragment() {
                 }
             }
             
-            // Load showcased products
-            val affiliateArr = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
-            if (affiliateArr.length() > 0) {
-                val affData = affiliateArr.getJSONObject(0)
-                val affProducts = affData.optJSONArray("products") ?: JSONArray()
-                for (i in 0 until affProducts.length()) {
-                    val ap = affProducts.optJSONObject(i) ?: continue
-                    val pId = ap.optString("id")
-                    if (pId.isNotEmpty()) showcasedProductIds.add(pId)
-                }
-            }
+            // Removed load showcased products from old AffiliateHelper
 
             // Load all products
             val jsonProducts = requireContext().assets.open("products.json").bufferedReader().use { it.readText() }
@@ -181,9 +171,10 @@ class CommunityAddAffiliateProductsFragment : Fragment() {
             
             val isPurchased = purchasedProductIds.contains(id)
             
-            val prefs = requireContext().getSharedPreferences("AffiliatePrefs", android.content.Context.MODE_PRIVATE)
-            val hiddenProducts = prefs.getStringSet("hiddenProducts", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-            val isShowcased = isPurchased && !hiddenProducts.contains(id)
+            val currentUserId = "test_001"
+            val helper = com.veganbeauty.app.features.community.affiliate.AffiliateProductsHelper
+            val isDisplayed = helper.isProductDisplayed(requireContext(), currentUserId, id)
+            val isShowcased = isPurchased && isDisplayed
             
             val item = LayoutInflater.from(context).inflate(R.layout.com_item_affiliate_add_product_card, llAddProductsContainer, false)
             
@@ -213,11 +204,7 @@ class CommunityAddAffiliateProductsFragment : Fragment() {
                     btnAdd.text = "Đã trưng bày"
                     btnAdd.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E"))
                     btnAdd.isEnabled = false
-                    
-                    val p = requireContext().getSharedPreferences("AffiliatePrefs", android.content.Context.MODE_PRIVATE)
-                    val hSet = p.getStringSet("hiddenProducts", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-                    hSet.remove(id)
-                    p.edit().putStringSet("hiddenProducts", hSet).apply()
+                    helper.setProductDisplayed(requireContext(), currentUserId, id, true)
                     
                     Toast.makeText(context, "Đã thêm sản phẩm vào cửa hàng", Toast.LENGTH_SHORT).show()
                 }
