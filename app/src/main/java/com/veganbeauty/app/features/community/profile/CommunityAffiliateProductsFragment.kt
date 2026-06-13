@@ -67,11 +67,7 @@ class CommunityAffiliateProductsFragment : Fragment() {
                 }
             }
             
-            val jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext())
-            if (jsonArray.length() == 0) return
-            
-            val data = jsonArray.getJSONObject(0)
-            val orders = data.optJSONArray("orders") ?: return
+
             
             data class ProductStats(val name: String, var count: Int, var commission: Long, val image: String, val price: Long)
             val productMap = mutableMapOf<String, ProductStats>()
@@ -82,18 +78,20 @@ class CommunityAffiliateProductsFragment : Fragment() {
                 
                 // Nguồn lấy từ orders của chính currentUserId đã hoàn tất
                 val userOrders = jsonReader.getAllOrders().filter { it.userId == currentUserId && it.status == "Hoàn tất" }
-                val showcaseIds = mutableSetOf<String>()
+                // Lấy thông tin từ products.json
+                val allProducts = jsonReader.getAllProducts()
+                
                 for (order in userOrders) {
                     for (item in order.items) {
-                        showcaseIds.add(item.productId)
-                    }
-                }
-                
-                val allProducts = jsonReader.getAllProducts()
-                for (pId in showcaseIds) {
-                    val pData = allProducts.find { it.id == pId }
-                    if (pData != null) {
-                        productMap[pId] = ProductStats(pData.name, 0, 0L, pData.mainImage, pData.price)
+                        val pId = item.productId
+                        val pData = allProducts.find { it.id == pId }
+                        val name = pData?.name ?: item.productName
+                        val img = pData?.mainImage ?: item.productImage
+                        val price = pData?.price ?: item.price
+                        
+                        if (!productMap.containsKey(pId)) {
+                            productMap[pId] = ProductStats(name, 0, 0L, img, price)
+                        }
                     }
                 }
                 
@@ -104,15 +102,12 @@ class CommunityAffiliateProductsFragment : Fragment() {
                     for (item in order.items) {
                         val pId = item.productId
                         
-                        // Kiểm tra sản phẩm phải tồn tại trong products chuẩn mới tính
-                        val pData = allProducts.find { it.id == pId }
-                        if (pData != null) {
-                            val itemComm = if (order.items.isNotEmpty()) commission / order.items.size else 0L
-                            val stats = productMap[pId]
-                            if (stats != null) {
-                                stats.count += item.quantity
-                                stats.commission += (itemComm * item.quantity)
-                            }
+                        // Bỏ check "pData != null" để tính luôn pseudo products
+                        val itemComm = if (order.items.isNotEmpty()) commission / order.items.size else 0L
+                        val stats = productMap[pId]
+                        if (stats != null) {
+                            stats.count += item.quantity
+                            stats.commission += (itemComm * item.quantity)
                         }
                     }
                 }

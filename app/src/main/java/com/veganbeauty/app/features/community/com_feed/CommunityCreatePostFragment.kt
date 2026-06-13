@@ -382,28 +382,30 @@ class CommunityCreatePostFragment : RootieFragment() {
             try {
                 val currentUserId = "test_001" // Or get from session
                 val completedOrders = LocalJsonReader(requireContext()).getAllOrders().filter { it.userId == currentUserId && it.status == "Hoàn tất" }
-                val purchasedProductIds = mutableSetOf<String>()
-                for (order in completedOrders) {
-                    for (item in order.items) {
-                        purchasedProductIds.add(item.productId)
-                    }
-                }
-
-                // Map against products.json
+                
+                // Map against products.json first to get full info if available
                 val productsJsonStr = requireContext().assets.open("products.json").bufferedReader().use { it.readText() }
                 val productsData = org.json.JSONObject(productsJsonStr)
                 val allProductsArray = productsData.optJSONArray("products") ?: org.json.JSONArray(productsJsonStr)
-
+                val allProductsMap = mutableMapOf<String, org.json.JSONObject>()
                 for (i in 0 until allProductsArray.length()) {
                     val p = allProductsArray.optJSONObject(i) ?: continue
                     val pId = p.optString("id", p.optString("_id"))
-                    
-                    if (purchasedProductIds.contains(pId)) {
-                        val obj = org.json.JSONObject()
-                        obj.put("id", pId)
-                        obj.put("name", p.optString("name", "Sản phẩm"))
-                        obj.put("thumbnail_url", p.optString("mainImage", p.optString("image", "")))
-                        productsMap[pId] = obj
+                    allProductsMap[pId] = p
+                }
+
+                for (order in completedOrders) {
+                    for (item in order.items) {
+                        val pId = item.productId
+                        if (!productsMap.containsKey(pId)) {
+                            val pData = allProductsMap[pId]
+                            val obj = org.json.JSONObject()
+                            obj.put("id", pId)
+                            obj.put("name", pData?.optString("name") ?: item.productName)
+                            obj.put("thumbnail_url", pData?.optString("mainImage", pData.optString("image", "")) ?: item.productImage)
+                            obj.put("brand", pData?.optString("brand", ""))
+                            productsMap[pId] = obj
+                        }
                     }
                 }
             } catch (e: Exception) {
