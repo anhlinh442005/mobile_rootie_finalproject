@@ -17,12 +17,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             android.content.SharedPreferences prefs = getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE);
             String savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null);
-            androidx.fragment.app.Fragment destination;
-            if (savedSkin != null) {
-                destination = new com.veganbeauty.app.features.weather.WeatherForecastFragment();
-            } else {
-                destination = new com.veganbeauty.app.features.quiz.QuizTestIntroFragment();
-            }
+            androidx.fragment.app.Fragment destination = new com.veganbeauty.app.features.home.HomeFragment();
             getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_container, destination)
                 .commit();
