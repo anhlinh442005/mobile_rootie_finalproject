@@ -326,7 +326,7 @@ class FirestoreService {
         }
     }
 
-<<<<<<< HEAD
+
     suspend fun addCommentToPost(postId: String, commentMap: Map<String, Any>): Boolean {
         return try {
             // Append to comments array and increment comments_count

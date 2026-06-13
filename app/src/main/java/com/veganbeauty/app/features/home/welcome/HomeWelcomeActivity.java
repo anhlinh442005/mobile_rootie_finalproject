@@ -882,7 +882,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             obj.optString("email", ""),
                             obj.optString("phone", ""),
                             obj.optString("password", ""),
-                            obj.optString("avatar", null)
+                            obj.optString("avatar", null),
+                            obj.optString("primary_image", null)
                         );
 
                     userDao.insertUserSync(user);

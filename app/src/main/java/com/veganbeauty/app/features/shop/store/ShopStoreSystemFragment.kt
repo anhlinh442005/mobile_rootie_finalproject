@@ -550,7 +550,7 @@ class ShopStoreSystemFragment : RootieFragment() {
             )
 
             val builder = NotificationCompat.Builder(ctx, channelId)
-                .setSmallIcon(R.drawable.ic_bell)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(titleText)
                 .setContentText(messageText)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
