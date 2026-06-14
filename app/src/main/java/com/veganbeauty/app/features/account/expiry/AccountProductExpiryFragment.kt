@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.veganbeauty.app.core.base.RootieFragment
@@ -17,6 +18,7 @@ import com.veganbeauty.app.data.local.RootieDatabase
 import com.veganbeauty.app.data.repository.ProductRepository
 import com.veganbeauty.app.databinding.AccountProductExpiryFragmentBinding
 import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment
+import kotlinx.coroutines.launch
 
 class AccountProductExpiryFragment : RootieFragment() {
 
@@ -25,13 +27,17 @@ class AccountProductExpiryFragment : RootieFragment() {
 
     private lateinit var viewModel: AccountProductExpiryViewModel
 
-    private val soonAdapter = AccountProductExpiryAdapter(isGrid = false) { uiModel ->
-        navigateToDetail(uiModel)
-    }
+    private val soonAdapter = AccountProductExpiryAdapter(
+        AccountProductExpiryAdapter.ExpiryLayoutMode.HORIZONTAL,
+        onItemClick = { uiModel -> navigateToDetail(uiModel) },
+        onItemLongClick = { uiModel -> showActionBottomSheet(uiModel) }
+    )
 
-    private val allAdapter = AccountProductExpiryAdapter(isGrid = true) { uiModel ->
-        navigateToDetail(uiModel)
-    }
+    private val allAdapter = AccountProductExpiryAdapter(
+        AccountProductExpiryAdapter.ExpiryLayoutMode.GRID,
+        onItemClick = { uiModel -> navigateToDetail(uiModel) },
+        onItemLongClick = { uiModel -> showActionBottomSheet(uiModel) }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,12 +51,17 @@ class AccountProductExpiryFragment : RootieFragment() {
 
     private fun setupViewModel() {
         val db = RootieDatabase.getDatabase(requireContext())
-        val repository = ProductRepository(db.productDao(), LocalJsonReader(requireContext()))
+        val repository = ProductRepository(
+            productDao = db.productDao(),
+            localJsonReader = LocalJsonReader(requireContext()),
+            userProductExpiryDao = db.userProductExpiryDao()
+        )
+        val userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(requireContext())
 
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return AccountProductExpiryViewModel(repository) as T
+                return AccountProductExpiryViewModel(repository, userId) as T
             }
         })[AccountProductExpiryViewModel::class.java]
     }
@@ -79,19 +90,55 @@ class AccountProductExpiryFragment : RootieFragment() {
 
         // Filter button
         binding.btnFilter.setOnClickListener {
-            Toast.makeText(requireContext(), "Bộ lọc đang được phát triển!", Toast.LENGTH_SHORT).show()
+            val filterBottomSheet = ExpiryFilterBottomSheet.newInstance()
+            filterBottomSheet.show(childFragmentManager, ExpiryFilterBottomSheet.TAG)
         }
 
         // View all soon button
         binding.btnViewAllSoon.setOnClickListener {
-            Toast.makeText(requireContext(), "Hiển thị tất cả sản phẩm sắp hết hạn", Toast.LENGTH_SHORT).show()
+            val bottomSheet = SoonExpiryBottomSheet.newInstance()
+            bottomSheet.show(childFragmentManager, SoonExpiryBottomSheet.TAG)
         }
+    }
+
+    private fun showActionBottomSheet(uiModel: ExpiryProductUiModel) {
+        val actionBottomSheet = ExpiryActionBottomSheet.newInstance(
+            productName = uiModel.product.name,
+            productExpiry = uiModel.product.expiryDate,
+            productImage = uiModel.product.mainImage
+        )
+        actionBottomSheet.setActions(
+            onBuyAgain = {
+                lifecycleScope.launch {
+                    val db = RootieDatabase.getDatabase(requireContext())
+                    val fullProduct = db.productDao().getProductById(uiModel.product.id)
+                    val detailFragment = ShopDetailFragment().apply {
+                        setProduct(fullProduct ?: uiModel.product)
+                    }
+                    parentFragmentManager.beginTransaction()
+                        .setCustomAnimations(
+                            android.R.anim.fade_in,
+                            android.R.anim.fade_out,
+                            android.R.anim.fade_in,
+                            android.R.anim.fade_out
+                        )
+                        .replace(com.veganbeauty.app.R.id.main_container, detailFragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            },
+            onDelete = {
+                viewModel.deleteExpiryProduct(uiModel.product.id)
+                Toast.makeText(requireContext(), "Đã xoá ${uiModel.product.name} khỏi kệ", Toast.LENGTH_SHORT).show()
+            }
+        )
+        actionBottomSheet.show(childFragmentManager, ExpiryActionBottomSheet.TAG)
     }
 
     override fun observeViewModel() {
         // Observe soon products list
         viewModel.soonExpiryProducts.observe(viewLifecycleOwner) { products ->
-            soonAdapter.submitList(products)
+            soonAdapter.submitList(products.take(5))
             if (products.isEmpty()) {
                 binding.rvSoonProducts.visibility = View.GONE
                 binding.tvSoonTitle.visibility = View.GONE
@@ -109,7 +156,7 @@ class AccountProductExpiryFragment : RootieFragment() {
         }
     }
 
-    private fun navigateToDetail(uiModel: ExpiryProductUiModel) {
+    fun navigateToDetail(uiModel: ExpiryProductUiModel) {
         val detailFragment = AccountProductExpiryDetailFragment.newInstance(uiModel.product.id)
 
         parentFragmentManager.beginTransaction()
