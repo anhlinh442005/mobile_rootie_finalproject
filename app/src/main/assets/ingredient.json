@@ -7,7 +7,11 @@
     "scientific_name": "Cocos nucifera oil",
     "origin": "Dầu từ Cơm dừa",
     "description": "Dầu dừa (Cocos nucifera oil) là loại dầu thực vật quen thuộc ở các vùng nhiệt đới, được dùng rộng rãi trong ẩm thực, chăm sóc tóc truyền thống. Trong dân gian, dầu dừa thường được dùng để dưỡng tóc, giúp tóc mềm mượt và óng ả. Thành phần này giàu axit lauric cùng nhiều axit béo khác, có khả năng thẩm thấu tốt vào sợi tóc, từ đó giúp nuôi dưỡng và bảo vệ tóc hiệu quả. Với ưu điểm an toàn, lành tính và dịu nhẹ, dầu dừa được Giọt Lành ứng dụng trong các sản phẩm dầu xả và kem ủ tóc , nhằm mang lại hiệu quả phục hồi tự nhiên cho mái tóc hư tổn.",
-    "uses": "Dầu dừa giúp bổ sung độ ẩm và dưỡng chất cho thân và ngọn tóc– nơi dễ bị khô xơ và gãy rụng nhất. Thành phần này giúp tóc mềm mại, giảm chẻ ngọn và tăng độ bóng khỏe tự nhiên. Khi kết hợp trong công thức dầu xả và kem ủ Giọt Lành, dầu dừa góp phần bảo vệ mái tóc khỏi hư tổn do nhiệt , tia UV hay tác động từ môi trường, mang lại cảm giác mượt mà và chắc khỏe hơn sau mỗi lần chăm sóc, mà không gây nặng hay bết tóc ."
+    "uses": "Dầu dừa giúp bổ sung độ ẩm và dưỡng chất cho thân và ngọn tóc– nơi dễ bị khô xơ và gãy rụng nhất. Thành phần này giúp tóc mềm mại, giảm chẻ ngọn và tăng độ bóng khỏe tự nhiên. Khi kết hợp trong công thức dầu xả và kem ủ Giọt Lành, dầu dừa góp phần bảo vệ mái tóc khỏi hư tổn do nhiệt , tia UV hay tác động từ môi trường, mang lại cảm giác mượt mà và chắc khỏe hơn sau mỗi lần chăm sóc, mà không gây nặng hay bết tóc .",
+    "types": [
+      "Làm dịu",
+      "Phục hồi"
+    ]
   },
   {
     "name": "Trà xanh",
@@ -17,7 +21,12 @@
     "scientific_name": "Green tea essential oil",
     "origin": "Tinh dầu từ lá trà xanh",
     "description": "Tinh dầu trà xanh là nguyên liệu gắn bó lâu đời trong y học và chăm sóc da truyền thống phương Đông. Từ xa xưa, trà xanh đã được xem như biểu tượng của sự thanh lọc và cân bằng tự nhiên cho cơ thể và làn da. Ngày nay, khoa học hiện đại đã chứng minh rằng tinh dầu chiết xuất từ lá trà xanh chứa nhiều hợp chất quý như EGCG (Epigallocatechin gallate) và các polyphenol, có khả năng trung hòa gốc tự do, nhờ đó giúp giảm stress oxy hóa – một trong những nguyên nhân chính thúc đẩy quá trình lão hóa da. Với đặc tính kháng khuẩn, kháng viêm và làm dịu da, tinh dầu trà xanh hiện được ứng dụng rộng rãi trong các sản phẩm mỹ phẩm thiên nhiên, đặc biệt phù hợp với làn da nhạy cảm và dễ kích ứng.",
-    "uses": "Tinh dầu trà xanh giàu chất chống oxy hóa, giúp làm chậm quá trình lão hóa, kiểm soát bã nhờn và làm dịu tình trạng viêm, kích ứng. Với đặc tính kháng khuẩn và dịu nhẹ, thành phần này phù hợp cả với da nhạy cảm, góp phần mang lại làn da sạch khỏe và tươi sáng. Khi ứng dụng trong sữa tắm Hoa Trà Giọt Lành, tinh dầu trà xanh còn giúp củng cố hàng rào bảo vệ tự nhiên của da, mang lại cảm giác thư thái và dễ chịu sau mỗi lần tắm."
+    "uses": "Tinh dầu trà xanh giàu chất chống oxy hóa, giúp làm chậm quá trình lão hóa, kiểm soát bã nhờn và làm dịu tình trạng viêm, kích ứng. Với đặc tính kháng khuẩn và dịu nhẹ, thành phần này phù hợp cả với da nhạy cảm, góp phần mang lại làn da sạch khỏe và tươi sáng. Khi ứng dụng trong sữa tắm Hoa Trà Giọt Lành, tinh dầu trà xanh còn giúp củng cố hàng rào bảo vệ tự nhiên của da, mang lại cảm giác thư thái và dễ chịu sau mỗi lần tắm.",
+    "types": [
+      "Làm dịu",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Bồ hòn",
@@ -27,7 +36,13 @@
     "scientific_name": "Sapindus saponaria fruit extract",
     "origin": "Dịch chiết từ quả Bồ hòn",
     "description": "Bồ hòn là loài thực vật giàu saponin, từ lâu đã được sử dụng trong nhiều nền y học cổ truyền và dân gian như một nguyên liệu làm sạch tự nhiên. Ở Việt Nam, quả bồ hòn thường được dùng để giặt giũ, vệ sinh hoặc nấu nước gội đầu thay thế xà phòng nhờ khả năng tạo bọt dịu nhẹ. Các nghiên cứu hiện đại cho thấy chiết xuất từ quả bồ hòn chứa saponin cùng các acid béo như oleic acid và linolenic acid, đồng thời có đặc tính chống viêm, kháng khuẩn và chống oxy hóa. Tại Giọt Lành, bồ hòn được ứng dụng trong các công thức chăm sóc tóc như một nguồn chất tạo bọt tự nhiên, an toàn và thân thiện với da đầu.",
-    "uses": "Dịch chiết bồ hòn mang đến khả năng làm sạch nhẹ nhàng nhưng vẫn hiệu quả, giúp loại bỏ bụi bẩn, dầu thừa và gàu trên da đầu mà không gây khô rít. Nhờ chứa saponin tự nhiên, bồ hòn tạo bọt dịu nhẹ, phù hợp với mái tóc và da đầu nhạy cảm. Đồng thời, các đặc tính kháng khuẩn và chống viêm của bồ hòn góp phần duy trì môi trường da đầu khỏe mạnh, giảm nguy cơ kích ứng và hỗ trợ mái tóc phát triển chắc khỏe hơn. Sự kết hợp của bồ hòn cùng các thảo dược bản địa khác trong công thức Giọt Lành tạo nên trải nghiệm làm sạch trong lành, cân bằng và bền vững."
+    "uses": "Dịch chiết bồ hòn mang đến khả năng làm sạch nhẹ nhàng nhưng vẫn hiệu quả, giúp loại bỏ bụi bẩn, dầu thừa và gàu trên da đầu mà không gây khô rít. Nhờ chứa saponin tự nhiên, bồ hòn tạo bọt dịu nhẹ, phù hợp với mái tóc và da đầu nhạy cảm. Đồng thời, các đặc tính kháng khuẩn và chống viêm của bồ hòn góp phần duy trì môi trường da đầu khỏe mạnh, giảm nguy cơ kích ứng và hỗ trợ mái tóc phát triển chắc khỏe hơn. Sự kết hợp của bồ hòn cùng các thảo dược bản địa khác trong công thức Giọt Lành tạo nên trải nghiệm làm sạch trong lành, cân bằng và bền vững.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Hydroxyethyl cellulose",
@@ -37,7 +52,12 @@
     "scientific_name": "Hydroxyethyl cellulose",
     "origin": "Hợp chất có nguồn gốc từ thực vật",
     "description": "Hydroxyethyl cellulose là một polymer tan trong nước, được dẫn xuất từ cellulose có mặt trong nhiều loại thực vật. Trong mỹ phẩm, thành phần này thường được sử dụng như chất làm đặc và tạo gel, giúp điều chỉnh độ sệt của sản phẩm để dễ lấy, dễ tán và mang lại cảm giác mượt mà khi sử dụng. Nhờ khả năng tạo dung dịch nhớt ổn định, hydroxyethyl cellulose còn giúp giữ các thành phần khác phân tán đều trong công thức, hạn chế tách lớp và giúp sản phẩm trở nên đồng nhất, đẹp mắt hơn. Với đặc tính trơ, dịu nhẹ và ít gây kích ứng, thành phần này được ưa chuộng trong các công thức ưu tiên độ lành tính, kể cả cho làn da nhạy cảm.",
-    "uses": "Trong công thức dầu gội của Giọt Lành, hydroxyethyl cellulose giúp điều chỉnh độ sệt vừa đủ để sản phẩm không quá loãng cũng không quá đặc, nhờ đó dễ dàn trải trên da đầu và toàn bộ chiều dài sợi tóc, đồng thời hỗ trợ bọt gội trở nên mịn hơn, mang lại cảm giác mát-xa da đầu êm ái và dễ chịu. Khi kết hợp cùng các chất hoạt động bề mặt dịu nhẹ và chiết xuất thảo dược bản địa trong sản phẩm Giọt Lành, thành phần này còn góp phần giữ cho dưỡng chất phân bố đều, giúp mỗi lần gội xả là một lần các thành phần nuôi dưỡng tiếp xúc tốt hơn với da đầu và sợi tóc, từ đó hỗ trợ mái tóc trở nên mềm mại hơn sau mỗi lần sử dụng."
+    "uses": "Trong công thức dầu gội của Giọt Lành, hydroxyethyl cellulose giúp điều chỉnh độ sệt vừa đủ để sản phẩm không quá loãng cũng không quá đặc, nhờ đó dễ dàn trải trên da đầu và toàn bộ chiều dài sợi tóc, đồng thời hỗ trợ bọt gội trở nên mịn hơn, mang lại cảm giác mát-xa da đầu êm ái và dễ chịu. Khi kết hợp cùng các chất hoạt động bề mặt dịu nhẹ và chiết xuất thảo dược bản địa trong sản phẩm Giọt Lành, thành phần này còn góp phần giữ cho dưỡng chất phân bố đều, giúp mỗi lần gội xả là một lần các thành phần nuôi dưỡng tiếp xúc tốt hơn với da đầu và sợi tóc, từ đó hỗ trợ mái tóc trở nên mềm mại hơn sau mỗi lần sử dụng.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu"
+    ]
   },
   {
     "name": "Decyl Glucoside",
@@ -47,7 +67,13 @@
     "scientific_name": "Decyl Glucoside",
     "origin": "Hợp chất có nguồn gốc từ bắp",
     "description": "Decyl glucoside là một trong những chất hoạt động bề mặt (surfactant) dịu nhẹ được ưa chuộng trong các sản phẩm làm sạch “xanh” và lành tính. Về bản chất, đây là dẫn xuất từ rượu béo chuỗi C10 (decyl alcohol) kết hợp với đường glucose, tạo nên một phân tử có khả năng làm sạch nhưng vẫn giữ được sự mềm mại cho da và tóc. Nhờ nguồn gốc từ thực vật và khả năng phân hủy sinh học tốt, decyl glucoside thường xuất hiện trong các công thức dầu gội, sữa rửa mặt và sản phẩm dành cho da nhạy cảm hoặc da đầu dễ kích ứng.",
-    "uses": "Trong công thức các sản phẩm làm sạch của Giọt Lành, decyl glucoside đóng vai trò là chất làm sạch nền dịu nhẹ, hỗ trợ loại bỏ bụi bẩn, dầu thừa và cặn sản phẩm trên da đầu nhưng vẫn giữ được lớp màng ẩm tự nhiên. Nhờ đó, da và tóc được làm sạch một cách êm dịu, hạn chế cảm giác khô rát, bong tróc hay ngứa sau khi gội. Khi kết hợp với các chiết xuất thảo dược bản địa, decyl glucoside giúp tạo lớp bọt mịn vừa đủ, hỗ trợ phân tán đều dưỡng chất trên da đầu và cơ thể, từ đó nâng cao hiệu quả nuôi dưỡng mà vẫn đảm bảo sự an toàn và lành tính cho người sử dụng."
+    "uses": "Trong công thức các sản phẩm làm sạch của Giọt Lành, decyl glucoside đóng vai trò là chất làm sạch nền dịu nhẹ, hỗ trợ loại bỏ bụi bẩn, dầu thừa và cặn sản phẩm trên da đầu nhưng vẫn giữ được lớp màng ẩm tự nhiên. Nhờ đó, da và tóc được làm sạch một cách êm dịu, hạn chế cảm giác khô rát, bong tróc hay ngứa sau khi gội. Khi kết hợp với các chiết xuất thảo dược bản địa, decyl glucoside giúp tạo lớp bọt mịn vừa đủ, hỗ trợ phân tán đều dưỡng chất trên da đầu và cơ thể, từ đó nâng cao hiệu quả nuôi dưỡng mà vẫn đảm bảo sự an toàn và lành tính cho người sử dụng.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Quaternium-80",
@@ -57,7 +83,10 @@
     "scientific_name": "Quaternium-80",
     "origin": "Hợp chất thuộc nhóm chất hoạt động bề mặt",
     "description": "Quaternium-80 là một chất điều hòa tóc mang điện tích dương, có khả năng bám lên bề mặt sợi tóc vốn mang điện tích âm. Nhờ đặc tính này, thành phần giúp làm phẳng bề mặt sợi tóc, giảm ma sát giữa các sợi và cải thiện độ bóng, độ mượt. Trong các sản phẩm chăm sóc tóc, đặc biệt là kem ủ dành cho tóc khô xơ, Quaternium-80 thường được sử dụng ở nồng độ thấp và xuất hiện ở gần cuối bảng thành phần. Dù hàm lượng không cao, thành phần này vẫn có thể tạo ra sự khác biệt rõ rệt về cảm giác mềm mượt và độ dễ chải của tóc sau khi xả hoặc ủ.",
-    "uses": "Trong công thức ủ tóc của Giọt Lành, Quaternium-80 được dùng như một chất điều hòa hỗ trợ, giúp tóc sau khi ủ bớt rít, dễ gỡ rối và hạn chế hiện tượng xù, rối do ma sát. Thành phần này góp phần làm cho bề mặt sợi tóc mượt hơn, hỗ trợ tóc dễ vào nếp và giảm gãy rụng cơ học khi chải hoặc tạo kiểu. Với vị trí đứng gần cuối bảng thành phần và nồng độ thấp, Quaternium-80 không đóng vai trò là hoạt chất chính mà là thành phần bổ trợ, giúp tối ưu hiệu quả chăm sóc của kem ủ, đặc biệt về mặt cảm quan: tóc mềm hơn, mượt hơn và dễ chải hơn sau khi xả."
+    "uses": "Trong công thức ủ tóc của Giọt Lành, Quaternium-80 được dùng như một chất điều hòa hỗ trợ, giúp tóc sau khi ủ bớt rít, dễ gỡ rối và hạn chế hiện tượng xù, rối do ma sát. Thành phần này góp phần làm cho bề mặt sợi tóc mượt hơn, hỗ trợ tóc dễ vào nếp và giảm gãy rụng cơ học khi chải hoặc tạo kiểu. Với vị trí đứng gần cuối bảng thành phần và nồng độ thấp, Quaternium-80 không đóng vai trò là hoạt chất chính mà là thành phần bổ trợ, giúp tối ưu hiệu quả chăm sóc của kem ủ, đặc biệt về mặt cảm quan: tóc mềm hơn, mượt hơn và dễ chải hơn sau khi xả.",
+    "types": [
+      "Phục hồi"
+    ]
   },
   {
     "name": "PEG 40 Hydrogenated castor oil",
@@ -67,7 +96,10 @@
     "scientific_name": "PEG 40 Hydrogenated castor oil",
     "origin": "Hợp chất có nguồn gốc là dẫn xuất từ dầu thầu dầu",
     "description": "PEG-40 Hydrogenated castor oil là một chất hòa tan thường được sử dụng trong các công thức gốc nước như xịt tóc, toner hay xịt khoáng, với vai trò hỗ trợ phân tán các thành phần có tính dầu như tinh dầu hoặc một số chiết xuất dầu vào trong nền nước. Nhờ đó, sản phẩm hạn chế hiện tượng nổi váng dầu và duy trì được trạng thái đồng nhất, ổn định hơn. Ở nồng độ thấp, PEG-40 Hydrogenated castor oil vẫn giúp tạo hệ phân tán mịn giữa pha nước và pha dầu, đồng thời không làm tăng cảm giác nhờn dính trên da đầu và tóc, vì vậy thường được ưu tiên trong các sản phẩm dạng xịt nơi kết cấu cần nhẹ, dễ thấm và không gây nặng tóc.",
-    "uses": "Trong công thức xịt tóc của Giọt Lành, PEG-40 Hydrogenated castor oil được sử dụng với nồng độ vừa đủ để hỗ trợ hòa tan và phân tán các thành phần có tính dầu trong nền nước, giúp công thức ổn định hơn trong quá trình bảo quản. Để sản phẩm đạt trạng thái phân tán đồng đều và phát huy hiệu quả tốt hơn, nên lắc đều chai trước mỗi lần sử dụng. Nhờ sự hỗ trợ của PEG-40 Hydrogenated castor oil, mỗi lần xịt, sản phẩm được phân bố đều hơn trên da đầu và sợi tóc, giữ kết cấu nhẹ, không gây bết dính rõ rệt, đồng thời hỗ trợ các thành phần chức năng khác phát huy tác dụng ổn định và đồng nhất hơn."
+    "uses": "Trong công thức xịt tóc của Giọt Lành, PEG-40 Hydrogenated castor oil được sử dụng với nồng độ vừa đủ để hỗ trợ hòa tan và phân tán các thành phần có tính dầu trong nền nước, giúp công thức ổn định hơn trong quá trình bảo quản. Để sản phẩm đạt trạng thái phân tán đồng đều và phát huy hiệu quả tốt hơn, nên lắc đều chai trước mỗi lần sử dụng. Nhờ sự hỗ trợ của PEG-40 Hydrogenated castor oil, mỗi lần xịt, sản phẩm được phân bố đều hơn trên da đầu và sợi tóc, giữ kết cấu nhẹ, không gây bết dính rõ rệt, đồng thời hỗ trợ các thành phần chức năng khác phát huy tác dụng ổn định và đồng nhất hơn.",
+    "types": [
+      "Phục hồi"
+    ]
   },
   {
     "name": "Guar Hydroxypropyltrimonium Chloride",
@@ -77,7 +109,12 @@
     "scientific_name": "Guar Hydroxypropyltrimonium Chloride",
     "origin": "Hợp chất có nguồn gốc từ hạt cây guar",
     "description": "Guar hydroxypropyltrimonium chloride là một polymer điều hòa (conditioning polymer) được sử dụng phổ biến trong các sản phẩm chăm sóc tóc như dầu gội và dầu xả. Thành phần này được biến tính từ nhựa tự nhiên chiết xuất từ hạt cây guar, giúp tăng khả năng bám trên bề mặt sợi tóc nhờ điện tích dương, từ đó hỗ trợ làm mượt và giảm ma sát khi chải. Nhờ đặc tính này, guar hydroxypropyltrimonium chloride có thể bám nhẹ lên bề mặt tóc, tạo một lớp màng mỏng giúp tóc mềm mại hơn mà không gây cảm giác nặng hay bết. Đây là lý do thành phần này thường xuất hiện trong các công thức dầu gội hoặc sản phẩm xả nhanh, nhằm bổ sung hiệu ứng dưỡng mượt ngay trong bước làm sạch.",
-    "uses": "Trong công thức dầu gội và dầu xả của Giọt Lành, guar hydroxypropyltrimonium chloride giúp tóc sau khi gội bớt rít, dễ chải và hạn chế hiện tượng tích điện gây xơ rối. Bằng cách giảm ma sát giữa các sợi tóc, thành phần này hỗ trợ gỡ rối nhẹ nhàng, giúp tóc mềm mại hơn, dễ vào nếp và giảm gãy rụng cơ học do chải hoặc buộc tóc. Khi kết hợp cùng các chất hoạt động bề mặt dịu nhẹ và chiết xuất thảo dược bản địa, guar hydroxypropyltrimonium chloride góp phần cân bằng giữa khả năng làm sạch và cảm giác dưỡng mượt, mang lại trải nghiệm tóc sạch nhưng vẫn mềm, nhẹ, phù hợp sử dụng hằng ngày."
+    "uses": "Trong công thức dầu gội và dầu xả của Giọt Lành, guar hydroxypropyltrimonium chloride giúp tóc sau khi gội bớt rít, dễ chải và hạn chế hiện tượng tích điện gây xơ rối. Bằng cách giảm ma sát giữa các sợi tóc, thành phần này hỗ trợ gỡ rối nhẹ nhàng, giúp tóc mềm mại hơn, dễ vào nếp và giảm gãy rụng cơ học do chải hoặc buộc tóc. Khi kết hợp cùng các chất hoạt động bề mặt dịu nhẹ và chiết xuất thảo dược bản địa, guar hydroxypropyltrimonium chloride góp phần cân bằng giữa khả năng làm sạch và cảm giác dưỡng mượt, mang lại trải nghiệm tóc sạch nhưng vẫn mềm, nhẹ, phù hợp sử dụng hằng ngày.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu"
+    ]
   },
   {
     "name": "Climbazole",
@@ -87,7 +124,12 @@
     "scientific_name": "Climbazole",
     "origin": "Hợp chất tổng hợp an toàn",
     "description": "Climbazole là một hoạt chất phổ biến trong các công thức dầu gội trị gàu hiện đại, được đánh giá cao nhờ hiệu quả kiểm soát nấm Malassezia – loại vi nấm có liên quan trực tiếp đến tình trạng gàu và viêm da tiết bã. Hoạt chất này được sử dụng rộng rãi tại châu Âu và nhiều quốc gia khác trong các sản phẩm chăm sóc tóc nhờ tính ổn định, an toàn và hiệu quả khi dùng ngoài da. Trong công thức Giọt Lành, Climbazole được lựa chọn với nồng độ phù hợp (0,6%), đảm bảo vừa đủ để phát huy hiệu quả kháng nấm mà vẫn giữ sự dịu nhẹ, bảo vệ hàng rào tự nhiên của da đầu.",
-    "uses": "Climbazole hoạt động bằng cách ức chế sự phát triển của vi nấm Malassezia, từ đó giúp làm giảm và ngăn ngừa tình trạng gàu tái phát. Ngoài ra, hoạt chất này còn góp phần làm dịu cảm giác ngứa và khó chịu do gàu gây ra, giúp da đầu trở nên thoải mái và cân bằng hơn. Khi được kết hợp với các chiết xuất thảo dược bản địa trong dầu gội Sạch Gàu Giọt Lành, Climbazole không chỉ mang lại hiệu quả kiểm soát gàu mà còn đảm bảo trải nghiệm chăm sóc tóc an toàn, lành tính và dịu nhẹ."
+    "uses": "Climbazole hoạt động bằng cách ức chế sự phát triển của vi nấm Malassezia, từ đó giúp làm giảm và ngăn ngừa tình trạng gàu tái phát. Ngoài ra, hoạt chất này còn góp phần làm dịu cảm giác ngứa và khó chịu do gàu gây ra, giúp da đầu trở nên thoải mái và cân bằng hơn. Khi được kết hợp với các chiết xuất thảo dược bản địa trong dầu gội Sạch Gàu Giọt Lành, Climbazole không chỉ mang lại hiệu quả kiểm soát gàu mà còn đảm bảo trải nghiệm chăm sóc tóc an toàn, lành tính và dịu nhẹ.",
+    "types": [
+      "Làm dịu",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Behentrimonium Chloride",
@@ -97,7 +139,11 @@
     "scientific_name": "Behentrimonium Chloride",
     "origin": "Sáp nhũ hóa có nguồn gốc thực vật",
     "description": "Behentrimonium chloride là một trong những chất điều hòa tóc được sử dụng phổ biến trong dầu xả, kem ủ và các sản phẩm chăm sóc tóc cần hiệu ứng mềm mượt, dễ chải. Nhờ mang điện tích dương, thành phần này có khả năng bám lên bề mặt sợi tóc vốn mang điện tích âm, từ đó giúp làm phẳng bề mặt, giảm ma sát và hỗ trợ cải thiện độ bóng, độ mượt. Thành phần này thường được sử dụng ở nồng độ thấp nhưng mang lại hiệu quả rõ rệt, đặc biệt trên tóc khô xơ, dễ rối hoặc thường xuyên chịu tác động nhiệt và hóa chất. Behentrimonium chloride thường được kết hợp cùng các rượu béo như cetyl alcohol, cetearyl alcohol và các thành phần dưỡng ẩm khác để tạo nên nền dầu xả hoặc kem ủ có kết cấu mịn, bám đều trên tóc và cho cảm giác mượt mà khi xả.",
-    "uses": "Trong công thức dầu xả hoặc kem ủ tóc của Giọt Lành, Behentrimonium chloride giữ vai trò là chất điều hòa chính, giúp tóc sau khi xả bớt rít, dễ gỡ rối và hạn chế hiện tượng tĩnh điện gây xù rối. Thành phần này giúp giảm ma sát giữa các sợi tóc, nhờ đó tóc mềm hơn, dễ chải và giảm gãy rụng cơ học trong quá trình chải hoặc buộc tóc hằng ngày. Khi kết hợp với các rượu béo như cetyl alcohol, cetearyl alcohol, thành phần dưỡng ẩm và chiết xuất thảo dược bản địa, Behentrimonium chloride góp phần tạo nên hiệu ứng tóc mượt, vào nếp hơn sau khi xả, đồng thời hỗ trợ cải thiện cảm quan cho mái tóc khô xơ nhưng vẫn đảm bảo định hướng công thức dịu nhẹ cho da đầu."
+    "uses": "Trong công thức dầu xả hoặc kem ủ tóc của Giọt Lành, Behentrimonium chloride giữ vai trò là chất điều hòa chính, giúp tóc sau khi xả bớt rít, dễ gỡ rối và hạn chế hiện tượng tĩnh điện gây xù rối. Thành phần này giúp giảm ma sát giữa các sợi tóc, nhờ đó tóc mềm hơn, dễ chải và giảm gãy rụng cơ học trong quá trình chải hoặc buộc tóc hằng ngày. Khi kết hợp với các rượu béo như cetyl alcohol, cetearyl alcohol, thành phần dưỡng ẩm và chiết xuất thảo dược bản địa, Behentrimonium chloride góp phần tạo nên hiệu ứng tóc mượt, vào nếp hơn sau khi xả, đồng thời hỗ trợ cải thiện cảm quan cho mái tóc khô xơ nhưng vẫn đảm bảo định hướng công thức dịu nhẹ cho da đầu.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi"
+    ]
   },
   {
     "name": "Propylene Glycol",
@@ -107,7 +153,11 @@
     "scientific_name": "Propylene Glycol",
     "origin": "Hợp chất có nguồn gốc thực vật",
     "description": "Propylene glycol là một thành phần đa chức năng trong mỹ phẩm, thường được xếp vào nhóm chất giữ ẩm và dung môi hòa tan. Với khả năng hút và giữ nước, propylene glycol giúp hạn chế tình trạng mất nước trên bề mặt da khi sử dụng các sản phẩm làm sạch như sữa tắm. Trong công thức hiện đại, propylene glycol có nguồn gốc từ thực vật ngày càng được ưu tiên, phù hợp với định hướng sử dụng nguyên liệu “xanh” hơn. Thành phần này giúp hòa tan và phân tán đều một số hoạt chất hoặc chiết xuất trong nền nước, góp phần giữ cho sản phẩm ổn định hơn trong suốt thời gian sử dụng.",
-    "uses": "Trong công thức sữa tắm của Giọt Lành, propylene glycol (nguồn gốc thực vật) đóng vai trò là chất giữ ẩm và dung môi hỗ trợ. Thành phần này giúp bề mặt da sau khi tắm bớt cảm giác khô căng, hỗ trợ duy trì độ ẩm dễ chịu, đặc biệt khi sử dụng sản phẩm làm sạch hằng ngày. Bên cạnh đó, propylene glycol giúp các chiết xuất thảo dược và thành phần dưỡng khác phân tán đều trong công thức, hỗ trợ kết cấu sữa tắm ổn định và dễ dàn trải trên da. Nhờ vậy, mỗi lần tắm, da vừa được làm sạch vừa nhận được lợi ích từ các thành phần dưỡng chất một cách đồng đều và êm dịu."
+    "uses": "Trong công thức sữa tắm của Giọt Lành, propylene glycol (nguồn gốc thực vật) đóng vai trò là chất giữ ẩm và dung môi hỗ trợ. Thành phần này giúp bề mặt da sau khi tắm bớt cảm giác khô căng, hỗ trợ duy trì độ ẩm dễ chịu, đặc biệt khi sử dụng sản phẩm làm sạch hằng ngày. Bên cạnh đó, propylene glycol giúp các chiết xuất thảo dược và thành phần dưỡng khác phân tán đều trong công thức, hỗ trợ kết cấu sữa tắm ổn định và dễ dàn trải trên da. Nhờ vậy, mỗi lần tắm, da vừa được làm sạch vừa nhận được lợi ích từ các thành phần dưỡng chất một cách đồng đều và êm dịu.",
+    "types": [
+      "Làm dịu",
+      "Sạch sâu"
+    ]
   },
   {
     "name": "Cây sả",
@@ -117,7 +167,13 @@
     "scientific_name": "Cymbopogon citratus extract",
     "origin": "Dịch chiết từ lá và thân Cây sả",
     "description": "Cây sả là loài thực vật quen thuộc, được trồng rộng rãi ở vùng nhiệt đới và từ lâu đã có mặt trong nhiều bài thuốc dân gian cũng như y học cổ truyền. Trong mỹ phẩm thiên nhiên, sả được đánh giá cao nhờ giàu hợp chất hoạt tính sinh học như citral – thành phần chính tạo nên hương thơm đặc trưng, đồng thời thể hiện khả năng kháng khuẩn và kháng nấm. Nghiên cứu hiện đại còn cho thấy chiết xuất từ cây sả có hoạt tính ức chế enzyme 5α-reductase, từ đó góp phần hạn chế tình trạng rụng tóc. Tại Giọt Lành, dịch chiết cây sả được ứng dụng với quy trình hiện đại nhưng vẫn giữ lại giá trị thảo dược nguyên bản, mang đến trải nghiệm chăm sóc tóc dịu nhẹ và lành tính cho người dùng.",
-    "uses": "Dịch chiết cây sả trong sản phẩm chăm sóc tóc Giọt Lành hỗ trợ giảm gãy rụng và kháng gàu nhờ đặc tính kháng khuẩn, kháng nấm tự nhiên, đặc biệt hiệu quả với các vi sinh vật gây ra tình trạng gàu. Citral cùng các hợp chất chống oxy hóa trong cây sả giúp làm sạch da đầu một cách dịu nhẹ, loại bỏ dầu thừa và bụi bẩn mà không gây khô rít. Khi được kết hợp cùng các thảo dược bản địa khác, dịch chiết cây sả không chỉ mang lại mái tóc chắc khỏe và da đầu thông thoáng mà còn đem đến hương thơm tươi mát, gần gũi, tạo cảm giác thư giãn và cân bằng."
+    "uses": "Dịch chiết cây sả trong sản phẩm chăm sóc tóc Giọt Lành hỗ trợ giảm gãy rụng và kháng gàu nhờ đặc tính kháng khuẩn, kháng nấm tự nhiên, đặc biệt hiệu quả với các vi sinh vật gây ra tình trạng gàu. Citral cùng các hợp chất chống oxy hóa trong cây sả giúp làm sạch da đầu một cách dịu nhẹ, loại bỏ dầu thừa và bụi bẩn mà không gây khô rít. Khi được kết hợp cùng các thảo dược bản địa khác, dịch chiết cây sả không chỉ mang lại mái tóc chắc khỏe và da đầu thông thoáng mà còn đem đến hương thơm tươi mát, gần gũi, tạo cảm giác thư giãn và cân bằng.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Cam thảo",
@@ -127,7 +183,12 @@
     "scientific_name": "Licorice root extract",
     "origin": "Chiết xuất từ Rễ cây cam thảo",
     "description": "Cam thảo là vị thuốc quen thuộc trong y học cổ truyền, được sử dụng từ xa xưa nhờ đặc tính thanh nhiệt, giải độc và làm dịu cơ thể. Nghiên cứu hiện đại cho thấy chiết xuất rễ cam thảo chứa nhiều hoạt chất sinh học, nổi bật là glabridin – hợp chất có khả năng ức chế enzym tyrosinase, yếu tố quan trọng trong quá trình hình thành sắc tố da. Nhờ vậy, cam thảo trở thành một trong những thành phần thiên nhiên được ứng dụng rộng rãi trong mỹ phẩm làm sáng và chăm sóc da.",
-    "uses": "Chiết xuất cam thảo có khả năng hỗ trợ làm sáng da và cải thiện tình trạng da không đều màu. Bên cạnh đó, đặc tính kháng viêm của cam thảo giúp làm dịu làn da nhạy cảm, giảm cảm giác ngứa rát và kích ứng. Thành phần này cũng thể hiện tác dụng kháng khuẩn tự nhiên, góp phần bảo vệ hàng rào sinh học của da và duy trì sự sạch khỏe khi sử dụng trong sữa tắm. Nhờ sự kết hợp hài hòa giữa giá trị truyền thống và nghiên cứu hiện đại, chiết xuất cam thảo trong công thức Giọt Lành mang đến giải pháp chăm sóc da dịu nhẹ, an toàn và lành tính."
+    "uses": "Chiết xuất cam thảo có khả năng hỗ trợ làm sáng da và cải thiện tình trạng da không đều màu. Bên cạnh đó, đặc tính kháng viêm của cam thảo giúp làm dịu làn da nhạy cảm, giảm cảm giác ngứa rát và kích ứng. Thành phần này cũng thể hiện tác dụng kháng khuẩn tự nhiên, góp phần bảo vệ hàng rào sinh học của da và duy trì sự sạch khỏe khi sử dụng trong sữa tắm. Nhờ sự kết hợp hài hòa giữa giá trị truyền thống và nghiên cứu hiện đại, chiết xuất cam thảo trong công thức Giọt Lành mang đến giải pháp chăm sóc da dịu nhẹ, an toàn và lành tính.",
+    "types": [
+      "Làm dịu",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Bồ kết",
@@ -137,7 +198,12 @@
     "scientific_name": "Gleditsia australis fruit extract",
     "origin": "Dịch chiết từ quả Bồ kết",
     "description": "Bồ kết là loài cây gắn bó lâu đời với đời sống và y học dân gian tại nhiều quốc gia Đông Á, đặc biệt phổ biến ở các vùng quê Việt Nam. Từ xưa, quả bồ kết đã được dùng nấu nước gội đầu nhờ khả năng tạo bọt dịu nhẹ và hương thơm thảo mộc đặc trưng. Trong thành phần, bồ kết chứa nhiều hợp chất có giá trị như saponin giúp tạo bọt và làm sạch tự nhiên, cùng flavonoid có khả năng chống oxy hóa, góp phần bảo vệ da đầu và mái tóc. Tại Giọt Lành, mỗi chai dầu gội đều sử dụng cao bồ kết – một dạng chiết xuất đậm đặc được nấu, cô đặc và lọc kỹ nhằm giữ trọn dưỡng chất có lợi và loại bỏ tạp chất không mong muốn.",
-    "uses": "Dịch chiết bồ kết trong công thức Giọt Lành giúp làm sạch da đầu một cách dịu nhẹ mà không gây khô rít, đồng thời hỗ trợ giảm gãy rụng và nuôi dưỡng tóc chắc khỏe. Saponin tự nhiên mang lại khả năng tạo bọt và làm sạch hiệu quả, trong khi flavonoid giúp tóc thêm bóng mượt, chắc khỏe và được bảo vệ tốt hơn khỏi các tác nhân gây hại. Mùi thơm đặc trưng của bồ kết không chỉ tạo cảm giác thư giãn, gần gũi mà còn khơi gợi nét đẹp truyền thống của người Việt. Khi kết hợp cùng các thảo dược bản địa khác trong dầu gội Giọt Lành, bồ kết trở thành nền tảng quan trọng giúp mái tóc mềm mại và óng ả hơn."
+    "uses": "Dịch chiết bồ kết trong công thức Giọt Lành giúp làm sạch da đầu một cách dịu nhẹ mà không gây khô rít, đồng thời hỗ trợ giảm gãy rụng và nuôi dưỡng tóc chắc khỏe. Saponin tự nhiên mang lại khả năng tạo bọt và làm sạch hiệu quả, trong khi flavonoid giúp tóc thêm bóng mượt, chắc khỏe và được bảo vệ tốt hơn khỏi các tác nhân gây hại. Mùi thơm đặc trưng của bồ kết không chỉ tạo cảm giác thư giãn, gần gũi mà còn khơi gợi nét đẹp truyền thống của người Việt. Khi kết hợp cùng các thảo dược bản địa khác trong dầu gội Giọt Lành, bồ kết trở thành nền tảng quan trọng giúp mái tóc mềm mại và óng ả hơn.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu"
+    ]
   },
   {
     "name": "Glycerin",
@@ -147,7 +213,11 @@
     "scientific_name": "Glycerin",
     "origin": "Hợp chất có nguồn gốc từ thực vật",
     "description": "Glycerin là một trong những thành phần dưỡng ẩm phổ biến nhất trong mỹ phẩm, được sử dụng từ lâu đời nhờ tính an toàn và khả năng tương thích cao với da và tóc. Về mặt hóa học, glycerin là một loại rượu đường (polyol), có khả năng hút ẩm và giữ nước mạnh mẽ. Trong mỹ phẩm, glycerin có thể được chiết xuất từ nguồn thực vật như dầu dừa hoặc dầu cọ. Đặc tính nổi bật nhất của glycerin là khả năng cấp ẩm và duy trì độ ẩm tự nhiên, khiến nó trở thành thành phần không thể thiếu trong các sản phẩm chăm sóc tóc và da.",
-    "uses": "Trong công thức chăm sóc tóc của Giọt Lành, glycerin đóng vai trò như một chất giữ ẩm tự nhiên, giúp hút nước từ môi trường và giữ lại trong cấu trúc tóc, từ đó cải thiện độ mềm mại và độ đàn hồi. Thành phần này giúp tóc giảm tình trạng khô xơ, gãy rụng, đồng thời hỗ trợ da đầu duy trì độ ẩm cân bằng và hạn chế kích ứng. Nhờ đặc tính dịu nhẹ và lành tính, glycerin còn góp phần tăng hiệu quả của các chiết xuất thảo dược khác, giúp công thức ổn định và phát huy tác dụng nuôi dưỡng tối ưu, mang lại mái tóc mượt mà, bóng khỏe và tràn đầy sức sống."
+    "uses": "Trong công thức chăm sóc tóc của Giọt Lành, glycerin đóng vai trò như một chất giữ ẩm tự nhiên, giúp hút nước từ môi trường và giữ lại trong cấu trúc tóc, từ đó cải thiện độ mềm mại và độ đàn hồi. Thành phần này giúp tóc giảm tình trạng khô xơ, gãy rụng, đồng thời hỗ trợ da đầu duy trì độ ẩm cân bằng và hạn chế kích ứng. Nhờ đặc tính dịu nhẹ và lành tính, glycerin còn góp phần tăng hiệu quả của các chiết xuất thảo dược khác, giúp công thức ổn định và phát huy tác dụng nuôi dưỡng tối ưu, mang lại mái tóc mượt mà, bóng khỏe và tràn đầy sức sống.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi"
+    ]
   },
   {
     "name": "Nước",
@@ -157,7 +227,10 @@
     "scientific_name": "Aqua (Water)",
     "origin": "Nước tinh khiết qua hệ thống thẩm thấu ngược",
     "description": "Nước là thành phần không thể thiếu trong hầu hết các sản phẩm chăm sóc da và tóc. Tại Giọt Lành, nguồn nước được xử lý bằng hệ thống RO (Reverse Osmosis – thẩm thấu ngược) ngay tại nhà máy, tuân thủ nghiêm ngặt tiêu chuẩn của Bộ Y tế dành cho sản xuất mỹ phẩm. Trong công nghệ RO, nước được ép qua màng lọc siêu mịn dưới áp suất cao, giúp loại bỏ tạp chất, cặn bẩn và vi sinh vật, chỉ giữ lại những phân tử nước tinh khiết. Quá trình này được giám sát chặt chẽ nhằm đảm bảo độ an toàn và ổn định, tạo nền tảng vững chắc cho công thức chăm sóc tóc của Giọt Lành.",
-    "uses": "Nước RO đóng vai trò làm dung môi tinh khiết, giúp hòa tan và phân tán đồng đều các chiết xuất và hoạt chất trong công thức. Nhờ được xử lý loại bỏ tạp chất và vi sinh vật, nước RO đảm bảo sản phẩm an toàn, ổn định và dịu nhẹ khi sử dụng trên tóc và da đầu."
+    "uses": "Nước RO đóng vai trò làm dung môi tinh khiết, giúp hòa tan và phân tán đồng đều các chiết xuất và hoạt chất trong công thức. Nhờ được xử lý loại bỏ tạp chất và vi sinh vật, nước RO đảm bảo sản phẩm an toàn, ổn định và dịu nhẹ khi sử dụng trên tóc và da đầu.",
+    "types": [
+      "Làm dịu"
+    ]
   },
   {
     "name": "Disodium Cocoamphodiacetate",
@@ -167,7 +240,12 @@
     "scientific_name": "Disodium Cocoamphodiacetate",
     "origin": "Hợp chất có nguồn gốc từ dừa",
     "description": "Disodium Cocoamphodiacetate là một chất hoạt động bề mặt dịu nhẹ, thường xuất hiện trong các công thức sản phẩm chăm sóc da và tóc lành tính. Về mặt cấu trúc, đây là một surfactant lưỡng tính giúp công thức ổn định hơn và giảm nguy cơ gây kích ứng so với nhiều chất hoạt động bề mặt mạnh truyền thống. Được dẫn xuất từ acid béo dầu dừa, disodium cocoamphodiacetate vừa hỗ trợ làm sạch, vừa góp phần làm mềm và hạn chế cảm giác khô rít sau khi sử dụng. Thành phần này thường được dùng kết hợp với các chất hoạt động bề mặt dịu nhẹ khác để tạo nên hệ làm sạch cân bằng: đủ hiệu quả nhưng vẫn êm dịu với da đầu và sợi tóc.",
-    "uses": "Trong công thức các sản phẩm làm sạch của Giọt Lành, disodium cocoamphodiacetate đóng vai trò là chất làm sạch hỗ trợ, giúp “làm mềm” tổng thể hệ surfactant, từ đó giảm độ “gắt” khi tiếp xúc với da đầu. Thành phần này giúp cuốn trôi bụi bẩn, mồ hôi và bã nhờn một cách nhẹ nhàng, đồng thời hỗ trợ duy trì độ ẩm tự nhiên, hạn chế cảm giác căng, khô hoặc rát sau khi sử dụng. Khi kết hợp cùng các chất hoạt động bề mặt dịu nhẹ khác và chiết xuất thảo dược, disodium cocoamphodiacetate góp phần tạo nên trải nghiệm làm sạch êm dịu, cân bằng và phù hợp cho việc sử dụng hằng ngày."
+    "uses": "Trong công thức các sản phẩm làm sạch của Giọt Lành, disodium cocoamphodiacetate đóng vai trò là chất làm sạch hỗ trợ, giúp “làm mềm” tổng thể hệ surfactant, từ đó giảm độ “gắt” khi tiếp xúc với da đầu. Thành phần này giúp cuốn trôi bụi bẩn, mồ hôi và bã nhờn một cách nhẹ nhàng, đồng thời hỗ trợ duy trì độ ẩm tự nhiên, hạn chế cảm giác căng, khô hoặc rát sau khi sử dụng. Khi kết hợp cùng các chất hoạt động bề mặt dịu nhẹ khác và chiết xuất thảo dược, disodium cocoamphodiacetate góp phần tạo nên trải nghiệm làm sạch êm dịu, cân bằng và phù hợp cho việc sử dụng hằng ngày.",
+    "types": [
+      "Làm dịu",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "PEG-7 Glyceryl Cocoate",
@@ -177,7 +255,13 @@
     "scientific_name": "PEG-7 Glyceryl Cocoate",
     "origin": "Hợp chất có nguồn gốc từ dừa",
     "description": "PEG-7 Glyceryl Cocoate là một dẫn xuất tan trong nước được tạo ra từ glycerin và acid béo của dầu dừa. Trong mỹ phẩm, thành phần này thường được xếp vào nhóm chất hoạt động bề mặt dịu nhẹ, đồng thời có tính chất làm mềm và hỗ trợ hòa tan các thành phần dầu trong công thức gốc nước. Nhờ đặc tính vừa làm sạch nhẹ, vừa để lại cảm giác mềm mượt, PEG-7 Glyceryl Cocoate thường được sử dụng trong dầu xả, giúp giảm cảm giác khô rít sau khi dùng sản phẩm, đồng thời cải thiện độ mượt khi thoa lên tóc.",
-    "uses": "Trong dầu xả Giọt Lành, PEG-7 Glyceryl Cocoate được sử dụng như một chất làm sạch hỗ trợ và làm mềm, giúp hệ chất hoạt động bề mặt trở nên dịu nhẹ hơn với tóc. Thành phần này giúp phân tán dầu thừa và bụi bẩn, đồng thời hỗ trợ giữ lại cảm giác mềm mại hơn trên sợi tóc sau khi gội, hạn chế cảm giác khô rít. Khi kết hợp với các chất hoạt động bề mặt dịu nhẹ khác và chiết xuất thảo dược bản địa, PEG-7 Glyceryl Cocoate góp phần cân bằng giữa khả năng làm sạch và độ êm dịu, giúp mái tóc sau khi gội sạch hơn nhưng vẫn giữ được độ mềm và dễ chịu khi chạm vào."
+    "uses": "Trong dầu xả Giọt Lành, PEG-7 Glyceryl Cocoate được sử dụng như một chất làm sạch hỗ trợ và làm mềm, giúp hệ chất hoạt động bề mặt trở nên dịu nhẹ hơn với tóc. Thành phần này giúp phân tán dầu thừa và bụi bẩn, đồng thời hỗ trợ giữ lại cảm giác mềm mại hơn trên sợi tóc sau khi gội, hạn chế cảm giác khô rít. Khi kết hợp với các chất hoạt động bề mặt dịu nhẹ khác và chiết xuất thảo dược bản địa, PEG-7 Glyceryl Cocoate góp phần cân bằng giữa khả năng làm sạch và độ êm dịu, giúp mái tóc sau khi gội sạch hơn nhưng vẫn giữ được độ mềm và dễ chịu khi chạm vào.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Biotin",
@@ -187,7 +271,10 @@
     "scientific_name": "Biotin (Vitamin B7)",
     "origin": "Thực vật",
     "description": "Biotin còn gọi là vitamin B7, là một vi chất thiết yếu tham gia vào nhiều quá trình trao đổi chất trong cơ thể, đặc biệt liên quan đến tóc, da và móng. Trong y học hiện đại, thiếu hụt biotin được ghi nhận có thể dẫn đến tóc yếu, dễ gãy rụng, vì vậy việc bổ sung đường uống thường được khuyến nghị trong những trường hợp cụ thể. Tuy nhiên, trong lĩnh vực mỹ phẩm, biotin được ứng dụng bằng cách bổ sung trực tiếp vào công thức chăm sóc tóc và da đầu.",
-    "uses": "Khác với biotin đường uống vốn có vai trò bổ sung dinh dưỡng từ bên trong cơ thể, biotin trong sản phẩm dưỡng tóc hoạt động trực tiếp trên bề mặt da đầu và thân tóc, giúp duy trì trạng thái cân bằng cho da đầu, tạo môi trường thuận lợi cho tóc phát triển. Đồng thời, thành phần này góp phần giảm tình trạng khô ngứa và kích ứng, hỗ trợ mái tóc trông khỏe và ổn định hơn trong quá trình chăm sóc hằng ngày."
+    "uses": "Khác với biotin đường uống vốn có vai trò bổ sung dinh dưỡng từ bên trong cơ thể, biotin trong sản phẩm dưỡng tóc hoạt động trực tiếp trên bề mặt da đầu và thân tóc, giúp duy trì trạng thái cân bằng cho da đầu, tạo môi trường thuận lợi cho tóc phát triển. Đồng thời, thành phần này góp phần giảm tình trạng khô ngứa và kích ứng, hỗ trợ mái tóc trông khỏe và ổn định hơn trong quá trình chăm sóc hằng ngày.",
+    "types": [
+      "Làm dịu"
+    ]
   },
   {
     "name": "Cỏ mần trầu",
@@ -197,7 +284,12 @@
     "scientific_name": "Eleusine indica extract",
     "origin": "Dịch chiết từ Cỏ mần trầu",
     "description": "Cỏ mần trầu là loài thực vật mọc hoang phổ biến ở nhiều vùng nhiệt đới và được sử dụng trong nhiều nền y học truyền thống. Ở Việt Nam, cỏ mần trầu từ lâu đã gắn bó với dân gian qua thói quen nấu nước gội đầu, giúp tóc mượt và giảm gãy rụng. Trong thành phần của cây có nhiều hoạt chất sinh học quý như schaftoside, vitexin, flavonoid và stigmasterol – những hợp chất mang đặc tính chống oxy hóa, kháng viêm và kháng khuẩn tự nhiên. Trong các sản phẩm của Giọt Lành, dịch chiết cỏ mần trầu được chọn lựa để tái hiện những giá trị thuần khiết và quen thuộc từ thiên nhiên, đồng hành cùng quá trình chăm sóc mái tóc Việt.",
-    "uses": "Chiết xuất cỏ mần trầu có khả năng làm dịu và hỗ trợ giảm tình trạng gãy rụng, đồng thời tạo môi trường thuận lợi cho tóc phát triển chắc khỏe. Nhờ giàu flavonoid và các hoạt chất chống oxy hóa, dịch chiết này còn giúp bảo vệ nang tóc khỏi tác động của gốc tự do, đồng thời duy trì sự cân bằng tự nhiên cho da đầu. Việc kết hợp cỏ mần trầu cùng những thảo dược bản địa khác trong công thức Giọt Lành góp phần nuôi dưỡng mái tóc thêm khỏe mạnh và óng mượt theo cách tự nhiên nhất."
+    "uses": "Chiết xuất cỏ mần trầu có khả năng làm dịu và hỗ trợ giảm tình trạng gãy rụng, đồng thời tạo môi trường thuận lợi cho tóc phát triển chắc khỏe. Nhờ giàu flavonoid và các hoạt chất chống oxy hóa, dịch chiết này còn giúp bảo vệ nang tóc khỏi tác động của gốc tự do, đồng thời duy trì sự cân bằng tự nhiên cho da đầu. Việc kết hợp cỏ mần trầu cùng những thảo dược bản địa khác trong công thức Giọt Lành góp phần nuôi dưỡng mái tóc thêm khỏe mạnh và óng mượt theo cách tự nhiên nhất.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Cetyl Alcohol",
@@ -207,7 +299,10 @@
     "scientific_name": "Cetyl Alcohol",
     "origin": "Sáp nhũ hóa có nguồn gốc thực vật",
     "description": "Cetyl alcohol thuộc nhóm “rượu béo” (fatty alcohol), khác với các loại cồn bay hơi thường gây khô da hoặc tóc. Nhóm rượu béo như cetyl alcohol có cấu trúc tương tự acid béo, vì vậy thường được dùng như thành phần làm mềm, tạo độ sệt và ổn định công thức trong mỹ phẩm. Trong các sản phẩm chăm sóc tóc, cetyl alcohol xuất hiện khá phổ biến trong dầu xả và kem ủ. Thành phần này giúp tạo cảm giác mượt khi chạm tay vào, đồng thời làm cho sản phẩm có độ đặc vừa phải, dễ lấy ra và dễ dàn trải trên tóc mà không bị chảy loãng.",
-    "uses": "Trong dầu xả và ủ tóc của Giọt Lành, cetyl alcohol đóng vai trò là chất làm mềm và hỗ trợ cấu trúc. Thành phần này giúp sản phẩm có độ sệt ổn định, khi thoa lên tóc tạo cảm giác trơn mượt hơn, hỗ trợ bám đều trên sợi tóc từ gốc đến ngọn. Nhờ khả năng làm mềm và giảm ma sát giữa các sợi tóc, cetyl alcohol góp phần giúp tóc dễ chải hơn, đỡ rối và hạn chế gãy rụng cơ học do chải hoặc buộc tóc. Đồng thời, kết cấu sản phẩm trở nên ổn định và dễ chịu hơn khi sử dụng, hỗ trợ các chiết xuất thảo dược và thành phần dưỡng khác phát huy hiệu quả tốt trên da đầu và mái tóc."
+    "uses": "Trong dầu xả và ủ tóc của Giọt Lành, cetyl alcohol đóng vai trò là chất làm mềm và hỗ trợ cấu trúc. Thành phần này giúp sản phẩm có độ sệt ổn định, khi thoa lên tóc tạo cảm giác trơn mượt hơn, hỗ trợ bám đều trên sợi tóc từ gốc đến ngọn. Nhờ khả năng làm mềm và giảm ma sát giữa các sợi tóc, cetyl alcohol góp phần giúp tóc dễ chải hơn, đỡ rối và hạn chế gãy rụng cơ học do chải hoặc buộc tóc. Đồng thời, kết cấu sản phẩm trở nên ổn định và dễ chịu hơn khi sử dụng, hỗ trợ các chiết xuất thảo dược và thành phần dưỡng khác phát huy hiệu quả tốt trên da đầu và mái tóc.",
+    "types": [
+      "Phục hồi"
+    ]
   },
   {
     "name": "Sả chanh",
@@ -217,7 +312,13 @@
     "scientific_name": "Cymbopogon schoenanthus oil (lemongrass essential oil)",
     "origin": "Tinh dầu từ lá và thân cây sả chanh",
     "description": "Sả chanh là loài thực vật có tinh dầu thơm quen thuộc trong nhiều nền y học cổ truyền và trong mỹ phẩm thiên nhiên. Tinh dầu sả chanh giàu các hợp chất monoterpene aldehyde như citral – thành phần góp phần tạo hương thơm đặc trưng và hoạt tính sinh học đa dạng. Nhờ khả năng kháng khuẩn và kháng nấm tự nhiên, sả chanh từ lâu đã được ứng dụng để làm sạch và bảo vệ cơ thể. Trong công thức Giọt Lành, tinh dầu sả chanh được chọn lựa không chỉ vì tính hiệu quả mà còn bởi sự an toàn và lành tính, phù hợp với định hướng chăm sóc dịu nhẹ cho tóc và da đầu.",
-    "uses": "Tinh dầu sả chanh giúp kiểm soát vi sinh vật gây hại trên da đầu, góp phần duy trì môi trường sạch khỏe và hạn chế tình trạng gàu. Khi có mặt trong xịt dưỡng tóc Giọt Lành, thành phần này không chỉ hỗ trợ nuôi dưỡng và bảo vệ tóc mà còn mang đến hương thơm thảo mộc thanh mát, tạo cảm giác thư giãn và sảng khoái trong quá trình chăm sóc tóc hằng ngày."
+    "uses": "Tinh dầu sả chanh giúp kiểm soát vi sinh vật gây hại trên da đầu, góp phần duy trì môi trường sạch khỏe và hạn chế tình trạng gàu. Khi có mặt trong xịt dưỡng tóc Giọt Lành, thành phần này không chỉ hỗ trợ nuôi dưỡng và bảo vệ tóc mà còn mang đến hương thơm thảo mộc thanh mát, tạo cảm giác thư giãn và sảng khoái trong quá trình chăm sóc tóc hằng ngày.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Oliu",
@@ -227,7 +328,10 @@
     "scientific_name": "Olea europaea fruit oil",
     "origin": "Dầu từ Quả ôliu",
     "description": "Dầu ôliu là một trong những loại dầu thực vật lâu đời nhất, gắn liền với ẩm thực, chăm sóc sắc đẹp truyền thống và tự nhiên. Trong mỹ phẩm, dầu ôliu được đánh giá cao nhờ giàu axit béo không bão hòa, vitamin E, squalene và các hợp chất phenolic – nổi bật với khả năng dưỡng ẩm, chống oxy hóa và làm mềm. Với đặc tính an toàn và lành tính, dầu ôliu trở thành nguyên liệu quen thuộc trong nhiều công thức chăm sóc tóc hiện đại.",
-    "uses": "Dầu ôliu có khả năng cấp ẩm sâu, giúp phục hồi độ mềm mại và cải thiện độ đàn hồi cho sợi tóc, đồng thời làm tăng độ mượt và độ bóng tự nhiên. Nhờ chứa nhiều chất chống oxy hóa, dầu ôliu còn góp phần bảo vệ thân tóc trước các tác nhân gây hại từ môi trường như ánh nắng, nhiệt độ hay hóa chất tạo kiểu. Trong công thức dầu xả Giọt Lành, dầu ôliu được sử dụng tập trung cho phần thân và ngọn tóc – nơi dễ bị khô xơ và hư tổn – nhằm mang lại hiệu quả dưỡng ẩm, làm mượt và nuôi dưỡng tóc chắc khỏe, mà không gây cảm giác nặng hay bết dính cho da đầu."
+    "uses": "Dầu ôliu có khả năng cấp ẩm sâu, giúp phục hồi độ mềm mại và cải thiện độ đàn hồi cho sợi tóc, đồng thời làm tăng độ mượt và độ bóng tự nhiên. Nhờ chứa nhiều chất chống oxy hóa, dầu ôliu còn góp phần bảo vệ thân tóc trước các tác nhân gây hại từ môi trường như ánh nắng, nhiệt độ hay hóa chất tạo kiểu. Trong công thức dầu xả Giọt Lành, dầu ôliu được sử dụng tập trung cho phần thân và ngọn tóc – nơi dễ bị khô xơ và hư tổn – nhằm mang lại hiệu quả dưỡng ẩm, làm mượt và nuôi dưỡng tóc chắc khỏe, mà không gây cảm giác nặng hay bết dính cho da đầu.",
+    "types": [
+      "Phục hồi"
+    ]
   },
   {
     "name": "Dầu quả bơ",
@@ -237,7 +341,11 @@
     "scientific_name": "Persea gratissima oil",
     "origin": "Dầu từ quả bơ",
     "description": "Dầu quả bơ là loại dầu thực vật giàu dưỡng chất được dùng trong chăm sóc tóc truyền thống và tự nhiên để làm mềm và nuôi dưỡng tóc. Thành phần chứa nhiều axit béo không bão hòa, phytosterol và chất chống oxy hóa, giúp bổ sung độ ẩm và bảo vệ tóc trước tác động từ môi trường. Với đặc tính an toàn, lành tính và dịu nhẹ, dầu bơ được Giọt Lành ứng dụng trong dầu xả như một giải pháp thuần chay hỗ trợ phục hồi tóc hư tổn và mang lại vẻ mềm mượt tự nhiên.",
-    "uses": "Dầu quả bơ có khả năng giữ ẩm và nuôi dưỡng sâu cho thân và ngọn tóc – những vùng dễ khô xơ và hư tổn nhất. Các axit béo không bão hòa tạo lớp màng tự nhiên bao bọc sợi tóc, giúp tóc mềm mại, giảm gãy rụng và tăng độ óng mượt. Đồng thời, chất chống oxy hóa trong dầu bơ hỗ trợ bảo vệ tóc khỏi hư tổn do nhiệt, tia UV hay ô nhiễm môi trường. Khi được kết hợp trong công thức dầu xả Giọt Lành, dầu quả bơ trở thành thành phần quan trọng giúp mái tóc được phục hồi, lấy lại sự chắc khỏe và mềm mượt, đồng thời vẫn giữ trải nghiệm chăm sóc tóc dịu nhẹ và không gây bết dính."
+    "uses": "Dầu quả bơ có khả năng giữ ẩm và nuôi dưỡng sâu cho thân và ngọn tóc – những vùng dễ khô xơ và hư tổn nhất. Các axit béo không bão hòa tạo lớp màng tự nhiên bao bọc sợi tóc, giúp tóc mềm mại, giảm gãy rụng và tăng độ óng mượt. Đồng thời, chất chống oxy hóa trong dầu bơ hỗ trợ bảo vệ tóc khỏi hư tổn do nhiệt, tia UV hay ô nhiễm môi trường. Khi được kết hợp trong công thức dầu xả Giọt Lành, dầu quả bơ trở thành thành phần quan trọng giúp mái tóc được phục hồi, lấy lại sự chắc khỏe và mềm mượt, đồng thời vẫn giữ trải nghiệm chăm sóc tóc dịu nhẹ và không gây bết dính.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi"
+    ]
   },
   {
     "name": "Vitamin B5",
@@ -247,7 +355,11 @@
     "scientific_name": "Panthenol (Vitamin B5)",
     "origin": "Hợp chất tổng hợp lành tính",
     "description": "Panthenol, thường được gọi là vitamin B5, là thành phần dưỡng tóc phổ biến trong các sản phẩm chăm sóc da và tóc. Thành phần này mang lại khả năng dưỡng ẩm và phục hồi hiệu quả cho tóc. Nhờ tính an toàn và lành tính, panthenol được sử dụng rộng rãi và phù hợp với định hướng công thức dịu nhẹ của Giọt Lành.",
-    "uses": "Vitamin B5 giúp nuôi dưỡng sợi tóc từ bên trong, mang lại độ mềm mượt và giảm tình trạng khô xơ, chẻ ngọn. Thành phần này còn giúp tóc có độ đàn hồi tốt hơn, hạn chế gãy rụng, đồng thời tạo một lớp bảo vệ mỏng giúp tóc khỏe hơn trước tác động của nhiệt, ánh nắng hay hóa chất tạo kiểu. Trong các sản phẩm chăm sóc tóc của Giọt Lành, panthenol giữ vai trò quan trọng trong quá trình phục hồi tóc hư tổn, giúp tóc chắc khỏe, bóng mượt và tràn đầy sức sống."
+    "uses": "Vitamin B5 giúp nuôi dưỡng sợi tóc từ bên trong, mang lại độ mềm mượt và giảm tình trạng khô xơ, chẻ ngọn. Thành phần này còn giúp tóc có độ đàn hồi tốt hơn, hạn chế gãy rụng, đồng thời tạo một lớp bảo vệ mỏng giúp tóc khỏe hơn trước tác động của nhiệt, ánh nắng hay hóa chất tạo kiểu. Trong các sản phẩm chăm sóc tóc của Giọt Lành, panthenol giữ vai trò quan trọng trong quá trình phục hồi tóc hư tổn, giúp tóc chắc khỏe, bóng mượt và tràn đầy sức sống.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi"
+    ]
   },
   {
     "name": "1,2-Hexanediol",
@@ -257,7 +369,10 @@
     "scientific_name": "1,2-Hexanediol",
     "origin": "Hợp chất có nguồn gốc tổng hợp",
     "description": "1,2-Hexanediol là một thành phần đa chức năng trong mỹ phẩm, thường được xếp vào nhóm dung môi và chất cấp ẩm. Nhờ cấu trúc diol, thành phần này có khả năng tương tác tốt với nước và một số thành phần tan trong dầu, giúp hòa tan hoặc ổn định các hoạt chất trong công thức. Bên cạnh đó, 1,2-hexanediol còn được ghi nhận có khả năng ức chế sự phát triển của một số vi sinh vật, nên thường được sử dụng như chất hỗ trợ bảo quản (preservative booster) ở nồng độ thấp và thường nằm gần cuối bảng thành phần, giúp tối ưu hệ bảo quản mà không cần dùng nồng độ cao các chất bảo quản truyền thống.",
-    "uses": "Trong công thức xịt dưỡng tóc của Giọt Lành, 1,2-hexanediol được sử dụng với vai trò là hoạt chất cấp ẩm và ổn định công thức, giúp một số thành phần tan tốt hơn trong nền nước. Thành phần này cũng góp phần tăng hiệu quả của hệ bảo quản, giúp sản phẩm hạn chế nguy cơ nhiễm khuẩn trong quá trình sử dụng hằng ngày. Ở nồng độ thấp, 1,2-hexanediol không phải là hoạt chất chính tác động lên tóc, nhưng giữ vai trò kỹ thuật quan trọng để xịt dưỡng tóc Giọt Lành luôn ổn định, an toàn và duy trì chất lượng đồng đều mỗi lần sử dụng."
+    "uses": "Trong công thức xịt dưỡng tóc của Giọt Lành, 1,2-hexanediol được sử dụng với vai trò là hoạt chất cấp ẩm và ổn định công thức, giúp một số thành phần tan tốt hơn trong nền nước. Thành phần này cũng góp phần tăng hiệu quả của hệ bảo quản, giúp sản phẩm hạn chế nguy cơ nhiễm khuẩn trong quá trình sử dụng hằng ngày. Ở nồng độ thấp, 1,2-hexanediol không phải là hoạt chất chính tác động lên tóc, nhưng giữ vai trò kỹ thuật quan trọng để xịt dưỡng tóc Giọt Lành luôn ổn định, an toàn và duy trì chất lượng đồng đều mỗi lần sử dụng.",
+    "types": [
+      "Phục hồi"
+    ]
   },
   {
     "name": "Acid citric",
@@ -267,7 +382,12 @@
     "scientific_name": "Citric acid",
     "origin": "Hợp chất có nguồn gốc từ thực vật",
     "description": "Acid citric là một axit hữu cơ tự nhiên, xuất hiện nhiều trong các loại trái cây có múi như chanh, cam, bưởi. Trong mỹ phẩm, thành phần này được dùng chủ yếu với vai trò chất điều chỉnh pH, giúp đưa công thức về khoảng pH phù hợp và thân thiện hơn với da và tóc. Vì chỉ cần một lượng rất nhỏ là đã có thể điều chỉnh pH của toàn bộ công thức, nên acid citric thường nằm ở cuối bảng thành phần. Vị trí này phản ánh đúng vai trò của thành phần: không phải là hoạt chất chính, mà là chất điều chỉnh giúp công thức ổn định và phù hợp hơn với làn da và mái tóc.",
-    "uses": "Trong công thức dầu gội và dầu xả của Giọt Lành, acid citric được dùng với nồng độ thấp để cân bằng pH về mức phù hợp với da đầu, hỗ trợ hàng rào bảo vệ tự nhiên hoạt động tốt hơn và giúp các thành phần làm sạch, dưỡng ẩm và chiết xuất thảo dược phát huy hiệu quả một cách hài hòa. Nhờ điều chỉnh pH, acid citric còn góp phần giúp bề mặt sợi tóc mượt hơn, đỡ rối và dễ chải hơn sau khi gội hoặc xả."
+    "uses": "Trong công thức dầu gội và dầu xả của Giọt Lành, acid citric được dùng với nồng độ thấp để cân bằng pH về mức phù hợp với da đầu, hỗ trợ hàng rào bảo vệ tự nhiên hoạt động tốt hơn và giúp các thành phần làm sạch, dưỡng ẩm và chiết xuất thảo dược phát huy hiệu quả một cách hài hòa. Nhờ điều chỉnh pH, acid citric còn góp phần giúp bề mặt sợi tóc mượt hơn, đỡ rối và dễ chải hơn sau khi gội hoặc xả.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu"
+    ]
   },
   {
     "name": "Hỗn hợp Phenoxyethanol & Ethylhexylglycerin",
@@ -277,7 +397,11 @@
     "scientific_name": "Phenoxyethanol, Ethylhexylglycerin",
     "origin": "Hợp chất tổng hợp an toàn",
     "description": "Trong các công thức mỹ phẩm hiện đại, hệ bảo quản thường không chỉ dựa vào một chất đơn lẻ mà là sự kết hợp của nhiều thành phần để vừa đảm bảo hiệu quả, vừa tối ưu độ dịu nhẹ trên da. Hỗn hợp phenoxyethanol và ethylhexylglycerin là một “bộ đôi” bảo quản được sử dụng khá phổ biến, nhờ khả năng hỗ trợ nhau trong việc hạn chế sự phát triển của vi sinh vật, giúp sản phẩm luôn ổn định trong suốt thời gian sử dụng. Phenoxyethanol đóng vai trò chính trong việc bảo quản, còn ethylhexylglycerin vừa góp phần hỗ trợ hiệu quả bảo quản, vừa mang tính chất dưỡng ẩm nhẹ và giúp công thức dễ chịu hơn trên da. Nhờ cách phối hợp này, nồng độ sử dụng được giữ ở mức vừa đủ để vẫn đảm bảo chất lượng sản phẩm trong điều kiện bảo quản thông thường.",
-    "uses": "Trong công thức chăm sóc tóc của Giọt Lành, hỗn hợp phenoxyethanol và ethylhexylglycerin được sử dụng ở nồng độ an toàn, giữ vai trò chất bảo quản dịu nhẹ, giúp hạn chế sự phát triển của vi khuẩn và nấm mốc, từ đó giữ cho sản phẩm luôn ổn định trong suốt hạn dùng. Với nồng độ sử dụng thấp và được đặt trong một công thức giàu chiết xuất thảo dược và các thành phần dịu nhẹ cho da đầu, hệ bảo quản này không tham gia trực tiếp vào cảm giác trên tóc, nhưng lại đóng vai trò quan trọng để mỗi lần sử dụng sản phẩm Giọt Lành đều đảm bảo an toàn và chất lượng ổn định."
+    "uses": "Trong công thức chăm sóc tóc của Giọt Lành, hỗn hợp phenoxyethanol và ethylhexylglycerin được sử dụng ở nồng độ an toàn, giữ vai trò chất bảo quản dịu nhẹ, giúp hạn chế sự phát triển của vi khuẩn và nấm mốc, từ đó giữ cho sản phẩm luôn ổn định trong suốt hạn dùng. Với nồng độ sử dụng thấp và được đặt trong một công thức giàu chiết xuất thảo dược và các thành phần dịu nhẹ cho da đầu, hệ bảo quản này không tham gia trực tiếp vào cảm giác trên tóc, nhưng lại đóng vai trò quan trọng để mỗi lần sử dụng sản phẩm Giọt Lành đều đảm bảo an toàn và chất lượng ổn định.",
+    "types": [
+      "Làm dịu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Hà thủ ô",
@@ -287,7 +411,10 @@
     "scientific_name": "Fallopia multiflora extract",
     "origin": "Dịch chiết từ rễ Hà thủ ô",
     "description": "Hà thủ ô là một vị thuốc quen thuộc trong y học cổ truyền phương Đông, nổi bật với công dụng bồi bổ cơ thể và chăm sóc tóc. Trong dân gian, Hà thủ ô thường gắn liền với hình ảnh mái tóc đen dày, tượng trưng cho sức sống và sự trẻ trung. Chiết xuất từ rễ Hà thủ ô chứa các hoạt chất sinh học như emodin, acid gallic và physcion – đã được nghiên cứu với tiềm năng hỗ trợ mọc tóc và cải thiện mật độ tóc. Trong các sản phẩm Giọt Lành, dịch chiết Hà thủ ô được ứng dụng nhằm kế thừa tinh hoa thảo dược trong công thức hiện đại, thân thiện với da đầu.",
-    "uses": "Dịch chiết Hà thủ ô trong sản phẩm chăm sóc tóc Giọt Lành góp phần nuôi dưỡng nang tóc, giúp tóc chắc khỏe và hỗ trợ giảm rụng tóc. Nhờ đặc tính chống oxy hóa, chiết xuất này giúp bảo vệ tóc khỏi tác hại từ môi trường, giảm tình trạng gãy rụng và giúp mái tóc trông dày, bóng mượt hơn. Khi kết hợp cùng các thảo dược bản địa khác, công thức tạo nên giải pháp chăm sóc tóc toàn diện, tôn vinh giá trị truyền thống và đáp ứng tiêu chuẩn an toàn hiện đại."
+    "uses": "Dịch chiết Hà thủ ô trong sản phẩm chăm sóc tóc Giọt Lành góp phần nuôi dưỡng nang tóc, giúp tóc chắc khỏe và hỗ trợ giảm rụng tóc. Nhờ đặc tính chống oxy hóa, chiết xuất này giúp bảo vệ tóc khỏi tác hại từ môi trường, giảm tình trạng gãy rụng và giúp mái tóc trông dày, bóng mượt hơn. Khi kết hợp cùng các thảo dược bản địa khác, công thức tạo nên giải pháp chăm sóc tóc toàn diện, tôn vinh giá trị truyền thống và đáp ứng tiêu chuẩn an toàn hiện đại.",
+    "types": [
+      "Phục hồi"
+    ]
   },
   {
     "name": "Bạc hà",
@@ -296,7 +423,13 @@
     "image": "https://giotlanh.com/wp-content/uploads/2025/09/IN-bac-ha.jpg",
     "scientific_name": "Mentha piperita oil / Mentha arvensis leaf extract",
     "description": "Bạc hà là một trong những loài thảo dược được ghi nhận lâu đời trong y học cổ truyền phương Đông và nhiều nền y học dân gian. Từ xưa, lá bạc hà thường được dùng để làm mát cơ thể, giảm ngứa và kháng khuẩn tự nhiên. Trong mỹ phẩm, bạc hà được sử dụng ở hai dạng chính: tinh dầu bạc hà (Mentha piperita oil) và dịch chiết lá bạc hà (Mentha arvensis leaf extract). Cả hai đều giàu hoạt chất menthol – hợp chất tạo cảm giác mát lạnh đặc trưng, cùng nhiều flavonoid và tinh chất tự nhiên có lợi. Trong các sản phẩm Giọt Lành, bạc hà được sử dụng tùy theo dạng tinh dầu hoặc dịch chiết, nhằm phát huy tối đa giá trị truyền thống và mang lại hiệu quả dịu nhẹ, an toàn trong chăm sóc tóc.",
-    "uses": "Dịch chiết hoặc tinh dầu bạc hà mang lại tác dụng làm sạch và hỗ trợ trị gàu nhờ khả năng kháng khuẩn, kháng nấm và kháng viêm tự nhiên. Menthol giúp da đầu thoáng mát, giảm cảm giác ngứa ngáy do gàu, đồng thời cải thiện tuần hoàn nhẹ nhàng trên bề mặt da đầu, từ đó góp phần nuôi dưỡng chân tóc khỏe mạnh. Khi được sử dụng thường xuyên, bạc hà không chỉ giúp duy trì da đầu sạch khỏe và hạn chế sự xuất hiện của gàu, mà còn đem lại cảm giác mát lạnh sảng khoái và hương thơm thảo mộc tươi mới, khiến trải nghiệm gội đầu trở nên dễ chịu và thư giãn hơn."
+    "uses": "Dịch chiết hoặc tinh dầu bạc hà mang lại tác dụng làm sạch và hỗ trợ trị gàu nhờ khả năng kháng khuẩn, kháng nấm và kháng viêm tự nhiên. Menthol giúp da đầu thoáng mát, giảm cảm giác ngứa ngáy do gàu, đồng thời cải thiện tuần hoàn nhẹ nhàng trên bề mặt da đầu, từ đó góp phần nuôi dưỡng chân tóc khỏe mạnh. Khi được sử dụng thường xuyên, bạc hà không chỉ giúp duy trì da đầu sạch khỏe và hạn chế sự xuất hiện của gàu, mà còn đem lại cảm giác mát lạnh sảng khoái và hương thơm thảo mộc tươi mới, khiến trải nghiệm gội đầu trở nên dễ chịu và thư giãn hơn.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Vitamin E",
@@ -306,7 +439,11 @@
     "scientific_name": "Tocopherol acetate (Vitamin E)",
     "origin": "Thực vật",
     "description": "Vitamin E là một trong những dưỡng chất thiết yếu, nổi bật với đặc tính chống oxy hóa và khả năng bảo vệ tế bào. Nhiều nghiên cứu đã chỉ ra vitamin E giúp trung hòa gốc tự do – yếu tố góp phần gây suy yếu nang tóc và làm tóc dễ hư tổn. Với tính an toàn và khả năng tương thích cao, vitamin E thường được sử dụng trong các sản phẩm chăm sóc tóc hiện đại. Trong Giọt Lành, thành phần này được đưa vào kem ủ tóc, vốn là sản phẩm đặc biệt có thể dùng trực tiếp trên cả thân tóc và da đầu.",
-    "uses": "Trong kem ủ tóc Giọt Lành, vitamin E giúp nuôi dưỡng nang tóc, hỗ trợ quá trình mọc tóc khỏe mạnh và giảm hư tổn do ánh nắng, nhiệt và ô nhiễm. Khi thoa trực tiếp lên da đầu, vitamin E góp phần củng cố hàng rào bảo vệ và duy trì môi trường da đầu cân bằng. Khi thoa lên thân tóc, thành phần này giúp cải thiện độ đàn hồi, tăng độ bóng mượt và giảm gãy rụng. Sự kết hợp vitamin E cùng các thảo dược bản địa trong công thức ủ tóc Giọt Lành mang lại trải nghiệm chăm sóc tóc dịu nhẹ, lành tính và toàn diện."
+    "uses": "Trong kem ủ tóc Giọt Lành, vitamin E giúp nuôi dưỡng nang tóc, hỗ trợ quá trình mọc tóc khỏe mạnh và giảm hư tổn do ánh nắng, nhiệt và ô nhiễm. Khi thoa trực tiếp lên da đầu, vitamin E góp phần củng cố hàng rào bảo vệ và duy trì môi trường da đầu cân bằng. Khi thoa lên thân tóc, thành phần này giúp cải thiện độ đàn hồi, tăng độ bóng mượt và giảm gãy rụng. Sự kết hợp vitamin E cùng các thảo dược bản địa trong công thức ủ tóc Giọt Lành mang lại trải nghiệm chăm sóc tóc dịu nhẹ, lành tính và toàn diện.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi"
+    ]
   },
   {
     "name": "Cocamidopropyl Betaine",
@@ -316,7 +453,12 @@
     "scientific_name": "Cocamidopropyl Betaine",
     "origin": "Hợp chất có nguồn gốc từ dừa",
     "description": "Cocamidopropyl betaine là một chất hoạt động bề mặt (surfactant) được sử dụng rộng rãi trong dầu gội và sữa tắm nhờ sự cân bằng tốt giữa hiệu quả làm sạch và độ dịu nhẹ. Thành phần này được tạo ra từ các acid béo có trong dầu dừa kết hợp với các amin, giúp hình thành một phân tử có khả năng cuốn trôi bụi bẩn và bã nhờn mà vẫn hạn chế làm mất lớp dầu tự nhiên của da đầu, tóc và cơ thể. Nhờ cấu trúc lưỡng tính, cocamidopropyl betaine có thể “hòa hợp” tốt với nhiều loại chất hoạt động bề mặt khác, góp phần giảm độ kích ứng tổng thể của công thức và cải thiện độ dày, độ mịn của bọt, phù hợp với các sản phẩm cần sự êm dịu nhưng vẫn đảm bảo cảm giác sạch sẽ sau khi sử dụng.",
-    "uses": "Trong công thức các sản phẩm làm sạch của Giọt Lành, cocamidopropyl betaine giữ vai trò là chất làm sạch hỗ trợ dịu nhẹ, giúp loại bỏ mồ hôi, bụi bẩn và dầu thừa trên da đầu và cơ thể mà không gây cảm giác khô căng hay rát. Thành phần này còn giúp bọt gội trở nên mịn hơn, từ đó hỗ trợ làm sạch đều hơn trên toàn bộ da đầu và tóc. Khi kết hợp với các chiết xuất thảo dược bản địa, cocamidopropyl betaine góp phần duy trì độ mềm mại, dễ chải của tóc sau khi gội, đồng thời hỗ trợ bảo vệ hàng rào tự nhiên của da, mang lại trải nghiệm làm sạch êm ái và lành tính."
+    "uses": "Trong công thức các sản phẩm làm sạch của Giọt Lành, cocamidopropyl betaine giữ vai trò là chất làm sạch hỗ trợ dịu nhẹ, giúp loại bỏ mồ hôi, bụi bẩn và dầu thừa trên da đầu và cơ thể mà không gây cảm giác khô căng hay rát. Thành phần này còn giúp bọt gội trở nên mịn hơn, từ đó hỗ trợ làm sạch đều hơn trên toàn bộ da đầu và tóc. Khi kết hợp với các chiết xuất thảo dược bản địa, cocamidopropyl betaine góp phần duy trì độ mềm mại, dễ chải của tóc sau khi gội, đồng thời hỗ trợ bảo vệ hàng rào tự nhiên của da, mang lại trải nghiệm làm sạch êm ái và lành tính.",
+    "types": [
+      "Làm dịu",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Sodium Lactate",
@@ -326,7 +468,12 @@
     "scientific_name": "Sodium Lactate",
     "origin": "Muối lên men từ thực vật",
     "description": "Sodium lactate là một chất giữ ẩm quen thuộc trong mỹ phẩm. Về bản chất, đây là muối của acid lactic – một thành phần tự nhiên cũng có mặt trong “hệ đệm” của da. Nhờ khả năng hút và giữ nước tốt, sodium lactate giúp duy trì độ ẩm bề mặt, đồng thời hỗ trợ cân bằng môi trường da. So với nhiều chất giữ ẩm thông thường, sodium lactate có khả năng liên kết nước rất tốt, lại có nguồn gốc từ quá trình lên men nên thường được ưa chuộng trong các công thức ưu tiên sự lành tính. Bên cạnh vai trò giữ ẩm, thành phần này còn có thể hỗ trợ điều chỉnh pH, giúp sản phẩm phù hợp hơn với da và tóc.",
-    "uses": "Trong công thức chăm sóc tóc và da của Giọt Lành, sodium lactate đóng vai trò là chất giữ ẩm, giúp da đầu duy trì được bề mặt ẩm mịn, hạn chế tình trạng khô căng, bong tróc sau khi gội hoặc khi dùng sản phẩm làm sạch thường xuyên. Đối với sợi tóc, thành phần này góp phần cải thiện độ mềm mại và độ đàn hồi, giúp tóc đỡ khô xơ và dễ vào nếp hơn. Khi kết hợp cùng các chiết xuất thảo dược bản địa và hệ hoạt chất nuôi dưỡng khác trong công thức, sodium lactate giúp làm dịu cảm giác khô, hỗ trợ hàng rào bảo vệ tự nhiên của da đầu, từ đó tạo nền tảng khỏe mạnh hơn cho mái tóc, phù hợp với định hướng chăm sóc êm dịu và lành tính của Giọt Lành."
+    "uses": "Trong công thức chăm sóc tóc và da của Giọt Lành, sodium lactate đóng vai trò là chất giữ ẩm, giúp da đầu duy trì được bề mặt ẩm mịn, hạn chế tình trạng khô căng, bong tróc sau khi gội hoặc khi dùng sản phẩm làm sạch thường xuyên. Đối với sợi tóc, thành phần này góp phần cải thiện độ mềm mại và độ đàn hồi, giúp tóc đỡ khô xơ và dễ vào nếp hơn. Khi kết hợp cùng các chiết xuất thảo dược bản địa và hệ hoạt chất nuôi dưỡng khác trong công thức, sodium lactate giúp làm dịu cảm giác khô, hỗ trợ hàng rào bảo vệ tự nhiên của da đầu, từ đó tạo nền tảng khỏe mạnh hơn cho mái tóc, phù hợp với định hướng chăm sóc êm dịu và lành tính của Giọt Lành.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu"
+    ]
   },
   {
     "name": "Dâu tằm",
@@ -336,7 +483,12 @@
     "scientific_name": "Morus alba bark extract",
     "origin": "Chiết xuất vỏ Dâu tằm",
     "description": "Dâu tằm là loài cây quen thuộc trong nhiều nền y học cổ truyền châu Á, trong đó phần rễ và vỏ được sử dụng phổ biến nhờ đặc tính thanh nhiệt, dưỡng huyết và chăm sóc cơ thể. Các nghiên cứu hiện đại đã chỉ ra rằng chiết xuất từ vỏ dâu tằm chứa nhiều hợp chất hoạt tính sinh học, nổi bật với khả năng kích hoạt tín hiệu β-catenin – một con đường quan trọng trong quá trình tái tạo và phát triển nang tóc. Nhờ đặc tính này, Morus alba bark extract được đánh giá là thành phần tiềm năng, kết nối giữa tri thức truyền thống và khoa học hiện đại, mang lại giá trị ứng dụng trong các sản phẩm chăm sóc tóc.",
-    "uses": "Chiết xuất vỏ dâu tằm hỗ trợ quá trình mọc tóc bằng cách thúc đẩy giai đoạn tăng trưởng (anagen), giúp nang tóc hoạt động hiệu quả hơn và duy trì mái tóc chắc khỏe. Các hợp chất chống oxy hóa và kháng viêm tự nhiên còn giúp giảm stress oxy hóa, giữ da đầu trong trạng thái cân bằng và khỏe mạnh. Trong công thức Giọt Lành, dịch chiết dâu tằm được sử dụng theo hướng dịu nhẹ, lành tính, hỗ trợ phục hồi chu trình mọc tóc tự nhiên, để mái tóc trông dày dặn, chắc khỏe và đầy sức sống."
+    "uses": "Chiết xuất vỏ dâu tằm hỗ trợ quá trình mọc tóc bằng cách thúc đẩy giai đoạn tăng trưởng (anagen), giúp nang tóc hoạt động hiệu quả hơn và duy trì mái tóc chắc khỏe. Các hợp chất chống oxy hóa và kháng viêm tự nhiên còn giúp giảm stress oxy hóa, giữ da đầu trong trạng thái cân bằng và khỏe mạnh. Trong công thức Giọt Lành, dịch chiết dâu tằm được sử dụng theo hướng dịu nhẹ, lành tính, hỗ trợ phục hồi chu trình mọc tóc tự nhiên, để mái tóc trông dày dặn, chắc khỏe và đầy sức sống.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Hoa Cúc La Mã",
@@ -346,7 +498,12 @@
     "scientific_name": "Anthemis nobilis flower extract (Chamomile extract)",
     "origin": "Chiết xuất từ Hoa cúc La Mã",
     "description": "Hoa Cúc La Mã từ lâu đã được biết đến như một thảo dược dịu nhẹ, thường được dùng trong các bài thuốc dân gian để làm dịu và chăm sóc cơ thể. Trong chiết xuất hoa cúc có nhiều tinh dầu, flavonoid và hoạt chất chống oxy hóa, mang lại khả năng làm dịu, kháng viêm, kháng khuẩn và hỗ trợ chăm sóc vùng da đầu nhạy cảm. Với Giọt Lành, chiết xuất Cúc La Mã được đưa vào dầu xả và xịt dưỡng tóc, góp phần mang đến trải nghiệm chăm sóc tóc nhẹ nhàng, an toàn và lành tính.",
-    "uses": "Chiết xuất hoa cúc La Mã có khả năng làm dịu da đầu, giảm tình trạng ngứa ngáy và kích ứng thường gặp ở da đầu nhạy cảm. Nhờ đặc tính chống viêm và kháng khuẩn, thành phần này hỗ trợ cân bằng môi trường da đầu, góp phần hạn chế gàu và duy trì mái tóc chắc khỏe. Khi có mặt trong công thức dầu xả và xịt dưỡng tóc Giọt Lành, Cúc La Mã giúp nuôi dưỡng mái tóc một cách êm dịu, mang đến cảm giác dễ chịu và thư giãn sau mỗi lần chăm sóc."
+    "uses": "Chiết xuất hoa cúc La Mã có khả năng làm dịu da đầu, giảm tình trạng ngứa ngáy và kích ứng thường gặp ở da đầu nhạy cảm. Nhờ đặc tính chống viêm và kháng khuẩn, thành phần này hỗ trợ cân bằng môi trường da đầu, góp phần hạn chế gàu và duy trì mái tóc chắc khỏe. Khi có mặt trong công thức dầu xả và xịt dưỡng tóc Giọt Lành, Cúc La Mã giúp nuôi dưỡng mái tóc một cách êm dịu, mang đến cảm giác dễ chịu và thư giãn sau mỗi lần chăm sóc.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Sodium Lauryl Sulfate",
@@ -356,7 +513,12 @@
     "scientific_name": "Sodium Lauryl Sulfate",
     "origin": "Hợp chất có nguồn gốc từ dầu cọ",
     "description": "Sodium lauryl sulfate (SLS) là một trong những chất hoạt động bề mặt được sử dụng phổ biến nhất trong các sản phẩm làm sạch như dầu gội, sữa tắm, sữa rửa mặt… nhờ khả năng nhũ hóa dầu thừa, mồ hôi và bụi bẩn rất tốt. Khi được dẫn xuất từ acid béo của dầu cọ, SLS mang lại nền làm sạch ổn định, giúp sản phẩm tạo bọt nhanh và dễ dàng phân tán đều trên da đầu và tóc. Tuy SLS thường được nhắc đến như một chất hoạt động bề mặt “mạnh”, nhưng trong các công thức hiện đại, trải nghiệm thực tế trên da đầu lại phụ thuộc rất nhiều vào cách xây dựng toàn bộ hệ làm sạch: nồng độ sử dụng, nguồn gốc SLS từ thực vật hay từ dầu mỏ, sự kết hợp với các chất hoạt động bề mặt dịu nhẹ khác và hệ dưỡng ẩm – làm dịu đi kèm. Khi được dùng ở nồng độ hợp lý và đặt trong một công thức cân bằng, SLS vẫn có thể mang lại hiệu quả làm sạch tốt mà không phải lúc nào cũng gây khô căng hay khó chịu cho da đầu.",
-    "uses": "Trong công thức dầu gội của Giọt Lành, sodium lauryl sulfate có nguồn gốc từ dầu cọ, được sử dụng với nồng độ thấp (dưới 2% và nằm ở khoảng giữa bảng thành phần), đóng vai trò hỗ trợ cuốn trôi bã nhờn, bụi bẩn và cặn sản phẩm trên da đầu một cách hiệu quả. Nhờ khả năng tạo bọt tốt, SLS giúp lớp bọt gội bông mịn, dễ mát-xa, hỗ trợ làm sạch đều khắp da đầu và từng sợi tóc. Đồng thời, Giọt Lành sử dụng kết hợp SLS cùng các chất hoạt động bề mặt dịu nhẹ hơn (như các dẫn xuất từ dừa) và chiết xuất thảo dược bản địa, nhằm “làm mềm” toàn bộ hệ làm sạch. Sự phối hợp này giúp da đầu được sạch thoáng nhưng vẫn giữ được độ ẩm dễ chịu, hạn chế cảm giác khô rít, để mái tóc sau gội mềm mại và dễ chải."
+    "uses": "Trong công thức dầu gội của Giọt Lành, sodium lauryl sulfate có nguồn gốc từ dầu cọ, được sử dụng với nồng độ thấp (dưới 2% và nằm ở khoảng giữa bảng thành phần), đóng vai trò hỗ trợ cuốn trôi bã nhờn, bụi bẩn và cặn sản phẩm trên da đầu một cách hiệu quả. Nhờ khả năng tạo bọt tốt, SLS giúp lớp bọt gội bông mịn, dễ mát-xa, hỗ trợ làm sạch đều khắp da đầu và từng sợi tóc. Đồng thời, Giọt Lành sử dụng kết hợp SLS cùng các chất hoạt động bề mặt dịu nhẹ hơn (như các dẫn xuất từ dừa) và chiết xuất thảo dược bản địa, nhằm “làm mềm” toàn bộ hệ làm sạch. Sự phối hợp này giúp da đầu được sạch thoáng nhưng vẫn giữ được độ ẩm dễ chịu, hạn chế cảm giác khô rít, để mái tóc sau gội mềm mại và dễ chải.",
+    "types": [
+      "Làm dịu",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Hoa Xuyến chi",
@@ -366,7 +528,13 @@
     "scientific_name": "Bidens pilosa flower extract",
     "origin": "Chiết xuất từ hoa Xuyến chi",
     "description": "Hoa Xuyến chi là loài thực vật thuộc họ Cúc mọc phổ biến ở nhiều vùng nhiệt đới. Trong y học dân gian, hoa và lá Xuyến chi được sử dụng để làm dịu da, kháng viêm và chăm sóc sức khỏe tự nhiên. Nghiên cứu hiện đại cho thấy chiết xuất từ hoa chứa nhiều flavonoid glycosyl hóa và axit phenolic – những hợp chất có hoạt tính sinh học quan trọng. Đặc biệt, chiết xuất Xuyến chi đã được chứng minh có khả năng kích thích sự tăng sinh của tế bào nhú bì (dermal papilla cells), vốn giữ vai trò trung tâm trong sự phát triển của nang tóc. Nhờ vậy, Xuyến chi ngày càng được quan tâm như một thành phần tiềm năng trong mỹ phẩm chăm sóc tóc và da đầu.",
-    "uses": "Chiết xuất hoa Xuyến chi hỗ trợ mọc tóc bằng cách thúc đẩy hoạt động của tế bào nhú bì, từ đó phục hồi chu trình mọc tóc tự nhiên. Với đặc tính kháng viêm, kháng khuẩn và kháng nấm, chiết xuất này giúp duy trì da đầu sạch khỏe, hạn chế gàu và viêm. Đồng thời, các chất chống oxy hóa trong hoa Xuyến chi bảo vệ nang tóc trước tác động của gốc tự do, góp phần giữ mái tóc chắc khỏe và tràn đầy sức sống. Trong công thức Giọt Lành, thành phần này được ứng dụng để phát huy giá trị thảo dược bản địa theo cách dịu nhẹ, an toàn và lành tính cho mái tóc và da đầu."
+    "uses": "Chiết xuất hoa Xuyến chi hỗ trợ mọc tóc bằng cách thúc đẩy hoạt động của tế bào nhú bì, từ đó phục hồi chu trình mọc tóc tự nhiên. Với đặc tính kháng viêm, kháng khuẩn và kháng nấm, chiết xuất này giúp duy trì da đầu sạch khỏe, hạn chế gàu và viêm. Đồng thời, các chất chống oxy hóa trong hoa Xuyến chi bảo vệ nang tóc trước tác động của gốc tự do, góp phần giữ mái tóc chắc khỏe và tràn đầy sức sống. Trong công thức Giọt Lành, thành phần này được ứng dụng để phát huy giá trị thảo dược bản địa theo cách dịu nhẹ, an toàn và lành tính cho mái tóc và da đầu.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Lá Trầu không",
@@ -376,7 +544,13 @@
     "scientific_name": "Piper betle leaf essential oil",
     "origin": "Lá trầu không",
     "description": "Trầu không là loài cây quen thuộc ở nhiều nước châu Á, gắn liền với y học dân gian nhờ khả năng kháng khuẩn, kháng viêm và làm sạch tự nhiên. Tinh dầu lá trầu giàu hợp chất sinh học như chavicol và eugenol, mang lại hương thơm nồng ấm cùng nhiều đặc tính quý. Trong Giọt Lành, tinh dầu lá trầu không được ứng dụng riêng trong dầu gội Sạch gàu, với định hướng kế thừa giá trị truyền thống và khai thác theo hướng dịu nhẹ – lành tính, nhằm chăm sóc da đầu chuyên biệt.",
-    "uses": "Tinh dầu lá trầu không nổi bật với khả năng kháng khuẩn và kháng nấm mạnh, giúp kiểm soát vi sinh vật gây ra gàu và các tình trạng viêm da đầu. Bên cạnh đó, đặc tính chống oxy hóa của tinh dầu góp phần bảo vệ da đầu khỏi stress oxy hóa – yếu tố có thể làm suy yếu hàng rào tự nhiên và dẫn đến rụng tóc sớm. Trong công thức dầu gội Sạch gàu Giọt Lành, tinh dầu trầu không được kết hợp cùng các thảo dược bản địa khác để duy trì môi trường da đầu sạch khỏe, hỗ trợ kiểm soát gàu và mang lại mái tóc chắc khỏe, thoáng mát và dễ chịu."
+    "uses": "Tinh dầu lá trầu không nổi bật với khả năng kháng khuẩn và kháng nấm mạnh, giúp kiểm soát vi sinh vật gây ra gàu và các tình trạng viêm da đầu. Bên cạnh đó, đặc tính chống oxy hóa của tinh dầu góp phần bảo vệ da đầu khỏi stress oxy hóa – yếu tố có thể làm suy yếu hàng rào tự nhiên và dẫn đến rụng tóc sớm. Trong công thức dầu gội Sạch gàu Giọt Lành, tinh dầu trầu không được kết hợp cùng các thảo dược bản địa khác để duy trì môi trường da đầu sạch khỏe, hỗ trợ kiểm soát gàu và mang lại mái tóc chắc khỏe, thoáng mát và dễ chịu.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "Hương nhu",
@@ -386,7 +560,13 @@
     "scientific_name": "Holy basil essential oil",
     "origin": "Tinh dầu từ lá và thân cây hương nhu",
     "description": "Hương nhu là loài thực vật quen thuộc trong nhiều nền y học cổ truyền châu Á, thường được dùng để làm thuốc, chế biến thực phẩm và chăm sóc sức khỏe tự nhiên. Tinh dầu hương nhu giàu eugenol, linalool, 1,8-cineole và nhiều hợp chất thơm khác, mang lại hương thơm thảo mộc dễ chịu cùng những đặc tính sinh học có giá trị. Trong dân gian, hương nhu được dùng để xông giải cảm, kháng viêm và làm sạch cơ thể. Hiện nay, tinh dầu hương nhu được ứng dụng trong mỹ phẩm chăm sóc tóc và da đầu với định hướng an toàn – lành tính – dịu nhẹ, phù hợp với triết lý phát triển của Giọt Lành.",
-    "uses": "Tinh dầu hương nhu thể hiện khả năng kháng khuẩn, kháng nấm và kháng viêm, giúp hỗ trợ kiểm soát gàu và các vấn đề da đầu, duy trì môi trường da đầu sạch khỏe. Khi kết hợp trong xịt dưỡng tóc Giọt Lành, tinh dầu hương nhu không chỉ góp phần nuôi dưỡng tóc và bảo vệ da đầu mà còn mang lại hương thơm thư thái, giúp quá trình chăm sóc tóc trở nên nhẹ nhàng và dễ chịu hơn."
+    "uses": "Tinh dầu hương nhu thể hiện khả năng kháng khuẩn, kháng nấm và kháng viêm, giúp hỗ trợ kiểm soát gàu và các vấn đề da đầu, duy trì môi trường da đầu sạch khỏe. Khi kết hợp trong xịt dưỡng tóc Giọt Lành, tinh dầu hương nhu không chỉ góp phần nuôi dưỡng tóc và bảo vệ da đầu mà còn mang lại hương thơm thư thái, giúp quá trình chăm sóc tóc trở nên nhẹ nhàng và dễ chịu hơn.",
+    "types": [
+      "Làm dịu",
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   },
   {
     "name": "EDTA",
@@ -396,7 +576,10 @@
     "scientific_name": "Ethylenediaminetetraacetic acid",
     "origin": "Hợp chất có nguồn gốc tổng hợp",
     "description": "EDTA là một chất tạo phức được sử dụng khá phổ biến trong mỹ phẩm, đặc biệt trong các sản phẩm gốc nước như sữa tắm, dầu gội, sữa rửa mặt. Nhiệm vụ chính của EDTA là “giữ” các ion kim loại (như canxi, magiê có trong nước hoặc tạp chất kim loại vi lượng) để chúng không ảnh hưởng xấu đến độ ổn định của công thức. Vì chỉ cần một lượng rất nhỏ đã đủ phát huy chức năng, EDTA thường nằm ở cuối bảng thành phần với nồng độ thấp. Ở mức này, vai trò của EDTA không phải là hoạt chất tác động trực tiếp lên da, mà là một thành phần kỹ thuật giúp công thức ổn định hơn trong suốt quá trình bảo quản và sử dụng.",
-    "uses": "Trong công thức sữa tắm của Giọt Lành, EDTA được sử dụng ở nồng độ thấp và nằm cuối bảng thành phần, giúp ổn định công thức bằng cách hạn chế tác động của ion kim loại lên màu sắc, mùi hương và độ trong/độ sệt của sản phẩm. Thành phần này đồng thời hỗ trợ hệ chất bảo quản hoạt động hiệu quả hơn và giúp các chất hoạt động bề mặt làm việc ổn định, đặc biệt trong điều kiện nguồn nước có độ cứng cao. Nhờ đó, sữa tắm giữ được chất lượng ổn định trong suốt thời gian sử dụng, hạn chế hiện tượng biến màu, tách lớp hoặc giảm khả năng tạo bọt, góp phần đảm bảo trải nghiệm sử dụng nhất quán cho người dùng."
+    "uses": "Trong công thức sữa tắm của Giọt Lành, EDTA được sử dụng ở nồng độ thấp và nằm cuối bảng thành phần, giúp ổn định công thức bằng cách hạn chế tác động của ion kim loại lên màu sắc, mùi hương và độ trong/độ sệt của sản phẩm. Thành phần này đồng thời hỗ trợ hệ chất bảo quản hoạt động hiệu quả hơn và giúp các chất hoạt động bề mặt làm việc ổn định, đặc biệt trong điều kiện nguồn nước có độ cứng cao. Nhờ đó, sữa tắm giữ được chất lượng ổn định trong suốt thời gian sử dụng, hạn chế hiện tượng biến màu, tách lớp hoặc giảm khả năng tạo bọt, góp phần đảm bảo trải nghiệm sử dụng nhất quán cho người dùng.",
+    "types": [
+      "Sạch sâu"
+    ]
   },
   {
     "name": "Cetearyl alcohol",
@@ -406,7 +589,10 @@
     "scientific_name": "Cetearyl alcohol",
     "origin": "Sáp nhũ hóa có nguồn gốc thực vật",
     "description": "Cetearyl alcohol thuộc nhóm rượu béo (fatty alcohol), khác với các loại cồn bay hơi thường gắn với cảm giác khô da hoặc khô tóc. Nhờ cấu trúc tương tự acid béo, cetearyl alcohol được sử dụng phổ biến trong mỹ phẩm như một thành phần làm mềm, tạo độ sệt và hỗ trợ ổn định nhũ tương. Trong các sản phẩm chăm sóc tóc như dầu xả hoặc kem ủ, cetearyl alcohol giúp công thức có độ đặc vừa phải, dễ lấy, dễ tán đều trên tóc. Đồng thời, thành phần này cũng góp phần tạo cảm giác trơn mượt khi xoa sản phẩm lên tóc, giúp người dùng cảm nhận rõ ràng hơn hiệu ứng “mềm – mượt” ngay trong bước xả, ủ.",
-    "uses": "Trong công thức chăm sóc tóc của Giọt Lành, cetearyl alcohol được sử dụng như chất làm mềm và hỗ trợ cấu trúc công thức. Thành phần này giúp sản phẩm có độ sệt ổn định, khi thoa lên tóc tạo cảm giác mượt, giúp sản phẩm bám đều dọc theo sợi tóc. Nhờ khả năng giảm ma sát giữa các sợi tóc, cetearyl alcohol góp phần hỗ trợ gỡ rối, giúp tóc đỡ xơ rối và hạn chế gãy rụng cơ học khi chải hoặc buộc tóc. Đồng thời, kết cấu sản phẩm trở nên dễ chịu hơn khi sử dụng, tạo điều kiện để các chiết xuất thảo dược và thành phần dưỡng khác phát huy hiệu quả tốt trên da đầu và mái tóc."
+    "uses": "Trong công thức chăm sóc tóc của Giọt Lành, cetearyl alcohol được sử dụng như chất làm mềm và hỗ trợ cấu trúc công thức. Thành phần này giúp sản phẩm có độ sệt ổn định, khi thoa lên tóc tạo cảm giác mượt, giúp sản phẩm bám đều dọc theo sợi tóc. Nhờ khả năng giảm ma sát giữa các sợi tóc, cetearyl alcohol góp phần hỗ trợ gỡ rối, giúp tóc đỡ xơ rối và hạn chế gãy rụng cơ học khi chải hoặc buộc tóc. Đồng thời, kết cấu sản phẩm trở nên dễ chịu hơn khi sử dụng, tạo điều kiện để các chiết xuất thảo dược và thành phần dưỡng khác phát huy hiệu quả tốt trên da đầu và mái tóc.",
+    "types": [
+      "Phục hồi"
+    ]
   },
   {
     "name": "Olive oil peg-8 esters",
@@ -416,7 +602,10 @@
     "scientific_name": "Olive oil peg-8 esters",
     "origin": "Hợp chất có nguồn gốc dẫn chất từ dầu ô liu",
     "description": "Olive oil PEG-8 esters là một dẫn chất từ dầu ô liu được thiết kế để tương thích tốt hơn với các công thức gốc nước như kem ủ hoặc mặt nạ tóc. Nhờ quá trình biến tính với PEG-8, các acid béo từ dầu ô liu trở nên dễ phân tán hơn, giúp thành phần này vừa đóng vai trò làm mềm, vừa hỗ trợ khả năng nhũ hóa và ổn định kết cấu sản phẩm. Trong chăm sóc tóc, các dẫn chất từ dầu ô liu như olive oil PEG-8 esters thường được ưu tiên đưa vào những sản phẩm cần thời gian lưu lại trên tóc lâu hơn, chẳng hạn như kem ủ, để phát huy tốt hiệu ứng làm mềm và cải thiện bề mặt sợi tóc. Thành phần này giúp bề mặt tóc trông mượt hơn, giảm cảm giác khô ráp, đặc biệt hữu ích cho tóc khô, xơ hoặc tóc đã qua xử lý hóa chất.",
-    "uses": "Trong công thức kem ủ tóc của Giọt Lành, olive oil PEG-8 esters được sử dụng như thành phần dưỡng mềm có nguồn gốc từ dầu ô liu, giúp tăng độ mượt cho sợi tóc, hỗ trợ làm phẳng bề mặt biểu bì tóc và giảm ma sát khi chải. Nhờ khả năng phân tán tốt trong nền nước, thành phần này giúp sản phẩm ủ bám đều dọc thân tóc, hỗ trợ các dưỡng chất khác tiếp xúc đồng đều hơn. Khi kết hợp với các rượu béo, chất điều hòa tóc và chiết xuất thảo dược, olive oil PEG-8 esters góp phần cải thiện cảm quan của tóc sau khi ủ: tóc mềm hơn, đỡ rối, dễ chải và trông khỏe khoắn hơn, đặc biệt ở những vùng tóc khô xơ hoặc thiếu ẩm."
+    "uses": "Trong công thức kem ủ tóc của Giọt Lành, olive oil PEG-8 esters được sử dụng như thành phần dưỡng mềm có nguồn gốc từ dầu ô liu, giúp tăng độ mượt cho sợi tóc, hỗ trợ làm phẳng bề mặt biểu bì tóc và giảm ma sát khi chải. Nhờ khả năng phân tán tốt trong nền nước, thành phần này giúp sản phẩm ủ bám đều dọc thân tóc, hỗ trợ các dưỡng chất khác tiếp xúc đồng đều hơn. Khi kết hợp với các rượu béo, chất điều hòa tóc và chiết xuất thảo dược, olive oil PEG-8 esters góp phần cải thiện cảm quan của tóc sau khi ủ: tóc mềm hơn, đỡ rối, dễ chải và trông khỏe khoắn hơn, đặc biệt ở những vùng tóc khô xơ hoặc thiếu ẩm.",
+    "types": [
+      "Phục hồi"
+    ]
   },
   {
     "name": "Bưởi",
@@ -426,6 +615,11 @@
     "scientific_name": "Citrus maxima fruit extract / Grapefruit essential oil",
     "origin": "Dịch chiết hoặc tinh dầu từ vỏ quả Bưởi",
     "description": "Bưởi là loại trái cây quen thuộc tại Việt Nam và nhiều nước châu Á, không chỉ được sử dụng trong ẩm thực mà còn gắn liền với các bài thuốc dân gian chăm sóc tóc. Trong y học cổ truyền, vỏ bưởi thường được đun lấy nước gội đầu để giúp tóc mọc nhanh, giảm gãy rụng và tạo hương thơm tươi mát. Khoa học hiện đại đã chứng minh vỏ bưởi giàu tinh dầu và flavonoid có khả năng chống oxy hóa, đồng thời sở hữu nhiều hợp chất kháng khuẩn tự nhiên. Trong các sản phẩm chăm sóc tóc Giọt Lành, bưởi được ứng dụng dưới hai dạng: dịch chiết từ vỏ quả bưởi (Citrus maxima fruit extract) và tinh dầu vỏ bưởi (Grapefruit essential oil), mỗi dạng đều giữ những ưu điểm riêng, góp phần phát huy tối đa giá trị chăm sóc tóc từ loại thảo mộc bản địa này.",
-    "uses": "Dịch chiết bưởi có chứa tinh dầu và một số flavonoid cùng dưỡng chất chống oxy hóa, tạo nên sự kết hợp hài hòa vừa nuôi dưỡng tóc chắc khỏe, vừa duy trì da đầu sạch thoáng, cho mái tóc bồng bềnh và tràn đầy sức sống. Tinh dầu bưởi là nguồn giàu hoạt chất thiên nhiên, trong đó nổi bật nhất là limonene – một monoterpene chiếm tỷ lệ cao trong tinh dầu họ cam chanh. Các nghiên cứu đã chỉ ra limonene có khả năng kích hoạt con đường tín hiệu Wnt/β-catenin, một cơ chế quan trọng trong quá trình tái tạo và phát triển nang tóc, nhờ đó tinh dầu bưởi có thể hỗ trợ mọc tóc, cải thiện mật độ tóc và giảm gãy rụng. Bên cạnh đó, tinh dầu bưởi còn thể hiện đặc tính chống oxy hóa, kháng khuẩn và khử trùng nhẹ, giúp làm sạch da đầu, loại bỏ dầu thừa và bụi bẩn, đồng thời bảo vệ nang tóc khỏi tác nhân gây viêm hay gàu."
+    "uses": "Dịch chiết bưởi có chứa tinh dầu và một số flavonoid cùng dưỡng chất chống oxy hóa, tạo nên sự kết hợp hài hòa vừa nuôi dưỡng tóc chắc khỏe, vừa duy trì da đầu sạch thoáng, cho mái tóc bồng bềnh và tràn đầy sức sống. Tinh dầu bưởi là nguồn giàu hoạt chất thiên nhiên, trong đó nổi bật nhất là limonene – một monoterpene chiếm tỷ lệ cao trong tinh dầu họ cam chanh. Các nghiên cứu đã chỉ ra limonene có khả năng kích hoạt con đường tín hiệu Wnt/β-catenin, một cơ chế quan trọng trong quá trình tái tạo và phát triển nang tóc, nhờ đó tinh dầu bưởi có thể hỗ trợ mọc tóc, cải thiện mật độ tóc và giảm gãy rụng. Bên cạnh đó, tinh dầu bưởi còn thể hiện đặc tính chống oxy hóa, kháng khuẩn và khử trùng nhẹ, giúp làm sạch da đầu, loại bỏ dầu thừa và bụi bẩn, đồng thời bảo vệ nang tóc khỏi tác nhân gây viêm hay gàu.",
+    "types": [
+      "Phục hồi",
+      "Sạch sâu",
+      "Da dầu mụn"
+    ]
   }
 ]

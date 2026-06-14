@@ -77,7 +77,7 @@ class AccountOrderListFragment : RootieFragment() {
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return OrderListViewModel(repository) as T
+                return OrderListViewModel(repository, requireContext().applicationContext) as T
             }
         })[OrderListViewModel::class.java]
     }

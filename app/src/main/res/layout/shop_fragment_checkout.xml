@@ -20,7 +20,7 @@
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_back"
+            android:src="@drawable/ic_chevron_left"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -116,6 +116,7 @@
 
             <!-- 2. Giao hàng tới / Địa chỉ -->
             <LinearLayout
+                android:id="@+id/llMemberAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
@@ -210,6 +211,215 @@
                     android:textColor="@color/primary"
                     android:maxLines="3"
                     android:inputType="textMultiLine" />
+            </LinearLayout>
+
+            <!-- 2b. Guest Checkout Form (only visible when buyer is not logged in) -->
+            <LinearLayout
+                android:id="@+id/llGuestForm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Thông tin khách vãng lai"
+                    android:textColor="@color/primary"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:text="Vui lòng nhập số điện thoại để nhận xác nhận đơn hàng. Email là tùy chọn."
+                    android:textColor="@color/gray_dark"
+                    android:textSize="12sp" />
+
+                <!-- Họ và tên -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
+                    android:text="Họ và tên *"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etGuestName"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_card_white"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:hint="Nguyễn Văn A"
+                    android:inputType="textPersonName"
+                    android:maxLines="1"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/gray_dark"
+                    android:textSize="14sp" />
+
+                <!-- Số điện thoại -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
+                    android:text="Số điện thoại *"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etGuestPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_card_white"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:hint="0123456789"
+                    android:inputType="phone"
+                    android:maxLines="1"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/gray_dark"
+                    android:textSize="14sp" />
+
+                <!-- Email (tùy chọn) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
+                    android:text="Email (tùy chọn — dùng để nhận xác nhận đơn hàng)"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etGuestEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_card_white"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:hint="email@example.com"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/gray_dark"
+                    android:textSize="14sp" />
+
+                <!-- Địa chỉ giao hàng -->
+                <TextView
+                    android:id="@+id/tvGuestAddressLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
+                    android:text="Địa chỉ giao hàng *"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etGuestAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_card_white"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:hint="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                    android:inputType="textPostalAddress"
+                    android:maxLines="2"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/gray_dark"
+                    android:textSize="14sp" />
+
+                <!-- Thông báo cho guest - khi nhận tại cửa hàng -->
+                <TextView
+                    android:id="@+id/tvGuestStorePickupNotice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_info_chip_green"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:padding="10dp"
+                    android:text="Bạn đã chọn nhận hàng tại cửa hàng. Vui lòng chọn cửa hàng bên dưới."
+                    android:textColor="#2E7D32"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- 2c. Guest Store Pickup Card (visible when guest selects "Nhận tại cửa hàng") -->
+            <LinearLayout
+                android:id="@+id/llGuestStorePickup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tvGuestStoreTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="Nhận hàng tại"
+                        android:textColor="@color/gray_dark"
+                        android:textSize="14sp"
+                        android:layout_alignParentStart="true" />
+
+                    <TextView
+                        android:id="@+id/btnChangeStore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Thay đổi"
+                        android:textColor="#3E4D44"
+                        android:textSize="14sp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+
+                <!-- Store Name & Address -->
+                <TextView
+                    android:id="@+id/tvGuestStoreName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Chưa chọn cửa hàng"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvGuestStoreAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:text="Vui lòng chọn cửa hàng để tiếp tục"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <!-- 3. Yêu cầu xuất hóa đơn điện tử -->
@@ -399,7 +609,7 @@
                         android:id="@+id/ivPaymentRadio"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_cart_checked" />
+                        android:src="@drawable/ic_check_circle" />
 
                     <ImageView
                         android:id="@+id/ivPaymentMethodIcon"
@@ -655,5 +865,88 @@
             app:cornerRadius="12dp" />
 
     </LinearLayout>
+
+    <!-- Push Notification Overlay Slide-down Card (Geofencing banner style) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvNotificationBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <!-- Green success Icon Frame -->
+            <FrameLayout
+                android:id="@+id/flNotiIconFrame"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_cart_voucher_bar"
+                android:backgroundTint="#EDF3ED"
+                android:padding="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_check_circle"
+                    app:tint="@color/primary"
+                    android:scaleType="fitCenter" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvNotiTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:text="Đặt hàng thành công 🎉"
+                android:textColor="#3E4D44"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/flNotiIconFrame"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvNotiTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="vừa xong"
+                android:textColor="#8E8E8E"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:textSize="12sp"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvNotiTitle"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/tvNotiMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="4dp"
+                android:text="Cảm ơn bạn đã mua sắm tại Rootie."
+                android:textColor="#3E4D44"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/flNotiIconFrame"
+                app:layout_constraintTop_toBottomOf="@id/tvNotiTitle" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

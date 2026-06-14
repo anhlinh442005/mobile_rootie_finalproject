@@ -163,13 +163,33 @@ class ShopHomeFragment : RootieFragment() {
         binding.etSearch.isClickable = true
         binding.etSearch.setOnClickListener(searchClickListener)
 
+        binding.ivQrScan.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+                .replace(
+                    com.veganbeauty.app.R.id.main_container,
+                    com.veganbeauty.app.features.shop.barcode.BarcodeScanFragment()
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Navigation
-        com.veganbeauty.app.utils.NavAppUtils.setupNavApp(this, view, com.veganbeauty.app.R.id.nav_shop)
+        com.veganbeauty.app.features.home.BottomNavHelper.setup(
+            fragment = this,
+            root = binding.root,
+            activeTabId = com.veganbeauty.app.R.id.nav_shop
+        ) { tabId -> com.veganbeauty.app.features.home.BottomNavHelper.navigate(this, tabId) }
     }
 
     override fun observeViewModel() {
         // Quan sát dữ liệu Banner
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.banners.collect { banners ->
                 bannerAdapter.submitList(banners)
                 setupBannerDots(banners.size)
@@ -177,7 +197,7 @@ class ShopHomeFragment : RootieFragment() {
         }
 
         // Quan sát dữ liệu Category
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.categories.collect { categories ->
                 categoryAdapter.submitList(categories)
             }
@@ -192,7 +212,7 @@ class ShopHomeFragment : RootieFragment() {
         }
 
         // Observe cart items to update badge count
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val db = RootieDatabase.getDatabase(requireContext())
             db.cartDao().getAllCartItems().collect { items ->
                 val totalQty = items.sumOf { it.quantity }

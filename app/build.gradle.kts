@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "com.veganbeauty.app"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.veganbeauty.app"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -46,13 +46,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
+
+kotlin {
+    jvmToolchain(17)
+}
+
 
 ksp {
     arg("room.generateKotlin", "true")
@@ -77,9 +82,20 @@ dependencies {
     
     // Coil
     implementation(libs.coil)
-    implementation("io.coil-kt:coil-svg:2.5.0")
+    implementation(libs.coil.svg)
+    implementation(libs.guava)
+
+    // CameraX
+    implementation("androidx.camera:camera-core:1.3.4")
+    implementation("androidx.camera:camera-camera2:1.3.4")
+    implementation("androidx.camera:camera-lifecycle:1.3.4")
+    implementation("androidx.camera:camera-view:1.3.4")
+
+    // Chart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
 }
+dependencies { implementation("com.github.yalantis:ucrop:2.2.8") }

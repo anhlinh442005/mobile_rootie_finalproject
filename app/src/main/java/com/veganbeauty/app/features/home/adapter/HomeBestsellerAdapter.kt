@@ -12,7 +12,8 @@ import java.text.NumberFormat
 import java.util.Locale
 
 class HomeBestsellerAdapter(
-    private val onItemClick: (ProductEntity) -> Unit = {}
+    private val onItemClick: (ProductEntity) -> Unit = {},
+    private val onAddToCart: (ProductEntity) -> Unit = {}
 ) : ListAdapter<ProductEntity, HomeBestsellerAdapter.ViewHolder>(DiffCallback()) {
 
     private val priceFormatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
@@ -34,9 +35,15 @@ class HomeBestsellerAdapter(
 
         fun bind(product: ProductEntity, rank: Int) {
             binding.root.setOnClickListener { onItemClick(product) }
+            binding.btnAction.setOnClickListener { onAddToCart(product) }
             binding.tvRank.text = rank.toString()
             binding.tvProductName.text = product.name
             binding.tvPrice.text = priceFormatter.format(product.price)
+            
+            val originalPrice = product.price / 0.75 // Assuming 25% discount to match design
+            binding.tvOriginalPrice.text = priceFormatter.format(originalPrice)
+            binding.tvOriginalPrice.paintFlags = binding.tvOriginalPrice.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+            
             binding.ivProduct.load(product.mainImage) {
                 crossfade(true)
                 placeholder(android.R.color.darker_gray)

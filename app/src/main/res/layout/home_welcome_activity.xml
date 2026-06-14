@@ -4,8 +4,14 @@
     android:id="@+id/home_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FEFBF4"
     android:fitsSystemWindows="false">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/welcome"
+        android:contentDescription="@null" />
 
     <LinearLayout
         android:id="@+id/home_splash_content"

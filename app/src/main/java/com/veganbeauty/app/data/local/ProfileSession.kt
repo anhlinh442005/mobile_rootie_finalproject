@@ -14,6 +14,7 @@ object ProfileSession {
     private const val KEY_IS_LOGGED_IN = "is_logged_in"
     private const val KEY_LAST_LOGIN = "last_login"
     private const val KEY_AVATAR = "avatar"
+    private const val KEY_USER_ID = "user_id"
     
     // Notification setting keys
     private const val KEY_NOTI_ENABLED = "noti_enabled"
@@ -27,6 +28,18 @@ object ProfileSession {
     private const val KEY_NOTI_STAFF_MESSAGE = "noti_staff_message"
     private const val KEY_NOTI_COMPLAINT_RESPONSE = "noti_complaint_response"
     private const val KEY_NOTI_SKIN_WEATHER = "noti_skin_weather"
+
+    fun getUserId(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_USER_ID, "test_001") ?: "test_001"
+    }
+
+    fun setUserId(context: Context, userId: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_USER_ID, userId)
+            .apply()
+    }
 
     fun getUsername(context: Context): String {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -137,6 +150,34 @@ object ProfileSession {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(KEY_AVATAR, avatarUrl)
+            .apply()
+    }
+
+    private const val KEY_PRIMARY_IMAGE = "primary_image"
+
+    fun getPrimaryImage(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_PRIMARY_IMAGE, "https://i.pinimg.com/1200x/21/2e/de/212ede6c525fcf95dbfa0a7d976beaa2.jpg") ?: "https://i.pinimg.com/1200x/21/2e/de/212ede6c525fcf95dbfa0a7d976beaa2.jpg"
+    }
+
+    fun setPrimaryImage(context: Context, primaryImage: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_PRIMARY_IMAGE, primaryImage)
+            .apply()
+    }
+
+    private const val KEY_BIO = "bio"
+
+    fun getBio(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_BIO, "Làm đẹp không phải để ai ngắm, mà để mình vui.") ?: "Làm đẹp không phải để ai ngắm, mà để mình vui."
+    }
+
+    fun setBio(context: Context, bio: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_BIO, bio)
             .apply()
     }
 
@@ -632,6 +673,119 @@ object ProfileSession {
         context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putBoolean(KEY_HIDE_QUIZ_REMINDER_WEEKLY, dismissed)
+            .apply()
+    }
+
+    // --- Product Expiry Notification Settings ---
+    fun isNotiExpiryEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean("noti_expiry_enabled", true)
+    }
+
+    fun setNotiExpiryEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("noti_expiry_enabled", enabled)
+            .apply()
+    }
+
+    fun isNotiExpiryWeek1(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean("noti_expiry_week1", true)
+    }
+
+    fun setNotiExpiryWeek1(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("noti_expiry_week1", enabled)
+            .apply()
+    }
+
+    fun isNotiExpiryWeek2(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean("noti_expiry_week2", true)
+    }
+
+    fun setNotiExpiryWeek2(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("noti_expiry_week2", enabled)
+            .apply()
+    }
+
+    // Product-specific overrides (fallback to global defaults if not customized)
+    fun getProductNotiEnabled(context: Context, userId: String, productId: String): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val key = "expiry_custom_enabled_${userId}_${productId}"
+        return if (prefs.contains(key)) {
+            prefs.getBoolean(key, true)
+        } else {
+            isNotiExpiryEnabled(context)
+        }
+    }
+
+    fun setProductNotiEnabled(context: Context, userId: String, productId: String, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("expiry_custom_enabled_${userId}_${productId}", enabled)
+            .apply()
+    }
+
+    fun getProductWeek1Enabled(context: Context, userId: String, productId: String): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val key = "expiry_custom_week1_${userId}_${productId}"
+        return if (prefs.contains(key)) {
+            prefs.getBoolean(key, true)
+        } else {
+            isNotiExpiryWeek1(context)
+        }
+    }
+
+    fun setProductWeek1Enabled(context: Context, userId: String, productId: String, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("expiry_custom_week1_${userId}_${productId}", enabled)
+            .apply()
+    }
+
+    fun getProductWeek2Enabled(context: Context, userId: String, productId: String): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val key = "expiry_custom_week2_${userId}_${productId}"
+        return if (prefs.contains(key)) {
+            prefs.getBoolean(key, true)
+        } else {
+            isNotiExpiryWeek2(context)
+        }
+    }
+
+    fun setProductWeek2Enabled(context: Context, userId: String, productId: String, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("expiry_custom_week2_${userId}_${productId}", enabled)
+            .apply()
+    }
+
+    // --- Guest checkout phone for order tracking ---
+    // Stores the last guest's phone number so they can track their orders
+    // without being logged in. Cleared on login.
+    private const val KEY_GUEST_PHONE = "guest_phone"
+
+    fun getGuestPhone(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_GUEST_PHONE, "") ?: ""
+    }
+
+    fun setGuestPhone(context: Context, phone: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_GUEST_PHONE, phone)
+            .apply()
+    }
+
+    fun clearGuestPhone(context: Context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .remove(KEY_GUEST_PHONE)
             .apply()
     }
 }

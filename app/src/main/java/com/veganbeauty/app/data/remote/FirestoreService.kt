@@ -10,66 +10,84 @@ class FirestoreService {
     suspend fun fetchAllProducts(): List<ProductEntity> {
         return try {
             val snapshot = db.collection("products").get().await()
-            snapshot.documents.mapNotNull { doc ->
-                // Mapping Firestore document to ProductEntity
-                @Suppress("UNCHECKED_CAST")
-                val albumList = doc.get("album") as? List<String> ?: emptyList()
-                
-                @Suppress("UNCHECKED_CAST")
-                val keyIngredientsRaw = doc.get("keyIngredients") as? List<Map<String, Any>> ?: emptyList()
-                val keyIngredientsList = keyIngredientsRaw.map { map ->
-                    com.veganbeauty.app.data.local.entities.KeyIngredient(
-                        name = map["name"] as? String ?: "",
-                        description = map["description"] as? String ?: ""
-                    )
-                }
-                
-                @Suppress("UNCHECKED_CAST")
-                val detailedList = doc.get("detailedIngredients") as? List<String> ?: emptyList()
-                @Suppress("UNCHECKED_CAST")
-                val idealList = doc.get("idealFor") as? List<String> ?: emptyList()
-                @Suppress("UNCHECKED_CAST")
-                val benefitsList = doc.get("benefits") as? List<String> ?: emptyList()
-
-                val categoryIdRaw = doc.get("categoryId")
-                val categoryIdsStr = when (categoryIdRaw) {
-                    is List<*> -> categoryIdRaw.filterIsInstance<String>().joinToString(",")
-                    is String -> categoryIdRaw
-                    else -> ""
-                }
-
-                ProductEntity(
-                    id = doc.id,
-                    name = doc.getString("name") ?: "",
-                    sku = doc.getString("sku") ?: "",
-                    price = doc.getLong("price") ?: 0L,
-                    category = doc.getString("category") ?: "",
-                    categoryIds = categoryIdsStr,
-                    brand = doc.getString("brand") ?: "",
-                    stock = doc.getLong("stock")?.toInt() ?: 0,
-                    description = doc.getString("description") ?: "",
-                    mainImage = doc.getString("mainImage") ?: "",
-                    suitableFor = doc.getString("suitableFor") ?: "",
-                    origin = doc.getString("origin") ?: "",
-                    expiryDate = doc.getString("expiryDate") ?: "",
-                    isNew = doc.getBoolean("isNew") ?: false,
-                    
-                    album = albumList,
-                    mainIngredientsSummary = doc.getString("mainIngredientsSummary") ?: "",
-                    allergyInformation = doc.getString("allergyInformation") ?: "",
-                    keyIngredients = keyIngredientsList,
-                    detailedIngredients = detailedList,
-                    storyDescription = doc.getString("storyDescription") ?: "",
-                    storyImage = doc.getString("storyImage") ?: "",
-                    idealFor = idealList,
-                    benefits = benefitsList,
-                    usage = doc.getString("usage") ?: "",
-                    usageAmount = doc.getString("usageAmount") ?: "",
-                    scent = doc.getString("scent") ?: "",
-                    notes = doc.getString("notes") ?: ""
-                )
-            }
+            snapshot.documents.mapNotNull { doc -> mapProductDocument(doc) }
         } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun fetchProductByBarcode(barcode: String): ProductEntity? {
+        return try {
+            val snapshot = db.collection("products")
+                .whereEqualTo("barcode", barcode.trim())
+                .limit(1)
+                .get()
+                .await()
+            snapshot.documents.firstOrNull()?.let { doc -> mapProductDocument(doc) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun mapProductDocument(doc: com.google.firebase.firestore.DocumentSnapshot): ProductEntity {
+        @Suppress("UNCHECKED_CAST")
+        val albumList = doc.get("album") as? List<String> ?: emptyList()
+
+        @Suppress("UNCHECKED_CAST")
+        val keyIngredientsRaw = doc.get("keyIngredients") as? List<Map<String, Any>> ?: emptyList()
+        val keyIngredientsList = keyIngredientsRaw.map { map ->
+            KeyIngredient(
+                name = map["name"] as? String ?: "",
+                description = map["description"] as? String ?: ""
+            )
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        val detailedList = doc.get("detailedIngredients") as? List<String> ?: emptyList()
+        @Suppress("UNCHECKED_CAST")
+        val idealList = doc.get("idealFor") as? List<String> ?: emptyList()
+        @Suppress("UNCHECKED_CAST")
+        val benefitsList = doc.get("benefits") as? List<String> ?: emptyList()
+
+        val categoryIdRaw = doc.get("categoryId")
+        val categoryIdsStr = when (categoryIdRaw) {
+            is List<*> -> categoryIdRaw.filterIsInstance<String>().joinToString(",")
+            is String -> categoryIdRaw
+            else -> ""
+        }
+
+        return ProductEntity(
+            id = doc.id,
+            name = doc.getString("name") ?: "",
+            sku = doc.getString("sku") ?: "",
+            barcode = doc.getString("barcode") ?: "",
+            price = doc.getLong("price") ?: 0L,
+            originalPrice = doc.getLong("originalPrice"),
+            category = doc.getString("category") ?: "",
+            categoryIds = categoryIdsStr,
+            brand = doc.getString("brand") ?: "",
+            stock = doc.getLong("stock")?.toInt() ?: 0,
+            description = doc.getString("description") ?: "",
+            mainImage = doc.getString("mainImage") ?: "",
+            suitableFor = doc.getString("suitableFor") ?: "",
+            origin = doc.getString("origin") ?: "",
+            expiryDate = doc.getString("expiryDate") ?: "",
+            isNew = doc.getBoolean("isNew") ?: false,
+            album = albumList,
+            mainIngredientsSummary = doc.getString("mainIngredientsSummary") ?: "",
+            allergyInformation = doc.getString("allergyInformation") ?: "",
+            keyIngredients = keyIngredientsList,
+            detailedIngredients = detailedList,
+            storyDescription = doc.getString("storyDescription") ?: "",
+            storyImage = doc.getString("storyImage") ?: "",
+            idealFor = idealList,
+            benefits = benefitsList,
+            usage = doc.getString("usage") ?: "",
+            usageAmount = doc.getString("usageAmount") ?: "",
+            scent = doc.getString("scent") ?: "",
+            notes = doc.getString("notes") ?: "",
+            rating = doc.getDouble("rating")?.toFloat() ?: 0f,
+            sold = doc.getLong("sold")?.toInt() ?: 0
+        )
     }
 
     suspend fun fetchAllUsers(): List<UserEntity> {
@@ -141,6 +159,7 @@ class FirestoreService {
                     createdAt = doc.getString("created_at") ?: "",
                     likesCount = likesCount,
                     commentsCount = doc.getLong("comments_count")?.toInt() ?: 0,
+                    reupsCount = doc.getLong("reups_count")?.toInt() ?: 0,
                     skinType = doc.getString("skin_type") ?: "",
                     concern = doc.getString("concern") ?: "",
                     type = doc.getString("type") ?: "",
@@ -325,6 +344,118 @@ class FirestoreService {
         }
     }
 
+
+    suspend fun addCommentToPost(postId: String, commentMap: Map<String, Any>): Boolean {
+        return try {
+            // Append to comments array and increment comments_count
+            db.collection("community_posts").document(postId)
+                .update(
+                    "comments", com.google.firebase.firestore.FieldValue.arrayUnion(commentMap),
+                    "comments_count", com.google.firebase.firestore.FieldValue.increment(1)
+                ).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun forceSyncLocalPostsToFirebase(postsJson: String, newsJson: String): Boolean {
+        return try {
+            val collection = db.collection("community_posts")
+            
+            // Delete old documents
+            val snapshot = collection.get().await()
+            for (doc in snapshot.documents) {
+                collection.document(doc.id).delete().await()
+            }
+            
+            // Upload Posts
+            val postsArray = org.json.JSONObject(postsJson).getJSONArray("posts")
+            for (i in 0 until postsArray.length()) {
+                val obj = postsArray.getJSONObject(i)
+                val map = jsonObjectToMap(obj)
+                val id = obj.optString("post_id", java.util.UUID.randomUUID().toString())
+                collection.document(id).set(map).await()
+            }
+
+            // Upload News
+            val newsArray = org.json.JSONArray(newsJson)
+            for (i in 0 until newsArray.length()) {
+                val obj = newsArray.getJSONObject(i)
+                val map = jsonObjectToMap(obj)
+                val id = obj.optString("post_id", java.util.UUID.randomUUID().toString())
+                collection.document(id).set(map).await()
+            }
+            
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun forceSyncCollection(collectionName: String, jsonStr: String, idKey: String, arrayKey: String? = null): Boolean {
+        return try {
+            val collection = db.collection(collectionName)
+            
+            // Delete old documents
+            val snapshot = collection.get().await()
+            for (doc in snapshot.documents) {
+                collection.document(doc.id).delete().await()
+            }
+            
+            // Upload new documents
+            val jsonArray = if (arrayKey != null) {
+                org.json.JSONObject(jsonStr).getJSONArray(arrayKey)
+            } else {
+                org.json.JSONArray(jsonStr)
+            }
+            
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val map = jsonObjectToMap(obj)
+                val id = obj.optString(idKey).takeIf { it.isNotBlank() } ?: java.util.UUID.randomUUID().toString()
+                collection.document(id).set(map).await()
+            }
+            
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun jsonObjectToMap(obj: org.json.JSONObject): Map<String, Any> {
+        val map = hashMapOf<String, Any>()
+        val keys = obj.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val value = obj.get(key)
+            map[key] = when (value) {
+                is org.json.JSONArray -> jsonArrayToList(value)
+                is org.json.JSONObject -> jsonObjectToMap(value)
+                org.json.JSONObject.NULL -> null
+                else -> value
+            } ?: ""
+        }
+        return map
+    }
+
+    private fun jsonArrayToList(arr: org.json.JSONArray): List<Any> {
+        val list = mutableListOf<Any>()
+        for (i in 0 until arr.length()) {
+            val value = arr.get(i)
+            list.add(when (value) {
+                is org.json.JSONArray -> jsonArrayToList(value)
+                is org.json.JSONObject -> jsonObjectToMap(value)
+                org.json.JSONObject.NULL -> null
+                else -> value
+            } ?: "")
+        }
+        return list
+    }
+
     suspend fun fetchAllStores(): List<StoreEntity> {
         return try {
             val snapshot = db.collection("stores").get().await()
@@ -333,14 +464,13 @@ class FirestoreService {
                 val toaDoMap = doc.get("toa_do") as? Map<String, Any>
                 val lienHeMap = doc.get("thong_tin_lien_he") as? Map<String, Any>
                 val hoatDongMap = doc.get("thoi_gian_hoat_dong") as? Map<String, Any>
-                
                 val thu26Map = hoatDongMap?.get("thu_2_6") as? Map<String, Any>
                 val moCua = thu26Map?.get("mo_cua") as? String ?: "07:00"
                 val dongCua = thu26Map?.get("dong_cua") as? String ?: "21:00"
-
                 val phoneList = lienHeMap?.get("so_dien_thoai") as? List<*>
                 val phoneStr = phoneList?.filterIsInstance<String>()?.joinToString(", ") ?: ""
-
+                val tienNghiList = doc.get("tien_nghi") as? List<*>
+                val tienNghiStr = tienNghiList?.filterIsInstance<String>()?.joinToString(",") ?: ""
                 StoreEntity(
                     id = doc.id,
                     maCuaHang = doc.getString("ma_cua_hang") ?: "",
@@ -359,7 +489,8 @@ class FirestoreService {
                     moCua = moCua,
                     dongCua = dongCua,
                     trangThai = doc.getString("trang_thai") ?: "Đang hoạt động",
-                    isActive = doc.getBoolean("isActive") ?: doc.getBoolean("is_active") ?: true
+                    isActive = doc.getBoolean("isActive") ?: doc.getBoolean("is_active") ?: true,
+                    tienNghi = tienNghiStr
                 )
             }
         } catch (e: Exception) { emptyList() }

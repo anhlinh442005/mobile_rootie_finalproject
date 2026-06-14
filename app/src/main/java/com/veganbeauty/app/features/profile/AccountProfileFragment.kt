@@ -36,8 +36,10 @@ class AccountProfileFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
-        // Load dynamic values from ProfileSession
         val ctx = requireContext()
+        val isLoggedIn = com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(ctx)
+
+        // Load dynamic values from ProfileSession
         val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(ctx)
         binding.ivAvatar.load(avatarUrl) {
             crossfade(true)
@@ -45,11 +47,36 @@ class AccountProfileFragment : RootieFragment() {
             placeholder(android.R.color.darker_gray)
         }
 
-        // Load dynamic values from ProfileSession
-        val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
-        val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
-        binding.tvUsername.text = fullName
-        binding.tvEmail.text = email
+        val guestRedirectListener = View.OnClickListener {
+            Toast.makeText(ctx, "Vui lòng đăng nhập để sử dụng tính năng này", Toast.LENGTH_SHORT).show()
+            val intent = android.content.Intent(ctx, com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity::class.java)
+            intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity?.finish()
+        }
+
+        if (isLoggedIn) {
+            val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
+            val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
+            binding.tvUsername.text = fullName
+            binding.tvEmail.text = email
+        } else {
+            binding.tvUsername.text = "Khách hàng"
+            binding.tvEmail.text = "Chạm để đăng nhập"
+            binding.tvUsername.setOnClickListener(guestRedirectListener)
+            binding.tvEmail.setOnClickListener(guestRedirectListener)
+            binding.ivAvatar.setOnClickListener(guestRedirectListener)
+        }
+
+        val setSecuredOnClickListener = { view: View, action: () -> Unit ->
+            view.setOnClickListener {
+                if (isLoggedIn) {
+                    action()
+                } else {
+                    guestRedirectListener.onClick(it)
+                }
+            }
+        }
 
         // Load skin type from SharedPreferences saved by Quiz
         val prefs = ctx.getSharedPreferences("RootieQuizPrefs", android.content.Context.MODE_PRIVATE)
@@ -85,7 +112,7 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Navigate to Order List Fragment
-        binding.btnAllOrders.setOnClickListener {
+        setSecuredOnClickListener(binding.btnAllOrders) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Tất cả"))
                 .addToBackStack(null)
@@ -93,35 +120,35 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Navigate to Order List Fragment with specific status filters pre-selected
-        binding.btnStatusPending.setOnClickListener {
+        setSecuredOnClickListener(binding.btnStatusPending) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Chờ xác nhận"))
                 .addToBackStack(null)
                 .commit()
         }
 
-        binding.btnStatusProcessing.setOnClickListener {
+        setSecuredOnClickListener(binding.btnStatusProcessing) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Đang xử lý"))
                 .addToBackStack(null)
                 .commit()
         }
 
-        binding.btnStatusDelivering.setOnClickListener {
+        setSecuredOnClickListener(binding.btnStatusDelivering) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Đang giao"))
                 .addToBackStack(null)
                 .commit()
         }
 
-        binding.btnStatusSuccess.setOnClickListener {
+        setSecuredOnClickListener(binding.btnStatusSuccess) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Hoàn tất"))
                 .addToBackStack(null)
                 .commit()
         }
 
-        binding.btnStatusCancelled.setOnClickListener {
+        setSecuredOnClickListener(binding.btnStatusCancelled) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Đã hủy"))
                 .addToBackStack(null)
@@ -129,7 +156,7 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Navigate to Edit Profile Fragment when clicking the edit pencil button
-        binding.btnEditProfile.setOnClickListener {
+        setSecuredOnClickListener(binding.btnEditProfile) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountProfileEditFragment())
                 .addToBackStack(null)
@@ -137,7 +164,7 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Navigate to Loyalty Reward & Exchange Fragment
-        binding.btnRewardExchange.setOnClickListener {
+        setSecuredOnClickListener(binding.btnRewardExchange) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.account.reward.AccountRewardFragment())
                 .addToBackStack(null)
@@ -145,7 +172,7 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Navigate to Order List for Reviews
-        binding.btnReviewProducts.setOnClickListener {
+        setSecuredOnClickListener(binding.btnReviewProducts) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Hoàn tất"))
                 .addToBackStack(null)
@@ -153,7 +180,7 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Navigate to Daily Check-in Fragment
-        binding.layoutCoinsBadge.setOnClickListener {
+        setSecuredOnClickListener(binding.layoutCoinsBadge) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.account.checkin.AccountCheckinFragment())
                 .addToBackStack(null)
@@ -161,7 +188,7 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         // Navigate to Account Setup Fragment
-        binding.btnAccountSetup.setOnClickListener {
+        setSecuredOnClickListener(binding.btnAccountSetup) {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, AccountProfileSetupFragment())
                 .addToBackStack(null)
@@ -239,16 +266,20 @@ class AccountProfileFragment : RootieFragment() {
             }
         }
 
-        // Retrieve and observe dynamic reward points count from Room database
-        val db = RootieDatabase.getDatabase(requireContext())
-        val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
-        viewLifecycleOwner.lifecycleScope.launch {
-            repository.refreshOrders()
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            db.rewardPointDao().getTotalPointsFlow().collect { points ->
-                binding.tvCoins.text = (points ?: 0).toString()
+        if (isLoggedIn) {
+            // Retrieve and observe dynamic reward points count from Room database
+            val db = RootieDatabase.getDatabase(requireContext())
+            val repository = OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), LocalJsonReader(requireContext()))
+            viewLifecycleOwner.lifecycleScope.launch {
+                repository.refreshOrders()
             }
+            viewLifecycleOwner.lifecycleScope.launch {
+                db.rewardPointDao().getTotalPointsFlow().collect { points ->
+                    binding.tvCoins.text = (points ?: 0).toString()
+                }
+            }
+        } else {
+            binding.tvCoins.text = "0"
         }
         BottomNavHelper.setup(
             fragment = this,

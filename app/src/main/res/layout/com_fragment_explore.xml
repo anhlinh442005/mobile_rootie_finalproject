@@ -22,13 +22,13 @@
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_arrow_back_thin"
-            app:tint="@android:color/white"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/ic_chevron_left"
+            app:tint="@android:color/white" />
 
         <LinearLayout
             android:layout_width="wrap_content"

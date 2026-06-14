@@ -128,6 +128,7 @@
 
         <!-- Divider -->
         <View
+            android:id="@+id/dividerAddress"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/gray_light" />
@@ -182,6 +183,21 @@
                     android:textColor="@color/gray_dark"
                     android:textSize="14sp"
                     tools:text="321 Lê Lợi, phường 5, quận 1, Hồ Chí Minh" />
+
+                <TextView
+                    android:id="@+id/tvTagDefault2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_cart_voucher_bar"
+                    android:backgroundTint="#EDF3ED"
+                    android:fontFamily="@font/lexend_medium"
+                    android:text="Mặc định"
+                    android:textColor="@color/primary"
+                    android:textSize="11sp"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="2dp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <!-- Edit Action -->

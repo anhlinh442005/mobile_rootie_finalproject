@@ -58,7 +58,7 @@
             android:id="@+id/btnNotification"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_bell"
+            android:src="@drawable/home_ic_notification"
             app:tint="@color/gray_dark"
             android:padding="2dp" />
     </LinearLayout>

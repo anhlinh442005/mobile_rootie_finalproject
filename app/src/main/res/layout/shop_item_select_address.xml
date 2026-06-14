@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clAddressItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingVertical="12dp">
+
+    <!-- Radio Indicator -->
+    <ImageView
+        android:id="@+id/ivRadioAddress"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/ic_cart_unchecked"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Content -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvEditAddress"
+        app:layout_constraintStart_toEndOf="@id/ivRadioAddress"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvNamePhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexend_medium"
+            android:textColor="@color/primary"
+            android:textSize="16sp"
+            tools:text="Bảo Nguyên | 0123456789" />
+
+        <TextView
+            android:id="@+id/tvAddressDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/lexend_regular"
+            android:textColor="@color/gray_dark"
+            android:textSize="14sp"
+            tools:text="123 Lê Lợi, phường 5, quận 1, Hồ Chí Minh" />
+
+        <TextView
+            android:id="@+id/tvTagDefault"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_cart_voucher_bar"
+            android:backgroundTint="#EDF3ED"
+            android:fontFamily="@font/lexend_medium"
+            android:text="Mặc định"
+            android:textColor="@color/primary"
+            android:textSize="11sp"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp" />
+    </LinearLayout>
+
+    <!-- Edit Action -->
+    <TextView
+        android:id="@+id/tvEditAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:fontFamily="@font/be_vietnam_pro_medium"
+        android:text="Sửa"
+        android:textColor="@color/primary"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

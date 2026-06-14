@@ -24,6 +24,31 @@ class OrderRepository(
         return orderDao.getOrdersByStatus(status)
     }
 
+    /**
+     * Stream of orders scoped to the current buyer.
+     *
+     *  - Logged-in members see only their own orders
+     *    (`userId == currentUserId`).
+     *  - Guests see only the orders that were placed with their
+     *    billing phone, so the same phone = same cart. This prevents
+     *    the previous bug where a guest's order list was empty even
+     *    after a successful checkout, or where a test-user account
+     *    could see guest orders that did not belong to them.
+     *
+     *  - When [userId] is blank/empty and [phone] is blank/empty the
+     *    function falls back to the unfiltered [allOrders] flow so
+     *    legacy / pre-fix installs do not regress to an empty list.
+     */
+    fun getOrdersForBuyer(userId: String?, phone: String?): Flow<List<OrderEntity>> {
+        val safeUserId = userId?.trim().orEmpty()
+        val safePhone = phone?.trim().orEmpty()
+        return when {
+            safeUserId.isNotEmpty() -> orderDao.getOrdersForUser(safeUserId)
+            safePhone.isNotEmpty() -> orderDao.getOrdersForGuestPhone(safePhone)
+            else -> orderDao.getAllOrders()
+        }
+    }
+
     // Refresh orders from assets (Seed only if database is empty)
     suspend fun refreshOrders() {
         try {
@@ -252,6 +277,7 @@ class OrderRepository(
     // Cancel order (locally)
     suspend fun cancelOrder(orderId: String) {
         orderDao.updateOrderStatus(orderId, "Đã hủy")
+        OrderStatusNotifier.simulateOnly(orderDao, orderId, "Đã hủy")
     }
 
     // Watch a specific order reactively
@@ -259,8 +285,11 @@ class OrderRepository(
         return orderDao.getOrderByIdFlow(orderId)
     }
 
-    // Update order status
+    // Update order status. The repository delegates the actual SQL update
+    // to the DAO and then asks [OrderStatusNotifier] to dispatch the
+    // mock SMS / Email notification per the hybrid checkout plan.
     suspend fun updateOrderStatus(orderId: String, status: String) {
         orderDao.updateOrderStatus(orderId, status)
+        OrderStatusNotifier.simulateOnly(orderDao, orderId, status)
     }
 }

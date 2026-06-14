@@ -19,7 +19,7 @@ class StoreRepository(
             if (remoteStores.isNotEmpty()) {
                 storeDao.insertStores(remoteStores)
             } else {
-                val localStores = localJsonReader.getStores()
+                val localStores = localJsonReader.getAllStores()
                 if (localStores.isNotEmpty()) {
                     storeDao.insertStores(localStores)
                 }
@@ -27,7 +27,7 @@ class StoreRepository(
         } catch (e: Exception) {
             e.printStackTrace()
             try {
-                val localStores = localJsonReader.getStores()
+                val localStores = localJsonReader.getAllStores()
                 if (localStores.isNotEmpty()) {
                     storeDao.insertStores(localStores)
                 }

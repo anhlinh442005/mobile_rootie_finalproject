@@ -26,57 +26,54 @@ class CommunityRepository(
 
     // Sync Data
     suspend fun refreshCommunityData() {
-        try {
-            // 1. Always load local assets first (fresh data from JSON files)
-            loadFromLocalAssets()
-            
-            // Temporary sync: Upload local JSON to Firestore so it gets updated
-            firestoreService.uploadAllExploreVideos(localJsonReader.getExploreVideos())
-
-            // 2. Then try to sync from Firebase Firestore (overrides local if available)
-            val remoteUsers = firestoreService.fetchAllUsers()
-            val remotePosts = firestoreService.fetchAllCommunityPosts()
-            val remoteReels = firestoreService.fetchAllReels()
-            
-            // Lấy data từ Firebase (bị comment lại để không ghi đè JSON mới ở máy)
-            // val rawRemoteVideos = firestoreService.fetchAllExploreVideos()
-            val rawRemoteVideos = emptyList<YtVideoEntity>()
-            val remoteVideos = rawRemoteVideos.map { video ->
-                val matchedUser = remoteUsers.find { it.username.equals(video.username, ignoreCase = true) }
-                if (matchedUser?.avatar?.isNotEmpty() == true) {
-                    video.copy(avatarUrl = matchedUser.avatar)
-                } else video
-            }
-            
-            val remoteIngredients = firestoreService.fetchAllIngredients()
-
-            if (remoteUsers.isNotEmpty()) {
-                communityDao.insertUsers(remoteUsers)
-            }
-            if (remotePosts.isNotEmpty()) {
-                communityDao.insertPosts(remotePosts)
-            }
-            if (remoteReels.isNotEmpty()) {
-                communityDao.insertReels(remoteReels)
-            }
-            if (remoteVideos.isNotEmpty()) {
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                // UNCONDITIONALLY WIPE ALL LOCAL DATABASE TABLES FOR A CLEAN SYNC
+                communityDao.deleteAllPosts()
+                communityDao.deleteAllUsers()
                 communityDao.deleteAllExploreVideos()
-                communityDao.insertExploreVideos(remoteVideos)
+
+                // 1. Always load local assets first (fresh data from JSON files)
+                loadFromLocalAssets()
+                
+                // Force sync the latest local data to Firebase BEFORE fetching it back down
+                firestoreService.forceSyncLocalPostsToFirebase(
+                    localJsonReader.getRawPostsJson(),
+                    localJsonReader.getRawNewsJson()
+                )
+                firestoreService.forceSyncCollection("users", localJsonReader.getRawUsersJson(), "user_id")
+                firestoreService.forceSyncCollection("community_reels_fb", localJsonReader.getRawReelsJson(), "video_id")
+                firestoreService.forceSyncCollection("ingredients", localJsonReader.getRawIngredientsJson(), "slug")
+                firestoreService.forceSyncCollection("products", localJsonReader.getRawProductsJson(), "id", "products")
+
+                // NOTE: We do NOT fetch posts/users back from Firebase.
+                // Local JSON files are the SINGLE SOURCE OF TRUTH for posts and users.
+                // Firebase is used only for: (1) real-time comment sync, (2) backup.
+                // Fetching back from Firebase would overwrite fresh JSON data with potentially stale Firebase data.
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // In case of error, local assets already loaded above
             }
-            if (remoteIngredients.isNotEmpty()) {
-                communityDao.insertIngredients(remoteIngredients)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            // In case of error, local assets already loaded above
         }
     }
 
     private suspend fun loadFromLocalAssets() {
         try {
             val localUsers = localJsonReader.getUsers()
-            val localPosts = localJsonReader.getCommunityPosts()
-            val localReels = localJsonReader.getReels()
+            val localPosts = localJsonReader.getCommunityPosts().map { post ->
+                val matchedUser = localUsers.find { it.user_id == post.authorId || it.username.equals(post.authorUsername, ignoreCase = true) }
+                if (matchedUser?.avatar?.isNotEmpty() == true) {
+                    post.copy(authorAvatarUrl = matchedUser.avatar)
+                } else post
+            }
+            val rawLocalReels = localJsonReader.getReels()
+            val localReels = rawLocalReels.map { reel ->
+                val matchedUser = localUsers.find { it.user_id == reel.authorId || it.username.equals(reel.authorUsername, ignoreCase = true) }
+                if (matchedUser?.avatar?.isNotEmpty() == true) {
+                    reel.copy(authorAvatarUrl = matchedUser.avatar)
+                } else reel
+            }
             
             val rawLocalVideos = localJsonReader.getExploreVideos()
             val localVideos = rawLocalVideos.map { video ->
@@ -86,8 +83,14 @@ class CommunityRepository(
                 } else video
             }
 
-            if (localUsers.isNotEmpty()) communityDao.insertUsers(localUsers)
-            if (localPosts.isNotEmpty()) communityDao.insertPosts(localPosts)
+            if (localUsers.isNotEmpty()) {
+                communityDao.deleteAllUsers()
+                communityDao.insertUsers(localUsers)
+            }
+            if (localPosts.isNotEmpty()) {
+                communityDao.deleteAllPosts()
+                communityDao.insertPosts(localPosts)
+            }
             if (localReels.isNotEmpty()) communityDao.insertReels(localReels)
             if (localVideos.isNotEmpty()) {
                 communityDao.deleteAllExploreVideos()
@@ -95,9 +98,8 @@ class CommunityRepository(
             }
             
             val localIngredients = localJsonReader.getIngredients()
-            val localBlogs = localJsonReader.getCommunityBlogs(10)
+            // Lưu ý: Blog không load ở đây nữa - BeautyHubFragment tự lazy load từ file (tránh OOM với file 174MB)
             if (localIngredients.isNotEmpty()) communityDao.insertIngredients(localIngredients)
-            if (localBlogs.isNotEmpty()) communityDao.insertBlogs(localBlogs)
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -226,7 +226,7 @@ class ShopListFragment : RootieFragment() {
             }
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val db = RootieDatabase.getDatabase(requireContext())
             db.cartDao().getAllCartItems().collect { items ->
                 val totalQty = items.sumOf { it.quantity }

@@ -44,7 +44,7 @@
             android:id="@+id/ivRadioCash"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_cart_unchecked"
+            android:src="@drawable/ic_circle_outline"
             />
 
         <ImageView
@@ -65,7 +65,7 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-    <!-- Option 2: ATM/Internet Banking -->
+    <!-- Option 2: ATM Card / Internet Banking -->
     <LinearLayout
         android:id="@+id/llOptionATM"
         android:layout_width="match_parent"
@@ -81,14 +81,14 @@
             android:id="@+id/ivRadioATM"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_cart_unchecked"
+            android:src="@drawable/ic_circle_outline"
             />
 
         <ImageView
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_marginStart="16dp"
-            android:src="@drawable/ic_card"
+            android:src="@drawable/ic_credit_card"
             app:tint="@color/primary" />
 
         <TextView
@@ -118,7 +118,7 @@
             android:id="@+id/ivRadioMoMo"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_cart_unchecked"
+            android:src="@drawable/ic_circle_outline"
             />
 
         <ImageView
@@ -154,7 +154,7 @@
             android:id="@+id/ivRadioVNPay"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_cart_unchecked"
+            android:src="@drawable/ic_circle_outline"
             />
 
         <ImageView

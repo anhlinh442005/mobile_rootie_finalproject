@@ -1,0 +1,889 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/neutral">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/skin_detail_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/skin_detail_btn_back"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_chevron_left"
+            app:tint="@color/primary"
+            android:padding="4dp"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Chi tiết lịch hẹn"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/be_vietnam_pro"/>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_agent"
+            app:tint="@color/primary" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/skin_detail_header"
+        app:layout_constraintBottom_toTopOf="@id/skin_detail_bottom_actions"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Card 1: Top Summary -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/skin_bg_btn_solid_dark"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/skin_detail_service_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Soi da cơ bản"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/skin_detail_store_image_card"/>
+
+                <!-- Status Tag (Green) -->
+                <LinearLayout
+                    android:id="@+id/skin_detail_status_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/skin_bg_btn_solid"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/skin_detail_service_name"
+                    app:layout_constraintStart_toStartOf="parent">
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="@color/white"/>
+                    <TextView
+                        android:id="@+id/skin_detail_status_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đã hoàn thành"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:layout_marginStart="4dp"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/skin_detail_order_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mã đặt lịch: RS202605200001"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintTop_toBottomOf="@id/skin_detail_status_container"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/skin_detail_btn_copy"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_clipboard_outline"
+                    app:tint="@color/white"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintStart_toEndOf="@id/skin_detail_order_id"
+                    app:layout_constraintTop_toTopOf="@id/skin_detail_order_id"
+                    app:layout_constraintBottom_toBottomOf="@id/skin_detail_order_id"/>
+
+                <View
+                    android:id="@+id/skin_detail_divider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="#88FFFFFF"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/skin_detail_order_id"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/skin_detail_store_image_card"/>
+
+                <ImageView
+                    android:id="@+id/skin_detail_ic_date"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_calendar_outline"
+                    app:tint="@color/white"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintTop_toBottomOf="@id/skin_detail_divider"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                <TextView
+                    android:id="@+id/skin_detail_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="20 tháng 5, 2024 • Thứ 2"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintTop_toTopOf="@id/skin_detail_ic_date"
+                    app:layout_constraintStart_toEndOf="@id/skin_detail_ic_date"/>
+
+                <ImageView
+                    android:id="@+id/skin_detail_ic_time"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_clock"
+                    app:tint="@color/white"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintTop_toBottomOf="@id/skin_detail_date"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                <TextView
+                    android:id="@+id/skin_detail_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10:00 - 10:45 (45 phút)"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintTop_toTopOf="@id/skin_detail_ic_time"
+                    app:layout_constraintBottom_toBottomOf="@id/skin_detail_ic_time"
+                    app:layout_constraintStart_toEndOf="@id/skin_detail_ic_time"/>
+
+                <ImageView
+                    android:id="@+id/skin_detail_ic_flag"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_check"
+                    app:tint="@color/white"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintTop_toBottomOf="@id/skin_detail_time"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                <TextView
+                    android:id="@+id/skin_detail_completed_at"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hoàn thành lúc: 10:43"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintTop_toTopOf="@id/skin_detail_ic_flag"
+                    app:layout_constraintBottom_toBottomOf="@id/skin_detail_ic_flag"
+                    app:layout_constraintStart_toEndOf="@id/skin_detail_ic_flag"/>
+
+                <!-- Circular Image on Right -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/skin_detail_store_image_card"
+                    android:layout_width="120dp"
+                    android:layout_height="150dp"
+                    app:cardCornerRadius="60dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="-20dp">
+                    <ImageView
+                        android:id="@+id/skin_detail_store_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/imv_logo"/>
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Row 2: Split Cards -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false"
+                android:layout_marginBottom="16dp">
+
+                <!-- Kết quả soi da -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/skin_bg_store_card"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_marginEnd="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_article_outline"
+                            app:tint="@color/primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kết quả soi da"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginStart="4dp"/>
+                    </LinearLayout>
+
+                    <!-- Dynamically populated list or static placeholder -->
+                    <LinearLayout
+                        android:id="@+id/skin_detail_results_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <!-- Filled programmatically -->
+                    </LinearLayout>
+
+                    <Space android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Xem báo cáo chi tiết  >"
+                        android:textAlignment="center"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:background="@drawable/skin_bg_btn_book"
+                        android:paddingVertical="8dp"
+                        android:layout_marginTop="8dp"
+                        android:textSize="12sp"/>
+
+                </LinearLayout>
+
+                <!-- Chi nhánh & Chuyên viên -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/skin_bg_store_card"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_marginStart="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_location"
+                            app:tint="@color/primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chi nhánh thực hiện"
+                            android:textColor="@color/primary"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginStart="4dp"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/skin_detail_store_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Rootie Gò Vấp"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/skin_detail_store_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="27 Quang Trung, P.10..."
+                        android:textColor="@color/content"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="2"
+                        android:ellipsize="end"/>
+
+                    <TextView
+                        android:id="@+id/skin_detail_store_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="(027) 7100 2020"
+                        android:textColor="@color/content"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:layout_marginTop="2dp"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#DEDEDE"
+                        android:layout_marginVertical="8dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            app:cardCornerRadius="18dp"
+                            app:cardElevation="0dp">
+                            <ImageView
+                                android:id="@+id/skin_detail_consultant_avatar"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/imv_logo"/>
+                        </androidx.cardview.widget.CardView>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chuyên viên tư vấn"
+                                android:textColor="@color/content"
+                                android:textSize="10sp"
+                                android:fontFamily="@font/be_vietnam_pro"/>
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+                                <TextView
+                                    android:id="@+id/skin_detail_consultant_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Nguyễn Thị Lan"
+                                    android:textColor="@color/primary"
+                                    android:textStyle="bold"
+                                    android:textSize="12sp"
+                                    android:fontFamily="@font/be_vietnam_pro"/>
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:background="@drawable/skin_bg_outline"
+                                    android:backgroundTint="#FFF6E5"
+                                    android:paddingHorizontal="4dp"
+                                    android:paddingVertical="2dp"
+                                    android:layout_marginStart="4dp"
+                                    android:gravity="center_vertical">
+                                    <ImageView
+                                        android:layout_width="8dp"
+                                        android:layout_height="8dp"
+                                        android:src="@drawable/ic_star"
+                                        app:tint="#FFC107"/>
+                                    <TextView
+                                        android:id="@+id/skin_detail_consultant_rating"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="4.9"
+                                        android:textColor="@color/primary"
+                                        android:textSize="8sp"
+                                        android:textStyle="bold"
+                                        android:layout_marginStart="2dp"
+                                        android:fontFamily="@font/be_vietnam_pro"/>
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Card 3: Review -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/skin_bg_store_card"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_comment"
+                        app:tint="@color/primary"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đánh giá dịch vụ của bạn"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+                        <TextView
+                            android:id="@+id/skin_detail_user_rating_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5.0"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold"
+                            android:textSize="24sp"
+                            android:fontFamily="@font/be_vietnam_pro"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <!-- Just mock stars for now -->
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
+                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tuyệt vời!"
+                            android:textColor="@color/content"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/be_vietnam_pro"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp">
+                        <TextView
+                            android:id="@+id/skin_detail_user_review_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="“Nhân viên tư vấn nhiệt tình, soi da kỹ và giải thích dễ hiểu.”"
+                            android:textColor="@color/primary"
+                            android:textSize="13sp"
+                            android:textStyle="italic"
+                            android:fontFamily="@font/be_vietnam_pro"/>
+                        <TextView
+                            android:id="@+id/skin_detail_review_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Đánh giá ngày 20/05/2024"
+                            android:textColor="@color/content"
+                            android:textSize="11sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/skin_bg_btn_book"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_edit"
+                            app:tint="@color/primary"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:text="Chỉnh sửa\nđánh giá"
+                            android:textAlignment="center"
+                            android:textColor="@color/primary"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Card 4: Images -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/skin_bg_store_card"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_camera"
+                        app:tint="@color/primary"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hình ảnh trước &amp; sau"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="80dp"
+                        android:layout_height="60dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="0dp"
+                        android:layout_marginEnd="8dp">
+                        <ImageView
+                            android:id="@+id/skin_detail_before_img"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Trước"
+                            android:textColor="@color/white"
+                            android:textSize="10sp"
+                            android:layout_gravity="bottom|start"
+                            android:layout_margin="4dp"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="80dp"
+                        android:layout_height="60dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="0dp"
+                        android:layout_marginEnd="16dp">
+                        <ImageView
+                            android:id="@+id/skin_detail_after_img"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sau"
+                            android:textColor="@color/white"
+                            android:textSize="10sp"
+                            android:layout_gravity="bottom|start"
+                            android:layout_margin="4dp"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <Space android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/skin_bg_btn_book"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_camera"
+                            app:tint="@color/primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Xem ảnh\nchi tiết   >"
+                            android:textColor="@color/primary"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginStart="4dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Card 5: Points & Next Appt -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/skin_bg_store_card"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_marginEnd="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_gift"
+                            app:tint="@color/primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Điểm thưởng"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginStart="4dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/mascot_coin" />
+                        <TextView
+                            android:id="@+id/skin_detail_earned_points"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+50"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold"
+                            android:textSize="20sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginStart="4dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" Rootie Points"
+                            android:textColor="@color/content"
+                            android:textSize="10sp"
+                            android:fontFamily="@font/be_vietnam_pro"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/skin_detail_total_points"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tổng điểm hiện tại: 320 điểm"
+                        android:textColor="@color/primary"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/skin_bg_store_card"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_marginStart="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_calendar_outline"
+                            app:tint="@color/primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lịch hẹn tiếp theo gợi ý"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginStart="4dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp">
+                        <TextView
+                            android:id="@+id/skin_detail_next_appt_text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Dựa trên kết quả soi da, Rootie khuyến nghị bạn tái khám sau 30 ngày."
+                            android:textColor="@color/content"
+                            android:textSize="10sp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginEnd="4dp"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:background="@drawable/skin_bg_outline"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:gravity="center">
+                            <TextView
+                                android:id="@+id/skin_detail_next_appt_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Th 5\n20/06\n2024"
+                                android:textColor="@color/primary"
+                                android:textStyle="bold"
+                                android:textSize="10sp"
+                                android:textAlignment="center"
+                                android:fontFamily="@font/be_vietnam_pro"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔔 Đặt lịch sớm để được tư vấn &amp; chăm sóc tốt nhất cho làn da của bạn!"
+                android:textColor="@color/primary"
+                android:textSize="8sp"
+                android:textAlignment="center"
+                android:background="@drawable/skin_bg_btn_book"
+                android:paddingVertical="8dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/be_vietnam_pro"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Actions -->
+    <LinearLayout
+        android:id="@+id/skin_detail_bottom_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/neutral">
+
+        <LinearLayout
+            android:id="@+id/skin_detail_btn_rebook"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/skin_bg_btn_solid_dark"
+            android:gravity="center"
+            android:padding="14dp"
+            android:layout_marginEnd="8dp">
+            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_calendar_outline" app:tint="@color/white"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đặt lại lịch hẹn"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/skin_detail_btn_book_other"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/skin_bg_btn_outline_dark"
+            android:gravity="center"
+            android:padding="14dp"
+            android:layout_marginStart="8dp">
+            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_skincare" app:tint="@color/primary"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đặt dịch vụ khác"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

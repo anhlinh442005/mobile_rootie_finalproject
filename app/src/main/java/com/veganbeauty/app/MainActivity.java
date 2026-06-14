@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 android.content.SharedPreferences prefs = getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE);
                 String savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null);
                 if (savedSkin != null) {
-                    destination = new com.veganbeauty.app.features.weather.WeatherForecastFragment();
+                    destination = new com.veganbeauty.app.features.home.HomeFragment();
                 } else {
                     destination = new com.veganbeauty.app.features.quiz.QuizTestIntroFragment();
                 }
@@ -42,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.main_container, destination)
                 .commit();
         }
+
+        if (!com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(this)) {
+            com.veganbeauty.app.features.shop.product.CartHelper.clearCart(this);
+        }
+
+        // Trigger ONE-TIME SYNC of all mock data to Firebase
+        com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncAllLocalDataToFirebase(this);
 
         // Sync team users from users.json into SQLite + Firebase on background thread
         new Thread(() -> {
@@ -90,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
                             obj.optString("email", ""),
                             obj.optString("phone", ""),
                             obj.optString("password", ""),
-                            obj.optString("avatar", null)
+                            obj.optString("avatar", null),
+                            obj.optString("primary_image", null)
                         );
 
                     // Update avatar in SQLite (upsert) using the sync method

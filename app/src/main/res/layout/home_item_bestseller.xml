@@ -5,29 +5,30 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingVertical="6dp">
+    android:paddingVertical="4dp">
 
     <TextView
         android:id="@+id/tvRank"
         android:layout_width="20dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="#28362E"
-        android:textSize="13sp"
-        android:textStyle="bold" />
+        android:textColor="#526053"
+        android:textSize="20sp"
+        android:text="1"
+        android:fontFamily="@font/be_vietnam_pro_italic" />
 
     <ImageView
         android:id="@+id/ivProduct"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="4dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="0dp"
         android:scaleType="centerCrop"
-        android:src="@android:color/darker_gray" />
+        android:src="@drawable/mascot_thank" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -38,7 +39,8 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textColor="#28362E"
-            android:textSize="10sp" />
+            android:text="Sua rua mat"
+            android:textSize="8sp" />
 
         <TextView
             android:id="@+id/tvPrice"
@@ -46,16 +48,28 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textColor="#E53935"
-            android:textSize="10sp"
+            android:textSize="8sp"
+            android:text="100.000 d"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvOriginalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#9E9E9E"
+            android:text="50.000 d"
+            android:textSize="6sp" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/btnAction"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/bg_cart_button_green"
         android:contentDescription="@null"
-        android:src="@drawable/ic_bag"
-        app:tint="@color/primary" />
+        android:padding="6dp"
+        android:src="@drawable/ic_add_to_cart"
+        app:tint="@color/neutral" />
 
 </LinearLayout>

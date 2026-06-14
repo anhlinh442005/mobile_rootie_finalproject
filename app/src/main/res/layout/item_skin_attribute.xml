@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/attr_icon"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@drawable/ic_skin_type_outline"
+        android:tint="@color/primary" />
+
+    <TextView
+        android:id="@+id/attr_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="Loại da"
+        android:textColor="@color/content"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/attr_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/be_vietnam_pro_bold"
+        android:gravity="center"
+        android:text="Da hỗn hợp thiên dầu"
+        android:textColor="@color/primary"
+        android:textSize="10sp" />
+</LinearLayout>

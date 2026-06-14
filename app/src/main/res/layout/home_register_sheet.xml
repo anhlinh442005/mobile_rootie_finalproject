@@ -13,6 +13,15 @@
         android:paddingHorizontal="24dp"
         android:paddingBottom="32dp">
 
+        <View
+            android:layout_width="48dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/home_sheet_handle"
+            android:backgroundTint="@color/neutral" />
+
         <TextView
             android:id="@+id/home_register_title"
             android:layout_width="match_parent"
@@ -46,7 +55,7 @@
             <EditText
                 android:id="@+id/home_input_fullname"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="48dp"
                 android:background="@drawable/home_bg_input"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:hint="Họ và tên"
@@ -54,13 +63,13 @@
                 android:paddingHorizontal="16dp"
                 android:textColor="@color/primary"
                 android:textColorHint="@color/primary"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
 
             <!-- Email or Phone -->
             <EditText
                 android:id="@+id/home_input_email_phone"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="48dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/home_bg_input"
                 android:fontFamily="@font/be_vietnam_pro"
@@ -69,30 +78,29 @@
                 android:paddingHorizontal="16dp"
                 android:textColor="@color/primary"
                 android:textColorHint="@color/primary"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
 
             <!-- Password -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 app:hintEnabled="false"
                 app:boxBackgroundMode="none"
                 app:endIconMode="password_toggle"
-                app:endIconTint="@color/content">
+                app:endIconTint="@color/content"
+                android:layout_marginTop="12dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/home_input_password"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="55dp"
                     android:background="@drawable/home_bg_input"
-                    android:fontFamily="@font/be_vietnam_pro"
                     android:hint="Mật khẩu"
                     android:inputType="textPassword"
                     android:paddingHorizontal="16dp"
                     android:textColor="@color/primary"
                     android:textColorHint="@color/primary"
-                    android:textSize="13sp" />
+                    android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,24 +108,23 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 app:hintEnabled="false"
                 app:boxBackgroundMode="none"
                 app:endIconMode="password_toggle"
-                app:endIconTint="@color/content">
+                app:endIconTint="@color/content"
+                android:layout_marginTop="12dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/home_input_confirm_password"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="55dp"
                     android:background="@drawable/home_bg_input"
-                    android:fontFamily="@font/be_vietnam_pro"
                     android:hint="Nhập lại mật khẩu"
                     android:inputType="textPassword"
                     android:paddingHorizontal="16dp"
                     android:textColor="@color/primary"
                     android:textColorHint="@color/primary"
-                    android:textSize="13sp" />
+                    android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -127,7 +134,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:button="@drawable/home_checkbox_custom"
                 android:buttonTint="@color/neutral"
+                android:paddingStart="8dp"
                 android:text="Tôi đã đọc và đồng ý với\nĐiều khoản sử dụng và Chính sách bảo mật"
                 android:textColor="@color/neutral"
                 android:textSize="12sp"
@@ -137,13 +146,14 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/home_btn_register"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="48dp"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="@color/primary"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:text="Đăng ký"
                 android:textColor="@color/neutral"
-                android:textSize="13sp"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 app:cornerRadius="16dp" />
 
             <!-- Or Register With -->

@@ -86,7 +86,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_notification" />
+                            android:src="@drawable/home_ic_notification" />
                     </FrameLayout>
                 </LinearLayout>
             </RelativeLayout>
@@ -571,8 +571,8 @@
                 android:layout_marginVertical="12dp"
                 android:background="@color/gray_light" />
 
-            <!-- Đơn hàng (Orders) Section -->
             <LinearLayout
+                android:id="@+id/ll_orders_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

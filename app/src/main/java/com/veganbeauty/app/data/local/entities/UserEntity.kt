@@ -12,5 +12,13 @@ data class UserEntity(
     val email: String,
     val phone: String,
     val password: String,
-    val avatar: String? = null
-)
+    val avatar: String? = null,
+    val primary_image: String? = null
+) {
+    @androidx.room.Ignore
+    var mutualCount: Int = 0
+    @androidx.room.Ignore
+    var firstMutualFriendName: String? = null
+    @androidx.room.Ignore
+    var mutualFriendAvatars: List<String> = emptyList()
+}

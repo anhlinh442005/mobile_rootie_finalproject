@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:text="4.186"
                 android:layout_marginStart="4dp"
-                android:textColor="@color/primary" />
+                android:textColor="#4A5568" />
         </LinearLayout>
 
         <LinearLayout
@@ -153,15 +153,35 @@
                 android:id="@+id/ivComment"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_comment"
-                app:tint="@color/primary" />
+                android:src="@drawable/ic_comment" />
             <TextView
                 android:id="@+id/tvComments"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="18"
                 android:layout_marginStart="4dp"
-                android:textColor="@color/primary" />
+                android:textColor="#4A5568" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="16dp">
+            
+            <ImageView
+                android:id="@+id/ivReup"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_reup" />
+            <TextView
+                android:id="@+id/tvReups"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3"
+                android:layout_marginStart="4dp"
+                android:textColor="#4A5568" />
         </LinearLayout>
 
         <LinearLayout
@@ -175,14 +195,14 @@
                 android:id="@+id/ivShare"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/ic_share"
-                app:tint="@color/primary" />
+                android:src="@drawable/ic_share" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3"
                 android:layout_marginStart="4dp"
-                android:textColor="@color/primary" />
+                android:visibility="gone"
+                android:textColor="#4A5568" />
         </LinearLayout>
             
         <View
@@ -194,8 +214,7 @@
             android:id="@+id/ivBookmark"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_bookmark"
-            app:tint="@color/primary" />
+            android:src="@drawable/ic_bookmark_outline" />
     </LinearLayout>
 
     <!-- Post Content Container -->
