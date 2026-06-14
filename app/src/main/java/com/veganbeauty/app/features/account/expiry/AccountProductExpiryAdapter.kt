@@ -15,18 +15,25 @@ import coil.load
 import com.veganbeauty.app.R
 
 class AccountProductExpiryAdapter(
-    private val isGrid: Boolean,
+    private val layoutMode: ExpiryLayoutMode,
+    private val onItemLongClick: ((ExpiryProductUiModel) -> Unit)? = null,
     private val onItemClick: (ExpiryProductUiModel) -> Unit
 ) : ListAdapter<ExpiryProductUiModel, AccountProductExpiryAdapter.ViewHolder>(DiffCallback) {
 
+    enum class ExpiryLayoutMode {
+        GRID,
+        HORIZONTAL,
+        LIST
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val layoutId = if (isGrid) {
-            R.layout.account_product_expiry_item_grid
-        } else {
-            R.layout.account_product_expiry_item_horizontal
+        val layoutId = when (layoutMode) {
+            ExpiryLayoutMode.GRID -> R.layout.account_product_expiry_item_grid
+            ExpiryLayoutMode.HORIZONTAL -> R.layout.account_product_expiry_item_horizontal
+            ExpiryLayoutMode.LIST -> R.layout.account_product_expiry_item_list
         }
         val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
-        return ViewHolder(view, onItemClick)
+        return ViewHolder(view, onItemClick, onItemLongClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -35,7 +42,8 @@ class AccountProductExpiryAdapter(
 
     class ViewHolder(
         itemView: View,
-        private val onItemClick: (ExpiryProductUiModel) -> Unit
+        private val onItemClick: (ExpiryProductUiModel) -> Unit,
+        private val onItemLongClick: ((ExpiryProductUiModel) -> Unit)?
     ) : RecyclerView.ViewHolder(itemView) {
         private val ivProductImage: ImageView = itemView.findViewById(R.id.ivProductImage)
         private val tvProductName: TextView = itemView.findViewById(R.id.tvProductName)
@@ -56,16 +64,23 @@ class AccountProductExpiryAdapter(
             // Expiry progress
             pbExpiry.progress = uiModel.progressPercent
 
-            // Dynamic progress tint & text color based on urgency
-            if (uiModel.isUrgent) {
+            // Dynamic progress tint & text color based on status (Expired/Urgent/Normal)
+            if (uiModel.remainingDays <= 0) {
+                tvExpiryDuration.setTextColor(Color.parseColor("#8E8E8E")) // Grey
+                pbExpiry.progressTintList = ColorStateList.valueOf(Color.parseColor("#8E8E8E"))
+            } else if (uiModel.isUrgent) {
                 tvExpiryDuration.setTextColor(Color.parseColor("#C62828")) // Red
                 pbExpiry.progressTintList = ColorStateList.valueOf(Color.parseColor("#C62828"))
             } else {
-                tvExpiryDuration.setTextColor(Color.parseColor("#677559")) // Secondary/content green
+                tvExpiryDuration.setTextColor(Color.parseColor("#677559")) // Green
                 pbExpiry.progressTintList = ColorStateList.valueOf(Color.parseColor("#677559"))
             }
 
             itemView.setOnClickListener { onItemClick(uiModel) }
+            itemView.setOnLongClickListener {
+                onItemLongClick?.invoke(uiModel)
+                true
+            }
         }
     }
 

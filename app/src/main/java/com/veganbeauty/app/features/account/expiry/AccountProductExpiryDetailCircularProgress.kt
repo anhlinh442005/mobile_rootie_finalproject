@@ -21,6 +21,13 @@ class AccountProductExpiryDetailCircularProgress @JvmOverloads constructor(
             invalidate()
         }
 
+    var progressColor: Int = Color.parseColor("#3E4D44")
+        set(value) {
+            field = value
+            progressPaint.color = value
+            invalidate()
+        }
+
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#E0E4E2") // Gray background ring
         style = Paint.Style.STROKE
