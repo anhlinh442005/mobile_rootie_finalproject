@@ -586,6 +586,10 @@
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
                             android:src="@drawable/bg_switch_thumb" />
+                    </FrameLayout>
+                </RelativeLayout>
+            </LinearLayout>
+
              <!-- Section 5: THÔNG BÀO THỜI TIẾT & DA -->
             <TextView
                 android:layout_width="match_parent"
