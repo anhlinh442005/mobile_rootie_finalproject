@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/quiz_test_card_weekly_reminder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="12dp"
+    android:background="@drawable/bg_weekly_reminder_gradient"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <!-- Left Circular Icon Container with Lotus -->
+    <FrameLayout
+        android:id="@+id/icon_container"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_circle_icon"
+        android:backgroundTint="#26FFFFFF">
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/quiz_ic_lotus"
+            app:tint="#FFFFFF" />
+    </FrameLayout>
+
+    <!-- Middle content: Title & Desc & Reward Badge -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lexend"
+                android:text="Test da định kỳ"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/status_badge_bg"
+                android:backgroundTint="#FF9F00"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="1dp"
+                android:text="+100 Xu"
+                android:textColor="#FFFFFF"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/be_vietnam_pro" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Đã 7 ngày, kiểm tra da để tối ưu routine"
+            android:textColor="#E2EBE5"
+            android:textSize="11sp"
+            android:ellipsize="end"
+            android:maxLines="1" />
+    </LinearLayout>
+
+    <!-- Action Button -->
+    <TextView
+        android:id="@+id/btn_action_checkin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_btn_solid"
+        android:backgroundTint="#FFFFFF"
+        android:clickable="false"
+        android:focusable="false"
+        android:fontFamily="@font/lexend"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:text="Làm ngay"
+        android:textColor="#3E4D44"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <!-- Dismiss Button -->
+    <ImageView
+        android:id="@+id/quiz_test_btn_dismiss_reminder"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="5dp"
+        android:src="@drawable/ic_close"
+        app:tint="#B3FFFFFF" />
+
+</LinearLayout>

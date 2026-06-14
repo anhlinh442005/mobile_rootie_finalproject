@@ -49,4 +49,9 @@
     <style name="RoundedSquareImageView" parent="">
         <item name="cornerSize">12dp</item>
     </style>
+
+    <!-- Style for circular ShapeableImageView -->
+    <style name="CircleImageView" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

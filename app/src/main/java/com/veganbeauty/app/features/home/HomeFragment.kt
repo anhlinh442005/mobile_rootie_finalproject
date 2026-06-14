@@ -87,6 +87,8 @@ class HomeFragment : RootieFragment() {
           .addToBackStack(null)
           .commit()
     }
+    setupStreakWidget()
+    setupQuizReminder()
   }
 
   private fun setupBanner() {
@@ -277,9 +279,100 @@ class HomeFragment : RootieFragment() {
         .commit()
   }
 
+  private fun setupStreakWidget() {
+    val ctx = context ?: return
+    val currentStreak = com.veganbeauty.app.data.local.ProfileSession.getSkinStreak(ctx)
+    binding.tvHomeStreakCount.text = "Chuỗi chăm da của bạn: $currentStreak ngày 🔥"
+
+    val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+    val todayStr = sdf.format(java.util.Date())
+    val hasCompletedMorningToday = com.veganbeauty.app.data.local.ProfileSession.isMorningRewardAwarded(ctx, todayStr)
+    val hasCompletedEveningToday = com.veganbeauty.app.data.local.ProfileSession.isEveningRewardAwarded(ctx, todayStr)
+
+    val descText = when {
+        hasCompletedMorningToday && hasCompletedEveningToday -> "Tuyệt vời! Bạn đã hoàn thành tất cả routine hôm nay! 🎉"
+        hasCompletedMorningToday -> "Bạn đã hoàn thành Routine Sáng! Đừng quên Routine Tối nhé! 🌙"
+        hasCompletedEveningToday -> "Bạn đã hoàn thành Routine Tối! Đừng quên Routine Sáng ngày mai nhé! ☀️"
+        else -> "Hôm nay bạn chưa hoàn thành Routine nào, bấm để bắt đầu chăm da nhé! ✨"
+    }
+    binding.tvHomeStreakDesc.text = descText
+  }
+
+  private fun setupQuizReminder() {
+    val context = context ?: return
+    val lastTestTime = com.veganbeauty.app.data.local.ProfileSession.getLastSkinTestTime(context)
+    val isDismissed = com.veganbeauty.app.data.local.ProfileSession.isQuizReminderDismissedWeekly(context)
+    val currentTime = System.currentTimeMillis()
+    val sevenDaysMs = 7 * 24 * 60 * 60 * 1000L
+    
+    val needsTest = lastTestTime != 0L && (currentTime - lastTestTime >= sevenDaysMs)
+    
+    if (needsTest) {
+        // Reset the dismiss flag because a new week has started
+        if (currentTime - lastTestTime >= sevenDaysMs && lastTestTime != 0L && isDismissed) {
+            com.veganbeauty.app.data.local.ProfileSession.setQuizReminderDismissedWeekly(context, false)
+        }
+        
+        // Show Home Widget (if not dismissed)
+        val shouldShowWidget = !com.veganbeauty.app.data.local.ProfileSession.isQuizReminderDismissedWeekly(context)
+        if (shouldShowWidget) {
+            binding.quizTestWeeklyReminderLayout.root.visibility = View.VISIBLE
+            binding.quizTestWeeklyReminderLayout.root.setOnClickListener {
+                navigateToQuizIntro()
+            }
+            binding.quizTestWeeklyReminderLayout.quizTestBtnDismissReminder.setOnClickListener {
+                com.veganbeauty.app.data.local.ProfileSession.setQuizReminderDismissedWeekly(context, true)
+                binding.quizTestWeeklyReminderLayout.root.visibility = View.GONE
+                Toast.makeText(context, "Đã ẩn nhắc nhở tuần này", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            binding.quizTestWeeklyReminderLayout.root.visibility = View.GONE
+        }
+        
+        // Show Popup Dialog once per app session (Stunning visual design, no default black/white theme background)
+        if (!hasShownQuizPopupThisSession) {
+            hasShownQuizPopupThisSession = true
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_quiz_test_weekly_reminder, null)
+            val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+                .setView(dialogView)
+                .create()
+            
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            
+            dialogView.findViewById<View>(R.id.btn_dialog_confirm).setOnClickListener {
+                dialog.dismiss()
+                navigateToQuizIntro()
+            }
+            dialogView.findViewById<View>(R.id.btn_dialog_cancel).setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
+    } else {
+        binding.quizTestWeeklyReminderLayout.root.visibility = View.GONE
+    }
+  }
+
+  private fun navigateToQuizIntro() {
+      parentFragmentManager.beginTransaction()
+          .replace(R.id.main_container, com.veganbeauty.app.features.quiz.QuizTestIntroFragment())
+          .addToBackStack(null)
+          .commit()
+  }
+
+  override fun onResume() {
+      super.onResume()
+      setupStreakWidget()
+      setupQuizReminder()
+  }
+
   override fun onDestroyView() {
     super.onDestroyView()
     _binding = null
+  }
+
+  companion object {
+      private var hasShownQuizPopupThisSession = false
   }
 }
 

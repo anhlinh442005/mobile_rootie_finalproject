@@ -29,10 +29,16 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver
             android:name=".features.routine.RoutineAlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name=".features.weather.DailySkinWeatherReceiver"
             android:enabled="true"
             android:exported="false" />
     </application>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAF4">
+    android:background="@color/neutral">
 
     <!-- Scrollable Content -->
     <ScrollView
@@ -179,7 +179,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="Sông Khánh Bình"
-                        android:textColor="#28362E"
+                        android:textColor="@color/primary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -189,7 +189,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="khanhbinh.skincare@rootie.vn"
-                        android:textColor="#434844"
+                        android:textColor="@color/secondary"
                         android:textSize="14sp" />
 
                     <!-- Badges Row (Gold member & Dry skin) centered below email -->
@@ -219,7 +219,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:text="Thành viên vàng"
-                                android:textColor="#000000"
+                                android:textColor="@color/primary"
                                 android:textSize="12sp" />
                         </LinearLayout>
 
@@ -246,7 +246,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:text="Da khô"
-                                android:textColor="#000000"
+                                android:textColor="@color/primary"
                                 android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -261,7 +261,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="16dp"
-                    android:background="@drawable/bg_pill_grey"
+                    android:background="@drawable/bg_pill_grey_translucent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingHorizontal="10dp"
@@ -278,7 +278,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:text="127"
-                        android:textColor="#000000"
+                        android:textColor="@color/primary"
                         android:textSize="12sp" />
                 </LinearLayout>
             </RelativeLayout>
@@ -317,7 +317,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Khu vực bạn chọn hiện tại"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -326,7 +326,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="Vui lòng nhập địa chỉ để biết chi nhánh gần bạn nhất"
-                            android:textColor="#555555"
+                            android:textColor="@color/gray_dark"
                             android:textSize="12sp" />
                     </LinearLayout>
 
@@ -365,13 +365,14 @@
                         <FrameLayout
                             android:layout_width="52dp"
                             android:layout_height="52dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="12dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_calendar" />
+                                android:src="@drawable/ic_calendar"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -381,7 +382,7 @@
                             android:gravity="center"
                             android:maxLines="2"
                             android:text="Lịch sử đặt hẹn SPA"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="12sp" />
                     </LinearLayout>
 
@@ -399,13 +400,14 @@
                         <FrameLayout
                             android:layout_width="52dp"
                             android:layout_height="52dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="12dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_checklist" />
+                                android:src="@drawable/ic_checklist"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -415,13 +417,13 @@
                             android:gravity="center"
                             android:maxLines="2"
                             android:text="Lịch sử liệu trình"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="12sp" />
                     </LinearLayout>
 
                     <!-- Weather & Skin -->
                     <LinearLayout
-                        android:id="@+id/btn_weather_skin"
+                        android:id="@+id/btn_skin_weather"
                         android:layout_width="82dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -433,13 +435,14 @@
                         <FrameLayout
                             android:layout_width="52dp"
                             android:layout_height="52dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="12dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_weather_skin" />
+                                android:src="@drawable/ic_skin_weather"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -449,7 +452,7 @@
                             android:gravity="center"
                             android:maxLines="2"
                             android:text="Thời tiết &amp; Da"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="12sp" />
                     </LinearLayout>
 
@@ -467,13 +470,14 @@
                         <FrameLayout
                             android:layout_width="52dp"
                             android:layout_height="52dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="12dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_skin_reminder" />
+                                android:src="@drawable/ic_skin_reminder"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -483,7 +487,7 @@
                             android:gravity="center"
                             android:maxLines="2"
                             android:text="Nhắc hẹn chăm da"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="12sp" />
                     </LinearLayout>
 
@@ -501,13 +505,14 @@
                         <FrameLayout
                             android:layout_width="52dp"
                             android:layout_height="52dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="10dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_face" />
+                                android:src="@drawable/ic_face"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -517,7 +522,7 @@
                             android:gravity="center"
                             android:maxLines="2"
                             android:text="Hồ sơ da"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="12sp" />
                     </LinearLayout>
 
@@ -535,13 +540,14 @@
                         <FrameLayout
                             android:layout_width="52dp"
                             android:layout_height="52dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="12dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_clock" />
+                                android:src="@drawable/ic_clock"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -551,7 +557,7 @@
                             android:gravity="center"
                             android:maxLines="2"
                             android:text="Nhắc hết hạn"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -563,7 +569,7 @@
                 android:layout_height="1dp"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="12dp"
-                android:background="#B3B3B3" />
+                android:background="@color/gray_light" />
 
             <!-- Đơn hàng (Orders) Section -->
             <LinearLayout
@@ -580,7 +586,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Đơn hàng"
-                        android:textColor="#000000"
+                        android:textColor="@color/primary"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -594,7 +600,7 @@
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground"
                         android:text="Xem tất cả đơn hàng >"
-                        android:textColor="#879578"
+                        android:textColor="@color/secondary"
                         android:textSize="12sp" />
                 </RelativeLayout>
 
@@ -620,13 +626,14 @@
                         <FrameLayout
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_light_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="10dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_bag" />
+                                android:src="@drawable/ic_bag"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -635,7 +642,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Chờ xác nhận"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -654,13 +661,14 @@
                         <FrameLayout
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_light_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="10dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_box" />
+                                android:src="@drawable/ic_box"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -669,7 +677,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Đang xử lý"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -688,13 +696,14 @@
                         <FrameLayout
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_light_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="10dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_truck" />
+                                android:src="@drawable/ic_truck"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -703,7 +712,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Đang giao"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -722,13 +731,14 @@
                         <FrameLayout
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_light_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="10dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_check" />
+                                android:src="@drawable/ic_check"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -737,7 +747,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Hoàn tất"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -756,13 +766,14 @@
                         <FrameLayout
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_light_green"
+                            android:background="@drawable/bg_circle_primary_light"
                             android:padding="11dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_cancel" />
+                                android:src="@drawable/ic_cancel"
+                                app:tint="@color/primary" />
                         </FrameLayout>
 
                         <TextView
@@ -771,7 +782,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Đã hủy"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -783,7 +794,7 @@
                 android:layout_height="1dp"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="16dp"
-                android:background="#B3B3B3" />
+                android:background="@color/gray_light" />
 
             <!-- Sản phẩm đã mua (Bought products) Header & Grid -->
             <LinearLayout
@@ -800,7 +811,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sản phẩm đã mua"
-                        android:textColor="#000000"
+                        android:textColor="@color/primary"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -810,7 +821,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:text="Xem tất cả >"
-                        android:textColor="#CCCCCC"
+                        android:textColor="@color/tertiary"
                         android:textSize="12sp" />
                 </RelativeLayout>
 
@@ -1195,7 +1206,7 @@
                             android:paddingHorizontal="16dp"
                             android:paddingVertical="6dp"
                             android:text="Tìm hiểu thêm"
-                            android:textColor="#02542D"
+                            android:textColor="@color/primary"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                     </RelativeLayout>
@@ -1224,7 +1235,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="© 2026 Rootie Vietnam. All rights reserved."
-                    android:textColor="#888888"
+                    android:textColor="@color/gray_dark"
                     android:textSize="11sp" />
             </LinearLayout>
 

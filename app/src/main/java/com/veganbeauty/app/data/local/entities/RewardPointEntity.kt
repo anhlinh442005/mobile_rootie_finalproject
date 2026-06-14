@@ -3,7 +3,7 @@ package com.veganbeauty.app.data.local.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "reward_points")
+@Entity(tableName = "user_coin")
 data class RewardPointEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val orderId: String,

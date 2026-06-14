@@ -189,7 +189,7 @@ class AccountProfileFragment : RootieFragment() {
 
 
         // Navigate to Weather & Skin page
-        binding.btnWeatherSkin.setOnClickListener {
+        binding.btnSkinWeather.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.weather.WeatherForecastFragment())
                 .addToBackStack(null)

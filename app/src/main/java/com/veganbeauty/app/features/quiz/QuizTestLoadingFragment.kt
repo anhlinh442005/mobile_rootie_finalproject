@@ -67,8 +67,13 @@ class QuizTestLoadingFragment : RootieFragment() {
                 override fun onAnimationEnd(animation: Animator) {
                     if (isAdded) {
                         // Navigate to the final quiz results screen
+                        val resultFragment = QuizTestResultFragment().apply {
+                            arguments = android.os.Bundle().apply {
+                                putBoolean("IS_FIRST_TEST", true)
+                            }
+                        }
                         parentFragmentManager.beginTransaction()
-                            .replace(R.id.main_container, QuizTestResultFragment())
+                            .replace(R.id.main_container, resultFragment)
                             .commit()
                     }
                 }

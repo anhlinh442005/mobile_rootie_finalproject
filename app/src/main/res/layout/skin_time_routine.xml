@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FEFBF4">
+    android:background="@color/neutral">
 
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,7 +25,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#02542D" />
+            app:tint="@color/primary" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -59,21 +59,6 @@
                 android:layout_height="22dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_notification" />
-
-            <!-- Yellow badge with number "1" -->
-            <TextView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/bg_circle_yellow_indicator"
-                android:gravity="center"
-                android:text="1"
-                android:textColor="#FFFFFF"
-                android:textSize="8sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/be_vietnam_pro" />
         </FrameLayout>
 
         <!-- Circular Avatar Container -->
@@ -101,6 +86,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toTopOf="@+id/bottomButtonsContainer"
         app:layout_constraintTop_toBottomOf="@+id/topBar">
 
@@ -108,7 +95,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="24dp">
+            android:paddingBottom="24dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <!-- Estimation Card -->
             <androidx.cardview.widget.CardView
@@ -118,12 +107,12 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="15dp"
-                app:cardElevation="6dp">
+                app:cardElevation="4dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#3E4D44"
+                    android:background="@color/primary"
                     android:padding="16dp">
 
                     <!-- Watermark Lotus Logo in background -->
@@ -239,7 +228,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_settings"
-                        app:tint="#3D5C39" />
+                        app:tint="@color/primary" />
 
                     <TextView
                         android:layout_width="wrap_content"

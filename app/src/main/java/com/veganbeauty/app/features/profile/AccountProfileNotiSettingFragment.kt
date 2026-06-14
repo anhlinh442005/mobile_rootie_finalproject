@@ -140,6 +140,7 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
         updateSwitchUI(binding.switchOrderStatusContainer, binding.switchOrderStatusThumb, ProfileSession.isOrderStatusEnabled(context))
         updateSwitchUI(binding.switchPromotionContainer, binding.switchPromotionThumb, ProfileSession.isPromotionEnabled(context))
         updateSwitchUI(binding.switchStaffMessageContainer, binding.switchStaffMessageThumb, ProfileSession.isStaffMessageEnabled(context))
+        updateSwitchUI(binding.switchSkinWeatherContainer, binding.switchSkinWeatherThumb, ProfileSession.isSkinWeatherNotiEnabled(context))
     }
 
     private fun setupSwitchListeners() {
@@ -238,6 +239,19 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
                 triggerTestNotification("Tin nhắn nhân viên", "Bạn có tin nhắn mới từ tư vấn viên.")
             }
         }
+
+        // Weather & Skin Switch
+        binding.switchSkinWeatherContainer.setOnClickListener {
+            if (!ProfileSession.isNotiEnabled(context)) return@setOnClickListener
+            val nextState = !ProfileSession.isSkinWeatherNotiEnabled(context)
+            ProfileSession.setSkinWeatherNotiEnabled(context, nextState)
+            updateSwitchUI(binding.switchSkinWeatherContainer, binding.switchSkinWeatherThumb, nextState)
+            if (nextState) {
+                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(context)
+            } else {
+                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.cancelDailyNotification(context)
+            }
+        }
     }
 
     private fun syncAllSettingsEnabledState() {
@@ -257,6 +271,8 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
         binding.switchPromotionContainer.alpha = alpha
         binding.switchStaffMessageContainer.isEnabled = isEnabled
         binding.switchStaffMessageContainer.alpha = alpha
+        binding.switchSkinWeatherContainer.isEnabled = isEnabled
+        binding.switchSkinWeatherContainer.alpha = alpha
 
         // Disable or hide promotional dropdown options if promotions are off, or if general notification is off
         val isPromotionVisible = isEnabled && ProfileSession.isPromotionEnabled(requireContext())
@@ -403,6 +419,14 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
             icon?.setColorFilter(Color.parseColor("#677559"))
             label?.setTextColor(Color.parseColor("#677559"))
             label?.setTypeface(null, Typeface.BOLD)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            loadSwitchesState()
+            syncAllSettingsEnabledState()
         }
     }
 

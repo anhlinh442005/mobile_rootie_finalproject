@@ -9,12 +9,12 @@ interface RewardPointDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRewardPoints(reward: RewardPointEntity): Long
 
-    @Query("SELECT SUM(points) FROM reward_points")
+    @Query("SELECT SUM(points) FROM user_coin")
     fun getTotalPointsFlow(): Flow<Int?>
 
-    @Query("SELECT * FROM reward_points ORDER BY timestamp DESC")
+    @Query("SELECT * FROM user_coin ORDER BY timestamp DESC")
     fun getAllRewardHistory(): Flow<List<RewardPointEntity>>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM reward_points WHERE orderId = :orderId AND reason LIKE '%Đánh giá%')")
+    @Query("SELECT EXISTS(SELECT 1 FROM user_coin WHERE orderId = :orderId AND reason LIKE '%Đánh giá%')")
     suspend fun hasReceivedPointsForOrder(orderId: String): Boolean
 }

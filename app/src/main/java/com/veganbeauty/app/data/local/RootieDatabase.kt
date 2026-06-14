@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
         CartItemEntity::class,
         StoreEntity::class
     ], 
-    version = 21
+    version = 22
 )
 @TypeConverters(OrderConverters::class, ProductConverters::class)
 abstract class RootieDatabase : RoomDatabase() {

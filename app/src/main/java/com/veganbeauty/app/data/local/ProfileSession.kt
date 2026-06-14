@@ -26,6 +26,7 @@ object ProfileSession {
     private const val KEY_NOTI_PROMOTION_TIME_RANGE = "noti_promotion_time_range"
     private const val KEY_NOTI_STAFF_MESSAGE = "noti_staff_message"
     private const val KEY_NOTI_COMPLAINT_RESPONSE = "noti_complaint_response"
+    private const val KEY_NOTI_SKIN_WEATHER = "noti_skin_weather"
 
     fun getUsername(context: Context): String {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -344,6 +345,16 @@ object ProfileSession {
             .putBoolean("evening_reward_awarded_$date", awarded).apply()
     }
 
+    fun isRoutineSubmitted(context: Context, type: String, date: String): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean("${type}_routine_submitted_$date", false)
+    }
+
+    fun setRoutineSubmitted(context: Context, type: String, date: String, submitted: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+            .putBoolean("${type}_routine_submitted_$date", submitted).apply()
+    }
+
     // Accessors for notification settings
     fun isNotiEnabled(context: Context): Boolean {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -462,6 +473,165 @@ object ProfileSession {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putBoolean(KEY_NOTI_COMPLAINT_RESPONSE, enabled)
+            .apply()
+    }
+
+    fun isSkinWeatherNotiEnabled(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTI_SKIN_WEATHER, true)
+    }
+
+    fun setSkinWeatherNotiEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTI_SKIN_WEATHER, enabled)
+            .apply()
+    }
+
+    // --- Skincare Quiz & Skin Profile Storage ---
+    private const val QUIZ_PREFS_NAME = "RootieQuizPrefs"
+    private const val KEY_SAVED_USER_SKIN_TYPE = "SAVED_USER_SKIN_TYPE"
+    private const val KEY_SAVED_RECOMMENDATION = "SAVED_RECOMMENDATION"
+    private const val KEY_SAVED_SENSITIVITY = "SAVED_SENSITIVITY"
+    private const val KEY_SAVED_HYDRATION = "SAVED_HYDRATION"
+    private const val KEY_SAVED_ELASTICITY = "SAVED_ELASTICITY"
+    private const val KEY_SAVED_SEBUM = "SAVED_SEBUM"
+    private const val KEY_SAVED_SKIN_AREAS = "SAVED_SKIN_AREAS"
+    private const val KEY_SAVED_FLAGGED_GROUPS = "SAVED_FLAGGED_GROUPS"
+    private const val KEY_QUIZ_HISTORY_LIST = "QUIZ_HISTORY_LIST"
+
+    fun getSavedUserSkinType(context: Context): String {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_SAVED_USER_SKIN_TYPE, "Da hỗn hợp thiên dầu") ?: "Da hỗn hợp thiên dầu"
+    }
+
+    fun setSavedUserSkinType(context: Context, skinType: String) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_SAVED_USER_SKIN_TYPE, skinType)
+            .apply()
+    }
+
+    fun getSavedRecommendation(context: Context): String {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_SAVED_RECOMMENDATION, "") ?: ""
+    }
+
+    fun setSavedRecommendation(context: Context, recommendation: String) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_SAVED_RECOMMENDATION, recommendation)
+            .apply()
+    }
+
+    fun getSavedSensitivity(context: Context): Int {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_SAVED_SENSITIVITY, 50)
+    }
+
+    fun setSavedSensitivity(context: Context, sensitivity: Int) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putInt(KEY_SAVED_SENSITIVITY, sensitivity)
+            .apply()
+    }
+
+    fun getSavedHydration(context: Context): Int {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_SAVED_HYDRATION, 50)
+    }
+
+    fun setSavedHydration(context: Context, hydration: Int) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putInt(KEY_SAVED_HYDRATION, hydration)
+            .apply()
+    }
+
+    fun getSavedElasticity(context: Context): Int {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_SAVED_ELASTICITY, 75)
+    }
+
+    fun setSavedElasticity(context: Context, elasticity: Int) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putInt(KEY_SAVED_ELASTICITY, elasticity)
+            .apply()
+    }
+
+    fun getSavedSebum(context: Context): Int {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_SAVED_SEBUM, 50)
+    }
+
+    fun setSavedSebum(context: Context, sebum: Int) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putInt(KEY_SAVED_SEBUM, sebum)
+            .apply()
+    }
+
+    fun getSavedSkinAreas(context: Context): String {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_SAVED_SKIN_AREAS, "Độ ẩm và dầu phân bố không đều.") ?: "Độ ẩm và dầu phân bố không đều."
+    }
+
+    fun setSavedSkinAreas(context: Context, skinAreas: String) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_SAVED_SKIN_AREAS, skinAreas)
+            .apply()
+    }
+
+    fun getSavedFlaggedGroups(context: Context): Set<String> {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getStringSet(KEY_SAVED_FLAGGED_GROUPS, emptySet()) ?: emptySet()
+    }
+
+    fun setSavedFlaggedGroups(context: Context, flaggedGroups: Set<String>) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putStringSet(KEY_SAVED_FLAGGED_GROUPS, flaggedGroups)
+            .apply()
+    }
+
+    fun getQuizHistoryList(context: Context): String {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_QUIZ_HISTORY_LIST, "[]") ?: "[]"
+    }
+
+    fun setQuizHistoryList(context: Context, historyListJson: String) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_QUIZ_HISTORY_LIST, historyListJson)
+            .apply()
+    }
+
+    private const val KEY_LAST_SKIN_TEST_TIME = "KEY_LAST_SKIN_TEST_TIME"
+    private const val KEY_HIDE_QUIZ_REMINDER_WEEKLY = "KEY_HIDE_QUIZ_REMINDER_WEEKLY"
+
+    fun getLastSkinTestTime(context: Context): Long {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getLong(KEY_LAST_SKIN_TEST_TIME, 0L)
+    }
+
+    fun setLastSkinTestTime(context: Context, time: Long) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putLong(KEY_LAST_SKIN_TEST_TIME, time)
+            .apply()
+    }
+
+    fun isQuizReminderDismissedWeekly(context: Context): Boolean {
+        return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_HIDE_QUIZ_REMINDER_WEEKLY, false)
+    }
+
+    fun setQuizReminderDismissedWeekly(context: Context, dismissed: Boolean) {
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_HIDE_QUIZ_REMINDER_WEEKLY, dismissed)
             .apply()
     }
 }

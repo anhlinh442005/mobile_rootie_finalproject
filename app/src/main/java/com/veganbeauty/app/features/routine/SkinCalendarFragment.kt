@@ -361,7 +361,7 @@ class SkinCalendarFragment : RootieFragment() {
     private fun selectTab(index: Int) {
         selectedTab = index
         val activeBg = ContextCompat.getDrawable(requireContext(), R.drawable.com_bg_btn_dark_green)
-        val inactiveBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_pill_grey)
+        val inactiveBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_pill_grey_translucent)
         
         binding.btnTabMonth.background = if (index == 0) activeBg else inactiveBg
         binding.btnTabMonth.setTextColor(if (index == 0) Color.WHITE else Color.parseColor("#3E4D44"))

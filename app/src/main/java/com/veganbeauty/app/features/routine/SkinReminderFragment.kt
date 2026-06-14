@@ -171,14 +171,16 @@ class SkinReminderFragment : RootieFragment() {
         binding.tvMorningProgressText.text = "$completedMorningStepsCount/$activeMorningStepsCount BƯỚC"
         binding.viewMorningProgressBar.progress = morningProgressPercentage
 
-        if (hasCompletedMorningToday) {
+        val isMorningSubmitted = ProfileSession.isRoutineSubmitted(ctx, "morning", todayStr)
+
+        if (isMorningSubmitted) {
             binding.tvMorningHeaderStatus.text = "SÁNG NAY • ĐÃ HOÀN THÀNH"
             binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#677559"))
             binding.btnStartMorningRoutine.text = "Đã hoàn thành"
-            binding.btnStartMorningRoutine.isEnabled = false
+            binding.btnStartMorningRoutine.isEnabled = true
             binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.quiz_ic_selected, 0, 0, 0)
 
-            // Update Morning Reward Item Status (Keep "+ 10 xu" & "HÀNG NGÀY", only fade left details)
+            // Update Morning Reward Item Status (Keep "+ 10 xu" & "HÀNG NGÀY", only fade left details if not awarded)
             binding.tvMorningRewardXu.text = "+ 10 xu"
             binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
             binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
@@ -186,32 +188,77 @@ class SkinReminderFragment : RootieFragment() {
             binding.layoutMorningReward.alpha = 1.0f
             binding.layoutMorningReward.getChildAt(0)?.alpha = 0.5f
             binding.layoutMorningReward.getChildAt(1)?.alpha = 0.5f
-            binding.layoutMorningReward.getChildAt(2)?.alpha = 1.0f
+            binding.layoutMorningReward.getChildAt(2)?.alpha = if (hasCompletedMorningToday) 1.0f else 0.5f
         } else {
-            if (completedMorningStepsCount > 0) {
-                binding.tvMorningHeaderStatus.text = "SÁNG NAY • ĐANG THỰC HIỆN"
-                binding.btnStartMorningRoutine.text = "Tiếp tục Routine"
-            } else {
-                binding.tvMorningHeaderStatus.text = "SÁNG NAY • CHƯA BẮT ĐẦU"
-                binding.btnStartMorningRoutine.text = "Bắt đầu Routine"
-            }
-            binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"))
-            binding.btnStartMorningRoutine.isEnabled = true
-            binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0)
+            if (hour < 6) {
+                // Not yet time
+                binding.tvMorningHeaderStatus.text = "SÁNG NAY • CHƯA ĐẾN GIỜ"
+                binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"))
+                binding.btnStartMorningRoutine.text = "Chưa đến giờ"
+                binding.btnStartMorningRoutine.isEnabled = true
+                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0)
 
-            // Update Morning Reward Item Status
-            binding.tvMorningRewardXu.text = "+ 10 xu"
-            binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
-            binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
-            binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
-            binding.layoutMorningReward.alpha = 1.0f
-            binding.layoutMorningReward.getChildAt(0)?.alpha = 1.0f
-            binding.layoutMorningReward.getChildAt(1)?.alpha = 1.0f
-            binding.layoutMorningReward.getChildAt(2)?.alpha = 1.0f
+                // Reward status
+                binding.tvMorningRewardXu.text = "+ 10 xu"
+                binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
+                binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
+                binding.layoutMorningReward.alpha = 1.0f
+                binding.layoutMorningReward.getChildAt(0)?.alpha = 1.0f
+                binding.layoutMorningReward.getChildAt(1)?.alpha = 1.0f
+                binding.layoutMorningReward.getChildAt(2)?.alpha = 1.0f
+            } else if (hour >= 11) {
+                // Missed morning routine
+                binding.tvMorningHeaderStatus.text = "SÁNG NAY • ĐÃ BỎ LỠ"
+                binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#FF3B30"))
+                binding.btnStartMorningRoutine.text = "Đã bỏ lỡ"
+                binding.btnStartMorningRoutine.isEnabled = true
+                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0)
+
+                // Gray out Morning Reward Item
+                binding.tvMorningRewardXu.text = "+ 10 xu"
+                binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
+                binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
+                binding.layoutMorningReward.alpha = 1.0f
+                binding.layoutMorningReward.getChildAt(0)?.alpha = 0.5f
+                binding.layoutMorningReward.getChildAt(1)?.alpha = 0.5f
+                binding.layoutMorningReward.getChildAt(2)?.alpha = 0.5f
+            } else {
+                if (completedMorningStepsCount > 0) {
+                    binding.tvMorningHeaderStatus.text = "SÁNG NAY • ĐANG THỰC HIỆN"
+                    binding.btnStartMorningRoutine.text = "Tiếp tục Routine"
+                } else {
+                    binding.tvMorningHeaderStatus.text = "SÁNG NAY • CHƯA BẮT ĐẦU"
+                    binding.btnStartMorningRoutine.text = "Bắt đầu Routine"
+                }
+                binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"))
+                binding.btnStartMorningRoutine.isEnabled = true
+                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0)
+
+                // Update Morning Reward Item Status
+                binding.tvMorningRewardXu.text = "+ 10 xu"
+                binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
+                binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
+                binding.layoutMorningReward.alpha = 1.0f
+                binding.layoutMorningReward.getChildAt(0)?.alpha = 1.0f
+                binding.layoutMorningReward.getChildAt(1)?.alpha = 1.0f
+                binding.layoutMorningReward.getChildAt(2)?.alpha = 1.0f
+            }
         }
 
         // 4. Render Evening Routine Card Status
-        val hasCompletedEveningToday = ProfileSession.isEveningRewardAwarded(ctx, todayStr)
+        val isEveningActive = hour >= 18 || hour < 2
+        val eveningTargetDate = if (hour < 2) {
+            val prevCal = Calendar.getInstance()
+            prevCal.add(Calendar.DAY_OF_YEAR, -1)
+            sdf.format(prevCal.time)
+        } else {
+            todayStr
+        }
+        val hasCompletedEveningToday = ProfileSession.isEveningRewardAwarded(ctx, eveningTargetDate)
+        val isEveningSubmitted = ProfileSession.isRoutineSubmitted(ctx, "evening", eveningTargetDate)
 
         val rawEveningSteps = ProfileSession.getEveningSteps(ctx)
         val activeEveningStepsCount = rawEveningSteps.mapNotNull { raw ->
@@ -222,7 +269,7 @@ class SkinReminderFragment : RootieFragment() {
         val completedEveningStepsCount = if (hasCompletedEveningToday) {
             activeEveningStepsCount
         } else {
-            val completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr)
+            val completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, eveningTargetDate)
             completedStepIds.count { it.startsWith("evening_") }
         }
 
@@ -235,14 +282,18 @@ class SkinReminderFragment : RootieFragment() {
         binding.tvEveningProgressText.text = "$completedEveningStepsCount/$activeEveningStepsCount BƯỚC"
         binding.viewEveningProgressBar.progress = eveningProgressPercentage
 
-        if (hasCompletedEveningToday) {
-            binding.tvEveningHeaderStatus.text = "TỐI NAY • ĐÃ HOÀN THÀNH"
+        if (isEveningSubmitted) {
+            if (hour < 2) {
+                binding.tvEveningHeaderStatus.text = "TỐI QUA • ĐÃ HOÀN THÀNH"
+            } else {
+                binding.tvEveningHeaderStatus.text = "TỐI NAY • ĐÃ HOÀN THÀNH"
+            }
             binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#677559"))
             binding.btnStartEveningRoutine.text = "Đã hoàn thành"
-            binding.btnStartEveningRoutine.isEnabled = false
+            binding.btnStartEveningRoutine.isEnabled = true
             binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.quiz_ic_selected, 0, 0, 0)
 
-            // Update Evening Reward Item Status (Keep "+ 10 xu" & "HÀNG NGÀY", only fade left details)
+            // Update Evening Reward Item Status (Keep "+ 10 xu" & "HÀNG NGÀY", only fade left details if not awarded)
             binding.tvEveningRewardXu.text = "+ 10 xu"
             binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
             binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
@@ -250,28 +301,48 @@ class SkinReminderFragment : RootieFragment() {
             binding.layoutEveningReward.alpha = 1.0f
             binding.layoutEveningReward.getChildAt(0)?.alpha = 0.5f
             binding.layoutEveningReward.getChildAt(1)?.alpha = 0.5f
-            binding.layoutEveningReward.getChildAt(2)?.alpha = 1.0f
+            binding.layoutEveningReward.getChildAt(2)?.alpha = if (hasCompletedEveningToday) 1.0f else 0.5f
         } else {
-            if (completedEveningStepsCount > 0) {
-                binding.tvEveningHeaderStatus.text = "TỐI NAY • ĐANG THỰC HIỆN"
-                binding.btnStartEveningRoutine.text = "Tiếp tục Routine"
-            } else {
-                binding.tvEveningHeaderStatus.text = "TỐI NAY • CHƯA BẮT ĐẦU"
-                binding.btnStartEveningRoutine.text = "Bắt đầu Routine"
-            }
-            binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"))
-            binding.btnStartEveningRoutine.isEnabled = true
-            binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0)
+            if (isEveningActive) {
+                val prefixStr = if (hour < 2) "TỐI QUA" else "TỐI NAY"
+                if (completedEveningStepsCount > 0) {
+                    binding.tvEveningHeaderStatus.text = "$prefixStr • ĐANG THỰC HIỆN"
+                    binding.btnStartEveningRoutine.text = "Tiếp tục Routine"
+                } else {
+                    binding.tvEveningHeaderStatus.text = "$prefixStr • CHƯA BẮT ĐẦU"
+                    binding.btnStartEveningRoutine.text = "Bắt đầu Routine"
+                }
+                binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"))
+                binding.btnStartEveningRoutine.isEnabled = true
+                binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0)
 
-            // Update Evening Reward Item Status
-            binding.tvEveningRewardXu.text = "+ 10 xu"
-            binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
-            binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
-            binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
-            binding.layoutEveningReward.alpha = 1.0f
-            binding.layoutEveningReward.getChildAt(0)?.alpha = 1.0f
-            binding.layoutEveningReward.getChildAt(1)?.alpha = 1.0f
-            binding.layoutEveningReward.getChildAt(2)?.alpha = 1.0f
+                // Update Evening Reward Item Status
+                binding.tvEveningRewardXu.text = "+ 10 xu"
+                binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
+                binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
+                binding.layoutEveningReward.alpha = 1.0f
+                binding.layoutEveningReward.getChildAt(0)?.alpha = 1.0f
+                binding.layoutEveningReward.getChildAt(1)?.alpha = 1.0f
+                binding.layoutEveningReward.getChildAt(2)?.alpha = 1.0f
+            } else {
+                // Outside evening routine hours. Previous night's routine is missed, tonight's hasn't started.
+                binding.tvEveningHeaderStatus.text = "TỐI NAY • CHƯA ĐẾN GIỜ"
+                binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"))
+                binding.btnStartEveningRoutine.text = "Chưa đến giờ"
+                binding.btnStartEveningRoutine.isEnabled = true
+                binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0)
+
+                // Update Evening Reward Item Status
+                binding.tvEveningRewardXu.text = "+ 10 xu"
+                binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
+                binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
+                binding.layoutEveningReward.alpha = 1.0f
+                binding.layoutEveningReward.getChildAt(0)?.alpha = 1.0f
+                binding.layoutEveningReward.getChildAt(1)?.alpha = 1.0f
+                binding.layoutEveningReward.getChildAt(2)?.alpha = 1.0f
+            }
         }
 
         // 5. Update Weekly Bonus Reward Item Status
@@ -342,6 +413,25 @@ class SkinReminderFragment : RootieFragment() {
         }
     }
 
+    private fun getRoutineDate(type: String): String {
+        val calendar = Calendar.getInstance()
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        if (type == "evening" && hour < 2) {
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
+        }
+        return sdf.format(calendar.time)
+    }
+
+    private fun isWithinTimeWindow(type: String): Boolean {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        return if (type == "morning") {
+            hour in 6..10
+        } else {
+            hour >= 18 || hour < 2
+        }
+    }
+
     private fun updateWeekCalendar() {
         val ctx = requireContext()
         val calendar = Calendar.getInstance()
@@ -388,10 +478,9 @@ class SkinReminderFragment : RootieFragment() {
 
     private fun completeMorningRoutine() {
         val ctx = requireContext()
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(Date())
+        val targetDate = getRoutineDate("morning")
 
-        ProfileSession.addCompletedMorningDate(ctx, todayStr)
+        ProfileSession.addCompletedMorningDate(ctx, targetDate)
 
         val db = RootieDatabase.getDatabase(ctx)
         viewLifecycleOwner.lifecycleScope.launch {
@@ -404,17 +493,16 @@ class SkinReminderFragment : RootieFragment() {
                 )
             )
             Toast.makeText(ctx, "Đã hoàn thành Routine Sáng! +10 xu", Toast.LENGTH_SHORT).show()
-            checkStreakAndUpdate()
+            checkStreakAndUpdate("morning")
             refreshUI()
         }
     }
 
     private fun completeEveningRoutine() {
         val ctx = requireContext()
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(Date())
+        val targetDate = getRoutineDate("evening")
 
-        ProfileSession.addCompletedEveningDate(ctx, todayStr)
+        ProfileSession.addCompletedEveningDate(ctx, targetDate)
 
         val db = RootieDatabase.getDatabase(ctx)
         viewLifecycleOwner.lifecycleScope.launch {
@@ -427,7 +515,7 @@ class SkinReminderFragment : RootieFragment() {
                 )
             )
             Toast.makeText(ctx, "Đã hoàn thành Routine Tối! +10 xu", Toast.LENGTH_SHORT).show()
-            checkStreakAndUpdate()
+            checkStreakAndUpdate("evening")
             refreshUI()
         }
     }
@@ -459,18 +547,18 @@ class SkinReminderFragment : RootieFragment() {
         }
     }
 
-    private suspend fun checkStreakAndUpdate() {
+    private suspend fun checkStreakAndUpdate(type: String) {
         val ctx = requireContext()
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(Date())
+        val targetDate = getRoutineDate(type)
 
         val completedMornings = ProfileSession.getCompletedMorningDates(ctx)
         val completedEvenings = ProfileSession.getCompletedEveningDates(ctx)
 
         // Check if both routines are completed today
-        if (completedMornings.contains(todayStr) && completedEvenings.contains(todayStr)) {
+        if (completedMornings.contains(targetDate) && completedEvenings.contains(targetDate)) {
             val lastCompletedStr = ProfileSession.getSkinLastCompletedDate(ctx)
-            if (lastCompletedStr == todayStr) {
+            if (lastCompletedStr == targetDate) {
                 return // Already updated today
             }
 
@@ -485,7 +573,7 @@ class SkinReminderFragment : RootieFragment() {
                 lastCal.add(Calendar.DAY_OF_YEAR, 1)
                 val expectedYesterdayStr = sdf.format(lastCal.time)
 
-                if (expectedYesterdayStr == todayStr) {
+                if (expectedYesterdayStr == targetDate) {
                     newStreak = currentStreak + 1
                 } else {
                     newStreak = 1 // Streak broken
@@ -495,7 +583,7 @@ class SkinReminderFragment : RootieFragment() {
             }
 
             ProfileSession.setSkinStreak(ctx, newStreak)
-            ProfileSession.setSkinLastCompletedDate(ctx, todayStr)
+            ProfileSession.setSkinLastCompletedDate(ctx, targetDate)
 
             val db = RootieDatabase.getDatabase(ctx)
             if (newStreak % 30 == 0) {

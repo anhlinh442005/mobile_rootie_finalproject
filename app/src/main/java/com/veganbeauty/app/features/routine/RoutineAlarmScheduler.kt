@@ -7,10 +7,11 @@ import android.content.Intent
 import java.util.Calendar
 
 object RoutineAlarmScheduler {
-    fun scheduleRoutineAlarm(context: Context, type: String, hour: Int, minute: Int) {
+    fun scheduleRoutineAlarm(context: Context, type: String, hour: Int, minute: Int, isLead: Boolean) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, RoutineAlarmReceiver::class.java).apply {
             putExtra("REMINDER_TYPE", type)
+            putExtra("IS_LEAD_REMINDER", isLead)
         }
         val requestCode = if (type == "MORNING") 1001 else 1002
         val pendingIntent = PendingIntent.getBroadcast(

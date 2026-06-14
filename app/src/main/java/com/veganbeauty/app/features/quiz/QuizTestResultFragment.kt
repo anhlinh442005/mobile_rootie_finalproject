@@ -18,11 +18,24 @@ import com.veganbeauty.app.databinding.QuizTestResultBinding
 import com.veganbeauty.app.features.home.BottomNavHelper
 import org.json.JSONArray
 import org.json.JSONObject
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
+import com.veganbeauty.app.data.local.ProfileSession
+import com.veganbeauty.app.features.routine.SkinReminderFragment
 
 class QuizTestResultFragment : RootieFragment() {
 
     private var _binding: QuizTestResultBinding? = null
     private val binding get() = _binding!!
+
+    private val GEMINI_API_KEY = com.veganbeauty.app.BuildConfig.GEMINI_API_KEY
+    private val morningSteps = mutableListOf<AiSkincareStep>()
+    private val eveningSteps = mutableListOf<AiSkincareStep>()
+    private var isMorningTab = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +52,10 @@ class QuizTestResultFragment : RootieFragment() {
         val skinType = prefs.getString("SKIN_TYPE_RESULT", "Da thường") ?: "Da thường"
         val recommendation = prefs.getString("RECOMMENDATION", "Duy trì chế độ dưỡng ẩm cân bằng và làm sạch da dịu nhẹ hàng ngày.") ?: "Duy trì chế độ dưỡng ẩm cân bằng và làm sạch da dịu nhẹ hàng ngày."
         val flaggedSet = prefs.getStringSet("FLAGGED_GROUPS", emptySet()) ?: emptySet()
+        val sensitivity = prefs.getInt("SENSITIVITY_PERCENT", 50)
+        val hydration = prefs.getInt("HYDRATION_PERCENT", 50)
+        val elasticity = prefs.getInt("ELASTICITY_PERCENT", 75)
+        val sebum = prefs.getInt("SEBUM_PERCENT", 50)
 
         binding.tvSkinTypeResult.text = skinType
         binding.tvRecommendation.text = recommendation
@@ -72,51 +89,26 @@ class QuizTestResultFragment : RootieFragment() {
                 .commit()
         }
 
-        // Setup save profile button
         binding.btnSaveProfile.setOnClickListener {
-            val sensitivity = prefs.getInt("SENSITIVITY_PERCENT", 50)
-            val hydration = prefs.getInt("HYDRATION_PERCENT", 50)
-            val elasticity = prefs.getInt("ELASTICITY_PERCENT", 75)
-            val sebum = prefs.getInt("SEBUM_PERCENT", 50)
-            val skinAreas = prefs.getString("SKIN_AREAS_DESC", "Độ ẩm và bã nhờn phân bổ tương đối đồng đều trên các vùng da.")
-
-            // Save active skin type, recommendations and flagged groups
-            prefs.edit().apply {
-                putString("SAVED_USER_SKIN_TYPE", skinType)
-                putString("SAVED_RECOMMENDATION", recommendation)
-                putStringSet("SAVED_FLAGGED_GROUPS", flaggedSet)
-                putInt("SAVED_SENSITIVITY", sensitivity)
-                putInt("SAVED_HYDRATION", hydration)
-                putInt("SAVED_ELASTICITY", elasticity)
-                putInt("SAVED_SEBUM", sebum)
-                putString("SAVED_SKIN_AREAS", skinAreas)
-                apply()
-            }
-
-            // Save to quiz history list
-            try {
-                val historyStr = prefs.getString("QUIZ_HISTORY_LIST", "[]") ?: "[]"
-                val historyArray = org.json.JSONArray(historyStr)
-                
-                val newLog = org.json.JSONObject().apply {
-                    put("date", java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date()))
-                    put("skinType", skinType)
-                    put("recommendation", recommendation)
-                }
-                
-                historyArray.put(newLog)
-                prefs.edit().putString("QUIZ_HISTORY_LIST", historyArray.toString()).apply()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            Toast.makeText(context, "Đã cập nhật $skinType vào hồ sơ da và lịch sử!", Toast.LENGTH_SHORT).show()
+            saveSkinProfile(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum, silent = false)
         }
 
-        // Setup suggest routine button (now opens SkinReminderFragment)
-        binding.btnSuggestRoutine.setOnClickListener {
+        val isFirstTest = arguments?.getBoolean("IS_FIRST_TEST", false) ?: false
+        if (isFirstTest) {
+            binding.llAiRoutineSection.visibility = View.VISIBLE
+            binding.llFooterButtons.visibility = View.GONE
+            setupAiRoutineListeners(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum)
+            loadAiRoutine(skinType, hydration, sebum, sensitivity, elasticity)
+        } else {
+            binding.llAiRoutineSection.visibility = View.GONE
+            binding.llFooterButtons.visibility = View.VISIBLE
+            binding.btnSaveProfile.visibility = View.GONE
+            binding.btnSuggestRoutine.visibility = View.GONE
+        }
+
+        binding.cardAiAdvice.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_container, com.veganbeauty.app.features.routine.SkinReminderFragment())
+                .replace(R.id.main_container, com.veganbeauty.app.features.ai.SkinAiChatFragment())
                 .addToBackStack(null)
                 .commit()
         }
@@ -446,8 +438,539 @@ class QuizTestResultFragment : RootieFragment() {
         dialog.show()
     }
 
+    private fun setupAiRoutineListeners(
+        prefs: android.content.SharedPreferences,
+        skinType: String,
+        recommendation: String,
+        flaggedSet: Set<String>,
+        sensitivity: Int,
+        hydration: Int,
+        elasticity: Int,
+        sebum: Int
+    ) {
+        binding.tabMorning.setOnClickListener {
+            if (!isMorningTab) {
+                isMorningTab = true
+                updateTabUI()
+                populateSteps()
+            }
+        }
+
+        binding.tabEvening.setOnClickListener {
+            if (isMorningTab) {
+                isMorningTab = false
+                updateTabUI()
+                populateSteps()
+            }
+        }
+
+        binding.btnApplyRoutine.setOnClickListener {
+            saveSelectedStepsToProfile(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum)
+        }
+
+        binding.tvRetakeQuizInline.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, QuizTestIntroFragment())
+                .commit()
+        }
+    }
+
+    private fun updateTabUI() {
+        if (isMorningTab) {
+            binding.tabMorning.setBackgroundResource(R.drawable.bg_btn_solid)
+            binding.tabMorning.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#677559"))
+            binding.tvTabMorning.setTextColor(android.graphics.Color.WHITE)
+
+            binding.tabEvening.setBackgroundResource(android.R.color.transparent)
+            binding.tabEvening.backgroundTintList = null
+            binding.tvTabEvening.setTextColor(android.graphics.Color.parseColor("#677559"))
+        } else {
+            binding.tabEvening.setBackgroundResource(R.drawable.bg_btn_solid)
+            binding.tabEvening.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#677559"))
+            binding.tvTabEvening.setTextColor(android.graphics.Color.WHITE)
+
+            binding.tabMorning.setBackgroundResource(android.R.color.transparent)
+            binding.tabMorning.backgroundTintList = null
+            binding.tvTabMorning.setTextColor(android.graphics.Color.parseColor("#677559"))
+        }
+    }
+
+    private fun loadAiRoutine(skinType: String, hydration: Int, sebum: Int, sensitivity: Int, elasticity: Int) {
+        if (GEMINI_API_KEY.isBlank() || GEMINI_API_KEY == "YOUR_GEMINI_API_KEY_HERE") {
+            generateRuleBasedRoutine(skinType, hydration, sebum, sensitivity, elasticity)
+        } else {
+            fetchRoutineFromAi(skinType, hydration, sebum, sensitivity, elasticity)
+        }
+    }
+
+    private fun fetchRoutineFromAi(skinType: String, hydration: Int, sebum: Int, sensitivity: Int, elasticity: Int) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY"
+                val url = URL(urlString)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "POST"
+                connection.setRequestProperty("Content-Type", "application/json")
+                connection.connectTimeout = 12000
+                connection.readTimeout = 12000
+                connection.doOutput = true
+
+                val prompt = """
+                    Bạn là trợ lý Rootie AI chuyên thiết kế chu trình dưỡng da thuần chay (skincare routine) phù hợp nhất với các chỉ số da người dùng.
+                    Hãy phân tích chi tiết làn da người dùng có các chỉ số sau:
+                    - Loại da: $skinType
+                    - Độ ẩm da: $hydration%
+                    - Chỉ số bã nhờn: $sebum%
+                    - Độ nhạy cảm da: $sensitivity%
+                    - Độ đàn hồi: $elasticity%
+
+                    Hãy đề xuất một routine buổi sáng và routine buổi tối phù hợp nhất sử dụng các sản phẩm thuần chay (Ví dụ: Gel rửa mặt bí đao, Tinh chất bí đao, Thạch bí đao, Thạch hoa hồng dưỡng ẩm, Sữa rửa mặt nghệ Hưng Yên, Nước hoa hồng Cao Bằng, Nước tẩy trang sen Hậu Giang, Sữa chống nắng bí đao...).
+                    Lưu ý: Giải thích lý do vì sao mỗi sản phẩm/bước dưỡng lại hoàn hảo cho các chỉ số cụ thể của làn da này.
+
+                    Trả về cấu trúc JSON chính xác như sau và KHÔNG kèm bất cứ ký tự nào khác ngoài JSON:
+                    {
+                      "assessment": "Một đoạn phân tích chi tiết, khoa học và ấm áp về tình trạng da của người dùng dựa trên độ ẩm, dầu nhờn và độ nhạy cảm.",
+                      "morning_steps": [
+                        {
+                          "name": "Tên bước (ví dụ: Sữa rửa mặt)",
+                          "product": "Tên sản phẩm thuần chay (ví dụ: Gel rửa mặt bí đao)",
+                          "reason": "Giải thích chi tiết tại sao phù hợp (ví dụ: Giúp làm sạch sâu bã nhờn ở mức $sebum% nhưng giữ ẩm nhẹ nhàng cho da nhạy cảm)"
+                        }
+                      ],
+                      "evening_steps": [
+                        {
+                          "name": "Tên bước",
+                          "product": "Tên sản phẩm",
+                          "reason": "Giải thích chi tiết tại sao phù hợp"
+                        }
+                      ]
+                    }
+                """.trimIndent()
+
+                val requestJson = JSONObject()
+                val partsArray = JSONArray().apply {
+                    put(JSONObject().put("text", prompt))
+                }
+                val contentsArray = JSONArray().apply {
+                    put(JSONObject().put("parts", partsArray))
+                }
+                requestJson.put("contents", contentsArray)
+
+                val systemInstruction = JSONObject().apply {
+                    val systemParts = JSONArray().apply {
+                        put(JSONObject().put("text", "Bạn chỉ trả về duy nhất chuỗi JSON hợp lệ theo cấu trúc được yêu cầu."))
+                    }
+                    put("parts", systemParts)
+                }
+                requestJson.put("systemInstruction", systemInstruction)
+
+                val generationConfig = JSONObject().apply {
+                    put("temperature", 0.3)
+                    put("maxOutputTokens", 2000)
+                }
+                requestJson.put("generationConfig", generationConfig)
+
+                connection.outputStream.use { os ->
+                    val input = requestJson.toString().toByteArray(Charsets.UTF_8)
+                    os.write(input, 0, input.size)
+                }
+
+                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                    val response = connection.inputStream.bufferedReader().use { it.readText() }
+                    val json = JSONObject(response)
+                    val candidates = json.getJSONArray("candidates")
+                    if (candidates.length() > 0) {
+                        val content = candidates.getJSONObject(0).getJSONObject("content")
+                        val parts = content.getJSONArray("parts")
+                        if (parts.length() > 0) {
+                            val textResult = parts.getJSONObject(0).getString("text").trim()
+                            
+                            val cleanJson = if (textResult.startsWith("```json")) {
+                                textResult.substringAfter("```json").substringBeforeLast("```").trim()
+                            } else if (textResult.startsWith("```")) {
+                                textResult.substringAfter("```").substringBeforeLast("```").trim()
+                            } else {
+                                textResult
+                            }
+
+                            val routineObj = JSONObject(cleanJson)
+                            val morningJson = routineObj.getJSONArray("morning_steps")
+                            val eveningJson = routineObj.getJSONArray("evening_steps")
+
+                            withContext(Dispatchers.Main) {
+                                morningSteps.clear()
+                                for (i in 0 until morningJson.length()) {
+                                    val step = morningJson.getJSONObject(i)
+                                    morningSteps.add(
+                                        AiSkincareStep(
+                                            index = i,
+                                            name = step.getString("name"),
+                                            recommendedProduct = step.getString("product"),
+                                            description = step.getString("reason"),
+                                            isChecked = true
+                                        )
+                                    )
+                                }
+
+                                eveningSteps.clear()
+                                for (i in 0 until eveningJson.length()) {
+                                    val step = eveningJson.getJSONObject(i)
+                                    eveningSteps.add(
+                                        AiSkincareStep(
+                                            index = i,
+                                            name = step.getString("name"),
+                                            recommendedProduct = step.getString("product"),
+                                            description = step.getString("reason"),
+                                            isChecked = true
+                                        )
+                                    )
+                                }
+
+                                populateSteps()
+                            }
+                            return@launch
+                        }
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    generateRuleBasedRoutine(skinType, hydration, sebum, sensitivity, elasticity)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    generateRuleBasedRoutine(skinType, hydration, sebum, sensitivity, elasticity)
+                }
+            }
+        }
+    }
+
+    private fun generateRuleBasedRoutine(skinType: String, hydration: Int, sebum: Int, sensitivity: Int, elasticity: Int) {
+        val lowerSkinType = skinType.lowercase()
+
+        morningSteps.clear()
+        eveningSteps.clear()
+
+        if (lowerSkinType.contains("dầu") || lowerSkinType.contains("mụn") || lowerSkinType.contains("hỗn hợp thiên dầu")) {
+            morningSteps.addAll(listOf(
+                AiSkincareStep(0, "Sữa rửa mặt", "Gel rửa mặt Bí đao", "Loại bỏ dầu thừa ($sebum%) nhẹ nhàng mà không làm khô căng da."),
+                AiSkincareStep(1, "Nước cân bằng", "Nước bí đao cân bằng da", "Làm sạch sâu bã nhờn vùng chữ T và kháng viêm ngừa mụn."),
+                AiSkincareStep(2, "Tinh chất", "Tinh chất bí đao", "Chứa 7% Niacinamide giúp kiềm dầu tối đa và thu nhỏ lỗ chân lông."),
+                AiSkincareStep(3, "Gel dưỡng ẩm", "Thạch bí đao dưỡng ẩm", "Cấp ẩm mỏng nhẹ dạng gel-cream, không gây bít tắc nang lông."),
+                AiSkincareStep(4, "Chống nắng", "Sữa chống nắng bí đao", "Bảo vệ tối ưu khỏi tia UV với màng lọc kiềm dầu thoáng nhẹ.")
+            ))
+
+            eveningSteps.addAll(listOf(
+                AiSkincareStep(0, "Tẩy trang", "Nước tẩy trang bí đao", "Hòa tan dầu thừa, bụi bẩn PM2.5 và kem chống nắng sâu trong lỗ chân lông."),
+                AiSkincareStep(1, "Sữa rửa mặt", "Gel rửa mặt bí đao", "Làm sạch sâu da mặt để chuẩn bị cho các bước dưỡng tiếp theo."),
+                AiSkincareStep(2, "Nước cân bằng", "Nước bí đao cân bằng da", "Cân bằng lại pH da và làm dịu nhanh các nốt mụn sưng đỏ."),
+                AiSkincareStep(3, "Tinh chất", "Tinh chất bí đao", "Tập trung điều trị mụn ẩn và làm mờ thâm mụn ban đêm."),
+                AiSkincareStep(4, "Dưỡng ẩm khóa nước", "Thạch bí đao dưỡng ẩm", "Giữ nước khóa ẩm dịu nhẹ giúp da phục hồi lúc ngủ.")
+            ))
+        } else if (lowerSkinType.contains("khô")) {
+            morningSteps.addAll(listOf(
+                AiSkincareStep(0, "Sữa rửa mặt", "Sữa rửa mặt nghệ Hưng Yên", "Làm sạch dịu nhẹ không bọt, bổ sung beta-carotene dưỡng ẩm."),
+                AiSkincareStep(1, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Cấp nước bù ẩm tức thì cho lớp sừng khô ráp."),
+                AiSkincareStep(2, "Tinh chất dưỡng sáng", "Tinh chất nghệ Hưng Yên", "Cung cấp vitamin C và curcumin chống oxy hóa, sáng da mặt."),
+                AiSkincareStep(3, "Kem dưỡng ẩm", "Thạch hoa hồng dưỡng ẩm", "Nuôi dưỡng làn da căng mướt suốt 24 giờ liên tục."),
+                AiSkincareStep(4, "Chống nắng", "Sữa chống nắng bí đao", "Bảo vệ màng ẩm của da khô khỏi ánh nắng trực tiếp.")
+            ))
+
+            eveningSteps.addAll(listOf(
+                AiSkincareStep(0, "Tẩy trang", "Nước tẩy trang hoa hồng Cao Bằng", "Tẩy trang dịu nhẹ đồng thời cấp ẩm sâu cho da không bị khô ráp."),
+                AiSkincareStep(1, "Sữa rửa mặt", "Sữa rửa mặt nghệ Hưng Yên", "Làm sạch sâu bụi bẩn mà vẫn giữ lại độ ẩm tự nhiên cho da."),
+                AiSkincareStep(2, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Cân bằng độ pH và bù nước tức thì sau khi rửa mặt."),
+                AiSkincareStep(3, "Tinh chất phục hồi", "Tinh chất hoa hồng Cao Bằng", "Bổ sung acid amin nuôi dưỡng sâu các tế bào da mất nước."),
+                AiSkincareStep(4, "Kem dưỡng đêm", "Thạch hoa hồng dưỡng ẩm", "Khóa dưỡng chất ban đêm giúp da mướt mịn căng tràn vào sáng hôm sau.")
+            ))
+        } else if (lowerSkinType.contains("nhạy cảm") || lowerSkinType.contains("dễ kích ứng")) {
+            morningSteps.addAll(listOf(
+                AiSkincareStep(0, "Sữa rửa mặt", "Sữa rửa mặt sen Hậu Giang", "Bảo vệ màng lipid nhạy cảm ($sensitivity%), làm sạch không sulfate."),
+                AiSkincareStep(1, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Làm dịu nhanh cảm giác châm chích và đỏ rát."),
+                AiSkincareStep(2, "Tinh chất phục hồi", "Tinh chất rau má", "Kích thích sinh collagen, phục hồi hàng rào bảo vệ bị suy yếu."),
+                AiSkincareStep(3, "Dưỡng ẩm làm dịu", "Thạch bí đao dưỡng ẩm", "Làm mát và dưỡng ẩm dịu nhẹ cho da nhạy cảm cực kỳ an toàn."),
+                AiSkincareStep(4, "Chống nắng vật lý", "Sữa chống nắng bí đao", "Bảo vệ da dịu nhẹ nhất khỏi tia UV mà không gây bí hay ngứa.")
+            ))
+
+            eveningSteps.addAll(listOf(
+                AiSkincareStep(0, "Tẩy trang", "Nước tẩy trang sen Hậu Giang", "Công thức Micellar làm sạch nhẹ nhàng không gây rát da."),
+                AiSkincareStep(1, "Sữa rửa mặt", "Sữa rửa mặt sen Hậu Giang", "Sạch sâu dịu nhẹ bảo vệ da khỏi kích ứng."),
+                AiSkincareStep(2, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Bù ẩm và cân bằng lại trạng thái ổn định cho da."),
+                AiSkincareStep(3, "Tinh chất", "Tinh chất rau má", "Hỗ trợ làm lành nhanh các tổn thương của biểu bì nhạy cảm ban đêm."),
+                AiSkincareStep(4, "Khóa ẩm dịu mát", "Thạch bí đao dưỡng ẩm", "Khóa ẩm dịu nhẹ không cồn, không hương liệu cho da nhạy cảm.")
+            ))
+        } else {
+            morningSteps.addAll(listOf(
+                AiSkincareStep(0, "Sữa rửa mặt", "Gel rửa mặt cà phê", "Rửa mặt sảng khoái với hạt cà phê siêu mịn khơi dậy năng lượng da."),
+                AiSkincareStep(1, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Cấp ẩm dị mọc và cân bằng độ pH lý tưởng."),
+                AiSkincareStep(2, "Tinh chất dưỡng sáng", "Tinh chất nghệ Hưng Yên", "Làm đều màu da, mờ thâm mụn, chống oxy hóa."),
+                AiSkincareStep(3, "Dưỡng ẩm", "Thạch hoa hồng dưỡng ẩm", "Dưỡng da căng mướt mịn màng tự nhiên."),
+                AiSkincareStep(4, "Chống nắng", "Sữa chống nắng bí đao", "Bảo vệ da tối ưu dưới tia UV gay gắt.")
+            ))
+
+            eveningSteps.addAll(listOf(
+                AiSkincareStep(0, "Tẩy trang", "Nước tẩy trang sen Hậu Giang", "Sạch thoáng bụi bẩn bã nhờn sau ngày dài."),
+                AiSkincareStep(1, "Sữa rửa mặt", "Gel rửa mặt cà phê", "Làm sạch sâu lỗ chân lông nhẹ nhàng."),
+                AiSkincareStep(2, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Khôi phục lại màng ẩm sau khi rửa mặt."),
+                AiSkincareStep(3, "Tinh chất dưỡng sáng", "Tinh chất nghệ Hưng Yên", "Làm mờ thâm mụn sạm màu hiệu quả ban đêm."),
+                AiSkincareStep(4, "Dưỡng ẩm ban đêm", "Thạch hoa hồng dưỡng ẩm", "Khóa ẩm giúp da mềm mịn và rạng rỡ vào sáng hôm sau.")
+            ))
+        }
+
+        populateSteps()
+    }
+
+    private fun populateSteps() {
+        binding.llAiRoutineStepsContainer.removeAllViews()
+        val stepsList = if (isMorningTab) morningSteps else eveningSteps
+
+        stepsList.forEach { step ->
+            val stepView = LayoutInflater.from(requireContext()).inflate(R.layout.quiz_item_ai_routine_step, binding.llAiRoutineStepsContainer, false)
+            
+            val ivCheckbox = stepView.findViewById<ImageView>(R.id.iv_step_checkbox)
+            val tvIndex = stepView.findViewById<TextView>(R.id.tv_step_index)
+            val tvName = stepView.findViewById<TextView>(R.id.tv_step_name)
+            val tvProduct = stepView.findViewById<TextView>(R.id.tv_recommended_product)
+            val tvReason = stepView.findViewById<TextView>(R.id.tv_ai_reason)
+            val layoutCard = stepView.findViewById<View>(R.id.layout_step_card)
+
+            tvIndex.text = (step.index + 1).toString()
+            tvName.text = step.name
+            tvProduct.text = step.recommendedProduct
+            tvReason.text = step.description
+
+            fun updateCheckboxState() {
+                if (step.isChecked) {
+                    ivCheckbox.setImageResource(R.drawable.skin_ic_checkbox_checked)
+                } else {
+                    ivCheckbox.setImageResource(R.drawable.skin_ic_checkbox_unchecked)
+                }
+            }
+
+            updateCheckboxState()
+
+            ivCheckbox.setOnClickListener {
+                step.isChecked = !step.isChecked
+                updateCheckboxState()
+            }
+
+            layoutCard.setOnClickListener {
+                step.isChecked = !step.isChecked
+                updateCheckboxState()
+            }
+
+            binding.llAiRoutineStepsContainer.addView(stepView)
+        }
+    }
+
+    private fun saveSkinProfile(
+        prefs: android.content.SharedPreferences,
+        skinType: String,
+        recommendation: String,
+        flaggedSet: Set<String>,
+        sensitivity: Int,
+        hydration: Int,
+        elasticity: Int,
+        sebum: Int,
+        silent: Boolean = false
+    ) {
+        val skinAreas = prefs.getString("SKIN_AREAS_DESC", "Độ ẩm và bã nhờn phân bổ tương đối đồng đều trên các vùng da.")
+
+        val lastTestTime = com.veganbeauty.app.data.local.ProfileSession.getLastSkinTestTime(requireContext())
+        val currentTime = System.currentTimeMillis()
+        val sevenDaysMs = 7 * 24 * 60 * 60 * 1000L
+        val isEligibleForReward = lastTestTime == 0L || (currentTime - lastTestTime >= sevenDaysMs)
+
+        // Save active skin type, recommendations and flagged groups
+        prefs.edit().apply {
+            putString("SAVED_USER_SKIN_TYPE", skinType)
+            putString("SAVED_RECOMMENDATION", recommendation)
+            putStringSet("SAVED_FLAGGED_GROUPS", flaggedSet)
+            putInt("SAVED_SENSITIVITY", sensitivity)
+            putInt("SAVED_HYDRATION", hydration)
+            putInt("SAVED_ELASTICITY", elasticity)
+            putInt("SAVED_SEBUM", sebum)
+            putString("SAVED_SKIN_AREAS", skinAreas)
+            putLong("KEY_LAST_SKIN_TEST_TIME", currentTime)
+            putBoolean("KEY_HIDE_QUIZ_REMINDER_WEEKLY", false) // Reset dismiss state on new test
+            apply()
+        }
+
+        // Save to quiz history list
+        try {
+            val historyStr = prefs.getString("QUIZ_HISTORY_LIST", "[]") ?: "[]"
+            val historyArray = org.json.JSONArray(historyStr)
+            
+            val newLog = org.json.JSONObject().apply {
+                put("date", java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date()))
+                put("skinType", skinType)
+                put("recommendation", recommendation)
+                put("sensitivity", sensitivity)
+                put("hydration", hydration)
+                put("elasticity", elasticity)
+                put("sebum", sebum)
+            }
+            
+            historyArray.put(newLog)
+            prefs.edit().putString("QUIZ_HISTORY_LIST", historyArray.toString()).apply()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        if (isEligibleForReward) {
+            val db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(requireContext())
+            viewLifecycleOwner.lifecycleScope.launch {
+                db.rewardPointDao().insertRewardPoints(
+                    com.veganbeauty.app.data.local.entities.RewardPointEntity(
+                        orderId = "SYSTEM_WEEKLY_QUIZ",
+                        points = 100,
+                        reason = "Cập nhật làn da định kỳ hàng tuần (+100 xu)",
+                        timestamp = currentTime
+                    )
+                )
+                
+                if (!silent) {
+                    val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null)
+                    val tvTitle = dialogView.findViewById<TextView>(R.id.tv_dialog_title)
+                    val tvMsg = dialogView.findViewById<TextView>(R.id.tv_dialog_message)
+                    val llCoinBadge = dialogView.findViewById<android.view.View>(R.id.ll_dialog_coin_badge)
+                    val tvCoinText = dialogView.findViewById<TextView>(R.id.tv_dialog_coin_text)
+                    val btnConfirm = dialogView.findViewById<android.view.View>(R.id.btn_dialog_confirm)
+                    val tvConfirmText = dialogView.findViewById<TextView>(R.id.tv_dialog_confirm_text)
+                    val btnCancel = dialogView.findViewById<android.view.View>(R.id.btn_dialog_cancel)
+
+                    tvTitle.text = "Nhận 100 xu thành công! 🎉"
+                    tvMsg.text = "Cảm ơn bạn đã cập nhật chỉ số da định kỳ. Bạn được cộng +100 xu vào ví thành viên!"
+                    llCoinBadge.visibility = android.view.View.VISIBLE
+                    tvCoinText.text = "Tặng +100 Xu thành viên"
+                    tvConfirmText.text = "TUYỆT VỜI"
+                    btnCancel.visibility = android.view.View.GONE
+
+                    val customDialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setView(dialogView)
+                        .create()
+                    customDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+                    btnConfirm.setOnClickListener {
+                        customDialog.dismiss()
+                        parentFragmentManager.popBackStack()
+                    }
+
+                    customDialog.setOnDismissListener {
+                        parentFragmentManager.popBackStack()
+                    }
+
+                    customDialog.show()
+                }
+            }
+        } else {
+            if (!silent) {
+                val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null)
+                val tvTitle = dialogView.findViewById<TextView>(R.id.tv_dialog_title)
+                val tvMsg = dialogView.findViewById<TextView>(R.id.tv_dialog_message)
+                val btnConfirm = dialogView.findViewById<android.view.View>(R.id.btn_dialog_confirm)
+                val tvConfirmText = dialogView.findViewById<TextView>(R.id.tv_dialog_confirm_text)
+                val btnCancel = dialogView.findViewById<android.view.View>(R.id.btn_dialog_cancel)
+
+                tvTitle.text = "Đã Lưu Hồ Sơ Da! 🎉"
+                tvMsg.text = "Chỉ số da và loại da $skinType đã được lưu vào lịch sử của bạn."
+                tvConfirmText.text = "ĐỒNG Ý"
+                btnCancel.visibility = android.view.View.GONE
+
+                val customDialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setView(dialogView)
+                    .create()
+                customDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+                btnConfirm.setOnClickListener {
+                    customDialog.dismiss()
+                    parentFragmentManager.popBackStack()
+                }
+
+                customDialog.setOnDismissListener {
+                    parentFragmentManager.popBackStack()
+                }
+
+                customDialog.show()
+            }
+        }
+    }
+
+    private fun saveSelectedStepsToProfile(
+        prefs: android.content.SharedPreferences,
+        skinType: String,
+        recommendation: String,
+        flaggedSet: Set<String>,
+        sensitivity: Int,
+        hydration: Int,
+        elasticity: Int,
+        sebum: Int
+    ) {
+        val morningSave = morningSteps.filter { it.isChecked }.map { step ->
+            "${step.index}:${step.name}:${step.recommendedProduct}:true"
+        }.toSet()
+
+        val eveningSave = eveningSteps.filter { it.isChecked }.map { step ->
+            "${step.index}:${step.name}:${step.recommendedProduct}:true"
+        }.toSet()
+
+        ProfileSession.setMorningSteps(requireContext(), morningSave)
+        ProfileSession.setEveningSteps(requireContext(), eveningSave)
+
+        // Silent save skin profile results & reward point calculations
+        saveSkinProfile(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum, silent = true)
+
+        var isNavigatingToReminder = false
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null)
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tv_dialog_title)
+        val tvMsg = dialogView.findViewById<TextView>(R.id.tv_dialog_message)
+        val btnConfirm = dialogView.findViewById<android.view.View>(R.id.btn_dialog_confirm)
+        val tvConfirmText = dialogView.findViewById<TextView>(R.id.tv_dialog_confirm_text)
+        val btnCancel = dialogView.findViewById<TextView>(R.id.btn_dialog_cancel)
+
+        tvTitle.text = "Áp dụng & Lưu thành công! 🎉"
+        tvMsg.text = "Đã lưu chỉ số da và áp dụng routine AI vào lịch trình hàng ngày.\n\nBạn có muốn thiết lập thời gian nhắc nhở routine không?"
+        tvConfirmText.text = "CÀI ĐẶT NHẮC HẸN ⏰"
+        btnCancel.text = "ĐỂ SAU"
+
+        val customDialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+        customDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        btnConfirm.setOnClickListener {
+            isNavigatingToReminder = true
+            customDialog.dismiss()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.routine.SkinRoutineSettingsFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        btnCancel.setOnClickListener {
+            customDialog.dismiss()
+            parentFragmentManager.popBackStack()
+        }
+
+        customDialog.setOnDismissListener {
+            if (!isNavigatingToReminder) {
+                parentFragmentManager.popBackStack()
+            }
+        }
+
+        customDialog.show()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+    data class AiSkincareStep(
+        val index: Int,
+        val name: String,
+        val recommendedProduct: String,
+        val description: String,
+        var isChecked: Boolean = true
+    )
 }

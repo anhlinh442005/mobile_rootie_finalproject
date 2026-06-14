@@ -103,29 +103,71 @@ class SkinTimeRoutineFragment : RootieFragment() {
 
         // 8. Load and populate steps
         loadSteps()
+
+        // 9. Notification action
+        binding.btnNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+    }
+
+    private fun getRoutineDate(type: String): String {
+        val calendar = Calendar.getInstance()
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        if (type == "evening" && hour < 2) {
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
+        }
+        return sdf.format(calendar.time)
+    }
+
+    private fun isWithinTimeWindow(type: String): Boolean {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        return if (type == "morning") {
+            hour in 6..10
+        } else {
+            hour >= 18 || hour < 2
+        }
     }
 
     private fun completeRoutineAction() {
         val ctx = requireContext()
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(Date())
-        val completedSteps = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr)
+        val targetDate = getRoutineDate(routineType)
 
+        val isAlreadySubmitted = ProfileSession.isRoutineSubmitted(ctx, routineType, targetDate)
+        if (isAlreadySubmitted) {
+            Toast.makeText(ctx, "Routine đã được hoàn tất trước đó!", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.popBackStack()
+            return
+        }
+
+        // Lock session (submit)
+        ProfileSession.setRoutineSubmitted(ctx, routineType, targetDate, true)
+
+        val completedSteps = ProfileSession.getCompletedStepIdsForDate(ctx, targetDate)
         val totalCount = activeSteps.size
         val completedCount = activeSteps.count { completedSteps.contains("${routineType}_${it.index}") }
 
+        if (!isWithinTimeWindow(routineType)) {
+            Toast.makeText(ctx, "Đã chốt phiên Routine! Ngoài khung giờ quy định nên không được cộng xu.", Toast.LENGTH_LONG).show()
+            parentFragmentManager.popBackStack()
+            return
+        }
+
         if (totalCount > 0 && completedCount == totalCount) {
             val isRewardGiven = if (routineType == "morning") {
-                ProfileSession.isMorningRewardAwarded(ctx, todayStr)
+                ProfileSession.isMorningRewardAwarded(ctx, targetDate)
             } else {
-                ProfileSession.isEveningRewardAwarded(ctx, todayStr)
+                ProfileSession.isEveningRewardAwarded(ctx, targetDate)
             }
 
             if (!isRewardGiven) {
                 if (routineType == "morning") {
-                    ProfileSession.setMorningRewardAwarded(ctx, todayStr, true)
+                    ProfileSession.setMorningRewardAwarded(ctx, targetDate, true)
                 } else {
-                    ProfileSession.setEveningRewardAwarded(ctx, todayStr, true)
+                    ProfileSession.setEveningRewardAwarded(ctx, targetDate, true)
                 }
 
                 // Award points via database
@@ -140,14 +182,15 @@ class SkinTimeRoutineFragment : RootieFragment() {
                         )
                     )
                     Toast.makeText(ctx, "Tuyệt vời! Bạn đã hoàn thành 100% Routine và nhận được +10 xu!", Toast.LENGTH_LONG).show()
+                    checkStreakAndUpdate(routineType)
                     parentFragmentManager.popBackStack()
                 }
             } else {
-                Toast.makeText(ctx, "Routine đã được hoàn tất trước đó!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, "Routine đã được hoàn tất và nhận thưởng trước đó!", Toast.LENGTH_SHORT).show()
                 parentFragmentManager.popBackStack()
             }
         } else {
-            Toast.makeText(ctx, "Đã lưu tiến trình! Hãy hoàn thành 100% các bước để nhận 10 xu nhé.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, "Đã chốt phiên Routine! Bạn chưa hoàn thành 100% các bước nên không được cộng xu.", Toast.LENGTH_LONG).show()
             parentFragmentManager.popBackStack()
         }
     }
@@ -185,9 +228,8 @@ class SkinTimeRoutineFragment : RootieFragment() {
         val ctx = requireContext()
         binding.layoutStepsContainer.removeAllViews()
 
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(Date())
-        val completedSteps = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr)
+        val targetDate = getRoutineDate(routineType)
+        val completedSteps = ProfileSession.getCompletedStepIdsForDate(ctx, targetDate)
 
         for (step in activeSteps) {
             val stepBinding = ItemTimeRoutineStepBinding.inflate(
@@ -226,9 +268,20 @@ class SkinTimeRoutineFragment : RootieFragment() {
 
     private fun toggleStep(stepIndex: Int) {
         val ctx = requireContext()
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(Date())
-        val currentSet = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr).toMutableSet()
+        val targetDate = getRoutineDate(routineType)
+
+        val isSubmitted = ProfileSession.isRoutineSubmitted(ctx, routineType, targetDate)
+        if (isSubmitted) {
+            Toast.makeText(ctx, "Routine đã được chốt và hoàn thành, không thể thay đổi!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!isWithinTimeWindow(routineType)) {
+            Toast.makeText(ctx, "Chưa đến giờ làm routine hoặc đã quá giờ quy định!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val currentSet = ProfileSession.getCompletedStepIdsForDate(ctx, targetDate).toMutableSet()
         val stepId = "${routineType}_$stepIndex"
 
         if (currentSet.contains(stepId)) {
@@ -236,31 +289,33 @@ class SkinTimeRoutineFragment : RootieFragment() {
         } else {
             currentSet.add(stepId)
         }
-        ProfileSession.setCompletedStepIdsForDate(ctx, todayStr, currentSet)
+        ProfileSession.setCompletedStepIdsForDate(ctx, targetDate, currentSet)
 
         // Count how many steps of the current routineType are checked today
         val count = activeSteps.count { currentSet.contains("${routineType}_${it.index}") }
         if (routineType == "morning") {
             val completedMornings = ProfileSession.getCompletedMorningDates(ctx).toMutableSet()
-            if (count > 0) {
-                completedMornings.add(todayStr)
+            if (count > 0 && isWithinTimeWindow(routineType)) {
+                completedMornings.add(targetDate)
             } else {
-                completedMornings.remove(todayStr)
+                completedMornings.remove(targetDate)
             }
             ProfileSession.setCompletedMorningDates(ctx, completedMornings)
         } else {
             val completedEvenings = ProfileSession.getCompletedEveningDates(ctx).toMutableSet()
-            if (count > 0) {
-                completedEvenings.add(todayStr)
+            if (count > 0 && isWithinTimeWindow(routineType)) {
+                completedEvenings.add(targetDate)
             } else {
-                completedEvenings.remove(todayStr)
+                completedEvenings.remove(targetDate)
             }
             ProfileSession.setCompletedEveningDates(ctx, completedEvenings)
         }
 
-        // Run streak check in background
-        viewLifecycleOwner.lifecycleScope.launch {
-            checkStreakAndUpdate()
+        // Run streak check in background if within time window
+        if (isWithinTimeWindow(routineType)) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                checkStreakAndUpdate(routineType)
+            }
         }
 
         // Refresh lists & metrics
@@ -271,9 +326,8 @@ class SkinTimeRoutineFragment : RootieFragment() {
     private fun updateStatsAndProgress() {
         if (_binding == null) return
         val ctx = requireContext()
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(Date())
-        val completedSteps = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr)
+        val targetDate = getRoutineDate(routineType)
+        val completedSteps = ProfileSession.getCompletedStepIdsForDate(ctx, targetDate)
 
         val totalCount = activeSteps.size
         val completedCount = activeSteps.count { completedSteps.contains("${routineType}_${it.index}") }
@@ -299,19 +353,47 @@ class SkinTimeRoutineFragment : RootieFragment() {
             0
         }
         binding.progressBar.progress = percentage
+
+        // Customise Complete Routine button appearance and text based on status and time window
+        val isSubmitted = ProfileSession.isRoutineSubmitted(ctx, routineType, targetDate)
+        if (isSubmitted) {
+            binding.btnCompleteRoutine.text = "Đã hoàn thành"
+            binding.btnCompleteRoutine.isEnabled = false
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.bg_button_disabled)
+            binding.btnCompleteRoutine.setTextColor(Color.parseColor("#8E8E93"))
+        } else if (!isWithinTimeWindow(routineType)) {
+            val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+            if (routineType == "morning") {
+                if (hour < 6) {
+                    binding.btnCompleteRoutine.text = "Chưa đến giờ"
+                } else {
+                    binding.btnCompleteRoutine.text = "Đã bỏ lỡ"
+                }
+            } else {
+                binding.btnCompleteRoutine.text = "Chưa đến giờ"
+            }
+            binding.btnCompleteRoutine.isEnabled = false
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.bg_button_disabled)
+            binding.btnCompleteRoutine.setTextColor(Color.parseColor("#8E8E93"))
+        } else {
+            binding.btnCompleteRoutine.text = "Hoàn tất Routine"
+            binding.btnCompleteRoutine.isEnabled = true
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.skin_bg_btn_dark_green)
+            binding.btnCompleteRoutine.setTextColor(Color.WHITE)
+        }
     }
 
-    private suspend fun checkStreakAndUpdate() {
+    private suspend fun checkStreakAndUpdate(type: String) {
         val ctx = requireContext()
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(Date())
+        val targetDate = getRoutineDate(type)
 
         val completedMornings = ProfileSession.getCompletedMorningDates(ctx)
         val completedEvenings = ProfileSession.getCompletedEveningDates(ctx)
 
-        if (completedMornings.contains(todayStr) && completedEvenings.contains(todayStr)) {
+        if (completedMornings.contains(targetDate) && completedEvenings.contains(targetDate)) {
             val lastCompletedStr = ProfileSession.getSkinLastCompletedDate(ctx)
-            if (lastCompletedStr == todayStr) {
+            if (lastCompletedStr == targetDate) {
                 return // Already updated today
             }
 
@@ -325,7 +407,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
                     lastCal.add(Calendar.DAY_OF_YEAR, 1)
                     val expectedYesterdayStr = sdf.format(lastCal.time)
 
-                    newStreak = if (expectedYesterdayStr == todayStr) {
+                    newStreak = if (expectedYesterdayStr == targetDate) {
                         currentStreak + 1
                     } else {
                         1
@@ -338,7 +420,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
             }
 
             ProfileSession.setSkinStreak(ctx, newStreak)
-            ProfileSession.setSkinLastCompletedDate(ctx, todayStr)
+            ProfileSession.setSkinLastCompletedDate(ctx, targetDate)
 
             val db = RootieDatabase.getDatabase(ctx)
             if (newStreak % 30 == 0) {

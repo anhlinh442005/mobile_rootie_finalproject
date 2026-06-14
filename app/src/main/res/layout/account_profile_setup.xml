@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FEFBF4">
+    android:background="@color/neutral">
 
     <!-- Scrollable Content -->
     <ScrollView
@@ -39,7 +39,7 @@
                     android:focusable="true"
                     android:padding="8dp"
                     android:src="@drawable/ic_chevron_left"
-                    app:tint="#02542D" />
+                    app:tint="@color/primary" />
 
                 <!-- Header Title -->
                 <TextView
@@ -48,7 +48,7 @@
                     android:layout_centerInParent="true"
                     android:fontFamily="@font/lexend"
                     android:text="Thiết lập tài khoản"
-                    android:textColor="#000000"
+                    android:textColor="@color/primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -79,13 +79,13 @@
                     android:paddingHorizontal="16dp"
                     android:paddingBottom="4dp"
                     android:text="Tài Khoản Của Tôi"
-                    android:textColor="#8E8E93"
+                    android:textColor="@color/primary"
                     android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/white"
+                    android:background="@color/white"
                     android:orientation="vertical"
                     android:paddingHorizontal="16dp">
 
@@ -103,7 +103,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Tài khoản &amp; Bảo mật"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -112,13 +112,13 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#D9D9D9" />
+                        android:background="@color/gray_light" />
 
                     <!-- Item: Địa chỉ -->
                     <RelativeLayout
@@ -134,7 +134,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Địa chỉ"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -143,13 +143,13 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#D9D9D9" />
+                        android:background="@color/gray_light" />
 
                     <!-- Item: Tài khoản / Thẻ ngân hàng -->
                     <RelativeLayout
@@ -165,7 +165,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Tài khoản / Thẻ ngân hàng"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -174,7 +174,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -192,13 +192,13 @@
                     android:paddingHorizontal="16dp"
                     android:paddingBottom="4dp"
                     android:text="Cài đặt"
-                    android:textColor="#8E8E93"
+                    android:textColor="@color/primary"
                     android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/white"
+                    android:background="@color/white"
                     android:orientation="vertical"
                     android:paddingHorizontal="16dp">
 
@@ -216,7 +216,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Cài đặt chat"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -225,13 +225,13 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#D9D9D9" />
+                        android:background="@color/gray_light" />
 
                     <!-- Item: Cài đặt thông báo -->
                     <RelativeLayout
@@ -247,7 +247,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Cài đặt thông báo"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -256,13 +256,13 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#D9D9D9" />
+                        android:background="@color/gray_light" />
 
                     <!-- Item: Cài đặt riêng tư -->
                     <RelativeLayout
@@ -278,7 +278,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Cài đặt riêng tư"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -287,13 +287,13 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#D9D9D9" />
+                        android:background="@color/gray_light" />
 
                     <!-- Item: Ngôn ngữ / Language -->
                     <RelativeLayout
@@ -314,7 +314,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Ngôn ngữ / Language"
-                                android:textColor="#000000"
+                                android:textColor="@color/primary"
                                 android:textSize="14sp" />
 
                             <TextView
@@ -322,7 +322,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="Tiếng Việt"
-                                android:textColor="#AEAEB2"
+                                android:textColor="@color/gray_dark"
                                 android:textSize="13sp" />
                         </LinearLayout>
 
@@ -332,7 +332,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -350,13 +350,13 @@
                     android:paddingHorizontal="16dp"
                     android:paddingBottom="4dp"
                     android:text="Hỗ trợ"
-                    android:textColor="#8E8E93"
+                    android:textColor="@color/primary"
                     android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/white"
+                    android:background="@color/white"
                     android:orientation="vertical"
                     android:paddingHorizontal="16dp">
 
@@ -374,7 +374,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Trung tâm hỗ trợ"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -383,13 +383,13 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#D9D9D9" />
+                        android:background="@color/gray_light" />
 
                     <!-- Item: Tiêu chuẩn cộng đồng -->
                     <RelativeLayout
@@ -405,7 +405,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Tiêu chuẩn cộng đồng"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -414,13 +414,13 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#D9D9D9" />
+                        android:background="@color/gray_light" />
 
                     <!-- Item: Điều khoản Rootie -->
                     <RelativeLayout
@@ -436,7 +436,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Điều khoản Rootie"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -445,13 +445,13 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#D9D9D9" />
+                        android:background="@color/gray_light" />
 
                     <!-- Item: Hài lòng với Rootie? -->
                     <RelativeLayout
@@ -467,7 +467,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:text="Hài lòng với Rootie? Hãy đánh giá ngay"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -476,7 +476,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#C3C8C2" />
+                            app:tint="@color/gray_light" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -499,7 +499,7 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:text="Chuyển tài khoản / Đăng xuất"
-                    android:textColor="#000000"
+                    android:textColor="@color/primary"
                     android:textSize="14sp" />
             </LinearLayout>
 
