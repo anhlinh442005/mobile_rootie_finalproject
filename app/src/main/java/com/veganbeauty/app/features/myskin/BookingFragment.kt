@@ -110,7 +110,7 @@ class BookingFragment : RootieFragment() {
             val currentCal = Calendar.getInstance()
             val maxCal = Calendar.getInstance().apply { add(Calendar.MONTH, 2) }
 
-            val picker = DatePickerDialog(requireContext(), R.style.Theme_DeviceDefault_Light_Dialog_Alert, { _, year, month, dayOfMonth ->
+            val picker = DatePickerDialog(requireContext(), android.R.style.Theme_DeviceDefault_Light_Dialog_Alert, { _, year, month, dayOfMonth ->
                 val chosenCal = Calendar.getInstance()
                 chosenCal.set(year, month, dayOfMonth)
                 setupDateList(chosenCal, rvDates)
@@ -214,7 +214,7 @@ class BookingFragment : RootieFragment() {
                 "Thời gian: ${sTime.time} - ${sDate.dayOfWeek}, ${sDate.date}/$year\n" +
                 "Chi nhánh: $storeNameStr"
 
-        AlertDialog.Builder(requireContext(), R.style.Theme_DeviceDefault_Light_Dialog_Alert)
+        AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
             .setTitle("Xác nhận đặt lịch")
             .setMessage(msg)
             .setPositiveButton("Đồng ý") { _, _ ->

@@ -186,7 +186,7 @@ class SkinHistoryFragment : Fragment() {
             
             // Xóa đường viền phải và trên
             axisRight.isEnabled = false
-            borders.forEach { _ -> setDrawBorders(false) }
+            setDrawBorders(false)
 
             // Thêm padding
             setExtraOffsets(0f, 20f, 16f, 0f)

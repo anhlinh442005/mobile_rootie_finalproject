@@ -9,6 +9,8 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.veganbeauty.app.features.shop.product.CartHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import androidx.viewpager2.widget.ViewPager2
@@ -40,11 +42,11 @@ class HomeFragment : RootieFragment() {
 
   private lateinit var viewModel: ShopViewModel
 
-  private val recentAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail)
-  private val recommendationsAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail)
-  private val bestsellerAdapter = HomeBestsellerAdapter(onItemClick = ::openProductDetail)
+  private val recentAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
+  private val recommendationsAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
+  private val bestsellerAdapter = HomeBestsellerAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
   private val topSearchAdapter = HomeTopSearchAdapter(onItemClick = ::openProductDetail)
-  private val flashSaleAdapter = HomeFlashsaleAdapter(onItemClick = ::openProductDetail)
+  private val flashSaleAdapter = HomeFlashsaleAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
   private val categoryAdapter = HomeCategoryAdapter()
   private val bannerAdapter = HomeBannerAdapter()
   private val shortcutAdapter = com.veganbeauty.app.features.home.adapter.HomeShortcutAdapter()
@@ -162,20 +164,29 @@ class HomeFragment : RootieFragment() {
     val calendar = Calendar.getInstance()
     val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
     
-    val endHour = 12
-    val startHour = 9
-    
-    val endTimeMillis = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, endHour)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
+    var endHour = -1
 
-    val nowMillis = System.currentTimeMillis()
+    if (currentHour in 1 until 5) {
+        endHour = 5
+    } else if (currentHour in 9 until 13) {
+        endHour = 13
+    } else if (currentHour in 16 until 24) {
+        endHour = 24
+    }
 
-    val timeRemaining = if (currentHour in startHour until endHour) {
-        endTimeMillis - nowMillis
+    val timeRemaining = if (endHour != -1) {
+        val endTimeMillis = Calendar.getInstance().apply {
+            if (endHour == 24) {
+                add(Calendar.DAY_OF_YEAR, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+            } else {
+                set(Calendar.HOUR_OF_DAY, endHour)
+            }
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        endTimeMillis - System.currentTimeMillis()
     } else {
         0L
     }
@@ -373,7 +384,7 @@ class HomeFragment : RootieFragment() {
     val categories =
         products
             .map { it.category }
-            .filter { it.isNotBlank() }
+            .filter { it.isNotBlank() && it != "Chăm Sóc Tóc" && it != "Chăm Sóc Mái Tóc" }
             .distinct()
             .take(6)
             .map { categoryName ->
@@ -434,6 +445,10 @@ class HomeFragment : RootieFragment() {
         .replace(R.id.main_container, detailFragment)
         .addToBackStack(null)
         .commit()
+  }
+
+  private fun addToCart(product: ProductEntity) {
+    CartHelper.addToCart(requireContext(), lifecycleScope, product, 1)
   }
 
   private fun openShop() {

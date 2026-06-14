@@ -123,8 +123,7 @@
                         android:text="@string/home_promo_sunscreen_subtitle"
                         android:textAllCaps="true"
                         android:textColor="#4D6A4F"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                        android:textSize="12sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -132,7 +131,7 @@
                         android:layout_marginTop="8dp"
                         android:text="@string/home_promo_sunscreen_title"
                         android:textColor="#4D6A4F"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -141,7 +140,7 @@
                         android:layout_marginTop="10dp"
                         android:text="@string/home_promo_sunscreen_desc"
                         android:textColor="#4D6A4F"
-                        android:textSize="13sp" />
+                        android:textSize="8sp" />
 
                     <TextView
                         android:id="@+id/btnPromoSunscreen"
@@ -154,7 +153,7 @@
                         android:paddingVertical="8dp"
                         android:text="@string/home_view_now"
                         android:textColor="#02542D"
-                        android:textSize="12sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -163,7 +162,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_gravity="center"/>
+                    android:paddingEnd="10dp"/>
             </LinearLayout>
 
             <TextView
@@ -275,7 +274,8 @@
                     app:layout_constraintWidth_percent="0.85"
                     app:layout_constraintHeight_percent="0.51"
                     app:layout_constraintVertical_bias="0.59"
-                    android:layout_marginTop="55dp"
+                    android:layout_marginTop="85dp"
+                    android:layout_marginRight="4dp"
                     android:layout_gravity="center_horizontal"
                     app:layout_constraintTop_toTopOf="@id/ivFlashsaleBg"
                     app:layout_constraintBottom_toBottomOf="@id/ivFlashsaleBg"
@@ -320,19 +320,18 @@
 
                             <TextView
                                 android:id="@+id/tvFlashHour"
-                                android:layout_width="15dp"
-                                android:layout_height="15dp"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
                                 android:background="@drawable/bg_white_rounded_4dp"
                                 android:fontFamily="@font/be_vietnam_pro_bold"
                                 android:gravity="center"
                                 android:text="00"
                                 android:textColor="#3E4D44"
-                                android:textSize="9sp" />
+                                android:textSize="7sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
                                 android:fontFamily="@font/be_vietnam_pro_regular"
                                 android:text="Giờ"
                                 android:textColor="@color/white"
@@ -357,19 +356,19 @@
 
                             <TextView
                                 android:id="@+id/tvFlashMinute"
-                                android:layout_width="15dp"
-                                android:layout_height="15dp"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
                                 android:background="@drawable/bg_white_rounded_4dp"
                                 android:fontFamily="@font/be_vietnam_pro_bold"
                                 android:gravity="center"
                                 android:text="00"
                                 android:textColor="#3E4D44"
-                                android:textSize="9sp" />
+                                android:textSize="7sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
+                                android:layout_marginTop="0dp"
                                 android:fontFamily="@font/be_vietnam_pro_regular"
                                 android:text="Phút"
                                 android:textColor="@color/white"
@@ -394,19 +393,18 @@
 
                             <TextView
                                 android:id="@+id/tvFlashSecond"
-                                android:layout_width="15dp"
-                                android:layout_height="15dp"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
                                 android:background="@drawable/bg_white_rounded_4dp"
                                 android:fontFamily="@font/be_vietnam_pro_bold"
                                 android:gravity="center"
                                 android:text="00"
                                 android:textColor="#3E4D44"
-                                android:textSize="9sp" />
+                                android:textSize="7sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
                                 android:fontFamily="@font/be_vietnam_pro_regular"
                                 android:text="Giây"
                                 android:textColor="@color/white"
@@ -432,7 +430,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingVertical="16dp"
+                    android:paddingVertical="26dp"
                     android:paddingHorizontal="16dp"
                     android:gravity="center_vertical"
                     android:baselineAligned="false">
@@ -557,6 +555,9 @@
                     android:layout_width="0dp"
                     android:layout_height="120dp"
                     android:layout_weight="1"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="4dp"
+                    android:elevation="4dp"
                     android:background="@drawable/bg_home_bestseller_card"
                     android:padding="12dp"
                     android:orientation="vertical">
@@ -601,6 +602,9 @@
                     android:layout_width="0dp"
                     android:layout_height="120dp"
                     android:layout_weight="1"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="4dp"
+                    android:elevation="4dp"
                     android:background="@drawable/bg_home_bestseller_card"
                     android:padding="12dp"
                     android:orientation="vertical">
@@ -720,14 +724,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_pill_dark_olive"
                         android:paddingHorizontal="20dp"
                         android:paddingVertical="10dp"
-                        android:text="Khám phá ngay  ❯"
+                        android:text="Khám phá ngay  "
                         android:textColor="@color/white"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:fontFamily="@font/be_vietnam_pro"
-                        android:background="@drawable/bg_pill_dark_olive" />
+                        android:gravity="center"
+                        app:drawableEndCompat="@drawable/ic_chevron_right"
+                        app:drawableTint="@color/white" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
