@@ -180,6 +180,7 @@ class LocalJsonReader(private val context: Context) {
                         id = obj.getString("id"),
                         name = obj.getString("name"),
                         sku = obj.getString("sku"),
+                        barcode = obj.optString("barcode", ""),
                         price = obj.getLong("price"),
                         originalPrice = if (obj.has("originalPrice")) obj.getLong("originalPrice") else null,
                         category = obj.getString("category"),
@@ -483,6 +484,8 @@ class LocalJsonReader(private val context: Context) {
                         status = obj.getString("status"),
                         totalAmount = finalTotal,
                         items = orderItems,
+                        userId = if (obj.has("userId")) obj.optString("userId", "").takeIf { it.isNotBlank() } else null,
+                        isGuest = obj.optBoolean("isGuest", false),
                         shippingName = obj.optString("shippingName", "Nguyễn Văn A"),
                         shippingPhone = obj.optString("shippingPhone", "090 123 4567"),
                         shippingAddress = obj.optString("shippingAddress", "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh"),
@@ -495,7 +498,10 @@ class LocalJsonReader(private val context: Context) {
                         reviewText = if (obj.has("reviewText")) obj.getString("reviewText") else null,
                         reviewImage = if (obj.has("reviewImage")) obj.getString("reviewImage") else null,
                         isAnonymous = obj.optBoolean("isAnonymous", false),
-                        recommendToFriends = obj.optBoolean("recommendToFriends", false)
+                        recommendToFriends = obj.optBoolean("recommendToFriends", false),
+                        billingName = obj.optString("billingName", "").takeIf { it.isNotBlank() },
+                        billingPhone = obj.optString("billingPhone", "").takeIf { it.isNotBlank() },
+                        billingEmail = obj.optString("billingEmail", "").takeIf { it.isNotBlank() }
                     )
                 )
             }
@@ -637,10 +643,32 @@ class LocalJsonReader(private val context: Context) {
                 
                 val storeCode = obj.optString("ma_cua_hang", "")
                 val storeName = obj.optString("ten_cua_hang", "")
+                val type = obj.optString("loai_hinh", "Cửa hàng mỹ phẩm")
                 
                 val addressObj = obj.optJSONObject("dia_chi")
                 val address = addressObj?.optString("dia_chi_day_du", "") ?: ""
                 val province = addressObj?.optString("tinh_thanh", "") ?: ""
+                val district = addressObj?.optString("quan_huyen", "") ?: ""
+                val ward = addressObj?.optString("phuong_xa", "") ?: ""
+                val street = addressObj?.optString("duong", "") ?: ""
+                val number = addressObj?.optString("so_nha", "") ?: ""
+                
+                val toaDoObj = obj.optJSONObject("toa_do")
+                val lat = toaDoObj?.optDouble("lat", 0.0) ?: 0.0
+                val lng = toaDoObj?.optDouble("lng", 0.0) ?: 0.0
+                
+                val contactObj = obj.optJSONObject("thong_tin_lien_he")
+                val email = contactObj?.optString("email", "") ?: ""
+                val phoneArray = contactObj?.optJSONArray("so_dien_thoai")
+                val phone = if (phoneArray != null && phoneArray.length() > 0) {
+                    val tempPhones = mutableListOf<String>()
+                    for (j in 0 until phoneArray.length()) {
+                        tempPhones.add(phoneArray.getString(j))
+                    }
+                    tempPhones.joinToString(",")
+                } else {
+                    contactObj?.optString("so_dien_thoai", "") ?: ""
+                }
                 
                 val timeObj = obj.optJSONObject("thoi_gian_hoat_dong")
                 val thu26Obj = timeObj?.optJSONObject("thu_2_6")
@@ -657,6 +685,17 @@ class LocalJsonReader(private val context: Context) {
                     ""
                 }
                 
+                val tienNghiArray = obj.optJSONArray("tien_nghi")
+                val tienNghiStr = if (tienNghiArray != null) {
+                    val tempTienNghi = mutableListOf<String>()
+                    for (j in 0 until tienNghiArray.length()) {
+                        tempTienNghi.add(tienNghiArray.getString(j))
+                    }
+                    tempTienNghi.joinToString(",")
+                } else {
+                    ""
+                }
+                
                 // Mock distance based on ID or random to make it look realistic (1.0 to 15.0 km)
                 val randomSeed = id.hashCode()
                 val mockDistance = 1.0 + (Math.abs(randomSeed) % 140) / 10.0
@@ -666,22 +705,22 @@ class LocalJsonReader(private val context: Context) {
                         id = id,
                         maCuaHang = storeCode,
                         tenCuaHang = storeName,
-                        loaiHinh = obj.optString("loai_hinh", "Cửa hàng"),
-                        soNha = "",
-                        duong = "",
-                        phuongXa = "",
-                        quanHuyen = "",
+                        loaiHinh = type,
+                        soNha = number,
+                        duong = street,
+                        phuongXa = ward,
+                        quanHuyen = district,
                         tinhThanh = province,
                         diaChiDayDu = address,
-                        lat = 0.0,
-                        lng = 0.0,
-                        soDienThoai = "",
-                        email = "",
-                        moCua = thu26Obj?.optString("mo_cua", "08:00") ?: "08:00",
-                        dongCua = thu26Obj?.optString("dong_cua", "22:00") ?: "22:00",
-                        trangThai = "Đang hoạt động",
-                        isActive = true,
-                        tienNghi = "",
+                        lat = lat,
+                        lng = lng,
+                        soDienThoai = phone,
+                        email = email,
+                        moCua = openHours.split(" - ").firstOrNull() ?: "08:00",
+                        dongCua = openHours.split(" - ").lastOrNull() ?: "22:00",
+                        trangThai = obj.optString("trang_thai", "Đang hoạt động"),
+                        isActive = obj.optBoolean("isActive", true),
+                        tienNghi = tienNghiStr,
                         imageUrl = imageUrl,
                         distance = mockDistance
                     )

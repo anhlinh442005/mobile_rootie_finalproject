@@ -12,8 +12,25 @@ interface OrderDao {
     @Query("SELECT * FROM orders WHERE status = :status")
     fun getOrdersByStatus(status: String): Flow<List<OrderEntity>>
 
+    @Query("SELECT * FROM orders WHERE userId = :userId OR (isGuest = 1 AND billingPhone = :phone)")
+    fun getOrdersForUserOrGuest(userId: String, phone: String): Flow<List<OrderEntity>>
+
+    @Query("SELECT * FROM orders WHERE userId = :userId")
+    fun getOrdersForUser(userId: String): Flow<List<OrderEntity>>
+
+    /**
+     * Guest orders identified by the phone number typed at checkout.
+     * Used so a returning guest with the same phone sees their prior
+     * orders, while different phones do not see each other's orders.
+     */
+    @Query("SELECT * FROM orders WHERE isGuest = 1 AND billingPhone = :phone")
+    fun getOrdersForGuestPhone(phone: String): Flow<List<OrderEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrders(orders: List<OrderEntity>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrder(order: OrderEntity): Long
 
     @Query("UPDATE orders SET status = :status WHERE orderId = :orderId")
     suspend fun updateOrderStatus(orderId: String, status: String): Int

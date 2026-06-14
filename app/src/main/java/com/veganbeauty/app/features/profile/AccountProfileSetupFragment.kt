@@ -96,8 +96,22 @@ class AccountProfileSetupFragment : RootieFragment() {
 
         // Logout
         binding.btnLogout.setOnClickListener {
-            Toast.makeText(context, "Đã đăng xuất", Toast.LENGTH_SHORT).show()
-            // In a real app, clear session and navigate to Login screen
+            context?.let { ctx ->
+                com.veganbeauty.app.data.local.ProfileSession.setLoggedIn(ctx, false)
+                // Also clear the last login timestamp in SharedPreferences to ensure isLoggedIn returns false
+                ctx.getSharedPreferences("rootie_profile_prefs", android.content.Context.MODE_PRIVATE)
+                    .edit()
+                    .putLong("last_login", 0L)
+                    .apply()
+                
+                Toast.makeText(ctx, "Đã đăng xuất thành công", Toast.LENGTH_SHORT).show()
+                
+                // Navigate back to HomeWelcomeActivity to allow logging in or testing guest mode
+                val intent = android.content.Intent(activity, com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity::class.java)
+                intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                activity?.finish()
+            }
         }
     }
 

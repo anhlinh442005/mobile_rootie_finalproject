@@ -23,6 +23,10 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
         }
 
+        if (!com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(this)) {
+            com.veganbeauty.app.features.shop.product.CartHelper.clearCart(this);
+        }
+
         // Trigger ONE-TIME SYNC of all mock data to Firebase
         com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncAllLocalDataToFirebase(this);
 
