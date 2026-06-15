@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Left timeline graphic column -->
+    <FrameLayout
+        android:id="@+id/layoutIndicator"
+        android:layout_width="24dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Vertical Connector Line - Upper part -->
+        <View
+            android:id="@+id/viewLineTop"
+            android:layout_width="2dp"
+            android:layout_height="12dp"
+            android:layout_gravity="top|center_horizontal"
+            android:background="#E0E4E2" />
+
+        <!-- Vertical Connector Line - Lower part -->
+        <View
+            android:id="@+id/viewLineBottom"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="12dp"
+            android:background="#E0E4E2" />
+
+        <!-- Dot Container -->
+        <FrameLayout
+            android:id="@+id/layoutDot"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="4dp">
+
+            <!-- Active glowing outer border ring -->
+            <View
+                android:id="@+id/viewDotOuter"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="@drawable/bg_circle_white"
+                android:backgroundTint="#3E4D44"
+                android:alpha="0.2"
+                android:visibility="gone" />
+
+            <!-- Solid inner center dot -->
+            <View
+                android:id="@+id/viewDotInner"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle_white"
+                android:backgroundTint="#7E8A83" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <!-- Details Column -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:paddingBottom="20dp"
+        app:layout_constraintStart_toEndOf="@id/layoutIndicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvStepTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#7E8A83"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Đang giao đến bạn" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tvStepDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif"
+            android:textColor="#7E8A83"
+            android:textSize="13sp"
+            tools:text="Shipper đang trên đường giao hàng." />
+
+        <!-- Time and Date -->
+        <TextView
+            android:id="@+id/tvStepDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif"
+            android:textColor="#7E8A83"
+            android:textSize="12sp"
+            tools:text="09:30, 24/10/2023" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
