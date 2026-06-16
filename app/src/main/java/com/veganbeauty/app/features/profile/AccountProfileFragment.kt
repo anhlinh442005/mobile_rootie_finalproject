@@ -122,7 +122,7 @@ class AccountProfileFragment : RootieFragment() {
         // Navigate to Order List Fragment with specific status filters pre-selected
         setSecuredOnClickListener(binding.btnStatusPending) {
             parentFragmentManager.beginTransaction()
-                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Chờ xác nhận"))
+                .replace(com.veganbeauty.app.R.id.main_container, AccountOrderListFragment.newInstance("Chờ xử lý"))
                 .addToBackStack(null)
                 .commit()
         }

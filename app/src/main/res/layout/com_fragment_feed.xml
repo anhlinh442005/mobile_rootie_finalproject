@@ -93,6 +93,7 @@
                 app:tint="@color/primary" />
 
             <ImageView
+                android:id="@+id/ivNotification"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/home_ic_notification"

@@ -80,12 +80,14 @@
                     <!-- Bell with badge overlay (SVG icon already contains the badge) -->
                     <FrameLayout
                         android:id="@+id/btn_notification"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
+                            android:layout_gravity="center"
                             android:src="@drawable/home_ic_notification" />
                     </FrameLayout>
                 </LinearLayout>
@@ -611,7 +613,7 @@
                     android:layout_marginTop="16dp"
                     android:orientation="horizontal">
 
-                    <!-- Step 1: Chờ xác nhận -->
+                    <!-- Step 1: Chờ xử lý -->
                     <LinearLayout
                         android:id="@+id/btn_status_pending"
                         android:layout_width="0dp"
@@ -641,7 +643,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:gravity="center"
-                            android:text="Chờ xác nhận"
+                            android:text="Chờ xử lý"
                             android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>

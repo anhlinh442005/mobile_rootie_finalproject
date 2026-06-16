@@ -444,7 +444,38 @@ class LocalJsonReader(private val context: Context) {
             videoList
         } catch (e: Exception) { emptyList() }
     }
-    fun getAllNotifications(): List<NotificationItem> = emptyList()
+    fun getAllNotifications(): List<NotificationItem> {
+        return try {
+            val jsonString = context.assets.open("notification_account.json").bufferedReader().use { it.readText() }
+            val jsonArray = org.json.JSONArray(jsonString)
+            val list = mutableListOf<NotificationItem>()
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                list.add(
+                    NotificationItem(
+                        id = obj.getString("id"),
+                        title = obj.getString("title"),
+                        content = obj.getString("content"),
+                        time = obj.getString("time"),
+                        category = obj.getString("category"),
+                        tag = obj.optString("tag").takeIf { it.isNotEmpty() },
+                        voucherCode = obj.optString("voucherCode").takeIf { it.isNotEmpty() },
+                        actionText = obj.optString("actionText").takeIf { it.isNotEmpty() },
+                        isRead = obj.optBoolean("isRead", false),
+                        section = obj.getString("section"),
+                        iconResName = obj.getString("iconResName"),
+                        notificationType = obj.optString("notificationType").takeIf { it.isNotEmpty() },
+                        orderId = obj.optString("orderId").takeIf { it.isNotEmpty() },
+                        scheduleId = obj.optString("scheduleId").takeIf { it.isNotEmpty() }
+                    )
+                )
+            }
+            list
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
     fun getAllOrders(): List<OrderEntity> {
         return try {
             val jsonString = context.assets.open("orders.json").bufferedReader().use { it.readText() }

@@ -330,9 +330,7 @@ class HomeFragment : RootieFragment() {
     binding.root.findViewById<View>(R.id.home_header_qr_btn).setOnClickListener {
       Toast.makeText(context, "Mở trình quét mã QR", Toast.LENGTH_SHORT).show()
     }
-    binding.root.findViewById<View>(R.id.home_header_notification_btn).setOnClickListener {
-      Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show()
-    }
+
 
     binding.tvRecentSeeAll.setOnClickListener { openShop() }
     binding.tvCategoriesSeeAll.setOnClickListener { openShop() }

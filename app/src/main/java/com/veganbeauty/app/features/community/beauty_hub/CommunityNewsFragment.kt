@@ -27,6 +27,16 @@ class CommunityNewsFragment : RootieFragment() {
 
     private val postAdapter = PostAdapter()
 
+    companion object {
+        fun newInstance(targetPostId: String? = null): CommunityNewsFragment {
+            val fragment = CommunityNewsFragment()
+            val args = Bundle()
+            args.putString("TARGET_POST_ID", targetPostId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,6 +51,14 @@ class CommunityNewsFragment : RootieFragment() {
 
         binding.ivBack.setOnClickListener {
             parentFragmentManager.popBackStack()
+        }
+
+        binding.ivNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.notification.CommunityNotificationFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         // Hardcode official Rootie VietNam information
@@ -200,6 +218,16 @@ class CommunityNewsFragment : RootieFragment() {
             // Reverse so newest posts appear first
             val sortedNews = newsPosts.sortedByDescending { it.createdAt }
             postAdapter.updateData(sortedNews, emptyList(), emptyList(), emptyList())
+
+            val targetPostId = arguments?.getString("TARGET_POST_ID")
+            if (!targetPostId.isNullOrEmpty()) {
+                val index = sortedNews.indexOfFirst { it.postId == targetPostId }
+                if (index != -1) {
+                    binding.rvNews.post {
+                        (binding.rvNews.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(index, 0)
+                    }
+                }
+            }
         }
     }
 

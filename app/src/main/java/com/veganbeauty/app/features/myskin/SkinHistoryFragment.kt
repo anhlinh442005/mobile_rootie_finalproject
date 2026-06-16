@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import com.veganbeauty.app.core.base.RootieFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -21,7 +21,7 @@ import com.veganbeauty.app.databinding.SkinFragmentHistoryBinding
 import org.json.JSONArray
 import org.json.JSONObject
 
-class SkinHistoryFragment : Fragment() {
+class SkinHistoryFragment : RootieFragment() {
 
     private var _binding: SkinFragmentHistoryBinding? = null
     private val binding get() = _binding!!
@@ -38,9 +38,7 @@ class SkinHistoryFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        
+    override fun setupUI(view: View) {
         allHistory = LocalJsonReader(requireContext()).getSkinHistory()
         currentHistory = allHistory
 

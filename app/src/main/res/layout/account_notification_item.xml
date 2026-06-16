@@ -7,6 +7,9 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="6dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="16dp"
     app:cardElevation="1dp"
     app:strokeWidth="1dp"
@@ -98,7 +101,41 @@
             app:strokeColor="@color/primary"
             app:layout_constraintStart_toStartOf="@id/tvTitle"
             app:layout_constraintTop_toBottomOf="@id/tvContent"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="COPY MÃ" />
+
+        <!-- Individual Item Actions -->
+        <LinearLayout
+            android:id="@+id/layoutActions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvContent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/btnMarkRead"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_check"
+                app:tint="@color/primary"
+                android:contentDescription="Đánh dấu đã đọc" />
+
+            <ImageView
+                android:id="@+id/btnDelete"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_address_trash"
+                app:tint="#D73B35"
+                android:contentDescription="Xoá thông báo" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

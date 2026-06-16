@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import com.veganbeauty.app.core.base.RootieFragment
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
@@ -20,7 +20,7 @@ import com.veganbeauty.app.R
 import com.veganbeauty.app.databinding.SkinFragmentScanResultBinding
 import org.json.JSONArray
 
-class SkinScanResultFragment : Fragment() {
+class SkinScanResultFragment : RootieFragment() {
 
     companion object {
         private const val ARG_IMAGE_URI = "arg_image_uri"
@@ -46,9 +46,7 @@ class SkinScanResultFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun setupUI(view: View) {
         setupListeners()
         loadData()
     }

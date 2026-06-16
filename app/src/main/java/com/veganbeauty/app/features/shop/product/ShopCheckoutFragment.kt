@@ -1131,7 +1131,7 @@ class ShopCheckoutFragment : RootieFragment() {
             orderId = orderCode,
             orderDate = nowDate,
             orderTime = nowTime,
-            status = "Đã đặt hàng",
+            status = "Chờ xử lý",
             totalAmount = totalAmount,
             items = orderItems,
             userId = finalUserId,

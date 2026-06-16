@@ -4,10 +4,13 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.veganbeauty.app.R
+import com.veganbeauty.app.data.local.LocalJsonReader
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
 import com.veganbeauty.app.features.account.checkin.AccountCheckinFragment
 import com.veganbeauty.app.features.account.order.AccountOrderDetailFragment
 import com.veganbeauty.app.features.myskin.BookingDetailUpcomingFragment
+import com.veganbeauty.app.features.myskin.BookingDetailCompletedFragment
+import com.veganbeauty.app.features.myskin.BookingDetailCancelledFragment
 import com.veganbeauty.app.features.profile.AccountVoucherDetailFragment
 import com.veganbeauty.app.features.profile.VoucherItem
 import com.veganbeauty.app.features.routine.SkinReminderFragment
@@ -32,11 +35,23 @@ object NotificationIntentHandler {
             return
         }
 
+        if (action == "open_community_notification_list") {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.notification.CommunityNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+            return
+        }
+
         if (action == "open_detail") {
-            val type = intent.getStringExtra("extra_notification_type") ?: ""
-            when (type.lowercase()) {
-                "voucher" -> {
-                    val code = intent.getStringExtra("extra_voucher_code") ?: "RT50KDEC"
+            val type = (intent.getStringExtra("extra_notification_type") ?: "").lowercase()
+            val voucherCode = intent.getStringExtra("extra_voucher_code")
+            val orderId = intent.getStringExtra("extra_order_id")
+            val scheduleId = intent.getStringExtra("extra_schedule_id")
+
+            when {
+                type == "voucher" || !voucherCode.isNullOrEmpty() -> {
+                    val code = voucherCode ?: "RT50KDEC"
                     val voucher = findVoucherByCode(activity, code) ?: VoucherItem(
                         id = "noti_voucher_1",
                         title = "Voucher giảm 50K sống xanh!",
@@ -58,42 +73,56 @@ object NotificationIntentHandler {
                         .addToBackStack(null)
                         .commit()
                 }
-                "order" -> {
-                    val orderId = intent.getStringExtra("extra_order_id") ?: "ORDER_PLACEHOLDER"
-                    val fragment = AccountOrderDetailFragment.newInstance(orderId)
+                type == "order" || !orderId.isNullOrEmpty() -> {
+                    val actualOrderId = orderId ?: "RT8829"
+                    val fragment = AccountOrderDetailFragment.newInstance(actualOrderId)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_container, fragment)
                         .addToBackStack(null)
                         .commit()
                 }
-                "skin care" -> {
+                type == "skin care" -> {
                     val fragment = SkinReminderFragment()
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_container, fragment)
                         .addToBackStack(null)
                         .commit()
                 }
-                "checkin" -> {
+                type == "checkin" -> {
                     val fragment = AccountCheckinFragment()
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_container, fragment)
                         .addToBackStack(null)
                         .commit()
                 }
-                "schedule date" -> {
-                    val scheduleId = intent.getStringExtra("extra_schedule_id") ?: "BK_NOTI_101"
-                    val mockBooking = BookingHistoryEntity(
-                        id = scheduleId,
-                        serviceName = "Chăm sóc da chuyên sâu Acne Free",
-                        dateDisplay = "15 Tháng 6, 2026",
-                        dayOfWeek = "Thứ Hai",
-                        time = "14:00 - 15:30",
-                        duration = "90 phút",
-                        storeName = "Rootie Quận 1",
-                        storeAddress = "123 Nguyễn Thị Minh Khai, Quận 1, TP. HCM",
-                        status = "Sắp diễn ra"
-                    )
-                    val fragment = BookingDetailUpcomingFragment.newInstance(mockBooking)
+                type == "schedule date" || !scheduleId.isNullOrEmpty() -> {
+                    val actualScheduleId = scheduleId ?: "BK_NOTI_101"
+                    val bookings = LocalJsonReader(activity).getUserBookingHistory("xuannk23411@st.uel.edu.vn")
+                    val realBooking = bookings.find { it.id == actualScheduleId }
+                    val fragment = if (realBooking != null) {
+                        when (realBooking.status) {
+                            "Đã hoàn thành" -> BookingDetailCompletedFragment.newInstance(realBooking)
+                            "Đã huỷ" -> BookingDetailCancelledFragment.newInstance(realBooking)
+                            else -> BookingDetailUpcomingFragment.newInstance(realBooking)
+                        }
+                    } else {
+                        val mockBooking = BookingHistoryEntity(
+                            id = actualScheduleId,
+                            userId = "user_1",
+                            userName = "Nguyễn Khánh Xuân",
+                            userPhone = "0901234567",
+                            userEmail = "xuannk23411@st.uel.edu.vn",
+                            serviceName = "Chăm sóc da chuyên sâu Acne Free",
+                            dateDisplay = "15 Tháng 6, 2026",
+                            dayOfWeek = "Thứ Hai",
+                            time = "14:00 - 15:30",
+                            duration = "90 phút",
+                            storeName = "Rootie Quận 1",
+                            storeAddress = "123 Nguyễn Thị Minh Khai, Quận 1, TP. HCM",
+                            status = "Sắp diễn ra"
+                        )
+                        BookingDetailUpcomingFragment.newInstance(mockBooking)
+                    }
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_container, fragment)
                         .addToBackStack(null)
@@ -103,7 +132,7 @@ object NotificationIntentHandler {
         }
     }
 
-    private fun findVoucherByCode(context: Context, code: String): VoucherItem? {
+    fun findVoucherByCode(context: Context, code: String): VoucherItem? {
         return try {
             val jsonString = context.assets.open("vouchers.json").bufferedReader().use { it.readText() }
             val jsonArray = org.json.JSONArray(jsonString)

@@ -69,7 +69,7 @@ class OrderListAdapter(
             // Bind Status Badge
             binding.tvOrderStatus.text = order.status
             val (bgResId, textResId) = when (order.status) {
-                "Chờ xác nhận" -> Pair(R.color.status_pending_bg, R.color.status_pending_text)
+                "Chờ xử lý" -> Pair(R.color.status_pending_bg, R.color.status_pending_text)
                 "Đang xử lý" -> Pair(R.color.status_processing_bg, R.color.status_processing_text)
                 "Đang giao" -> Pair(R.color.status_delivering_bg, R.color.status_delivering_text)
                 "Hoàn tất" -> Pair(R.color.status_success_bg, R.color.status_success_text)
@@ -118,7 +118,7 @@ class OrderListAdapter(
             onReviewClick: (OrderEntity) -> Unit
         ) {
             when (order.status) {
-                "Chờ xác nhận" -> {
+                "Chờ xử lý" -> {
                     // Outlined: Hủy đơn, Filled: (Gone)
                     binding.btnActionOutlined.visibility = View.VISIBLE
                     binding.btnActionOutlined.text = "Hủy đơn"

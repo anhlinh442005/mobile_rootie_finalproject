@@ -4,6 +4,7 @@ import com.veganbeauty.app.data.local.dao.OrderDao
 import com.veganbeauty.app.data.local.dao.RewardPointDao
 import com.veganbeauty.app.data.local.dao.UserGiftDao
 import com.veganbeauty.app.data.local.entities.OrderEntity
+import com.veganbeauty.app.data.local.entities.OrderItem
 import com.veganbeauty.app.data.local.entities.RewardPointEntity
 import com.veganbeauty.app.data.local.entities.UserGiftEntity
 import com.veganbeauty.app.data.local.LocalJsonReader
@@ -291,5 +292,37 @@ class OrderRepository(
     suspend fun updateOrderStatus(orderId: String, status: String) {
         orderDao.updateOrderStatus(orderId, status)
         OrderStatusNotifier.simulateOnly(orderDao, orderId, status)
+    }
+
+    // Ensure order exists in local DB. If not, seed a realistic mock fallback.
+    suspend fun ensureOrderExists(orderId: String) {
+        val existing = orderDao.getOrderById(orderId)
+        if (existing == null) {
+            val mockOrder = OrderEntity(
+                orderId = orderId,
+                orderDate = "16/06/2026",
+                orderTime = "15:30",
+                status = "Đang giao",
+                totalAmount = 202000L,
+                items = listOf(
+                    OrderItem(
+                        productId = "product_rose_cream",
+                        productName = "Kem dưỡng hoa hồng Cocoon 50ml",
+                        productImage = "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1781257994/rose_cream_u2kgwf.png",
+                        quantity = 1,
+                        price = 222000L
+                    )
+                ),
+                userId = "test_001",
+                isGuest = false,
+                shippingName = "Nguyễn Khánh Xuân",
+                shippingPhone = "090 123 4567",
+                shippingAddress = "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+                shippingCost = 30000L,
+                voucherDiscount = 50000L,
+                paymentMethod = "Thanh toán khi nhận hàng (COD)"
+            )
+            orderDao.insertOrder(mockOrder)
+        }
     }
 }

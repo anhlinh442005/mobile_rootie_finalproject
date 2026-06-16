@@ -61,6 +61,15 @@ class CommunityFeedFragment : RootieFragment() {
             view.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)?.openDrawer(androidx.core.view.GravityCompat.START)
         }
 
+        // Open Notifications with slide transition
+        binding.ivNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.notification.CommunityNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Close Side Menu
         view.findViewById<View>(R.id.ivCloseMenu)?.setOnClickListener {
             view.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)?.closeDrawer(androidx.core.view.GravityCompat.START)

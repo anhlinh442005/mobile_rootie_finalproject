@@ -8,13 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import com.veganbeauty.app.core.base.RootieFragment
 import coil.load
 import com.veganbeauty.app.R
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
 import com.veganbeauty.app.databinding.SkinFragmentBookingDetailCancelledBinding
 
-class BookingDetailCancelledFragment : Fragment() {
+class BookingDetailCancelledFragment : RootieFragment() {
 
     private var _binding: SkinFragmentBookingDetailCancelledBinding? = null
     private val binding get() = _binding!!
@@ -37,9 +37,7 @@ class BookingDetailCancelledFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        
+    override fun setupUI(view: View) {
         binding.skinDetailBtnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }

@@ -15,8 +15,8 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.veganbeauty.app.R
+import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.SkinFragmentScanBinding
 import java.io.File
 import java.text.SimpleDateFormat
@@ -24,7 +24,7 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class SkinScanFragment : Fragment() {
+class SkinScanFragment : RootieFragment() {
 
     private var _binding: SkinFragmentScanBinding? = null
     private val binding get() = _binding!!
@@ -57,8 +57,7 @@ class SkinScanFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun setupUI(view: View) {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         setupListeners()

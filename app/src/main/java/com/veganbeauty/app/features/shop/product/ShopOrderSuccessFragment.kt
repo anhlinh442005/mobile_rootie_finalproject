@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager
 import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.ShopOrderSuccessBinding
+import com.veganbeauty.app.features.account.order.AccountOrderDetailFragment
 import com.veganbeauty.app.features.account.order.AccountOrderListFragment
 import com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity
 import com.veganbeauty.app.features.shop.home.ShopHomeFragment
@@ -176,6 +177,7 @@ class ShopOrderSuccessFragment : RootieFragment() {
     }
 
     private fun navigateToOrderStatus() {
+        val orderCode = arguments?.getString(ARG_ORDER_CODE) ?: ""
         parentFragmentManager.beginTransaction()
             .setCustomAnimations(
                 android.R.anim.fade_in,
@@ -183,7 +185,8 @@ class ShopOrderSuccessFragment : RootieFragment() {
                 android.R.anim.fade_in,
                 android.R.anim.fade_out
             )
-            .replace(R.id.main_container, AccountOrderListFragment.newInstance("Tất cả"))
+            .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(orderCode))
+            .addToBackStack(null)
             .commit()
     }
 

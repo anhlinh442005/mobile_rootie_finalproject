@@ -17,12 +17,15 @@ class ProfilePostDetailFragment : Fragment() {
     private var userId: String = "test_001"
     private var initialPosition: Int = 0
 
+    private var targetPostId: String? = null
+
     companion object {
-        fun newInstance(userId: String, initialPosition: Int): ProfilePostDetailFragment {
+        fun newInstance(userId: String, initialPosition: Int, targetPostId: String? = null): ProfilePostDetailFragment {
             val fragment = ProfilePostDetailFragment()
             val args = Bundle()
             args.putString("USER_ID", userId)
             args.putInt("INITIAL_POSITION", initialPosition)
+            args.putString("TARGET_POST_ID", targetPostId)
             fragment.arguments = args
             return fragment
         }
@@ -33,6 +36,7 @@ class ProfilePostDetailFragment : Fragment() {
         arguments?.let {
             userId = it.getString("USER_ID") ?: "test_001"
             initialPosition = it.getInt("INITIAL_POSITION", 0)
+            targetPostId = it.getString("TARGET_POST_ID")
         }
     }
 
@@ -68,12 +72,26 @@ class ProfilePostDetailFragment : Fragment() {
         val productsList = jsonReader.getProducts()
 
         viewModel.posts.observe(viewLifecycleOwner) { allPosts ->
+            val finalUserId = if (!targetPostId.isNullOrEmpty()) {
+                val targetPost = allPosts.find { it.postId == targetPostId }
+                targetPost?.authorId ?: userId
+            } else {
+                userId
+            }
+
             val myPosts = allPosts
-                .filter { it.authorId == userId }
+                .filter { it.authorId == finalUserId }
                 .distinctBy { it.postId }  // deduplicate by post ID - never show same post twice
                 .sortedByDescending { it.createdAt }
             adapter.updateData(myPosts, emptyList(), emptyList(), productsList)
-            layoutManager.scrollToPositionWithOffset(initialPosition, 0)
+
+            val scrollPos = if (!targetPostId.isNullOrEmpty()) {
+                val index = myPosts.indexOfFirst { it.postId == targetPostId }
+                if (index != -1) index else initialPosition
+            } else {
+                initialPosition
+            }
+            layoutManager.scrollToPositionWithOffset(scrollPos, 0)
         }
 
     }

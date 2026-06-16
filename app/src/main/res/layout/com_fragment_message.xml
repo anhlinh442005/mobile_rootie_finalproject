@@ -55,7 +55,7 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/btnNotification"
+            android:id="@+id/ivNotification"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/home_ic_notification"

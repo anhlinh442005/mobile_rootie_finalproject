@@ -62,8 +62,8 @@ class OrderListViewModel(
 
     val orderStats: LiveData<String> = scopedOrders.map { orders ->
         val total = orders.size
-        val pending = orders.count { it.status.equals("Chờ xác nhận", ignoreCase = true) }
-        "$total đơn • $pending chờ xác nhận"
+        val pending = orders.count { it.status.equals("Chờ xử lý", ignoreCase = true) }
+        "$total đơn • $pending chờ xử lý"
     }.asLiveData()
 
     init {

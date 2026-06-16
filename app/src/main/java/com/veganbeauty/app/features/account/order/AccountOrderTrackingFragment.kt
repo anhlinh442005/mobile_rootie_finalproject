@@ -98,7 +98,7 @@ class AccountOrderTrackingFragment : RootieFragment() {
 
         // Badge styling based on status
         val (badgeBgRes, badgeTextRes) = when (order.status) {
-            "Chờ xác nhận" -> Pair(R.color.status_pending_bg, R.color.status_pending_text)
+            "Chờ xử lý" -> Pair(R.color.status_pending_bg, R.color.status_pending_text)
             "Đang xử lý" -> Pair(R.color.status_processing_bg, R.color.status_processing_text)
             "Đang giao" -> Pair(R.color.status_delivering_bg, R.color.status_delivering_text)
             "Hoàn tất" -> Pair(R.color.status_success_bg, R.color.status_success_text)
@@ -191,7 +191,7 @@ class AccountOrderTrackingFragment : RootieFragment() {
                 description = "Đơn hàng của bạn đã được ghi nhận trên hệ thống.",
                 dateTimeStr = formatDateTime(cal1),
                 isCompleted = true,
-                isActive = status == "Chờ xác nhận"
+                isActive = status == "Chờ xử lý"
             ))
         }
 

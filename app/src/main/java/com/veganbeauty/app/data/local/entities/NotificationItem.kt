@@ -11,5 +11,8 @@ data class NotificationItem(
     val actionText: String? = null,
     var isRead: Boolean = false,
     val section: String, // "Hôm nay", "Hôm qua", "Cũ hơn"
-    val iconResName: String
+    val iconResName: String,
+    val notificationType: String? = null,
+    val orderId: String? = null,
+    val scheduleId: String? = null
 )

@@ -110,6 +110,33 @@ public class MainActivity extends AppCompatActivity {
         }).start();
 
         setupFloatingChatHead();
+
+        // Handle push notification intents
+        com.veganbeauty.app.features.account.notification.NotificationIntentHandler.handleIntent(this, getIntent());
+
+        // Request POST_NOTIFICATIONS permission for Android 13+ (API 33+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+
+        // Fetch and log FCM token
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+            .addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    android.util.Log.w("FCM_TOKEN", "Fetching FCM registration token failed", task.getException());
+                    return;
+                }
+                String token = task.getResult();
+                android.util.Log.d("FCM_TOKEN", "=== ROOTIE_FCM_TOKEN: " + token + " ===");
+                getSharedPreferences("RootiePrefs", MODE_PRIVATE)
+                    .edit()
+                    .putString("FCM_REGISTRATION_TOKEN", token)
+                    .apply();
+            });
     }
 
     private float initialTouchX;
@@ -280,6 +307,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(android.content.Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+
+        // Handle push notification intents
+        com.veganbeauty.app.features.account.notification.NotificationIntentHandler.handleIntent(this, intent);
+
         String navigateTo = intent.getStringExtra("NAVIGATE_TO");
         if (navigateTo != null) {
             androidx.fragment.app.Fragment destination = null;

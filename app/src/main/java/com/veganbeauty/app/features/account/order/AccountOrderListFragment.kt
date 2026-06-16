@@ -15,6 +15,9 @@ import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.data.local.LocalJsonReader
 import com.veganbeauty.app.data.local.RootieDatabase
 import com.veganbeauty.app.data.local.entities.OrderEntity
+import com.veganbeauty.app.data.local.entities.CartItemEntity
+import com.veganbeauty.app.features.ai.SkinAiChatFragment
+import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment
 import com.veganbeauty.app.data.repository.OrderRepository
 import com.veganbeauty.app.databinding.AccountOrderListFragmentBinding
 import androidx.lifecycle.lifecycleScope
@@ -44,13 +47,32 @@ class AccountOrderListFragment : RootieFragment() {
                 .commit()
         },
         onReorderClick = { order ->
-            Toast.makeText(requireContext(), "Mua lại sản phẩm từ đơn ${order.orderId}", Toast.LENGTH_SHORT).show()
+            val checkoutItems = ArrayList(order.items.map { item ->
+                CartItemEntity(
+                    id = item.productId,
+                    name = item.productName,
+                    image = item.productImage,
+                    price = item.price,
+                    quantity = item.quantity,
+                    isSelected = true
+                )
+            })
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems))
+                .addToBackStack(null)
+                .commit()
         },
         onTrackClick = { order ->
-            Toast.makeText(requireContext(), "Theo dõi đơn hàng: ${order.orderId}", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, AccountOrderTrackingFragment.newInstance(order.orderId))
+                .addToBackStack(null)
+                .commit()
         },
         onContactClick = { order ->
-            Toast.makeText(requireContext(), "Kết nối với tư vấn viên Rootie hỗ trợ đơn ${order.orderId}", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, SkinAiChatFragment())
+                .addToBackStack(null)
+                .commit()
         },
         onReviewClick = { order ->
             parentFragmentManager.beginTransaction()
@@ -107,7 +129,7 @@ class AccountOrderListFragment : RootieFragment() {
 
         // Setup click listeners for filter tabs (including newly added Success and Cancelled tabs)
         binding.tabAll.setOnClickListener { viewModel.setFilter("Tất cả") }
-        binding.tabPending.setOnClickListener { viewModel.setFilter("Chờ xác nhận") }
+        binding.tabPending.setOnClickListener { viewModel.setFilter("Chờ xử lý") }
         binding.tabProcessing.setOnClickListener { viewModel.setFilter("Đang xử lý") }
         binding.tabDelivering.setOnClickListener { viewModel.setFilter("Đang giao") }
         binding.tabSuccess.setOnClickListener { viewModel.setFilter("Hoàn tất") }
@@ -141,7 +163,7 @@ class AccountOrderListFragment : RootieFragment() {
     private fun updateTabStyles(activeStatus: String) {
         val tabs = mapOf(
             "Tất cả" to binding.tabAll,
-            "Chờ xác nhận" to binding.tabPending,
+            "Chờ xử lý" to binding.tabPending,
             "Đang xử lý" to binding.tabProcessing,
             "Đang giao" to binding.tabDelivering,
             "Hoàn tất" to binding.tabSuccess,
