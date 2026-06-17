@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="6dp">
+
+    <!-- User Chat Bubble -->
+    <LinearLayout
+        android:id="@+id/layoutUserBubble"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_default="wrap"
+        app:layout_constraintWidth_max="280dp"
+        android:background="@drawable/bg_chat_bubble_user"
+        android:orientation="vertical"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvUserMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexend"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="Chào Rootie, mình là Khánh Bình đây..." />
+    </LinearLayout>
+
+    <!-- Message Time -->
+    <TextView
+        android:id="@+id/tvUserTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:textColor="@color/gray_dark"
+        android:textSize="10sp"
+        android:text="10:42 AM"
+        app:layout_constraintTop_toBottomOf="@id/layoutUserBubble"
+        app:layout_constraintEnd_toEndOf="@id/layoutUserBubble" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

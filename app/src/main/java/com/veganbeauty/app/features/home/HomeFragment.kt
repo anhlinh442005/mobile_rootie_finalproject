@@ -9,6 +9,8 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.veganbeauty.app.features.shop.product.CartHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import androidx.viewpager2.widget.ViewPager2
@@ -40,11 +42,11 @@ class HomeFragment : RootieFragment() {
 
   private lateinit var viewModel: ShopViewModel
 
-  private val recentAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail)
-  private val recommendationsAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail)
-  private val bestsellerAdapter = HomeBestsellerAdapter(onItemClick = ::openProductDetail)
+  private val recentAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
+  private val recommendationsAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
+  private val bestsellerAdapter = HomeBestsellerAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
   private val topSearchAdapter = HomeTopSearchAdapter(onItemClick = ::openProductDetail)
-  private val flashSaleAdapter = HomeFlashsaleAdapter(onItemClick = ::openProductDetail)
+  private val flashSaleAdapter = HomeFlashsaleAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
   private val categoryAdapter = HomeCategoryAdapter()
   private val bannerAdapter = HomeBannerAdapter()
   private val shortcutAdapter = com.veganbeauty.app.features.home.adapter.HomeShortcutAdapter()
@@ -127,6 +129,8 @@ class HomeFragment : RootieFragment() {
           .addToBackStack(null)
           .commit()
     }
+    setupStreakWidget()
+    setupQuizReminder()
   }
 
   private fun setupShortcuts() {
@@ -162,20 +166,29 @@ class HomeFragment : RootieFragment() {
     val calendar = Calendar.getInstance()
     val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
     
-    val endHour = 12
-    val startHour = 9
-    
-    val endTimeMillis = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, endHour)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
+    var endHour = -1
 
-    val nowMillis = System.currentTimeMillis()
+    if (currentHour in 1 until 5) {
+        endHour = 5
+    } else if (currentHour in 9 until 13) {
+        endHour = 13
+    } else if (currentHour in 16 until 24) {
+        endHour = 24
+    }
 
-    val timeRemaining = if (currentHour in startHour until endHour) {
-        endTimeMillis - nowMillis
+    val timeRemaining = if (endHour != -1) {
+        val endTimeMillis = Calendar.getInstance().apply {
+            if (endHour == 24) {
+                add(Calendar.DAY_OF_YEAR, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+            } else {
+                set(Calendar.HOUR_OF_DAY, endHour)
+            }
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        endTimeMillis - System.currentTimeMillis()
     } else {
         0L
     }
@@ -317,9 +330,7 @@ class HomeFragment : RootieFragment() {
     binding.root.findViewById<View>(R.id.home_header_qr_btn).setOnClickListener {
       Toast.makeText(context, "Mở trình quét mã QR", Toast.LENGTH_SHORT).show()
     }
-    binding.root.findViewById<View>(R.id.home_header_notification_btn).setOnClickListener {
-      Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show()
-    }
+
 
     binding.tvRecentSeeAll.setOnClickListener { openShop() }
     binding.tvCategoriesSeeAll.setOnClickListener { openShop() }
@@ -373,7 +384,7 @@ class HomeFragment : RootieFragment() {
     val categories =
         products
             .map { it.category }
-            .filter { it.isNotBlank() }
+            .filter { it.isNotBlank() && it != "Chăm Sóc Tóc" && it != "Chăm Sóc Mái Tóc" }
             .distinct()
             .take(6)
             .map { categoryName ->
@@ -436,6 +447,10 @@ class HomeFragment : RootieFragment() {
         .commit()
   }
 
+  private fun addToCart(product: ProductEntity) {
+    CartHelper.addToCart(requireContext(), lifecycleScope, product, 1)
+  }
+
   private fun openShop() {
     parentFragmentManager
         .beginTransaction()
@@ -443,10 +458,101 @@ class HomeFragment : RootieFragment() {
         .commit()
   }
 
+  private fun setupStreakWidget() {
+    val ctx = context ?: return
+    val currentStreak = com.veganbeauty.app.data.local.ProfileSession.getSkinStreak(ctx)
+    binding.tvHomeStreakCount.text = "Chuỗi chăm da của bạn: $currentStreak ngày 🔥"
+
+    val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+    val todayStr = sdf.format(java.util.Date())
+    val hasCompletedMorningToday = com.veganbeauty.app.data.local.ProfileSession.isMorningRewardAwarded(ctx, todayStr)
+    val hasCompletedEveningToday = com.veganbeauty.app.data.local.ProfileSession.isEveningRewardAwarded(ctx, todayStr)
+
+    val descText = when {
+        hasCompletedMorningToday && hasCompletedEveningToday -> "Tuyệt vời! Bạn đã hoàn thành tất cả routine hôm nay! 🎉"
+        hasCompletedMorningToday -> "Bạn đã hoàn thành Routine Sáng! Đừng quên Routine Tối nhé! 🌙"
+        hasCompletedEveningToday -> "Bạn đã hoàn thành Routine Tối! Đừng quên Routine Sáng ngày mai nhé! ☀️"
+        else -> "Hôm nay bạn chưa hoàn thành Routine nào, bấm để bắt đầu chăm da nhé! ✨"
+    }
+    binding.tvHomeStreakDesc.text = descText
+  }
+
+  private fun setupQuizReminder() {
+    val context = context ?: return
+    val lastTestTime = com.veganbeauty.app.data.local.ProfileSession.getLastSkinTestTime(context)
+    val isDismissed = com.veganbeauty.app.data.local.ProfileSession.isQuizReminderDismissedWeekly(context)
+    val currentTime = System.currentTimeMillis()
+    val sevenDaysMs = 7 * 24 * 60 * 60 * 1000L
+    
+    val needsTest = lastTestTime != 0L && (currentTime - lastTestTime >= sevenDaysMs)
+    
+    if (needsTest) {
+        // Reset the dismiss flag because a new week has started
+        if (currentTime - lastTestTime >= sevenDaysMs && lastTestTime != 0L && isDismissed) {
+            com.veganbeauty.app.data.local.ProfileSession.setQuizReminderDismissedWeekly(context, false)
+        }
+        
+        // Show Home Widget (if not dismissed)
+        val shouldShowWidget = !com.veganbeauty.app.data.local.ProfileSession.isQuizReminderDismissedWeekly(context)
+        if (shouldShowWidget) {
+            binding.quizTestWeeklyReminderLayout.root.visibility = View.VISIBLE
+            binding.quizTestWeeklyReminderLayout.root.setOnClickListener {
+                navigateToQuizIntro()
+            }
+            binding.quizTestWeeklyReminderLayout.quizTestBtnDismissReminder.setOnClickListener {
+                com.veganbeauty.app.data.local.ProfileSession.setQuizReminderDismissedWeekly(context, true)
+                binding.quizTestWeeklyReminderLayout.root.visibility = View.GONE
+                Toast.makeText(context, "Đã ẩn nhắc nhở tuần này", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            binding.quizTestWeeklyReminderLayout.root.visibility = View.GONE
+        }
+        
+        // Show Popup Dialog once per app session (Stunning visual design, no default black/white theme background)
+        if (!hasShownQuizPopupThisSession) {
+            hasShownQuizPopupThisSession = true
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_quiz_test_weekly_reminder, null)
+            val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+                .setView(dialogView)
+                .create()
+            
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            
+            dialogView.findViewById<View>(R.id.btn_dialog_confirm).setOnClickListener {
+                dialog.dismiss()
+                navigateToQuizIntro()
+            }
+            dialogView.findViewById<View>(R.id.btn_dialog_cancel).setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
+    } else {
+        binding.quizTestWeeklyReminderLayout.root.visibility = View.GONE
+    }
+  }
+
+  private fun navigateToQuizIntro() {
+      parentFragmentManager.beginTransaction()
+          .replace(R.id.main_container, com.veganbeauty.app.features.quiz.QuizTestIntroFragment())
+          .addToBackStack(null)
+          .commit()
+  }
+
+  override fun onResume() {
+      super.onResume()
+      setupStreakWidget()
+      setupQuizReminder()
+  }
+
   override fun onDestroyView() {
     super.onDestroyView()
     flashSaleTimer?.cancel()
     _binding = null
+  }
+
+  companion object {
+      private var hasShownQuizPopupThisSession = false
   }
 }
 

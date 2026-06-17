@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/neutral">
+
+    <!-- Header bar with Light Gradient Background -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutHeader"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:background="@drawable/skin_bg_top_bar_gradient"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Quay lại"
+            app:tint="@color/primary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- AI Avatar in Header -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivHeaderAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/mascot_message"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/CircleImageView"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Title Container -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@id/ivHeaderAvatar"
+            app:layout_constraintEnd_toStartOf="@id/btnMore"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="Rootie AI"
+                android:textColor="@color/primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <!-- Little Green Dot -->
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/skin_bg_circle_completed"
+                    android:backgroundTint="@color/primary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="CONSULTING MODE"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- More Dots Button -->
+        <ImageButton
+            android:id="@+id/btnMore"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more_dots"
+            android:scaleType="centerInside"
+            android:contentDescription="Tùy chọn thêm"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Chat Message List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChatList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader"
+        app:layout_constraintBottom_toTopOf="@id/layoutQuickPrompts" />
+
+    <!-- Horizontal Scroll of Quick Prompt Chips -->
+    <HorizontalScrollView
+        android:id="@+id/layoutQuickPrompts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:clipToPadding="false"
+        android:background="@color/neutral"
+        app:layout_constraintBottom_toTopOf="@id/layoutInputBar"
+        app:layout_constraintTop_toBottomOf="@id/rvChatList">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Chip 1: Weather Advice -->
+            <TextView
+                android:id="@+id/chipWeatherAdvice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⛅ Thời tiết &amp; Da hôm nay"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:background="@drawable/bg_quick_prompt_chip"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Chip 2: Weather Routine -->
+            <TextView
+                android:id="@+id/chipWeatherRoutine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🧴 Routine theo thời tiết"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:background="@drawable/bg_quick_prompt_chip"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Chip 3: Match Products -->
+            <TextView
+                android:id="@+id/chipMatchProducts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎯 Sản phẩm Rootie của tôi"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:background="@drawable/bg_quick_prompt_chip"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Chip 4: Skin Diagnosis -->
+            <TextView
+                android:id="@+id/chipSkinDiagnosis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📋 Phác đồ chẩn đoán da"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:background="@drawable/bg_quick_prompt_chip"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Bottom Input Panel -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutInputBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:background="@color/neutral"
+        app:layout_constraintTop_toBottomOf="@id/layoutQuickPrompts"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Input Background Box -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_chat_input_box"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Plus Icon -->
+            <ImageButton
+                android:id="@+id/btnPlus"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_plus_dark"
+                android:contentDescription="Thêm tệp đính kèm"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <!-- Text Input Field -->
+            <EditText
+                android:id="@+id/etMessageInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@null"
+                android:hint="Nhập câu hỏi cho Rootie ...."
+                android:textColorHint="@color/tertiary"
+                android:textColor="@color/primary"
+                android:textSize="15sp"
+                android:fontFamily="@font/lexend"
+                android:inputType="textShortMessage"
+                android:imeOptions="actionSend"
+                app:layout_constraintStart_toEndOf="@id/btnPlus"
+                app:layout_constraintEnd_toStartOf="@id/btnSend" />
+
+            <!-- Circular Send Button -->
+            <ImageButton
+                android:id="@+id/btnSend"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/skin_bg_circle_completed"
+                android:backgroundTint="@color/primary"
+                android:src="@drawable/ic_send_white"
+                android:padding="8dp"
+                android:contentDescription="Gửi tin nhắn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

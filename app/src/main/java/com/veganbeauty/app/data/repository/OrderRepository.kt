@@ -4,6 +4,7 @@ import com.veganbeauty.app.data.local.dao.OrderDao
 import com.veganbeauty.app.data.local.dao.RewardPointDao
 import com.veganbeauty.app.data.local.dao.UserGiftDao
 import com.veganbeauty.app.data.local.entities.OrderEntity
+import com.veganbeauty.app.data.local.entities.OrderItem
 import com.veganbeauty.app.data.local.entities.RewardPointEntity
 import com.veganbeauty.app.data.local.entities.UserGiftEntity
 import com.veganbeauty.app.data.local.LocalJsonReader
@@ -23,11 +24,40 @@ class OrderRepository(
         return orderDao.getOrdersByUserId(userId)
     }
 
+<<<<<<< HEAD
     fun getAffiliateOrders(referrerUserId: String): Flow<List<OrderEntity>> {
         return orderDao.getAffiliateOrdersByReferrer(referrerUserId)
     }
 
     // Refresh orders from assets (Overwrite everything)
+=======
+    /**
+     * Stream of orders scoped to the current buyer.
+     *
+     *  - Logged-in members see only their own orders
+     *    (`userId == currentUserId`).
+     *  - Guests see only the orders that were placed with their
+     *    billing phone, so the same phone = same cart. This prevents
+     *    the previous bug where a guest's order list was empty even
+     *    after a successful checkout, or where a test-user account
+     *    could see guest orders that did not belong to them.
+     *
+     *  - When [userId] is blank/empty and [phone] is blank/empty the
+     *    function falls back to the unfiltered [allOrders] flow so
+     *    legacy / pre-fix installs do not regress to an empty list.
+     */
+    fun getOrdersForBuyer(userId: String?, phone: String?): Flow<List<OrderEntity>> {
+        val safeUserId = userId?.trim().orEmpty()
+        val safePhone = phone?.trim().orEmpty()
+        return when {
+            safeUserId.isNotEmpty() -> orderDao.getOrdersForUser(safeUserId)
+            safePhone.isNotEmpty() -> orderDao.getOrdersForGuestPhone(safePhone)
+            else -> orderDao.getAllOrders()
+        }
+    }
+
+    // Refresh orders from assets (Seed only if database is empty)
+>>>>>>> 35f09837414391a9ba011bce61277d4577c69501
     suspend fun refreshOrders() {
         try {
             // Clear all old orders first as requested
@@ -251,6 +281,7 @@ class OrderRepository(
     // Cancel order (locally)
     suspend fun cancelOrder(orderId: String) {
         orderDao.updateOrderStatus(orderId, "Đã hủy")
+        OrderStatusNotifier.simulateOnly(orderDao, orderId, "Đã hủy")
     }
 
     // Watch a specific order reactively
@@ -258,8 +289,43 @@ class OrderRepository(
         return orderDao.getOrderByIdFlow(orderId)
     }
 
-    // Update order status
+    // Update order status. The repository delegates the actual SQL update
+    // to the DAO and then asks [OrderStatusNotifier] to dispatch the
+    // mock SMS / Email notification per the hybrid checkout plan.
     suspend fun updateOrderStatus(orderId: String, status: String) {
         orderDao.updateOrderStatus(orderId, status)
+        OrderStatusNotifier.simulateOnly(orderDao, orderId, status)
+    }
+
+    // Ensure order exists in local DB. If not, seed a realistic mock fallback.
+    suspend fun ensureOrderExists(orderId: String) {
+        val existing = orderDao.getOrderById(orderId)
+        if (existing == null) {
+            val mockOrder = OrderEntity(
+                orderId = orderId,
+                orderDate = "16/06/2026",
+                orderTime = "15:30",
+                status = "Đang giao",
+                totalAmount = 202000L,
+                items = listOf(
+                    OrderItem(
+                        productId = "product_rose_cream",
+                        productName = "Kem dưỡng hoa hồng Cocoon 50ml",
+                        productImage = "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1781257994/rose_cream_u2kgwf.png",
+                        quantity = 1,
+                        price = 222000L
+                    )
+                ),
+                userId = "test_001",
+                isGuest = false,
+                shippingName = "Nguyễn Khánh Xuân",
+                shippingPhone = "090 123 4567",
+                shippingAddress = "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
+                shippingCost = 30000L,
+                voucherDiscount = 50000L,
+                paymentMethod = "Thanh toán khi nhận hàng (COD)"
+            )
+            orderDao.insertOrder(mockOrder)
+        }
     }
 }

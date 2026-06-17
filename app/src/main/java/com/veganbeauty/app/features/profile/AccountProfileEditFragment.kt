@@ -15,6 +15,34 @@ class AccountProfileEditFragment : RootieFragment() {
     private var _binding: AccountProfileEditBinding? = null
     private val binding get() = _binding!!
 
+    private val pickImageLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.GetContent()
+    ) { uri: android.net.Uri? ->
+        uri?.let {
+            try {
+                val inputStream = requireContext().contentResolver.openInputStream(it)
+                val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
+                inputStream?.close()
+                if (bitmap != null) {
+                    showCropperDialog(bitmap)
+                } else {
+                    Toast.makeText(context, "Không thể đọc ảnh chọn", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Lỗi khi tải ảnh từ thư viện", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private val takePhotoLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: android.graphics.Bitmap? ->
+        bitmap?.let {
+            showCropperDialog(it)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,15 +53,12 @@ class AccountProfileEditFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
-        // Load the elegant placeholder avatar from Unsplash using Coil with CircleCrop matching main profile
-        binding.ivAvatar.load("https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80") {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-        }
+        // Load the persistent avatar from ProfileSession using Coil with CircleCrop
+        val ctx = requireContext()
+        val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(ctx)
+        loadAvatarImage(avatarUrl)
 
         // Load values from ProfileSession
-        val ctx = requireContext()
         val username = com.veganbeauty.app.data.local.ProfileSession.getUsername(ctx)
         val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
         val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
@@ -44,7 +69,7 @@ class AccountProfileEditFragment : RootieFragment() {
         binding.etFullname.setText(fullName)
         binding.etPhone.setText(phone)
 
-        // Back button action
+        // Back button action - saves current fields
         binding.btnBack.setOnClickListener {
             val saveCtx = requireContext()
             com.veganbeauty.app.data.local.ProfileSession.setFullName(saveCtx, binding.etFullname.text.toString())
@@ -66,9 +91,9 @@ class AccountProfileEditFragment : RootieFragment() {
             label?.setTypeface(null, android.graphics.Typeface.BOLD)
         }
 
-        // Micro-animations & Toast Feedbacks for modern UX
+        // Change Avatar button action -> shows source picker dialog
         binding.btnChangeAvatar.setOnClickListener {
-            Toast.makeText(context, "Thay đổi ảnh đại diện", Toast.LENGTH_SHORT).show()
+            showAvatarSourcePicker()
         }
 
         binding.btnSelectDob.setOnClickListener {
@@ -99,6 +124,218 @@ class AccountProfileEditFragment : RootieFragment() {
 
         binding.btnNotification.setOnClickListener {
             Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun loadAvatarImage(uri: String) {
+        binding.ivAvatar.load(uri) {
+            crossfade(true)
+            transformations(CircleCropTransformation())
+            placeholder(android.R.color.darker_gray)
+            error(com.veganbeauty.app.R.drawable.img_avatar)
+        }
+    }
+
+    private fun showAvatarSourcePicker() {
+        val dialogView = layoutInflater.inflate(com.veganbeauty.app.R.layout.dialog_avatar_source_picker, null)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+        dialogView.findViewById<View>(com.veganbeauty.app.R.id.btn_pick_camera).setOnClickListener {
+            dialog.dismiss()
+            try {
+                takePhotoLauncher.launch(null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Không thể mở camera", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogView.findViewById<View>(com.veganbeauty.app.R.id.btn_pick_gallery).setOnClickListener {
+            dialog.dismiss()
+            try {
+                pickImageLauncher.launch("image/*")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Không thể mở thư viện", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogView.findViewById<View>(com.veganbeauty.app.R.id.btn_picker_cancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun showCropperDialog(sourceBitmap: android.graphics.Bitmap) {
+        val dialogView = layoutInflater.inflate(com.veganbeauty.app.R.layout.dialog_avatar_cropper, null)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+        val ivCropSource = dialogView.findViewById<android.widget.ImageView>(com.veganbeauty.app.R.id.iv_crop_source)
+        val sbZoom = dialogView.findViewById<android.widget.SeekBar>(com.veganbeauty.app.R.id.sb_zoom)
+        val btnCancel = dialogView.findViewById<android.view.View>(com.veganbeauty.app.R.id.btn_crop_cancel)
+        val btnConfirm = dialogView.findViewById<android.view.View>(com.veganbeauty.app.R.id.btn_crop_confirm)
+
+        ivCropSource.scaleType = android.widget.ImageView.ScaleType.MATRIX
+
+        ivCropSource.post {
+            val viewWidth = ivCropSource.width.toFloat()
+            val viewHeight = ivCropSource.height.toFloat()
+            if (viewWidth <= 0 || viewHeight <= 0) return@post
+
+            val imgWidth = sourceBitmap.width.toFloat()
+            val imgHeight = sourceBitmap.height.toFloat()
+
+            // Fit-center fill scale
+            val scaleX = viewWidth / imgWidth
+            val scaleY = viewHeight / imgHeight
+            val initialScale = Math.max(scaleX, scaleY)
+
+            val transX = (viewWidth - imgWidth * initialScale) / 2f
+            val transY = (viewHeight - imgHeight * initialScale) / 2f
+
+            val matrix = android.graphics.Matrix()
+            matrix.postScale(initialScale, initialScale)
+            matrix.postTranslate(transX, transY)
+            ivCropSource.imageMatrix = matrix
+            ivCropSource.setImageBitmap(sourceBitmap)
+
+            var startX = 0f
+            var startY = 0f
+            val savedMatrix = android.graphics.Matrix()
+
+            ivCropSource.setOnTouchListener { _, event ->
+                when (event.action and android.view.MotionEvent.ACTION_MASK) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        savedMatrix.set(ivCropSource.imageMatrix)
+                        startX = event.x
+                        startY = event.y
+                    }
+                    android.view.MotionEvent.ACTION_MOVE -> {
+                        val dx = event.x - startX
+                        val dy = event.y - startY
+                        val newMatrix = android.graphics.Matrix(savedMatrix)
+                        newMatrix.postTranslate(dx, dy)
+                        ivCropSource.imageMatrix = newMatrix
+                    }
+                }
+                true
+            }
+
+            sbZoom.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        val zoomFactor = 1f + (progress / 100f) * 3.5f
+                        val newMatrix = android.graphics.Matrix(savedMatrix)
+                        newMatrix.postScale(zoomFactor, zoomFactor, viewWidth / 2f, viewHeight / 2f)
+                        ivCropSource.imageMatrix = newMatrix
+                    }
+                }
+
+                override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {
+                    savedMatrix.set(ivCropSource.imageMatrix)
+                }
+
+                override fun onStopTrackingTouch(seekBar: android.widget.SeekBar?) {}
+            })
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnConfirm.setOnClickListener {
+            dialog.dismiss()
+            try {
+                val viewSize = ivCropSource.width
+                if (viewSize <= 0) return@setOnClickListener
+
+                val targetSize = 500
+                val croppedBitmap = android.graphics.Bitmap.createBitmap(targetSize, targetSize, android.graphics.Bitmap.Config.ARGB_8888)
+                val canvas = android.graphics.Canvas(croppedBitmap)
+
+                val currentMatrix = ivCropSource.imageMatrix
+                val drawMatrix = android.graphics.Matrix(currentMatrix)
+
+                val scale = targetSize.toFloat() / viewSize.toFloat()
+                drawMatrix.postScale(scale, scale, 0f, 0f)
+
+                canvas.drawBitmap(sourceBitmap, drawMatrix, android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG or android.graphics.Paint.ANTI_ALIAS_FLAG))
+
+                handleAvatarTaken(croppedBitmap)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Lỗi khi cắt ảnh", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun handleAvatarPicked(uri: android.net.Uri) {
+        val path = saveAvatarToInternalStorage(uri)
+        if (path != null) {
+            val fileUri = "file://$path"
+            com.veganbeauty.app.data.local.ProfileSession.setAvatar(requireContext(), fileUri)
+            loadAvatarImage(fileUri)
+            Toast.makeText(context, "Đã cập nhật ảnh đại diện", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun handleAvatarTaken(bitmap: android.graphics.Bitmap) {
+        val path = saveAvatarBitmapToInternalStorage(bitmap)
+        if (path != null) {
+            val fileUri = "file://$path"
+            com.veganbeauty.app.data.local.ProfileSession.setAvatar(requireContext(), fileUri)
+            loadAvatarImage(fileUri)
+            Toast.makeText(context, "Đã cập nhật ảnh đại diện", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveAvatarToInternalStorage(uri: android.net.Uri): String? {
+        return try {
+            val context = requireContext()
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val file = java.io.File(context.filesDir, "user_avatar.jpg")
+            val outputStream = java.io.FileOutputStream(file)
+            inputStream.use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun saveAvatarBitmapToInternalStorage(bitmap: android.graphics.Bitmap): String? {
+        return try {
+            val context = requireContext()
+            val file = java.io.File(context.filesDir, "user_avatar.jpg")
+            val outputStream = java.io.FileOutputStream(file)
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, outputStream)
+            outputStream.flush()
+            outputStream.close()
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 

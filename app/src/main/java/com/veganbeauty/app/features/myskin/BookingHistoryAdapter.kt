@@ -61,17 +61,17 @@ class BookingHistoryAdapter(
             val context = holder.itemView.context
             when (item.status) {
                 "Sắp diễn ra" -> {
-                    holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_btn_book) // Blue/Green
+                    holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_upcoming)
                     holder.tvStatusTag.setTextColor(Color.WHITE)
                     holder.llActions.visibility = View.VISIBLE
                 }
                 "Đã hoàn thành" -> {
-                    holder.tvStatusTag.setBackgroundColor(Color.parseColor("#CD853F")) // Orange/Brown
+                    holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_completed)
                     holder.tvStatusTag.setTextColor(Color.WHITE)
                     holder.llActions.visibility = View.GONE
                 }
                 "Đã huỷ" -> {
-                    holder.tvStatusTag.setBackgroundColor(Color.parseColor("#CD5C5C")) // Red
+                    holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_cancelled)
                     holder.tvStatusTag.setTextColor(Color.WHITE)
                     holder.llActions.visibility = View.GONE
                 }

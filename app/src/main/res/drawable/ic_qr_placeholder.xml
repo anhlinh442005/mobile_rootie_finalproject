@@ -1,0 +1,25 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <!-- QR-like decorative pattern (placeholder, not a real QR) -->
+    <path
+        android:fillColor="#3E4D44"
+        android:pathData="M4,4h20v20H4z M8,8v12h12V8z M12,12h4v4h-4z" />
+    <path
+        android:fillColor="#3E4D44"
+        android:pathData="M40,4h20v20H40z M44,8v12h12V8z M48,12h4v4h-4z" />
+    <path
+        android:fillColor="#3E4D44"
+        android:pathData="M4,40h20v20H4z M8,44v12h12V44z M12,48h4v4h-4z" />
+    <path
+        android:fillColor="#3E4D44"
+        android:pathData="M28,4h4v4h-4z M32,8h4v4h-4z M28,12h4v4h-4z" />
+    <path
+        android:fillColor="#3E4D44"
+        android:pathData="M4,28h4v4H4z M8,32h4v4H8z M12,28h4v4h-4z" />
+    <path
+        android:fillColor="#3E4D44"
+        android:pathData="M28,28h4v4h-4z M36,28h4v4h-4z M28,36h4v4h-4z M36,36h4v4h-4z M28,44h4v4h-4z M32,40h8v4h-8z M40,44h4v4h-4z M44,40h4v4h-4z M48,44h4v4h-4z M52,40h4v4h-4z M40,48h8v4h-8z M48,52h4v4h-4z M52,48h4v4h-4z" />
+</vector>

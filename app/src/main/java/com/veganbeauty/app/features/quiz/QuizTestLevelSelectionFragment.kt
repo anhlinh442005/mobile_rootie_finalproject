@@ -32,10 +32,7 @@ class QuizTestLevelSelectionFragment : RootieFragment() {
             parentFragmentManager.popBackStack()
         }
 
-        // Notification dummy click
-        binding.btnNotifications.setOnClickListener {
-            // Placeholder click behavior
-        }
+
 
         // Card Selection Clicks
         binding.cardQuizBasic.setOnClickListener {

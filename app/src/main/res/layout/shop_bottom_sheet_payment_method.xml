@@ -44,7 +44,7 @@
             android:id="@+id/ivRadioCash"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_cart_unchecked"
+            android:src="@drawable/ic_circle_outline"
             />
 
         <ImageView
@@ -65,6 +65,42 @@
             android:textSize="15sp" />
     </LinearLayout>
 
+    <!-- Option 2: ATM Card / Internet Banking -->
+    <LinearLayout
+        android:id="@+id/llOptionATM"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp">
+
+        <ImageView
+            android:id="@+id/ivRadioATM"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_circle_outline"
+            />
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_credit_card"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
+            android:text="Thẻ ATM nội địa/Internet Banking"
+            android:textColor="@color/primary"
+            android:textSize="15sp" />
+    </LinearLayout>
 
     <!-- Option 3: MoMo -->
     <LinearLayout
@@ -82,7 +118,7 @@
             android:id="@+id/ivRadioMoMo"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_cart_unchecked"
+            android:src="@drawable/ic_circle_outline"
             />
 
         <ImageView
@@ -118,7 +154,7 @@
             android:id="@+id/ivRadioVNPay"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_cart_unchecked"
+            android:src="@drawable/ic_circle_outline"
             />
 
         <ImageView

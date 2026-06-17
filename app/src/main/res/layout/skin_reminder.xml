@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FEFBF4">
+    android:background="@color/neutral">
 
     <!-- Top App Bar with gradient background -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,7 +25,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#02542D" />
+            app:tint="@color/primary" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -60,6 +60,8 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:scrollbars="none"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topBar">
 
@@ -68,7 +70,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="16dp"
-            android:paddingBottom="32dp">
+            android:paddingBottom="32dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <!-- User Info Bar -->
             <LinearLayout
@@ -144,7 +148,7 @@
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#3E4D44">
+                app:cardBackgroundColor="@color/primary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -152,43 +156,63 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/be_vietnam_pro"
-                        android:text="Chuỗi chăm da của bạn"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="bottom"
-                        android:layout_marginTop="4dp">
+                        android:layout_height="wrap_content">
 
-                        <TextView
-                            android:id="@+id/tvStreakDays"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/be_vietnam_pro"
-                            android:text="5"
-                            android:textColor="#D8E8C6"
-                            android:textSize="45sp"
-                            android:textStyle="bold" />
+                            android:orientation="vertical"
+                            android:layout_alignParentStart="true">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/lexend"
-                            android:text="ngày"
-                            android:textColor="#FFFFFF"
-                            android:textSize="17sp"
-                            android:textStyle="bold"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginBottom="6dp" />
-                    </LinearLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:text="Chuỗi chăm da của bạn"
+                                android:textColor="#FFFFFF"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="bottom"
+                                android:layout_marginTop="4dp">
+
+                                <TextView
+                                    android:id="@+id/tvStreakDays"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/be_vietnam_pro"
+                                    android:text="5"
+                                    android:textColor="#D8E8C6"
+                                    android:textSize="45sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="ngày"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="17sp"
+                                    android:textStyle="bold"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginBottom="6dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/ic_skin_fire"
+                            app:tint="#D8E8C6"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true" />
+                    </RelativeLayout>
 
                     <!-- Days row -->
                     <LinearLayout
@@ -411,7 +435,9 @@
                 android:layout_height="302dp"
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="15dp"
-                app:cardElevation="8dp">
+                app:cardElevation="4dp"
+                app:cardPreventCornerOverlap="false"
+                app:cardBackgroundColor="@android:color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -479,7 +505,7 @@
                             android:text="Bắt đầu Routine"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:fontFamily="@font/be_vietnam_pro"
                             android:textStyle="bold"
                             android:drawableStart="@drawable/ic_skin_routine_white"
@@ -523,7 +549,9 @@
                 android:layout_height="302dp"
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="15dp"
-                app:cardElevation="8dp">
+                app:cardElevation="4dp"
+                app:cardPreventCornerOverlap="false"
+                app:cardBackgroundColor="@android:color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -591,7 +619,7 @@
                             android:text="Bắt đầu Routine"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:fontFamily="@font/be_vietnam_pro"
                             android:textStyle="bold"
                             android:drawableStart="@drawable/ic_skin_routine_white"

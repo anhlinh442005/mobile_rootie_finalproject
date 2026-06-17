@@ -66,6 +66,15 @@ class CommunityBeautyHubFragment : RootieFragment() {
         binding.rvIngredients.adapter = ingredientAdapter
         binding.rvBlogs.adapter = blogAdapter
         binding.rvNotebooks.adapter = notebookAdapter
+        
+        binding.ivNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.notification.CommunityNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+        
         binding.llShortcutNews.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)

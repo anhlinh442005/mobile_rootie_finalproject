@@ -60,6 +60,14 @@ class CommunityProfileFragment : Fragment() {
             }
         }
 
+        binding.ivNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.notification.CommunityNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         val passedUserId = arguments?.getString(ARG_USER_ID) ?: arguments?.getString("USER_ID")
         val loggedInEmail = ProfileSession.getEmail(ctx)
         

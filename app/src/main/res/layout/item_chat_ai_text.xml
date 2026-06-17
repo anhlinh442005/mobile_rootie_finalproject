@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="6dp">
+
+    <!-- AI Avatar -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivAiAvatar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/mascot_message"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="2dp" />
+
+    <!-- AI Title/Header block -->
+    <LinearLayout
+        android:id="@+id/layoutAiHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toEndOf="@id/ivAiAvatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivAiAvatar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Rootie AI"
+            android:textColor="@color/primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Trợ lý cá nhân"
+            android:textColor="@color/secondary"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <!-- AI Text Bubble -->
+    <LinearLayout
+        android:id="@+id/layoutAiBubble"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        app:layout_constraintWidth_default="wrap"
+        app:layout_constraintWidth_max="280dp"
+        android:background="@drawable/bg_chat_bubble_ai"
+        android:elevation="1dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="10dp"
+        app:layout_constraintStart_toStartOf="@id/layoutAiHeader"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/layoutAiHeader">
+
+        <TextView
+            android:id="@+id/tvAiMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexend"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="Chào bạn, mình là trợ lý Rootie..." />
+    </LinearLayout>
+
+    <!-- Time text -->
+    <TextView
+        android:id="@+id/tvAiTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:textColor="@color/gray_dark"
+        android:textSize="10sp"
+        android:text="10:42 AM"
+        app:layout_constraintTop_toBottomOf="@id/layoutAiBubble"
+        app:layout_constraintStart_toStartOf="@id/layoutAiBubble" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

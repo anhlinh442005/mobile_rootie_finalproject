@@ -41,7 +41,12 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
+        if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
+            Toast.makeText(requireContext(), "Vui lòng đăng nhập để xem giỏ hàng", Toast.LENGTH_SHORT).show()
+            dismiss()
+            return null
+        }
         _binding = ShopBottomSheetCartBinding.inflate(inflater, container, false)
         database = RootieDatabase.getDatabase(requireContext())
         return binding.root
@@ -49,6 +54,7 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (_binding == null) return
 
         setupRecyclerView()
         setupListeners()

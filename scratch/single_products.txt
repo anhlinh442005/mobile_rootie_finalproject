@@ -1,0 +1,61 @@
+ID: 1e499ed75a31e4a02af2d962 | Name: Sữa chống nắng bí đao 50ml | Price: 432000 | Cat: Chăm sóc da
+ID: 24c454b0d57a53fe4be37964 | Name: Sữa chống nắng bí đao 15ml | Price: 182000 | Cat: Chăm sóc da
+ID: 3ec85dfb4eba9ccb5d808c02 | Name: Kem chống nắng bí đao quang phổ rộng, bảo vệ rất cao SPF 50 +, PA ++++ 50ml | Price: 388000 | Cat: Chăm sóc da
+ID: a2ba6a40610e099f10b42d7f | Name: Nước tẩy trang sen Hậu Giang 1000ml | Price: 565000 | Cat: Chăm sóc da
+ID: 9c60e218100d013418e3eb91 | Name: Nước tẩy trang sen Hậu Giang 140ml | Price: 152000 | Cat: Chăm sóc da
+ID: 0b8fadbc1bd44562f75704e6 | Name: Nước tẩy trang sen Hậu Giang 500ml | Price: 309000 | Cat: Chăm sóc da
+ID: 98ec272ca4f37e7a6550cccd | Name: Nước tẩy trang bí đao 1000ml | Price: 535000 | Cat: Chăm sóc da
+ID: dc312be5eec4d740ae26acbb | Name: Nước tẩy trang bí đao 500ml | Price: 299000 | Cat: Chăm sóc da
+ID: edd9e4ecece58a82a253e4a8 | Name: Nước tẩy trang bí đao 140ml | Price: 140000 | Cat: Chăm sóc da
+ID: dd23909f6a123054c8cf62f4 | Name: Dầu tẩy trang hoa hồng 310ml | Price: 339000 | Cat: Chăm sóc da
+ID: 5c5672e9b67657a2b86069fe | Name: Dầu tẩy trang hoa hồng 140ml | Price: 177000 | Cat: Chăm sóc da
+ID: d9054c76d1034d593bea440c | Name: Nước tẩy trang hoa hồng 310ml | Price: 241000 | Cat: Chăm sóc da
+ID: 6d7d02a9276d5114489a48c3 | Name: Nước tẩy trang hoa hồng 140ml | Price: 153000 | Cat: Chăm sóc da
+ID: 812ea7faa15bac41e52d4170 | Name: Sữa rửa mặt sen Hậu Giang 310ml | Price: 339000 | Cat: Chăm sóc da
+ID: 87ca86128c249a4e52690db8 | Name: Gel rửa mặt cà phê Đắk Lắk 310ml | Price: 299000 | Cat: Chăm sóc da
+ID: 25b93e7dda9397da3b212b63 | Name: Gel rửa mặt cà phê Đắk Lắk 140ml | Price: 192000 | Cat: Chăm sóc da
+ID: 8d4ab3d4fb9c1ee4077c8d1d | Name: Sữa rửa mặt nghệ Hưng Yên 310ml | Price: 299000 | Cat: Chăm sóc da
+ID: 13afaa472ab5642f72112123 | Name: Sữa rửa mặt nghệ Hưng Yên 140ml | Price: 192000 | Cat: Chăm sóc da
+ID: 7df6fb8720d3cc5566f0c4ca | Name: Gel rửa mặt hoa hồng 140ml | Price: 192000 | Cat: Chăm sóc da
+ID: 947e0b2bbd933756c73469b4 | Name: Gel bí đao rửa mặt 310ml | Price: 299000 | Cat: Chăm sóc da
+ID: 5f29c9fa19873eb44aedced4 | Name: Gel bí đao rửa mặt 140ml | Price: 192000 | Cat: Chăm sóc da
+ID: f2f170af25caff6973113648 | Name: Cà phê Đắk Lắk làm sạch da chết mặt 150ml | Price: 172000 | Cat: Chăm sóc da
+ID: 8fe068265d7f674a7dd86f84 | Name: Mặt nạ nghệ Hưng Yên 100ml | Price: 339000 | Cat: Chăm sóc da
+ID: 2b8ad283ba0fe39ef106880f | Name: Mặt nạ nghệ Hưng Yên 30ml | Price: 152000 | Cat: Chăm sóc da
+ID: 813455e9fcaaa2178c222614 | Name: Mặt nạ bí đao 100ml | Price: 339000 | Cat: Chăm sóc da
+ID: 3c691929f72b07a51ab8df27 | Name: Mặt nạ bí đao 30ml | Price: 152000 | Cat: Chăm sóc da
+ID: 9be4bb818bdad1c0cff402b7 | Name: Túi Refill Đường Thốt Nốt An Giang Làm Sạch Da Chết Cơ Thể 200ML | Price: 152000 | Cat: Tắm & Dưỡng Thể
+ID: c1c6def56e82dfbd16743d83 | Name: Túi Refill Cà Phê Đắk Lắk Làm Sạch Da Chết Cơ Thể 200ML | Price: 118000 | Cat: Tắm & Dưỡng Thể
+ID: 178545ef04bc12afd653231c | Name: Đường thốt nốt An Giang làm sạch da chết cơ thể 200ml | Price: 162000 | Cat: Tắm & Dưỡng Thể
+ID: 7007b8b1425c64a7af919b72 | Name: Cà phê Đắk Lắk làm sạch da chết cơ thể 600ml | Price: 339000 | Cat: Tắm & Dưỡng Thể
+ID: 63fbeb4b71d9be046f8cd2e4 | Name: Cà phê Đắk Lắk làm sạch da chết cơ thể 200ml | Price: 133000 | Cat: Tắm & Dưỡng Thể
+ID: a185202d2cc44ecd80397574 | Name: Gel tắm khuynh diệp & bạc hà 500ml  | Price: 241000 | Cat: Tắm & Dưỡng Thể
+ID: 67ac81895e29370aa758f466 | Name: Gel tắm bí đao 310ml  | Price: 241000 | Cat: Tắm & Dưỡng Thể
+ID: c4ffadcfbb7ab91d5edcc360 | Name: Sáp dưỡng ẩm đa năng sen Hậu Giang 30ml | Price: 192000 | Cat: Tắm & Dưỡng Thể
+ID: fa9faa32eb09f2a48bb19fc8 | Name: Bơ dưỡng thể cà phê Đắk Lắk 200ml | Price: 240000 | Cat: Tắm & Dưỡng Thể
+ID: 0270231fcfee24f5205ecfee | Name: Cà phê Đắk Lắk làm sạch da chết môi 5g | Price: 74000 | Cat: Dưỡng Môi
+ID: 6c1f36304287d148fdd36144 | Name: Son dưỡng dầu dừa Bến Tre 5g | Price: 32000 | Cat: Dưỡng Môi
+ID: ca6e1382ef917a9d2cb0031a | Name: Tinh chất xịt dưỡng Sen Hậu Giang 200ml | Price: 368000 | Cat: Chăm sóc da
+ID: f4d2089a9b35bb5d6845764f | Name: Tẩy da chết da đầu bồ kết 200ml | Price: 240000 | Cat: Chăm Sóc Tóc
+ID: 85aaa24b4e80e35fdf3e0892 | Name: Gel tắm đường thốt nốt An Giang 500ml | Price: 241000 | Cat: Tắm & Dưỡng Thể
+ID: 9806f8679f1abada0a0e6378 | Name: Nước sen Hậu Giang 500ml | Price: 418000 | Cat: Chăm sóc da
+ID: d6049a26f5e640bdd69cda40 | Name: Nước sen Hậu Giang 310ml | Price: 299000 | Cat: Chăm sóc da
+ID: d7b2542d9f43256d944d854a | Name: Nước sen Hậu Giang 140ml | Price: 192000 | Cat: Chăm sóc da
+ID: 58990d055eb566f37e3c5d80 | Name: Nước nghệ Hưng Yên 310ml | Price: 299000 | Cat: Chăm sóc da
+ID: 0ed27f8f8207d06b3cd04db3 | Name: Nước nghệ Hưng Yên 140ml | Price: 192000 | Cat: Chăm sóc da
+ID: 0066feeceaba62d09860f05c | Name: Nước bí đao cân bằng da 310ml | Price: 299000 | Cat: Chăm sóc da
+ID: 5ee9a1e82a48994b6e401a29 | Name: Nước bí đao cân bằng da 140ml | Price: 192000 | Cat: Chăm sóc da
+ID: 641cdf538114d9cb102d9ab2 | Name: Tinh chất bí đao N15 70ml | Price: 486000 | Cat: Chăm sóc da
+ID: c4b7cebcaf1a27611a9395af | Name: Tinh chất nghệ Hưng Yên C22 30ml | Price: 457000 | Cat: Chăm sóc da
+ID: 568e1a3abfd97d6406cd3db9 | Name: Tinh chất nghệ Hưng Yên C10 30ml | Price: 320000 | Cat: Chăm sóc da
+ID: 09f0912f3bc5246ed851a7ae | Name: Tinh chất hoa hồng 30ml | Price: 261000 | Cat: Chăm sóc da
+ID: afacd99996f7d76b3c0c7f88 | Name: Dung dịch chấm mụn bí đao 5ml | Price: 125000 | Cat: Chăm sóc da
+ID: 44e410999cfeae6eedd37038 | Name: Tinh chất bí đao N7 70ml | Price: 299000 | Cat: Chăm sóc da
+ID: ead1d3ea6f03b685eb8ca0d4 | Name: Xịt khoáng nghệ Hưng Yên 130ml | Price: 212000 | Cat: Chăm sóc da
+ID: e3b8810d7bb90e696e5f43c7 | Name: Sáp dưỡng ẩm đa năng sen Hậu Giang 30ml | Price: 192000 | Cat: Chăm sóc da
+ID: 0c8e0704cf2997ca8560441a | Name: Thạch nghệ Hưng Yên 100ml | Price: 378000 | Cat: Chăm sóc da
+ID: ef39d32a96ce292d1e83a7ab | Name: Thạch nghệ Hưng Yên 30ml | Price: 192000 | Cat: Chăm sóc da
+ID: fdc1ca708d8cf2225c9d9697 | Name: Thạch hoa hồng dưỡng ẩm 100ml | Price: 378000 | Cat: Chăm sóc da
+ID: ca192eb70b03e780dc19d872 | Name: Thạch hoa hồng dưỡng ẩm 30ml | Price: 192000 | Cat: Chăm sóc da
+ID: 113023f9cf480dbe4182e96c | Name: Thạch bí đao 100ml | Price: 378000 | Cat: Chăm sóc da
+ID: 1ba0d34dab3627b376a567c7 | Name: Thạch bí đao 30ml | Price: 192000 | Cat: Chăm sóc da

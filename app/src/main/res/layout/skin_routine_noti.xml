@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:background="@drawable/bg_skin_routine_noti_card"
+        android:padding="12dp">
+
+        <!-- Mascot Container Box (Group 106/107) -->
+        <FrameLayout
+            android:id="@+id/layout_noti_icon_container"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="14dp"
+            android:background="@drawable/bg_skin_routine_noti_icon">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_logo" />
+        </FrameLayout>
+
+        <!-- Notification Content Area -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/layout_noti_icon_container"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="12dp">
+
+            <!-- Title & Time Line -->
+            <RelativeLayout
+                android:id="@+id/layout_noti_title_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- ROOTIE Text -->
+                <TextView
+                    android:id="@+id/tv_noti_app_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="ROOTIE"
+                    android:textColor="#3E4D44"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <!-- Time text (e.g. "bây giờ" / "15 phút trước") -->
+                <TextView
+                    android:id="@+id/tv_noti_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:fontFamily="@font/lexend"
+                    android:text="bây giờ"
+                    android:textColor="#807F7F"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+            <!-- Message Text -->
+            <TextView
+                android:id="@+id/tv_noti_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_noti_title_bar"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingMultiplier="1.2"
+                android:text="Đến giờ chăm da buổi sáng rồi\nMở Rootie và bắt đầu quy trình giúp làn da của bạn luôn rạng rỡ hôm nay."
+                android:textColor="#3E4D44"
+                android:textSize="13sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

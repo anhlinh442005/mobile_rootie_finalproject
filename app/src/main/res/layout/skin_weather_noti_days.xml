@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/bg_skin_routine_noti_card"
+        android:padding="12dp">
+
+        <!-- Mascot/Weather Icon Container Box -->
+        <FrameLayout
+            android:id="@+id/layout_noti_icon_container"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="14dp"
+            android:background="@drawable/bg_skin_routine_noti_icon">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_skin_weather_noti" />
+        </FrameLayout>
+
+        <!-- Notification Content Area -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/layout_noti_icon_container"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="12dp">
+
+            <!-- Title & Time Line -->
+            <RelativeLayout
+                android:id="@+id/layout_noti_title_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- ROOTIE Text -->
+                <TextView
+                    android:id="@+id/tv_noti_app_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="ROOTIE • Thời tiết &amp; Da hôm nay ☀️"
+                    android:textColor="#3E4D44"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- Time text -->
+                <TextView
+                    android:id="@+id/tv_noti_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:fontFamily="@font/lexend"
+                    android:text="06:30"
+                    android:textColor="#807F7F"
+                    android:textSize="11sp" />
+            </RelativeLayout>
+
+            <!-- Message Text -->
+            <TextView
+                android:id="@+id/tv_noti_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_noti_title_bar"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingMultiplier="1.2"
+                android:text="Nhiệt độ hôm nay khá cao (32°C), UV đạt mức 9.2. Da khô của bạn có nguy cơ căng rát, hãy nhớ thoa kem chống nắng phổ rộng và cấp ẩm phục hồi nhé!"
+                android:textColor="#3E4D44"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

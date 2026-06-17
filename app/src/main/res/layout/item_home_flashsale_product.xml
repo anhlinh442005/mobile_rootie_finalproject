@@ -28,6 +28,7 @@
                 android:id="@+id/ivFlashProduct"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:src="@drawable/mascot_thank"
                 android:scaleType="fitCenter" />
 
         </FrameLayout>
@@ -40,9 +41,10 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:minLines="2"
+            android:text="Sua rua mat"
             android:fontFamily="@font/be_vietnam_pro_medium"
             android:textColor="#28362E"
-            android:textSize="11sp" />
+            android:textSize="8sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,31 +59,34 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro_bold"
                 android:textColor="#D32F2F"
-                android:textSize="10sp" />
+                android:text="100.000 d"
+                android:textSize="8sp" />
 
             <TextView
                 android:id="@+id/tvFlashOriginalPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
+                android:text="200.000d"
                 android:fontFamily="@font/be_vietnam_pro_regular"
                 android:textColor="#888888"
-                android:textSize="8sp" />
+                android:textSize="5sp" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFlashBuy"
             android:layout_width="match_parent"
             android:layout_height="24dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="4dp"
             android:backgroundTint="#47574B"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Chọn"
+            android:paddingTop="2dp"
+            android:textAlignment="center"
             android:fontFamily="@font/be_vietnam_pro_semibold"
-            android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="9sp"
+            android:textSize="8sp"
             app:cornerRadius="6dp" />
 
         </LinearLayout>

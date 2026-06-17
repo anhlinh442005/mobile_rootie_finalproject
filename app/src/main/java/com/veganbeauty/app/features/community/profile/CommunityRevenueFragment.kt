@@ -27,6 +27,14 @@ class CommunityRevenueFragment : Fragment() {
         ivBack?.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
+
+        view.findViewById<ImageView>(R.id.ivNotification)?.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.notification.CommunityNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
         
         view.findViewById<LinearLayout>(R.id.navOrders)?.setOnClickListener {
             parentFragmentManager.beginTransaction()

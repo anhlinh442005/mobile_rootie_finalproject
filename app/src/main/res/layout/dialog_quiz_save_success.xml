@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="310dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#FEFBF4"
+    app:cardUseCompatPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
+
+        <!-- Header Area: Botanical Circle Badge with Sparkles -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp">
+
+            <!-- Deep botanical soft outer ring -->
+            <View
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle_icon"
+                android:backgroundTint="#0D677559" />
+
+            <!-- Inner soft ring -->
+            <FrameLayout
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle_icon"
+                android:backgroundTint="#1A677559">
+
+                <!-- Main Olive Green Badge -->
+                <FrameLayout
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_circle_icon"
+                    android:backgroundTint="#677559">
+
+                    <!-- Lotus/Sparkles Line Art -->
+                    <ImageView
+                        android:id="@+id/iv_dialog_badge_icon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/quiz_ic_lotus"
+                        app:tint="#FEFBF4" />
+                </FrameLayout>
+            </FrameLayout>
+
+            <!-- Glowing Sparkle Detail (Top-Left) -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="42dp"
+                android:layout_marginBottom="30dp"
+                android:src="@drawable/quiz_ic_sparkles"
+                app:tint="#FF9F00" />
+
+            <!-- Soft Sparkle Detail (Bottom-Right) -->
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="44dp"
+                android:layout_marginTop="28dp"
+                android:src="@drawable/skin_ai_sparkles"
+                app:tint="#677559" />
+
+            <!-- Botanical Leaf Sparkle (Top-Right) -->
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="40dp"
+                android:layout_marginBottom="32dp"
+                android:src="@drawable/ic_skin_sparkle"
+                app:tint="#B3677559" />
+
+        </FrameLayout>
+
+        <!-- Premium Title -->
+        <TextView
+            android:id="@+id/tv_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lưu Hồ Sơ Thành Công"
+            android:textColor="#3E4D44"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/lexend"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Reward Badge with Coin Icon (Visible only when rewarded) -->
+        <LinearLayout
+            android:id="@+id/ll_dialog_coin_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/status_badge_bg"
+            android:backgroundTint="#FFF6E5"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
+            android:layout_marginBottom="14dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_coin"
+                android:layout_marginEnd="5dp" />
+
+            <TextView
+                android:id="@+id/tv_dialog_coin_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tặng +100 Xu thành viên"
+                android:textColor="#FF9F00"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/be_vietnam_pro" />
+        </LinearLayout>
+
+        <!-- Description / Message -->
+        <TextView
+            android:id="@+id/tv_dialog_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đã lưu chỉ số da và áp dụng routine AI vào lịch trình hàng ngày của bạn."
+            android:textColor="#5C6860"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.25"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Confirm Action Button -->
+        <LinearLayout
+            android:id="@+id/btn_dialog_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_btn_pill_solid"
+            android:backgroundTint="#3E4D44"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/tv_dialog_confirm_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CÀI ĐẶT NHẮC HẸN ⏰"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/lexend"
+                android:letterSpacing="0.03" />
+        </LinearLayout>
+
+        <!-- Cancel Text Link -->
+        <TextView
+            android:id="@+id/btn_dialog_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="ĐỂ SAU"
+            android:textColor="#7E8A83"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/lexend"
+            android:letterSpacing="0.05"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

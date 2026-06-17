@@ -10,66 +10,84 @@ class FirestoreService {
     suspend fun fetchAllProducts(): List<ProductEntity> {
         return try {
             val snapshot = db.collection("products").get().await()
-            snapshot.documents.mapNotNull { doc ->
-                // Mapping Firestore document to ProductEntity
-                @Suppress("UNCHECKED_CAST")
-                val albumList = doc.get("album") as? List<String> ?: emptyList()
-                
-                @Suppress("UNCHECKED_CAST")
-                val keyIngredientsRaw = doc.get("keyIngredients") as? List<Map<String, Any>> ?: emptyList()
-                val keyIngredientsList = keyIngredientsRaw.map { map ->
-                    com.veganbeauty.app.data.local.entities.KeyIngredient(
-                        name = map["name"] as? String ?: "",
-                        description = map["description"] as? String ?: ""
-                    )
-                }
-                
-                @Suppress("UNCHECKED_CAST")
-                val detailedList = doc.get("detailedIngredients") as? List<String> ?: emptyList()
-                @Suppress("UNCHECKED_CAST")
-                val idealList = doc.get("idealFor") as? List<String> ?: emptyList()
-                @Suppress("UNCHECKED_CAST")
-                val benefitsList = doc.get("benefits") as? List<String> ?: emptyList()
-
-                val categoryIdRaw = doc.get("categoryId")
-                val categoryIdsStr = when (categoryIdRaw) {
-                    is List<*> -> categoryIdRaw.filterIsInstance<String>().joinToString(",")
-                    is String -> categoryIdRaw
-                    else -> ""
-                }
-
-                ProductEntity(
-                    id = doc.id,
-                    name = doc.getString("name") ?: "",
-                    sku = doc.getString("sku") ?: "",
-                    price = doc.getLong("price") ?: 0L,
-                    category = doc.getString("category") ?: "",
-                    categoryIds = categoryIdsStr,
-                    brand = doc.getString("brand") ?: "",
-                    stock = doc.getLong("stock")?.toInt() ?: 0,
-                    description = doc.getString("description") ?: "",
-                    mainImage = doc.getString("mainImage") ?: "",
-                    suitableFor = doc.getString("suitableFor") ?: "",
-                    origin = doc.getString("origin") ?: "",
-                    expiryDate = doc.getString("expiryDate") ?: "",
-                    isNew = doc.getBoolean("isNew") ?: false,
-                    
-                    album = albumList,
-                    mainIngredientsSummary = doc.getString("mainIngredientsSummary") ?: "",
-                    allergyInformation = doc.getString("allergyInformation") ?: "",
-                    keyIngredients = keyIngredientsList,
-                    detailedIngredients = detailedList,
-                    storyDescription = doc.getString("storyDescription") ?: "",
-                    storyImage = doc.getString("storyImage") ?: "",
-                    idealFor = idealList,
-                    benefits = benefitsList,
-                    usage = doc.getString("usage") ?: "",
-                    usageAmount = doc.getString("usageAmount") ?: "",
-                    scent = doc.getString("scent") ?: "",
-                    notes = doc.getString("notes") ?: ""
-                )
-            }
+            snapshot.documents.mapNotNull { doc -> mapProductDocument(doc) }
         } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun fetchProductByBarcode(barcode: String): ProductEntity? {
+        return try {
+            val snapshot = db.collection("products")
+                .whereEqualTo("barcode", barcode.trim())
+                .limit(1)
+                .get()
+                .await()
+            snapshot.documents.firstOrNull()?.let { doc -> mapProductDocument(doc) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun mapProductDocument(doc: com.google.firebase.firestore.DocumentSnapshot): ProductEntity {
+        @Suppress("UNCHECKED_CAST")
+        val albumList = doc.get("album") as? List<String> ?: emptyList()
+
+        @Suppress("UNCHECKED_CAST")
+        val keyIngredientsRaw = doc.get("keyIngredients") as? List<Map<String, Any>> ?: emptyList()
+        val keyIngredientsList = keyIngredientsRaw.map { map ->
+            KeyIngredient(
+                name = map["name"] as? String ?: "",
+                description = map["description"] as? String ?: ""
+            )
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        val detailedList = doc.get("detailedIngredients") as? List<String> ?: emptyList()
+        @Suppress("UNCHECKED_CAST")
+        val idealList = doc.get("idealFor") as? List<String> ?: emptyList()
+        @Suppress("UNCHECKED_CAST")
+        val benefitsList = doc.get("benefits") as? List<String> ?: emptyList()
+
+        val categoryIdRaw = doc.get("categoryId")
+        val categoryIdsStr = when (categoryIdRaw) {
+            is List<*> -> categoryIdRaw.filterIsInstance<String>().joinToString(",")
+            is String -> categoryIdRaw
+            else -> ""
+        }
+
+        return ProductEntity(
+            id = doc.id,
+            name = doc.getString("name") ?: "",
+            sku = doc.getString("sku") ?: "",
+            barcode = doc.getString("barcode") ?: "",
+            price = doc.getLong("price") ?: 0L,
+            originalPrice = doc.getLong("originalPrice"),
+            category = doc.getString("category") ?: "",
+            categoryIds = categoryIdsStr,
+            brand = doc.getString("brand") ?: "",
+            stock = doc.getLong("stock")?.toInt() ?: 0,
+            description = doc.getString("description") ?: "",
+            mainImage = doc.getString("mainImage") ?: "",
+            suitableFor = doc.getString("suitableFor") ?: "",
+            origin = doc.getString("origin") ?: "",
+            expiryDate = doc.getString("expiryDate") ?: "",
+            isNew = doc.getBoolean("isNew") ?: false,
+            album = albumList,
+            mainIngredientsSummary = doc.getString("mainIngredientsSummary") ?: "",
+            allergyInformation = doc.getString("allergyInformation") ?: "",
+            keyIngredients = keyIngredientsList,
+            detailedIngredients = detailedList,
+            storyDescription = doc.getString("storyDescription") ?: "",
+            storyImage = doc.getString("storyImage") ?: "",
+            idealFor = idealList,
+            benefits = benefitsList,
+            usage = doc.getString("usage") ?: "",
+            usageAmount = doc.getString("usageAmount") ?: "",
+            scent = doc.getString("scent") ?: "",
+            notes = doc.getString("notes") ?: "",
+            rating = doc.getDouble("rating")?.toFloat() ?: 0f,
+            sold = doc.getLong("sold")?.toInt() ?: 0
+        )
     }
 
     suspend fun fetchAllUsers(): List<UserEntity> {
@@ -484,6 +502,8 @@ class FirestoreService {
                 val dongCua = thu26Map?.get("dong_cua") as? String ?: "21:00"
                 val phoneList = lienHeMap?.get("so_dien_thoai") as? List<*>
                 val phoneStr = phoneList?.filterIsInstance<String>()?.joinToString(", ") ?: ""
+                val tienNghiList = doc.get("tien_nghi") as? List<*>
+                val tienNghiStr = tienNghiList?.filterIsInstance<String>()?.joinToString(",") ?: ""
                 StoreEntity(
                     id = doc.id,
                     maCuaHang = doc.getString("ma_cua_hang") ?: "",
@@ -502,7 +522,8 @@ class FirestoreService {
                     moCua = moCua,
                     dongCua = dongCua,
                     trangThai = doc.getString("trang_thai") ?: "Đang hoạt động",
-                    isActive = doc.getBoolean("isActive") ?: doc.getBoolean("is_active") ?: true
+                    isActive = doc.getBoolean("isActive") ?: doc.getBoolean("is_active") ?: true,
+                    tienNghi = tienNghiStr
                 )
             }
         } catch (e: Exception) { emptyList() }

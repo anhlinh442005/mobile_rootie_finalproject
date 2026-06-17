@@ -27,6 +27,16 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
     private lateinit var repository: ProductRepository
     private var productId: String? = null
 
+    private val requestNotificationPermissionLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Toast.makeText(context, "Đã cấp quyền thông báo!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Vui lòng cấp quyền thông báo trong cài đặt để nhận nhắc nhở!", Toast.LENGTH_LONG).show()
+        }
+    }
+
     // Baseline date: June 4, 2026
     private val baselineDate: Date by lazy {
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -49,7 +59,11 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
         super.onCreate(savedInstanceState)
         productId = arguments?.getString(ARG_PRODUCT_ID)
         val db = RootieDatabase.getDatabase(requireContext())
-        repository = ProductRepository(db.productDao(), LocalJsonReader(requireContext()))
+        repository = ProductRepository(
+            productDao = db.productDao(),
+            localJsonReader = LocalJsonReader(requireContext()),
+            userProductExpiryDao = db.userProductExpiryDao()
+        )
     }
 
     override fun onCreateView(
@@ -68,28 +82,145 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
 
         productId?.let { id ->
             lifecycleScope.launch {
-                val db = RootieDatabase.getDatabase(requireContext())
-                val product = db.productDao().getProductById(id)
+                val userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(requireContext())
+                val product = repository.getExpiryProductById(userId, id)
                 if (product != null) {
                     bindProductDetails(product)
                 }
             }
         }
 
+        val userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(requireContext())
+        val pId = productId ?: ""
+
+        // Load initial product-specific switches state
+        val productNotiEnabled = com.veganbeauty.app.data.local.ProfileSession.getProductNotiEnabled(requireContext(), userId, pId)
+        val productWeek1Enabled = com.veganbeauty.app.data.local.ProfileSession.getProductWeek1Enabled(requireContext(), userId, pId)
+        val productWeek2Enabled = com.veganbeauty.app.data.local.ProfileSession.getProductWeek2Enabled(requireContext(), userId, pId)
+
+        binding.switchNotification.isChecked = productNotiEnabled
+        binding.switchWeek1.isChecked = productWeek1Enabled
+        binding.switchWeek2.isChecked = productWeek2Enabled
+        binding.switchWeek1.isEnabled = productNotiEnabled
+        binding.switchWeek2.isEnabled = productNotiEnabled
+
         // Configure Switch listeners
         binding.switchWeek1.setOnCheckedChangeListener { _, isChecked ->
-            val status = if (isChecked) "Bật" else "Tắt"
-            Toast.makeText(context, "$status nhắc nhở trước 1 tuần", Toast.LENGTH_SHORT).show()
+            com.veganbeauty.app.data.local.ProfileSession.setProductWeek1Enabled(requireContext(), userId, pId, isChecked)
+            if (isChecked) {
+                checkAndRequestNotiPermission {
+                    val productName = binding.tvProductName.text.toString()
+                    triggerCustomExpiryNotification(1, productName)
+                }
+            } else {
+                Toast.makeText(context, "Tắt nhắc nhở trước 1 tuần", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.switchWeek2.setOnCheckedChangeListener { _, isChecked ->
-            val status = if (isChecked) "Bật" else "Tắt"
-            Toast.makeText(context, "$status nhắc nhở trước 2 tuần", Toast.LENGTH_SHORT).show()
+            com.veganbeauty.app.data.local.ProfileSession.setProductWeek2Enabled(requireContext(), userId, pId, isChecked)
+            if (isChecked) {
+                checkAndRequestNotiPermission {
+                    val productName = binding.tvProductName.text.toString()
+                    triggerCustomExpiryNotification(2, productName)
+                }
+            } else {
+                Toast.makeText(context, "Tắt nhắc nhở trước 2 tuần", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.switchNotification.setOnCheckedChangeListener { _, isChecked ->
+            com.veganbeauty.app.data.local.ProfileSession.setProductNotiEnabled(requireContext(), userId, pId, isChecked)
+            binding.switchWeek1.isEnabled = isChecked
+            binding.switchWeek2.isEnabled = isChecked
+            if (!isChecked) {
+                binding.switchWeek1.isChecked = false
+                binding.switchWeek2.isChecked = false
+            }
             val status = if (isChecked) "Bật" else "Tắt"
             Toast.makeText(context, "$status nhận thông báo hạn sử dụng", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkAndRequestNotiPermission(onGranted: () -> Unit) {
+        val context = requireContext()
+        val systemNotificationsEnabled = androidx.core.app.NotificationManagerCompat.from(context).areNotificationsEnabled()
+        if (!systemNotificationsEnabled) {
+            Toast.makeText(context, "Thông báo hiện đang bị tắt. Vui lòng bật trong Cài đặt hệ thống.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
+                onGranted()
+            } else {
+                requestNotificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+        } else {
+            onGranted()
+        }
+    }
+
+    private fun triggerCustomExpiryNotification(weeks: Int, productName: String) {
+        val context = requireContext()
+        val titleText = "Chỉ còn $weeks tuần!"
+        val messageText = "$productName của bạn sắp hết hạn. Kiểm tra ngay!"
+
+        // 1. Show In-App Notification slide-down (Geofencing banner style)
+        _binding?.let { b ->
+            b.tvNotiTitle.text = titleText
+            b.tvNotiMessage.text = messageText
+            b.cvNotificationBanner.visibility = View.VISIBLE
+            b.cvNotificationBanner.translationY = -300f
+            
+            b.cvNotificationBanner.animate()
+                .translationY(0f)
+                .setDuration(500)
+                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .start()
+        }
+
+        // Automatically hide in-app banner after 5 seconds
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            _binding?.let { b ->
+                b.cvNotificationBanner.animate()
+                    .translationY(-300f)
+                    .setDuration(500)
+                    .withEndAction {
+                        b.cvNotificationBanner.visibility = View.GONE
+                    }
+                    .start()
+            }
+        }, 5000)
+
+        // 2. Trigger System Notification
+        val notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        val channelId = "rootie_expiry_channel"
+        
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val name = "Nhắc nhở hết hạn sản phẩm"
+            val importance = android.app.NotificationManager.IMPORTANCE_HIGH
+            val channel = android.app.NotificationChannel(channelId, name, importance).apply {
+                description = "Thông báo nhắc nhở hạn sử dụng mỹ phẩm"
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val builder = androidx.core.app.NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(com.veganbeauty.app.R.drawable.ic_notification)
+            .setContentTitle(titleText)
+            .setContentText(messageText)
+            .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+
+        try {
+            notificationManager.notify(weeks * 1000 + 99, builder.build())
+        } catch (e: SecurityException) {
+            e.printStackTrace()
         }
     }
 
@@ -160,6 +291,14 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
         binding.tvRemainingValue.text = valueText
         binding.tvRemainingUnit.text = unitText
         binding.circularProgress.progress = ratio
+
+        // Dynamic circular progress ring color based on status (Expired/Urgent/Normal)
+        val progressColor = when {
+            diffDays <= 0 -> android.graphics.Color.parseColor("#8E8E8E") // Grey for expired
+            diffDays <= 14 -> android.graphics.Color.parseColor("#C62828") // Red for urgent (<= 2 weeks)
+            else -> android.graphics.Color.parseColor("#3E4D44") // Dark green for normal
+        }
+        binding.circularProgress.progressColor = progressColor
     }
 
     override fun onDestroyView() {

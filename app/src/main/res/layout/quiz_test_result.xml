@@ -40,18 +40,6 @@
             android:textStyle="bold" />
 
         <!-- Notification Bell -->
-        <ImageView
-            android:id="@+id/btn_notifications"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="9dp"
-            android:src="@drawable/ic_notification" />
     </RelativeLayout>
 
     <!-- Scrollable Content -->
@@ -320,12 +308,16 @@
 
             <!-- Section: AI Recommendations -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_ai_advice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 app:cardBackgroundColor="#3E4D44"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="3dp">
+                app:cardElevation="3dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -365,8 +357,171 @@
                         android:textColor="#FFFFFF"
                         android:textSize="15sp"
                         android:lineSpacingMultiplier="1.45" />
+
+                    <!-- Link to Chat with AI -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/skin_ai_sparkles"
+                            app:tint="#D8E8C6" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:text="Hỏi thêm Rootie AI về lời khuyên này →"
+                            android:textColor="#D8E8C6"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+            <!-- Section: AI Skincare Routine Setup (Visible only right after test) -->
+            <LinearLayout
+                android:id="@+id/ll_ai_routine_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Title for the routine section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="14dp">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/quiz_ic_sparkles"
+                        app:tint="#3E4D44" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:text="Thiết lập Routine gợi ý từ AI"
+                        android:textColor="#3E4D44"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Custom Tabs Day/Night -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:orientation="horizontal"
+                    android:background="@drawable/bg_btn_solid"
+                    android:backgroundTint="#EAECE3"
+                    android:padding="3dp"
+                    android:layout_marginBottom="16dp">
+
+                    <!-- Tab Morning -->
+                    <FrameLayout
+                        android:id="@+id/tab_morning"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_btn_solid"
+                        android:backgroundTint="#677559"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:id="@+id/tv_tab_morning"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/lexend"
+                            android:text="Buổi sáng ☀️"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+
+                    <!-- Tab Evening -->
+                    <FrameLayout
+                        android:id="@+id/tab_evening"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:id="@+id/tv_tab_evening"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/lexend"
+                            android:text="Buổi tối 🌙"
+                            android:textColor="#677559"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Steps List Container -->
+                <LinearLayout
+                    android:id="@+id/ll_ai_routine_steps_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <!-- Action Button 1: Apply Routine -->
+                <FrameLayout
+                    android:id="@+id/btn_apply_routine"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_btn_solid"
+                    android:backgroundTint="#677559"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lexend"
+                        android:text="ÁP DỤNG &amp; LƯU HỒ SƠ DA"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+
+                <!-- Link Text: RETAKE QUIZ INLINE -->
+                <TextView
+                    android:id="@+id/tv_retake_quiz_inline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:fontFamily="@font/lexend"
+                    android:text="LÀM LẠI QUIZ"
+                    android:textColor="#3E4D44"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

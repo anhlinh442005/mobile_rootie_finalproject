@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FEFBF4">
+    android:background="@color/neutral">
 
     <!-- Scrollable Main Content -->
     <ScrollView
@@ -12,13 +12,17 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/layout_bottom_nav"
         android:fillViewport="true"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="24dp">
+            android:paddingBottom="24dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <!-- 1. Header Bar -->
             <RelativeLayout
@@ -37,7 +41,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    app:tint="#02542D"
+                    app:tint="@color/primary"
                     android:padding="6dp" />
 
                 <TextView
@@ -46,11 +50,11 @@
                     android:layout_centerInParent="true"
                     android:fontFamily="@font/lexend"
                     android:text="Dự báo theo thời tiết"
-                    android:textColor="#000000"
+                    android:textColor="@color/primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <!-- Notification Bell Container -->
+                <!-- Notification Bell Button -->
                 <FrameLayout
                     android:id="@+id/btn_notification"
                     android:layout_width="40dp"
@@ -62,32 +66,10 @@
                     android:focusable="true">
 
                     <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_notification"
-                        app:tint="#3E4D44" />
-
-                    <!-- Ellipse 1 Badge -->
-                    <FrameLayout
-                        android:layout_width="9dp"
-                        android:layout_height="9dp"
-                        android:layout_gravity="top|end"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/badge_dot"
-                        android:backgroundTint="#FFCC00">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:fontFamily="@font/lexend"
-                            android:text="1"
-                            android:textColor="#FFFFFF"
-                            android:textSize="7sp"
-                            android:textStyle="bold"
-                            android:gravity="center" />
-                    </FrameLayout>
+                        android:src="@drawable/ic_notification" />
                 </FrameLayout>
             </RelativeLayout>
 
@@ -95,7 +77,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="69dp"
-                android:background="#FFFFFF"
+                android:background="@color/white"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="17dp">
@@ -129,7 +111,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="CHÀO BUỔI SÁNG"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/primary"
                         android:textSize="15sp"
                         android:textStyle="normal" />
 
@@ -139,7 +121,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="Khánh Bình"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -159,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/lexend"
                     android:text="Hôm nay da bạn cần chống nắng và cấp ẩm nhiều hơn. Đừng quên nhé!"
-                    android:textColor="#3E4D44"
+                    android:textColor="@color/primary"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:lineSpacingExtra="4dp" />
@@ -170,7 +152,7 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/lexend"
                     android:text="UV cao và độ ẩm thấp có thể khiến da nhạy cảm dễ mất nước. Rootie khuyên bạn nên tập trung vào hàng rào bảo vệ."
-                    android:textColor="#3E4D44"
+                    android:textColor="@color/primary"
                     android:textSize="14sp"
                     android:lineSpacingExtra="3dp" />
             </LinearLayout>
@@ -182,14 +164,17 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginHorizontal="17dp"
                 app:cardCornerRadius="15dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="#FAFAF4">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardUseCompatPadding="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:padding="20dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -214,7 +199,7 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/lexend"
                                     android:text="29"
-                                    android:textColor="#000000"
+                                    android:textColor="@color/primary"
                                     android:textSize="50sp"
                                     android:textStyle="bold" />
 
@@ -223,7 +208,7 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/lexend"
                                     android:text="°C"
-                                    android:textColor="#000000"
+                                    android:textColor="@color/primary"
                                     android:textSize="32sp"
                                     android:layout_marginTop="6dp" />
                             </LinearLayout>
@@ -235,7 +220,7 @@
                                 android:layout_marginTop="4dp"
                                 android:fontFamily="@font/lexend"
                                 android:text="NẮNG NHIỀU, OI NHẸ"
-                                android:textColor="#808080"
+                                android:textColor="@color/gray_dark"
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
 
@@ -246,7 +231,7 @@
                                 android:layout_marginTop="2dp"
                                 android:fontFamily="@font/lexend"
                                 android:text="Thành phố Hồ Chí Minh"
-                                android:textColor="#808080"
+                                android:textColor="@color/gray_dark"
                                 android:textSize="12sp" />
                         </LinearLayout>
 
@@ -267,149 +252,175 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_marginTop="20dp"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:clipChildren="false"
+                        android:clipToPadding="false">
 
                         <!-- Box Humid -->
-                        <LinearLayout
+                        <androidx.cardview.widget.CardView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:minHeight="85dp"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_card_white"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:elevation="2dp"
-                            android:paddingHorizontal="4dp"
-                            android:paddingVertical="8dp">
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="3dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardUseCompatPadding="true">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Độ ẩm"
-                                android:textColor="#3E4D44"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
+                                android:minHeight="85dp"
+                                android:background="@drawable/bg_card_white"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:paddingVertical="8dp">
 
-                            <TextView
-                                android:id="@+id/tv_humidity"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="42%"
-                                android:textColor="#3E4D44"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Độ ẩm"
+                                    android:textColor="@color/primary"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
 
-                            <TextView
-                                android:id="@+id/tv_humidity_level"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="Thấp"
-                                android:textColor="#F04758"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/tv_humidity"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="42%"
+                                    android:textColor="@color/primary"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_humidity_level"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Thấp"
+                                    android:textColor="#F04758"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
 
                         <!-- Spacer -->
                         <View
-                            android:layout_width="12dp"
+                            android:layout_width="4dp"
                             android:layout_height="match_parent" />
 
                         <!-- Box UV -->
-                        <LinearLayout
+                        <androidx.cardview.widget.CardView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:minHeight="85dp"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_card_white"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:elevation="2dp"
-                            android:paddingHorizontal="4dp"
-                            android:paddingVertical="8dp">
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="3dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardUseCompatPadding="true">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Chỉ số UV"
-                                android:textColor="#3E4D44"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
+                                android:minHeight="85dp"
+                                android:background="@drawable/bg_card_white"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:paddingVertical="8dp">
 
-                            <TextView
-                                android:id="@+id/tv_uv_index"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="8.5"
-                                android:textColor="#3E4D44"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Chỉ số UV"
+                                    android:textColor="@color/primary"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
 
-                            <TextView
-                                android:id="@+id/tv_uv_level"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="Nguy hiểm"
-                                android:textColor="#F04758"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/tv_uv_index"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="8.5"
+                                    android:textColor="@color/primary"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_uv_level"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Nguy hiểm"
+                                    android:textColor="#F04758"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
 
                         <!-- Spacer -->
                         <View
-                            android:layout_width="12dp"
+                            android:layout_width="4dp"
                             android:layout_height="match_parent" />
 
                         <!-- Box Dust -->
-                        <LinearLayout
+                        <androidx.cardview.widget.CardView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:minHeight="85dp"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_card_white"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:elevation="2dp"
-                            android:paddingHorizontal="4dp"
-                            android:paddingVertical="8dp">
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="3dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardUseCompatPadding="true">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Bụi mịn"
-                                android:textColor="#3E4D44"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
+                                android:minHeight="85dp"
+                                android:background="@drawable/bg_card_white"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:paddingVertical="8dp">
 
-                            <TextView
-                                android:id="@+id/tv_dust_index"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="74"
-                                android:textColor="#3E4D44"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Bụi mịn"
+                                    android:textColor="@color/primary"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
 
-                            <TextView
-                                android:id="@+id/tv_dust_level"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="Trung bình"
-                                android:textColor="#BCCCAB"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/tv_dust_index"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="74"
+                                    android:textColor="@color/primary"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_dust_level"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/lexend"
+                                    android:text="Trung bình"
+                                    android:textColor="#BCCCAB"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
                     <!-- Alert warning card -->
@@ -470,13 +481,18 @@
             </LinearLayout>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_ai_insight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginHorizontal="17dp"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="6dp"
-                app:cardBackgroundColor="#3E4D44">
+                app:cardBackgroundColor="@color/primary"
+                app:cardUseCompatPadding="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -494,6 +510,31 @@
                         android:textSize="14sp"
                         android:textStyle="italic"
                         android:lineSpacingExtra="4dp" />
+
+                    <!-- Link to Chat with AI -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/skin_ai_sparkles"
+                            app:tint="@color/primary_light" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:text="Hỏi Rootie AI để chẩn đoán chuyên sâu →"
+                            android:textColor="@color/primary_light"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
                     <!-- UV Impact Row -->
                     <RelativeLayout
@@ -620,6 +661,87 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- 5.5. Daily Skin Weather Notification Switch Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="17dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="3dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardUseCompatPadding="true">
+
+                <RelativeLayout
+                    android:id="@+id/btn_toggle_skin_weather_noti"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <!-- Bell Icon -->
+                    <ImageView
+                        android:id="@+id/iv_weather_noti_bell"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_skin_weather_noti"
+                        app:tint="@color/secondary" />
+
+                    <!-- Text description -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="12dp"
+                        android:layout_toStartOf="@id/switch_skin_weather_forecast"
+                        android:layout_toEndOf="@id/iv_weather_noti_bell"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="Thông báo đánh giá da (06:30)"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/lexend"
+                            android:text="Nhận lời khuyên từ AI theo thời tiết mỗi sáng"
+                            android:textColor="@color/gray_dark"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <!-- Switch -->
+                    <FrameLayout
+                        android:id="@+id/switch_skin_weather_forecast"
+                        android:layout_width="48dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_switch_track_off"
+                        android:clickable="false"
+                        android:focusable="false">
+
+                        <ImageView
+                            android:id="@+id/switch_skin_weather_forecast_thumb"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:layout_marginStart="2dp"
+                            android:src="@drawable/bg_switch_thumb" />
+                    </FrameLayout>
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
             <!-- 6. Routine đề xuất hôm nay Card Section -->
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -638,7 +760,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_weather_wand"
-                        app:tint="#3E4D44" />
+                        app:tint="@color/primary" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -646,7 +768,7 @@
                         android:layout_marginStart="10dp"
                         android:fontFamily="@font/lexend"
                         android:text="Routine đề xuất hôm nay"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -658,7 +780,7 @@
                     android:layout_centerVertical="true"
                     android:fontFamily="@font/lexend"
                     android:text="7 : 30 AM"
-                    android:textColor="#3E4D44"
+                    android:textColor="@color/primary"
                     android:textSize="14sp" />
             </RelativeLayout>
 
@@ -686,14 +808,14 @@
                         android:layout_width="46dp"
                         android:layout_height="46dp"
                         android:background="@drawable/bg_circle_green"
-                        android:backgroundTint="#D8E8C6"
+                        android:backgroundTint="@color/primary_light"
                         android:padding="8dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_weather_drop"
-                            app:tint="#3E4D44" />
+                            app:tint="@color/primary" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -708,7 +830,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="Cleanser"
-                            android:textColor="#3E4D44"
+                            android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -718,7 +840,7 @@
                             android:layout_marginTop="2dp"
                             android:fontFamily="@font/lexend"
                             android:text="Công thức nhẹ nhàng"
-                            android:textColor="#3E4D44"
+                            android:textColor="@color/primary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -739,14 +861,14 @@
                         android:layout_width="46dp"
                         android:layout_height="46dp"
                         android:background="@drawable/bg_circle_green"
-                        android:backgroundTint="#D8E8C6"
+                        android:backgroundTint="@color/primary_light"
                         android:padding="8dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_weather_sun_outlined"
-                            app:tint="#3E4D44" />
+                            app:tint="@color/primary" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -761,7 +883,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="Vitamin C Serum"
-                            android:textColor="#3E4D44"
+                            android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -771,7 +893,7 @@
                             android:layout_marginTop="2dp"
                             android:fontFamily="@font/lexend"
                             android:text="Bảo vệ da mặt khỏi tia UV"
-                            android:textColor="#3E4D44"
+                            android:textColor="@color/primary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -792,14 +914,14 @@
                         android:layout_width="46dp"
                         android:layout_height="46dp"
                         android:background="@drawable/bg_circle_green"
-                        android:backgroundTint="#D8E8C6"
+                        android:backgroundTint="@color/primary_light"
                         android:padding="8dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_weather_lotion"
-                            app:tint="#3E4D44" />
+                            app:tint="@color/primary" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -814,7 +936,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="Moisturizer Gel"
-                            android:textColor="#3E4D44"
+                            android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -824,7 +946,7 @@
                             android:layout_marginTop="2dp"
                             android:fontFamily="@font/lexend"
                             android:text="Tăng cường hydrat hóa nhẹ"
-                            android:textColor="#3E4D44"
+                            android:textColor="@color/primary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -845,7 +967,7 @@
                         android:layout_width="46dp"
                         android:layout_height="46dp"
                         android:background="@drawable/bg_circle_green"
-                        android:backgroundTint="#C3C8C2"
+                        android:backgroundTint="@color/gray_light"
                         android:padding="10dp">
 
                         <ImageView
@@ -996,7 +1118,7 @@
                 android:layout_marginHorizontal="17dp"
                 android:fontFamily="@font/lexend"
                 android:text="TÌNH TRẠNG DA HÔM NAY"
-                android:textColor="#807F7F"
+                android:textColor="@color/gray_dark"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -1007,7 +1129,8 @@
                 android:layout_marginHorizontal="17dp"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="6dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/white"
+                app:cardUseCompatPadding="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -1027,7 +1150,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="ĐỒ DẦU (OILY)"
-                            android:textColor="#807F7F"
+                            android:textColor="@color/gray_dark"
                             android:textSize="12sp"
                             android:textStyle="bold" />
 
@@ -1038,7 +1161,7 @@
                             android:layout_alignParentEnd="true"
                             android:fontFamily="@font/lexend"
                             android:text="75%"
-                            android:textColor="#807F7F"
+                            android:textColor="@color/gray_dark"
                             android:textSize="12sp"
                             android:textStyle="bold" />
 
@@ -1066,7 +1189,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="CẤP NƯỚC (HYDRATION)"
-                            android:textColor="#807F7F"
+                            android:textColor="@color/gray_dark"
                             android:textSize="12sp"
                             android:textStyle="bold" />
 
@@ -1077,7 +1200,7 @@
                             android:layout_alignParentEnd="true"
                             android:fontFamily="@font/lexend"
                             android:text="50%"
-                            android:textColor="#879578"
+                            android:textColor="@color/secondary"
                             android:textSize="12sp"
                             android:textStyle="bold" />
 
@@ -1104,7 +1227,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="NHẠY CẢM (SENSITIVITY)"
-                            android:textColor="#807F7F"
+                            android:textColor="@color/gray_dark"
                             android:textSize="12sp"
                             android:textStyle="bold" />
 

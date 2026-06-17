@@ -3,6 +3,7 @@ package com.veganbeauty.app.features.routine
 import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -68,10 +69,10 @@ class SkinRoutineSettingsFragment : RootieFragment() {
                     .commit()
             }
 
-            // AI Suggestion Navigate to Quiz Intro
+            // AI Suggestion Navigate to SkinAiChatFragment
             binding.btnAiSuggestion.setOnClickListener {
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_container, QuizTestIntroFragment())
+                    .replace(R.id.main_container, com.veganbeauty.app.features.ai.SkinAiChatFragment())
                     .addToBackStack(null)
                     .commit()
             }
@@ -402,23 +403,63 @@ class SkinRoutineSettingsFragment : RootieFragment() {
         // 4. Update Alarm scheduler
         if (morningEnabled) {
             val morningParts = morningTime.split(":")
-            val mHour = morningParts.getOrNull(0)?.toIntOrNull() ?: 6
-            val mMinute = morningParts.getOrNull(1)?.toIntOrNull() ?: 30
-            RoutineAlarmScheduler.scheduleRoutineAlarm(ctx, "MORNING", mHour, mMinute)
+            var mHour = morningParts.getOrNull(0)?.toIntOrNull() ?: 6
+            var mMinute = morningParts.getOrNull(1)?.toIntOrNull() ?: 30
+            
+            // If lead reminder is enabled, schedule 15 minutes early
+            if (leadEnabled) {
+                val cal = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, mHour)
+                    set(Calendar.MINUTE, mMinute)
+                }
+                cal.add(Calendar.MINUTE, -15)
+                mHour = cal.get(Calendar.HOUR_OF_DAY)
+                mMinute = cal.get(Calendar.MINUTE)
+            }
+            
+            RoutineAlarmScheduler.scheduleRoutineAlarm(ctx, "MORNING", mHour, mMinute, leadEnabled)
         } else {
             RoutineAlarmScheduler.cancelRoutineAlarm(ctx, "MORNING")
         }
 
         if (eveningEnabled) {
             val eveningParts = eveningTime.split(":")
-            val eHour = eveningParts.getOrNull(0)?.toIntOrNull() ?: 21
-            val eMinute = eveningParts.getOrNull(1)?.toIntOrNull() ?: 45
-            RoutineAlarmScheduler.scheduleRoutineAlarm(ctx, "EVENING", eHour, eMinute)
+            var eHour = eveningParts.getOrNull(0)?.toIntOrNull() ?: 21
+            var eMinute = eveningParts.getOrNull(1)?.toIntOrNull() ?: 45
+            
+            // If lead reminder is enabled, schedule 15 minutes early
+            if (leadEnabled) {
+                val cal = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, eHour)
+                    set(Calendar.MINUTE, eMinute)
+                }
+                cal.add(Calendar.MINUTE, -15)
+                eHour = cal.get(Calendar.HOUR_OF_DAY)
+                eMinute = cal.get(Calendar.MINUTE)
+            }
+            
+            RoutineAlarmScheduler.scheduleRoutineAlarm(ctx, "EVENING", eHour, eMinute, leadEnabled)
         } else {
             RoutineAlarmScheduler.cancelRoutineAlarm(ctx, "EVENING")
         }
 
-        Toast.makeText(ctx, "Đã lưu cấu hình routine và đặt lịch thông báo thành công!", Toast.LENGTH_SHORT).show()
+        // Trigger immediate test notifications so the user can preview them instantly
+        if (morningEnabled) {
+            val testIntent = Intent(ctx, RoutineAlarmReceiver::class.java).apply {
+                putExtra("REMINDER_TYPE", "MORNING")
+                putExtra("IS_LEAD_REMINDER", leadEnabled)
+            }
+            ctx.sendBroadcast(testIntent)
+        }
+        if (eveningEnabled) {
+            val testIntent = Intent(ctx, RoutineAlarmReceiver::class.java).apply {
+                putExtra("REMINDER_TYPE", "EVENING")
+                putExtra("IS_LEAD_REMINDER", leadEnabled)
+            }
+            ctx.sendBroadcast(testIntent)
+        }
+
+        Toast.makeText(ctx, "Đã lưu cấu hình routine và gửi thông báo xem thử thành công!", Toast.LENGTH_SHORT).show()
         parentFragmentManager.popBackStack()
     }
 

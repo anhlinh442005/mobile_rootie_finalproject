@@ -13,6 +13,7 @@ data class ProductEntity(
     @PrimaryKey val id: String,
     val name: String,
     val sku: String,
+    val barcode: String = "",
     val price: Long,
     val originalPrice: Long? = null,
     val category: String,

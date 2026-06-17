@@ -28,7 +28,9 @@ data class CommentItem(
     val replyContent: String = "",
     val replyTime: String = "",
     val replyLikesCount: Int = 0,
-    val replyAvatarUrl: String = ""
+    val replyAvatarUrl: String = "",
+    val commentId: String = "",
+    val replyCommentId: String = ""
 )
 
 class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
@@ -40,12 +42,14 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
         const val TAG = "CommunityCommentBottomSheet"
         private const val ARG_POST_ID = "post_id"
         private const val ARG_COMMENTS_COUNT = "comments_count"
+        private const val ARG_TARGET_COMMENT_ID = "target_comment_id"
 
-        fun newInstance(postId: String, commentsCount: Int = 5): CommunityCommentBottomSheet {
+        fun newInstance(postId: String, commentsCount: Int = 5, targetCommentId: String? = null): CommunityCommentBottomSheet {
             val fragment = CommunityCommentBottomSheet()
             val args = Bundle()
             args.putString(ARG_POST_ID, postId)
             args.putInt(ARG_COMMENTS_COUNT, commentsCount)
+            args.putString(ARG_TARGET_COMMENT_ID, targetCommentId)
             fragment.arguments = args
             return fragment
         }
@@ -195,7 +199,9 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
                         replyContent = replyContent,
                         replyTime = if (replyTime.isNotEmpty()) com.veganbeauty.app.utils.TimeFormatter.getTimeAgo(replyTime) else "",
                         replyLikesCount = replyLikes,
-                        replyAvatarUrl = replyAvatar
+                        replyAvatarUrl = replyAvatar,
+                        commentId = commentId,
+                        replyCommentId = if (hasReply) repliesMap[commentId]?.optString("comment_id", "") ?: "" else ""
                     ))
                 }
             }
@@ -206,6 +212,8 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
             e.printStackTrace()
         }        
         val tvCommentCount = view.findViewById<TextView>(R.id.tvCommentCount)
+        val tvClearAllComments = view.findViewById<TextView>(R.id.tvClearAllComments)
+
         if (commentsList.isEmpty()) {
             tvEmptyComments?.visibility = View.VISIBLE
             rvComments.visibility = View.GONE
@@ -215,6 +223,35 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
             rvComments.visibility = View.VISIBLE
             rvComments.adapter = CommentAdapter(commentsList)
             tvCommentCount.text = "${commentsList.size} bình luận"
+
+            val targetCommentId = arguments?.getString(ARG_TARGET_COMMENT_ID)
+            if (!targetCommentId.isNullOrEmpty()) {
+                val index = commentsList.indexOfFirst {
+                    it.commentId == targetCommentId || (it.hasReply && it.replyCommentId == targetCommentId)
+                }
+                if (index != -1) {
+                    rvComments.post {
+                        rvComments.scrollToPosition(index)
+                    }
+                }
+            }
+        }
+
+        tvClearAllComments?.setOnClickListener {
+            if (commentsList.isNotEmpty()) {
+                androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
+                    .setTitle("Xóa tất cả bình luận")
+                    .setMessage("Bạn có chắc chắn muốn xóa toàn bộ bình luận?")
+                    .setPositiveButton("Xóa tất cả") { _, _ ->
+                        commentsList.clear()
+                        rvComments.adapter?.notifyDataSetChanged()
+                        tvEmptyComments?.visibility = View.VISIBLE
+                        rvComments.visibility = View.GONE
+                        tvCommentCount.text = "Bình luận"
+                    }
+                    .setNegativeButton("Hủy", null)
+                    .show()
+            }
         }
         
         // Hide/Show bottom sheet on dismiss/send
@@ -311,7 +348,7 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    inner class CommentAdapter(private val comments: List<CommentItem>) :
+    inner class CommentAdapter(private val comments: MutableList<CommentItem>) :
         RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
         inner class CommentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -340,6 +377,35 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
                 tvTime.text = item.timeStr
                 tvContent.text = item.content
                 tvLikesCount.text = item.likesCount.toString()
+                
+                itemView.setOnLongClickListener {
+                    androidx.appcompat.app.AlertDialog.Builder(itemView.context, R.style.CustomDialogTheme)
+                        .setTitle("Xóa bình luận")
+                        .setMessage("Bạn có chắc chắn muốn xóa bình luận này?")
+                        .setPositiveButton("Xóa") { _, _ ->
+                            val pos = adapterPosition
+                            if (pos != RecyclerView.NO_POSITION && pos < comments.size) {
+                                comments.removeAt(pos)
+                                notifyItemRemoved(pos)
+                                val fView = this@CommunityCommentBottomSheet.view
+                                val tvEmptyCommentsView = fView?.findViewById<View>(R.id.tvEmptyComments)
+                                val rvCommentsView = fView?.findViewById<View>(R.id.rvComments)
+                                val tvCommentCountView = fView?.findViewById<TextView>(R.id.tvCommentCount)
+
+                                val countText = if (comments.isEmpty()) {
+                                    tvEmptyCommentsView?.visibility = View.VISIBLE
+                                    rvCommentsView?.visibility = View.GONE
+                                    "Bình luận"
+                                } else {
+                                    "${comments.size} bình luận"
+                                }
+                                tvCommentCountView?.text = countText
+                            }
+                        }
+                        .setNegativeButton("Hủy", null)
+                        .show()
+                    true
+                }
                 
                 if (item.isAuthor) {
                     tvAuthorTag.visibility = View.VISIBLE
@@ -375,8 +441,10 @@ class CommunityCommentBottomSheet : BottomSheetDialogFragment() {
 
                 if (item.hasReply) {
                     llReplyContainer.visibility = View.VISIBLE
-                    llReplyContentContainer.visibility = View.GONE
-                    llViewMoreReplies.visibility = View.VISIBLE
+                    val targetCommentId = arguments?.getString(ARG_TARGET_COMMENT_ID)
+                    val showReplyDirectly = !targetCommentId.isNullOrEmpty() && item.replyCommentId == targetCommentId
+                    llReplyContentContainer.visibility = if (showReplyDirectly) View.VISIBLE else View.GONE
+                    llViewMoreReplies.visibility = if (showReplyDirectly) View.GONE else View.VISIBLE
                     
                     tvReplyUsername.text = item.replyUsername
                     tvReplyTime.text = item.replyTime

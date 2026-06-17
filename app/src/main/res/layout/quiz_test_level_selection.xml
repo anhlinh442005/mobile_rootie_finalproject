@@ -39,45 +39,6 @@
             android:textStyle="bold" />
 
         <!-- Notification Bell with Badge -->
-        <FrameLayout
-            android:id="@+id/btn_notifications"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:src="@drawable/home_ic_notification"
-                app:tint="#3E4D44" />
-
-            <!-- Yellow badge dot with "1" inside -->
-            <FrameLayout
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_circle_icon"
-                android:backgroundTint="#F5B223">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="@font/lexend"
-                    android:text="1"
-                    android:textColor="#FFFFFF"
-                    android:textSize="9sp"
-                    android:textStyle="bold" />
-            </FrameLayout>
-        </FrameLayout>
     </RelativeLayout>
 
     <!-- Scrollable Content -->

@@ -38,7 +38,7 @@ class WeatherForecastFragment : RootieFragment() {
 
     // API key for Google Gemini (Free tier). Replace with your own key.
     // If empty or equals placeholder, falls back to Rule-based skin/weather expert system.
-    private val GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
+    private val GEMINI_API_KEY = com.veganbeauty.app.BuildConfig.GEMINI_API_KEY
 
     // Ho Chi Minh City coordinates fallback
     private val defaultLat = 10.8231
@@ -74,6 +74,61 @@ class WeatherForecastFragment : RootieFragment() {
         loadUserProfileData()
         checkLocationPermissionsAndLoad()
         setupFeedbackButtons()
+
+        binding.cardAiInsight.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.ai.SkinAiChatFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        setupSkinWeatherNotificationSwitch()
+    }
+
+    private fun setupSkinWeatherNotificationSwitch() {
+        val context = requireContext()
+        val isEnabled = com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(context)
+        updateSwitchUI(binding.switchSkinWeatherForecast, binding.switchSkinWeatherForecastThumb, isEnabled)
+
+        binding.btnToggleSkinWeatherNoti.setOnClickListener {
+            val ctx = requireContext()
+            val nextState = !com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(ctx)
+            com.veganbeauty.app.data.local.ProfileSession.setSkinWeatherNotiEnabled(ctx, nextState)
+            updateSwitchUI(binding.switchSkinWeatherForecast, binding.switchSkinWeatherForecastThumb, nextState)
+            if (nextState) {
+                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(ctx)
+                Toast.makeText(ctx, "Đã bật thông báo thời tiết và da lúc 06:30 sáng", Toast.LENGTH_SHORT).show()
+            } else {
+                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.cancelDailyNotification(ctx)
+                Toast.makeText(ctx, "Đã tắt thông báo thời tiết và da hàng ngày", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun updateSwitchUI(container: android.widget.FrameLayout, thumb: ImageView, enabled: Boolean) {
+        if (enabled) {
+            container.setBackgroundResource(R.drawable.ic_switch_track_on)
+            val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
+            lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
+            lp.marginStart = 0
+            lp.marginEnd = (2 * resources.displayMetrics.density).toInt()
+            thumb.layoutParams = lp
+        } else {
+            container.setBackgroundResource(R.drawable.ic_switch_track_off)
+            val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
+            lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+            lp.marginEnd = 0
+            lp.marginStart = (2 * resources.displayMetrics.density).toInt()
+            thumb.layoutParams = lp
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            val isEnabled = com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(requireContext())
+            updateSwitchUI(binding.switchSkinWeatherForecast, binding.switchSkinWeatherForecastThumb, isEnabled)
+        }
     }
 
     private fun setupToolbar() {
@@ -81,14 +136,15 @@ class WeatherForecastFragment : RootieFragment() {
             parentFragmentManager.popBackStack()
         }
         binding.btnNotification.setOnClickListener {
-            Toast.makeText(context, "Hôm nay UV cao, hãy nhớ thoa kem chống nắng nhé!", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 
     private fun loadUserProfileData() {
-        val prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
         val username = com.veganbeauty.app.data.local.ProfileSession.getFullName(requireContext())
-        val skinType = prefs.getString("SAVED_USER_SKIN_TYPE", "Da dầu nhạy cảm") ?: "Da dầu nhạy cảm"
 
         // Set dynamic greeting based on hour of the day
         val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
@@ -107,59 +163,9 @@ class WeatherForecastFragment : RootieFragment() {
             transformations(CircleCropTransformation())
             placeholder(android.R.color.darker_gray)
         }
-
-        // Customise AI Insight text base on user skin type (with cached Gemini AI Insight fallback)
-        val cachedInsight = prefs.getString("SAVED_CACHED_AI_INSIGHT", null)
-        val insightText = if (!cachedInsight.isNullOrBlank()) {
-            cachedInsight
-        } else {
-            when {
-                skinType.contains("dầu", ignoreCase = true) -> 
-                    "“Lượng dầu tiết ra hôm nay có thể tăng cao do nhiệt độ. Bạn nên dùng sữa rửa mặt tạo bọt dịu nhẹ và dưỡng ẩm dạng gel.”"
-                skinType.contains("khô", ignoreCase = true) -> 
-                    "“Thời tiết hôm nay dễ làm da mất ẩm, tạo cảm giác căng chặt. Hãy ưu tiên bổ sung serum HA và kem dưỡng khóa ẩm dày hơn.”"
-                skinType.contains("nhạy cảm", ignoreCase = true) || skinType.contains("kích ứng", ignoreCase = true) -> 
-                    "“Hàng rào bảo vệ da của bạn đang nhạy cảm, dễ đỏ rát dưới nắng. Nên thoa kem chống nắng vật lý và hạn chế sản phẩm chứa cồn/hương liệu.”"
-                skinType.contains("hỗn hợp", ignoreCase = true) -> 
-                    "“Vùng chữ T sẽ đổ dầu nhiều hơn dưới nắng nóng, trong khi hai bên má vẫn cần cấp ẩm nhẹ. Bạn nên dưỡng ẩm mỏng nhẹ toàn mặt.”"
-                skinType.contains("thường", ignoreCase = true) -> 
-                    "“Làn da của bạn ở trạng thái cân bằng lý tưởng. Hãy duy trì bảo vệ da bằng kem chống nắng phổ rộng và cấp ẩm nhẹ nhàng.”"
-                skinType.contains("lão hóa", ignoreCase = true) -> 
-                    "“Tia UV cao hôm nay đẩy nhanh lão hóa da. Hãy dùng thêm serum chống oxy hóa như Vitamin C dưới lớp kem chống nắng.”"
-                skinType.contains("mất nước", ignoreCase = true) -> 
-                    "“Da đang thiếu nước sâu bên dưới dù có thể đổ dầu bề mặt. Hãy cấp ẩm đa tầng bằng xịt khoáng và toner dưỡng ẩm.”"
-                else -> 
-                    "“Làn da $skinType cần được bảo vệ cẩn thận hôm nay. Hãy tập trung làm sạch dịu nhẹ và chống nắng kỹ càng.”"
-            }
-        }
-        binding.tvAiInsightDesc.text = insightText
-
-        // Customise the three metrics
-        val (uvImpact, hydrationImpact, dustImpact) = when {
-            skinType.contains("dầu", ignoreCase = true) -> 
-                Triple("Tăng tiết bã nhờn", "Mất cân bằng ẩm", "Nguy cơ nổi mụn")
-            skinType.contains("khô", ignoreCase = true) -> 
-                Triple("Dễ bong tróc", "Thiếu nước trầm trọng", "Hàng rào da suy giảm")
-            skinType.contains("nhạy cảm", ignoreCase = true) || skinType.contains("kích ứng", ignoreCase = true) -> 
-                Triple("Rủi ro đỏ da", "Hàng rào yếu", "Kích ứng mẩn đỏ")
-            skinType.contains("hỗn hợp", ignoreCase = true) -> 
-                Triple("Nhờn vùng chữ T", "Khô hai bên má", "Tắc nghẽn nhẹ")
-            skinType.contains("lão hóa", ignoreCase = true) -> 
-                Triple("Tăng sắc tố UV", "Mất đàn hồi", "Tổn thương gốc tự do")
-            skinType.contains("mất nước", ignoreCase = true) -> 
-                Triple("Nếp nhăn giả", "Mất nước tế bào", "Bít tắc tuyến nhờn")
-            else -> 
-                Triple("Bảo vệ tối đa", "Duy trì ẩm tốt", "Làm sạch bình thường")
-        }
-        binding.tvUvImpact.text = uvImpact
-        binding.tvHydrationImpact.text = hydrationImpact
-        binding.tvDustImpact.text = dustImpact
-
-        // Customise routine base on skin type
-        updateRoutineLabels(skinType)
     }
 
-    private fun updateRoutineLabels(skinType: String) {
+    private fun updateRoutineLabels(skinType: String, temp: Double, humidity: Int, uv: Double, pm25: Int) {
         val isOily = skinType.contains("dầu", ignoreCase = true)
         val isSensitive = skinType.contains("nhạy cảm", ignoreCase = true) || skinType.contains("kích ứng", ignoreCase = true)
         val isDry = skinType.contains("khô", ignoreCase = true)
@@ -167,50 +173,111 @@ class WeatherForecastFragment : RootieFragment() {
         val isAging = skinType.contains("lão hóa", ignoreCase = true)
         val isDehydrated = skinType.contains("mất nước", ignoreCase = true)
 
-        val (cleanserName, cleanserSub) = when {
-            isOily -> Pair("Gel rửa mặt BHA/Salicylic", "Kiềm dầu & làm sạch sâu bã nhờn")
-            isSensitive -> Pair("Sữa rửa mặt không bọt", "Cực kỳ dịu nhẹ cho da nhạy cảm")
-            isDry -> Pair("Sữa rửa mặt cấp ẩm", "Làm sạch dịu nhẹ, giữ ẩm tự nhiên")
-            isCombination -> Pair("Gel rửa mặt cân bằng", "Sạch sâu vùng chữ T, dịu nhẹ vùng má")
-            isAging -> Pair("Sữa rửa mặt chống lão hóa", "Sạch sâu nhẹ nhàng kèm tinh chất phục hồi")
-            isDehydrated -> Pair("Sữa rửa mặt Amino Acid", "Không làm khô căng da sau khi rửa")
-            else -> Pair("Sữa rửa mặt cân bằng pH", "Duy trì độ pH sinh lý lý tưởng cho da")
+        val matchedProducts = SkinWeatherProductMatcher.matchProductsForWeatherAndSkin(requireContext(), temp, humidity, skinType)
+
+        // 1. Cleanser
+        val matchedCleanser = matchedProducts["Cleanser"]
+        val cleanserName = matchedCleanser?.name ?: when {
+            isOily -> "Gel rửa mặt BHA/Salicylic"
+            isSensitive -> "Sữa rửa mặt không bọt"
+            isDry -> "Sữa rửa mặt cấp ẩm"
+            isCombination -> "Gel rửa mặt cân bằng"
+            isAging -> "Sữa rửa mặt chống lão hóa"
+            isDehydrated -> "Sữa rửa mặt Amino Acid"
+            else -> "Sữa rửa mặt cân bằng pH"
+        }
+        val cleanserSub = matchedCleanser?.let { "${it.notes} (Phù hợp: ${it.suitabilityScore}%)" } ?: when {
+            isOily -> "Kiềm dầu & làm sạch sâu bã nhờn"
+            isSensitive -> "Cực kỳ dịu nhẹ cho da nhạy cảm"
+            isDry -> "Làm sạch dịu nhẹ, giữ ẩm tự nhiên"
+            isCombination -> "Sạch sâu vùng chữ T, dịu nhẹ vùng má"
+            isAging -> "Sạch sâu nhẹ nhàng kèm tinh chất phục hồi"
+            isDehydrated -> "Không làm khô căng da sau khi rửa"
+            else -> "Duy trì độ pH sinh lý lý tưởng cho da"
+        }
+        val finalCleanserSub = if (pm25 >= 50) {
+            "$cleanserSub & sạch sâu bụi mịn PM2.5"
+        } else {
+            cleanserSub
         }
 
-        val (serumName, serumSub) = when {
-            isOily -> Pair("Niacinamide 10% Serum", "Thu nhỏ lỗ chân lông, điều tiết dầu")
-            isSensitive -> Pair("Serum phục hồi B5", "Làm dịu kích ứng, phục hồi hàng rào da")
-            isDry -> Pair("Hyaluronic Acid (HA) Serum", "Cấp nước đa tầng, căng mọng da")
-            isCombination -> Pair("Serum HA + Niacinamide", "Cân bằng dầu nước tối ưu")
-            isAging -> Pair("Retinol / Peptide Serum", "Tăng sinh collagen, mờ nếp nhăn")
-            isDehydrated -> Pair("Serum HA cấp nước sâu", "Bơm nước căng mọng tế bào da")
-            else -> Pair("Vitamin C Serum", "Làm sáng và đều màu da tự nhiên")
+        // 2. Serum
+        val matchedSerum = matchedProducts["Serum"]
+        val serumName = matchedSerum?.name ?: when {
+            isOily -> "Niacinamide 10% Serum"
+            isSensitive -> "Serum phục hồi B5"
+            isDry -> "Hyaluronic Acid (HA) Serum"
+            isCombination -> "Serum HA + Niacinamide"
+            isAging -> "Retinol / Peptide Serum"
+            isDehydrated -> "Serum HA cấp nước sâu"
+            else -> "Vitamin C Serum"
+        }
+        val serumSub = matchedSerum?.let { "${it.notes} (Phù hợp: ${it.suitabilityScore}%)" } ?: when {
+            isOily -> "Thu nhỏ lỗ chân lông, điều tiết dầu"
+            isSensitive -> "Làm dịu kích ứng, phục hồi hàng rào da"
+            isDry -> "Cấp nước đa tầng, căng mọng da"
+            isCombination -> "Cân bằng dầu nước tối ưu"
+            isAging -> "Tăng sinh collagen, mờ nếp nhăn"
+            isDehydrated -> "Bơm nước căng mọng tế bào da"
+            else -> "Làm sáng và đều màu da tự nhiên"
         }
 
-        val (moisturizerName, moisturizerSub) = when {
-            isOily -> Pair("Dưỡng ẩm dạng Gel", "Thấm nhanh, mỏng nhẹ, không bóng nhờn")
-            isSensitive -> Pair("Kem dưỡng Ceramide phục hồi", "Củng cố lớp màng bảo vệ tự nhiên")
-            isDry -> Pair("Kem dưỡng ẩm Cream", "Khóa ẩm sâu, ngăn ngừa bong tróc da")
-            isCombination -> Pair("Lotion dưỡng ẩm mỏng nhẹ", "Cấp ẩm đầy đủ mà không gây bí da")
-            isAging -> Pair("Kem dưỡng săn chắc da", "Nuôi dưỡng sâu, tăng cường độ đàn hồi")
-            isDehydrated -> Pair("Gel-cream khóa nước", "Khóa nước dưới da mà không bết dính")
-            else -> Pair("Lotion dưỡng ẩm nhẹ", "Cấp ẩm vừa đủ cho làn da khỏe mạnh")
+        // 3. Moisturizer
+        val matchedMoisturizer = matchedProducts["Moisturizer"]
+        val moisturizerName = matchedMoisturizer?.name ?: when {
+            isOily -> "Dưỡng ẩm dạng Gel"
+            isSensitive -> "Kem dưỡng Ceramide phục hồi"
+            isDry -> "Kem dưỡng ẩm Cream"
+            isCombination -> "Lotion dưỡng ẩm mỏng nhẹ"
+            isAging -> "Kem dưỡng săn chắc da"
+            isDehydrated -> "Gel-cream khóa nước"
+            else -> "Lotion dưỡng ẩm nhẹ"
+        }
+        val moisturizerSub = matchedMoisturizer?.let { "${it.notes} (Phù hợp: ${it.suitabilityScore}%)" } ?: when {
+            isOily -> "Thấm nhanh, mỏng nhẹ, không bóng nhờn"
+            isSensitive -> "Củng cố lớp màng bảo vệ tự nhiên"
+            isDry -> "Khóa ẩm sâu, ngăn ngừa bong tróc da"
+            isCombination -> "Cấp ẩm đầy đủ mà không gây bí da"
+            isAging -> "Nuôi dưỡng sâu, tăng cường độ đàn hồi"
+            isDehydrated -> "Khóa nước dưới da mà không bết dính"
+            else -> "Lotion dưỡng ẩm nhẹ"
+        }
+        val finalMoisturizerSub = when {
+            humidity < 40 -> "$moisturizerSub (Khóa ẩm tăng cường vì thời tiết khô)"
+            temp >= 33 -> "$moisturizerSub (Thoa lớp mỏng nhẹ tránh bí tắc ngày nóng)"
+            else -> moisturizerSub
         }
 
-        val (sunscreenName, sunscreenSub) = when {
-            isOily -> Pair("Kem chống nắng kiềm dầu", "Finish khô thoáng, không bít tắc")
-            isSensitive -> Pair("KCN vật lý thuần chay", "Chống nắng dịu nhẹ, không cay mắt")
-            isDry -> Pair("Kem chống nắng dưỡng ẩm", "Bảo vệ da khô khỏi mất nước")
-            isCombination -> Pair("KCN kiềm dầu dịu nhẹ", "Không gây mụn vùng chữ T")
-            isAging -> Pair("Kem chống nắng chống lão hóa", "Ngăn ngừa sạm nám do tia UV")
-            isDehydrated -> Pair("Kem chống nắng cấp nước", "Vừa bảo vệ vừa cấp nước làm dịu da")
-            else -> Pair("Kem chống nắng phổ rộng", "Bảo vệ toàn diện trước tia UVA & UVB")
+        // 4. Sunscreen
+        val matchedSunscreen = matchedProducts["Sunscreen"]
+        val sunscreenName = matchedSunscreen?.name ?: when {
+            isOily -> "Kem chống nắng kiềm dầu"
+            isSensitive -> "KCN vật lý thuần chay"
+            isDry -> "Kem chống nắng dưỡng ẩm"
+            isCombination -> "KCN kiềm dầu dịu nhẹ"
+            isAging -> "Kem chống nắng chống lão hóa"
+            isDehydrated -> "Kem chống nắng cấp nước"
+            else -> "Kem chống nắng phổ rộng"
+        }
+        val sunscreenSub = matchedSunscreen?.let { "${it.notes} (Phù hợp: ${it.suitabilityScore}%)" } ?: when {
+            isOily -> "Finish khô thoáng, không bít tắc"
+            isSensitive -> "Chống nắng dịu nhẹ, không cay mắt"
+            isDry -> "Bảo vệ da khô khỏi mất nước"
+            isCombination -> "Không gây mụn vùng chữ T"
+            isAging -> "Ngăn ngừa sạm nám do tia UV"
+            isDehydrated -> "Vừa bảo vệ vừa cấp nước làm dịu da"
+            else -> "Bảo vệ toàn diện trước tia UVA & UVB"
+        }
+        val finalSunscreenSub = when {
+            uv >= 8.0 -> "$sunscreenSub (Tia UV nguy hiểm: ${String.format("%.1f", uv)} - thoa lại sau mỗi 2h)"
+            uv >= 5.0 -> "$sunscreenSub (Tia UV cao: ${String.format("%.1f", uv)} - thoa lại sau mỗi 3h)"
+            else -> sunscreenSub
         }
 
         binding.layoutRoutineItem1.let { card ->
             val titleLayout = card.getChildAt(1) as? LinearLayout
             (titleLayout?.getChildAt(0) as? TextView)?.text = cleanserName
-            (titleLayout?.getChildAt(1) as? TextView)?.text = cleanserSub
+            (titleLayout?.getChildAt(1) as? TextView)?.text = finalCleanserSub
         }
 
         binding.layoutRoutineItem2.let { card ->
@@ -222,13 +289,13 @@ class WeatherForecastFragment : RootieFragment() {
         binding.layoutRoutineItem3.let { card ->
             val titleLayout = card.getChildAt(1) as? LinearLayout
             (titleLayout?.getChildAt(0) as? TextView)?.text = moisturizerName
-            (titleLayout?.getChildAt(1) as? TextView)?.text = moisturizerSub
+            (titleLayout?.getChildAt(1) as? TextView)?.text = finalMoisturizerSub
         }
 
         binding.layoutRoutineItem4.let { card ->
             val titleLayout = card.getChildAt(1) as? LinearLayout
             (titleLayout?.getChildAt(0) as? TextView)?.text = sunscreenName
-            (titleLayout?.getChildAt(1) as? TextView)?.text = sunscreenSub
+            (titleLayout?.getChildAt(1) as? TextView)?.text = finalSunscreenSub
         }
     }
 
@@ -369,43 +436,74 @@ class WeatherForecastFragment : RootieFragment() {
 
                 withContext(Dispatchers.Main) {
                     if (success) {
-                        updateWeatherUI(temp, humidity, uv, realPm25, cityName)
+                        updateWeatherUI(temp, humidity, uv, realPm25, cityName, lat, lng)
                     } else {
-                        useFallbackWeatherData(cityName)
+                        useFallbackWeatherData(cityName, lat, lng)
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    useFallbackWeatherData(cityName)
+                    useFallbackWeatherData(cityName, lat, lng)
                 }
             }
         }
     }
 
-    private fun useFallbackWeatherData(cityName: String) {
-        updateWeatherUI(32.0, 68, 9.2, -1.0, cityName)
+    private fun useFallbackWeatherData(cityName: String, lat: Double, lng: Double) {
+        updateWeatherUI(32.0, 68, 9.2, -1.0, cityName, lat, lng)
     }
 
-    private fun updateWeatherUI(temp: Double, humidity: Int, uv: Double, pm25: Double, cityName: String) {
+    private fun updateWeatherUI(temp: Double, humidity: Int, uv: Double, pm25: Double, cityName: String, lat: Double, lng: Double) {
         if (_binding == null) return
+
+        val weatherCondition = when {
+            temp >= 33 -> "NẮNG NÓNG GAY GẮT"
+            temp >= 28 -> "NẮNG NHIỀU, OI NHẸ"
+            else -> "MÁT MẺ, DỄ CHỊU"
+        }
+        val pm25Val = if (pm25 >= 0) pm25.toInt() else (15 + (temp * 0.4) + (humidity * 0.1)).toInt()
+
+        // Save weather details to SharedPreferences for AI Chat context
+        try {
+            val prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
+            prefs.edit().apply {
+                putFloat("SAVED_WEATHER_TEMP", temp.toFloat())
+                putInt("SAVED_WEATHER_HUMIDITY", humidity)
+                putFloat("SAVED_WEATHER_UV", uv.toFloat())
+                putInt("SAVED_WEATHER_PM25", pm25Val)
+                putString("SAVED_WEATHER_CITY", cityName)
+                putString("SAVED_WEATHER_CONDITION", weatherCondition)
+                putFloat("SAVED_WEATHER_LAT", lat.toFloat())
+                putFloat("SAVED_WEATHER_LNG", lng.toFloat())
+                apply()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         // Set city name
         binding.tvLocation.text = cityName
 
         // 1. Temp & Status text
         binding.tvTemperature.text = temp.toInt().toString()
-        val weatherCondition = when {
-            temp >= 33 -> "NẮNG NÓNG GAY GẮT"
-            temp >= 28 -> "NẮNG NHIỀU, OI NHẸ"
-            else -> "MÁT MẺ, DỄ CHỊU"
-        }
         binding.tvWeatherCondition.text = weatherCondition
         binding.tvWeatherCondition.setTextColor(when {
             temp >= 33 -> Color.parseColor("#EB5757")
             temp >= 28 -> Color.parseColor("#E2B93B")
             else -> Color.parseColor("#677559")
         })
+
+        // Set Sun icon for Day (6:00 AM - 5:59 PM) and Moon icon for Night (6:00 PM - 5:59 AM)
+        val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+        val isNight = hour < 6 || hour >= 18
+        if (isNight) {
+            binding.ivWeatherIcon.setImageResource(R.drawable.ic_moon_outline)
+            binding.ivWeatherIcon.setColorFilter(Color.parseColor("#90A4AE")) // Soft silver-blue
+        } else {
+            binding.ivWeatherIcon.setImageResource(R.drawable.ic_weather_sun)
+            binding.ivWeatherIcon.setColorFilter(Color.parseColor("#F0C43D")) // Sun yellow
+        }
 
         // 2. Humidity level
         binding.tvHumidity.text = "$humidity%"
@@ -429,7 +527,6 @@ class WeatherForecastFragment : RootieFragment() {
         binding.tvUvLevel.setTextColor(if (uv >= 8) Color.parseColor("#EB5757") else Color.parseColor("#E2B93B"))
 
         // 4. Dust level PM2.5 (Use real PM2.5 or simulate if failed/offline)
-        val pm25Val = if (pm25 >= 0) pm25.toInt() else (15 + (temp * 0.4) + (humidity * 0.1)).toInt()
         binding.tvDustIndex.text = pm25Val.toString()
         val dustLevel = when {
             pm25Val < 25 -> "Tốt"
@@ -454,22 +551,67 @@ class WeatherForecastFragment : RootieFragment() {
             else -> "Hôm nay da bạn cần chống nắng và cấp ẩm nhiều hơn. Đừng quên nhé!"
         }
 
-        // 7. Update skin state progress values base on temperature
-        val oilyPercent = when {
-            temp >= 33 -> 85
-            temp >= 28 -> 75
-            else -> 60
+        // 7. Update skin state progress values base on skinType and weather factors
+        val prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
+        val skinType = prefs.getString("SAVED_USER_SKIN_TYPE", "Da dầu nhạy cảm") ?: "Da dầu nhạy cảm"
+
+        val isOily = skinType.contains("dầu", ignoreCase = true)
+        val isSensitive = skinType.contains("nhạy cảm", ignoreCase = true) || skinType.contains("kích ứng", ignoreCase = true)
+        val isDry = skinType.contains("khô", ignoreCase = true)
+        val isCombination = skinType.contains("hỗn hợp", ignoreCase = true)
+        val isNormal = skinType.contains("thường", ignoreCase = true)
+        val isDehydrated = skinType.contains("mất nước", ignoreCase = true)
+
+        var baseOily = when {
+            isOily -> 70
+            isCombination -> 55
+            isDehydrated -> 50
+            isNormal -> 40
+            isDry -> 20
+            else -> 45
         }
-        val hydrationPercent = when {
-            humidity < 40 -> 40
-            humidity <= 65 -> 55
-            else -> 70
+        baseOily += when {
+            temp >= 33 -> 15
+            temp >= 28 -> 8
+            temp < 22 -> -5
+            else -> 0
         }
-        val sensitivityPercent = when {
-            uv >= 8 -> 35
-            temp >= 33 -> 30
-            else -> 20
+        val oilyPercent = baseOily.coerceIn(10, 95)
+
+        var baseHydration = when {
+            isNormal -> 70
+            isOily -> 60
+            isCombination -> 55
+            isSensitive -> 50
+            isDry -> 35
+            isDehydrated -> 25
+            else -> 50
         }
+        baseHydration += when {
+            humidity < 40 -> -15
+            humidity < 55 -> -5
+            humidity > 75 -> 10
+            else -> 0
+        }
+        if (uv >= 8.0) baseHydration -= 5
+        val hydrationPercent = baseHydration.coerceIn(10, 95)
+
+        var baseSensitivity = when {
+            isSensitive -> 55
+            isDehydrated -> 35
+            isDry -> 30
+            isCombination -> 20
+            isOily -> 20
+            else -> 15
+        }
+        baseSensitivity += when {
+            uv >= 8.0 -> 20
+            uv >= 5.0 -> 10
+            else -> 0
+        }
+        baseSensitivity += if (temp >= 33) 10 else 0
+        baseSensitivity += if (pm25Val >= 50) 15 else if (pm25Val >= 25) 5 else 0
+        val sensitivityPercent = baseSensitivity.coerceIn(5, 95)
 
         binding.tvOilyValue.text = "$oilyPercent%"
         binding.progressOily.progress = oilyPercent
@@ -480,16 +622,76 @@ class WeatherForecastFragment : RootieFragment() {
         binding.tvSensitivityValue.text = "$sensitivityPercent%"
         binding.progressSensitivity.progress = sensitivityPercent
 
-        // 8. Update AI Insight based on both user skin type and weather factors
-        val prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
-        val skinType = prefs.getString("SAVED_USER_SKIN_TYPE", "Da dầu nhạy cảm") ?: "Da dầu nhạy cảm"
-        fetchGeminiInsight(temp, humidity, uv, pm25Val, skinType)
+        // Customise the three metrics dynamically based on skinType and weather
+        val (uvImpact, hydrationImpact, dustImpact) = when {
+            skinType.contains("dầu", ignoreCase = true) -> 
+                Triple(
+                    if (uv >= 6.0) "Tăng bã nhờn & sạm da" else "Tăng tiết bã nhờn",
+                    if (humidity < 55) "Dầu nước mất cân bằng" else "Độ ẩm cân bằng",
+                    if (pm25Val >= 50) "Nguy cơ tắc nghẽn mụn" else "Bám dính dầu nhờn"
+                )
+            skinType.contains("khô", ignoreCase = true) -> 
+                Triple(
+                    if (uv >= 6.0) "Dễ rát & sạm da khô" else "Dễ mất ẩm bong tróc",
+                    if (humidity < 55) "Thiếu nước nghiêm trọng" else "Giảm khô căng nhẹ",
+                    if (pm25Val >= 50) "Hàng rào bảo vệ yếu" else "Khô ngứa do khói bụi"
+                )
+            skinType.contains("nhạy cảm", ignoreCase = true) || skinType.contains("kích ứng", ignoreCase = true) -> 
+                Triple(
+                    if (uv >= 5.0) "Nguy cơ đỏ rát cao" else "Dễ kích ứng nhẹ",
+                    if (humidity < 55) "Màng ẩm tổn thương" else "Đủ ẩm dễ chịu",
+                    if (pm25Val >= 50) "Mẩn ngứa bít tắc" else "Bám dính bụi bẩn"
+                )
+            skinType.contains("hỗn hợp", ignoreCase = true) -> 
+                Triple(
+                    if (uv >= 6.0) "Vùng chữ T nhờn rát" else "Vùng chữ T tiết dầu",
+                    if (humidity < 55) "Hai bên má khô rát" else "Cân bằng vùng má",
+                    if (pm25Val >= 50) "Bít tắc vùng chữ T" else "Tích tụ bụi nhẹ"
+                )
+            skinType.contains("lão hóa", ignoreCase = true) -> 
+                Triple(
+                    if (uv >= 6.0) "Tia UV gây sạm nám" else "Đẩy nhanh lão hóa",
+                    if (humidity < 55) "Mất nước nếp nhăn sâu" else "Giữ ẩm tế bào",
+                    if (pm25Val >= 50) "Tổn thương gốc tự do" else "Tác nhân ô nhiễm"
+                )
+            skinType.contains("mất nước", ignoreCase = true) -> 
+                Triple(
+                    if (uv >= 6.0) "Rát sạm khô căng" else "Nếp nhăn giả do UV",
+                    if (humidity < 45) "Mất nước tế bào sâu" else "Cải thiện tình trạng khô",
+                    if (pm25Val >= 50) "Tắc tuyến bã nhờn" else "Bụi gây khô bề mặt"
+                )
+            else -> 
+                Triple(
+                    if (uv >= 6.0) "Chống nắng tối đa" else "Bảo vệ dịu nhẹ",
+                    if (humidity < 55) "Cần cấp ẩm nhẹ" else "Duy trì ẩm tốt",
+                    if (pm25Val >= 50) "Làm sạch sâu bụi mịn" else "Làm sạch bình thường"
+                )
+        }
+        binding.tvUvImpact.text = uvImpact
+        binding.tvHydrationImpact.text = hydrationImpact
+        binding.tvDustImpact.text = dustImpact
+
+        // 8. Update recommended routine labels
+        updateRoutineLabels(skinType, temp, humidity, uv, pm25Val)
+
+        // 9. Update AI Insight based on both user skin type and weather factors
+        fetchGeminiInsight(temp, humidity, uv, pm25Val, cityName, skinType, oilyPercent, hydrationPercent, sensitivityPercent)
     }
 
-    private fun fetchGeminiInsight(temp: Double, humidity: Int, uv: Double, pm25: Int, skinType: String) {
+    private fun fetchGeminiInsight(
+        temp: Double,
+        humidity: Int,
+        uv: Double,
+        pm25: Int,
+        cityName: String,
+        skinType: String,
+        oily: Int,
+        hydration: Int,
+        sensitivity: Int
+    ) {
         val prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
         if (GEMINI_API_KEY.isBlank() || GEMINI_API_KEY == "YOUR_GEMINI_API_KEY_HERE") {
-            updateRuleBasedAiInsight(temp, humidity, uv, pm25, skinType)
+            updateRuleBasedAiInsight(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity)
             return
         }
 
@@ -551,6 +753,7 @@ class WeatherForecastFragment : RootieFragment() {
                             withContext(Dispatchers.Main) {
                                 if (_binding != null) {
                                     binding.tvAiInsightDesc.text = textResult
+                                    saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, textResult)
                                 }
                             }
                             return@launch
@@ -558,26 +761,41 @@ class WeatherForecastFragment : RootieFragment() {
                     }
                 }
                 
-                // If response code is not OK or parsing failed, check cache before running rule-based fallback
                 withContext(Dispatchers.Main) {
                     val cachedInsight = prefs.getString("SAVED_CACHED_AI_INSIGHT", null)
-                    if (cachedInsight.isNullOrBlank()) {
-                        updateRuleBasedAiInsight(temp, humidity, uv, pm25, skinType)
+                    if (!cachedInsight.isNullOrBlank()) {
+                        binding.tvAiInsightDesc.text = cachedInsight
+                        saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, cachedInsight)
+                    } else {
+                        updateRuleBasedAiInsight(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity)
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
                     val cachedInsight = prefs.getString("SAVED_CACHED_AI_INSIGHT", null)
-                    if (cachedInsight.isNullOrBlank()) {
-                        updateRuleBasedAiInsight(temp, humidity, uv, pm25, skinType)
+                    if (!cachedInsight.isNullOrBlank()) {
+                        binding.tvAiInsightDesc.text = cachedInsight
+                        saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, cachedInsight)
+                    } else {
+                        updateRuleBasedAiInsight(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity)
                     }
                 }
             }
         }
     }
 
-    private fun updateRuleBasedAiInsight(temp: Double, humidity: Int, uv: Double, pm25: Int, skinType: String) {
+    private fun updateRuleBasedAiInsight(
+        temp: Double,
+        humidity: Int,
+        uv: Double,
+        pm25: Int,
+        cityName: String,
+        skinType: String,
+        oily: Int,
+        hydration: Int,
+        sensitivity: Int
+    ) {
         val baseInsight = when {
             skinType.contains("dầu nhạy cảm", ignoreCase = true) -> {
                 when {
@@ -624,7 +842,71 @@ class WeatherForecastFragment : RootieFragment() {
                 "Làn da của bạn tương đối ổn định hôm nay. Hãy duy trì thói quen làm sạch dịu nhẹ, cấp ẩm vừa đủ và bôi kem chống nắng bảo vệ da khỏi tia UV."
             }
         }
-        binding.tvAiInsightDesc.text = "“$baseInsight”"
+        val finalInsight = "“$baseInsight”"
+        binding.tvAiInsightDesc.text = finalInsight
+        saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, finalInsight)
+    }
+
+    private fun saveDiagnosticRecord(
+        temp: Double,
+        humidity: Int,
+        uv: Double,
+        pm25: Int,
+        cityName: String,
+        skinType: String,
+        oily: Int,
+        hydration: Int,
+        sensitivity: Int,
+        insightText: String
+    ) {
+        try {
+            val sdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+            val dateStr = sdf.format(java.util.Date())
+
+            val routineItems = mutableListOf<SkinWeatherDiagnostic.RoutineItem>()
+            val categoryNames = listOf("Cleanser", "Serum", "Moisturizer", "Sunscreen")
+            val layoutIds = listOf(
+                binding.layoutRoutineItem1,
+                binding.layoutRoutineItem2,
+                binding.layoutRoutineItem3,
+                binding.layoutRoutineItem4
+            )
+
+            for (i in layoutIds.indices) {
+                val card = layoutIds[i]
+                val titleLayout = card.getChildAt(1) as? LinearLayout
+                val pName = (titleLayout?.getChildAt(0) as? TextView)?.text?.toString() ?: ""
+                val pDesc = (titleLayout?.getChildAt(1) as? TextView)?.text?.toString() ?: ""
+                routineItems.add(
+                    SkinWeatherDiagnostic.RoutineItem(
+                        category = categoryNames[i],
+                        productName = pName,
+                        description = pDesc
+                    )
+                )
+            }
+
+            val diagnostic = SkinWeatherDiagnostic(
+                id = java.util.UUID.randomUUID().toString(),
+                timestamp = System.currentTimeMillis(),
+                date = dateStr,
+                city = cityName,
+                temperature = temp,
+                humidity = humidity,
+                uv = uv,
+                pm25 = pm25,
+                skinType = skinType,
+                oilyPercent = oily,
+                hydrationPercent = hydration,
+                sensitivityPercent = sensitivity,
+                insight = insightText,
+                recommendedRoutine = routineItems
+            )
+
+            SkinWeatherHistoryManager.saveDiagnostic(requireContext(), diagnostic)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setupFeedbackButtons() {
@@ -716,9 +998,9 @@ class WeatherForecastFragment : RootieFragment() {
         }
 
         binding.layoutBottomNav.navHome.setOnClickListener {
-            // Back to quiz/home
+            // Back to home
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_container, QuizTestIntroFragment())
+                .replace(R.id.main_container, com.veganbeauty.app.features.home.HomeFragment())
                 .commit()
         }
     }

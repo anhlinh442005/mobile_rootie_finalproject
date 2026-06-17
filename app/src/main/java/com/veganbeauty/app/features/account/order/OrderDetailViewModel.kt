@@ -13,6 +13,16 @@ class OrderDetailViewModel(
     private val orderId: String
 ) : RootieViewModel() {
 
+    init {
+        viewModelScope.launch {
+            try {
+                repository.ensureOrderExists(orderId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     // Reactive observe a single order from the database Flow
     val order: LiveData<OrderEntity?> = repository.getOrderById(orderId).asLiveData()
 

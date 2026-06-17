@@ -73,6 +73,27 @@ class AccountProfileSecurityFragment : RootieFragment() {
         }
         updateSwitchUI(fastLoginState)
 
+        val prefs = context.getSharedPreferences("RootieQuizPrefs", android.content.Context.MODE_PRIVATE)
+        var floatingChatState = prefs.getBoolean("SKIN_AI_FLOATING_CHAT_ENABLED", true)
+        fun updateFloatingSwitchUI(enabled: Boolean) {
+            if (enabled) {
+                binding.switchFloatingChatContainer.setBackgroundResource(R.drawable.ic_switch_track_on)
+                val lp = binding.switchFloatingChatThumb.layoutParams as android.widget.FrameLayout.LayoutParams
+                lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
+                lp.marginStart = 0
+                lp.marginEnd = (2 * resources.displayMetrics.density).toInt()
+                binding.switchFloatingChatThumb.layoutParams = lp
+            } else {
+                binding.switchFloatingChatContainer.setBackgroundResource(R.drawable.ic_switch_track_off)
+                val lp = binding.switchFloatingChatThumb.layoutParams as android.widget.FrameLayout.LayoutParams
+                lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+                lp.marginEnd = 0
+                lp.marginStart = (2 * resources.displayMetrics.density).toInt()
+                binding.switchFloatingChatThumb.layoutParams = lp
+            }
+        }
+        updateFloatingSwitchUI(floatingChatState)
+
         // Listeners for Account items
         binding.btnMyProfile.setOnClickListener {
             // Navigate to Edit Profile screen
@@ -112,6 +133,21 @@ class AccountProfileSecurityFragment : RootieFragment() {
             updateSwitchUI(fastLoginState)
             ProfileSession.setFastLoginEnabled(context, fastLoginState)
             val msg = if (fastLoginState) "Đã bật đăng nhập nhanh" else "Đã tắt đăng nhập nhanh"
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+
+        // Floating chat switch click listener
+        binding.switchFloatingChatContainer.setOnClickListener {
+            floatingChatState = !floatingChatState
+            updateFloatingSwitchUI(floatingChatState)
+            prefs.edit().putBoolean("SKIN_AI_FLOATING_CHAT_ENABLED", floatingChatState).apply()
+            
+            // Instantly update the visibility of the floating chat head in MainActivity
+            activity?.findViewById<View>(R.id.skin_ai_floating_chat_head)?.let { chatHead ->
+                chatHead.visibility = if (floatingChatState) View.VISIBLE else View.GONE
+            }
+            
+            val msg = if (floatingChatState) "Đã bật Trợ lý Rootie AI nổi" else "Đã tắt Trợ lý Rootie AI nổi"
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
         }
 

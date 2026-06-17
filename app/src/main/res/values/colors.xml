@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#3E4D44</color>
+    <color name="primary_light">#D8E8C6</color>
     <color name="secondary">#677559</color>
     <color name="content">#677559</color>
     <color name="tertiary">#97A49C</color>
@@ -40,4 +41,5 @@
     <color name="home_overlay_dark">#66000000</color>
     <!-- ~70% neutral — hiệu ứng kính mờ trên ảnh peek -->
     <color name="home_peek_overlay">#B3FEFBF4</color>
+    <color name="about_us_bg">#F4F7ED</color>
 </resources>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:orientation="vertical">
+
+    <!-- Product Image Card with overlay badges -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="140dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/shop_banner_1"
+            app:shapeAppearanceOverlay="@style/RoundedSquareImageView" />
+
+        <!-- Phase Badge (Top Left) -->
+        <TextView
+            android:id="@+id/tvProductPhase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:layout_margin="12dp"
+            android:background="@drawable/skin_bg_button_light"
+            android:backgroundTint="#F6F4F0"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="GIAI ĐOẠN 1"
+            android:textColor="#3E4D44"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <!-- Price Badge (Top Right) -->
+        <TextView
+            android:id="@+id/tvProductPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_margin="12dp"
+            android:background="@drawable/skin_bg_button_light"
+            android:backgroundTint="#677559"
+            android:fontFamily="@font/lexend"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="290K"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <!-- Subcategory / Phase Action Label -->
+    <TextView
+        android:id="@+id/tvProductSubcategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="LÀM SẠCH DỊU NHẸ"
+        android:textColor="#3E4D44"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+    <!-- Product Name -->
+    <TextView
+        android:id="@+id/tvProductName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="Cleansing Milk pH 5.5"
+        android:textColor="#3E4D44"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <!-- Expert Reason Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_expert_reason_card"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <!-- Expert Icon (custom skin_ai_user_vip) -->
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/skin_ai_user_vip"
+            android:layout_gravity="top"
+            android:layout_marginTop="2dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="LÝ DO CHUYÊN GIA"
+                android:textColor="#3E4D44"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvExpertReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/lexend"
+                android:textColor="#434844"
+                android:textSize="12sp"
+                android:lineSpacingMultiplier="1.2"
+                android:text="Công thức nhũ tương không hạt bảo toàn tối đa lớp màng lipid..." />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

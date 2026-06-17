@@ -15,8 +15,8 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.veganbeauty.app.R
+import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.SkinFragmentScanBinding
 import java.io.File
 import java.text.SimpleDateFormat
@@ -24,7 +24,7 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class SkinScanFragment : Fragment() {
+class SkinScanFragment : RootieFragment() {
 
     private var _binding: SkinFragmentScanBinding? = null
     private val binding get() = _binding!!
@@ -45,7 +45,7 @@ class SkinScanFragment : Fragment() {
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                openResultFragment()
+                openResultFragment(it.toString())
             }
         }
 
@@ -57,8 +57,7 @@ class SkinScanFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun setupUI(view: View) {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         setupListeners()
@@ -156,13 +155,13 @@ class SkinScanFragment : Fragment() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    openResultFragment()
+                    openResultFragment(photoFile.absolutePath)
                 }
             }
         )
     }
 
-    private fun openResultFragment() {
+    private fun openResultFragment(imageUri: String) {
         parentFragmentManager.beginTransaction()
             .setCustomAnimations(
                 android.R.anim.fade_in,
@@ -170,7 +169,7 @@ class SkinScanFragment : Fragment() {
                 android.R.anim.fade_in,
                 android.R.anim.slide_out_right
             )
-            .replace(R.id.main_container, SkinScanResultFragment())
+            .replace(R.id.main_container, SkinScanResultFragment.newInstance(imageUri))
             .addToBackStack(null)
             .commit()
     }

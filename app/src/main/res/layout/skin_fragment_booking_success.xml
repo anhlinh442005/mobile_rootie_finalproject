@@ -72,127 +72,136 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Info Card -->
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginHorizontal="24dp"
-        android:background="@drawable/skin_bg_store_card"
-        android:orientation="vertical"
-        android:padding="24dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
         app:layout_constraintTop_toBottomOf="@id/success_subtitle">
 
-        <!-- Row 1: Chi nhánh -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:background="@drawable/skin_bg_store_card"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <TextView
-                android:layout_width="120dp"
+            <!-- Row 1: Chi nhánh -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Chi nhánh"
-                android:textColor="@color/secondary"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:fontFamily="@font/be_vietnam_pro" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/info_store_name"
-                android:layout_width="0dp"
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Chi nhánh"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+
+                <TextView
+                    android:id="@+id/info_store_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Rootie Gò Vấp"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+            </LinearLayout>
+
+            <!-- Row 2: Ngày giờ -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Rootie Gò Vấp"
-                android:textColor="@color/secondary"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:fontFamily="@font/be_vietnam_pro" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Ngày giờ"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+
+                <TextView
+                    android:id="@+id/info_date_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="25/05/2026 - 10:00"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+            </LinearLayout>
+
+            <!-- Row 3: Chuyên viên -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Chuyên viên"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+
+                <TextView
+                    android:id="@+id/info_specialist"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Nguyễn Khánh Xuân"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+            </LinearLayout>
+
+            <!-- Row 4: Dịch vụ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Dịch vụ"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+
+                <TextView
+                    android:id="@+id/info_service"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Soi da chuyên sâu"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+            </LinearLayout>
+
         </LinearLayout>
-
-        <!-- Row 2: Ngày giờ -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:text="Ngày giờ"
-                android:textColor="@color/secondary"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:fontFamily="@font/be_vietnam_pro" />
-
-            <TextView
-                android:id="@+id/info_date_time"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="25/05/2026 - 10:00"
-                android:textColor="@color/secondary"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:fontFamily="@font/be_vietnam_pro" />
-        </LinearLayout>
-
-        <!-- Row 3: Chuyên viên -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:text="Chuyên viên"
-                android:textColor="@color/secondary"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:fontFamily="@font/be_vietnam_pro" />
-
-            <TextView
-                android:id="@+id/info_specialist"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Nguyễn Khánh Xuân"
-                android:textColor="@color/secondary"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:fontFamily="@font/be_vietnam_pro" />
-        </LinearLayout>
-
-        <!-- Row 4: Dịch vụ -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:text="Dịch vụ"
-                android:textColor="@color/secondary"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:fontFamily="@font/be_vietnam_pro" />
-
-            <TextView
-                android:id="@+id/info_service"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Soi da chuyên sâu"
-                android:textColor="@color/secondary"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:fontFamily="@font/be_vietnam_pro" />
-        </LinearLayout>
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <!-- Bottom Button -->
     <TextView

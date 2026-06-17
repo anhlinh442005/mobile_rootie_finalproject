@@ -10,13 +10,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import com.veganbeauty.app.core.base.RootieFragment
 import coil.load
 import com.veganbeauty.app.R
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
 import com.veganbeauty.app.databinding.SkinFragmentBookingDetailCompletedBinding
 
-class BookingDetailCompletedFragment : Fragment() {
+class BookingDetailCompletedFragment : RootieFragment() {
 
     private var _binding: SkinFragmentBookingDetailCompletedBinding? = null
     private val binding get() = _binding!!
@@ -39,9 +39,7 @@ class BookingDetailCompletedFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        
+    override fun setupUI(view: View) {
         binding.skinDetailBtnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -62,11 +60,17 @@ class BookingDetailCompletedFragment : Fragment() {
         }
         
         binding.skinDetailBtnRebook.setOnClickListener {
-            Toast.makeText(context, "Đặt lại lịch hẹn clicked", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, BookingFragment())
+                .addToBackStack(null)
+                .commit()
         }
         
         binding.skinDetailBtnBookOther.setOnClickListener {
-            Toast.makeText(context, "Đặt dịch vụ khác clicked", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, BookingFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 

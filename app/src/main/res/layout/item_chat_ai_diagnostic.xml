@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <!-- AI Avatar -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivAiAvatar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/mascot_message"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="2dp" />
+
+    <!-- AI Title block -->
+    <LinearLayout
+        android:id="@+id/layoutAiHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toEndOf="@id/ivAiAvatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivAiAvatar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="AI DIAGNOSTIC"
+            android:textColor="#3E4D44"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Phân tích chuyên sâu"
+            android:textColor="#677559"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <!-- Main Diagnostic Card -->
+    <LinearLayout
+        android:id="@+id/cardDiagnostic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_diagnostic_card"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintStart_toStartOf="@id/layoutAiHeader"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutAiHeader">
+
+        <!-- Assessment Text -->
+        <TextView
+            android:id="@+id/tvDiagnosticAssessment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexend"
+            android:textColor="#3E4D44"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="Dựa trên triệu chứng, Rootie nhận định lớp màng Lipid của bạn đang bị mất cân bằng cấp độ 2 nhé Khánh Bình ơi!" />
+
+        <!-- Sub-card Description -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_diagnostic_desc"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:id="@+id/tvDiagnosticDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lexend"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:lineSpacingMultiplier="1.25"
+                android:text="Lớp màng bảo vệ da (Skin Barrier) đang bị suy yếu khiến độ ẩm thất thoát nhanh chóng (TEWL)..." />
+        </LinearLayout>
+
+        <!-- Metric Indicators Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <!-- Moisture Indicator -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivMetricMoisture"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/bg_circle_metric_grey"
+                    android:src="@drawable/ic_water_drop_outline"
+                    android:padding="11dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="ĐỘ ẨM"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/tvMetricMoistureVal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="32%"
+                    android:textColor="@color/primary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Sensitivity Indicator -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivMetricSensitivity"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/ic_warning_rhomb" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="NHẠY CẢM"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/tvMetricSensitivityVal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Rất Cao"
+                    android:textColor="#F04758"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Barrier Indicator -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivMetricBarrier"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/ic_shield_checkmark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="HÀNG RÀO"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/tvMetricBarrierVal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Yếu"
+                    android:textColor="@color/secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray_light"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Section: Tại sao lộ trình này hiệu quả -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_diagnostic_desc"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <!-- Title & Sparkle icon -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvWhyTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Tại sao lộ trình này hiệu quả?"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="80dp"
+                    android:layout_height="3dp"
+                    android:layout_below="@id/tvWhyTitle"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/secondary" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/skin_ai_sparkles" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tvWhyContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/lexend"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:lineSpacingMultiplier="1.25"
+                android:text="Thay vì sử dụng các hoạt chất mạnh, chúng ta sẽ tập trung vào..." />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray_light"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Section: Lộ trình 7 ngày -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="Lộ trình chăm sóc da"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="STEP - BY - STEP"
+                android:textColor="@color/gray_light"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Container for dynamically inflated recommended products -->
+        <LinearLayout
+            android:id="@+id/layoutDiagnosticProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <!-- Add All to Cart Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnAddToCartAll"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/skin_bg_tab_selected"
+            android:backgroundTint="#3E4D44"
+            android:fontFamily="@font/lexend"
+            android:text="Thêm trọn bộ vào giỏ hàng"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:drawableStart="@drawable/skin_ic_cart_white"
+            android:drawablePadding="8dp"
+            android:paddingHorizontal="24dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

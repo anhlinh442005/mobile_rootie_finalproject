@@ -140,6 +140,12 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
         updateSwitchUI(binding.switchOrderStatusContainer, binding.switchOrderStatusThumb, ProfileSession.isOrderStatusEnabled(context))
         updateSwitchUI(binding.switchPromotionContainer, binding.switchPromotionThumb, ProfileSession.isPromotionEnabled(context))
         updateSwitchUI(binding.switchStaffMessageContainer, binding.switchStaffMessageThumb, ProfileSession.isStaffMessageEnabled(context))
+        updateSwitchUI(binding.switchSkinWeatherContainer, binding.switchSkinWeatherThumb, ProfileSession.isSkinWeatherNotiEnabled(context))
+        
+        // Load Expiry Notification switch states
+        updateSwitchUI(binding.switchExpiryNotiContainer, binding.switchExpiryNotiThumb, ProfileSession.isNotiExpiryEnabled(context))
+        updateSwitchUI(binding.switchExpiryWeek1Container, binding.switchExpiryWeek1Thumb, ProfileSession.isNotiExpiryWeek1(context))
+        updateSwitchUI(binding.switchExpiryWeek2Container, binding.switchExpiryWeek2Thumb, ProfileSession.isNotiExpiryWeek2(context))
     }
 
     private fun setupSwitchListeners() {
@@ -238,6 +244,49 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
                 triggerTestNotification("Tin nhắn nhân viên", "Bạn có tin nhắn mới từ tư vấn viên.")
             }
         }
+
+        // Weather & Skin Switch
+        binding.switchSkinWeatherContainer.setOnClickListener {
+            if (!ProfileSession.isNotiEnabled(context)) return@setOnClickListener
+            val nextState = !ProfileSession.isSkinWeatherNotiEnabled(context)
+            ProfileSession.setSkinWeatherNotiEnabled(context, nextState)
+            updateSwitchUI(binding.switchSkinWeatherContainer, binding.switchSkinWeatherThumb, nextState)
+            if (nextState) {
+                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(context)
+            } else {
+                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.cancelDailyNotification(context)
+            }
+        }
+
+        // Expiry Notifications Master Switch
+        binding.switchExpiryNotiContainer.setOnClickListener {
+            if (!ProfileSession.isNotiEnabled(context)) return@setOnClickListener
+            val nextState = !ProfileSession.isNotiExpiryEnabled(context)
+            ProfileSession.setNotiExpiryEnabled(context, nextState)
+            updateSwitchUI(binding.switchExpiryNotiContainer, binding.switchExpiryNotiThumb, nextState)
+            
+            binding.layoutExpiryOptions.visibility = if (nextState) View.VISIBLE else View.GONE
+            
+            if (nextState) {
+                triggerTestNotification("Thông báo hết hạn", "Đã bật nhắc nhở hạn sử dụng sản phẩm.")
+            }
+        }
+
+        // Expiry Week 1 Switch
+        binding.switchExpiryWeek1Container.setOnClickListener {
+            if (!ProfileSession.isNotiEnabled(context) || !ProfileSession.isNotiExpiryEnabled(context)) return@setOnClickListener
+            val nextState = !ProfileSession.isNotiExpiryWeek1(context)
+            ProfileSession.setNotiExpiryWeek1(context, nextState)
+            updateSwitchUI(binding.switchExpiryWeek1Container, binding.switchExpiryWeek1Thumb, nextState)
+        }
+
+        // Expiry Week 2 Switch
+        binding.switchExpiryWeek2Container.setOnClickListener {
+            if (!ProfileSession.isNotiEnabled(context) || !ProfileSession.isNotiExpiryEnabled(context)) return@setOnClickListener
+            val nextState = !ProfileSession.isNotiExpiryWeek2(context)
+            ProfileSession.setNotiExpiryWeek2(context, nextState)
+            updateSwitchUI(binding.switchExpiryWeek2Container, binding.switchExpiryWeek2Thumb, nextState)
+        }
     }
 
     private fun syncAllSettingsEnabledState() {
@@ -257,10 +306,26 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
         binding.switchPromotionContainer.alpha = alpha
         binding.switchStaffMessageContainer.isEnabled = isEnabled
         binding.switchStaffMessageContainer.alpha = alpha
+        binding.switchSkinWeatherContainer.isEnabled = isEnabled
+        binding.switchSkinWeatherContainer.alpha = alpha
+        
+        // Expiry toggles activation
+        binding.switchExpiryNotiContainer.isEnabled = isEnabled
+        binding.switchExpiryNotiContainer.alpha = alpha
 
         // Disable or hide promotional dropdown options if promotions are off, or if general notification is off
         val isPromotionVisible = isEnabled && ProfileSession.isPromotionEnabled(requireContext())
         binding.layoutPromotionOptions.visibility = if (isPromotionVisible) View.VISIBLE else View.GONE
+
+        // Disable or hide expiry sub-options
+        val isExpiryEnabled = ProfileSession.isNotiExpiryEnabled(requireContext())
+        val isExpiryVisible = isEnabled && isExpiryEnabled
+        binding.layoutExpiryOptions.visibility = if (isExpiryVisible) View.VISIBLE else View.GONE
+        
+        binding.switchExpiryWeek1Container.isEnabled = isExpiryVisible
+        binding.switchExpiryWeek1Container.alpha = if (isExpiryVisible) 1.0f else 0.5f
+        binding.switchExpiryWeek2Container.isEnabled = isExpiryVisible
+        binding.switchExpiryWeek2Container.alpha = if (isExpiryVisible) 1.0f else 0.5f
     }
 
     private fun updateSwitchUI(container: FrameLayout, thumb: ImageView, enabled: Boolean) {
@@ -403,6 +468,14 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
             icon?.setColorFilter(Color.parseColor("#677559"))
             label?.setTextColor(Color.parseColor("#677559"))
             label?.setTypeface(null, Typeface.BOLD)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            loadSwitchesState()
+            syncAllSettingsEnabledState()
         }
     }
 

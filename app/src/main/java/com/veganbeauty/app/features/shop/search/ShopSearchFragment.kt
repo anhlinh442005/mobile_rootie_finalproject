@@ -62,6 +62,21 @@ class ShopSearchFragment : RootieFragment() {
             ShopSearchHistoryHelper.clear(requireContext())
             refreshSearchHistory()
         }
+        binding.btnScanQr.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+                .replace(
+                    com.veganbeauty.app.R.id.main_container,
+                    com.veganbeauty.app.features.shop.barcode.BarcodeScanFragment()
+                )
+                .addToBackStack(null)
+                .commit()
+        }
 
         setupRecyclerViews()
         setupSearch()

@@ -71,7 +71,7 @@
             android:id="@+id/btnScanQr"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_camera"
+            android:src="@drawable/ic_qrscan"
             app:tint="@color/primary" />
     </LinearLayout>
 

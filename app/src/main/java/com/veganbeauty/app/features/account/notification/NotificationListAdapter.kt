@@ -10,30 +10,23 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.veganbeauty.app.R
 import com.veganbeauty.app.data.local.entities.NotificationItem
-import com.veganbeauty.app.databinding.AccountNotificationBannerBinding
-import com.veganbeauty.app.databinding.AccountNotificationGridCardsBinding
 import com.veganbeauty.app.databinding.AccountNotificationHeaderBinding
 import com.veganbeauty.app.databinding.AccountNotificationItemBinding
 
 private const val VIEW_TYPE_HEADER = 0
 private const val VIEW_TYPE_ITEM = 1
-private const val VIEW_TYPE_BANNER = 2
-private const val VIEW_TYPE_GRID = 3
 
 class NotificationListAdapter(
     private val onItemClick: (NotificationItem) -> Unit,
     private val onActionClick: (NotificationItem) -> Unit,
-    private val onBannerClick: () -> Unit,
-    private val onLeftGridClick: () -> Unit,
-    private val onRightGridClick: () -> Unit
+    private val onMarkReadClick: (NotificationItem) -> Unit,
+    private val onDeleteClick: (NotificationItem) -> Unit
 ) : ListAdapter<NotificationListItem, RecyclerView.ViewHolder>(DiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is NotificationListItem.Header -> VIEW_TYPE_HEADER
             is NotificationListItem.Notification -> VIEW_TYPE_ITEM
-            is NotificationListItem.PromoBanner -> VIEW_TYPE_BANNER
-            is NotificationListItem.GridStats -> VIEW_TYPE_GRID
         }
     }
 
@@ -48,14 +41,6 @@ class NotificationListAdapter(
                 val binding = AccountNotificationItemBinding.inflate(inflater, parent, false)
                 NotificationViewHolder(binding)
             }
-            VIEW_TYPE_BANNER -> {
-                val binding = AccountNotificationBannerBinding.inflate(inflater, parent, false)
-                PromoBannerViewHolder(binding)
-            }
-            VIEW_TYPE_GRID -> {
-                val binding = AccountNotificationGridCardsBinding.inflate(inflater, parent, false)
-                GridStatsViewHolder(binding)
-            }
             else -> throw IllegalArgumentException("Unknown view type: $viewType")
         }
     }
@@ -64,8 +49,6 @@ class NotificationListAdapter(
         when (val item = getItem(position)) {
             is NotificationListItem.Header -> (holder as HeaderViewHolder).bind(item)
             is NotificationListItem.Notification -> (holder as NotificationViewHolder).bind(item.item)
-            is NotificationListItem.PromoBanner -> (holder as PromoBannerViewHolder).bind()
-            is NotificationListItem.GridStats -> (holder as GridStatsViewHolder).bind()
         }
     }
 
@@ -110,19 +93,10 @@ class NotificationListAdapter(
                     ContextCompat.getColor(context, R.color.status_delivering_text),
                     ContextCompat.getColor(context, R.color.status_delivering_bg)
                 )
-                "Tin nhắn" -> {
-                    if (item.iconResName == "ic_ribbon") {
-                        Pair(
-                            ContextCompat.getColor(context, R.color.status_pending_text),
-                            ContextCompat.getColor(context, R.color.status_pending_bg)
-                        )
-                    } else {
-                        Pair(
-                            ContextCompat.getColor(context, R.color.status_processing_text),
-                            ContextCompat.getColor(context, R.color.status_processing_bg)
-                        )
-                    }
-                }
+                "Khác" -> Pair(
+                    ContextCompat.getColor(context, R.color.status_processing_text),
+                    ContextCompat.getColor(context, R.color.status_processing_bg)
+                )
                 else -> Pair(
                     ContextCompat.getColor(context, R.color.primary),
                     ContextCompat.getColor(context, R.color.gray_light)
@@ -132,7 +106,7 @@ class NotificationListAdapter(
             binding.ivIcon.backgroundTintList = ColorStateList.valueOf(bgTint)
 
             // Dynamic Action Button visibility & styling
-            if (!item.actionText.isNullOrEmpty()) {
+            if (!item.actionText.isNullOrEmpty() && !item.actionText.equals("CHI TIẾT", ignoreCase = true) && !item.actionText.equals("CHI TIẾT ĐƠN", ignoreCase = true)) {
                 binding.btnAction.visibility = View.VISIBLE
                 binding.btnAction.text = item.actionText
                 binding.btnAction.setOnClickListener {
@@ -142,32 +116,19 @@ class NotificationListAdapter(
                 binding.btnAction.visibility = View.GONE
             }
 
+            // Bind read/delete clicks
+            binding.btnMarkRead.visibility = if (item.isRead) View.GONE else View.VISIBLE
+            binding.btnMarkRead.setOnClickListener {
+                onMarkReadClick(item)
+            }
+
+            binding.btnDelete.setOnClickListener {
+                onDeleteClick(item)
+            }
+
             // Card click listener
             binding.cardNotification.setOnClickListener {
                 onItemClick(item)
-            }
-        }
-    }
-
-    inner class PromoBannerViewHolder(
-        private val binding: AccountNotificationBannerBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind() {
-            binding.root.setOnClickListener {
-                onBannerClick()
-            }
-        }
-    }
-
-    inner class GridStatsViewHolder(
-        private val binding: AccountNotificationGridCardsBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind() {
-            binding.cardLeft.setOnClickListener {
-                onLeftGridClick()
-            }
-            binding.cardRight.setOnClickListener {
-                onRightGridClick()
             }
         }
     }
@@ -179,8 +140,6 @@ class NotificationListAdapter(
                     oldItem.title == newItem.title
                 oldItem is NotificationListItem.Notification && newItem is NotificationListItem.Notification -> 
                     oldItem.item.id == newItem.item.id
-                oldItem is NotificationListItem.PromoBanner && newItem is NotificationListItem.PromoBanner -> true
-                oldItem is NotificationListItem.GridStats && newItem is NotificationListItem.GridStats -> true
                 else -> false
             }
         }

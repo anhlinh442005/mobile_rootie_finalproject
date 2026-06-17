@@ -180,7 +180,7 @@ class ShopDetailFragment : RootieFragment() {
 
     override fun observeViewModel() {
         super.observeViewModel()
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val db = RootieDatabase.getDatabase(requireContext())
             db.cartDao().getAllCartItems().collect { items ->
                 val totalQty = items.sumOf { it.quantity }
@@ -739,6 +739,5 @@ class ShopDetailFragment : RootieFragment() {
 
     private fun addToCart(prod: ProductEntity) {
         com.veganbeauty.app.features.shop.product.CartHelper.addToCart(requireContext(), lifecycleScope, prod, 1)
-        android.widget.Toast.makeText(context, "Đã thêm ${prod.name} vào giỏ hàng", android.widget.Toast.LENGTH_SHORT).show()
     }
 }

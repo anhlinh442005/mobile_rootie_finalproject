@@ -161,12 +161,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                         .getUser();
                 // Save all user info into ProfileSession so other screens can read it
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setLoggedIn(this, true);
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUserId(this, user.getUser_id());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setFullName(this, user.getFull_name());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setEmail(this, user.getEmail());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPhone(this, user.getPhone());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUsername(this, user.getUsername());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(this, user.getAvatar() != null ? user.getAvatar() : "");
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPrimaryImage(this, user.getPrimary_image() != null ? user.getPrimary_image() : "");
+
                 navigateToMain();
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
                 android.widget.Toast.makeText(this,
@@ -700,7 +702,11 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         loginBinding.homeRegisterLink.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
         loginBinding.homeRegisterLink.setHighlightColor(Color.TRANSPARENT);
 
-        loginBinding.homeGuestLink.setOnClickListener(v -> navigateToMain());
+        loginBinding.homeGuestLink.setOnClickListener(v -> {
+            com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setLoggedIn(HomeWelcomeActivity.this, false);
+            com.veganbeauty.app.features.shop.product.CartHelper.clearCart(HomeWelcomeActivity.this);
+            navigateToMain();
+        });
         loginBinding.homeForgotPassword.setOnClickListener(v -> transitionToForgotPassword());
         loginBinding.homeBtnLogin.setOnClickListener(v -> {
             String email = loginBinding.homeInputEmail.getText() != null
@@ -1137,7 +1143,11 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     }
 
     private void navigateToMain() {
-        startActivity(new Intent(this, MainActivity.class));
+        Intent intent = new Intent(this, MainActivity.class);
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            intent.putExtras(getIntent().getExtras());
+        }
+        startActivity(intent);
         finish();
     }
 }
