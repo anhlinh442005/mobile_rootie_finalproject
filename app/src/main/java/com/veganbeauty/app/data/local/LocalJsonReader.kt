@@ -88,27 +88,62 @@ class LocalJsonReader(private val context: Context) {
     }
 
     fun getShowcaseProductsForUser(userId: String): List<String> {
-        return try {
-            val jsonString = context.assets.open("user_showcases.json").bufferedReader().use { it.readText() }
-            val root = JSONObject(jsonString)
-            val array = root.optJSONArray("user_showcases") ?: return emptyList()
-            for (i in 0 until array.length()) {
-                val obj = array.getJSONObject(i)
-                if (obj.getString("userId") == userId) {
-                    val pIdsArray = obj.optJSONArray("showcaseProductIds")
-                    val list = mutableListOf<String>()
-                    if (pIdsArray != null) {
-                        for (j in 0 until pIdsArray.length()) {
-                            list.add(pIdsArray.getString(j))
+        val list = mutableSetOf<String>()
+
+        // 1. Get from affiliate_product.json
+        try {
+            val file = java.io.File(context.filesDir, "affiliate_product_local.json")
+            val root = if (file.exists()) {
+                org.json.JSONObject(file.readText())
+            } else {
+                val assetStr = context.assets.open("affiliate_product.json").bufferedReader().use { it.readText() }
+                org.json.JSONObject(assetStr)
+            }
+            val arr = root.optJSONArray("affiliate_products")
+            if (arr != null) {
+                for (i in 0 until arr.length()) {
+                    val obj = arr.getJSONObject(i)
+                    if (obj.optString("userId") == userId) {
+                        val productsArr = obj.optJSONArray("products")
+                        if (productsArr != null) {
+                            for (j in 0 until productsArr.length()) {
+                                val p = productsArr.getJSONObject(j)
+                                if (p.optBoolean("affiliate_display", true)) {
+                                    list.add(p.optString("productId"))
+                                }
+                            }
                         }
                     }
-                    return list
                 }
             }
-            emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
+        } catch (e: Exception) { e.printStackTrace() }
+
+        // 2. Get from orders where referrerUserId == userId
+        try {
+            val allOrders = getAllOrders()
+            val affiliateOrders = allOrders.filter { it.isAffiliate && it.affiliate?.referrerUserId == userId }
+            for (order in affiliateOrders) {
+                for (item in order.items) {
+                    list.add(item.productId)
+                }
+            }
+        } catch (e: Exception) { e.printStackTrace() }
+
+        // 3. Get from community posts where authorId == userId and has linked products
+        try {
+            val allPosts = getCommunityPosts()
+            val userPosts = allPosts.filter { it.authorId == userId }
+            for (post in userPosts) {
+                val ids = post.linkedProductIds ?: ""
+                if (ids.isNotEmpty()) {
+                    ids.split(",").forEach { 
+                        if (it.isNotBlank()) list.add(it.trim())
+                    }
+                }
+            }
+        } catch (e: Exception) { e.printStackTrace() }
+
+        return list.toList()
     }
 
     fun getAllProducts(): List<ProductEntity> {
@@ -238,7 +273,7 @@ class LocalJsonReader(private val context: Context) {
                         email = obj.optString("email", ""),
                         phone = obj.optString("phone", ""),
                         password = obj.optString("password", ""),
-                        avatar = obj.optString("avatar", null),
+                        avatar = obj.optString("avatar", null)?.takeIf { it.isNotBlank() } ?: "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png",
                         primary_image = obj.optString("primary_image", null)
                     )
                 )
@@ -253,7 +288,17 @@ class LocalJsonReader(private val context: Context) {
         return try {
             val jsonString = context.assets.open("community_posts.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF")
             val usersMap = getUsers().associateBy { it.user_id }
-            parsePosts(jsonString, usersMap)
+            val assetPosts = parsePosts(jsonString, usersMap).toMutableList()
+            
+            // Read from local_posts.json
+            val localFile = java.io.File(context.filesDir, "local_posts.json")
+            if (localFile.exists()) {
+                val localJsonString = localFile.readText()
+                val localPosts = parsePosts(localJsonString, usersMap)
+                assetPosts.addAll(0, localPosts) // Add to top
+            }
+            
+            assetPosts
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
@@ -343,7 +388,7 @@ class LocalJsonReader(private val context: Context) {
                 // Priority: avatar_url in the post's author object → usersMap avatar → profile_picture_url
                 val avatarFromPost = authorObj?.optString("avatar_url", "")?.takeIf { it.isNotEmpty() }
                     ?: authorObj?.optString("profile_picture_url", "")?.takeIf { it.isNotEmpty() }
-                avatarFromPost ?: realUser?.avatar
+                avatarFromPost ?: realUser?.avatar ?: "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png"
             }
             
             postList.add(CommunityPostEntity(
@@ -383,7 +428,7 @@ class LocalJsonReader(private val context: Context) {
                 val realUser = usersMap[authorId]
                 val authorUsername = realUser?.username ?: authorObj?.optString("username") ?: ""
                 val authorDisplayName = realUser?.full_name?.takeIf { it.isNotBlank() } ?: realUser?.username ?: authorObj?.optString("display_name") ?: ""
-                val authorAvatarUrl = realUser?.avatar ?: authorObj?.optString("avatar_url", authorObj?.optString("avatar"))
+                val authorAvatarUrl = realUser?.avatar ?: authorObj?.optString("avatar_url", authorObj?.optString("avatar"))?.takeIf { it.isNotBlank() } ?: "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png"
                 
                 reelList.add(ReelEntity(
                     videoId = obj.optString("video_id", java.util.UUID.randomUUID().toString()),
@@ -457,67 +502,57 @@ class LocalJsonReader(private val context: Context) {
                 val obj = jsonArray.getJSONObject(i)
                 val itemsArray = obj.getJSONArray("items")
                 val orderItems = mutableListOf<com.veganbeauty.app.data.local.entities.OrderItem>()
-                var totalAmount = 0L
                 for (j in 0 until itemsArray.length()) {
                     val itemObj = itemsArray.getJSONObject(j)
-                    val price = itemObj.optLong("price", 0L)
-                    val qty = itemObj.optInt("quantity", 1)
-                    totalAmount += (price * qty)
                     orderItems.add(
                         com.veganbeauty.app.data.local.entities.OrderItem(
                             productId = itemObj.getString("productId"),
                             productName = itemObj.getString("productName"),
                             productImage = itemObj.getString("productImage"),
-                            quantity = qty,
-                            price = price
+                            quantity = itemObj.optInt("quantity", 1),
+                            price = itemObj.optLong("price", 0L)
                         )
                     )
                 }
-                
-                val shippingCost = obj.optLong("shippingCost", 30000L)
-                val voucherDiscount = obj.optLong("voucherDiscount", 0L)
-                val finalTotal = totalAmount + shippingCost - voucherDiscount
                 
                 val isAffiliate = obj.optBoolean("isAffiliate", false)
                 val affObj = obj.optJSONObject("affiliate")
                 val affiliateInfo = if (isAffiliate && affObj != null) {
                     com.veganbeauty.app.data.local.entities.AffiliateInfo(
+                        isAffiliateOrder = affObj.optBoolean("isAffiliateOrder", true),
                         affiliate_id = affObj.optString("affiliate_id", ""),
                         affiliateCode = affObj.optString("affiliateCode", ""),
                         referrerUserId = affObj.optString("referrerUserId", ""),
                         referrerName = affObj.optString("referrerName", ""),
-                        sourceType = affObj.optString("sourceType", ""),
-                        sourcePostId = affObj.optString("sourcePostId", ""),
+                        sourceType = affObj.optString("sourceType", "community_post"),
+                        sourcePostId = affObj.optString("sourcePostId", null),
                         commissionRate = affObj.optDouble("commissionRate", 0.0),
                         commissionAmount = affObj.optLong("commissionAmount", 0L),
-                        commissionStatus = affObj.optString("commissionStatus", "")
+                        commissionStatus = affObj.optString("commissionStatus", "pending")
                     )
                 } else null
                 
                 orderList.add(
                     OrderEntity(
-                        orderId = obj.getString("id"),
-                        userId = obj.optString("userId", "test_001"),
+                        id = obj.getString("id"),
+                        userId = obj.getString("userId"),
                         orderDate = obj.getString("orderDate"),
                         orderTime = obj.getString("orderTime"),
                         status = obj.getString("status"),
-                        totalAmount = finalTotal,
+                        totalAmount = obj.getLong("totalAmount"),
+                        subTotal = obj.optLong("subTotal", obj.getLong("totalAmount")),
                         items = orderItems,
-                        shippingName = obj.optString("shippingName", "Nguyễn Văn A"),
-                        shippingPhone = obj.optString("shippingPhone", "090 123 4567"),
-                        shippingAddress = obj.optString("shippingAddress", "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh"),
-                        shippingCost = shippingCost,
-                        voucherDiscount = voucherDiscount,
-                        paymentMethod = obj.optString("paymentMethod", "Thanh toán qua Ví MoMo"),
-                        expectedDeliveryTime = if (obj.has("expectedDeliveryTime")) obj.getString("expectedDeliveryTime") else null,
-                        hasReview = obj.optBoolean("hasReview", false),
-                        reviewStars = obj.optInt("reviewStars", 0),
-                        reviewText = if (obj.has("reviewText")) obj.getString("reviewText") else null,
-                        reviewImage = if (obj.has("reviewImage")) obj.getString("reviewImage") else null,
-                        isAnonymous = obj.optBoolean("isAnonymous", false),
-                        recommendToFriends = obj.optBoolean("recommendToFriends", false),
+                        shippingName = obj.getString("shippingName"),
+                        shippingPhone = obj.getString("shippingPhone"),
+                        shippingAddress = obj.getString("shippingAddress"),
+                        shippingCost = obj.optLong("shippingCost", 0L),
+                        voucherDiscount = obj.optLong("voucherDiscount", 0L),
+                        paymentMethod = obj.getString("paymentMethod"),
+                        expectedDeliveryTime = obj.optString("expectedDeliveryTime", null),
+                        deliveryDate = obj.optString("deliveryDate", null),
                         isAffiliate = isAffiliate,
-                        affiliate = affiliateInfo
+                        affiliate = affiliateInfo,
+                        hasReview = obj.optBoolean("hasReview", false)
                     )
                 )
             }
@@ -637,7 +672,97 @@ class LocalJsonReader(private val context: Context) {
         file.writeText(jsonString)
     }
 
-    fun getRawPostsJson(): String = try { context.assets.open("community_posts.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "{}" }
+    fun getRawPostsJson(): String {
+        return try {
+            val assetStr = context.assets.open("community_posts.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF")
+            val assetRoot = try {
+                org.json.JSONObject(assetStr)
+            } catch (e: Exception) {
+                val array = org.json.JSONArray(assetStr)
+                val obj = org.json.JSONObject()
+                obj.put("posts", array)
+                obj
+            }
+            val assetPostsArray = assetRoot.optJSONArray("posts") ?: org.json.JSONArray()
+            
+            val localFile = java.io.File(context.filesDir, "local_posts.json")
+            if (localFile.exists()) {
+                val localArray = org.json.JSONArray(localFile.readText())
+                val combinedArray = org.json.JSONArray()
+                // local first
+                for (i in 0 until localArray.length()) {
+                    combinedArray.put(localArray.getJSONObject(i))
+                }
+                for (i in 0 until assetPostsArray.length()) {
+                    combinedArray.put(assetPostsArray.getJSONObject(i))
+                }
+                assetRoot.put("posts", combinedArray)
+            }
+            assetRoot.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "{}"
+        }
+    }
+    
+    fun saveLocalPost(post: CommunityPostEntity) {
+        try {
+            val file = java.io.File(context.filesDir, "local_posts.json")
+            val postsArray = if (file.exists()) {
+                org.json.JSONArray(file.readText())
+            } else {
+                org.json.JSONArray()
+            }
+            
+            val postObj = org.json.JSONObject()
+            postObj.put("post_id", post.postId)
+            postObj.put("content", post.content)
+            postObj.put("created_at", post.createdAt)
+            postObj.put("reactions_count", post.likesCount)
+            postObj.put("comments_count", post.commentsCount)
+            postObj.put("reups_count", post.reupsCount)
+            postObj.put("skin_type", post.skinType ?: "")
+            postObj.put("concern", post.concern ?: "")
+            postObj.put("type", post.type ?: "")
+            
+            val authorObj = org.json.JSONObject()
+            authorObj.put("user_id", post.authorId)
+            authorObj.put("username", post.authorUsername)
+            authorObj.put("display_name", post.authorDisplayName)
+            authorObj.put("avatar_url", post.authorAvatarUrl ?: "")
+            postObj.put("author", authorObj)
+            
+            if (post.mediaUrlsString.isNotEmpty()) {
+                val mediaArray = org.json.JSONArray()
+                post.mediaUrlsString.split(",").forEach { url ->
+                    val mediaObj = org.json.JSONObject()
+                    mediaObj.put("url", url)
+                    mediaArray.put(mediaObj)
+                }
+                postObj.put("media", mediaArray)
+            }
+            
+            if (!post.linkedProductIds.isNullOrEmpty()) {
+                val linkedArray = org.json.JSONArray()
+                post.linkedProductIds.split(",").forEach { id ->
+                    linkedArray.put(id)
+                }
+                postObj.put("linked_products", linkedArray)
+            }
+            
+            // Add to top
+            val newArray = org.json.JSONArray()
+            newArray.put(postObj)
+            for (i in 0 until postsArray.length()) {
+                newArray.put(postsArray.getJSONObject(i))
+            }
+            
+            file.writeText(newArray.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    
     fun getRawNewsJson(): String = try { context.assets.open("community_news.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
     fun getRawUsersJson(): String = try { context.assets.open("users.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
     fun getRawReelsJson(): String = try { context.assets.open("community_reels_fb.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }

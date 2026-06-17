@@ -93,7 +93,7 @@ class AccountOrderDetailFragment : RootieFragment() {
         val context = context ?: return
 
         // 1. General Info Card
-        binding.tvOrderCode.text = order.orderId
+        binding.tvOrderCode.text = order.id
         binding.tvOrderDate.text = "${order.orderDate} - ${order.orderTime}"
 
         // Badge styling based on status
@@ -201,7 +201,7 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.ivBannerSubActionIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, textResId))
 
                 binding.btnBannerSubAction.setOnClickListener {
-                    Toast.makeText(context, "Tính năng Theo dõi đơn cho mã ${order.orderId} đang được tải...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Tính năng Theo dõi đơn cho mã ${order.id} đang được tải...", Toast.LENGTH_SHORT).show()
                 }
             }
             "Hoàn tất" -> {
@@ -223,7 +223,7 @@ class AccountOrderDetailFragment : RootieFragment() {
 
                 binding.btnBannerSubAction.setOnClickListener {
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.orderId))
+                        .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.id))
                         .addToBackStack(null)
                         .commit()
                 }
@@ -249,7 +249,7 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.btnActionLeft.visibility = View.VISIBLE
                 binding.btnActionLeft.text = "Liên hệ hỗ trợ"
                 binding.btnActionLeft.setOnClickListener {
-                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.orderId}...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.id}...", Toast.LENGTH_SHORT).show()
                 }
 
                 binding.btnActionRight.visibility = View.VISIBLE
@@ -262,7 +262,7 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.btnActionLeft.visibility = View.VISIBLE
                 binding.btnActionLeft.text = "Liên hệ hỗ trợ"
                 binding.btnActionLeft.setOnClickListener {
-                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.orderId}...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.id}...", Toast.LENGTH_SHORT).show()
                 }
 
                 binding.btnActionRight.visibility = View.VISIBLE
@@ -275,26 +275,26 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.btnActionLeft.visibility = View.VISIBLE
                 binding.btnActionLeft.text = "Trả hàng/Hoàn tiền"
                 binding.btnActionLeft.setOnClickListener {
-                    Toast.makeText(context, "Gửi yêu cầu Trả hàng/Hoàn tiền cho đơn ${order.orderId}...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Gửi yêu cầu Trả hàng/Hoàn tiền cho đơn ${order.id}...", Toast.LENGTH_SHORT).show()
                 }
 
                 binding.btnActionRight.visibility = View.VISIBLE
                 binding.btnActionRight.text = "Mua lại"
                 binding.btnActionRight.setOnClickListener {
-                    Toast.makeText(context, "Đã thêm toàn bộ sản phẩm của đơn ${order.orderId} vào giỏ hàng!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Đã thêm toàn bộ sản phẩm của đơn ${order.id} vào giỏ hàng!", Toast.LENGTH_SHORT).show()
                 }
             }
             "Đã hủy" -> {
                 binding.btnActionLeft.visibility = View.VISIBLE
                 binding.btnActionLeft.text = "Liên hệ hỗ trợ"
                 binding.btnActionLeft.setOnClickListener {
-                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.orderId}...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.id}...", Toast.LENGTH_SHORT).show()
                 }
 
                 binding.btnActionRight.visibility = View.VISIBLE
                 binding.btnActionRight.text = "Mua lại"
                 binding.btnActionRight.setOnClickListener {
-                    Toast.makeText(context, "Đã thêm toàn bộ sản phẩm của đơn ${order.orderId} vào giỏ hàng!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Đã thêm toàn bộ sản phẩm của đơn ${order.id} vào giỏ hàng!", Toast.LENGTH_SHORT).show()
                 }
             }
             else -> {
@@ -308,12 +308,12 @@ class AccountOrderDetailFragment : RootieFragment() {
         val context = context ?: return
         MaterialAlertDialogBuilder(context)
             .setTitle("Hủy đơn hàng")
-            .setMessage("Bạn có chắc chắn muốn hủy đơn hàng ${order.orderId} không?")
+            .setMessage("Bạn có chắc chắn muốn hủy đơn hàng ${order.id} không?")
             .setPositiveButton("Xác nhận") { _, _ ->
                 viewModel.cancelOrder()
                 Toast.makeText(
                     context,
-                    "Đã hủy đơn hàng ${order.orderId} thành công!",
+                    "Đã hủy đơn hàng ${order.id} thành công!",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -325,7 +325,7 @@ class AccountOrderDetailFragment : RootieFragment() {
         val context = context ?: return
         MaterialAlertDialogBuilder(context)
             .setTitle("Đã nhận được hàng")
-            .setMessage("Bạn xác nhận đã nhận đầy đủ và nguyên vẹn các sản phẩm trong đơn hàng ${order.orderId}?")
+            .setMessage("Bạn xác nhận đã nhận đầy đủ và nguyên vẹn các sản phẩm trong đơn hàng ${order.id}?")
             .setPositiveButton("Xác nhận") { _, _ ->
                 viewModel.confirmReceived()
                 Toast.makeText(
@@ -334,7 +334,7 @@ class AccountOrderDetailFragment : RootieFragment() {
                     Toast.LENGTH_SHORT
                 ).show()
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.orderId))
+                    .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.id))
                     .addToBackStack(null)
                     .commit()
             }

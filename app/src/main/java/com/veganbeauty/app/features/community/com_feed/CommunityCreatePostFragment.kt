@@ -166,18 +166,27 @@ class CommunityCreatePostFragment : RootieFragment() {
         } catch (e: Exception) { e.printStackTrace() }
     }
 
+    private fun setupHideKeyboard(view: View) {
+        if (view !is android.widget.EditText) {
+            view.setOnTouchListener { v, event ->
+                if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                    val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                    binding.etContent.clearFocus()
+                }
+                false
+            }
+        }
+        if (view is android.view.ViewGroup) {
+            for (i in 0 until view.childCount) {
+                setupHideKeyboard(view.getChildAt(i))
+            }
+        }
+    }
+
     override fun setupUI(view: View) {
         // Hide keyboard when tapping outside
-        val touchListener = View.OnTouchListener { v, event ->
-            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
-                val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
-                binding.etContent.clearFocus()
-            }
-            false
-        }
-        binding.root.setOnTouchListener(touchListener)
-        (binding.root.getChildAt(1) as? androidx.core.widget.NestedScrollView)?.setOnTouchListener(touchListener)
+        setupHideKeyboard(binding.root)
 
         val db = RootieDatabase.getDatabase(requireContext())
         communityDao = db.communityDao()
@@ -381,7 +390,8 @@ class CommunityCreatePostFragment : RootieFragment() {
             val productsMap = mutableMapOf<String, org.json.JSONObject>()
             try {
                 val currentUserId = "test_001" // Or get from session
-                val completedOrders = LocalJsonReader(requireContext()).getAllOrders().filter { it.userId == currentUserId && it.status == "Hoàn tất" }
+                val jsonReader = LocalJsonReader(requireContext())
+                val eligibleProductIds = jsonReader.getShowcaseProductsForUser(currentUserId)
                 
                 // Map against products.json first to get full info if available
                 val productsJsonStr = requireContext().assets.open("products.json").bufferedReader().use { it.readText() }
@@ -394,18 +404,15 @@ class CommunityCreatePostFragment : RootieFragment() {
                     allProductsMap[pId] = p
                 }
 
-                for (order in completedOrders) {
-                    for (item in order.items) {
-                        val pId = item.productId
-                        if (!productsMap.containsKey(pId)) {
-                            val pData = allProductsMap[pId]
-                            val obj = org.json.JSONObject()
-                            obj.put("id", pId)
-                            obj.put("name", pData?.optString("name") ?: item.productName)
-                            obj.put("thumbnail_url", pData?.optString("mainImage", pData.optString("image", "")) ?: item.productImage)
-                            obj.put("brand", pData?.optString("brand", ""))
-                            productsMap[pId] = obj
-                        }
+                for (pId in eligibleProductIds) {
+                    if (!productsMap.containsKey(pId)) {
+                        val pData = allProductsMap[pId]
+                        val obj = org.json.JSONObject()
+                        obj.put("id", pId)
+                        obj.put("name", pData?.optString("name") ?: "Sản phẩm $pId")
+                        obj.put("thumbnail_url", pData?.optString("mainImage", pData?.optString("image", "")) ?: "")
+                        obj.put("brand", pData?.optString("brand", ""))
+                        productsMap[pId] = obj
                     }
                 }
             } catch (e: Exception) {
@@ -518,33 +525,29 @@ class CommunityCreatePostFragment : RootieFragment() {
                     setOnClickListener {
                         if (!selectedProductIds.contains(id)) {
                             selectedProductIds.add(id)
-                            Toast.makeText(context, "Đã gắn: $name", Toast.LENGTH_SHORT).show()
                             
-                            val chip = android.widget.TextView(context).apply {
-                                text = "🛍️ $name"
-                                setTextColor(Color.parseColor("#4B6554"))
-                                setBackgroundResource(R.drawable.com_bg_chip_solid_normal)
-                                setPadding(24, 12, 24, 12)
-                                textSize = 12f
-                                val params = android.widget.LinearLayout.LayoutParams(
-                                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-                                ).apply { 
-                                    topMargin = 16 
-                                    marginEnd = 16
-                                }
-                                layoutParams = params
-                                
-                                setOnClickListener {
-                                    selectedProductIds.remove(id)
-                                    (parent as? android.view.ViewGroup)?.removeView(this)
+                            val llList = binding.root.findViewById<android.widget.LinearLayout>(R.id.llAttachedProductsList)
+                            val llContainer = binding.root.findViewById<android.widget.LinearLayout>(R.id.llAttachedProductsContainer)
+                            
+                            val productView = LayoutInflater.from(context).inflate(R.layout.com_item_post_product, llList, false)
+                            val tvProductName = productView.findViewById<android.widget.TextView>(R.id.tvProductName)
+                            val ivProductImg = productView.findViewById<android.widget.ImageView>(R.id.ivProductImage)
+                            
+                            tvProductName.text = name
+                            if (img.isNotEmpty()) {
+                                ivProductImg.load(img) { crossfade(true) }
+                            }
+                            
+                            productView.setOnClickListener {
+                                selectedProductIds.remove(id)
+                                (productView.parent as? android.view.ViewGroup)?.removeView(productView)
+                                if (llList?.childCount == 0) {
+                                    llContainer?.visibility = View.GONE
                                 }
                             }
-                            binding.llImagePreviewContainer?.parent?.let { parentView ->
-                                if (parentView is android.widget.LinearLayout) {
-                                    parentView.addView(chip)
-                                }
-                            }
+                            
+                            llList?.addView(productView)
+                            llContainer?.visibility = View.VISIBLE
                         }
                         bottomSheetDialog.dismiss()
                     }
@@ -629,6 +632,7 @@ class CommunityCreatePostFragment : RootieFragment() {
         binding.btnPost.isEnabled = false
 
         CoroutineScope(Dispatchers.IO).launch {
+            LocalJsonReader(requireContext()).saveLocalPost(newPost)
             communityDao.insertPosts(listOf(newPost))
             firestoreService.uploadCommunityPost(newPost)
             

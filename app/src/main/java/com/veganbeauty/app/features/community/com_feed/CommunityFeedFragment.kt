@@ -66,6 +66,14 @@ class CommunityFeedFragment : RootieFragment() {
             view.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)?.closeDrawer(androidx.core.view.GravityCompat.START)
         }
 
+        binding.ivSearch.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_container, CommunitySearchFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Set click listeners for the specialized community navbar
         binding.comBottomNav.navComFeed.setOnClickListener {
             // Scroll back to top immediately
@@ -278,9 +286,9 @@ class CommunityFeedFragment : RootieFragment() {
                             it.type.equals(currentFilter, ignoreCase = true) ||
                             it.skinType.equals(currentFilter, ignoreCase = true) ||
                             it.concern.equals(currentFilter, ignoreCase = true)
-                        }.distinctBy { it.postId }.shuffled()  // deduplicate by postId
+                        }.distinctBy { it.postId }.sortedByDescending { it.createdAt }
                     } else {
-                        postsList.distinctBy { it.postId }.shuffled()  // deduplicate by postId
+                        postsList.distinctBy { it.postId }.sortedByDescending { it.createdAt }
                     }
                     
                     if (newsList.isNotEmpty() && currentFilter == "Tất cả") {

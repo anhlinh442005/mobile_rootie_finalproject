@@ -362,6 +362,44 @@ class PostAdapter(
                 // Reup toggle and action
                 val context = postHolder.itemView.context
                 val ownUserId = getOwnUserId(context)
+                
+                // Author logic: hide follow button for own posts, configure more options
+                if (post.authorId == ownUserId) {
+                    postHolder.binding.tvFollow.visibility = View.GONE
+                    postHolder.binding.ivMore.setOnClickListener { v ->
+                        val popupView = LayoutInflater.from(context).inflate(R.layout.com_popup_more_author, null)
+                        val popupWindow = android.widget.PopupWindow(
+                            popupView,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            true
+                        )
+                        popupWindow.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+                        popupWindow.elevation = 8f
+                        popupView.findViewById<View>(R.id.tvEdit).setOnClickListener { popupWindow.dismiss() }
+                        popupView.findViewById<View>(R.id.tvDelete).setOnClickListener { popupWindow.dismiss() }
+                        popupView.findViewById<View>(R.id.tvPrivacy).setOnClickListener { popupWindow.dismiss() }
+                        val xOffset = -(160 * context.resources.displayMetrics.density).toInt() + v.width
+                        popupWindow.showAsDropDown(v, xOffset, 0)
+                    }
+                } else {
+                    postHolder.binding.tvFollow.visibility = View.VISIBLE
+                    postHolder.binding.ivMore.setOnClickListener { v ->
+                        val popupView = LayoutInflater.from(context).inflate(R.layout.com_popup_more_other, null)
+                        val popupWindow = android.widget.PopupWindow(
+                            popupView,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            true
+                        )
+                        popupWindow.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+                        popupWindow.elevation = 8f
+                        popupView.findViewById<View>(R.id.tvReport).setOnClickListener { popupWindow.dismiss() }
+                        popupView.findViewById<View>(R.id.tvHide).setOnClickListener { popupWindow.dismiss() }
+                        val xOffset = -(160 * context.resources.displayMetrics.density).toInt() + v.width
+                        popupWindow.showAsDropDown(v, xOffset, 0)
+                    }
+                }
                 var isReuped = com.veganbeauty.app.features.community.UserMemoryHelper.isPostReposted(context, ownUserId, post.postId)
                 var currentReupsCount = post.reupsCount
                 

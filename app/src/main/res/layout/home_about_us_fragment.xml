@@ -20,7 +20,7 @@
             android:layout_height="24dp"
             android:layout_centerVertical="true"
             android:contentDescription="Back"
-            android:src="@drawable/ic_arrow_back"
+            android:src="@drawable/ic_arrow_back_thin"
             app:tint="@color/primary" />
 
         <TextView

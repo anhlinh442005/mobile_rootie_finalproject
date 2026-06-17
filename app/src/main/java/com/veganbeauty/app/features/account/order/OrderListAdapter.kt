@@ -64,7 +64,7 @@ class OrderListAdapter(
 
             // Bind Date and Time
             binding.tvOrderDateTime.text = "${order.orderDate} • ${order.orderTime}"
-            binding.tvOrderId.text = order.orderId
+            binding.tvOrderId.text = order.id
 
             // Bind Status Badge
             binding.tvOrderStatus.text = order.status
@@ -79,18 +79,60 @@ class OrderListAdapter(
             binding.tvOrderStatus.background.mutate().setTint(ContextCompat.getColor(context, bgResId))
             binding.tvOrderStatus.setTextColor(ContextCompat.getColor(context, textResId))
 
-            // Bind Product (assume non-empty list of items)
-            if (order.items.isNotEmpty()) {
-                val firstItem = order.items[0]
-                binding.tvProductName.text = firstItem.productName
-                binding.tvProductQuantity.text = "x${firstItem.quantity}"
+            // Product Container Header
+            binding.tvProductCountLabel.text = "Sản phẩm (${order.items.size})"
+            
+            // State for expand/collapse (defaults to false meaning collapsed)
+            var isExpanded = false
+            
+            fun updateProductsVisibility() {
+                binding.llProductsContainer.removeAllViews()
+                val itemsToShow = if (isExpanded) order.items else order.items.take(2)
                 
-                binding.ivProductImage.load(firstItem.productImage) {
-                    crossfade(true)
-                    placeholder(android.R.color.darker_gray)
-                    error(android.R.color.darker_gray)
+                for (item in itemsToShow) {
+                    val rowView = LayoutInflater.from(context).inflate(R.layout.item_account_order_product_row, binding.llProductsContainer, false)
+                    
+                    val tvName = rowView.findViewById<android.widget.TextView>(R.id.tvProductName)
+                    val tvQuantity = rowView.findViewById<android.widget.TextView>(R.id.tvProductQuantity)
+                    val tvPrice = rowView.findViewById<android.widget.TextView>(R.id.tvProductPrice)
+                    val ivImage = rowView.findViewById<android.widget.ImageView>(R.id.ivProductImage)
+                    
+                    tvName.text = item.productName
+                    tvQuantity.text = "x${item.quantity}"
+                    
+                    val itemPriceFormatted = String.format("%,dđ", item.price).replace(',', '.')
+                    tvPrice.text = itemPriceFormatted
+                    
+                    ivImage.load(item.productImage) {
+                        crossfade(true)
+                        placeholder(android.R.color.darker_gray)
+                        error(android.R.color.darker_gray)
+                    }
+                    
+                    binding.llProductsContainer.addView(rowView)
+                }
+                
+                if (order.items.size > 2) {
+                    binding.llToggleProducts.visibility = View.VISIBLE
+                    if (isExpanded) {
+                        binding.tvToggleText.text = "Thu gọn"
+                        binding.ivToggleIcon.setImageResource(R.drawable.ic_chevron_up_thin)
+                    } else {
+                        binding.tvToggleText.text = "Xem thêm"
+                        binding.ivToggleIcon.setImageResource(R.drawable.ic_chevron_down_thin)
+                    }
+                } else {
+                    binding.llToggleProducts.visibility = View.GONE
                 }
             }
+            
+            binding.llToggleProducts.setOnClickListener {
+                isExpanded = !isExpanded
+                updateProductsVisibility()
+            }
+            
+            // Initial render
+            updateProductsVisibility()
 
             // Formatting Price as 395.000đ
             val formattedAmount = String.format("%,dđ", order.totalAmount).replace(',', '.')
@@ -173,7 +215,7 @@ class OrderListAdapter(
 
     class OrderDiffCallback : DiffUtil.ItemCallback<OrderEntity>() {
         override fun areItemsTheSame(oldItem: OrderEntity, newItem: OrderEntity): Boolean {
-            return oldItem.orderId == newItem.orderId
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: OrderEntity, newItem: OrderEntity): Boolean {

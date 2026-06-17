@@ -12,8 +12,10 @@ import coil.transform.CircleCropTransformation
 import com.veganbeauty.app.R
 import com.veganbeauty.app.data.local.entities.ChatMessageEntity
 
-class ChatDetailAdapter(private var items: List<ChatMessageEntity>) :
-    RecyclerView.Adapter<ChatDetailAdapter.ChatViewHolder>() {
+class ChatDetailAdapter(
+    private var items: List<ChatMessageEntity>,
+    private val onMessageLongClick: (ChatMessageEntity) -> Unit
+) : RecyclerView.Adapter<ChatDetailAdapter.ChatViewHolder>() {
 
     private var partnerAvatar: String = ""
 
@@ -37,17 +39,56 @@ class ChatDetailAdapter(private var items: List<ChatMessageEntity>) :
         return ChatViewHolder(view)
     }
 
+    private var selectedItemPosition: Int = -1
+
+    private fun formatTimestamp(timestamp: Long): String {
+        val calendar = java.util.Calendar.getInstance()
+        val now = java.util.Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+
+        val formatTime = java.text.SimpleDateFormat("HH:mm", java.util.Locale("vi", "VN"))
+        val formatDate = java.text.SimpleDateFormat("dd 'th' MM", java.util.Locale("vi", "VN"))
+
+        val timeStr = formatTime.format(calendar.time)
+
+        return if (calendar.get(java.util.Calendar.YEAR) == now.get(java.util.Calendar.YEAR) &&
+            calendar.get(java.util.Calendar.DAY_OF_YEAR) == now.get(java.util.Calendar.DAY_OF_YEAR)
+        ) {
+            timeStr
+        } else {
+            val dateStr = formatDate.format(calendar.time)
+            "$timeStr ng $dateStr"
+        }
+    }
+
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val item = items[position]
 
-        // Simple mock timestamp string logic since createdAt is Long
-        val timeStr = "Vừa xong"
-        holder.tvTimestamp.visibility = View.VISIBLE
-        holder.tvTimestamp.text = timeStr
+        val showTimestamp = if (position == 0) {
+            true
+        } else {
+            val prevItem = items[position - 1]
+            val diff = item.createdAt - prevItem.createdAt
+            diff > 30 * 60 * 1000 // 30 minutes in milliseconds
+        }
+
+        if (showTimestamp || position == selectedItemPosition) {
+            holder.tvTimestamp.visibility = View.VISIBLE
+            holder.tvTimestamp.text = formatTimestamp(item.createdAt)
+        } else {
+            holder.tvTimestamp.visibility = View.GONE
+        }
+
+        holder.llBubble.setOnClickListener {
+            val prevSelected = selectedItemPosition
+            selectedItemPosition = if (selectedItemPosition == position) -1 else position
+            if (prevSelected != -1) notifyItemChanged(prevSelected)
+            if (selectedItemPosition != -1) notifyItemChanged(selectedItemPosition)
+        }
 
         holder.tvMessage.text = item.text
 
-        val currentUserId = "test_001"
+        val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(holder.itemView.context)
         val isMine = item.senderId == currentUserId
 
         if (isMine) {
@@ -61,11 +102,16 @@ class ChatDetailAdapter(private var items: List<ChatMessageEntity>) :
             // Show status (e.g., "Đã xem" if partner read it)
             val partnerId = if (item.receiverId == currentUserId) item.senderId else item.receiverId
             val partnerStatus = item.status[partnerId]
-            if (partnerStatus == "read") {
+            if (partnerStatus == "read" && position == selectedItemPosition) {
                 holder.tvStatus.visibility = View.VISIBLE
                 holder.tvStatus.text = "Đã xem"
             } else {
                 holder.tvStatus.visibility = View.GONE
+            }
+
+            holder.llBubble.setOnLongClickListener {
+                onMessageLongClick(item)
+                true
             }
         } else {
             // Partner message
@@ -75,11 +121,17 @@ class ChatDetailAdapter(private var items: List<ChatMessageEntity>) :
             holder.llBubble.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#DEE2D3")) // Light green
             holder.tvMessage.setTextColor(android.graphics.Color.BLACK)
             holder.tvStatus.visibility = View.GONE
+            
+            holder.llBubble.setOnLongClickListener(null)
 
             val nextItem = if (position < items.size - 1) items[position + 1] else null
             val nextIsMine = nextItem?.senderId == currentUserId
+            
+            // Check if next item is also within 30 minutes and from same partner to hide avatar
+            val nextIsClose = nextItem != null && (nextItem.createdAt - item.createdAt <= 30 * 60 * 1000)
+            
             if (nextItem != null && !nextIsMine) {
-                holder.ivPartnerAvatar.visibility = View.INVISIBLE // Reserve space but hide if not last
+                holder.ivPartnerAvatar.visibility = View.INVISIBLE // Reserve space but hide if not last in group
             } else {
                 holder.ivPartnerAvatar.visibility = View.VISIBLE
                 if (partnerAvatar.isNotEmpty()) {

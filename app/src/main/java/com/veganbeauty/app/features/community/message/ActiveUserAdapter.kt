@@ -72,7 +72,18 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
             holder.ivAvatar.load(item.partnerAvatar) {
                 crossfade(true)
                 placeholder(R.color.gray_light)
+                if (item.partnerId == "rootie_vn") {
+                    error(R.drawable.ic_logo_rootie)
+                } else {
+                    error(R.drawable.img_avatar)
+                }
                 transformations(CircleCropTransformation())
+            }
+        } else {
+            if (item.partnerId == "rootie_vn") {
+                holder.ivAvatar.setImageResource(R.drawable.ic_logo_rootie)
+            } else {
+                holder.ivAvatar.setImageResource(R.drawable.img_avatar)
             }
         }
     }

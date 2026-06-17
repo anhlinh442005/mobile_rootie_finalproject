@@ -229,6 +229,40 @@
                         android:paddingHorizontal="16dp"/>
                 </HorizontalScrollView>
 
+                <!-- Attached Products Preview -->
+                <LinearLayout
+                    android:id="@+id/llAttachedProductsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sản phẩm đã dùng"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginStart="16dp"/>
+                        
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingHorizontal="16dp"
+                        android:scrollbars="none">
+                        <LinearLayout
+                            android:id="@+id/llAttachedProductsList"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"/>
+                    </HorizontalScrollView>
+                </LinearLayout>
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>

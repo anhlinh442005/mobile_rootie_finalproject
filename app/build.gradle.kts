@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
     alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -86,3 +86,4 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
 }
 dependencies { implementation("com.github.yalantis:ucrop:2.2.8") }
+dependencies { implementation("com.google.firebase:firebase-database-ktx") }

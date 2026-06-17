@@ -486,10 +486,18 @@ object ProfileSession {
             .getBoolean(KEY_NOTI_COMPLAINT_RESPONSE, true)
     }
 
-    fun setComplaintResponseEnabled(context: Context, enabled: Boolean) {
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(KEY_NOTI_COMPLAINT_RESPONSE, enabled)
-            .apply()
+    fun getCurrentUserId(context: Context): String {
+        val email = getEmail(context)
+        try {
+            val usersJsonStr = context.assets.open("users.json").bufferedReader().use { it.readText() }
+            val usersJsonArray = org.json.JSONArray(usersJsonStr)
+            for (i in 0 until usersJsonArray.length()) {
+                val obj = usersJsonArray.getJSONObject(i)
+                if (obj.optString("email") == email) {
+                    return obj.optString("user_id", "test_001")
+                }
+            }
+        } catch(e: Exception) {}
+        return "test_001"
     }
 }

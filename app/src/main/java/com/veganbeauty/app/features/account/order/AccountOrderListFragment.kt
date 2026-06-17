@@ -32,29 +32,29 @@ class AccountOrderListFragment : RootieFragment() {
     private val orderAdapter = OrderListAdapter(
         onItemClick = { order ->
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(order.orderId))
+                .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(order.id))
                 .addToBackStack(null)
                 .commit()
         },
         onCancelClick = { order -> showCancelConfirmationDialog(order) },
         onDetailClick = { order -> 
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(order.orderId))
+                .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(order.id))
                 .addToBackStack(null)
                 .commit()
         },
         onReorderClick = { order ->
-            Toast.makeText(requireContext(), "Mua lại sản phẩm từ đơn ${order.orderId}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Mua lại sản phẩm từ đơn ${order.id}", Toast.LENGTH_SHORT).show()
         },
         onTrackClick = { order ->
-            Toast.makeText(requireContext(), "Theo dõi đơn hàng: ${order.orderId}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Theo dõi đơn hàng: ${order.id}", Toast.LENGTH_SHORT).show()
         },
         onContactClick = { order ->
-            Toast.makeText(requireContext(), "Kết nối với tư vấn viên Rootie hỗ trợ đơn ${order.orderId}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Kết nối với tư vấn viên Rootie hỗ trợ đơn ${order.id}", Toast.LENGTH_SHORT).show()
         },
         onReviewClick = { order ->
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.orderId))
+                .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.id))
                 .addToBackStack(null)
                 .commit()
         }
@@ -162,12 +162,12 @@ class AccountOrderListFragment : RootieFragment() {
     private fun showCancelConfirmationDialog(order: OrderEntity) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Hủy đơn hàng")
-            .setMessage("Bạn có chắc chắn muốn hủy đơn hàng ${order.orderId} không?")
+            .setMessage("Bạn có chắc chắn muốn hủy đơn hàng ${order.id} không?")
             .setPositiveButton("Xác nhận") { _, _ ->
-                viewModel.cancelOrder(order.orderId)
+                viewModel.cancelOrder(order.id)
                 Toast.makeText(
                     requireContext(),
-                    "Đã hủy đơn hàng ${order.orderId} thành công!",
+                    "Đã hủy đơn hàng ${order.id} thành công!",
                     Toast.LENGTH_SHORT
                 ).show()
             }

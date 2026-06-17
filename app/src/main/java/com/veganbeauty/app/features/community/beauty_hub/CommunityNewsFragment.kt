@@ -201,6 +201,189 @@ class CommunityNewsFragment : RootieFragment() {
             val sortedNews = newsPosts.sortedByDescending { it.createdAt }
             postAdapter.updateData(sortedNews, emptyList(), emptyList(), emptyList())
         }
+
+        fun getFriendsJsonString(ctx: android.content.Context): String {
+            val file = java.io.File(ctx.filesDir, "User_com_friend.json")
+            if (file.exists()) return file.readText()
+            return ctx.assets.open("User_com_friend.json").bufferedReader().use { it.readText() }
+        }
+
+        var currentUserId = "test_001"
+        try {
+            val loggedInEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext())
+            val usersStr = requireContext().assets.open("users.json").bufferedReader().use { it.readText() }
+            val usersArray = org.json.JSONArray(usersStr)
+            for (i in 0 until usersArray.length()) {
+                val obj = usersArray.getJSONObject(i)
+                if (obj.optString("email") == loggedInEmail) {
+                    currentUserId = obj.optString("user_id", "test_001")
+                    break
+                }
+            }
+        } catch (e: Exception) { e.printStackTrace() }
+
+        var isFollowing = false
+        var rootieFollowersCount = 0
+
+        try {
+            val friendJsonStr = getFriendsJsonString(requireContext())
+            val friendJsonArray = org.json.JSONArray(friendJsonStr)
+            
+            for (i in 0 until friendJsonArray.length()) {
+                val obj = friendJsonArray.getJSONObject(i)
+                if (obj.optString("user_id") == currentUserId) {
+                    val followingArr = obj.optJSONArray("following")
+                    if (followingArr != null) {
+                        for (j in 0 until followingArr.length()) {
+                            if (followingArr.optString(j) == "rootie_vn") {
+                                isFollowing = true
+                                break
+                            }
+                        }
+                    }
+                }
+                if (obj.optString("user_id") == "rootie_vn") {
+                    rootieFollowersCount = obj.optJSONArray("followers")?.length() ?: 0
+                }
+            }
+        } catch (e: Exception) { e.printStackTrace() }
+
+        fun updateFollowButtonUI() {
+            if (isFollowing) {
+                binding.btnFollow.text = "Đã theo dõi"
+                binding.btnFollow.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E8F5E9"))
+                binding.btnFollow.setTextColor(android.graphics.Color.parseColor("#6E846A"))
+            } else {
+                binding.btnFollow.text = "Theo dõi"
+                binding.btnFollow.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#6E846A"))
+                binding.btnFollow.setTextColor(android.graphics.Color.WHITE)
+            }
+            // Update stats text
+            val mutualCountStr = if (binding.tvMutualCount.text.contains("theo dõi")) " • ${binding.tvMutualCount.text.split(" ").last { it.toIntOrNull() != null } ?: "6"} đang theo dõi" else " • 6 đang theo dõi"
+            binding.tvStats.text = "${rootieFollowersCount}K người theo dõi$mutualCountStr\n1.046 bài viết"
+        }
+        
+        updateFollowButtonUI()
+
+        binding.btnFollow.setOnClickListener {
+            if (isFollowing) {
+                // Show unfollow confirmation dialog
+                val dialogView = layoutInflater.inflate(R.layout.com_dialog_unfollow_confirm, null)
+                val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
+                    .setView(dialogView)
+                    .create()
+                
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+                
+                dialogView.findViewById<View>(R.id.btnCancel).setOnClickListener {
+                    dialog.dismiss()
+                }
+                
+                dialogView.findViewById<View>(R.id.btnUnfollow).setOnClickListener {
+                    dialog.dismiss()
+                    try {
+                        val file = java.io.File(requireContext().filesDir, "User_com_friend.json")
+                        val currentFriendStr = getFriendsJsonString(requireContext())
+                        val friendJsonArray = org.json.JSONArray(currentFriendStr)
+                        
+                        for (i in 0 until friendJsonArray.length()) {
+                            val obj = friendJsonArray.getJSONObject(i)
+                            if (obj.optString("user_id") == currentUserId) {
+                                val followingArr = obj.optJSONArray("following") ?: org.json.JSONArray()
+                                val newFollowing = org.json.JSONArray()
+                                for (j in 0 until followingArr.length()) {
+                                    if (followingArr.optString(j) != "rootie_vn") {
+                                        newFollowing.put(followingArr.getString(j))
+                                    }
+                                }
+                                obj.put("following", newFollowing)
+                            }
+                            if (obj.optString("user_id") == "rootie_vn") {
+                                val followersArr = obj.optJSONArray("followers") ?: org.json.JSONArray()
+                                val newFollowers = org.json.JSONArray()
+                                for (j in 0 until followersArr.length()) {
+                                    if (followersArr.optString(j) != currentUserId) {
+                                        newFollowers.put(followersArr.getString(j))
+                                    }
+                                }
+                                obj.put("followers", newFollowers)
+                            }
+                        }
+                        isFollowing = false
+                        rootieFollowersCount = maxOf(0, rootieFollowersCount - 1)
+                        file.writeText(friendJsonArray.toString(2))
+                        updateFollowButtonUI()
+                    } catch (e: Exception) { e.printStackTrace() }
+                }
+                dialog.show()
+            } else {
+                // Follow
+                try {
+                    val file = java.io.File(requireContext().filesDir, "User_com_friend.json")
+                    val currentFriendStr = getFriendsJsonString(requireContext())
+                    val friendJsonArray = org.json.JSONArray(currentFriendStr)
+                    
+                    for (i in 0 until friendJsonArray.length()) {
+                        val obj = friendJsonArray.getJSONObject(i)
+                        if (obj.optString("user_id") == currentUserId) {
+                            val followingArr = obj.optJSONArray("following") ?: org.json.JSONArray()
+                            followingArr.put("rootie_vn")
+                            obj.put("following", followingArr)
+                        }
+                        if (obj.optString("user_id") == "rootie_vn") {
+                            val followersArr = obj.optJSONArray("followers") ?: org.json.JSONArray()
+                            followersArr.put(currentUserId)
+                            obj.put("followers", followersArr)
+                        }
+                    }
+                    isFollowing = true
+                    rootieFollowersCount++
+                    file.writeText(friendJsonArray.toString(2))
+                    updateFollowButtonUI()
+                } catch (e: Exception) { e.printStackTrace() }
+            }
+        }
+
+        binding.btnMessage.setOnClickListener {
+            // Hotfix: Clean up the corrupted conversation from previous bug
+            try {
+                val convFile = java.io.File(requireContext().filesDir, "conversations_local_v2.json")
+                if (convFile.exists()) {
+                    val array = org.json.JSONArray(convFile.readText())
+                    val newArray = org.json.JSONArray()
+                    for (i in 0 until array.length()) {
+                        val obj = array.getJSONObject(i)
+                        val partnerId = obj.optString("partner_id")
+                        val pArr = obj.optJSONArray("participants")
+                        var hasRootie = false
+                        if (pArr != null) {
+                            for (j in 0 until pArr.length()) {
+                                if (pArr.optString(j) == "rootie_vn") hasRootie = true
+                            }
+                        }
+                        if (partnerId == currentUserId && hasRootie) {
+                            // Skip this corrupted entry
+                            continue
+                        }
+                        newArray.put(obj)
+                    }
+                    convFile.writeText(newArray.toString())
+                }
+            } catch (e: Exception) { e.printStackTrace() }
+
+            val convId = com.veganbeauty.app.features.community.message.MessageHelper.getOrCreateConversation(
+                requireContext(),
+                currentUserId,
+                "rootie_vn",
+                "Rootie VietNam",
+                "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png"
+            )
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.message.ChatDetailFragment.newInstance(convId))
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     override fun observeViewModel() {

@@ -20,7 +20,7 @@
             android:id="@+id/btnBack"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_arrow_back"
+            android:src="@drawable/ic_arrow_back_thin"
             app:tint="@color/gray_dark"
             android:padding="2dp" />
 

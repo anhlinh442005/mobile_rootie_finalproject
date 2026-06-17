@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/com_bg_popup_menu"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/tvReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:text="Báo cáo vi phạm"
+        android:textColor="@color/primary"
+        android:fontFamily="@font/be_vietnam_pro_medium"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvHide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:text="Ẩn bài viết"
+        android:textColor="@color/primary"
+        android:fontFamily="@font/be_vietnam_pro_medium"
+        android:textSize="14sp" />
+</LinearLayout>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clHeader"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:paddingHorizontal="16dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        android:elevation="2dp">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_back_thin"
+            app:tint="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSearchAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tìm kiếm"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clSearchBar"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_search_bar"
+            app:layout_constraintStart_toEndOf="@id/ivBack"
+            app:layout_constraintEnd_toStartOf="@id/tvSearchAction"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/ivSearchIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_search"
+                app:tint="@color/gray_dark"
+                android:layout_marginStart="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="Tìm kiếm cẩm nang, chăm..."
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray_dark"
+                android:paddingHorizontal="8dp"
+                android:singleLine="true"
+                android:imeOptions="actionSearch"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@id/ivSearchIcon"
+                app:layout_constraintEnd_toStartOf="@id/ivClear"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <ImageView
+                android:id="@+id/ivClear"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_close"
+                android:padding="2dp"
+                app:tint="@color/gray_dark"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="8dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Suggestions List -->
+    <LinearLayout
+        android:id="@+id/llSuggestions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/clHeader">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bạn có thể thích"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true" />
+                
+            <LinearLayout
+                android:id="@+id/llRefresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Làm mới"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/llSuggestionItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• skincare" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• skincareroutine" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• lamdep" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• metub" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• review" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• beauty" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• makeup" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• beautytips" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• metubnetwork" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" android:text="• trinhmeow" android:textColor="@color/black" android:textStyle="bold" android:textSize="14sp" android:paddingVertical="10dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Search Results List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchResults"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/clHeader"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Empty State -->
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Không tìm thấy kết quả nào"
+        android:textColor="@color/gray_dark"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/clHeader"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

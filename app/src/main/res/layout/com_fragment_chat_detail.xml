@@ -20,7 +20,7 @@
             android:id="@+id/btnBack"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_chat_back_arrow"
+            android:src="@drawable/ic_arrow_back_thin"
             app:tint="@color/gray_dark"
             android:padding="2dp" />
 
@@ -71,8 +71,18 @@
                     android:fontFamily="@font/be_vietnam_pro" />
 
                 <ImageView
+                    android:id="@+id/ivVerified"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/ic_verified"
+                    app:tint="#0095F6"
+                    android:visibility="gone" />
+
+                <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
+                    android:layout_marginStart="4dp"
                     android:src="@drawable/ic_chat_chevron_right"
                     app:tint="@color/gray_dark" />
             </LinearLayout>

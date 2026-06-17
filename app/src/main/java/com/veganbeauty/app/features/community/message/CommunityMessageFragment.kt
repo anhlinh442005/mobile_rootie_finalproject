@@ -61,9 +61,9 @@ class CommunityMessageFragment : Fragment() {
             val conversations = MessageHelper.getConversations(requireContext())
             messageAdapter.updateData(conversations)
             
-            // For active users, filter only active ones or just take all for UI purpose
+            val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getUsername(requireContext())
             val activeUsers = conversations.filter { it.isActive }
-            val myFriendsIds = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getFriendsForUser("test_001")
+            val myFriendsIds = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getFriendsForUser(currentUserId)
             
             val sortedActiveUsers = activeUsers.sortedByDescending { myFriendsIds.contains(it.partnerId) }
             activeUserAdapter.updateData(sortedActiveUsers)
@@ -72,7 +72,78 @@ class CommunityMessageFragment : Fragment() {
             e.printStackTrace()
         }
     }
+
+    private var conversationsListener: com.google.firebase.database.ValueEventListener? = null
+
+    private fun listenForRealtimeConversations() {
+        val dbRef = com.google.firebase.database.FirebaseDatabase.getInstance().reference.child("conversations")
+        conversationsListener = dbRef.addValueEventListener(object : com.google.firebase.database.ValueEventListener {
+            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                if (context == null) return
+                val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(requireContext())
+                val usersMap = mutableMapOf<String, Pair<String, String>>()
+                try {
+                    val usersJsonString = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getRawUsersJson()
+                    val usersArray = org.json.JSONArray(usersJsonString)
+                    for (i in 0 until usersArray.length()) {
+                        val u = usersArray.getJSONObject(i)
+                        usersMap[u.getString("user_id")] = Pair(u.optString("username"), u.optString("avatar"))
+                    }
+                } catch (e: Exception) {}
+
+                val list = mutableListOf<com.veganbeauty.app.data.local.entities.ConversationEntity>()
+                
+                // Read local ones first
+                val localConvs = MessageHelper.getConversations(requireContext())
+                val localMap = localConvs.associateBy { it.conversationId }.toMutableMap()
+
+                for (child in snapshot.children) {
+                    val convId = child.key ?: continue
+                    
+                    // Fallback to local if fields missing
+                    val local = localMap[convId]
+
+                    // We need to determine participants, partnerId, etc.
+                    // This is complex, but we can update the last_message and unread_count for existing local conversations
+                    if (local != null) {
+                        val lastMsgSnapshot = child.child("last_message")
+                        if (lastMsgSnapshot.exists()) {
+                            val msgId = lastMsgSnapshot.child("message_id").getValue(String::class.java) ?: ""
+                            val senderId = lastMsgSnapshot.child("sender_id").getValue(String::class.java) ?: ""
+                            val text = lastMsgSnapshot.child("text").getValue(String::class.java) ?: ""
+                            val timestamp = lastMsgSnapshot.child("timestamp").getValue(Long::class.java) ?: 0L
+                            local.lastMessage = com.veganbeauty.app.data.local.entities.LastMessageEntity(msgId, senderId, text, timestamp)
+                        }
+
+                        val updatedAt = child.child("updated_at").getValue(Long::class.java) ?: local.updatedAt
+                        local.updatedAt = updatedAt
+                        
+                        // We could also update unread_count by checking messages or relying on local count.
+                        // For a simple real-time test, just update the last message is enough to show list changes.
+                        localMap[convId] = local
+                    }
+                }
+                
+                val updatedList = localMap.values.sortedByDescending { it.updatedAt }
+                messageAdapter.updateData(updatedList)
+            }
+            override fun onCancelled(error: com.google.firebase.database.DatabaseError) {}
+        })
+    }
     
+    override fun onResume() {
+        super.onResume()
+        loadData()
+        listenForRealtimeConversations()
+    }
+    
+    override fun onPause() {
+        super.onPause()
+        conversationsListener?.let {
+            com.google.firebase.database.FirebaseDatabase.getInstance().reference.child("conversations").removeEventListener(it)
+        }
+    }
+
     private fun setupInteractions() {
         binding.btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()

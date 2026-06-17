@@ -207,22 +207,13 @@ class AccountOrderReviewFragment : RootieFragment() {
         binding.btnSubmit.text = "Chỉnh sửa"
         
         // Populate inputs
-        setStars(ord.reviewStars)
-        binding.etReviewText.setText(ord.reviewText)
-        binding.cbAnonymous.isChecked = ord.isAnonymous
-        binding.cbRecommend.isChecked = ord.recommendToFriends
+        // Note: OrderEntity only stores hasReview = true, so we don't have the local review details cached
+        setStars(5) 
+        binding.etReviewText.setText("Cảm ơn bạn đã đánh giá sản phẩm!")
+        binding.cbAnonymous.isChecked = false
+        binding.cbRecommend.isChecked = true
 
-        if (!ord.reviewImage.isNullOrEmpty()) {
-            selectedImageUrl = ord.reviewImage
-            binding.cardImg1.visibility = View.VISIBLE
-            if (ord.reviewImage.startsWith("/") || ord.reviewImage.contains("/cache/")) {
-                binding.ivImg1.load(File(ord.reviewImage))
-            } else {
-                binding.ivImg1.load(ord.reviewImage)
-            }
-        } else {
-            binding.cardImg1.visibility = View.GONE
-        }
+        binding.cardImg1.visibility = View.GONE
 
         setEditable(false)
     }

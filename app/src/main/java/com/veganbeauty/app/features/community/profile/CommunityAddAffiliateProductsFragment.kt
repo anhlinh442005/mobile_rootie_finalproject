@@ -91,54 +91,49 @@ class CommunityAddAffiliateProductsFragment : Fragment() {
     
     private fun loadData() {
         try {
-            val purchasedItemsMap = mutableMapOf<String, JSONObject>()
-            
-            val jsonOrders = requireContext().assets.open("orders.json").bufferedReader().use { it.readText() }
-            val ordersData = JSONObject(jsonOrders)
-            val ordersArr = ordersData.optJSONArray("orders") ?: JSONArray()
-            for (i in 0 until ordersArr.length()) {
-                val order = ordersArr.optJSONObject(i) ?: continue
-                val status = order.optString("status")
-                if (status != "Đã hủy") {
-                    val items = order.optJSONArray("items") ?: continue
-                    for (j in 0 until items.length()) {
-                        val item = items.optJSONObject(j) ?: continue
-                        val pId = item.optString("productId")
-                        if (pId.isNotEmpty()) {
-                            purchasedProductIds.add(pId)
-                            if (!purchasedItemsMap.containsKey(pId)) {
-                                val pseudoP = JSONObject()
-                                pseudoP.put("id", pId)
-                                pseudoP.put("name", item.optString("productName", "Sản phẩm Rootie"))
-                                pseudoP.put("mainImage", item.optString("productImage", ""))
-                                pseudoP.put("price", item.optLong("price", 0L))
-                                pseudoP.put("category", "")
-                                purchasedItemsMap[pId] = pseudoP
-                            }
-                        }
+            // ── STEP 1: Get current userId from session ───────────────────────────────
+            val currentEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext())
+            var currentUserId = "test_001"
+            try {
+                val usersStr = requireContext().assets.open("users.json").bufferedReader().use { it.readText() }
+                val usersArr = org.json.JSONArray(usersStr)
+                for (i in 0 until usersArr.length()) {
+                    val obj = usersArr.getJSONObject(i)
+                    if (obj.optString("email") == currentEmail) {
+                        currentUserId = obj.optString("user_id", "test_001")
+                        break
+                    }
+                }
+            } catch (e: Exception) { e.printStackTrace() }
+
+            // ── STEP 2: Load ONLY completed orders (Hoàn tất) of THIS user ─────────────
+            purchasedProductIds.clear()
+            val orders = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getAllOrders()
+            for (order in orders) {
+                // STRICT: only Hoàn tất, only this user's own orders
+                if (order.userId == currentUserId && order.status == "Hoàn tất") {
+                    for (item in order.items) {
+                        if (item.productId.isNotEmpty()) purchasedProductIds.add(item.productId)
                     }
                 }
             }
-            
-            // Removed load showcased products from old AffiliateHelper
 
-            // Load all products
+            // ── STEP 3: Load products from products.json, filter to purchased ones only ─
             val jsonProducts = requireContext().assets.open("products.json").bufferedReader().use { it.readText() }
             val productsData = JSONObject(jsonProducts)
-            val productsArr = productsData.optJSONArray("products") ?: JSONArray(jsonProducts)
-            
+            val productsArr = productsData.optJSONArray("products") ?: JSONArray()
+
             allProducts.clear()
             for (i in 0 until productsArr.length()) {
-                val p = productsArr.optJSONObject(i)
-                if (p != null) {
-                    val id = p.optString("id", p.optString("_id", ""))
-                    purchasedItemsMap.remove(id)
+                val p = productsArr.optJSONObject(i) ?: continue
+                val id = p.optString("id", p.optString("_id", ""))
+                // Only include products that this user has actually purchased (Hoàn tất)
+                if (purchasedProductIds.contains(id)) {
                     allProducts.add(p)
                 }
             }
-            
-            allProducts.addAll(purchasedItemsMap.values)
-            
+            // Note: products NOT found in products.json are intentionally excluded (data integrity)
+
         } catch (e: Exception) {
             e.printStackTrace()
         }

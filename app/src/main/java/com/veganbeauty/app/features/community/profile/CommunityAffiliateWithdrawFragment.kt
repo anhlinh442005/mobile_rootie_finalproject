@@ -58,18 +58,19 @@ class CommunityAffiliateWithdrawFragment : Fragment() {
             
             val data = jsonArray.getJSONObject(0)
 
-            // ── Compute from orders ───────────────────────────────────────────
-            val orders = data.optJSONArray("orders") ?: org.json.JSONArray()
+            // ── Compute from orders.json ──────────────────────────────────────────
+            val allOrders = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getAllOrders()
+            val currentUserId = "test_001" // Or get from session
+            val affiliateOrders = allOrders.filter { it.isAffiliate && it.affiliate?.referrerUserId == currentUserId }
+            
             var successCommission = 0L
             var pendingCommission = 0L
-            for (i in 0 until orders.length()) {
-                val order = orders.getJSONObject(i)
-                val status = order.optString("status")
-                val comm = order.optLong("commission", 0)
-                if (status == "Thành công" || status == "Đã duyệt") {
-                    successCommission += comm
-                } else if (status == "Đang xử lý" || status == "Đang chờ") {
-                    pendingCommission += comm
+            for (order in affiliateOrders) {
+                val commission = order.affiliate?.commissionAmount ?: 0L
+                if (order.affiliate?.commissionStatus == "confirmed") {
+                    successCommission += commission
+                } else if (order.affiliate?.commissionStatus == "pending") {
+                    pendingCommission += commission
                 }
             }
 

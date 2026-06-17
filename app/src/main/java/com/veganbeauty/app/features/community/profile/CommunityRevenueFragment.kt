@@ -94,92 +94,45 @@ class CommunityRevenueFragment : Fragment() {
             val affiliateOrders = allOrders.filter { it.isAffiliate && it.affiliate?.referrerUserId == currentUserId }
             
             var totalRevenue = 0L
-            var successCommission = 0L
-            var pendingCommission = 0L
-            var successfulOrders = 0
+            var totalCommission = 0L
+            var availableBalance = 0L
+            var pendingBalance = 0L
+            var successfulOrdersCount = 0
+            var pendingOrdersCount = 0
             val newCustomerIds = mutableSetOf<String>()
 
             for (order in affiliateOrders) {
-                val orderValue = order.totalAmount
+                totalRevenue += order.totalAmount
                 val commission = order.affiliate?.commissionAmount ?: 0L
-                val cStatus = order.affiliate?.commissionStatus ?: ""
+                totalCommission += commission
+                newCustomerIds.add(order.userId)
                 
-                if (order.status != "Đã hủy") {
-                    totalRevenue += orderValue
-                    newCustomerIds.add(order.userId)
-                }
-                
-                if (cStatus == "confirmed") {
-                    successCommission += commission
-                    successfulOrders++
-                } else if (cStatus == "pending") {
-                    pendingCommission += commission
+                if (order.affiliate?.commissionStatus == "confirmed") {
+                    availableBalance += commission
+                    successfulOrdersCount++
+                } else if (order.affiliate?.commissionStatus == "pending") {
+                    pendingBalance += commission
+                    pendingOrdersCount++
                 }
             }
 
-            // Trừ đi phần đã rút ra khỏi số dư khả dụng (MOCK or read from separate withdrawals.json if available)
-            // For now, assume 0 as per user instructions to clear old data
-            var totalWithdrawn = 0L
-            val newCustomers = newCustomerIds.size
-            val availableBalance = (successCommission - totalWithdrawn).coerceAtLeast(0L)
-            // ────────────────────────────────────────────────────────────────
-            
-            // Load user data
-            var userName = "Linh Nguyễn"
-            var avatarUrl = ""
-            var userIdStr = "test_001"
-            try {
-                val jsonStrUser = requireContext().assets.open("users.json").bufferedReader().use { it.readText() }
-                val userArray = JSONArray(jsonStrUser)
-                for (i in 0 until userArray.length()) {
-                    val u = userArray.getJSONObject(i)
-                    if (u.optString("user_id") == "test_001" || u.optString("username") == "Test User") {
-                        userName = u.optString("full_name", u.optString("username", "Linh Nguyễn"))
-                        avatarUrl = u.optString("avatar", "")
-                        userIdStr = u.optString("user_id", "test_001")
-                        break
-                    }
-                }
-            } catch (e: Exception) { e.printStackTrace() }
-            
-            // Rank
-            var totalPurchased = 0L
-            try {
-                val ordersJson = requireContext().assets.open("orders.json").bufferedReader().use { it.readText() }
-                val ordersObj = org.json.JSONObject(ordersJson)
-                val ordersArr = ordersObj.optJSONArray("orders") ?: org.json.JSONArray()
-                for (i in 0 until ordersArr.length()) {
-                    val order = ordersArr.getJSONObject(i)
-                    if (order.optString("userId") == userIdStr && order.optString("status") != "Đã hủy") {
-                        val items = order.optJSONArray("items") ?: org.json.JSONArray()
-                        for (j in 0 until items.length()) {
-                            val item = items.getJSONObject(j)
-                            totalPurchased += (item.optLong("price", 0) * item.optLong("quantity", 1))
-                        }
-                    }
-                }
-            } catch (e: Exception) { e.printStackTrace() }
-            
-            var rankName = "Thành viên Đồng"
-            var rankIcon = "🥉"
-            if (totalPurchased >= 20_000_000) { rankName = "Thành viên Kim Cương"; rankIcon = "💎" }
-            else if (totalPurchased >= 10_000_000) { rankName = "Thành viên Vàng"; rankIcon = "🥇" }
-            else if (totalPurchased >= 5_000_000) { rankName = "Thành viên Bạc"; rankIcon = "🥈" }
-            
-            view.findViewById<TextView>(R.id.tvUserName)?.text = "Xin chào, $userName 🌿"
-            view.findViewById<TextView>(R.id.tvUserRank)?.text = "$rankIcon $rankName"
-            val ivAvatar = view.findViewById<ImageView>(R.id.ivAvatar)
-            if (avatarUrl.isNotEmpty() && ivAvatar != null) {
-                ivAvatar.load(avatarUrl) { transformations(coil.transform.CircleCropTransformation()) }
-            }
-            
             // Bind computed values to UI
             view.findViewById<TextView>(R.id.tvTotalRevenue)?.text = format.format(totalRevenue)
-            view.findViewById<TextView>(R.id.tvPendingCommission)?.text = format.format(pendingCommission)
-            view.findViewById<TextView>(R.id.tvTotalOrders)?.text = successfulOrders.toString()
-            view.findViewById<TextView>(R.id.tvNewCustomers)?.text = newCustomers.toString()
+            view.findViewById<TextView>(R.id.tvPendingCommission)?.text = format.format(pendingBalance)
+            view.findViewById<TextView>(R.id.tvTotalOrders)?.text = successfulOrdersCount.toString()
+            view.findViewById<TextView>(R.id.tvNewCustomers)?.text = newCustomerIds.size.toString()
             view.findViewById<TextView>(R.id.tvAvailableBalance)?.text = format.format(availableBalance)
             view.findViewById<TextView>(R.id.tvWithdrawBalance)?.text = format.format(availableBalance)
+            
+            val allUsers = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getUsers()
+            val currentUser = allUsers.find { it.user_id == currentUserId }
+            if (currentUser != null) {
+                view.findViewById<TextView>(R.id.tvUserName)?.text = "Xin chào, ${currentUser.full_name} 🌿"
+                val ivAvatar = view.findViewById<ImageView>(R.id.ivAvatar)
+                if (ivAvatar != null && !currentUser.avatar.isNullOrEmpty()) {
+                    ivAvatar.load(currentUser.avatar)
+                }
+            }
             
             val allProducts = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getAllProducts()
             
@@ -194,7 +147,7 @@ class CommunityRevenueFragment : Fragment() {
             
             for (order in affiliateOrders) {
                 if (order.status == "Đã hủy") continue
-                val affiliateId = order.affiliate?.affiliate_id ?: order.orderId
+                val affiliateId = order.affiliate?.affiliate_id ?: order.id
                 val orderDate = order.orderDate
                 val orderValue = order.totalAmount
                 val status = order.status
@@ -222,8 +175,7 @@ class CommunityRevenueFragment : Fragment() {
                 val ivProductImage = rowView.findViewById<ImageView>(R.id.ivProductImage)
                 if (order.items.isNotEmpty()) {
                     val firstItem = order.items.first()
-                    val pData = allProducts.find { it.id == firstItem.productId }
-                    val productImage = pData?.mainImage ?: ""
+                    val productImage = firstItem.productImage
                     if (productImage.isNotEmpty()) {
                         ivProductImage.load(productImage)
                     }
@@ -233,14 +185,13 @@ class CommunityRevenueFragment : Fragment() {
                 
                 for (item in order.items) {
                     val productId = item.productId
-                    val pData = allProducts.find { it.id == productId }
+                    val name = item.productName
+                    val image = item.productImage
                     
-                    if (pData != null) {
-                        val itemComm = if (order.items.isNotEmpty()) commission / order.items.size else 0L
-                        val existing = productMap[productId] ?: Triple(0, 0L, pData.mainImage)
-                        productMap[productId] = Triple(existing.first + item.quantity, existing.second + itemComm, pData.mainImage)
-                        productNameMap[productId] = pData.name
-                    }
+                    val itemComm = if (order.items.isNotEmpty()) commission / order.items.size else 0L
+                    val existing = productMap[productId] ?: Triple(0, 0L, image)
+                    productMap[productId] = Triple(existing.first + item.quantity, existing.second + itemComm, image)
+                    productNameMap[productId] = name
                 }
             }
             

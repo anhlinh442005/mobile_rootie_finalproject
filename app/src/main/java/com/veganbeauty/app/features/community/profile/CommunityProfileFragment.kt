@@ -107,7 +107,57 @@ class CommunityProfileFragment : Fragment() {
         
         var finalAvatarUrl = arguments?.getString("AVATAR_URL") ?: jsonAvatar
         var fallbackName = arguments?.getString("USER_NAME") ?: jsonFullName
-        
+
+        fun getFriendsJsonString(ctx: android.content.Context): String {
+            val file = java.io.File(ctx.filesDir, "User_com_friend.json")
+            if (file.exists()) {
+                return file.readText()
+            }
+            return ctx.assets.open("User_com_friend.json").bufferedReader().use { it.readText() }
+        }
+
+        var currentFollowersCount = 0
+        var currentFollowingCount = 0
+        var isFollowing = false
+
+        // Count followers and following from User_com_friend.json
+        try {
+            val friendJsonStr = getFriendsJsonString(ctx)
+            val friendJsonArray = org.json.JSONArray(friendJsonStr)
+            
+            // Check if currentUserId is being followed by ownUserId
+            for (i in 0 until friendJsonArray.length()) {
+                val obj = friendJsonArray.getJSONObject(i)
+                if (obj.optString("user_id") == ownUserId) {
+                    val followingArr = obj.optJSONArray("following")
+                    if (followingArr != null) {
+                        for (j in 0 until followingArr.length()) {
+                            if (followingArr.optString(j) == currentUserId) {
+                                isFollowing = true
+                                break
+                            }
+                        }
+                    }
+                    break
+                }
+            }
+
+            for (i in 0 until friendJsonArray.length()) {
+                val obj = friendJsonArray.getJSONObject(i)
+                if (obj.optString("user_id") == currentUserId) {
+                    currentFollowersCount = obj.optJSONArray("followers")?.length() ?: 0
+                    currentFollowingCount = obj.optJSONArray("following")?.length() ?: 0
+                    break
+                }
+            }
+            binding.tvFollowersCount.text = currentFollowersCount.toString()
+            binding.tvFollowingCount.text = currentFollowingCount.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            binding.tvFollowersCount.text = "0"
+            binding.tvFollowingCount.text = "0"
+        }
+
         if (isOwnProfile) {
             binding.tvName.text = ProfileSession.getFullName(ctx)
             val uname = ProfileSession.getUsername(ctx)
@@ -133,6 +183,8 @@ class CommunityProfileFragment : Fragment() {
         if (isOwnProfile) {
             binding.btnEditProfile.text = "Chỉnh sửa"
             binding.btnShareProfile.text = "Chia sẻ"
+            binding.btnEditProfile.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#6E846A"))
+            binding.btnEditProfile.setTextColor(android.graphics.Color.WHITE)
             
             binding.btnEditProfile.setOnClickListener {
                 parentFragmentManager.beginTransaction()
@@ -142,8 +194,98 @@ class CommunityProfileFragment : Fragment() {
                     .commit()
             }
         } else {
-            binding.btnEditProfile.text = "Theo dõi"
+            if (isFollowing) {
+                binding.btnEditProfile.text = "Đã theo dõi"
+                binding.btnEditProfile.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E8F5E9"))
+                binding.btnEditProfile.setTextColor(android.graphics.Color.parseColor("#6E846A"))
+            } else {
+                binding.btnEditProfile.text = "Theo dõi"
+                binding.btnEditProfile.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#6E846A"))
+                binding.btnEditProfile.setTextColor(android.graphics.Color.WHITE)
+            }
             binding.btnShareProfile.text = "Nhắn tin"
+            
+            binding.btnShareProfile.setOnClickListener {
+                val convId = com.veganbeauty.app.features.community.message.MessageHelper.getOrCreateConversation(
+                    ctx,
+                    ownUserId,
+                    currentUserId,
+                    if (fallbackName.isNotEmpty()) fallbackName else "Người dùng",
+                    finalAvatarUrl
+                )
+                parentFragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.community.message.ChatDetailFragment.newInstance(convId))
+                    .addToBackStack(null)
+                    .commit()
+            }
+            
+            binding.btnEditProfile.setOnClickListener {
+                try {
+                    val file = java.io.File(ctx.filesDir, "User_com_friend.json")
+                    val currentFriendStr = getFriendsJsonString(ctx)
+                    val friendJsonArray = org.json.JSONArray(currentFriendStr)
+                    
+                    if (!isFollowing) {
+                        // Action: Follow
+                        for (i in 0 until friendJsonArray.length()) {
+                            val obj = friendJsonArray.getJSONObject(i)
+                            if (obj.optString("user_id") == ownUserId) {
+                                val followingArr = obj.optJSONArray("following") ?: org.json.JSONArray()
+                                followingArr.put(currentUserId)
+                                obj.put("following", followingArr)
+                            }
+                            if (obj.optString("user_id") == currentUserId) {
+                                val followersArr = obj.optJSONArray("followers") ?: org.json.JSONArray()
+                                followersArr.put(ownUserId)
+                                obj.put("followers", followersArr)
+                            }
+                        }
+                        isFollowing = true
+                        currentFollowersCount++
+                        
+                        binding.btnEditProfile.text = "Đã theo dõi"
+                        binding.btnEditProfile.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E8F5E9"))
+                        binding.btnEditProfile.setTextColor(android.graphics.Color.parseColor("#6E846A"))
+                    } else {
+                        // Action: Unfollow
+                        for (i in 0 until friendJsonArray.length()) {
+                            val obj = friendJsonArray.getJSONObject(i)
+                            if (obj.optString("user_id") == ownUserId) {
+                                val followingArr = obj.optJSONArray("following") ?: org.json.JSONArray()
+                                val newFollowing = org.json.JSONArray()
+                                for (j in 0 until followingArr.length()) {
+                                    if (followingArr.optString(j) != currentUserId) {
+                                        newFollowing.put(followingArr.getString(j))
+                                    }
+                                }
+                                obj.put("following", newFollowing)
+                            }
+                            if (obj.optString("user_id") == currentUserId) {
+                                val followersArr = obj.optJSONArray("followers") ?: org.json.JSONArray()
+                                val newFollowers = org.json.JSONArray()
+                                for (j in 0 until followersArr.length()) {
+                                    if (followersArr.optString(j) != ownUserId) {
+                                        newFollowers.put(followersArr.getString(j))
+                                    }
+                                }
+                                obj.put("followers", newFollowers)
+                            }
+                        }
+                        isFollowing = false
+                        currentFollowersCount = maxOf(0, currentFollowersCount - 1)
+                        
+                        binding.btnEditProfile.text = "Theo dõi"
+                        binding.btnEditProfile.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#6E846A"))
+                        binding.btnEditProfile.setTextColor(android.graphics.Color.WHITE)
+                    }
+                    
+                    file.writeText(friendJsonArray.toString(2))
+                    binding.tvFollowersCount.text = currentFollowersCount.toString()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
 
         binding.tvBio.text = bioText
@@ -171,27 +313,7 @@ class CommunityProfileFragment : Fragment() {
         }
 
 
-        // Count followers and following from User_com_friend.json
-        try {
-            val friendJsonStr = ctx.assets.open("User_com_friend.json").bufferedReader().use { it.readText() }
-            val friendJsonArray = org.json.JSONArray(friendJsonStr)
-            var followersCount = 0
-            var followingCount = 0
-            for (i in 0 until friendJsonArray.length()) {
-                val obj = friendJsonArray.getJSONObject(i)
-                if (obj.optString("user_id") == currentUserId) {
-                    followersCount = obj.optJSONArray("followers")?.length() ?: 0
-                    followingCount = obj.optJSONArray("following")?.length() ?: 0
-                    break
-                }
-            }
-            binding.tvFollowersCount.text = followersCount.toString()
-            binding.tvFollowingCount.text = followingCount.toString()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            binding.tvFollowersCount.text = "0"
-            binding.tvFollowingCount.text = "0"
-        }
+
 
         // Load Skin Type from ProfileSession or SharedPreferences
         val prefs = ctx.getSharedPreferences("RootieQuizPrefs", android.content.Context.MODE_PRIVATE)

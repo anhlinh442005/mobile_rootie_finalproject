@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
             android:fontFamily="@font/be_vietnam_pro"
             android:text="Rút tiền"
             android:textColor="#3E4D44"

@@ -76,33 +76,25 @@ class CommunityAffiliateProductsFragment : Fragment() {
                 val currentUserId = "test_001" // Or get from session
                 val jsonReader = com.veganbeauty.app.data.local.LocalJsonReader(requireContext())
                 
-                // Nguồn lấy từ orders của chính currentUserId đã hoàn tất
-                val userOrders = jsonReader.getAllOrders().filter { it.userId == currentUserId && it.status == "Hoàn tất" }
-                // Lấy thông tin từ products.json
+                // Nguồn lấy từ affiliate_product.json (kim chỉ nam) thông qua getShowcaseProductsForUser
+                val eligibleProductIds = jsonReader.getShowcaseProductsForUser(currentUserId)
                 val allProducts = jsonReader.getAllProducts()
                 
-                for (order in userOrders) {
-                    for (item in order.items) {
-                        val pId = item.productId
-                        val pData = allProducts.find { it.id == pId }
-                        val name = pData?.name ?: item.productName
-                        val img = pData?.mainImage ?: item.productImage
-                        val price = pData?.price ?: item.price
-                        
-                        if (!productMap.containsKey(pId)) {
-                            productMap[pId] = ProductStats(name, 0, 0L, img, price)
-                        }
-                    }
+                // Khởi tạo productMap với danh sách hợp lệ
+                for (pId in eligibleProductIds) {
+                    val pData = allProducts.find { it.id == pId }
+                    val name = pData?.name ?: "Sản phẩm $pId"
+                    val img = pData?.mainImage ?: ""
+                    val price = pData?.price ?: 0L
+                    productMap[pId] = ProductStats(name, 0, 0L, img, price)
                 }
                 
                 // Tính toán số liệu thống kê (Đã bán, Hoa hồng) từ những đơn hàng affiliate thành công
-                val completedOrders = jsonReader.getAllOrders().filter { it.status == "Hoàn tất" && it.affiliate != null && it.affiliate.referrerUserId == currentUserId }
+                val completedOrders = jsonReader.getAllOrders().filter { it.status == "Hoàn" + " tất" && it.affiliate != null && it.affiliate.referrerUserId == currentUserId }
                 for (order in completedOrders) {
                     val commission = order.affiliate?.commissionAmount ?: 0L
                     for (item in order.items) {
                         val pId = item.productId
-                        
-                        // Bỏ check "pData != null" để tính luôn pseudo products
                         val itemComm = if (order.items.isNotEmpty()) commission / order.items.size else 0L
                         val stats = productMap[pId]
                         if (stats != null) {
@@ -129,7 +121,7 @@ class CommunityAffiliateProductsFragment : Fragment() {
                 prodView.findViewById<TextView>(R.id.tvProductName).text = stats.name
                 prodView.findViewById<TextView>(R.id.tvProductSold).text = "Đã bán\n${stats.count}"
                 prodView.findViewById<TextView>(R.id.tvProductPrice)?.text = format.format(stats.price)
-                prodView.findViewById<TextView>(R.id.tvProductCommission)?.text = "Hoa hồng: ${format.format(stats.commission)}đ"
+                prodView.findViewById<TextView>(R.id.tvProductCommission)?.text = "Hoa hồng: ${format.format(stats.commission)}"
                 
                 val ivProduct = prodView.findViewById<ImageView>(R.id.ivProductImage)
                 if (stats.image.isNotEmpty()) {

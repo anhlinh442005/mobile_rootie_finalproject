@@ -8,9 +8,9 @@ data class ConversationEntity(
     var partnerAvatar: String,
     val isActive: Boolean,
     val isTyping: Boolean,
-    val lastMessage: LastMessageEntity?,
-    val unreadCount: Map<String, Int>,
-    val updatedAt: Long
+    var lastMessage: LastMessageEntity?,
+    var unreadCount: Map<String, Int>,
+    var updatedAt: Long
 )
 
 data class LastMessageEntity(

@@ -99,7 +99,7 @@ class CommunityAffiliateOrdersFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val order = items[position]
-            val orderId = order.orderId
+            val orderId = order.id
             val orderDate = order.orderDate
             val customer = order.shippingName
             val orderValue = order.totalAmount

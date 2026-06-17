@@ -16,9 +16,11 @@ class OrderListViewModel(private val repository: OrderRepository) : RootieViewMo
     private val _selectedStatus = MutableStateFlow("Tất cả")
     val selectedStatus: LiveData<String> = _selectedStatus.asLiveData()
 
+    private val currentUserId = "test_001" // In real app, get from session
+
     // Combined Flow: filter orders in memory for super-responsive UI updates
     val filteredOrders: LiveData<List<OrderEntity>> = combine(
-        repository.allOrders,
+        repository.getBuyerOrders(currentUserId),
         _selectedStatus
     ) { orders, status ->
         if (status == "Tất cả") {
@@ -28,7 +30,7 @@ class OrderListViewModel(private val repository: OrderRepository) : RootieViewMo
         }
     }.asLiveData()
 
-    val orderStats: LiveData<String> = repository.allOrders.map { orders ->
+    val orderStats: LiveData<String> = repository.getBuyerOrders(currentUserId).map { orders ->
         val total = orders.size
         val pending = orders.count { it.status.equals("Chờ xác nhận", ignoreCase = true) }
         "$total đơn • $pending chờ xác nhận"

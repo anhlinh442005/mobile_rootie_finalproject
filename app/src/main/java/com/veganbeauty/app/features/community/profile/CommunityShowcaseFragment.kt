@@ -86,35 +86,20 @@ class CommunityShowcaseFragment : Fragment() {
         val followersCount = socialData["followers"]?.size ?: 867
         binding.tvFollowers.text = followersCount.toString()
 
-        // Read products from user orders (Hoàn tất)
         val currentUserId = userId ?: "test_001"
-        val completedOrders = jsonReader.getAllOrders().filter { it.userId == currentUserId && it.status == "Hoàn tất" }
+        
+        // Use the centralized helper which extracts products from posts and affiliate orders
+        val productIds = jsonReader.getShowcaseProductsForUser(currentUserId)
         
         val allProducts = jsonReader.getProducts()
         val finalProducts = mutableListOf<CommunityProduct>()
         val addedProductIds = mutableSetOf<String>()
 
-        for (order in completedOrders) {
-            for (item in order.items) {
-                val pId = item.productId
-                if (!addedProductIds.contains(pId)) {
-                    val pData = allProducts.find { it.id == pId }
-                    if (pData != null) {
-                        finalProducts.add(pData)
-                    } else {
-                        // Create pseudo CommunityProduct if missing
-                        finalProducts.add(
-                            CommunityProduct(
-                                id = pId,
-                                name = item.productName,
-                                originalPrice = null,
-                                price = item.price.toInt(),
-                                rating = 0.0f,
-                                sold = 0,
-                                mainImage = item.productImage
-                            )
-                        )
-                    }
+        for (pId in productIds) {
+            if (!addedProductIds.contains(pId)) {
+                val pData = allProducts.find { it.id == pId }
+                if (pData != null) {
+                    finalProducts.add(pData)
                     addedProductIds.add(pId)
                 }
             }

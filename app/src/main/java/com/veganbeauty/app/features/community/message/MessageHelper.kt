@@ -172,10 +172,12 @@ object MessageHelper {
             }
             
             val unreadObj = obj.optJSONObject("unread_count") ?: JSONObject()
-            val unreadCount = mapOf(
-                "test_001" to unreadObj.optInt("test_001", 0),
-                "75675216" to unreadObj.optInt("75675216", 0)
-            )
+            val unreadCount = mutableMapOf<String, Int>()
+            val keys = unreadObj.keys()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                unreadCount[key] = unreadObj.optInt(key, 0)
+            }
 
             val partnerId = obj.optString("partner_id")
             val cachedName = obj.optString("partner_name")
@@ -207,10 +209,12 @@ object MessageHelper {
             val obj = array.getJSONObject(i)
             if (obj.optString("conversation_id") == conversationId) {
                 val statusObj = obj.optJSONObject("status") ?: JSONObject()
-                val statusMap = mapOf(
-                    "test_001" to statusObj.optString("test_001", "unread"),
-                    "75675216" to statusObj.optString("75675216", "unread")
-                )
+                val statusMap = mutableMapOf<String, String>()
+                val keys = statusObj.keys()
+                while (keys.hasNext()) {
+                    val key = keys.next()
+                    statusMap[key] = statusObj.optString(key, "unread")
+                }
                 
                 list.add(ChatMessageEntity(
                     messageId = obj.optString("message_id"),
@@ -298,9 +302,137 @@ object MessageHelper {
             }
         }
         writeConversationsArray(context, convArray)
+
+        // Push to Firebase Realtime Database
+        try {
+            val database = com.google.firebase.database.FirebaseDatabase.getInstance().reference
+            val msgMap = mapOf(
+                "message_id" to msgId,
+                "conversation_id" to conversationId,
+                "sender_id" to senderId,
+                "receiver_id" to receiverId,
+                "text" to text,
+                "type" to "text",
+                "created_at" to timestamp,
+                "status" to mapOf(
+                    senderId to "read",
+                    receiverId to "unread"
+                )
+            )
+            database.child("conversations").child(conversationId).child("messages").child(msgId).setValue(msgMap)
+            
+            val lastMsgMap = mapOf(
+                "message_id" to msgId,
+                "sender_id" to senderId,
+                "text" to text,
+                "timestamp" to timestamp
+            )
+            database.child("conversations").child(conversationId).child("last_message").setValue(lastMsgMap)
+            database.child("conversations").child(conversationId).child("updated_at").setValue(timestamp)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun getConversation(context: Context, conversationId: String): ConversationEntity? {
         return getConversations(context).find { it.conversationId == conversationId }
+    }
+
+    fun getOrCreateConversation(context: Context, currentUserId: String, partnerId: String, partnerName: String, partnerAvatar: String): String {
+        val convArray = readConversationsArray(context)
+        for (i in 0 until convArray.length()) {
+            val obj = convArray.getJSONObject(i)
+            val participants = obj.optJSONArray("participants")
+            if (participants != null && participants.length() == 2) {
+                val p1 = participants.getString(0)
+                val p2 = participants.getString(1)
+                if ((p1 == currentUserId && p2 == partnerId) || (p1 == partnerId && p2 == currentUserId)) {
+                    return obj.optString("conversationId")
+                }
+            }
+        }
+        
+        // Not found, create new
+        val newConvId = "c_" + UUID.randomUUID().toString().take(8)
+        val timestamp = System.currentTimeMillis()
+        val newConv = JSONObject().apply {
+            put("conversationId", newConvId)
+            put("participants", JSONArray(listOf(currentUserId, partnerId)))
+            put("partner_id", partnerId)
+            put("partner_name", partnerName)
+            put("partner_avatar", partnerAvatar)
+            put("is_active", true)
+            put("is_typing", false)
+            put("last_message", JSONObject.NULL)
+            put("unread_count", JSONObject().apply {
+                put(currentUserId, 0)
+                put(partnerId, 0)
+            })
+            put("updated_at", timestamp)
+        }
+        convArray.put(newConv)
+        writeConversationsArray(context, convArray)
+        return newConvId
+    }
+
+    fun updateMessage(context: Context, conversationId: String, messageId: String, newText: String) {
+        val msgArray = readMessagesArray(context)
+        for (i in 0 until msgArray.length()) {
+            val obj = msgArray.getJSONObject(i)
+            if (obj.optString("message_id") == messageId) {
+                obj.put("text", newText)
+                break
+            }
+        }
+        writeMessagesArray(context, msgArray)
+
+        // Also update last_message if it's the last message
+        val convArray = readConversationsArray(context)
+        for (i in 0 until convArray.length()) {
+            val obj = convArray.getJSONObject(i)
+            if (obj.optString("conversationId") == conversationId) {
+                val lastMsg = obj.optJSONObject("last_message")
+                if (lastMsg != null && lastMsg.optString("message_id") == messageId) {
+                    lastMsg.put("text", newText)
+                    obj.put("last_message", lastMsg)
+                }
+                break
+            }
+        }
+        writeConversationsArray(context, convArray)
+
+        try {
+            val database = com.google.firebase.database.FirebaseDatabase.getInstance().reference
+            database.child("conversations").child(conversationId).child("messages").child(messageId).child("text").setValue(newText)
+            
+            // Check if last message
+            database.child("conversations").child(conversationId).child("last_message").get().addOnSuccessListener { snapshot ->
+                val lastId = snapshot.child("message_id").getValue(String::class.java)
+                if (lastId == messageId) {
+                    database.child("conversations").child(conversationId).child("last_message").child("text").setValue(newText)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun deleteMessage(context: Context, conversationId: String, messageId: String) {
+        val msgArray = readMessagesArray(context)
+        val newMsgArray = JSONArray()
+        for (i in 0 until msgArray.length()) {
+            val obj = msgArray.getJSONObject(i)
+            if (obj.optString("message_id") != messageId) {
+                newMsgArray.put(obj)
+            }
+        }
+        writeMessagesArray(context, newMsgArray)
+
+        try {
+            val database = com.google.firebase.database.FirebaseDatabase.getInstance().reference
+            database.child("conversations").child(conversationId).child("messages").child(messageId).removeValue()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

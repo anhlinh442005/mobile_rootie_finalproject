@@ -12,40 +12,38 @@ data class OrderItem(
 )
 
 data class AffiliateInfo(
-    val affiliate_id: String,
+    val isAffiliateOrder: Boolean = false,
+    val affiliate_id: String, // Tracking ID: AFFORD-xxxx
     val affiliateCode: String,
     val referrerUserId: String,
     val referrerName: String,
-    val sourceType: String,
-    val sourcePostId: String,
+    val sourceType: String = "community_post",
+    val sourcePostId: String? = null,
     val commissionRate: Double,
     val commissionAmount: Long,
-    val commissionStatus: String
+    val commissionStatus: String // confirmed, pending, rejected
 )
 
 @Entity(tableName = "orders")
 data class OrderEntity(
-    @PrimaryKey val orderId: String,
-    val userId: String = "test_001",
+    @PrimaryKey val id: String, // Real ID: ORD-xxxx
+    val userId: String,
+    val status: String, // Chờ xác nhận, Đang xử lý, Đang giao, Hoàn tất, Đã hủy
     val orderDate: String,
     val orderTime: String,
-    val status: String,
     val totalAmount: Long,
+    val subTotal: Long,
     val items: List<OrderItem>,
-    val shippingName: String = "Nguyễn Văn A",
-    val shippingPhone: String = "090 123 4567",
-    val shippingAddress: String = "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh",
-    val shippingCost: Long = 30000L,
-    val voucherDiscount: Long = 50000L,
-    val paymentMethod: String = "Thanh toán qua Ví MoMo",
+    val shippingName: String,
+    val shippingPhone: String,
+    val shippingAddress: String,
+    val shippingCost: Long,
+    val voucherDiscount: Long,
+    val paymentMethod: String,
     val expectedDeliveryTime: String? = null,
-    val hasReview: Boolean = false,
-    val reviewStars: Int = 0,
-    val reviewText: String? = null,
-    val reviewImage: String? = null,
-    val isAnonymous: Boolean = false,
-    val recommendToFriends: Boolean = false,
+    val deliveryDate: String? = null,
     val isAffiliate: Boolean = false,
     @androidx.room.Embedded(prefix = "aff_")
-    val affiliate: AffiliateInfo? = null
+    val affiliate: AffiliateInfo? = null,
+    val hasReview: Boolean = false
 )

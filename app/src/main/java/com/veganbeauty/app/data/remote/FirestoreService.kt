@@ -424,6 +424,39 @@ class FirestoreService {
         return map
     }
 
+    suspend fun clearOldAffiliateData() {
+        val collections = listOf(
+            "affiliate_orders", "affiliate", "affiliates", "affiliate_wallets",
+            "affiliate_products", "showcase_products", "user_showcases",
+            "attached_products", "cart_affiliate", "affiliate_dashboard"
+        )
+        for (colName in collections) {
+            try {
+                val snapshot = db.collection(colName).get().await()
+                for (doc in snapshot.documents) {
+                    db.collection(colName).document(doc.id).delete().await()
+                }
+            } catch (e: Exception) { e.printStackTrace() }
+        }
+    }
+
+    suspend fun syncOrders(orders: List<OrderEntity>) {
+        try {
+            // Clear existing orders first
+            val collection = db.collection("orders")
+            val snapshot = collection.get().await()
+            for (doc in snapshot.documents) {
+                collection.document(doc.id).delete().await()
+            }
+            // Upload new orders
+            for (order in orders) {
+                collection.document(order.id).set(order).await()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun jsonArrayToList(arr: org.json.JSONArray): List<Any> {
         val list = mutableListOf<Any>()
         for (i in 0 until arr.length()) {

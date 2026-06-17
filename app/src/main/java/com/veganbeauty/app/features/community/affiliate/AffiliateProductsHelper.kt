@@ -6,7 +6,7 @@ import org.json.JSONObject
 import java.io.File
 
 object AffiliateProductsHelper {
-    private const val FILE_NAME = "affiliate_products_local.json"
+    private const val FILE_NAME = "affiliate_product_local.json"
 
     private fun getFile(context: Context): File {
         return File(context.filesDir, FILE_NAME)
@@ -23,7 +23,7 @@ object AffiliateProductsHelper {
         }
         
         try {
-            val assetStr = context.assets.open("affiliate_products.json").bufferedReader().use { it.readText() }
+            val assetStr = context.assets.open("affiliate_product.json").bufferedReader().use { it.readText() }
             val root = JSONObject(assetStr)
             file.writeText(assetStr) // Save to local
             return root
@@ -59,11 +59,11 @@ object AffiliateProductsHelper {
 
     fun isProductDisplayed(context: Context, userId: String, productId: String): Boolean {
         val userData = getUserData(context, userId)
-        val productsArr = userData.optJSONArray("products") ?: return true // Default true if not explicitly hidden? Or false? User says display=0 means hidden. If not present, default to true or false depending on logic. Let's say default is false, but if purchased it can be added. 
+        val productsArr = userData.optJSONArray("products") ?: return true
         for (i in 0 until productsArr.length()) {
             val p = productsArr.getJSONObject(i)
             if (p.optString("productId") == productId) {
-                return p.optInt("display", 1) == 1
+                return p.optBoolean("affiliate_display", true)
             }
         }
         // If not in the list, default to false (not displayed)
@@ -96,7 +96,7 @@ object AffiliateProductsHelper {
         for (i in 0 until productsArr.length()) {
             val p = productsArr.getJSONObject(i)
             if (p.optString("productId") == productId) {
-                p.put("display", if (displayed) 1 else 0)
+                p.put("affiliate_display", displayed)
                 found = true
                 break
             }
@@ -105,7 +105,7 @@ object AffiliateProductsHelper {
         if (!found) {
             productsArr.put(JSONObject().apply {
                 put("productId", productId)
-                put("display", if (displayed) 1 else 0)
+                put("affiliate_display", displayed)
             })
         }
         

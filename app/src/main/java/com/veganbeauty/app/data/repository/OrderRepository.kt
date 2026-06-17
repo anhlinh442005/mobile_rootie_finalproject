@@ -19,22 +19,26 @@ class OrderRepository(
     // Flow of all orders
     val allOrders: Flow<List<OrderEntity>> = orderDao.getAllOrders()
 
-    // Get orders by status
-    fun getOrdersByStatus(status: String): Flow<List<OrderEntity>> {
-        return orderDao.getOrdersByStatus(status)
+    fun getBuyerOrders(userId: String): Flow<List<OrderEntity>> {
+        return orderDao.getOrdersByUserId(userId)
     }
 
-    // Refresh orders from assets (Seed only if database is empty)
+    fun getAffiliateOrders(referrerUserId: String): Flow<List<OrderEntity>> {
+        return orderDao.getAffiliateOrdersByReferrer(referrerUserId)
+    }
+
+    // Refresh orders from assets (Overwrite everything)
     suspend fun refreshOrders() {
         try {
-            if (orderDao.getOrderCount() == 0) {
-                val mockOrders = localJsonReader.getAllOrders()
-                if (mockOrders.isNotEmpty()) {
-                    orderDao.insertOrders(mockOrders)
-                }
+            // Clear all old orders first as requested
+            orderDao.deleteAllOrders()
+            
+            val mockOrders = localJsonReader.getAllOrders()
+            if (mockOrders.isNotEmpty()) {
+                orderDao.insertOrders(mockOrders)
             }
             
-            // Seed initial reward points (8,500 net coins) and transaction history if empty
+            // Seed initial reward points (Reset if needed, but keeping for now as it's separate from orders collection)
             val totalPoints = rewardPointDao.getTotalPointsFlow().first()
             if (totalPoints == null) {
                 // To end up with exactly 8,500 net, we insert 11,200 initial and the 3 history deductions:
@@ -222,14 +226,9 @@ class OrderRepository(
         val qualifiesForCoins = stars > 0 && hasText && hasImage
 
         // Update the review details in database
-        orderDao.updateOrderReview(
+        orderDao.updateOrderReviewStatus(
             orderId = orderId,
-            hasReview = true,
-            stars = stars,
-            text = text,
-            image = image,
-            isAnonymous = isAnonymous,
-            recommend = recommend
+            hasReview = true
         )
 
         // Award points if qualified and hasn't already been awarded
