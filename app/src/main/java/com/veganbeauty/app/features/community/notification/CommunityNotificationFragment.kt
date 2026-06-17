@@ -37,7 +37,7 @@ class CommunityNotificationFragment : RootieFragment() {
                                     .commit()
                             } else {
                                 val targetUserId = item.userId ?: "test_001"
-                                val postDetailFragment = com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment.newInstance(targetUserId, 0, item.postId)
+                                val postDetailFragment = com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment.newInstance(targetUserId, 0, targetPostId = item.postId)
                                 parentFragmentManager.beginTransaction()
                                     .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                                     .replace(R.id.main_container, postDetailFragment)

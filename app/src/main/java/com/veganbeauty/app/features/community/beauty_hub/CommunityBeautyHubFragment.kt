@@ -108,10 +108,14 @@ class CommunityBeautyHubFragment : RootieFragment() {
         }
 
         binding.btnExploreFeed.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, CommunityFeedFragment())
-                .commit()
+            if (com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
+                parentFragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.main_container, CommunityFeedFragment())
+                    .commit()
+            } else {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+            }
         }
 
         binding.swipeRefreshLayout.setColorSchemeResources(R.color.primary)
@@ -193,31 +197,47 @@ class CommunityBeautyHubFragment : RootieFragment() {
 
     private fun setupBottomNavigation() {
         binding.comBottomNav.navComFeed.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, CommunityFeedFragment())
-                .commit()
+            if (com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
+                parentFragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.main_container, CommunityFeedFragment())
+                    .commit()
+            } else {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+            }
         }
 
         binding.comBottomNav.navComProfile.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, com.veganbeauty.app.features.community.profile.CommunityProfileFragment())
-                .commit()
+            if (com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
+                parentFragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.main_container, com.veganbeauty.app.features.community.profile.CommunityProfileFragment())
+                    .commit()
+            } else {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+            }
         }
 
         binding.comBottomNav.navComExplore.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, CommunityExploreFragment())
-                .commit()
+            if (com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
+                parentFragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.main_container, CommunityExploreFragment())
+                    .commit()
+            } else {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+            }
         }
 
         binding.comBottomNav.navComChat.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, com.veganbeauty.app.features.community.message.CommunityMessageFragment())
-                .commit()
+            if (com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
+                parentFragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.main_container, com.veganbeauty.app.features.community.message.CommunityMessageFragment())
+                    .commit()
+            } else {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+            }
         }
         
         binding.comBottomNav.navComHub.setOnClickListener {

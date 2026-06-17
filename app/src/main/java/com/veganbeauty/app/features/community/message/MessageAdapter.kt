@@ -31,43 +31,57 @@ class MessageAdapter(
         return MessageViewHolder(view)
     }
 
-    private fun formatTimestamp(timestamp: Long): String {
-        if (timestamp <= 0) return ""
-        val calendar = java.util.Calendar.getInstance()
-        val now = java.util.Calendar.getInstance()
-        calendar.timeInMillis = timestamp
+    private fun formatTimestamp(timestampStr: String): String {
+        if (timestampStr.isEmpty()) return ""
+        try {
+            val format = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.getDefault())
+            format.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            val date = format.parse(timestampStr) ?: return ""
 
-        val formatTime = java.text.SimpleDateFormat("HH:mm", java.util.Locale("vi", "VN"))
-        val formatDate = java.text.SimpleDateFormat("dd/MM", java.util.Locale("vi", "VN"))
+            val calendar = java.util.Calendar.getInstance()
+            val now = java.util.Calendar.getInstance()
+            calendar.time = date
 
-        val timeStr = formatTime.format(calendar.time)
+            val formatTime = java.text.SimpleDateFormat("HH:mm", java.util.Locale("vi", "VN"))
+            val formatDate = java.text.SimpleDateFormat("dd/MM", java.util.Locale("vi", "VN"))
 
-        return if (calendar.get(java.util.Calendar.YEAR) == now.get(java.util.Calendar.YEAR) &&
-            calendar.get(java.util.Calendar.DAY_OF_YEAR) == now.get(java.util.Calendar.DAY_OF_YEAR)
-        ) {
-            timeStr
-        } else {
-            val dateStr = formatDate.format(calendar.time)
-            "$timeStr $dateStr"
+            val timeStr = formatTime.format(calendar.time)
+
+            return if (calendar.get(java.util.Calendar.YEAR) == now.get(java.util.Calendar.YEAR) &&
+                calendar.get(java.util.Calendar.DAY_OF_YEAR) == now.get(java.util.Calendar.DAY_OF_YEAR)
+            ) {
+                timeStr
+            } else {
+                val dateStr = formatDate.format(calendar.time)
+                "$timeStr $dateStr"
+            }
+        } catch (e: Exception) {
+            return ""
         }
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val item = items[position]
         
-        val lastMsgText = item.lastMessage?.text ?: ""
-        val lastTimestamp = item.lastMessage?.timestamp ?: item.updatedAt
-        val lastTime = formatTimestamp(lastTimestamp)
+        val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(holder.itemView.context)
+        val partnerId = item.members.firstOrNull { it != currentUserId } ?: ""
+        val partnerInfo = item.memberInfo[partnerId]
         
-        holder.tvName.text = item.partnerName
+        val partnerName = partnerInfo?.name ?: "Unknown"
+        val partnerAvatar = partnerInfo?.avatar ?: ""
+        
+        val lastMsgText = item.lastMessage
+        val lastTime = formatTimestamp(item.lastMessageAt)
+        
+        holder.tvName.text = partnerName
         holder.tvLastMessage.text = lastMsgText
         holder.tvTime.text = lastTime
 
-        if (item.partnerAvatar.isNotEmpty()) {
-            holder.ivAvatar.load(item.partnerAvatar) {
+        if (partnerAvatar.isNotEmpty()) {
+            holder.ivAvatar.load(partnerAvatar) {
                 crossfade(true)
                 placeholder(R.color.gray_light)
-                if (item.partnerId == "rootie_vn") {
+                if (partnerId == "rootie_vn") {
                     error(R.drawable.ic_logo_rootie)
                 } else {
                     error(R.drawable.img_avatar)
@@ -75,18 +89,17 @@ class MessageAdapter(
                 transformations(CircleCropTransformation())
             }
         } else {
-            if (item.partnerId == "rootie_vn") {
+            if (partnerId == "rootie_vn") {
                 holder.ivAvatar.setImageResource(R.drawable.ic_logo_rootie)
             } else {
                 holder.ivAvatar.setImageResource(R.drawable.img_avatar)
             }
         }
 
-        holder.vActiveDot.visibility = if (item.isActive) View.VISIBLE else View.GONE
+        holder.vActiveDot.visibility = if (item.activeBy.contains(partnerId)) View.VISIBLE else View.GONE
         
-        val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(holder.itemView.context)
-        val unreadCount = item.unreadCount[currentUserId] ?: 0
-        if (unreadCount > 0) {
+        val isUnread = item.unreadBy.contains(currentUserId)
+        if (isUnread) {
             holder.vUnreadDot.visibility = View.VISIBLE
             holder.tvName.setTypeface(null, android.graphics.Typeface.BOLD)
             holder.tvLastMessage.setTypeface(null, android.graphics.Typeface.BOLD)

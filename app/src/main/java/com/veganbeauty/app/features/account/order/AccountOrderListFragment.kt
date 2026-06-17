@@ -47,15 +47,6 @@ class AccountOrderListFragment : RootieFragment() {
                 .commit()
         },
         onReorderClick = { order ->
-<<<<<<< HEAD
-            Toast.makeText(requireContext(), "Mua lại sản phẩm từ đơn ${order.id}", Toast.LENGTH_SHORT).show()
-        },
-        onTrackClick = { order ->
-            Toast.makeText(requireContext(), "Theo dõi đơn hàng: ${order.id}", Toast.LENGTH_SHORT).show()
-        },
-        onContactClick = { order ->
-            Toast.makeText(requireContext(), "Kết nối với tư vấn viên Rootie hỗ trợ đơn ${order.id}", Toast.LENGTH_SHORT).show()
-=======
             val checkoutItems = ArrayList(order.items.map { item ->
                 CartItemEntity(
                     id = item.productId,
@@ -73,7 +64,7 @@ class AccountOrderListFragment : RootieFragment() {
         },
         onTrackClick = { order ->
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_container, AccountOrderTrackingFragment.newInstance(order.orderId))
+                .replace(R.id.main_container, AccountOrderTrackingFragment.newInstance(order.id))
                 .addToBackStack(null)
                 .commit()
         },
@@ -82,7 +73,6 @@ class AccountOrderListFragment : RootieFragment() {
                 .replace(R.id.main_container, SkinAiChatFragment())
                 .addToBackStack(null)
                 .commit()
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
         },
         onReviewClick = { order ->
             parentFragmentManager.beginTransaction()

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="310dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#FEFBF4"
+    app:cardUseCompatPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
+
+        <!-- Header Area: Centered Premium Lotus Badge with Floating Sparkles -->
+        <FrameLayout
+            android:id="@+id/layout_badge"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp">
+
+            <!-- Deep botanical soft outer ring -->
+            <View
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle_icon"
+                android:backgroundTint="#0D3E4D44" />
+
+            <!-- Inner soft ring -->
+            <FrameLayout
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle_icon"
+                android:backgroundTint="#1A3E4D44">
+
+                <!-- Main Dark Green Badge -->
+                <FrameLayout
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_circle_icon"
+                    android:backgroundTint="#3E4D44">
+
+                    <!-- Lotus Line Art -->
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/quiz_ic_lotus"
+                        app:tint="#FEFBF4" />
+                </FrameLayout>
+            </FrameLayout>
+
+            <!-- Glowing Sparkle Detail (Top-Left) -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="42dp"
+                android:layout_marginBottom="30dp"
+                android:src="@drawable/quiz_ic_sparkles"
+                app:tint="#FF9F00" />
+
+            <!-- Soft Sparkle Detail (Bottom-Right) -->
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="44dp"
+                android:layout_marginTop="28dp"
+                android:src="@drawable/skin_ai_sparkles"
+                app:tint="#677559" />
+
+            <!-- Botanical Leaf Sparkle (Top-Right) -->
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="40dp"
+                android:layout_marginBottom="32dp"
+                android:src="@drawable/ic_skin_sparkle"
+                app:tint="#B3677559" />
+
+        </FrameLayout>
+
+        <!-- Premium Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Khám phá làn da của bạn"
+            android:textColor="#3E4D44"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/lexend"
+            android:gravity="center"
+            android:layout_marginBottom="6dp" />
+
+        <!-- Reward Badge with Coin Icon -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/status_badge_bg"
+            android:backgroundTint="#FFF6E5"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_coin"
+                android:layout_marginEnd="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tặng +100 Xu thành viên mới"
+                android:textColor="#FF9F00"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/be_vietnam_pro" />
+        </LinearLayout>
+
+        <!-- Description -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chào mừng đến với Rootie! Hãy dành 1 phút thực hiện bài trắc nghiệm để chúng mình phân tích da và thiết kế chu trình chăm sóc chuẩn y khoa dành riêng cho bạn nhé."
+            android:textColor="#5C6860"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.25"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Confirm Action Button -->
+        <LinearLayout
+            android:id="@+id/btn_dialog_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_btn_rounded_solid"
+            android:backgroundTint="#3E4D44"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BẮT ĐẦU NGAY"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/lexend"
+                android:letterSpacing="0.03" />
+        </LinearLayout>
+
+        <!-- Cancel Text Link -->
+        <TextView
+            android:id="@+id/btn_dialog_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="ĐỂ SAU"
+            android:textColor="#7E8A83"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/lexend"
+            android:letterSpacing="0.05"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

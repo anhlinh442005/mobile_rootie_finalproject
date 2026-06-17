@@ -67,7 +67,43 @@ class CommunityProfileFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+        binding.ivSettings.setOnClickListener {
+            binding.drawerLayout.openDrawer(androidx.core.view.GravityCompat.END)
+        }
+        
+        val navView = binding.root.findViewById<com.google.android.material.navigation.NavigationView>(R.id.navView)
+        val ivCloseMenu = navView.findViewById<android.widget.ImageView>(R.id.ivCloseMenu)
+        val llLogout = navView.findViewById<android.widget.LinearLayout>(R.id.llLogout)
+        
+        ivCloseMenu?.setOnClickListener {
+            binding.drawerLayout.closeDrawer(androidx.core.view.GravityCompat.END)
+        }
 
+        llLogout?.setOnClickListener {
+            val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.com_dialog_logout_confirm, null)
+            val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create()
+                
+            val btnConfirm = dialogView.findViewById<android.widget.TextView>(R.id.btnConfirmLogout)
+            val btnCancel = dialogView.findViewById<android.widget.TextView>(R.id.btnCancelLogout)
+            
+            btnConfirm.setOnClickListener {
+                dialog.dismiss()
+                com.veganbeauty.app.data.local.ProfileSession.setLoggedIn(requireContext(), false)
+                val intent = android.content.Intent(requireContext(), com.veganbeauty.app.MainActivity::class.java)
+                intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                activity?.finish()
+            }
+            
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
+            
+            dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            dialog.show()
+        }
         val passedUserId = arguments?.getString(ARG_USER_ID) ?: arguments?.getString("USER_ID")
         val loggedInEmail = ProfileSession.getEmail(ctx)
         

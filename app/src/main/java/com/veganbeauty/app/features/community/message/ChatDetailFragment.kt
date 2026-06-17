@@ -7,12 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.veganbeauty.app.R
 import com.veganbeauty.app.databinding.ComFragmentChatDetailBinding
-import kotlinx.coroutines.delay
 
 class ChatDetailFragment : Fragment() {
 
@@ -81,75 +79,27 @@ class ChatDetailFragment : Fragment() {
         })
 
         loadData()
-        listenForRealtimeMessages()
-    }
-
-    private var messagesListener: com.google.firebase.database.ValueEventListener? = null
-
-    private fun listenForRealtimeMessages() {
-        val convId = conversationId ?: return
-        val dbRef = com.google.firebase.database.FirebaseDatabase.getInstance().reference
-            .child("conversations").child(convId).child("messages")
-
-        messagesListener = dbRef.addValueEventListener(object : com.google.firebase.database.ValueEventListener {
-            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
-                val newMessages = mutableListOf<com.veganbeauty.app.data.local.entities.ChatMessageEntity>()
-                for (child in snapshot.children) {
-                    val msgId = child.child("message_id").getValue(String::class.java) ?: continue
-                    val senderId = child.child("sender_id").getValue(String::class.java) ?: ""
-                    val receiverId = child.child("receiver_id").getValue(String::class.java) ?: ""
-                    val text = child.child("text").getValue(String::class.java) ?: ""
-                    val timestamp = child.child("created_at").getValue(Long::class.java) ?: 0L
-                    
-                    val statusMap = mutableMapOf<String, String>()
-                    val statusSnapshot = child.child("status")
-                    for (status in statusSnapshot.children) {
-                        statusMap[status.key ?: ""] = status.getValue(String::class.java) ?: "unread"
-                    }
-
-                    newMessages.add(com.veganbeauty.app.data.local.entities.ChatMessageEntity(
-                        messageId = msgId,
-                        conversationId = convId,
-                        senderId = senderId,
-                        receiverId = receiverId,
-                        text = text,
-                        type = child.child("type").getValue(String::class.java) ?: "text",
-                        createdAt = timestamp,
-                        status = statusMap,
-                        readAt = emptyMap()
-                    ))
-                }
-
-                if (newMessages.isNotEmpty()) {
-                    newMessages.sortBy { it.createdAt }
-                    chatAdapter.updateData(newMessages)
-                    binding.rvChat.scrollToPosition(newMessages.size - 1)
-                }
-            }
-
-            override fun onCancelled(error: com.google.firebase.database.DatabaseError) {}
-        })
     }
 
     private fun loadData() {
         conversationId?.let { convId ->
             val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(requireContext())
-            // Mark conversation as read when opening
             MessageHelper.markAsRead(requireContext(), convId, currentUserId)
 
             val conv = MessageHelper.getConversation(requireContext(), convId)
             if (conv != null) {
-                partnerId = conv.partnerId
-                binding.tvName.text = conv.partnerName
+                partnerId = conv.members.firstOrNull { it != currentUserId } ?: ""
+                val partnerInfo = conv.memberInfo[partnerId]
                 
-                // Show verified tick for official Rootie VietNam account
+                binding.tvName.text = partnerInfo?.name ?: "Unknown"
+                
                 if (partnerId == "rootie_vn") {
                     binding.ivVerified.visibility = View.VISIBLE
                 } else {
                     binding.ivVerified.visibility = View.GONE
                 }
                 
-                val avatarUrl = conv.partnerAvatar
+                val avatarUrl = partnerInfo?.avatar ?: ""
                 if (avatarUrl.isNotEmpty()) {
                     binding.ivAvatar.load(avatarUrl) {
                         crossfade(true)
@@ -168,13 +118,14 @@ class ChatDetailFragment : Fragment() {
                         binding.ivAvatar.setImageResource(R.drawable.img_avatar)
                     }
                 }
-                binding.vActiveDot.visibility = if (conv.isActive) View.VISIBLE else View.GONE
-                binding.tvStatus.text = if (conv.isActive) "Đang hoạt động" else "Hoạt động 15 phút trước"
+                
+                val isActive = conv.activeBy.contains(partnerId)
+                binding.vActiveDot.visibility = if (isActive) View.VISIBLE else View.GONE
+                binding.tvStatus.text = if (isActive) "Đang hoạt động" else "Ngoại tuyến"
 
                 chatAdapter.setPartnerAvatar(avatarUrl)
             }
 
-            // Load local initial data while waiting for Firebase
             val messages = MessageHelper.getMessages(requireContext(), convId)
             chatAdapter.updateData(messages)
             if (messages.isNotEmpty()) {
@@ -204,12 +155,8 @@ class ChatDetailFragment : Fragment() {
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> { // Edit
-                        showEditDialog(msg)
-                    }
-                    1 -> { // Revoke
-                        revokeMessage(msg)
-                    }
+                    0 -> { showEditDialog(msg) }
+                    1 -> { revokeMessage(msg) }
                 }
             }
             .show()
@@ -235,7 +182,7 @@ class ChatDetailFragment : Fragment() {
             .setPositiveButton("Lưu") { _, _ ->
                 val newText = input.text.toString().trim()
                 if (newText.isNotEmpty() && newText != msg.text) {
-                    updateMessage(msg.messageId, newText)
+                    updateMessage(msg.id, newText)
                 }
             }
             .setNegativeButton("Hủy", null)
@@ -253,9 +200,9 @@ class ChatDetailFragment : Fragment() {
         conversationId?.let { convId ->
             androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setTitle("Thu hồi tin nhắn")
-                .setMessage("Tin nhắn này sẽ bị xóa ở cả 2 phía. Bạn có chắc chắn muốn thu hồi?")
+                .setMessage("Tin nhắn này sẽ bị xóa. Bạn có chắc chắn muốn thu hồi?")
                 .setPositiveButton("Thu hồi") { _, _ ->
-                    MessageHelper.deleteMessage(requireContext(), convId, msg.messageId)
+                    MessageHelper.deleteMessage(requireContext(), convId, msg.id)
                     refreshLocalMessages(convId)
                 }
                 .setNegativeButton("Hủy", null)
@@ -265,13 +212,6 @@ class ChatDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        conversationId?.let { convId ->
-            messagesListener?.let {
-                com.google.firebase.database.FirebaseDatabase.getInstance().reference
-                    .child("conversations").child(convId).child("messages")
-                    .removeEventListener(it)
-            }
-        }
         _binding = null
     }
 }

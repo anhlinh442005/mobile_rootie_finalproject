@@ -567,45 +567,33 @@ class LocalJsonReader(private val context: Context) {
                 orderList.add(
                     OrderEntity(
                         id = obj.getString("id"),
-                        userId = obj.getString("userId"),
+                        userId = obj.optString("userId", null)?.takeIf { it.isNotBlank() },
                         orderDate = obj.getString("orderDate"),
                         orderTime = obj.getString("orderTime"),
                         status = obj.getString("status"),
                         totalAmount = obj.getLong("totalAmount"),
                         subTotal = obj.optLong("subTotal", obj.getLong("totalAmount")),
                         items = orderItems,
-<<<<<<< HEAD
-                        shippingName = obj.getString("shippingName"),
-                        shippingPhone = obj.getString("shippingPhone"),
-                        shippingAddress = obj.getString("shippingAddress"),
-                        shippingCost = obj.optLong("shippingCost", 0L),
-                        voucherDiscount = obj.optLong("voucherDiscount", 0L),
-                        paymentMethod = obj.getString("paymentMethod"),
-                        expectedDeliveryTime = obj.optString("expectedDeliveryTime", null),
-                        deliveryDate = obj.optString("deliveryDate", null),
-                        isAffiliate = isAffiliate,
-                        affiliate = affiliateInfo,
-                        hasReview = obj.optBoolean("hasReview", false)
-=======
-                        userId = if (obj.has("userId")) obj.optString("userId", "").takeIf { it.isNotBlank() } else null,
                         isGuest = obj.optBoolean("isGuest", false),
                         shippingName = obj.optString("shippingName", "Nguyễn Văn A"),
                         shippingPhone = obj.optString("shippingPhone", "090 123 4567"),
                         shippingAddress = obj.optString("shippingAddress", "123 Đường Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, TP. Hồ Chí Minh"),
-                        shippingCost = shippingCost,
-                        voucherDiscount = voucherDiscount,
+                        shippingCost = obj.optLong("shippingCost", 30000L),
+                        voucherDiscount = obj.optLong("voucherDiscount", 0L),
                         paymentMethod = obj.optString("paymentMethod", "Thanh toán qua Ví MoMo"),
-                        expectedDeliveryTime = if (obj.has("expectedDeliveryTime")) obj.getString("expectedDeliveryTime") else null,
+                        expectedDeliveryTime = obj.optString("expectedDeliveryTime", null),
+                        deliveryDate = obj.optString("deliveryDate", null),
+                        isAffiliate = isAffiliate,
+                        affiliate = affiliateInfo,
                         hasReview = obj.optBoolean("hasReview", false),
                         reviewStars = obj.optInt("reviewStars", 0),
-                        reviewText = if (obj.has("reviewText")) obj.getString("reviewText") else null,
-                        reviewImage = if (obj.has("reviewImage")) obj.getString("reviewImage") else null,
+                        reviewText = obj.optString("reviewText", null),
+                        reviewImage = obj.optString("reviewImage", null),
                         isAnonymous = obj.optBoolean("isAnonymous", false),
                         recommendToFriends = obj.optBoolean("recommendToFriends", false),
-                        billingName = obj.optString("billingName", "").takeIf { it.isNotBlank() },
-                        billingPhone = obj.optString("billingPhone", "").takeIf { it.isNotBlank() },
-                        billingEmail = obj.optString("billingEmail", "").takeIf { it.isNotBlank() }
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
+                        billingName = obj.optString("billingName", null)?.takeIf { it.isNotBlank() },
+                        billingPhone = obj.optString("billingPhone", null)?.takeIf { it.isNotBlank() },
+                        billingEmail = obj.optString("billingEmail", null)?.takeIf { it.isNotBlank() }
                     )
                 )
             }

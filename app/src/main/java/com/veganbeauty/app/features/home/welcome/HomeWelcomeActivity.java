@@ -119,7 +119,23 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         setupBottomSheet();
         setupViewModel();
         syncTeamUsers();
-        startSplashSequence();
+        
+        if (getIntent() != null && getIntent().getBooleanExtra("DIRECT_LOGIN", false)) {
+            // Set static logo state
+            logoIcon.setAlpha(1f);
+            logoIcon.setScaleX(1f);
+            logoIcon.setScaleY(1f);
+            logoIcon.setTranslationY(0f);
+            
+            logoText.setAlpha(1f);
+            logoText.setVisibility(View.VISIBLE);
+            logoText.setTranslationY(0f);
+            
+            // Skip splash and jump straight to login
+            transitionToLogin();
+        } else {
+            startSplashSequence();
+        }
     }
 
     private void setupViewModel() {

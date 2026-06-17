@@ -48,8 +48,8 @@ class AccountProfileFragment : RootieFragment() {
         }
 
         val guestRedirectListener = View.OnClickListener {
-            Toast.makeText(ctx, "Vui lòng đăng nhập để sử dụng tính năng này", Toast.LENGTH_SHORT).show()
             val intent = android.content.Intent(ctx, com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity::class.java)
+            intent.putExtra("DIRECT_LOGIN", true)
             intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             activity?.finish()
@@ -281,6 +281,34 @@ class AccountProfileFragment : RootieFragment() {
         } else {
             binding.tvCoins.text = "0"
         }
+        
+        binding.btnLogout.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
+        binding.btnLogout.setOnClickListener {
+            val dialogView = LayoutInflater.from(requireContext()).inflate(com.veganbeauty.app.R.layout.com_dialog_logout_confirm, null)
+            val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create()
+                
+            val btnConfirm = dialogView.findViewById<android.widget.TextView>(com.veganbeauty.app.R.id.btnConfirmLogout)
+            val btnCancel = dialogView.findViewById<android.widget.TextView>(com.veganbeauty.app.R.id.btnCancelLogout)
+            
+            btnConfirm.setOnClickListener {
+                dialog.dismiss()
+                com.veganbeauty.app.data.local.ProfileSession.setLoggedIn(requireContext(), false)
+                val intent = android.content.Intent(requireContext(), com.veganbeauty.app.MainActivity::class.java)
+                intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                activity?.finish()
+            }
+            
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
+            
+            dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            dialog.show()
+        }
+
         BottomNavHelper.setup(
             fragment = this,
             root = binding.root,

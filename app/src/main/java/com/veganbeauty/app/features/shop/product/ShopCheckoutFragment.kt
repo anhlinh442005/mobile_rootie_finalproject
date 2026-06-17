@@ -797,58 +797,6 @@ class ShopCheckoutFragment : RootieFragment() {
         @Suppress("UNUSED_VARIABLE")
         val hideProductInfo = binding.switchHideProductInfo.isChecked
 
-<<<<<<< HEAD
-        lifecycleScope.launch {
-            // Process affiliate for each item
-            val prefs = requireContext().getSharedPreferences("affiliate_prefs", android.content.Context.MODE_PRIVATE)
-            val currentEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext())
-            var currentUserId = "test_001"
-            try {
-                val usersStr = requireContext().assets.open("users.json").bufferedReader().use { it.readText() }
-                val usersArr = org.json.JSONArray(usersStr)
-                for (i in 0 until usersArr.length()) {
-                    val obj = usersArr.getJSONObject(i)
-                    if (obj.optString("email") == currentEmail) {
-                        currentUserId = obj.optString("user_id", "test_001")
-                        break
-                    }
-                }
-            } catch(e: Exception) {}
-
-            // If checking out from cart, clear these items from the cart database
-            checkoutItems.forEach { item ->
-                database.cartDao().deleteCartItem(item)
-                
-                val trackingJsonStr = prefs.getString(item.id, null)
-                if (trackingJsonStr != null) {
-                    try {
-                        val trackingObj = org.json.JSONObject(trackingJsonStr)
-                        val referrerUserId = trackingObj.optString("referrerUserId")
-                        // Ensure we don't give commission to the user themselves
-                        if (referrerUserId != currentUserId && referrerUserId.isNotEmpty()) {
-                            val commissionRate = 0.08 // 8% commission
-                            val itemValue = item.price * item.quantity
-                            val commissionAmount = (itemValue * commissionRate).toLong()
-                            
-                            /* 
-                            com.veganbeauty.app.features.community.affiliate.AffiliateHelper.addAffiliateOrder(
-                                context = requireContext(),
-                                referrerUserId = referrerUserId,
-                                productId = item.id,
-                                productName = item.name,
-                                productImage = item.image,
-                                orderValue = itemValue,
-                                commissionAmount = commissionAmount,
-                                customerEmail = currentEmail ?: "Khách ẩn danh"
-                            )
-                            */
-                        }
-                    } catch(e: Exception) {}
-                    
-                    // Clear the preference so it's not reused for future non-affiliate purchases
-                    prefs.edit().remove(item.id).apply()
-                }
-=======
         // Validate buyer info up front so the OTP step only runs when the
         // form is in a valid state.
         val buyerInfo = collectAndValidateBuyerInfo() ?: return
@@ -904,7 +852,6 @@ class ShopCheckoutFragment : RootieFragment() {
                 Toast.makeText(requireContext(),
                     "Vui lòng nhập họ và tên người nhận.", Toast.LENGTH_SHORT).show()
                 return null
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
             }
 
             // Validation: phone is required
@@ -1181,11 +1128,12 @@ class ShopCheckoutFragment : RootieFragment() {
         val nowDate = java.text.SimpleDateFormat("dd/MM/yyyy", Locale("vi", "VN")).format(java.util.Date(now))
         val nowTime = java.text.SimpleDateFormat("HH:mm", Locale("vi", "VN")).format(java.util.Date(now))
         return OrderEntity(
-            orderId = orderCode,
+            id = orderCode,
             orderDate = nowDate,
             orderTime = nowTime,
             status = "Chờ xử lý",
             totalAmount = totalAmount,
+            subTotal = checkoutItems.sumOf { it.price * it.quantity },
             items = orderItems,
             userId = finalUserId,
             isGuest = isGuest,

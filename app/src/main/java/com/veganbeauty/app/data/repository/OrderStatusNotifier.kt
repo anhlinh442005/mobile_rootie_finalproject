@@ -82,21 +82,21 @@ object OrderStatusNotifier {
     private fun simulateOutboundNotification(order: OrderEntity, newStatus: String) {
         val isGuest = order.isGuest || order.userId.isNullOrBlank()
         if (!isGuest) {
-            Log.i(TAG, "Order ${order.orderId} → $newStatus (user=${order.userId}, " +
+            Log.i(TAG, "Order ${order.id} → $newStatus (user=${order.userId}, " +
                 "in-app notification dispatched via user preferences)")
             return
         }
         val email = order.billingEmail?.trim().orEmpty()
         val phone = order.billingPhone?.trim().orEmpty()
         val name = order.billingName?.trim().orEmpty().ifEmpty { "Quý khách" }
-        val body = buildMessageBody(order.orderId, newStatus)
+        val body = buildMessageBody(order.id, newStatus)
 
         if (email.isNotEmpty()) {
             // Email routing
             Log.i(
                 TAG,
                 "[MOCK EMAIL → $email] To: $name <$email> | Subject: " +
-                    "Cập nhật đơn hàng #${order.orderId} | Body: $body"
+                    "Cập nhật đơn hàng #${order.id} | Body: $body"
             )
         } else if (phone.isNotEmpty()) {
             // SMS routing
@@ -107,7 +107,7 @@ object OrderStatusNotifier {
         } else {
             Log.w(
                 TAG,
-                "Guest order ${order.orderId} has no email or phone on file; " +
+                "Guest order ${order.id} has no email or phone on file; " +
                     "cannot route notification."
             )
         }

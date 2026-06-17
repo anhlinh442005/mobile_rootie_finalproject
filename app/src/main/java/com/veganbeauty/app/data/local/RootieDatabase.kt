@@ -28,11 +28,7 @@ import com.veganbeauty.app.data.local.entities.*
         StoreEntity::class,
         UserProductExpiryEntity::class
     ], 
-<<<<<<< HEAD
-    version = 35   // bumped to force destructive migration - wipes all old cached data
-=======
-    version = 31
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
+    version = 36   // bumped to force destructive migration - wipes all old cached data
 )
 @TypeConverters(OrderConverters::class, ProductConverters::class)
 abstract class RootieDatabase : RoomDatabase() {

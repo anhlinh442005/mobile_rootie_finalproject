@@ -35,10 +35,11 @@ class BlogAdapter(
         if (post.imageUrl.isNotEmpty()) {
             holder.ivPostImage.load(post.imageUrl) {
                 crossfade(true)
-                error(R.drawable.img_avatar)
+                error(R.color.gray_light)
+                placeholder(R.color.gray_light)
             }
         } else {
-            holder.ivPostImage.setImageResource(R.drawable.img_avatar)
+            holder.ivPostImage.setImageResource(R.color.gray_light)
         }
         
         holder.itemView.setOnClickListener {

@@ -46,8 +46,16 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
         // Adjust index for actual data
         val item = items[position - 1]
         
+        val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(holder.itemView.context)
+        val partnerId = item.members.firstOrNull { it != currentUserId } ?: ""
+        val partnerInfo = item.memberInfo[partnerId]
+        
+        val partnerName = partnerInfo?.name ?: "Unknown"
+        val partnerAvatar = partnerInfo?.avatar ?: ""
+        val isActive = item.activeBy.contains(partnerId)
+        
         // Convert name to username-like format (e.g., "Bảo Nguyên" -> "bao_nguyen")
-        val shortName = item.partnerName.lowercase()
+        val shortName = partnerName.lowercase()
             .replace(" ", "_")
             .replace("á", "a").replace("à", "a").replace("ả", "a").replace("ã", "a").replace("ạ", "a")
             .replace("ă", "a").replace("ắ", "a").replace("ằ", "a").replace("ẳ", "a").replace("ẵ", "a").replace("ặ", "a")
@@ -66,13 +74,13 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
         holder.tvName.text = shortName
         holder.tvName.setTextColor(holder.itemView.context.resources.getColor(R.color.gray_dark, null))
         holder.ivAddStory.visibility = View.GONE
-        holder.vActiveDot.visibility = if (item.isActive) View.VISIBLE else View.GONE
+        holder.vActiveDot.visibility = if (isActive) View.VISIBLE else View.GONE
         
-        if (item.partnerAvatar.isNotEmpty()) {
-            holder.ivAvatar.load(item.partnerAvatar) {
+        if (partnerAvatar.isNotEmpty()) {
+            holder.ivAvatar.load(partnerAvatar) {
                 crossfade(true)
                 placeholder(R.color.gray_light)
-                if (item.partnerId == "rootie_vn") {
+                if (partnerId == "rootie_vn") {
                     error(R.drawable.ic_logo_rootie)
                 } else {
                     error(R.drawable.img_avatar)
@@ -80,7 +88,7 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
                 transformations(CircleCropTransformation())
             }
         } else {
-            if (item.partnerId == "rootie_vn") {
+            if (partnerId == "rootie_vn") {
                 holder.ivAvatar.setImageResource(R.drawable.ic_logo_rootie)
             } else {
                 holder.ivAvatar.setImageResource(R.drawable.img_avatar)

@@ -30,13 +30,7 @@ public class MainActivity extends AppCompatActivity {
             } else if ("WEATHER_FORECAST".equals(navigateTo)) {
                 destination = new com.veganbeauty.app.features.weather.WeatherForecastFragment();
             } else {
-                android.content.SharedPreferences prefs = getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE);
-                String savedSkin = prefs.getString("SAVED_USER_SKIN_TYPE", null);
-                if (savedSkin != null) {
-                    destination = new com.veganbeauty.app.features.home.HomeFragment();
-                } else {
-                    destination = new com.veganbeauty.app.features.quiz.QuizTestIntroFragment();
-                }
+                destination = new com.veganbeauty.app.features.home.HomeFragment();
             }
             getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_container, destination)

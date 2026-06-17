@@ -205,14 +205,10 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.ivBannerSubActionIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, textResId))
 
                 binding.btnBannerSubAction.setOnClickListener {
-<<<<<<< HEAD
-                    Toast.makeText(context, "Tính năng Theo dõi đơn cho mã ${order.id} đang được tải...", Toast.LENGTH_SHORT).show()
-=======
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.main_container, AccountOrderTrackingFragment.newInstance(order.orderId))
+                        .replace(R.id.main_container, AccountOrderTrackingFragment.newInstance(order.id))
                         .addToBackStack(null)
                         .commit()
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
                 }
             }
             "Hoàn tất" -> {
@@ -260,14 +256,10 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.btnActionLeft.visibility = View.VISIBLE
                 binding.btnActionLeft.text = "Liên hệ hỗ trợ"
                 binding.btnActionLeft.setOnClickListener {
-<<<<<<< HEAD
-                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.id}...", Toast.LENGTH_SHORT).show()
-=======
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.main_container, SkinAiChatFragment())
                         .addToBackStack(null)
                         .commit()
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
                 }
 
                 binding.btnActionRight.visibility = View.VISIBLE
@@ -280,14 +272,10 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.btnActionLeft.visibility = View.VISIBLE
                 binding.btnActionLeft.text = "Liên hệ hỗ trợ"
                 binding.btnActionLeft.setOnClickListener {
-<<<<<<< HEAD
-                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.id}...", Toast.LENGTH_SHORT).show()
-=======
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.main_container, SkinAiChatFragment())
                         .addToBackStack(null)
                         .commit()
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
                 }
 
                 binding.btnActionRight.visibility = View.VISIBLE
@@ -306,9 +294,6 @@ class AccountOrderDetailFragment : RootieFragment() {
                 binding.btnActionRight.visibility = View.VISIBLE
                 binding.btnActionRight.text = "Mua lại"
                 binding.btnActionRight.setOnClickListener {
-<<<<<<< HEAD
-                    Toast.makeText(context, "Đã thêm toàn bộ sản phẩm của đơn ${order.id} vào giỏ hàng!", Toast.LENGTH_SHORT).show()
-=======
                     val checkoutItems = ArrayList(order.items.map { item ->
                         CartItemEntity(
                             id = item.productId,
@@ -323,29 +308,21 @@ class AccountOrderDetailFragment : RootieFragment() {
                         .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems))
                         .addToBackStack(null)
                         .commit()
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
                 }
             }
             "Đã hủy" -> {
                 binding.btnActionLeft.visibility = View.VISIBLE
                 binding.btnActionLeft.text = "Liên hệ hỗ trợ"
                 binding.btnActionLeft.setOnClickListener {
-<<<<<<< HEAD
-                    Toast.makeText(context, "Đang kết nối đến tư vấn viên để hỗ trợ đơn ${order.id}...", Toast.LENGTH_SHORT).show()
-=======
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.main_container, SkinAiChatFragment())
                         .addToBackStack(null)
                         .commit()
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
                 }
 
                 binding.btnActionRight.visibility = View.VISIBLE
                 binding.btnActionRight.text = "Mua lại"
                 binding.btnActionRight.setOnClickListener {
-<<<<<<< HEAD
-                    Toast.makeText(context, "Đã thêm toàn bộ sản phẩm của đơn ${order.id} vào giỏ hàng!", Toast.LENGTH_SHORT).show()
-=======
                     val checkoutItems = ArrayList(order.items.map { item ->
                         CartItemEntity(
                             id = item.productId,
@@ -360,7 +337,6 @@ class AccountOrderDetailFragment : RootieFragment() {
                         .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems))
                         .addToBackStack(null)
                         .commit()
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
                 }
             }
             else -> {

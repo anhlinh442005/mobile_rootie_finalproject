@@ -35,14 +35,10 @@ interface OrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrders(orders: List<OrderEntity>): List<Long>
 
-<<<<<<< HEAD
-    @Query("UPDATE orders SET status = :status WHERE id = :orderId")
-=======
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrder(order: OrderEntity): Long
 
-    @Query("UPDATE orders SET status = :status WHERE orderId = :orderId")
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
+    @Query("UPDATE orders SET status = :status WHERE id = :orderId")
     suspend fun updateOrderStatus(orderId: String, status: String): Int
 
     @Query("SELECT * FROM orders WHERE id = :orderId")

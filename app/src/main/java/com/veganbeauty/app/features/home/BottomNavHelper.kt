@@ -33,7 +33,12 @@ object BottomNavHelper {
     tabs.forEach { (viewId, _) ->
       root.findViewById<android.view.ViewGroup>(viewId)?.setOnClickListener {
         if (viewId != activeTabId) {
-          onTabSelected(viewId)
+            val isLoggedIn = com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(root.context)
+            if (!isLoggedIn && viewId == R.id.nav_account) {
+                showLoginRequiredDialog(root.context)
+                return@setOnClickListener
+            }
+            onTabSelected(viewId)
         }
       }
     }
@@ -63,13 +68,39 @@ object BottomNavHelper {
     }
   }
 
+  fun showLoginRequiredDialog(context: android.content.Context) {
+      val dialogView = android.view.LayoutInflater.from(context).inflate(R.layout.dialog_login_required, null)
+      val dialog = androidx.appcompat.app.AlertDialog.Builder(context)
+          .setView(dialogView)
+          .create()
+          
+      val btnConfirm = dialogView.findViewById<android.view.View>(R.id.btnConfirmLogin)
+      val btnCancel = dialogView.findViewById<android.view.View>(R.id.btnCancelLogin)
+      
+      btnConfirm.setOnClickListener {
+          dialog.dismiss()
+          val intent = android.content.Intent(context, com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity::class.java)
+          intent.putExtra("DIRECT_LOGIN", true)
+          intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+          context.startActivity(intent)
+      }
+      
+      btnCancel.setOnClickListener {
+          dialog.dismiss()
+      }
+      
+      dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+      dialog.show()
+  }
+
   fun navigate(fragment: Fragment, tabId: Int) {
+    val isLoggedIn = com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(fragment.requireContext())
     val target =
         when (tabId) {
           R.id.nav_home -> HomeFragment()
           R.id.nav_shop -> com.veganbeauty.app.features.shop.home.ShopHomeFragment()
           R.id.nav_myskin -> com.veganbeauty.app.features.myskin.MySkinFragment()
-          R.id.nav_community -> com.veganbeauty.app.features.community.com_feed.ComLoadingFragment()
+          R.id.nav_community -> if (isLoggedIn) com.veganbeauty.app.features.community.com_feed.ComLoadingFragment() else com.veganbeauty.app.features.community.beauty_hub.CommunityBeautyHubFragment()
           R.id.nav_account -> AccountProfileFragment()
           else -> null
         }

@@ -75,6 +75,33 @@ class CommunityFeedFragment : RootieFragment() {
             view.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawerLayout)?.closeDrawer(androidx.core.view.GravityCompat.START)
         }
 
+        // Logout
+        view.findViewById<View>(R.id.llLogout)?.setOnClickListener {
+            val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.com_dialog_logout_confirm, null)
+            val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create()
+                
+            val btnConfirm = dialogView.findViewById<android.widget.TextView>(R.id.btnConfirmLogout)
+            val btnCancel = dialogView.findViewById<android.widget.TextView>(R.id.btnCancelLogout)
+            
+            btnConfirm.setOnClickListener {
+                dialog.dismiss()
+                com.veganbeauty.app.data.local.ProfileSession.setLoggedIn(requireContext(), false)
+                val intent = android.content.Intent(requireContext(), com.veganbeauty.app.MainActivity::class.java)
+                intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                activity?.finish()
+            }
+            
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
+            
+            dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            dialog.show()
+        }
+
         binding.ivSearch.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)

@@ -103,3 +103,5 @@ dependencies {
 }
 dependencies { implementation("com.github.yalantis:ucrop:2.2.8") }
 dependencies { implementation("com.google.firebase:firebase-database-ktx") }
+dependencies { implementation("com.google.code.gson:gson:2.10.1") }
+dependencies { implementation("com.google.firebase:firebase-messaging-ktx") }

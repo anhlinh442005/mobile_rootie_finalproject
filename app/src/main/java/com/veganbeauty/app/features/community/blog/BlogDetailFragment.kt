@@ -108,8 +108,11 @@ class BlogDetailFragment : Fragment() {
             if (featuredPost.imageUrl.isNotEmpty()) {
                 view.findViewById<ImageView>(R.id.ivFeaturedImage).load(featuredPost.imageUrl) {
                     crossfade(true)
-                    error(R.drawable.img_avatar)
+                    error(R.color.gray_light)
+                    placeholder(R.color.gray_light)
                 }
+            } else {
+                view.findViewById<ImageView>(R.id.ivFeaturedImage).setImageResource(R.color.gray_light)
             }
             
             flFeaturedPost.setOnClickListener {

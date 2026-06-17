@@ -24,13 +24,10 @@ class OrderRepository(
         return orderDao.getOrdersByUserId(userId)
     }
 
-<<<<<<< HEAD
     fun getAffiliateOrders(referrerUserId: String): Flow<List<OrderEntity>> {
         return orderDao.getAffiliateOrdersByReferrer(referrerUserId)
     }
 
-    // Refresh orders from assets (Overwrite everything)
-=======
     /**
      * Stream of orders scoped to the current buyer.
      *
@@ -55,9 +52,6 @@ class OrderRepository(
             else -> orderDao.getAllOrders()
         }
     }
-
-    // Refresh orders from assets (Seed only if database is empty)
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
     suspend fun refreshOrders() {
         try {
             // Clear all old orders first as requested
@@ -302,11 +296,12 @@ class OrderRepository(
         val existing = orderDao.getOrderById(orderId)
         if (existing == null) {
             val mockOrder = OrderEntity(
-                orderId = orderId,
+                id = orderId,
                 orderDate = "16/06/2026",
                 orderTime = "15:30",
                 status = "Đang giao",
                 totalAmount = 202000L,
+                subTotal = 222000L,
                 items = listOf(
                     OrderItem(
                         productId = "product_rose_cream",

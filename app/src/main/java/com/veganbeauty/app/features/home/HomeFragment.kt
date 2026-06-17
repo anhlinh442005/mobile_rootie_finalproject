@@ -529,6 +529,47 @@ class HomeFragment : RootieFragment() {
         }
     } else {
         binding.quizTestWeeklyReminderLayout.root.visibility = View.GONE
+        
+        // Show popup for first-time users
+        if (lastTestTime == 0L && !hasShownQuizPopupThisSession) {
+            hasShownQuizPopupThisSession = true
+            view?.postDelayed({
+                if (!isAdded) return@postDelayed
+                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_quiz_test_new_user, null)
+                val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                    .setView(dialogView)
+                    .create()
+                
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+                
+                dialogView.findViewById<View>(R.id.btn_dialog_confirm).setOnClickListener {
+                    dialog.dismiss()
+                    navigateToQuizIntro()
+                }
+                dialogView.findViewById<View>(R.id.btn_dialog_cancel).setOnClickListener {
+                    dialog.dismiss()
+                }
+                
+                dialog.show()
+                
+                // Entrance bouncing animation for the whole dialog
+                val scaleX = android.animation.ObjectAnimator.ofFloat(dialogView, "scaleX", 0.7f, 1.05f, 1f)
+                val scaleY = android.animation.ObjectAnimator.ofFloat(dialogView, "scaleY", 0.7f, 1.05f, 1f)
+                val enterAnim = android.animation.AnimatorSet()
+                enterAnim.playTogether(scaleX, scaleY)
+                enterAnim.duration = 500
+                enterAnim.interpolator = android.view.animation.OvershootInterpolator(1.5f)
+                enterAnim.start()
+
+                // Continuous jumping animation for the badge to catch attention
+                val badgeLayout = dialogView.findViewById<View>(R.id.layout_badge)
+                val bounceAnim = android.animation.ObjectAnimator.ofFloat(badgeLayout, "translationY", 0f, -20f, 0f)
+                bounceAnim.duration = 1200
+                bounceAnim.repeatCount = android.animation.ObjectAnimator.INFINITE
+                bounceAnim.interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+                bounceAnim.start()
+            }, 5000)
+        }
     }
   }
 

@@ -81,7 +81,7 @@ class CommunityBlogFragment : Fragment() {
                         if (featured.imageUrl.isNotEmpty()) {
                             view.findViewById<ImageView>(R.id.ivFeaturedImage).load(featured.imageUrl) {
                                 crossfade(true)
-                                error(R.drawable.img_avatar)
+                                error(R.color.gray_light)
                             }
                         }
                         adapter.updateData(posts.drop(1))

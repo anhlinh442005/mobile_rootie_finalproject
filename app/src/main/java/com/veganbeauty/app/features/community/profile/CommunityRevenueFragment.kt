@@ -113,7 +113,7 @@ class CommunityRevenueFragment : Fragment() {
                 totalRevenue += order.totalAmount
                 val commission = order.affiliate?.commissionAmount ?: 0L
                 totalCommission += commission
-                newCustomerIds.add(order.userId)
+                order.userId?.let { newCustomerIds.add(it) }
                 
                 if (order.affiliate?.commissionStatus == "confirmed") {
                     availableBalance += commission

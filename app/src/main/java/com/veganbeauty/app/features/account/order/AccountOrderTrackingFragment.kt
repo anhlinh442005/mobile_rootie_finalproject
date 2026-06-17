@@ -94,7 +94,7 @@ class AccountOrderTrackingFragment : RootieFragment() {
 
         // 1. Expected Delivery & Order ID
         binding.tvExpectedTime.text = order.expectedDeliveryTime ?: "Hôm nay, 18:00 - 20:00"
-        binding.tvOrderCode.text = "Mã đơn: ${order.orderId}"
+        binding.tvOrderCode.text = "Mã đơn: ${order.id}"
 
         // Badge styling based on status
         val (badgeBgRes, badgeTextRes) = when (order.status) {

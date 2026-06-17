@@ -41,7 +41,19 @@ class ChatDetailAdapter(
 
     private var selectedItemPosition: Int = -1
 
+    private fun parseDate(dateStr: String): Long {
+        if (dateStr.isEmpty()) return 0L
+        try {
+            val format = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.getDefault())
+            format.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            return format.parse(dateStr)?.time ?: 0L
+        } catch (e: Exception) {
+            return 0L
+        }
+    }
+
     private fun formatTimestamp(timestamp: Long): String {
+        if (timestamp == 0L) return ""
         val calendar = java.util.Calendar.getInstance()
         val now = java.util.Calendar.getInstance()
         calendar.timeInMillis = timestamp
@@ -63,18 +75,20 @@ class ChatDetailAdapter(
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val item = items[position]
+        val itemTime = parseDate(item.sentAt)
 
         val showTimestamp = if (position == 0) {
             true
         } else {
             val prevItem = items[position - 1]
-            val diff = item.createdAt - prevItem.createdAt
+            val prevTime = parseDate(prevItem.sentAt)
+            val diff = itemTime - prevTime
             diff > 30 * 60 * 1000 // 30 minutes in milliseconds
         }
 
         if (showTimestamp || position == selectedItemPosition) {
             holder.tvTimestamp.visibility = View.VISIBLE
-            holder.tvTimestamp.text = formatTimestamp(item.createdAt)
+            holder.tvTimestamp.text = formatTimestamp(itemTime)
         } else {
             holder.tvTimestamp.visibility = View.GONE
         }
@@ -99,12 +113,13 @@ class ChatDetailAdapter(
             holder.llBubble.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#758864")) // Dark green
             holder.tvMessage.setTextColor(android.graphics.Color.WHITE)
 
-            // Show status (e.g., "Đã xem" if partner read it)
-            val partnerId = if (item.receiverId == currentUserId) item.senderId else item.receiverId
-            val partnerStatus = item.status[partnerId]
-            if (partnerStatus == "read" && position == selectedItemPosition) {
+            // Show status
+            if (!item.seenAt.isNullOrEmpty() && position == selectedItemPosition) {
                 holder.tvStatus.visibility = View.VISIBLE
                 holder.tvStatus.text = "Đã xem"
+            } else if (!item.deliveredAt.isNullOrEmpty() && position == selectedItemPosition) {
+                holder.tvStatus.visibility = View.VISIBLE
+                holder.tvStatus.text = "Đã nhận"
             } else {
                 holder.tvStatus.visibility = View.GONE
             }
@@ -128,7 +143,8 @@ class ChatDetailAdapter(
             val nextIsMine = nextItem?.senderId == currentUserId
             
             // Check if next item is also within 30 minutes and from same partner to hide avatar
-            val nextIsClose = nextItem != null && (nextItem.createdAt - item.createdAt <= 30 * 60 * 1000)
+            val nextTime = if (nextItem != null) parseDate(nextItem.sentAt) else 0L
+            val nextIsClose = nextItem != null && (nextTime - itemTime <= 30 * 60 * 1000)
             
             if (nextItem != null && !nextIsMine) {
                 holder.ivPartnerAvatar.visibility = View.INVISIBLE // Reserve space but hide if not last in group

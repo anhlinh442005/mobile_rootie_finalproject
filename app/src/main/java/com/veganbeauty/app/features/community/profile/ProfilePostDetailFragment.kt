@@ -19,26 +19,17 @@ class ProfilePostDetailFragment : Fragment() {
     private var userId: String = "test_001"
     private var initialPosition: Int = 0
 
-<<<<<<< HEAD
     private var currentTab: Int = 0
-
-    companion object {
-        fun newInstance(userId: String, initialPosition: Int, currentTab: Int = 0): ProfilePostDetailFragment {
-=======
     private var targetPostId: String? = null
 
     companion object {
-        fun newInstance(userId: String, initialPosition: Int, targetPostId: String? = null): ProfilePostDetailFragment {
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
+        fun newInstance(userId: String, initialPosition: Int, currentTab: Int = 0, targetPostId: String? = null): ProfilePostDetailFragment {
             val fragment = ProfilePostDetailFragment()
             val args = Bundle()
             args.putString("USER_ID", userId)
             args.putInt("INITIAL_POSITION", initialPosition)
-<<<<<<< HEAD
             args.putInt("CURRENT_TAB", currentTab)
-=======
             args.putString("TARGET_POST_ID", targetPostId)
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
             fragment.arguments = args
             return fragment
         }
@@ -49,11 +40,8 @@ class ProfilePostDetailFragment : Fragment() {
         arguments?.let {
             userId = it.getString("USER_ID") ?: "test_001"
             initialPosition = it.getInt("INITIAL_POSITION", 0)
-<<<<<<< HEAD
             currentTab = it.getInt("CURRENT_TAB", 0)
-=======
             targetPostId = it.getString("TARGET_POST_ID")
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
         }
     }
 
@@ -88,7 +76,6 @@ class ProfilePostDetailFragment : Fragment() {
         val jsonReader = LocalJsonReader(requireContext())
         val productsList = jsonReader.getProducts()
 
-<<<<<<< HEAD
         viewModel.posts.observe(viewLifecycleOwner) { dbPosts ->
             viewLifecycleOwner.lifecycleScope.launch {
                 val newsList = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
@@ -110,42 +97,33 @@ class ProfilePostDetailFragment : Fragment() {
                     }
                 } catch(e: Exception) {}
 
+                val finalUserId = if (!targetPostId.isNullOrEmpty()) {
+                    val targetPost = allPostsCombined.find { it.postId == targetPostId }
+                    targetPost?.authorId ?: userId
+                } else {
+                    userId
+                }
+
                 val myPosts = allPostsCombined.filter { post ->
                     when (currentTab) {
-                        0 -> post.authorId == userId
-                        1 -> post.authorId == userId
+                        0 -> post.authorId == finalUserId
+                        1 -> post.authorId == finalUserId
                         2 -> com.veganbeauty.app.features.community.UserMemoryHelper.isPostReposted(requireContext(), ownUserId, post.postId)
                         3 -> com.veganbeauty.app.features.community.UserMemoryHelper.isPostSaved(requireContext(), ownUserId, post.postId)
-                        else -> post.authorId == userId
+                        else -> post.authorId == finalUserId
                     }
                 }.distinctBy { it.postId }.sortedByDescending { it.createdAt }
 
                 adapter.updateData(myPosts, emptyList(), emptyList(), productsList)
-                layoutManager.scrollToPositionWithOffset(initialPosition, 0)
-            }
-=======
-        viewModel.posts.observe(viewLifecycleOwner) { allPosts ->
-            val finalUserId = if (!targetPostId.isNullOrEmpty()) {
-                val targetPost = allPosts.find { it.postId == targetPostId }
-                targetPost?.authorId ?: userId
-            } else {
-                userId
-            }
 
-            val myPosts = allPosts
-                .filter { it.authorId == finalUserId }
-                .distinctBy { it.postId }  // deduplicate by post ID - never show same post twice
-                .sortedByDescending { it.createdAt }
-            adapter.updateData(myPosts, emptyList(), emptyList(), productsList)
-
-            val scrollPos = if (!targetPostId.isNullOrEmpty()) {
-                val index = myPosts.indexOfFirst { it.postId == targetPostId }
-                if (index != -1) index else initialPosition
-            } else {
-                initialPosition
+                val scrollPos = if (!targetPostId.isNullOrEmpty()) {
+                    val index = myPosts.indexOfFirst { it.postId == targetPostId }
+                    if (index != -1) index else initialPosition
+                } else {
+                    initialPosition
+                }
+                layoutManager.scrollToPositionWithOffset(scrollPos, 0)
             }
-            layoutManager.scrollToPositionWithOffset(scrollPos, 0)
->>>>>>> 35f09837414391a9ba011bce61277d4577c69501
         }
 
     }
