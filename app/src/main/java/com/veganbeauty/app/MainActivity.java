@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.MotionEvent;
 import android.os.Handler;
 import android.content.DialogInterface;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -133,6 +134,12 @@ public class MainActivity extends AppCompatActivity {
             });
     }
 
+    private View bubbleAi;
+    private View bubbleHuman;
+    private View chatHeadArrow;
+    private boolean isExtraBubblesExpanded = false;
+    private boolean isDockedToLeft = false;
+
     private float initialTouchX;
     private float initialTouchY;
     private float initialViewX;
@@ -146,9 +153,46 @@ public class MainActivity extends AppCompatActivity {
         final View chatHead = findViewById(R.id.skin_ai_floating_chat_head);
         if (chatHead == null) return;
 
+        bubbleAi = findViewById(R.id.skin_floating_bubble_ai);
+        bubbleHuman = findViewById(R.id.skin_floating_bubble_human);
+        chatHeadArrow = findViewById(R.id.skin_ai_floating_chat_head_arrow);
+
+        if (chatHeadArrow != null) {
+            chatHeadArrow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    undockChatHead();
+                }
+            });
+        }
+
+        if (bubbleAi != null) {
+            bubbleAi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openSkinAiChatDialog();
+                }
+            });
+        }
+
+        if (bubbleHuman != null) {
+            bubbleHuman.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openSkinChatDialog();
+                }
+            });
+        }
+
         android.content.SharedPreferences prefs = getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE);
         boolean enabled = prefs.getBoolean("SKIN_AI_FLOATING_CHAT_ENABLED", true);
         chatHead.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        if (chatHeadArrow != null) {
+            chatHeadArrow.setVisibility(View.GONE);
+        }
+        if (!enabled) {
+            collapseExtraBubblesImmediately();
+        }
 
         longClickRunnable = new Runnable() {
             @Override
@@ -185,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
                                 isLongClickTriggered = false;
                             }
                             isDragging = true;
+                            collapseExtraBubblesImmediately();
                         }
 
                         if (isDragging) {
@@ -220,24 +265,32 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         if (!isDragging) {
-                            openChatFragment();
+                            toggleExtraBubbles();
                         } else {
                             int screenWidth = getResources().getDisplayMetrics().widthPixels;
                             float currentX = chatHead.getX();
                             float centerX = currentX + chatHead.getWidth() / 2f;
-                            
-                            float targetX;
-                            if (centerX < screenWidth / 2f) {
-                                targetX = 16 * getResources().getDisplayMetrics().density;
+                            float density = getResources().getDisplayMetrics().density;
+                            float threshold = 12 * density;
+
+                            if (currentX < threshold) {
+                                dockChatHead(true);
+                            } else if (currentX > screenWidth - chatHead.getWidth() - threshold) {
+                                dockChatHead(false);
                             } else {
-                                targetX = screenWidth - chatHead.getWidth() - (16 * getResources().getDisplayMetrics().density);
+                                float targetX;
+                                if (centerX < screenWidth / 2f) {
+                                    targetX = 16 * density;
+                                } else {
+                                    targetX = screenWidth - chatHead.getWidth() - (16 * density);
+                                }
+                                
+                                chatHead.animate()
+                                        .x(targetX)
+                                        .setDuration(250)
+                                        .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                                        .start();
                             }
-                            
-                            chatHead.animate()
-                                    .x(targetX)
-                                    .setDuration(250)
-                                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                                    .start();
                         }
                         return true;
                 }
@@ -283,6 +336,10 @@ public class MainActivity extends AppCompatActivity {
                 android.content.SharedPreferences prefs = getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE);
                 prefs.edit().putBoolean("SKIN_AI_FLOATING_CHAT_ENABLED", false).apply();
                 chatHead.setVisibility(View.GONE);
+                collapseExtraBubblesImmediately();
+                if (chatHeadArrow != null) {
+                    chatHeadArrow.setVisibility(View.GONE);
+                }
                 Toast.makeText(MainActivity.this, "Đã ẩn Trợ lý Rootie AI", Toast.LENGTH_SHORT).show();
             }
         });
@@ -295,6 +352,170 @@ public class MainActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void collapseExtraBubblesImmediately() {
+        if (bubbleAi == null || bubbleHuman == null) return;
+        if (isExtraBubblesExpanded) {
+            bubbleAi.setVisibility(View.GONE);
+            bubbleAi.setTranslationY(0f);
+            bubbleHuman.setVisibility(View.GONE);
+            bubbleHuman.setTranslationY(0f);
+            isExtraBubblesExpanded = false;
+        }
+    }
+
+    private void toggleExtraBubbles() {
+        final View chatHead = findViewById(R.id.skin_ai_floating_chat_head);
+        if (bubbleAi == null || bubbleHuman == null || chatHead == null) return;
+
+        if (isExtraBubblesExpanded) {
+            bubbleAi.animate()
+                .translationY(0)
+                .alpha(0f)
+                .setDuration(200)
+                .withEndAction(() -> bubbleAi.setVisibility(View.GONE))
+                .start();
+            bubbleHuman.animate()
+                .translationY(0)
+                .alpha(0f)
+                .setDuration(200)
+                .withEndAction(() -> bubbleHuman.setVisibility(View.GONE))
+                .start();
+            isExtraBubblesExpanded = false;
+        } else {
+            float mainX = chatHead.getX();
+            float mainY = chatHead.getY();
+            float density = getResources().getDisplayMetrics().density;
+            float offsetNeed = 5 * density;
+
+            float bubbleX = mainX + offsetNeed;
+            float bubbleY = mainY + offsetNeed;
+
+            bubbleAi.setX(bubbleX);
+            bubbleAi.setY(bubbleY);
+            bubbleHuman.setX(bubbleX);
+            bubbleHuman.setY(bubbleY);
+
+            bubbleAi.setVisibility(View.VISIBLE);
+            bubbleHuman.setVisibility(View.VISIBLE);
+
+            bubbleAi.setAlpha(0f);
+            bubbleAi.setTranslationY(0f);
+            bubbleHuman.setAlpha(0f);
+            bubbleHuman.setTranslationY(0f);
+
+            float targetY_Ai = -65 * density;
+            float targetY_Human = -125 * density;
+
+            bubbleAi.animate()
+                .translationY(targetY_Ai)
+                .alpha(1f)
+                .setDuration(300)
+                .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
+                .start();
+
+            bubbleHuman.animate()
+                .translationY(targetY_Human)
+                .alpha(1f)
+                .setDuration(300)
+                .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
+                .start();
+
+            isExtraBubblesExpanded = true;
+        }
+    }
+
+    private void openSkinAiChatDialog() {
+        collapseExtraBubblesImmediately();
+        com.veganbeauty.app.features.ai.SkinAiChatFragment dialog = new com.veganbeauty.app.features.ai.SkinAiChatFragment();
+        dialog.show(getSupportFragmentManager(), "SkinAiChatDialog");
+    }
+
+    private void openSkinChatDialog() {
+        collapseExtraBubblesImmediately();
+        com.veganbeauty.app.features.ai.SkinChatFragment dialog = new com.veganbeauty.app.features.ai.SkinChatFragment();
+        dialog.show(getSupportFragmentManager(), "SkinChatDialog");
+    }
+
+    private void dockChatHead(final boolean isLeft) {
+        final View chatHead = findViewById(R.id.skin_ai_floating_chat_head);
+        if (chatHead == null || chatHeadArrow == null) return;
+
+        collapseExtraBubblesImmediately();
+        isDockedToLeft = isLeft;
+
+        final int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        final float density = getResources().getDisplayMetrics().density;
+        float targetX = isLeft ? -chatHead.getWidth() : screenWidth;
+
+        chatHead.animate()
+                .x(targetX)
+                .setDuration(250)
+                .setInterpolator(new android.view.animation.AccelerateInterpolator())
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        chatHead.setVisibility(View.GONE);
+                        
+                        float arrowY = chatHead.getY() + (chatHead.getHeight() - chatHeadArrow.getHeight()) / 2f;
+                        int statusBarHeight = (int) (24 * density);
+                        int navigationBarHeight = (int) (48 * density);
+                        int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                        if (arrowY < statusBarHeight) arrowY = statusBarHeight;
+                        if (arrowY > screenHeight - chatHeadArrow.getHeight() - navigationBarHeight) {
+                            arrowY = screenHeight - chatHeadArrow.getHeight() - navigationBarHeight;
+                        }
+
+                        float arrowX = isLeft ? -12 * density : screenWidth - 20 * density;
+                        chatHeadArrow.setX(arrowX);
+                        chatHeadArrow.setY(arrowY);
+
+                        ImageView arrowIcon = findViewById(R.id.skin_ai_floating_chat_head_arrow_icon);
+                        if (arrowIcon != null) {
+                            arrowIcon.setImageResource(isLeft ? R.drawable.ic_chevron_right : R.drawable.ic_chevron_left);
+                        }
+
+                        chatHeadArrow.setVisibility(View.VISIBLE);
+                        chatHeadArrow.setScaleX(0f);
+                        chatHeadArrow.setScaleY(0f);
+                        chatHeadArrow.animate()
+                                    .scaleX(1.0f)
+                                    .scaleY(1.0f)
+                                    .setDuration(200)
+                                    .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
+                                    .start();
+                    }
+                })
+                .start();
+    }
+
+    private void undockChatHead() {
+        final View chatHead = findViewById(R.id.skin_ai_floating_chat_head);
+        if (chatHead == null || chatHeadArrow == null) return;
+
+        final int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        final float density = getResources().getDisplayMetrics().density;
+
+        chatHeadArrow.animate()
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .setDuration(150)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            chatHeadArrow.setVisibility(View.GONE);
+                            chatHead.setVisibility(View.VISIBLE);
+                            
+                            float targetX = isDockedToLeft ? 16 * density : screenWidth - chatHead.getWidth() - (16 * density);
+                            chatHead.animate()
+                                    .x(targetX)
+                                    .setDuration(300)
+                                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                                    .start();
+                        }
+                    })
+                    .start();
     }
 
     @Override

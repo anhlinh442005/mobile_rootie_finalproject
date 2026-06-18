@@ -9,7 +9,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.veganbeauty.app.core.base.RootieFragment
+import androidx.fragment.app.DialogFragment
 import com.veganbeauty.app.data.local.LocalJsonReader
 import com.veganbeauty.app.data.local.ProfileSession
 import com.veganbeauty.app.data.local.entities.ProductEntity
@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class SkinAiChatFragment : RootieFragment() {
+class SkinAiChatFragment : DialogFragment() {
 
     private var _binding: SkinAiChatBinding? = null
     private val binding get() = _binding!!
@@ -45,11 +45,34 @@ class SkinAiChatFragment : RootieFragment() {
         return binding.root
     }
 
-    override fun setupUI(view: View) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupUI(view)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (showsDialog) {
+            dialog?.window?.let { window ->
+                val width = (resources.displayMetrics.widthPixels * 0.90).toInt()
+                val height = (resources.displayMetrics.heightPixels * 0.85).toInt()
+                window.setLayout(width, height)
+                window.setBackgroundDrawableResource(android.R.color.transparent)
+            }
+        }
+    }
+
+    private fun setupUI(view: View) {
         allProducts = LocalJsonReader(requireContext()).getAllProducts()
 
-        // Hide floating chatbot head in chat screen
-        activity?.findViewById<View>(com.veganbeauty.app.R.id.skin_ai_floating_chat_head)?.visibility = View.GONE
+        if (!showsDialog) {
+            // Hide floating chatbot head in chat screen
+            activity?.findViewById<View>(com.veganbeauty.app.R.id.skin_ai_floating_chat_head)?.visibility = View.GONE
+        } else {
+            view.setBackgroundResource(com.veganbeauty.app.R.drawable.bg_chat_dialog)
+            view.clipToOutline = true
+            view.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+        }
 
         setupRecyclerView()
         setupListeners()
@@ -84,7 +107,11 @@ class SkinAiChatFragment : RootieFragment() {
 
     private fun setupListeners() {
         binding.btnBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            if (showsDialog) {
+                dismiss()
+            } else {
+                parentFragmentManager.popBackStack()
+            }
         }
 
         binding.btnSend.setOnClickListener {
@@ -1018,12 +1045,14 @@ class SkinAiChatFragment : RootieFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Restore floating chatbot head if enabled
-        activity?.let { act ->
-            val prefs = act.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
-            val enabled = prefs.getBoolean("SKIN_AI_FLOATING_CHAT_ENABLED", true)
-            if (enabled) {
-                act.findViewById<View>(com.veganbeauty.app.R.id.skin_ai_floating_chat_head)?.visibility = View.VISIBLE
+        if (!showsDialog) {
+            // Restore floating chatbot head if enabled
+            activity?.let { act ->
+                val prefs = act.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
+                val enabled = prefs.getBoolean("SKIN_AI_FLOATING_CHAT_ENABLED", true)
+                if (enabled) {
+                    act.findViewById<View>(com.veganbeauty.app.R.id.skin_ai_floating_chat_head)?.visibility = View.VISIBLE
+                }
             }
         }
         _binding = null
