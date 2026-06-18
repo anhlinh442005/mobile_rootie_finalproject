@@ -48,7 +48,8 @@
       "newProduct": false,
       "expiryDate": "01/05/2027",
       "rating": 4.7,
-      "sold": 6761
+      "sold": 6761,
+      "barcode": "8930000000019"
     },
     {
       "id": "55cb3638da4889f9acfb3884",
@@ -146,7 +147,8 @@
       "newProduct": false,
       "expiryDate": "02/05/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000026"
     },
     {
       "id": "50c50369a5552d24a4c319b6",
@@ -256,7 +258,8 @@
       "newProduct": false,
       "expiryDate": "03/05/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000033"
     },
     {
       "id": "f00e6cba6c5b59f11d69eb54",
@@ -335,7 +338,8 @@
       "newProduct": false,
       "expiryDate": "04/05/2027",
       "rating": 4.4,
-      "sold": 7820
+      "sold": 7820,
+      "barcode": "8930000000040"
     },
     {
       "id": "246c3c1f2c0ec26df7a0f42c",
@@ -442,7 +446,8 @@
       "newProduct": false,
       "expiryDate": "05/05/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000057"
     },
     {
       "id": "11a64d9f24eaa29ea09465dc",
@@ -568,7 +573,8 @@
       "newProduct": false,
       "expiryDate": "06/05/2027",
       "rating": 4.4,
-      "sold": 1465
+      "sold": 1465,
+      "barcode": "8930000000064"
     },
     {
       "id": "6c6e8df9ce95c82add761dd8",
@@ -694,7 +700,8 @@
       "newProduct": false,
       "expiryDate": "07/05/2027",
       "rating": 5.0,
-      "sold": 653
+      "sold": 653,
+      "barcode": "8930000000071"
     },
     {
       "id": "61756027ad622b26ec5f111a",
@@ -782,7 +789,8 @@
       "newProduct": false,
       "expiryDate": "08/05/2027",
       "rating": 5.0,
-      "sold": 1195
+      "sold": 1195,
+      "barcode": "8930000000088"
     },
     {
       "id": "8c6488c3de04d7f8a13a38d6",
@@ -916,7 +924,8 @@
       "newProduct": false,
       "expiryDate": "09/05/2027",
       "rating": 4.9,
-      "sold": 5255
+      "sold": 5255,
+      "barcode": "8930000000095"
     },
     {
       "id": "1bbc4d3419ce83e47ca773db",
@@ -1025,7 +1034,8 @@
       "newProduct": false,
       "expiryDate": "10/05/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000101"
     },
     {
       "id": "d663acaac65ac724f075c83e",
@@ -1067,7 +1077,8 @@
       "newProduct": false,
       "expiryDate": "11/05/2027",
       "rating": 4.2,
-      "sold": 5522
+      "sold": 5522,
+      "barcode": "8930000000118"
     },
     {
       "id": "b81d48373a196e182f0f6d8c",
@@ -1243,7 +1254,8 @@
       "newProduct": false,
       "expiryDate": "12/05/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000125"
     },
     {
       "id": "f1a45fe87438cab9c9aac7ad",
@@ -1370,7 +1382,8 @@
       "newProduct": false,
       "expiryDate": "13/05/2027",
       "rating": 4.2,
-      "sold": 4386
+      "sold": 4386,
+      "barcode": "8930000000132"
     },
     {
       "id": "ee980571ca44bdd5bff68f30",
@@ -1546,7 +1559,8 @@
       "newProduct": false,
       "expiryDate": "14/05/2027",
       "rating": 4.8,
-      "sold": 6425
+      "sold": 6425,
+      "barcode": "8930000000149"
     },
     {
       "id": "1e499ed75a31e4a02af2d962",
@@ -1693,7 +1707,8 @@
       "newProduct": false,
       "expiryDate": "15/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000156"
     },
     {
       "id": "24c454b0d57a53fe4be37964",
@@ -1840,7 +1855,8 @@
       "newProduct": false,
       "expiryDate": "16/05/2028",
       "rating": 4.3,
-      "sold": 8247
+      "sold": 8247,
+      "barcode": "8930000000163"
     },
     {
       "id": "3ec85dfb4eba9ccb5d808c02",
@@ -1973,7 +1989,8 @@
       "newProduct": false,
       "expiryDate": "17/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000170"
     },
     {
       "id": "a2ba6a40610e099f10b42d7f",
@@ -2065,7 +2082,8 @@
       "newProduct": false,
       "expiryDate": "18/05/2028",
       "rating": 4.0,
-      "sold": 1740
+      "sold": 1740,
+      "barcode": "8930000000187"
     },
     {
       "id": "9c60e218100d013418e3eb91",
@@ -2156,7 +2174,8 @@
       "newProduct": false,
       "expiryDate": "19/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000194"
     },
     {
       "id": "0b8fadbc1bd44562f75704e6",
@@ -2248,7 +2267,8 @@
       "newProduct": false,
       "expiryDate": "20/05/2028",
       "rating": 5.0,
-      "sold": 1366
+      "sold": 1366,
+      "barcode": "8930000000200"
     },
     {
       "id": "98ec272ca4f37e7a6550cccd",
@@ -2342,7 +2362,8 @@
       "newProduct": false,
       "expiryDate": "21/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000217"
     },
     {
       "id": "dc312be5eec4d740ae26acbb",
@@ -2436,7 +2457,8 @@
       "newProduct": false,
       "expiryDate": "22/05/2028",
       "rating": 4.1,
-      "sold": 3637
+      "sold": 3637,
+      "barcode": "8930000000224"
     },
     {
       "id": "edd9e4ecece58a82a253e4a8",
@@ -2529,7 +2551,8 @@
       "newProduct": false,
       "expiryDate": "23/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000231"
     },
     {
       "id": "dd23909f6a123054c8cf62f4",
@@ -2599,7 +2622,8 @@
       "newProduct": false,
       "expiryDate": "24/05/2028",
       "rating": 4.8,
-      "sold": 9146
+      "sold": 9146,
+      "barcode": "8930000000248"
     },
     {
       "id": "5c5672e9b67657a2b86069fe",
@@ -2670,7 +2694,8 @@
       "newProduct": false,
       "expiryDate": "25/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000255"
     },
     {
       "id": "d9054c76d1034d593bea440c",
@@ -2757,7 +2782,8 @@
       "newProduct": false,
       "expiryDate": "26/05/2028",
       "rating": 4.9,
-      "sold": 7316
+      "sold": 7316,
+      "barcode": "8930000000262"
     },
     {
       "id": "6d7d02a9276d5114489a48c3",
@@ -2844,7 +2870,8 @@
       "newProduct": false,
       "expiryDate": "27/05/2028",
       "rating": 4.6,
-      "sold": 1043
+      "sold": 1043,
+      "barcode": "8930000000279"
     },
     {
       "id": "812ea7faa15bac41e52d4170",
@@ -2955,7 +2982,8 @@
       "newProduct": false,
       "expiryDate": "28/05/2028",
       "rating": 4.1,
-      "sold": 3533
+      "sold": 3533,
+      "barcode": "8930000000286"
     },
     {
       "id": "87ca86128c249a4e52690db8",
@@ -3057,7 +3085,8 @@
       "newProduct": false,
       "expiryDate": "01/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000293"
     },
     {
       "id": "25b93e7dda9397da3b212b63",
@@ -3159,7 +3188,8 @@
       "newProduct": false,
       "expiryDate": "02/05/2028",
       "rating": 4.9,
-      "sold": 4105
+      "sold": 4105,
+      "barcode": "8930000000309"
     },
     {
       "id": "8d4ab3d4fb9c1ee4077c8d1d",
@@ -3263,7 +3293,8 @@
       "newProduct": false,
       "expiryDate": "03/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000316"
     },
     {
       "id": "13afaa472ab5642f72112123",
@@ -3367,7 +3398,8 @@
       "newProduct": false,
       "expiryDate": "04/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000323"
     },
     {
       "id": "7df6fb8720d3cc5566f0c4ca",
@@ -3456,7 +3488,8 @@
       "newProduct": false,
       "expiryDate": "05/05/2028",
       "rating": 4.6,
-      "sold": 5300
+      "sold": 5300,
+      "barcode": "8930000000330"
     },
     {
       "id": "947e0b2bbd933756c73469b4",
@@ -3566,7 +3599,8 @@
       "newProduct": false,
       "expiryDate": "06/05/2028",
       "rating": 4.3,
-      "sold": 4197
+      "sold": 4197,
+      "barcode": "8930000000347"
     },
     {
       "id": "5f29c9fa19873eb44aedced4",
@@ -3676,7 +3710,8 @@
       "newProduct": false,
       "expiryDate": "07/05/2028",
       "rating": 4.2,
-      "sold": 9786
+      "sold": 9786,
+      "barcode": "8930000000354"
     },
     {
       "id": "f2f170af25caff6973113648",
@@ -3774,7 +3809,8 @@
       "newProduct": false,
       "expiryDate": "08/11/2027",
       "rating": 4.3,
-      "sold": 1036
+      "sold": 1036,
+      "barcode": "8930000000361"
     },
     {
       "id": "8fe068265d7f674a7dd86f84",
@@ -3883,7 +3919,8 @@
       "newProduct": false,
       "expiryDate": "09/11/2027",
       "rating": 4.2,
-      "sold": 9337
+      "sold": 9337,
+      "barcode": "8930000000378"
     },
     {
       "id": "2b8ad283ba0fe39ef106880f",
@@ -3992,7 +4029,8 @@
       "newProduct": false,
       "expiryDate": "10/11/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000385"
     },
     {
       "id": "813455e9fcaaa2178c222614",
@@ -4096,7 +4134,8 @@
       "newProduct": false,
       "expiryDate": "11/11/2027",
       "rating": 4.8,
-      "sold": 6695
+      "sold": 6695,
+      "barcode": "8930000000392"
     },
     {
       "id": "3c691929f72b07a51ab8df27",
@@ -4199,7 +4238,8 @@
       "newProduct": false,
       "expiryDate": "12/11/2027",
       "rating": 5.0,
-      "sold": 5864
+      "sold": 5864,
+      "barcode": "8930000000408"
     },
     {
       "id": "9be4bb818bdad1c0cff402b7",
@@ -4290,7 +4330,8 @@
       "newProduct": false,
       "expiryDate": "13/11/2027",
       "rating": 4.4,
-      "sold": 9004
+      "sold": 9004,
+      "barcode": "8930000000415"
     },
     {
       "id": "c1c6def56e82dfbd16743d83",
@@ -4378,7 +4419,8 @@
       "newProduct": false,
       "expiryDate": "14/11/2027",
       "rating": 4.1,
-      "sold": 9375
+      "sold": 9375,
+      "barcode": "8930000000422"
     },
     {
       "id": "178545ef04bc12afd653231c",
@@ -4469,7 +4511,8 @@
       "newProduct": false,
       "expiryDate": "15/11/2027",
       "rating": 4.1,
-      "sold": 9748
+      "sold": 9748,
+      "barcode": "8930000000439"
     },
     {
       "id": "7007b8b1425c64a7af919b72",
@@ -4557,7 +4600,8 @@
       "newProduct": false,
       "expiryDate": "16/11/2027",
       "rating": 4.6,
-      "sold": 7807
+      "sold": 7807,
+      "barcode": "8930000000446"
     },
     {
       "id": "63fbeb4b71d9be046f8cd2e4",
@@ -4646,7 +4690,8 @@
       "newProduct": false,
       "expiryDate": "17/11/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000453"
     },
     {
       "id": "a185202d2cc44ecd80397574",
@@ -4736,7 +4781,8 @@
       "newProduct": false,
       "expiryDate": "19/05/2028",
       "rating": 4.0,
-      "sold": 2363
+      "sold": 2363,
+      "barcode": "8930000000460"
     },
     {
       "id": "67ac81895e29370aa758f466",
@@ -4824,7 +4870,8 @@
       "newProduct": false,
       "expiryDate": "20/05/2028",
       "rating": 4.6,
-      "sold": 7939
+      "sold": 7939,
+      "barcode": "8930000000477"
     },
     {
       "id": "c4ffadcfbb7ab91d5edcc360",
@@ -4936,7 +4983,8 @@
       "newProduct": false,
       "expiryDate": "21/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000484"
     },
     {
       "id": "fa9faa32eb09f2a48bb19fc8",
@@ -5033,7 +5081,8 @@
       "newProduct": false,
       "expiryDate": "22/05/2028",
       "rating": 4.3,
-      "sold": 7258
+      "sold": 7258,
+      "barcode": "8930000000491"
     },
     {
       "id": "0270231fcfee24f5205ecfee",
@@ -5106,7 +5155,8 @@
       "newProduct": false,
       "expiryDate": "23/11/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000507"
     },
     {
       "id": "6c1f36304287d148fdd36144",
@@ -5165,7 +5215,8 @@
       "newProduct": false,
       "expiryDate": "24/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000514"
     },
     {
       "id": "ca6e1382ef917a9d2cb0031a",
@@ -5268,7 +5319,8 @@
       "newProduct": true,
       "expiryDate": "25/11/2027",
       "rating": 4.8,
-      "sold": 8804
+      "sold": 8804,
+      "barcode": "8930000000521"
     },
     {
       "id": "f4d2089a9b35bb5d6845764f",
@@ -5380,7 +5432,8 @@
       "newProduct": true,
       "expiryDate": "26/11/2027",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000538"
     },
     {
       "id": "85aaa24b4e80e35fdf3e0892",
@@ -5475,7 +5528,8 @@
       "newProduct": true,
       "expiryDate": "27/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000545"
     },
     {
       "id": "9806f8679f1abada0a0e6378",
@@ -5572,7 +5626,8 @@
       "newProduct": false,
       "expiryDate": "28/05/2028",
       "rating": 4.5,
-      "sold": 2192
+      "sold": 2192,
+      "barcode": "8930000000552"
     },
     {
       "id": "d6049a26f5e640bdd69cda40",
@@ -5669,7 +5724,8 @@
       "newProduct": false,
       "expiryDate": "01/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000569"
     },
     {
       "id": "d7b2542d9f43256d944d854a",
@@ -5767,7 +5823,8 @@
       "newProduct": false,
       "expiryDate": "02/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000576"
     },
     {
       "id": "58990d055eb566f37e3c5d80",
@@ -5848,7 +5905,8 @@
       "newProduct": false,
       "expiryDate": "03/05/2028",
       "rating": 4.1,
-      "sold": 3595
+      "sold": 3595,
+      "barcode": "8930000000583"
     },
     {
       "id": "0ed27f8f8207d06b3cd04db3",
@@ -5933,7 +5991,8 @@
       "newProduct": false,
       "expiryDate": "04/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000590"
     },
     {
       "id": "0066feeceaba62d09860f05c",
@@ -6030,7 +6089,8 @@
       "newProduct": false,
       "expiryDate": "05/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000606"
     },
     {
       "id": "5ee9a1e82a48994b6e401a29",
@@ -6127,7 +6187,8 @@
       "newProduct": false,
       "expiryDate": "06/05/2028",
       "rating": 4.8,
-      "sold": 5815
+      "sold": 5815,
+      "barcode": "8930000000613"
     },
     {
       "id": "641cdf538114d9cb102d9ab2",
@@ -6246,7 +6307,8 @@
       "newProduct": false,
       "expiryDate": "09/11/2027",
       "rating": 4.2,
-      "sold": 1931
+      "sold": 1931,
+      "barcode": "8930000000620"
     },
     {
       "id": "c4b7cebcaf1a27611a9395af",
@@ -6339,7 +6401,8 @@
       "newProduct": false,
       "expiryDate": "10/11/2027",
       "rating": 4.5,
-      "sold": 8478
+      "sold": 8478,
+      "barcode": "8930000000637"
     },
     {
       "id": "568e1a3abfd97d6406cd3db9",
@@ -6436,7 +6499,8 @@
       "newProduct": false,
       "expiryDate": "11/11/2027",
       "rating": 4.1,
-      "sold": 6616
+      "sold": 6616,
+      "barcode": "8930000000644"
     },
     {
       "id": "09f0912f3bc5246ed851a7ae",
@@ -6563,7 +6627,8 @@
       "newProduct": false,
       "expiryDate": "12/11/2027",
       "rating": 4.0,
-      "sold": 2854
+      "sold": 2854,
+      "barcode": "8930000000651"
     },
     {
       "id": "afacd99996f7d76b3c0c7f88",
@@ -6648,7 +6713,8 @@
       "newProduct": false,
       "expiryDate": "13/05/2027",
       "rating": 4.1,
-      "sold": 6009
+      "sold": 6009,
+      "barcode": "8930000000668"
     },
     {
       "id": "44e410999cfeae6eedd37038",
@@ -6754,7 +6820,8 @@
       "newProduct": false,
       "expiryDate": "14/11/2027",
       "rating": 4.5,
-      "sold": 5144
+      "sold": 5144,
+      "barcode": "8930000000675"
     },
     {
       "id": "ead1d3ea6f03b685eb8ca0d4",
@@ -6861,7 +6928,8 @@
       "newProduct": false,
       "expiryDate": "15/05/2028",
       "rating": 4.0,
-      "sold": 592
+      "sold": 592,
+      "barcode": "8930000000682"
     },
     {
       "id": "e3b8810d7bb90e696e5f43c7",
@@ -6965,7 +7033,8 @@
       "newProduct": false,
       "expiryDate": "16/05/2028",
       "rating": 4.3,
-      "sold": 590
+      "sold": 590,
+      "barcode": "8930000000699"
     },
     {
       "id": "0c8e0704cf2997ca8560441a",
@@ -7062,7 +7131,8 @@
       "newProduct": false,
       "expiryDate": "17/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000705"
     },
     {
       "id": "ef39d32a96ce292d1e83a7ab",
@@ -7163,7 +7233,8 @@
       "newProduct": false,
       "expiryDate": "18/05/2028",
       "rating": 4.9,
-      "sold": 8020
+      "sold": 8020,
+      "barcode": "8930000000712"
     },
     {
       "id": "fdc1ca708d8cf2225c9d9697",
@@ -7274,7 +7345,8 @@
       "newProduct": false,
       "expiryDate": "19/05/2028",
       "rating": 5.0,
-      "sold": 463
+      "sold": 463,
+      "barcode": "8930000000729"
     },
     {
       "id": "ca192eb70b03e780dc19d872",
@@ -7385,7 +7457,8 @@
       "newProduct": false,
       "expiryDate": "20/05/2028",
       "rating": 5.0,
-      "sold": 8495
+      "sold": 8495,
+      "barcode": "8930000000736"
     },
     {
       "id": "113023f9cf480dbe4182e96c",
@@ -7486,7 +7559,8 @@
       "newProduct": false,
       "expiryDate": "21/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000743"
     },
     {
       "id": "1ba0d34dab3627b376a567c7",
@@ -7587,7 +7661,8 @@
       "newProduct": false,
       "expiryDate": "22/05/2028",
       "rating": 0.0,
-      "sold": 0
+      "sold": 0,
+      "barcode": "8930000000750"
     }
   ]
 }
