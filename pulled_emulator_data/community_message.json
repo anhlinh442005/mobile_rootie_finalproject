@@ -1,0 +1,267 @@
+[
+
+  {
+
+    "id": "1",
+
+    "user_id": "test_001",
+
+    "partner_id": "75675216",
+
+    "partner_name": "Thien Ai",
+
+    "partner_avatar": "https://i.pinimg.com/736x/b1/f4/f1/b1f4f17046008cee09ece025370ebae3.jpg",
+
+    "is_active": true,
+
+    "is_unread": true,
+
+    "is_typing": false,
+
+    "messages": [
+
+      {
+
+        "sender_id": "test_001",
+
+        "text": "Bạn dùng kem dưỡng ẩm mới thấy sao?",
+
+        "timestamp": "Hôm qua",
+
+        "is_mine": true,
+
+        "status": "Đã xem",
+
+        "id": "m1"
+
+      },
+
+      {
+
+        "sender_id": "75675216",
+
+        "text": "Mình thấy khá ổn, da mềm mịn hơn hẳn đó",
+
+        "timestamp": "Vừa xong",
+
+        "is_mine": false,
+
+        "status": "",
+
+        "id": "m2"
+
+      }
+
+    ]
+
+  },
+
+  {
+
+    "id": "2",
+
+    "user_id": "test_001",
+
+    "partner_id": "72400102",
+
+    "partner_name": "Dr. Sam Ellis",
+
+    "partner_avatar": "https://i.pinimg.com/736x/12/96/30/1296309708221c882e57eefae42bf46b.jpg",
+
+    "is_active": false,
+
+    "is_unread": false,
+
+    "is_typing": false,
+
+    "messages": [
+
+      {
+
+        "sender_id": "72400102",
+
+        "text": "Chị ơi, cho em hỏi về serum mờ thâm ạ",
+
+        "timestamp": "14:00 8 THG 4",
+
+        "is_mine": false,
+
+        "status": "",
+
+        "id": "m1"
+
+      },
+
+      {
+
+        "sender_id": "test_001",
+
+        "text": "Chào em, em đang thắc mắc về serum nghệ hay vitamin C vậy?",
+
+        "timestamp": "14:15 8 THG 4",
+
+        "is_mine": true,
+
+        "status": "",
+
+        "id": "m2"
+
+      },
+
+      {
+
+        "sender_id": "72400102",
+
+        "text": "Dạ em cảm ơn chị nhiều",
+
+        "timestamp": "10 ngày trước",
+
+        "is_mine": false,
+
+        "status": "",
+
+        "id": "m3"
+
+      }
+
+    ]
+
+  },
+
+  {
+
+    "id": "3",
+
+    "user_id": "test_001",
+
+    "partner_id": "60040601",
+
+    "partner_name": "Life With Oatmeal",
+
+    "partner_avatar": "https://i.pinimg.com/736x/ca/36/57/ca36573c75ab03bb970f9cc9afc3a2ef.jpg",
+
+    "is_active": true,
+
+    "is_unread": false,
+
+    "is_typing": false,
+
+    "messages": [
+
+      {
+
+        "sender_id": "test_001",
+
+        "text": "Hôm bữa đi sự kiện Rootie vui ghê luôn",
+
+        "timestamp": "11 ngày trước",
+
+        "is_mine": true,
+
+        "status": "",
+
+        "id": "m1"
+
+      },
+
+      {
+
+        "sender_id": "60040601",
+
+        "text": "Công nhận, để hôm nào rảnh hẹn đi cafe nha",
+
+        "timestamp": "11 ngày trước",
+
+        "is_mine": false,
+
+        "status": "",
+
+        "id": "m2"
+
+      }
+
+    ]
+
+  },
+
+  {
+
+    "id": "4",
+
+    "user_id": "test_001",
+
+    "partner_id": "86237409",
+
+    "partner_name": "THẨM MỸ VIỆN MAILISA",
+
+    "partner_avatar": "https://i.pinimg.com/736x/52/f9/a0/52f9a02638cbaa0610a0a7afb61f4db0.jpg",
+
+    "is_active": false,
+
+    "is_unread": true,
+
+    "is_typing": false,
+
+    "messages": [
+
+      {
+
+        "sender_id": "86237409",
+
+        "text": "Bà ơi hôm trước bà mua sữa rửa mặt ở đâu dợ",
+
+        "timestamp": "12 ngày trước",
+
+        "is_mine": false,
+
+        "status": "",
+
+        "id": "m1"
+
+      }
+
+    ]
+
+  },
+
+  {
+
+    "id": "5",
+
+    "user_id": "test_001",
+
+    "partner_id": "04112607",
+
+    "partner_name": "Hương Phạm",
+
+    "partner_avatar": "https://i.pinimg.com/736x/e1/23/49/e12349977ea0127c7481887fafcb23f5.jpg",
+
+    "is_active": true,
+
+    "is_unread": false,
+
+    "is_typing": false,
+
+    "messages": [
+
+      {
+
+        "sender_id": "test_001",
+
+        "text": "Cảm ơn bạn đã theo dõi nha!",
+
+        "timestamp": "14 ngày trước",
+
+        "is_mine": true,
+
+        "status": "Đã xem",
+
+        "id": "m1"
+
+      }
+
+    ]
+
+  }
+
+]

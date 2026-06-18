@@ -53,7 +53,7 @@ class ChatDetailFragment : Fragment() {
         binding.rvChat.adapter = chatAdapter
         
         binding.btnBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
         
         binding.ivSend.setOnClickListener {
@@ -98,8 +98,21 @@ class ChatDetailFragment : Fragment() {
             if (conv != null) {
                 partnerId = (conv.members ?: emptyList()).firstOrNull { it != currentUserId } ?: ""
                 val partnerInfo = (conv.memberInfo ?: emptyMap())[partnerId]
-                
-                binding.tvName.text = partnerInfo?.name ?: "Unknown"
+                var partnerName = partnerInfo?.name ?: "Unknown"
+                var partnerAvatar = partnerInfo?.avatar ?: ""
+
+                // Fix legacy "You" data
+                if (partnerName == "You" || partnerName == "Unknown" || partnerAvatar.isEmpty()) {
+                    val user = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getUsers().find { it.user_id == partnerId }
+                    if (user != null) {
+                        if (partnerName == "You" || partnerName == "Unknown") partnerName = user.full_name ?: partnerName
+                        if (partnerAvatar.isEmpty()) partnerAvatar = user.avatar ?: ""
+                    } else if (partnerId == "test_001") {
+                        if (partnerName == "You" || partnerName == "Unknown") partnerName = "Test User"
+                    }
+                }
+
+                binding.tvName.text = partnerName
                 
                 if (partnerId == "rootie_vn") {
                     binding.ivVerified.visibility = View.VISIBLE
@@ -107,23 +120,21 @@ class ChatDetailFragment : Fragment() {
                     binding.ivVerified.visibility = View.GONE
                 }
                 
-                val avatarUrl = partnerInfo?.avatar ?: ""
-                if (avatarUrl.isNotEmpty()) {
-                    binding.ivAvatar.load(avatarUrl) {
+                if (partnerAvatar.isNotEmpty()) {
+                    binding.ivAvatar.load(partnerAvatar) {
                         crossfade(true)
                         placeholder(R.color.gray_light)
                         if (partnerId == "rootie_vn") {
                             error(R.drawable.ic_logo_rootie)
                         } else {
-                            error(R.drawable.img_avatar)
+                            error(R.drawable.mascot_message)
                         }
                         transformations(CircleCropTransformation())
                     }
                 } else {
-                    if (partnerId == "rootie_vn") {
-                        binding.ivAvatar.setImageResource(R.drawable.ic_logo_rootie)
-                    } else {
-                        binding.ivAvatar.setImageResource(R.drawable.img_avatar)
+                    val defaultRes = if (partnerId == "rootie_vn") R.drawable.ic_logo_rootie else R.drawable.mascot_message
+                    binding.ivAvatar.load(defaultRes) {
+                        transformations(CircleCropTransformation())
                     }
                 }
                 
@@ -131,7 +142,7 @@ class ChatDetailFragment : Fragment() {
                 binding.vActiveDot.visibility = if (isActive) View.VISIBLE else View.GONE
                 binding.tvStatus.text = if (isActive) "Đang hoạt động" else "Ngoại tuyến"
 
-                chatAdapter.setPartnerAvatar(avatarUrl)
+                chatAdapter.setPartnerAvatar(partnerAvatar)
             }
 
             val messages = MessageHelper.getMessages(requireContext(), convId)

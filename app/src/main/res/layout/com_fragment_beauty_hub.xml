@@ -44,6 +44,15 @@
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <ImageView
+                            android:id="@+id/btnHome"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@drawable/ic_home"
+                            app:tint="@color/primary"
+                            android:padding="6dp"
+                            android:layout_marginEnd="8dp" />
+
+                        <ImageView
                             android:layout_width="56dp"
                             android:layout_height="56dp"
                             android:src="@drawable/mascot_hello" />
@@ -173,7 +182,7 @@
                             <ImageView
                                 android:layout_width="28dp"
                                 android:layout_height="28dp"
-                                android:src="@drawable/ic_leaf"
+                                android:src="@drawable/ic_leaf_ingredients"
                                 app:tint="@color/primary" />
                             <TextView
                                 android:layout_width="wrap_content"

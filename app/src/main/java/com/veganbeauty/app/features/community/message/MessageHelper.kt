@@ -12,7 +12,7 @@ import java.io.File
 import java.util.UUID
 
 object MessageHelper {
-    private const val FILE_NAME = "community_messages_v4.json"
+    private const val FILE_NAME = "community_message.json"
     
     private val conversationListeners = mutableMapOf<String, ListenerRegistration>()
     private val allConversationsListeners = mutableMapOf<String, ListenerRegistration>()
@@ -22,7 +22,7 @@ object MessageHelper {
             val db = FirebaseFirestore.getInstance()
             val jsonTree = Gson().toJsonTree(conv)
             val map = Gson().fromJson(jsonTree, Map::class.java) as Map<String, Any>
-            db.collection("conversations").document(conv.id).set(map)
+            db.collection("community_message").document(conv.id).set(map)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -30,7 +30,7 @@ object MessageHelper {
 
     fun listenToConversation(context: Context, conversationId: String, onUpdate: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
-        val listener = db.collection("conversations").document(conversationId)
+        val listener = db.collection("community_message").document(conversationId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) return@addSnapshotListener
                 if (snapshot != null && snapshot.exists()) {
@@ -62,7 +62,7 @@ object MessageHelper {
     
     fun listenToAllConversations(context: Context, currentUserId: String, onUpdate: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
-        val listener = db.collection("conversations")
+        val listener = db.collection("community_message")
             .whereArrayContains("members", currentUserId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) return@addSnapshotListener
@@ -99,6 +99,37 @@ object MessageHelper {
         allConversationsListeners.remove(currentUserId)?.remove()
     }
 
+    fun forceResetFirebaseFromAssets(context: Context) {
+        Thread {
+            try {
+                val db = FirebaseFirestore.getInstance()
+                // Clear existing
+                db.collection("community_message").get().addOnSuccessListener { snapshot ->
+                    for (doc in snapshot.documents) {
+                        doc.reference.delete()
+                    }
+                    
+                    // Upload from assets
+                    val jsonString = context.assets.open("community_message.json").bufferedReader().use { it.readText() }
+                    val type = object : TypeToken<List<ConversationEntity>>() {}.type
+                    val conversations = Gson().fromJson<List<ConversationEntity>>(jsonString, type)
+                    
+                    for (conv in conversations) {
+                        val jsonTree = Gson().toJsonTree(conv)
+                        val map = Gson().fromJson(jsonTree, Map::class.java) as Map<String, Any>
+                        db.collection("community_message").document(conv.id).set(map)
+                    }
+                    
+                    // Also overwrite local file
+                    val file = File(context.filesDir, FILE_NAME)
+                    file.writeText(jsonString)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }.start()
+    }
+
     fun initDataIfNeed(context: Context) {
         val file = File(context.filesDir, FILE_NAME)
         if (!file.exists()) {
@@ -133,8 +164,10 @@ object MessageHelper {
         }
     }
 
-    fun getConversations(context: Context): List<ConversationEntity> {
-        return readData(context).sortedByDescending { it.updatedAt ?: "" }
+    fun getConversations(context: Context, currentUserId: String): List<ConversationEntity> {
+        return readData(context)
+            .filter { (it.members ?: emptyList()).contains(currentUserId) }
+            .sortedByDescending { it.updatedAt ?: "" }
     }
 
     fun getConversation(context: Context, conversationId: String): ConversationEntity? {
@@ -217,6 +250,9 @@ object MessageHelper {
         val existing = data.find { (it.members ?: emptyList()).contains(currentUserId) && (it.members ?: emptyList()).contains(partnerId) }
         if (existing != null) return existing.id
         
+        val currentUserName = com.veganbeauty.app.data.local.ProfileSession.getFullName(context) ?: "Unknown"
+        val currentUserAvatar = com.veganbeauty.app.data.local.ProfileSession.getAvatar(context) ?: ""
+        
         val newConvId = "chat_${partnerId}_${currentUserId}"
         val timeStr = getCurrentTimeString()
         
@@ -224,7 +260,7 @@ object MessageHelper {
             id = newConvId,
             members = listOf(currentUserId, partnerId),
             memberInfo = mapOf(
-                currentUserId to MemberInfoEntity("You", ""),
+                currentUserId to MemberInfoEntity(currentUserName, currentUserAvatar),
                 partnerId to MemberInfoEntity(partnerName, partnerAvatar)
             ),
             activeBy = listOf(),

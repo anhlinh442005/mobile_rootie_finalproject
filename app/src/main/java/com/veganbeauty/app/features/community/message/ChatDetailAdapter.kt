@@ -153,6 +153,12 @@ class ChatDetailAdapter(
                 if (partnerAvatar.isNotEmpty()) {
                     holder.ivPartnerAvatar.load(partnerAvatar) {
                         crossfade(true)
+                        placeholder(R.color.gray_light)
+                        error(R.drawable.mascot_message)
+                        transformations(CircleCropTransformation())
+                    }
+                } else {
+                    holder.ivPartnerAvatar.load(R.drawable.mascot_message) {
                         transformations(CircleCropTransformation())
                     }
                 }

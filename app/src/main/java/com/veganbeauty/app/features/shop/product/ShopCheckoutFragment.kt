@@ -1170,6 +1170,30 @@ class ShopCheckoutFragment : RootieFragment() {
                 android.util.Log.e(TAG, "persistOrderSync failed: ${e.message}", e)
             }
         }
+        
+        // --- ADD FIREBASE SYNC FOR ADMIN ---
+        try {
+            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            // 1. Push order to Firebase
+            val orderMap = com.google.gson.Gson().fromJson(
+                com.google.gson.Gson().toJsonTree(order),
+                Map::class.java
+            ) as Map<String, Any>
+            db.collection("orders").document(order.id).set(orderMap)
+            
+            // 2. Push notification for Admin
+            val newNotification = hashMapOf(
+                "title" to "Có đơn hàng mới! \uD83D\uDED2",
+                "message" to "Khách hàng ${order.shippingName} vừa đặt đơn hàng trị giá ${String.format("%,d", order.totalAmount)}đ.",
+                "type" to "NEW_ORDER",
+                "isRead" to false,
+                "createdAt" to System.currentTimeMillis(),
+                "orderId" to order.id
+            )
+            db.collection("notification_admin").add(newNotification)
+        } catch (e: Exception) {
+            android.util.Log.e(TAG, "Firebase sync failed: ${e.message}", e)
+        }
     }
 
     /**

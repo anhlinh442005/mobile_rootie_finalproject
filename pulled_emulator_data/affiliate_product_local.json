@@ -1,0 +1,87 @@
+{
+
+    "affiliate_products": [
+
+        {
+
+            "userId": "test_001",
+
+            "products": [
+
+                {
+
+                    "productId": "0b8fadbc1bd44562f75704e6",
+
+                    "affiliate_display": true
+
+                },
+
+                {
+
+                    "productId": "50c50369a5552d24a4c319b6",
+
+                    "affiliate_display": true
+
+                }
+
+            ]
+
+        },
+
+        {
+
+            "userId": "75675216",
+
+            "products": [
+
+                {
+
+                    "productId": "50c50369a5552d24a4c319b6",
+
+                    "affiliate_display": true
+
+                }
+
+            ]
+
+        },
+
+        {
+
+            "userId": "50899342",
+
+            "products": [
+
+                {
+
+                    "productId": "0b8fadbc1bd44562f75704e6",
+
+                    "affiliate_display": true
+
+                }
+
+            ]
+
+        },
+
+        {
+
+            "userId": "42788949",
+
+            "products": [
+
+                {
+
+                    "productId": "50c50369a5552d24a4c319b6",
+
+                    "affiliate_display": true
+
+                }
+
+            ]
+
+        }
+
+    ]
+
+}
