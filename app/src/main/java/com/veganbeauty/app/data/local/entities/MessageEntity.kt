@@ -5,25 +5,25 @@ import com.google.gson.annotations.SerializedName
 data class ConversationEntity(
     val id: String,
     @SerializedName("chat_type")
-    val chatType: String?,
-    val members: List<String>,
+    val chatType: String? = null,
+    val members: List<String>? = emptyList(),
     @SerializedName("member_info")
-    val memberInfo: Map<String, MemberInfoEntity>,
+    val memberInfo: Map<String, MemberInfoEntity>? = emptyMap(),
     @SerializedName("active_by")
-    val activeBy: List<String>,
+    val activeBy: List<String>? = emptyList(),
     @SerializedName("typing_by")
-    val typingBy: List<String>,
+    val typingBy: List<String>? = emptyList(),
     @SerializedName("unread_by")
-    val unreadBy: List<String>,
+    val unreadBy: List<String>? = emptyList(),
     @SerializedName("created_at")
-    val createdAt: String,
+    val createdAt: String? = null,
     @SerializedName("updated_at")
-    val updatedAt: String,
+    val updatedAt: String? = null,
     @SerializedName("last_message")
-    val lastMessage: String,
+    val lastMessage: String? = null,
     @SerializedName("last_message_at")
-    val lastMessageAt: String,
-    val messages: List<ChatMessageEntity>
+    val lastMessageAt: String? = null,
+    val messages: List<ChatMessageEntity>? = emptyList()
 )
 
 data class MemberInfoEntity(

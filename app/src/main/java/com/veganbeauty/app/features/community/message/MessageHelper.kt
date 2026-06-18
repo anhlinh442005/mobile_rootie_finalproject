@@ -1,10 +1,8 @@
 package com.veganbeauty.app.features.community.message
 
 import android.content.Context
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.veganbeauty.app.data.local.entities.ChatMessageEntity
@@ -16,27 +14,29 @@ import java.util.UUID
 object MessageHelper {
     private const val FILE_NAME = "community_messages_v4.json"
     
-    private val conversationListeners = mutableMapOf<String, ValueEventListener>()
-    private val allConversationsListeners = mutableMapOf<String, ValueEventListener>()
+    private val conversationListeners = mutableMapOf<String, ListenerRegistration>()
+    private val allConversationsListeners = mutableMapOf<String, ListenerRegistration>()
     
     private fun pushToFirebase(conv: ConversationEntity) {
         try {
-            val ref = FirebaseDatabase.getInstance().getReference("conversations").child(conv.id)
+            val db = FirebaseFirestore.getInstance()
             val jsonTree = Gson().toJsonTree(conv)
-            val map = Gson().fromJson(jsonTree, Map::class.java)
-            ref.setValue(map)
+            val map = Gson().fromJson(jsonTree, Map::class.java) as Map<String, Any>
+            db.collection("conversations").document(conv.id).set(map)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     fun listenToConversation(context: Context, conversationId: String, onUpdate: () -> Unit) {
-        val ref = FirebaseDatabase.getInstance().getReference("conversations").child(conversationId)
-        val listener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
+        val db = FirebaseFirestore.getInstance()
+        val listener = db.collection("conversations").document(conversationId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
+                if (snapshot != null && snapshot.exists()) {
                     try {
-                        val jsonTree = Gson().toJsonTree(snapshot.value)
+                        val map = snapshot.data ?: return@addSnapshotListener
+                        val jsonTree = Gson().toJsonTree(map)
                         val conv = Gson().fromJson(jsonTree, ConversationEntity::class.java)
                         
                         val data = readData(context)
@@ -48,65 +48,55 @@ object MessageHelper {
                         }
                         writeData(context, data)
                         onUpdate()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    } catch (ex: Exception) {
+                        ex.printStackTrace()
                     }
                 }
             }
-            override fun onCancelled(error: DatabaseError) {}
-        }
-        ref.addValueEventListener(listener)
         conversationListeners[conversationId] = listener
     }
 
     fun removeConversationListener(conversationId: String) {
-        val listener = conversationListeners.remove(conversationId)
-        if (listener != null) {
-            FirebaseDatabase.getInstance().getReference("conversations").child(conversationId).removeEventListener(listener)
-        }
+        conversationListeners.remove(conversationId)?.remove()
     }
     
     fun listenToAllConversations(context: Context, currentUserId: String, onUpdate: () -> Unit) {
-        val ref = FirebaseDatabase.getInstance().getReference("conversations")
-        val listener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
+        val db = FirebaseFirestore.getInstance()
+        val listener = db.collection("conversations")
+            .whereArrayContains("members", currentUserId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
+                if (snapshot != null && !snapshot.isEmpty) {
                     try {
                         val data = readData(context)
                         var changed = false
-                        for (child in snapshot.children) {
-                            val jsonTree = Gson().toJsonTree(child.value)
+                        for (doc in snapshot.documents) {
+                            val map = doc.data ?: continue
+                            val jsonTree = Gson().toJsonTree(map)
                             val conv = Gson().fromJson(jsonTree, ConversationEntity::class.java)
-                            if (conv.members.contains(currentUserId)) {
-                                val index = data.indexOfFirst { it.id == conv.id }
-                                if (index != -1) {
-                                    data[index] = conv
-                                } else {
-                                    data.add(conv)
-                                }
-                                changed = true
+                            
+                            val index = data.indexOfFirst { it.id == conv.id }
+                            if (index != -1) {
+                                data[index] = conv
+                            } else {
+                                data.add(conv)
                             }
+                            changed = true
                         }
                         if (changed) {
                             writeData(context, data)
                             onUpdate()
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    } catch (ex: Exception) {
+                        ex.printStackTrace()
                     }
                 }
             }
-            override fun onCancelled(error: DatabaseError) {}
-        }
-        ref.addValueEventListener(listener)
         allConversationsListeners[currentUserId] = listener
     }
     
     fun removeAllConversationsListener(currentUserId: String) {
-        val listener = allConversationsListeners.remove(currentUserId)
-        if (listener != null) {
-            FirebaseDatabase.getInstance().getReference("conversations").removeEventListener(listener)
-        }
+        allConversationsListeners.remove(currentUserId)?.remove()
     }
 
     fun initDataIfNeed(context: Context) {
@@ -144,7 +134,7 @@ object MessageHelper {
     }
 
     fun getConversations(context: Context): List<ConversationEntity> {
-        return readData(context).sortedByDescending { it.updatedAt }
+        return readData(context).sortedByDescending { it.updatedAt ?: "" }
     }
 
     fun getConversation(context: Context, conversationId: String): ConversationEntity? {
@@ -152,7 +142,7 @@ object MessageHelper {
     }
 
     fun getMessages(context: Context, conversationId: String): List<ChatMessageEntity> {
-        return getConversation(context, conversationId)?.messages?.sortedBy { it.sentAt } ?: emptyList()
+        return getConversation(context, conversationId)?.messages?.sortedBy { it.sentAt ?: "" } ?: emptyList()
     }
 
     private fun getCurrentTimeString(): String {
@@ -166,10 +156,10 @@ object MessageHelper {
         val index = data.indexOfFirst { it.id == conversationId }
         if (index != -1) {
             val conv = data[index]
-            val unreadBy = conv.unreadBy.toMutableList()
+            val unreadBy = conv.unreadBy?.toMutableList() ?: mutableListOf()
             unreadBy.remove(userId)
             
-            val newMessages = conv.messages.map {
+            val newMessages = (conv.messages ?: emptyList()).map {
                 if (it.senderId != userId && it.seenAt == null) {
                     it.copy(seenAt = getCurrentTimeString())
                 } else {
@@ -201,12 +191,12 @@ object MessageHelper {
                 seenAt = null
             )
             
-            val unreadBy = conv.unreadBy.toMutableList()
+            val unreadBy = conv.unreadBy?.toMutableList() ?: mutableListOf()
             if (!unreadBy.contains(receiverId)) {
                 unreadBy.add(receiverId)
             }
             
-            val updatedMessages = conv.messages.toMutableList()
+            val updatedMessages = conv.messages?.toMutableList() ?: mutableListOf()
             updatedMessages.add(newMsg)
             
             val updatedConv = conv.copy(
@@ -224,7 +214,7 @@ object MessageHelper {
 
     fun getOrCreateConversation(context: Context, currentUserId: String, partnerId: String, partnerName: String, partnerAvatar: String): String {
         val data = readData(context)
-        val existing = data.find { it.members.contains(currentUserId) && it.members.contains(partnerId) }
+        val existing = data.find { (it.members ?: emptyList()).contains(currentUserId) && (it.members ?: emptyList()).contains(partnerId) }
         if (existing != null) return existing.id
         
         val newConvId = "chat_${partnerId}_${currentUserId}"
@@ -259,11 +249,11 @@ object MessageHelper {
         val index = data.indexOfFirst { it.id == conversationId }
         if (index != -1) {
             val conv = data[index]
-            val updatedMessages = conv.messages.map {
+            val updatedMessages = (conv.messages ?: emptyList()).map {
                 if (it.id == messageId) it.copy(text = newText) else it
             }
             
-            var lastMsg = conv.lastMessage
+            var lastMsg = conv.lastMessage ?: ""
             if (updatedMessages.lastOrNull()?.id == messageId) {
                 lastMsg = newText
             }
@@ -280,13 +270,13 @@ object MessageHelper {
         val index = data.indexOfFirst { it.id == conversationId }
         if (index != -1) {
             val conv = data[index]
-            val updatedMessages = conv.messages.filter { it.id != messageId }
+            val updatedMessages = (conv.messages ?: emptyList()).filter { it.id != messageId }
             
-            var lastMsg = conv.lastMessage
-            var lastMsgAt = conv.lastMessageAt
-            if (conv.messages.lastOrNull()?.id == messageId) {
+            var lastMsg = conv.lastMessage ?: ""
+            var lastMsgAt = conv.lastMessageAt ?: ""
+            if ((conv.messages ?: emptyList()).lastOrNull()?.id == messageId) {
                 lastMsg = updatedMessages.lastOrNull()?.text ?: ""
-                lastMsgAt = updatedMessages.lastOrNull()?.sentAt ?: conv.createdAt
+                lastMsgAt = updatedMessages.lastOrNull()?.sentAt ?: conv.createdAt ?: ""
             }
             
             val updatedConv = conv.copy(messages = updatedMessages, lastMessage = lastMsg, lastMessageAt = lastMsgAt)

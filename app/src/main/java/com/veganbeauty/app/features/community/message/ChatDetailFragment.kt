@@ -96,8 +96,8 @@ class ChatDetailFragment : Fragment() {
 
             val conv = MessageHelper.getConversation(requireContext(), convId)
             if (conv != null) {
-                partnerId = conv.members.firstOrNull { it != currentUserId } ?: ""
-                val partnerInfo = conv.memberInfo[partnerId]
+                partnerId = (conv.members ?: emptyList()).firstOrNull { it != currentUserId } ?: ""
+                val partnerInfo = (conv.memberInfo ?: emptyMap())[partnerId]
                 
                 binding.tvName.text = partnerInfo?.name ?: "Unknown"
                 
@@ -127,7 +127,7 @@ class ChatDetailFragment : Fragment() {
                     }
                 }
                 
-                val isActive = conv.activeBy.contains(partnerId)
+                val isActive = (conv.activeBy ?: emptyList()).contains(partnerId)
                 binding.vActiveDot.visibility = if (isActive) View.VISIBLE else View.GONE
                 binding.tvStatus.text = if (isActive) "Đang hoạt động" else "Ngoại tuyến"
 

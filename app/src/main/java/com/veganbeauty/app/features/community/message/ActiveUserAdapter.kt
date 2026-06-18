@@ -47,12 +47,12 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
         val item = items[position - 1]
         
         val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(holder.itemView.context)
-        val partnerId = item.members.firstOrNull { it != currentUserId } ?: ""
-        val partnerInfo = item.memberInfo[partnerId]
+        val partnerId = (item.members ?: emptyList()).firstOrNull { it != currentUserId } ?: ""
+        val partnerInfo = (item.memberInfo ?: emptyMap())[partnerId]
         
         val partnerName = partnerInfo?.name ?: "Unknown"
         val partnerAvatar = partnerInfo?.avatar ?: ""
-        val isActive = item.activeBy.contains(partnerId)
+        val isActive = (item.activeBy ?: emptyList()).contains(partnerId)
         
         // Convert name to username-like format (e.g., "Bảo Nguyên" -> "bao_nguyen")
         val shortName = partnerName.lowercase()

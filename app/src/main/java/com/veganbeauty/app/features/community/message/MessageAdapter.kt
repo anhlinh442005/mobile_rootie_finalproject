@@ -64,14 +64,14 @@ class MessageAdapter(
         val item = items[position]
         
         val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(holder.itemView.context)
-        val partnerId = item.members.firstOrNull { it != currentUserId } ?: ""
-        val partnerInfo = item.memberInfo[partnerId]
+        val partnerId = (item.members ?: emptyList()).firstOrNull { it != currentUserId } ?: ""
+        val partnerInfo = (item.memberInfo ?: emptyMap())[partnerId]
         
         val partnerName = partnerInfo?.name ?: "Unknown"
         val partnerAvatar = partnerInfo?.avatar ?: ""
         
-        val lastMsgText = item.lastMessage
-        val lastTime = formatTimestamp(item.lastMessageAt)
+        val lastMsgText = item.lastMessage ?: ""
+        val lastTime = formatTimestamp(item.lastMessageAt ?: "")
         
         holder.tvName.text = partnerName
         holder.tvLastMessage.text = lastMsgText
@@ -96,9 +96,9 @@ class MessageAdapter(
             }
         }
 
-        holder.vActiveDot.visibility = if (item.activeBy.contains(partnerId)) View.VISIBLE else View.GONE
+        holder.vActiveDot.visibility = if ((item.activeBy ?: emptyList()).contains(partnerId)) View.VISIBLE else View.GONE
         
-        val isUnread = item.unreadBy.contains(currentUserId)
+        val isUnread = (item.unreadBy ?: emptyList()).contains(currentUserId)
         if (isUnread) {
             holder.vUnreadDot.visibility = View.VISIBLE
             holder.tvName.setTypeface(null, android.graphics.Typeface.BOLD)

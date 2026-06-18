@@ -69,8 +69,8 @@ class CommunityMessageFragment : Fragment() {
             
             // Only consider users active if they are in the activeBy list
             val activeUsers = conversations.filter { conv ->
-                val partnerId = conv.members.firstOrNull { it != currentRealId } ?: ""
-                conv.activeBy.contains(partnerId)
+                val partnerId = (conv.members ?: emptyList()).firstOrNull { it != currentRealId } ?: ""
+                (conv.activeBy ?: emptyList()).contains(partnerId)
             }
             
             val myFriendsIds = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getFriendsForUser(currentUsername)
@@ -79,7 +79,7 @@ class CommunityMessageFragment : Fragment() {
             // Note: If ActiveUserAdapter still expects the old properties, it might need to be updated.
             // Assuming it accepts ConversationEntity.
             val sortedActiveUsers = activeUsers.sortedByDescending { conv ->
-                val partnerId = conv.members.firstOrNull { it != currentRealId } ?: ""
+                val partnerId = (conv.members ?: emptyList()).firstOrNull { it != currentRealId } ?: ""
                 myFriendsIds.contains(partnerId)
             }
             
