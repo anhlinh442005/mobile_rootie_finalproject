@@ -98,6 +98,18 @@ public class MainActivity extends AppCompatActivity {
 
                     // Update avatar in SQLite (upsert) using the sync method
                     userDao.insertUserSync(user);
+
+                    // Sync user profile to Firestore
+                    java.util.Map<String, Object> userMap = new java.util.HashMap<>();
+                    userMap.put("username", user.getUsername());
+                    userMap.put("avatar", user.getAvatar() != null ? user.getAvatar() : "");
+                    userMap.put("email", user.getEmail());
+                    userMap.put("phone", user.getPhone());
+                    userMap.put("full_name", user.getFull_name());
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(userId)
+                        .set(userMap, com.google.firebase.firestore.SetOptions.merge());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -131,7 +143,29 @@ public class MainActivity extends AppCompatActivity {
                     .edit()
                     .putString("FCM_REGISTRATION_TOKEN", token)
                     .apply();
+
+                // Upload FCM Token to Firestore under users/{userId}
+                try {
+                    String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(MainActivity.this);
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(currentUserId)
+                        .update("fcm_token", token)
+                        .addOnFailureListener(e -> {
+                            java.util.Map<String, Object> data = new java.util.HashMap<>();
+                            data.put("fcm_token", token);
+                            com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(currentUserId)
+                                .set(data, com.google.firebase.firestore.SetOptions.merge());
+                        });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             });
+
+        // Initialize unread status logic for chat bubbles
+        setupUnreadBadgesLogic();
     }
 
     private View bubbleAi;
@@ -139,6 +173,10 @@ public class MainActivity extends AppCompatActivity {
     private View chatHeadArrow;
     private boolean isExtraBubblesExpanded = false;
     private boolean isDockedToLeft = false;
+
+    private android.widget.TextView tvMascotBadge;
+    private View viewHumanBadge;
+    private View viewAiBadge;
 
     private float initialTouchX;
     private float initialTouchY;
@@ -362,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
             bubbleHuman.setVisibility(View.GONE);
             bubbleHuman.setTranslationY(0f);
             isExtraBubblesExpanded = false;
+            updateUnreadBadges();
         }
     }
 
@@ -374,15 +413,22 @@ public class MainActivity extends AppCompatActivity {
                 .translationY(0)
                 .alpha(0f)
                 .setDuration(200)
-                .withEndAction(() -> bubbleAi.setVisibility(View.GONE))
+                .withEndAction(() -> {
+                    bubbleAi.setVisibility(View.GONE);
+                    updateUnreadBadges();
+                })
                 .start();
             bubbleHuman.animate()
                 .translationY(0)
                 .alpha(0f)
                 .setDuration(200)
-                .withEndAction(() -> bubbleHuman.setVisibility(View.GONE))
+                .withEndAction(() -> {
+                    bubbleHuman.setVisibility(View.GONE);
+                    updateUnreadBadges();
+                })
                 .start();
             isExtraBubblesExpanded = false;
+            updateUnreadBadges();
         } else {
             float mainX = chatHead.getX();
             float mainY = chatHead.getY();
@@ -423,19 +469,128 @@ public class MainActivity extends AppCompatActivity {
                 .start();
 
             isExtraBubblesExpanded = true;
+            updateUnreadBadges();
         }
     }
 
     private void openSkinAiChatDialog() {
         collapseExtraBubblesImmediately();
+        getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE)
+            .edit()
+            .putBoolean("SKIN_AI_CHAT_UNREAD", false)
+            .apply();
+        updateUnreadBadges();
+
         com.veganbeauty.app.features.ai.SkinAiChatFragment dialog = new com.veganbeauty.app.features.ai.SkinAiChatFragment();
         dialog.show(getSupportFragmentManager(), "SkinAiChatDialog");
     }
 
     private void openSkinChatDialog() {
         collapseExtraBubblesImmediately();
+        String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
+        String skinChatConvId = "chat_rootie_vn_" + currentUserId;
+        com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.markAsRead(this, skinChatConvId, currentUserId);
+        updateUnreadBadges();
+
         com.veganbeauty.app.features.ai.SkinChatFragment dialog = new com.veganbeauty.app.features.ai.SkinChatFragment();
         dialog.show(getSupportFragmentManager(), "SkinChatDialog");
+    }
+
+    private void setupUnreadBadgesLogic() {
+        tvMascotBadge = findViewById(R.id.tv_mascot_badge);
+        viewHumanBadge = findViewById(R.id.view_human_badge);
+        viewAiBadge = findViewById(R.id.view_ai_badge);
+
+        // Initialize AI chat unread state to true on first launch if not set
+        android.content.SharedPreferences quizPrefs = getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE);
+        if (!quizPrefs.contains("SKIN_AI_CHAT_UNREAD")) {
+            quizPrefs.edit().putBoolean("SKIN_AI_CHAT_UNREAD", true).apply();
+        }
+
+        // Seed unread message from rootie_vn if conversation is empty
+        final String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
+        final String skinChatConvId = "chat_rootie_vn_" + currentUserId;
+        com.veganbeauty.app.data.local.entities.ConversationEntity conv =
+            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.getConversation(this, skinChatConvId);
+        if (conv == null || conv.getMessages() == null || conv.getMessages().isEmpty()) {
+            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.getOrCreateConversation(
+                this,
+                currentUserId,
+                "rootie_vn",
+                "Rootie VietNam",
+                "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png"
+            );
+            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.sendMessage(
+                this,
+                skinChatConvId,
+                "rootie_vn",
+                currentUserId,
+                "Chào bạn! Tôi có thể giúp gì cho làn da của bạn hôm nay?"
+            );
+        }
+
+        // Start listening to the expert conversation
+        com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.listenToConversation(this, skinChatConvId, new kotlin.jvm.functions.Function0<kotlin.Unit>() {
+            @Override
+            public kotlin.Unit invoke() {
+                updateUnreadBadges();
+                return kotlin.Unit.INSTANCE;
+            }
+        });
+
+        // Initial update of badges
+        updateUnreadBadges();
+    }
+
+    private void updateUnreadBadges() {
+        if (tvMascotBadge == null || viewHumanBadge == null || viewAiBadge == null) return;
+
+        android.content.SharedPreferences quizPrefs = getSharedPreferences("RootieQuizPrefs", MODE_PRIVATE);
+        boolean isAiUnread = quizPrefs.getBoolean("SKIN_AI_CHAT_UNREAD", true);
+
+        String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
+        String skinChatConvId = "chat_rootie_vn_" + currentUserId;
+        com.veganbeauty.app.data.local.entities.ConversationEntity conv =
+            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.getConversation(this, skinChatConvId);
+        
+        boolean isHumanUnread = false;
+        if (conv != null && conv.getUnreadBy() != null) {
+            isHumanUnread = conv.getUnreadBy().contains(currentUserId);
+        }
+
+        // Set sub-bubble badges visibility
+        viewHumanBadge.setVisibility(isHumanUnread ? View.VISIBLE : View.GONE);
+        viewAiBadge.setVisibility(isAiUnread ? View.VISIBLE : View.GONE);
+
+        // Set main mascot badge visibility
+        if (isExtraBubblesExpanded) {
+            // When expanded, hide the main mascot badge
+            tvMascotBadge.setVisibility(View.GONE);
+        } else {
+            // When collapsed, show main mascot badge with unread count
+            int unreadCount = 0;
+            if (isAiUnread) unreadCount++;
+            if (isHumanUnread) unreadCount++;
+
+            if (unreadCount > 0) {
+                tvMascotBadge.setVisibility(View.VISIBLE);
+                tvMascotBadge.setText(String.valueOf(unreadCount));
+            } else {
+                tvMascotBadge.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
+            String skinChatConvId = "chat_rootie_vn_" + currentUserId;
+            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.removeConversationListener(skinChatConvId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void dockChatHead(final boolean isLeft) {

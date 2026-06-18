@@ -72,11 +72,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         )
 
         // 2. Trigger push notification
+        val action = if (type.equals("CHAT", ignoreCase = true)) "open_community_message_list" else "open_community_notification_list"
         NotificationPushHelper.sendCommunityPushNotification(
             context = applicationContext,
             id = id,
             title = title,
-            content = body
+            content = body,
+            actionName = action
         )
     }
 

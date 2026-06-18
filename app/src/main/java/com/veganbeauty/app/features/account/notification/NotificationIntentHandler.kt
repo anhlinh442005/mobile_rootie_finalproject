@@ -43,6 +43,20 @@ object NotificationIntentHandler {
             return
         }
 
+        if (action == "open_skin_chat") {
+            val dialog = com.veganbeauty.app.features.ai.SkinChatFragment()
+            dialog.show(supportFragmentManager, "SkinChatDialog")
+            return
+        }
+
+        if (action == "open_community_message_list") {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.message.CommunityMessageFragment())
+                .addToBackStack(null)
+                .commit()
+            return
+        }
+
         if (action == "open_detail") {
             val type = (intent.getStringExtra("extra_notification_type") ?: "").lowercase()
             val voucherCode = intent.getStringExtra("extra_voucher_code")

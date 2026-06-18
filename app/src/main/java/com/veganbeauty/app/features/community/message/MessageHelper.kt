@@ -184,6 +184,62 @@ object MessageHelper {
         return format.format(java.util.Date())
     }
 
+    private fun pushMessageToFirebase(conversationId: String, newMsg: ChatMessageEntity, receiverId: String, text: String, timeStr: String) {
+        try {
+            val db = FirebaseFirestore.getInstance()
+            val docRef = db.collection("community_message").document(conversationId)
+            val msgTree = Gson().toJsonTree(newMsg)
+            val msgMap = Gson().fromJson(msgTree, Map::class.java) as Map<String, Any>
+            
+            val updates = hashMapOf<String, Any>(
+                "last_message" to text,
+                "last_message_at" to timeStr,
+                "updated_at" to timeStr,
+                "unread_by" to com.google.firebase.firestore.FieldValue.arrayUnion(receiverId),
+                "messages" to com.google.firebase.firestore.FieldValue.arrayUnion(msgMap)
+            )
+            docRef.update(updates)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun pushReadStatusToFirebase(conversationId: String, userId: String) {
+        try {
+            val db = FirebaseFirestore.getInstance()
+            val docRef = db.collection("community_message").document(conversationId)
+            docRef.get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    val timeStr = getCurrentTimeString()
+                    @Suppress("UNCHECKED_CAST")
+                    val unreadBy = snapshot.get("unread_by") as? List<String> ?: emptyList()
+                    val updatedUnread = unreadBy.filter { it != userId }
+                    
+                    @Suppress("UNCHECKED_CAST")
+                    val messagesRaw = snapshot.get("messages") as? List<Map<String, Any>> ?: emptyList()
+                    val updatedMessages = messagesRaw.map { msgMap ->
+                        val senderId = msgMap["sender_id"]?.toString() ?: ""
+                        if (senderId != userId && msgMap["seen_at"] == null) {
+                            val newMap = HashMap(msgMap)
+                            newMap["seen_at"] = timeStr
+                            newMap
+                        } else {
+                            msgMap
+                        }
+                    }
+                    
+                    val updates = hashMapOf<String, Any>(
+                        "unread_by" to updatedUnread,
+                        "messages" to updatedMessages
+                    )
+                    docRef.update(updates)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun markAsRead(context: Context, conversationId: String, userId: String) {
         val data = readData(context)
         val index = data.indexOfFirst { it.id == conversationId }
@@ -203,7 +259,7 @@ object MessageHelper {
             val updatedConv = conv.copy(unreadBy = unreadBy, messages = newMessages)
             data[index] = updatedConv
             writeData(context, data)
-            pushToFirebase(updatedConv)
+            pushReadStatusToFirebase(conversationId, userId)
         }
     }
 
@@ -241,7 +297,7 @@ object MessageHelper {
             )
             data[index] = updatedConv
             writeData(context, data)
-            pushToFirebase(updatedConv)
+            pushMessageToFirebase(conversationId, newMsg, receiverId, text, timeStr)
         }
     }
 

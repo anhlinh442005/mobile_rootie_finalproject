@@ -10,74 +10,128 @@
         android:layout_height="match_parent" />
 
     <!-- Extra Floating Bubble: Human/Expert Chat -->
-    <androidx.cardview.widget.CardView
+    <FrameLayout
         android:id="@+id/skin_floating_bubble_human"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="21dp"
-        android:layout_marginBottom="95dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:cardCornerRadius="25dp"
-        app:cardElevation="6dp"
-        app:cardBackgroundColor="#FFFFFF">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            android:src="@drawable/logo"
-            android:padding="8dp" />
-    </androidx.cardview.widget.CardView>
-
-    <!-- Extra Floating Bubble: AI Chat -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/skin_floating_bubble_ai"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="21dp"
-        android:layout_marginBottom="95dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:cardCornerRadius="25dp"
-        app:cardElevation="6dp"
-        app:cardBackgroundColor="#FFFFFF">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            android:src="@drawable/mascot_chat"
-            android:padding="6dp" />
-    </androidx.cardview.widget.CardView>
-
-    <!-- Floating Chatbot Head (Avatar) -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/skin_ai_floating_chat_head"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="95dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom|start"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/logo"
+                android:padding="8dp" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Unread Badge Dot for Human Chat -->
+        <View
+            android:id="@+id/view_human_badge"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/badge_dot"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Extra Floating Bubble: AI Chat -->
+    <FrameLayout
+        android:id="@+id/skin_floating_bubble_ai"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="95dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom|start"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/mascot_chat"
+                android:padding="6dp" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Unread Badge Dot for AI Chat -->
+        <View
+            android:id="@+id/view_ai_badge"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/badge_dot"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Floating Chatbot Head (Avatar) -->
+    <FrameLayout
+        android:id="@+id/skin_ai_floating_chat_head"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="6dp"
         android:layout_marginBottom="90dp"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="#FFFFFF">
+        android:visibility="gone">
 
-        <ImageView
-            android:id="@+id/skin_ai_iv_chat_head_avatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            android:src="@drawable/mascot_message"
-            android:padding="8dp" />
-    </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom|start"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <ImageView
+                android:id="@+id/skin_ai_iv_chat_head_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/mascot_message"
+                android:padding="8dp" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Unread Badge for Mascot Chat Head -->
+        <TextView
+            android:id="@+id/tv_mascot_badge"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="top|end"
+            android:background="@drawable/bg_badge_red"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <!-- Floating Chat Head Arrow Indicator (Docked handle) -->
     <androidx.cardview.widget.CardView
