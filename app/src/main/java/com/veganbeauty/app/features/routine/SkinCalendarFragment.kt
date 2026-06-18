@@ -281,7 +281,8 @@ class SkinCalendarFragment : RootieFragment() {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        topMargin = (12 * resources.displayMetrics.density).toInt()
+                        val density = ctx.resources.displayMetrics.density
+                        topMargin = (12 * density).toInt()
                     }
                 }
                 binding.layoutCalendarGrid.addView(rowLayout)
@@ -360,8 +361,9 @@ class SkinCalendarFragment : RootieFragment() {
 
     private fun selectTab(index: Int) {
         selectedTab = index
-        val activeBg = ContextCompat.getDrawable(requireContext(), R.drawable.com_bg_btn_dark_green)
-        val inactiveBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_pill_grey_translucent)
+        val ctx = context ?: return
+        val activeBg = ContextCompat.getDrawable(ctx, R.drawable.com_bg_btn_dark_green)
+        val inactiveBg = ContextCompat.getDrawable(ctx, R.drawable.bg_pill_grey_translucent)
         
         binding.btnTabMonth.background = if (index == 0) activeBg else inactiveBg
         binding.btnTabMonth.setTextColor(if (index == 0) Color.WHITE else Color.parseColor("#3E4D44"))

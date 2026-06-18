@@ -21,7 +21,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Schedule daily weather & skin advice notification at 6:30 AM
-        com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.INSTANCE.scheduleDailyNotification(getApplicationContext());
+        try {
+            com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.INSTANCE.scheduleDailyNotification(getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (savedInstanceState == null) {
             String navigateTo = getIntent().getStringExtra("NAVIGATE_TO");
