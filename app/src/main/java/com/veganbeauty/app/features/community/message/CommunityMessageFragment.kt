@@ -36,6 +36,13 @@ class CommunityMessageFragment : Fragment() {
         loadData()
         setupBottomNavigation()
         setupInteractions()
+        
+        val currentRealId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(requireContext())
+        MessageHelper.listenToAllConversations(requireContext(), currentRealId) {
+            if (isAdded) {
+                loadData()
+            }
+        }
     }
 
     private fun setupAdapters() {
@@ -140,6 +147,8 @@ class CommunityMessageFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        val currentRealId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(requireContext())
+        MessageHelper.removeAllConversationsListener(currentRealId)
         _binding = null
     }
 }

@@ -1,5 +1,8 @@
 package com.veganbeauty.app.features.community.notification
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.veganbeauty.app.R
@@ -14,6 +18,28 @@ import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.databinding.ComFragmentNotificationBinding
 
 class CommunityNotificationFragment : RootieFragment() {
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Toast.makeText(requireContext(), "Đã cấp quyền nhận thông báo", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(requireContext(), "Bạn chưa cấp quyền nhận thông báo", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
 
     private var _binding: ComFragmentNotificationBinding? = null
     private val binding get() = _binding!!
@@ -101,6 +127,7 @@ class CommunityNotificationFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
+        checkNotificationPermission()
         // Back Navigation with slide pop transition
         binding.btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()

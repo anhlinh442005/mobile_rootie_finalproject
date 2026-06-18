@@ -79,6 +79,14 @@ class ChatDetailFragment : Fragment() {
         })
 
         loadData()
+        
+        conversationId?.let { convId ->
+            MessageHelper.listenToConversation(requireContext(), convId) {
+                if (isAdded) {
+                    refreshLocalMessages(convId)
+                }
+            }
+        }
     }
 
     private fun loadData() {
@@ -212,6 +220,9 @@ class ChatDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        conversationId?.let {
+            MessageHelper.removeConversationListener(it)
+        }
         _binding = null
     }
 }

@@ -51,7 +51,7 @@ class ComNotificationViewModel : ViewModel() {
             val loadedList = withContext(Dispatchers.IO) {
                 var list = loadNotificationsFromLocal(context)
                 val needsRegen = list != null && list.any { (it.type == "POST" || it.type == "INTERACTION") && it.postId.isNullOrEmpty() }
-                if (list == null || needsRegen) {
+                if (list.isNullOrEmpty() || needsRegen) {
                     val jsonReader = LocalJsonReader(context)
                     val users = jsonReader.getUsers()
                     val usersMap = users.associateBy { it.user_id }
