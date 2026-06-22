@@ -246,7 +246,8 @@ class AccountNotificationFragment : RootieFragment() {
             }
             type == "schedule date" || title.contains("lịch hẹn") || content.contains("lịch hẹn") -> {
                 val scheduleId = item.scheduleId ?: "BK_NOTI_101"
-                val bookings = LocalJsonReader(requireContext()).getUserBookingHistory("xuannk23411@st.uel.edu.vn")
+                val userEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext())
+                val bookings = LocalJsonReader(requireContext()).getUserBookingHistory(userEmail)
                 val realBooking = bookings.find { it.id == scheduleId }
                 val fragment = if (realBooking != null) {
                     when (realBooking.status) {
@@ -260,7 +261,7 @@ class AccountNotificationFragment : RootieFragment() {
                         userId = "user_1",
                         userName = "Nguyễn Khánh Xuân",
                         userPhone = "0901234567",
-                        userEmail = "xuannk23411@st.uel.edu.vn",
+                        userEmail = userEmail,
                         serviceName = "Chăm sóc da chuyên sâu Acne Free",
                         dateDisplay = "15 Tháng 6, 2026",
                         dayOfWeek = "Thứ Hai",

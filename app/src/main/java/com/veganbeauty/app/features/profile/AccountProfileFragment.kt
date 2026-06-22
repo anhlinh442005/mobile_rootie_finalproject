@@ -41,11 +41,7 @@ class AccountProfileFragment : RootieFragment() {
 
         // Load dynamic values from ProfileSession
         val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(ctx)
-        binding.ivAvatar.load(avatarUrl) {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-        }
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
 
         val guestRedirectListener = View.OnClickListener {
             val intent = android.content.Intent(ctx, com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity::class.java)
@@ -218,7 +214,7 @@ class AccountProfileFragment : RootieFragment() {
         // Navigate to Weather & Skin page
         binding.btnSkinWeather.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.weather.WeatherForecastFragment())
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.weather.SkinWeatherForecastFragment())
                 .addToBackStack(null)
                 .commit()
         }
@@ -324,5 +320,21 @@ class AccountProfileFragment : RootieFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            val ctx = requireContext()
+            val isLoggedIn = com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(ctx)
+            val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(ctx)
+            com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
+            if (isLoggedIn) {
+                val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
+                val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
+                binding.tvUsername.text = fullName
+                binding.tvEmail.text = email
+            }
+        }
     }
 }

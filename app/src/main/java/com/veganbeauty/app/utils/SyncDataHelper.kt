@@ -87,4 +87,82 @@ object SyncDataHelper {
             }
         }
     }
+
+    fun syncUserProfileToFirebaseAndLocal(context: Context) {
+        val userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context)
+        val username = com.veganbeauty.app.data.local.ProfileSession.getUsername(context)
+        val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(context)
+        val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(context)
+        val phone = com.veganbeauty.app.data.local.ProfileSession.getPhone(context)
+        val avatar = com.veganbeauty.app.data.local.ProfileSession.getAvatar(context)
+        val address = com.veganbeauty.app.data.local.ProfileSession.getAddress(context)
+        val cccd = com.veganbeauty.app.data.local.ProfileSession.getCCCD(context)
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(context)
+                val existingUser = db.userDao().getUserByEmail(email) ?: db.userDao().getUserByPhone(phone)
+                val password = existingUser?.password ?: "123456"
+
+                val userEntity = com.veganbeauty.app.data.local.entities.UserEntity(
+                    user_id = userId,
+                    username = username,
+                    full_name = fullName,
+                    email = email,
+                    phone = phone,
+                    password = password,
+                    avatar = avatar,
+                    primary_image = existingUser?.primary_image
+                )
+                db.userDao().insertUser(userEntity)
+
+                val firestoreDb = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                val userMap = hashMapOf<String, Any>(
+                    "username" to username,
+                    "full_name" to fullName,
+                    "email" to email,
+                    "phone" to phone,
+                    "avatar" to avatar,
+                    "address" to address,
+                    "cccd" to cccd
+                )
+                firestoreDb.collection("users").document(userId)
+                    .set(userMap, com.google.firebase.firestore.SetOptions.merge())
+                    .await()
+
+                Log.d("SyncData", "Successfully synced user profile to SQLite & Firestore for user: $userId")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("SyncData", "Failed to sync user profile: ${e.message}")
+            }
+        }
+    }
+
+    fun uploadAvatarToFirebase(context: Context, fileUri: android.net.Uri, onComplete: (String?) -> Unit) {
+        try {
+            val userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context)
+            val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().reference
+            val avatarRef = storageRef.child("avatars/$userId.jpg")
+
+            avatarRef.putFile(fileUri)
+                .addOnSuccessListener {
+                    avatarRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                        val downloadUrl = downloadUri.toString()
+                        com.veganbeauty.app.data.local.ProfileSession.setAvatar(context, downloadUrl)
+                        syncUserProfileToFirebaseAndLocal(context)
+                        onComplete(downloadUrl)
+                    }.addOnFailureListener { e ->
+                        e.printStackTrace()
+                        onComplete(null)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    e.printStackTrace()
+                    onComplete(null)
+                }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onComplete(null)
+        }
+    }
 }

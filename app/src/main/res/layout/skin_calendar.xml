@@ -141,6 +141,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/ic_skin_fire"
+                        app:tint="#FF5722"
                         app:layout_constraintBottom_toBottomOf="@id/tvCurrentStreak"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvStreakLabel" />
@@ -190,7 +191,7 @@
                     android:layout_marginEnd="8dp"
                     app:cardBackgroundColor="#FFFFFF"
                     app:cardCornerRadius="15dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="5dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -241,7 +242,7 @@
                     android:layout_marginStart="8dp"
                     app:cardBackgroundColor="#FFFFFF"
                     app:cardCornerRadius="15dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="5dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -632,7 +633,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="40dp"
                 android:background="@drawable/bg_btn_outlined_beige"
-                android:text="Nhật ký chi tiết tháng 4 >"
+                android:text="Nhật ký chi tiết tháng 4"
                 android:textAllCaps="false"
                 android:textColor="#3E4D44"
                 android:textSize="15sp"

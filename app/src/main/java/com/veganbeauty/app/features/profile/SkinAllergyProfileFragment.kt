@@ -80,7 +80,7 @@ class SkinAllergyProfileFragment : RootieFragment() {
             parentFragmentManager.popBackStack()
         }
 
-        binding.btnNotifications.setOnClickListener {
+        binding.btnNotification.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                 .addToBackStack(null)

@@ -32,7 +32,13 @@ class QuizTestLevelSelectionFragment : RootieFragment() {
             parentFragmentManager.popBackStack()
         }
 
-
+        // Notification Button click
+        binding.btnNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
 
         // Card Selection Clicks
         binding.cardQuizBasic.setOnClickListener {

@@ -60,8 +60,13 @@ class BookingHistoryAdapter(
             // Style tag based on status
             val context = holder.itemView.context
             when (item.status) {
-                "Sắp diễn ra" -> {
-                    holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_upcoming)
+                "Sắp diễn ra", "Chờ xác nhận", "pending" -> {
+                    if (item.status.equals("Chờ xác nhận", ignoreCase = true) || item.status.equals("pending", ignoreCase = true)) {
+                        holder.tvStatusTag.text = "Chờ xác nhận"
+                        holder.tvStatusTag.setBackgroundColor(Color.parseColor("#FF9800")) // Orange
+                    } else {
+                        holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_upcoming)
+                    }
                     holder.tvStatusTag.setTextColor(Color.WHITE)
                     holder.llActions.visibility = View.VISIBLE
                 }

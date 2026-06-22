@@ -150,8 +150,15 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 org.json.JSONArray jsonArray = new org.json.JSONArray(jsonString);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     org.json.JSONObject obj = jsonArray.getJSONObject(i);
+                    String userId = obj.optString("user_id", "");
+                    if (userId.isEmpty()) {
+                        userId = java.util.UUID.randomUUID().toString();
+                    }
+                    com.veganbeauty.app.data.local.entities.UserEntity existing = db.userDao().getUserByIdSync(userId);
+                    if (existing != null) continue;
+
                     com.veganbeauty.app.data.local.entities.UserEntity user = new com.veganbeauty.app.data.local.entities.UserEntity(
-                        obj.optString("user_id", java.util.UUID.randomUUID().toString()),
+                        userId,
                         obj.optString("username", ""),
                         obj.optString("full_name", ""),
                         obj.optString("email", ""),
@@ -1138,6 +1145,11 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     String userId = obj.optString("user_id", "");
                     if (!teamIds.contains(userId))
                         continue;
+
+                    com.veganbeauty.app.data.local.entities.UserEntity existingUser = userDao.getUserByIdSync(userId);
+                    if (existingUser != null) {
+                        continue;
+                    }
 
                     com.veganbeauty.app.data.local.entities.UserEntity user = new com.veganbeauty.app.data.local.entities.UserEntity(
                             userId,

@@ -11,6 +11,8 @@ import coil.load
 import com.veganbeauty.app.R
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
 import com.veganbeauty.app.databinding.SkinFragmentBookingDetailUpcomingBinding
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class BookingDetailUpcomingFragment : RootieFragment() {
 
@@ -108,6 +110,11 @@ class BookingDetailUpcomingFragment : RootieFragment() {
             val updatedData = data.copy(status = "Đã huỷ", cancelReason = finalReason)
             bookingData = updatedData
             populateUI(updatedData)
+
+            // Update on Firestore
+            viewLifecycleOwner.lifecycleScope.launch {
+                com.veganbeauty.app.data.remote.FirestoreService().updateBookingStatus(data.id, "Đã huỷ", finalReason)
+            }
             
             Toast.makeText(requireContext(), "Hủy lịch thành công", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
@@ -125,8 +132,13 @@ class BookingDetailUpcomingFragment : RootieFragment() {
         // Status Tag
         binding.skinDetailStatusTag.text = data.status
         when (data.status) {
-            "Sắp diễn ra" -> {
-                binding.skinDetailStatusTag.setBackgroundResource(R.drawable.skin_bg_btn_book) // Blue/Green
+            "Sắp diễn ra", "Chờ xác nhận", "pending" -> {
+                if (data.status.equals("Chờ xác nhận", ignoreCase = true) || data.status.equals("pending", ignoreCase = true)) {
+                    binding.skinDetailStatusTag.text = "Chờ xác nhận"
+                    binding.skinDetailStatusTag.setBackgroundColor(Color.parseColor("#FF9800")) // Orange
+                } else {
+                    binding.skinDetailStatusTag.setBackgroundResource(R.drawable.skin_bg_btn_book) // Blue/Green
+                }
                 binding.skinDetailStatusTag.setTextColor(Color.WHITE)
                 binding.skinDetailBottomActions.visibility = View.VISIBLE
             }

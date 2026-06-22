@@ -5,12 +5,61 @@
     android:layout_height="match_parent"
     android:background="@color/neutral">
 
+    <!-- Header Panel (Fixed/Sticky at the top) -->
+    <RelativeLayout
+        android:id="@+id/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:background="@drawable/bg_header_gradient"
+        android:paddingHorizontal="16dp"
+        android:gravity="center_vertical">
+
+        <!-- Back button -->
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_chevron_left"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <!-- Header Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Chỉnh sửa hồ sơ"
+            android:textColor="#28362E"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/lexend" />
+
+        <!-- Notification Icon -->
+        <ImageView
+            android:id="@+id/btn_notification"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:padding="6dp"
+            android:src="@drawable/ic_notification"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+    </RelativeLayout>
+
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/layout_header"
         android:layout_above="@id/bottom_nav"
         android:fillViewport="true"
+        android:overScrollMode="never"
         android:scrollbars="none">
 
         <LinearLayout
@@ -18,52 +67,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="24dp">
-
-            <!-- Header Panel -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="66dp"
-                android:background="@drawable/bg_header_gradient"
-                android:paddingHorizontal="16dp"
-                android:gravity="center_vertical">
-
-                <!-- Back button -->
-                <ImageView
-                    android:id="@+id/btn_back"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_chevron_left"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"/>
-
-                <!-- Header Title -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="Chỉnh sửa hồ sơ"
-                    android:textColor="#28362E"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:fontFamily="@font/lexend" />
-
-                <!-- Notification Icon -->
-                <ImageView
-                    android:id="@+id/btn_notification"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:padding="6dp"
-                    android:src="@drawable/home_ic_notification"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true" />
-            </RelativeLayout>
 
             <!-- Centered Profile Avatar Section -->
             <LinearLayout

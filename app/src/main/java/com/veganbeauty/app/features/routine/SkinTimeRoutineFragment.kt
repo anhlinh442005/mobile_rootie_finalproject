@@ -58,11 +58,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
 
         // 2. Load Avatar
         val avatarUrl = ProfileSession.getAvatar(ctx)
-        binding.ivAvatar.load(avatarUrl) {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-        }
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
 
         // 3. Customize dynamic elements based on routine type
         val fullName = ProfileSession.getFullName(ctx)
@@ -96,10 +92,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
             completeRoutineAction()
         }
 
-        // 7. Add all to cart action
-        binding.btnAddToCart.setOnClickListener {
-            addAllActiveStepsToCart()
-        }
+
 
         // 8. Load and populate steps
         loadSteps()
@@ -150,9 +143,32 @@ class SkinTimeRoutineFragment : RootieFragment() {
         val totalCount = activeSteps.size
         val completedCount = activeSteps.count { completedSteps.contains("${routineType}_${it.index}") }
 
+        // Mark as completed in ProfileSession for streak only if within time window and at least 1 step is checked
+        if (isWithinTimeWindow(routineType) && completedCount > 0) {
+            if (routineType == "morning") {
+                ProfileSession.addCompletedMorningDate(ctx, targetDate)
+            } else {
+                ProfileSession.addCompletedEveningDate(ctx, targetDate)
+            }
+        } else {
+            // Remove from completed if submitted outside window or no steps are checked
+            if (routineType == "morning") {
+                val completedMornings = ProfileSession.getCompletedMorningDates(ctx).toMutableSet()
+                completedMornings.remove(targetDate)
+                ProfileSession.setCompletedMorningDates(ctx, completedMornings)
+            } else {
+                val completedEvenings = ProfileSession.getCompletedEveningDates(ctx).toMutableSet()
+                completedEvenings.remove(targetDate)
+                ProfileSession.setCompletedEveningDates(ctx, completedEvenings)
+            }
+        }
+
         if (!isWithinTimeWindow(routineType)) {
             Toast.makeText(ctx, "Đã chốt phiên Routine! Ngoài khung giờ quy định nên không được cộng xu.", Toast.LENGTH_LONG).show()
-            parentFragmentManager.popBackStack()
+            viewLifecycleOwner.lifecycleScope.launch {
+                checkStreakAndUpdate(routineType)
+                parentFragmentManager.popBackStack()
+            }
             return
         }
 
@@ -187,11 +203,17 @@ class SkinTimeRoutineFragment : RootieFragment() {
                 }
             } else {
                 Toast.makeText(ctx, "Routine đã được hoàn tất và nhận thưởng trước đó!", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    checkStreakAndUpdate(routineType)
+                    parentFragmentManager.popBackStack()
+                }
             }
         } else {
             Toast.makeText(ctx, "Đã chốt phiên Routine! Bạn chưa hoàn thành 100% các bước nên không được cộng xu.", Toast.LENGTH_LONG).show()
-            parentFragmentManager.popBackStack()
+            viewLifecycleOwner.lifecycleScope.launch {
+                checkStreakAndUpdate(routineType)
+                parentFragmentManager.popBackStack()
+            }
         }
     }
 
@@ -230,6 +252,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
 
         val targetDate = getRoutineDate(routineType)
         val completedSteps = ProfileSession.getCompletedStepIdsForDate(ctx, targetDate)
+        val isSubmitted = ProfileSession.isRoutineSubmitted(ctx, routineType, targetDate)
 
         for (step in activeSteps) {
             val stepBinding = ItemTimeRoutineStepBinding.inflate(
@@ -247,10 +270,10 @@ class SkinTimeRoutineFragment : RootieFragment() {
             stepBinding.ivStepIcon.setImageResource(getStepIconRes(step.name))
 
             val stepId = "${routineType}_${step.index}"
-            val isStepCompleted = completedSteps.contains(stepId)
+            val isStepCompleted = completedSteps.contains(stepId) || isSubmitted
 
             if (isStepCompleted) {
-                stepBinding.ivCheckbox.setImageResource(R.drawable.skin_ic_circle_checked)
+                stepBinding.ivCheckbox.setImageResource(R.drawable.quiz_ic_selected)
             } else {
                 stepBinding.ivCheckbox.setImageResource(R.drawable.skin_ic_circle_unchecked)
             }
@@ -335,16 +358,21 @@ class SkinTimeRoutineFragment : RootieFragment() {
         // Update step badge
         binding.tvStepCountBadge.text = "$totalCount Bước"
 
-        // Calculate expected duration
+        // Calculate expected duration (completed / total minutes)
         var totalMinutes = 0
+        var completedMinutes = 0
+        val isSubmitted = ProfileSession.isRoutineSubmitted(ctx, routineType, targetDate)
         for (step in activeSteps) {
             val mins = getStepTimeVal(getStepTime(step.name))
             totalMinutes += mins
+            
+            val stepId = "${routineType}_${step.index}"
+            val isStepCompleted = completedSteps.contains(stepId) || isSubmitted
+            if (isStepCompleted) {
+                completedMinutes += mins
+            }
         }
-        if (totalMinutes == 0) {
-            totalMinutes = 15 // Fallback default
-        }
-        binding.tvDurationMins.text = "$totalMinutes Phút"
+        binding.tvDurationMins.text = "$completedMinutes/$totalMinutes Phút"
 
         // Progress percentage
         val percentage = if (totalCount > 0) {
@@ -355,7 +383,6 @@ class SkinTimeRoutineFragment : RootieFragment() {
         binding.progressBar.progress = percentage
 
         // Customise Complete Routine button appearance and text based on status and time window
-        val isSubmitted = ProfileSession.isRoutineSubmitted(ctx, routineType, targetDate)
         if (isSubmitted) {
             binding.btnCompleteRoutine.text = "Đã hoàn thành"
             binding.btnCompleteRoutine.isEnabled = false
@@ -548,6 +575,15 @@ class SkinTimeRoutineFragment : RootieFragment() {
             lower.contains("sunscreen") || lower.contains("chống nắng") || lower.contains("kem chống nắng") -> R.drawable.skin_ic_step_sunscreen
             lower.contains("makeup remover") || lower.contains("tẩy trang") -> R.drawable.skin_ic_step_water_drop
             else -> R.drawable.skin_ic_step_face
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            val ctx = requireContext()
+            val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(ctx)
+            com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
         }
     }
 

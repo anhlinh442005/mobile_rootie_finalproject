@@ -38,7 +38,24 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Notification Bell with Badge -->
+        <!-- Notification Button -->
+        <FrameLayout
+            android:id="@+id/btn_notification"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_notification" />
+        </FrameLayout>
     </RelativeLayout>
 
     <!-- Scrollable Content -->

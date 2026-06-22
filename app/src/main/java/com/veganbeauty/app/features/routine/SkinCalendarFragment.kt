@@ -56,11 +56,7 @@ class SkinCalendarFragment : RootieFragment() {
 
         // Load Avatar
         val avatarUrl = ProfileSession.getAvatar(ctx)
-        binding.ivAvatar.load(avatarUrl) {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-        }
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
 
         // 2. Load Streaks & Stats
         val morningDates = ProfileSession.getCompletedMorningDates(ctx)
@@ -119,6 +115,7 @@ class SkinCalendarFragment : RootieFragment() {
         val currentMonthFormat = SimpleDateFormat("'Nhật ký chi tiết tháng' M ' >'", Locale("vi", "VN"))
         binding.btnDetailedHistory.text = currentMonthFormat.format(Date())
     }
+
 
     private fun calculateMaxStreak(morningDates: Set<String>, eveningDates: Set<String>): Int {
         val completedDaysSet = morningDates.intersect(eveningDates).mapNotNull {
@@ -532,6 +529,15 @@ class SkinCalendarFragment : RootieFragment() {
 
             binding.layoutTimelineContainer.addView(viewDay)
             tempCal.add(Calendar.DAY_OF_YEAR, -1)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            val ctx = requireContext()
+            val avatarUrl = ProfileSession.getAvatar(ctx)
+            com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
         }
     }
 

@@ -13,6 +13,8 @@ import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
 import com.veganbeauty.app.data.local.LocalJsonReader
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class BookingHistoryFragment : RootieFragment() {
 
@@ -51,7 +53,8 @@ class BookingHistoryFragment : RootieFragment() {
 
         // Load data
         val jsonReader = LocalJsonReader(requireContext())
-        allHistory = jsonReader.getUserBookingHistory("xuannk23411@st.uel.edu.vn")
+        val userEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext())
+        allHistory = jsonReader.getUserBookingHistory(userEmail)
 
         // Init adapter
         rvHistory.layoutManager = LinearLayoutManager(context)
@@ -76,6 +79,27 @@ class BookingHistoryFragment : RootieFragment() {
 
         // Initial filter
         applyFilter()
+
+        // Fetch from Firestore asynchronously
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val remoteBookings = com.veganbeauty.app.data.remote.FirestoreService().fetchBookingsForUser(userEmail)
+                if (remoteBookings.isNotEmpty()) {
+                    for (remote in remoteBookings) {
+                        val existing = allHistory.find { it.id == remote.id }
+                        if (existing != null) {
+                            jsonReader.updateBookingStatus(remote.id, remote.status, remote.cancelReason)
+                        } else {
+                            jsonReader.addBooking(remote)
+                        }
+                    }
+                    allHistory = jsonReader.getUserBookingHistory(userEmail)
+                    applyFilter()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun observeViewModel() {}
@@ -108,12 +132,24 @@ class BookingHistoryFragment : RootieFragment() {
     private fun applyFilter() {
         val filteredList = if (currentFilter == "Tất Cả") {
             allHistory
+        } else if (currentFilter == "Sắp diễn ra") {
+            allHistory.filter { 
+                it.status.equals("Sắp diễn ra", ignoreCase = true) || 
+                it.status.equals("Chờ xác nhận", ignoreCase = true) || 
+                it.status.equals("pending", ignoreCase = true)
+            }
         } else {
             allHistory.filter { it.status.equals(currentFilter, ignoreCase = true) }
         }
 
         // Group by status
-        val grouped = filteredList.groupBy { it.status }
+        val grouped = filteredList.groupBy { 
+            if (it.status.equals("Chờ xác nhận", ignoreCase = true) || it.status.equals("pending", ignoreCase = true)) {
+                "Sắp diễn ra"
+            } else {
+                it.status
+            }
+        }
         
         // Define order of groups to match UI design
         val order = listOf("Sắp diễn ra", "Đã hoàn thành", "Đã huỷ")

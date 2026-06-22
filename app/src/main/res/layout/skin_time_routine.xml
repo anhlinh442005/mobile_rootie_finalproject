@@ -6,12 +6,13 @@
     android:layout_height="match_parent"
     android:background="@color/neutral">
 
-    <!-- Top App Bar -->
+    <!-- Top App Bar with solid background -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/skin_bg_top_bar_gradient"
+        android:background="@drawable/bg_header_gradient"
+        android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
@@ -320,7 +321,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="@color/neutral"
         android:paddingHorizontal="16dp"
+        android:paddingTop="12dp"
         android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -329,27 +332,9 @@
             android:id="@+id/btnCompleteRoutine"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/skin_bg_btn_dark_green"
             android:fontFamily="@font/be_vietnam_pro"
             android:text="Hoàn tất Routine"
-            android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <!-- Add all to cart button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnAddToCart"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/skin_bg_btn_olive"
-            android:drawableStart="@drawable/skin_ic_cart_white"
-            android:drawablePadding="8dp"
-            android:fontFamily="@font/be_vietnam_pro"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:text="Thêm trọn bộ vào giỏ hàng"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="16sp"

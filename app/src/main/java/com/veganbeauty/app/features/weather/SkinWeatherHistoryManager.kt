@@ -32,6 +32,49 @@ object SkinWeatherHistoryManager {
     private const val FILE_NAME = "skin_weather_history.json"
 
     fun saveDiagnostic(context: Context, diagnostic: SkinWeatherDiagnostic) {
+        // Save locally first
+        saveToLocalOnly(context, diagnostic)
+
+        // Then push to Firebase Firestore
+        try {
+            val userId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(context)
+            if (userId.isNotBlank() && userId != "guest_user") {
+                val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                val docId = diagnostic.date.replace("/", "-")
+
+                val firestoreData = hashMapOf(
+                    "id" to diagnostic.id,
+                    "timestamp" to diagnostic.timestamp,
+                    "date" to diagnostic.date,
+                    "city" to diagnostic.city,
+                    "temperature" to diagnostic.temperature,
+                    "humidity" to diagnostic.humidity,
+                    "uv" to diagnostic.uv,
+                    "pm25" to diagnostic.pm25,
+                    "skinType" to diagnostic.skinType,
+                    "oilyPercent" to diagnostic.oilyPercent,
+                    "hydrationPercent" to diagnostic.hydrationPercent,
+                    "sensitivityPercent" to diagnostic.sensitivityPercent,
+                    "insight" to diagnostic.insight,
+                    "recommendedRoutine" to diagnostic.recommendedRoutine.map { item ->
+                        hashMapOf(
+                            "category" to item.category,
+                            "productName" to item.productName,
+                            "description" to item.description
+                        )
+                    }
+                )
+
+                db.collection("users").document(userId)
+                    .collection("skin_weather_history").document(docId)
+                    .set(firestoreData)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun saveToLocalOnly(context: Context, diagnostic: SkinWeatherDiagnostic) {
         try {
             val file = File(context.filesDir, FILE_NAME)
             val jsonArray = if (file.exists()) {
@@ -98,7 +141,7 @@ object SkinWeatherHistoryManager {
             val jsonArray = JSONArray(content)
             for (i in 0 until jsonArray.length()) {
                 val obj = jsonArray.getJSONObject(i)
-                
+
                 val routineList = mutableListOf<SkinWeatherDiagnostic.RoutineItem>()
                 val routineArray = obj.optJSONArray("recommendedRoutine")
                 if (routineArray != null) {
@@ -137,5 +180,80 @@ object SkinWeatherHistoryManager {
             e.printStackTrace()
         }
         return list.sortedByDescending { it.timestamp }
+    }
+
+    fun syncFromFirestore(context: Context, onComplete: (List<SkinWeatherDiagnostic>) -> Unit) {
+        try {
+            val userId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(context)
+            if (userId.isBlank() || userId == "guest_user") {
+                onComplete(getHistory(context))
+                return
+            }
+
+            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            db.collection("users").document(userId)
+                .collection("skin_weather_history")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        try {
+                            val id = document.getString("id") ?: ""
+                            val timestamp = document.getLong("timestamp") ?: 0L
+                            val date = document.getString("date") ?: ""
+                            val city = document.getString("city") ?: ""
+                            val temperature = document.getDouble("temperature") ?: 0.0
+                            val humidity = document.getLong("humidity")?.toInt() ?: 0
+                            val uv = document.getDouble("uv") ?: 0.0
+                            val pm25 = document.getLong("pm25")?.toInt() ?: 0
+                            val skinType = document.getString("skinType") ?: ""
+                            val oilyPercent = document.getLong("oilyPercent")?.toInt() ?: 0
+                            val hydrationPercent = document.getLong("hydrationPercent")?.toInt() ?: 0
+                            val sensitivityPercent = document.getLong("sensitivityPercent")?.toInt() ?: 0
+                            val insight = document.getString("insight") ?: ""
+
+                            val routineList = mutableListOf<SkinWeatherDiagnostic.RoutineItem>()
+                            val routineRaw = document.get("recommendedRoutine") as? List<Map<String, Any>>
+                            if (routineRaw != null) {
+                                for (itemMap in routineRaw) {
+                                    routineList.add(
+                                        SkinWeatherDiagnostic.RoutineItem(
+                                            category = itemMap["category"] as? String ?: "",
+                                            productName = itemMap["productName"] as? String ?: "",
+                                            description = itemMap["description"] as? String ?: ""
+                                        )
+                                    )
+                                }
+                            }
+
+                            val diagnostic = SkinWeatherDiagnostic(
+                                id = id,
+                                timestamp = timestamp,
+                                date = date,
+                                city = city,
+                                temperature = temperature,
+                                humidity = humidity,
+                                uv = uv,
+                                pm25 = pm25,
+                                skinType = skinType,
+                                oilyPercent = oilyPercent,
+                                hydrationPercent = hydrationPercent,
+                                sensitivityPercent = sensitivityPercent,
+                                insight = insight,
+                                recommendedRoutine = routineList
+                            )
+                            saveToLocalOnly(context, diagnostic)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                    onComplete(getHistory(context))
+                }
+                .addOnFailureListener {
+                    onComplete(getHistory(context))
+                }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onComplete(getHistory(context))
+        }
     }
 }

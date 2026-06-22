@@ -18,6 +18,8 @@ import com.veganbeauty.app.core.base.RootieFragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class BookingFragment : RootieFragment() {
 
@@ -237,9 +239,13 @@ class BookingFragment : RootieFragment() {
         val monthFormat = SimpleDateFormat("MM", Locale.getDefault())
         val monthDisplay = "Tháng ${monthFormat.format(sDate.fullDate?.time ?: Calendar.getInstance().time)}"
 
+        val currentUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(requireContext())
+        val isoFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault())
+        val currentIsoTime = isoFormat.format(java.util.Date())
+
         val newBooking = com.veganbeauty.app.data.local.entities.BookingHistoryEntity(
             id = "RS" + System.currentTimeMillis().toString().takeLast(8),
-            userId = "1",
+            userId = currentUserId,
             userName = com.veganbeauty.app.data.local.ProfileSession.getFullName(requireContext()),
             userPhone = com.veganbeauty.app.data.local.ProfileSession.getPhone(requireContext()),
             userEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext()),
@@ -253,13 +259,18 @@ class BookingFragment : RootieFragment() {
             storeAddress = storeAddressStr,
             storePhone = "1900 1234",
             storeImage = storeImageUrlStr,
-            status = "upcoming",
-            createdAt = "Vừa xong",
+            status = "Chờ xác nhận",
+            createdAt = currentIsoTime,
             consultantName = specialist,
             consultantAvatar = "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
             consultantRating = 5.0f
         )
         com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).addBooking(newBooking)
+
+        // Upload to Firestore
+        viewLifecycleOwner.lifecycleScope.launch {
+            com.veganbeauty.app.data.remote.FirestoreService().uploadBooking(newBooking)
+        }
 
         val successFragment = BookingSuccessFragment.newInstance(
             storeName = storeNameStr,

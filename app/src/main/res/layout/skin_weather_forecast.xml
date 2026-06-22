@@ -54,24 +54,95 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <!-- Notification Bell Button -->
-                <FrameLayout
-                    android:id="@+id/btn_notification"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                <!-- Action Buttons Container -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_notification" />
-                </FrameLayout>
+                    <!-- History Button -->
+                    <FrameLayout
+                        android:id="@+id/btn_history"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_clipboard_outline"
+                            app:tint="@color/primary" />
+                    </FrameLayout>
+
+                    <!-- Notification Bell Button -->
+                    <FrameLayout
+                        android:id="@+id/btn_notification"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_notification" />
+                    </FrameLayout>
+                </LinearLayout>
             </RelativeLayout>
+
+            <!-- History Warning Banner -->
+            <LinearLayout
+                android:id="@+id/layout_history_banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FEF9E7"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="16dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_clipboard_outline"
+                    app:tint="#8A6D00" />
+
+                <TextView
+                    android:id="@+id/tv_history_banner_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/lexend"
+                    android:text="Bạn đang xem dữ liệu lịch sử ngày dd/MM/yyyy"
+                    android:textColor="#8A6D00"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/btn_exit_history"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lexend"
+                    android:text="Quay lại hiện tại"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
 
             <!-- 2. Welcome Row -->
             <LinearLayout
@@ -267,6 +338,7 @@
                             app:cardUseCompatPadding="true">
 
                             <LinearLayout
+                                android:id="@+id/layout_humidity_box"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:minHeight="85dp"
@@ -324,6 +396,7 @@
                             app:cardUseCompatPadding="true">
 
                             <LinearLayout
+                                android:id="@+id/layout_uv_box"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:minHeight="85dp"
@@ -381,6 +454,7 @@
                             app:cardUseCompatPadding="true">
 
                             <LinearLayout
+                                android:id="@+id/layout_dust_box"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:minHeight="85dp"
@@ -425,6 +499,7 @@
 
                     <!-- Alert warning card -->
                     <LinearLayout
+                        android:id="@+id/layout_warning_box"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
@@ -434,6 +509,7 @@
                         android:padding="12dp">
 
                         <ImageView
+                            android:id="@+id/iv_warning_icon"
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:src="@drawable/ic_weather_warning"
@@ -802,7 +878,7 @@
                     android:gravity="center_vertical"
                     android:elevation="3dp"
                     android:paddingHorizontal="16dp"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="0dp">
 
                     <FrameLayout
                         android:layout_width="46dp"
@@ -845,6 +921,15 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <!-- Dashed Arrow 1 -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/ic_dashed_arrow_down" />
+
                 <!-- Card 2: Vitamin C Serum -->
                 <LinearLayout
                     android:id="@+id/layout_routine_item2"
@@ -855,7 +940,7 @@
                     android:gravity="center_vertical"
                     android:elevation="3dp"
                     android:paddingHorizontal="16dp"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="0dp">
 
                     <FrameLayout
                         android:layout_width="46dp"
@@ -898,6 +983,15 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <!-- Dashed Arrow 2 -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/ic_dashed_arrow_down" />
+
                 <!-- Card 3: Moisturizer Gel -->
                 <LinearLayout
                     android:id="@+id/layout_routine_item3"
@@ -908,7 +1002,7 @@
                     android:gravity="center_vertical"
                     android:elevation="3dp"
                     android:paddingHorizontal="16dp"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="0dp">
 
                     <FrameLayout
                         android:layout_width="46dp"
@@ -951,12 +1045,21 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Card 4: SPF 50+ (Dark Green) -->
+                <!-- Dashed Arrow 3 -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/ic_dashed_arrow_down" />
+
+                <!-- Card 4: SPF 50+ -->
                 <LinearLayout
                     android:id="@+id/layout_routine_item4"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:background="@drawable/bg_btn_solid_feedback"
+                    android:background="@drawable/bg_card_white"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:elevation="3dp"
@@ -967,13 +1070,14 @@
                         android:layout_width="46dp"
                         android:layout_height="46dp"
                         android:background="@drawable/bg_circle_green"
-                        android:backgroundTint="@color/gray_light"
-                        android:padding="10dp">
+                        android:backgroundTint="@color/primary_light"
+                        android:padding="8dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_weather_protect" />
+                            android:src="@drawable/ic_weather_protect"
+                            app:tint="@color/primary" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -988,7 +1092,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="SPF 50+"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -998,7 +1102,7 @@
                             android:layout_marginTop="2dp"
                             android:fontFamily="@font/lexend"
                             android:text="Dặm lại mỗi 3h (Essential)"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/primary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>

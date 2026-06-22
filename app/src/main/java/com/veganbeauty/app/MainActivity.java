@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
             androidx.fragment.app.Fragment destination;
             if ("SKIN_REMINDER".equals(navigateTo)) {
                 destination = new com.veganbeauty.app.features.routine.SkinRoutineSettingsFragment();
-            } else if ("WEATHER_FORECAST".equals(navigateTo)) {
-                destination = new com.veganbeauty.app.features.weather.WeatherForecastFragment();
+            } else if ("WEATHER_FORECAST".equals(navigateTo) || "SKIN_WEATHER_FORECAST".equals(navigateTo)) {
+                destination = new com.veganbeauty.app.features.weather.SkinWeatherForecastFragment();
             } else {
                 destination = new com.veganbeauty.app.features.home.HomeFragment();
             }
@@ -88,16 +88,59 @@ public class MainActivity extends AppCompatActivity {
                     String userId = obj.optString("user_id", "");
                     if (!teamIds.contains(userId)) continue;
 
+                    com.veganbeauty.app.data.local.entities.UserEntity existingUser = userDao.getUserByIdSync(userId);
+
+                    String username = obj.optString("username", "");
+                    String fullName = obj.optString("full_name", "");
+                    String email = obj.optString("email", "");
+                    String phone = obj.optString("phone", "");
+                    String password = obj.optString("password", "");
+                    String avatar = obj.optString("avatar", null);
+                    String primaryImage = obj.optString("primary_image", null);
+
+                    if (existingUser != null) {
+                        if (existingUser.getUsername() != null && !existingUser.getUsername().isEmpty()) {
+                            username = existingUser.getUsername();
+                        }
+                        if (existingUser.getFull_name() != null && !existingUser.getFull_name().isEmpty()) {
+                            fullName = existingUser.getFull_name();
+                        }
+                        if (existingUser.getEmail() != null && !existingUser.getEmail().isEmpty()) {
+                            email = existingUser.getEmail();
+                        }
+                        if (existingUser.getPhone() != null && !existingUser.getPhone().isEmpty()) {
+                            phone = existingUser.getPhone();
+                        }
+                        if (existingUser.getPassword() != null && !existingUser.getPassword().isEmpty()) {
+                            password = existingUser.getPassword();
+                        }
+                        if (existingUser.getAvatar() != null && !existingUser.getAvatar().isEmpty()) {
+                            avatar = existingUser.getAvatar();
+                        }
+                        if (existingUser.getPrimary_image() != null && !existingUser.getPrimary_image().isEmpty()) {
+                            primaryImage = existingUser.getPrimary_image();
+                        }
+                    } else if (com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(getApplicationContext()) && 
+                               com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUserId(getApplicationContext()).equals(userId)) {
+                        android.content.Context ctx = getApplicationContext();
+                        username = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUsername(ctx);
+                        fullName = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getFullName(ctx);
+                        email = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getEmail(ctx);
+                        phone = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getPhone(ctx);
+                        avatar = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getAvatar(ctx);
+                        primaryImage = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getPrimaryImage(ctx);
+                    }
+
                     com.veganbeauty.app.data.local.entities.UserEntity user =
                         new com.veganbeauty.app.data.local.entities.UserEntity(
                             userId,
-                            obj.optString("username", ""),
-                            obj.optString("full_name", ""),
-                            obj.optString("email", ""),
-                            obj.optString("phone", ""),
-                            obj.optString("password", ""),
-                            obj.optString("avatar", null),
-                            obj.optString("primary_image", null)
+                            username,
+                            fullName,
+                            email,
+                            phone,
+                            password,
+                            avatar,
+                            primaryImage
                         );
 
                     // Update avatar in SQLite (upsert) using the sync method
@@ -690,8 +733,8 @@ public class MainActivity extends AppCompatActivity {
             androidx.fragment.app.Fragment destination = null;
             if ("SKIN_REMINDER".equals(navigateTo)) {
                 destination = new com.veganbeauty.app.features.routine.SkinRoutineSettingsFragment();
-            } else if ("WEATHER_FORECAST".equals(navigateTo)) {
-                destination = new com.veganbeauty.app.features.weather.WeatherForecastFragment();
+            } else if ("WEATHER_FORECAST".equals(navigateTo) || "SKIN_WEATHER_FORECAST".equals(navigateTo)) {
+                destination = new com.veganbeauty.app.features.weather.SkinWeatherForecastFragment();
             }
             if (destination != null) {
                 getSupportFragmentManager().beginTransaction()

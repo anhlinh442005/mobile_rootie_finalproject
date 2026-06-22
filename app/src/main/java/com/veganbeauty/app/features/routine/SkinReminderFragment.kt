@@ -102,11 +102,7 @@ class SkinReminderFragment : RootieFragment() {
 
         // Load Avatar & Full Name
         val avatarUrl = ProfileSession.getAvatar(ctx)
-        binding.ivAvatar.load(avatarUrl) {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-        }
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
 
         val fullName = ProfileSession.getFullName(ctx)
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -148,6 +144,7 @@ class SkinReminderFragment : RootieFragment() {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val todayStr = sdf.format(Date())
         val hasCompletedMorningToday = ProfileSession.isMorningRewardAwarded(ctx, todayStr)
+        val isMorningSubmitted = ProfileSession.isRoutineSubmitted(ctx, "morning", todayStr)
 
         val rawMorningSteps = ProfileSession.getMorningSteps(ctx)
         val activeMorningStepsCount = rawMorningSteps.mapNotNull { raw ->
@@ -155,7 +152,7 @@ class SkinReminderFragment : RootieFragment() {
             if (parts.size >= 4 && parts[3].toBoolean()) 1 else null
         }.size
 
-        val completedMorningStepsCount = if (hasCompletedMorningToday) {
+        val completedMorningStepsCount = if (hasCompletedMorningToday || isMorningSubmitted) {
             activeMorningStepsCount
         } else {
             val completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr)
@@ -171,7 +168,7 @@ class SkinReminderFragment : RootieFragment() {
         binding.tvMorningProgressText.text = "$completedMorningStepsCount/$activeMorningStepsCount BƯỚC"
         binding.viewMorningProgressBar.progress = morningProgressPercentage
 
-        val isMorningSubmitted = ProfileSession.isRoutineSubmitted(ctx, "morning", todayStr)
+
 
         if (isMorningSubmitted) {
             binding.tvMorningHeaderStatus.text = "SÁNG NAY • ĐÃ HOÀN THÀNH"
@@ -266,7 +263,7 @@ class SkinReminderFragment : RootieFragment() {
             if (parts.size >= 4 && parts[3].toBoolean()) 1 else null
         }.size
 
-        val completedEveningStepsCount = if (hasCompletedEveningToday) {
+        val completedEveningStepsCount = if (hasCompletedEveningToday || isEveningSubmitted) {
             activeEveningStepsCount
         } else {
             val completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, eveningTargetDate)
@@ -434,45 +431,70 @@ class SkinReminderFragment : RootieFragment() {
 
     private fun updateWeekCalendar() {
         val ctx = requireContext()
+        binding.layoutDaysContainer.removeAllViews()
+
         val calendar = Calendar.getInstance()
         calendar.firstDayOfWeek = Calendar.MONDAY
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
 
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val weekDates = mutableListOf<String>()
-        for (i in 0 until 7) {
-            weekDates.add(sdf.format(calendar.time))
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
+        val todayStr = sdf.format(Date())
         val completedMornings = ProfileSession.getCompletedMorningDates(ctx)
         val completedEvenings = ProfileSession.getCompletedEveningDates(ctx)
 
-        // Helper to configure each day's ImageView
-        val dayViews = listOf(
-            binding.ivDayMon,
-            binding.ivDayTue,
-            binding.ivDayWed,
-            binding.ivDayThu,
-            binding.ivDayFri,
-            binding.ivDaySat,
-            binding.ivDaySun
-        )
-
-        for (i in 0 until 7) {
-            val dateStr = weekDates[i]
+        // Show 14 days (current week + next week)
+        for (i in 0 until 14) {
+            val dateStr = sdf.format(calendar.time)
             val isCompleted = completedMornings.contains(dateStr) && completedEvenings.contains(dateStr)
-            val imgView = dayViews[i]
+            val isToday = dateStr == todayStr
+
+            val itemBinding = com.veganbeauty.app.databinding.ItemStreakDayBinding.inflate(
+                LayoutInflater.from(ctx),
+                binding.layoutDaysContainer,
+                false
+            )
+
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+            val dayLabel = when (dayOfWeek) {
+                Calendar.MONDAY -> "T2"
+                Calendar.TUESDAY -> "T3"
+                Calendar.WEDNESDAY -> "T4"
+                Calendar.THURSDAY -> "T5"
+                Calendar.FRIDAY -> "T6"
+                Calendar.SATURDAY -> "T7"
+                Calendar.SUNDAY -> "CN"
+                else -> ""
+            }
+
+            itemBinding.tvDayLabel.text = dayLabel
+            itemBinding.tvDayNum.text = calendar.get(Calendar.DAY_OF_MONTH).toString()
+
+            if (isToday) {
+                itemBinding.tvDayLabel.setTextColor(Color.WHITE)
+                itemBinding.tvDayLabel.alpha = 1.0f
+            } else {
+                itemBinding.tvDayLabel.setTextColor(Color.parseColor("#80FFFFFF"))
+            }
 
             if (isCompleted) {
-                imgView.setImageResource(R.drawable.quiz_ic_wavy_check)
-                imgView.setBackgroundResource(R.drawable.skin_bg_circle_completed)
-                imgView.setColorFilter(Color.parseColor("#D8E8C6"))
+                itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_white)
+                itemBinding.ivDayIcon.setImageResource(R.drawable.ic_check)
+                itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#3E4D44")) // Dark green check
             } else {
-                imgView.setImageResource(R.drawable.ic_skin_calendar_todo)
-                imgView.background = null
-                imgView.clearColorFilter()
+                if (isToday) {
+                    itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_today_border)
+                    itemBinding.ivDayIcon.setImageResource(R.drawable.ic_calendar_outline)
+                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#E05D3B")) // Orange-red for today
+                } else {
+                    itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_white_border)
+                    itemBinding.ivDayIcon.setImageResource(R.drawable.ic_calendar_outline)
+                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#B3FFFFFF")) // 70% white
+                }
             }
+
+            binding.layoutDaysContainer.addView(itemBinding.root)
+
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
     }
 

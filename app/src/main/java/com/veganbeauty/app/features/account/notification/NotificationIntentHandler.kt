@@ -111,7 +111,8 @@ object NotificationIntentHandler {
                 }
                 type == "schedule date" || !scheduleId.isNullOrEmpty() -> {
                     val actualScheduleId = scheduleId ?: "BK_NOTI_101"
-                    val bookings = LocalJsonReader(activity).getUserBookingHistory("xuannk23411@st.uel.edu.vn")
+                    val userEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(activity)
+                    val bookings = LocalJsonReader(activity).getUserBookingHistory(userEmail)
                     val realBooking = bookings.find { it.id == actualScheduleId }
                     val fragment = if (realBooking != null) {
                         when (realBooking.status) {
@@ -125,7 +126,7 @@ object NotificationIntentHandler {
                             userId = "user_1",
                             userName = "Nguyễn Khánh Xuân",
                             userPhone = "0901234567",
-                            userEmail = "xuannk23411@st.uel.edu.vn",
+                            userEmail = userEmail,
                             serviceName = "Chăm sóc da chuyên sâu Acne Free",
                             dateDisplay = "15 Tháng 6, 2026",
                             dayOfWeek = "Thứ Hai",

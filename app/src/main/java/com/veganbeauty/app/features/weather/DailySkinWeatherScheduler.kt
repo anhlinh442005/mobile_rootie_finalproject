@@ -52,7 +52,20 @@ object DailySkinWeatherScheduler {
             }
             Log.d("DailySkinWeatherScheduler", "Scheduled daily skin weather alarm at 6:30 AM. Next: ${calendar.time}")
         } catch (e: SecurityException) {
-            Log.e("DailySkinWeatherScheduler", "Failed to schedule exact alarm due to permission constraints", e)
+            Log.e("DailySkinWeatherScheduler", "Failed to schedule exact alarm due to permission constraints, falling back to inexact alarm", e)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
+            } else {
+                alarmManager.set(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
+            }
         }
     }
 

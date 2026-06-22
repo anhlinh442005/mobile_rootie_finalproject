@@ -28,6 +28,14 @@ class QuizTestIntroFragment : RootieFragment() {
             parentFragmentManager.popBackStack()
         }
 
+        // Notification Button click
+        binding.btnNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Start Quiz click
         binding.btnStartQuiz.setOnClickListener {
             parentFragmentManager.beginTransaction()

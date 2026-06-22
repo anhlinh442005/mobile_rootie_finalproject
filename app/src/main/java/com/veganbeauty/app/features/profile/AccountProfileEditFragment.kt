@@ -75,6 +75,7 @@ class AccountProfileEditFragment : RootieFragment() {
             com.veganbeauty.app.data.local.ProfileSession.setFullName(saveCtx, binding.etFullname.text.toString())
             com.veganbeauty.app.data.local.ProfileSession.setEmail(saveCtx, binding.etEmail.text.toString())
             com.veganbeauty.app.data.local.ProfileSession.setPhone(saveCtx, binding.etPhone.text.toString())
+            com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileToFirebaseAndLocal(saveCtx)
             parentFragmentManager.popBackStack()
         }
 
@@ -128,12 +129,7 @@ class AccountProfileEditFragment : RootieFragment() {
     }
 
     private fun loadAvatarImage(uri: String) {
-        binding.ivAvatar.load(uri) {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-            error(com.veganbeauty.app.R.drawable.img_avatar)
-        }
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, uri)
     }
 
     private fun showAvatarSourcePicker() {
@@ -288,7 +284,8 @@ class AccountProfileEditFragment : RootieFragment() {
             val fileUri = "file://$path"
             com.veganbeauty.app.data.local.ProfileSession.setAvatar(requireContext(), fileUri)
             loadAvatarImage(fileUri)
-            Toast.makeText(context, "Đã cập nhật ảnh đại diện", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Đã cập nhật ảnh đại diện cục bộ", Toast.LENGTH_SHORT).show()
+            uploadAvatarToFirebase(android.net.Uri.parse(fileUri))
         } else {
             Toast.makeText(context, "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show()
         }
@@ -300,9 +297,35 @@ class AccountProfileEditFragment : RootieFragment() {
             val fileUri = "file://$path"
             com.veganbeauty.app.data.local.ProfileSession.setAvatar(requireContext(), fileUri)
             loadAvatarImage(fileUri)
-            Toast.makeText(context, "Đã cập nhật ảnh đại diện", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Đã cập nhật ảnh đại diện cục bộ", Toast.LENGTH_SHORT).show()
+            uploadAvatarToFirebase(android.net.Uri.parse(fileUri))
         } else {
             Toast.makeText(context, "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun uploadAvatarToFirebase(fileUri: android.net.Uri) {
+        val context = requireContext()
+        val progressToast = Toast.makeText(context, "Đang tải ảnh đại diện lên Firebase...", Toast.LENGTH_LONG)
+        progressToast.show()
+
+        com.veganbeauty.app.utils.SyncDataHelper.uploadAvatarToFirebase(context, fileUri) { downloadUrl ->
+            activity?.runOnUiThread {
+                if (downloadUrl != null) {
+                    loadAvatarImage(downloadUrl)
+                    Toast.makeText(context, "Đồng bộ ảnh đại diện lên Firebase thành công!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Không thể đồng bộ ảnh đại diện lên Firebase. Đã lưu cục bộ.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(requireContext())
+            loadAvatarImage(avatarUrl)
         }
     }
 
