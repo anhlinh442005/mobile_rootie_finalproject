@@ -334,6 +334,16 @@ class AccountProfileFragment : RootieFragment() {
                 val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
                 binding.tvUsername.text = fullName
                 binding.tvEmail.text = email
+
+                // Fetch latest profile from Firestore and update UI on completion
+                com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(ctx) {
+                    if (_binding != null) {
+                        val updatedAvatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(ctx)
+                        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, updatedAvatarUrl)
+                        binding.tvUsername.text = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
+                        binding.tvEmail.text = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
+                    }
+                }
             }
         }
     }

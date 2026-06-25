@@ -112,7 +112,7 @@ class SkinCalendarFragment : RootieFragment() {
         populateTimeline(ctx)
 
         // 7. Dynamic Detailed History button text
-        val currentMonthFormat = SimpleDateFormat("'Nhật ký chi tiết tháng' M ' >'", Locale("vi", "VN"))
+        val currentMonthFormat = SimpleDateFormat("'Nhật ký chi tiết tháng' M", Locale("vi", "VN"))
         binding.btnDetailedHistory.text = currentMonthFormat.format(Date())
     }
 

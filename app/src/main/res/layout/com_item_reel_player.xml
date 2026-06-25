@@ -136,7 +136,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:padding="6dp"
-            android:src="@android:drawable/ic_menu_more"
+            android:src="@drawable/ic_more_horiz"
             app:tint="@android:color/white" />
 
     </LinearLayout>

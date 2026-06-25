@@ -5,6 +5,7 @@ import com.veganbeauty.app.data.local.entities.*
 import org.json.JSONObject
 
 class LocalJsonReader(private val context: Context) {
+    fun getContext(): Context = context
 
     fun getSocialDataForUser(userId: String): Map<String, List<String>> {
         val result = mutableMapOf<String, List<String>>(

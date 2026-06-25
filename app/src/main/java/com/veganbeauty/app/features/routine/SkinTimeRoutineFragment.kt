@@ -33,6 +33,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
 
     private var routineType = "morning" // "morning" or "evening"
     private val activeSteps = mutableListOf<SkincareStep>()
+    private val stepProducts = mutableMapOf<Int, ProductEntity>()
 
     data class SkincareStep(
         val index: Int,
@@ -197,6 +198,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
                             timestamp = System.currentTimeMillis()
                         )
                     )
+                    com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
                     Toast.makeText(ctx, "Tuyệt vời! Bạn đã hoàn thành 100% Routine và nhận được +10 xu!", Toast.LENGTH_LONG).show()
                     checkStreakAndUpdate(routineType)
                     parentFragmentManager.popBackStack()
@@ -241,6 +243,51 @@ class SkinTimeRoutineFragment : RootieFragment() {
             activeSteps.addAll(it)
         }
 
+        val db = RootieDatabase.getDatabase(ctx)
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val allProducts = db.productDao().getAllProducts().first()
+                stepProducts.clear()
+                for (step in activeSteps) {
+                    val matched = allProducts.firstOrNull { prod ->
+                        val nameLower = prod.name.lowercase()
+                        val catLower = prod.category.lowercase()
+                        val stepLower = step.name.lowercase()
+
+                        when {
+                            stepLower.contains("cleanser") || stepLower.contains("sữa rửa mặt") || stepLower.contains("rửa mặt") -> {
+                                nameLower.contains("sữa rửa mặt") || nameLower.contains("cleanser") || catLower.contains("cleanser")
+                            }
+                            stepLower.contains("toner") || stepLower.contains("nước hoa hồng") || stepLower.contains("cân bằng") -> {
+                                nameLower.contains("toner") || nameLower.contains("nước hoa hồng") || catLower.contains("toner")
+                            }
+                            stepLower.contains("serum") || stepLower.contains("tinh chất") -> {
+                                nameLower.contains("serum") || nameLower.contains("tinh chất") || catLower.contains("serum")
+                            }
+                            stepLower.contains("moisturizer") || stepLower.contains("kem dưỡng ẩm") || stepLower.contains("dưỡng ẩm") || stepLower.contains("khóa ẩm") -> {
+                                nameLower.contains("kem dưỡng") || nameLower.contains("moisturizer") || nameLower.contains("cream") || catLower.contains("moisturizer")
+                            }
+                            stepLower.contains("sunscreen") || stepLower.contains("chống nắng") || stepLower.contains("kem chống nắng") -> {
+                                nameLower.contains("chống nắng") || nameLower.contains("sunscreen") || catLower.contains("sunscreen")
+                            }
+                            stepLower.contains("makeup remover") || stepLower.contains("tẩy trang") -> {
+                                nameLower.contains("tẩy trang") || nameLower.contains("remover") || catLower.contains("remover")
+                            }
+                            else -> false
+                        }
+                    }
+                    if (matched != null) {
+                        stepProducts[step.index] = matched
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    populateStepsList()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
         populateStepsList()
         updateStatsAndProgress()
     }
@@ -276,6 +323,22 @@ class SkinTimeRoutineFragment : RootieFragment() {
                 stepBinding.ivCheckbox.setImageResource(R.drawable.quiz_ic_selected)
             } else {
                 stepBinding.ivCheckbox.setImageResource(R.drawable.skin_ic_circle_unchecked)
+            }
+
+            val matchedProduct = stepProducts[step.index]
+            if (matchedProduct != null) {
+                stepBinding.tvViewProductLink.visibility = View.VISIBLE
+                stepBinding.tvViewProductLink.text = "🛒 Gợi ý: ${matchedProduct.name}"
+                stepBinding.tvViewProductLink.setOnClickListener {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_container, com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment().apply {
+                            setProduct(matchedProduct)
+                        })
+                        .addToBackStack(null)
+                        .commit()
+                }
+            } else {
+                stepBinding.tvViewProductLink.visibility = View.GONE
             }
 
             // Click listener
@@ -459,6 +522,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
                         timestamp = System.currentTimeMillis()
                     )
                 )
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
                 Toast.makeText(ctx, "Tuyệt vời! Đạt chuỗi 30 ngày chăm da +200 xu!", Toast.LENGTH_LONG).show()
             } else if (newStreak % 7 == 0) {
                 db.rewardPointDao().insertRewardPoints(
@@ -469,6 +533,7 @@ class SkinTimeRoutineFragment : RootieFragment() {
                         timestamp = System.currentTimeMillis()
                     )
                 )
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
                 Toast.makeText(ctx, "Tuyệt vời! Đạt chuỗi 7 ngày chăm da +50 xu!", Toast.LENGTH_LONG).show()
             }
         }

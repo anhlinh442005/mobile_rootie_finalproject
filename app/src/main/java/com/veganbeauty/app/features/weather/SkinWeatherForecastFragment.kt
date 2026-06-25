@@ -2,6 +2,7 @@ package com.veganbeauty.app.features.weather
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
@@ -107,6 +108,8 @@ class SkinWeatherForecastFragment : RootieFragment() {
             if (nextState) {
                 com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(ctx)
                 Toast.makeText(ctx, "Đã bật thông báo thời tiết và da lúc 06:30 sáng", Toast.LENGTH_SHORT).show()
+                val testIntent = Intent(ctx, com.veganbeauty.app.features.weather.DailySkinWeatherReceiver::class.java)
+                ctx.sendBroadcast(testIntent)
             } else {
                 com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.cancelDailyNotification(ctx)
                 Toast.makeText(ctx, "Đã tắt thông báo thời tiết và da hàng ngày", Toast.LENGTH_SHORT).show()

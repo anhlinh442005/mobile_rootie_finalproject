@@ -25,6 +25,7 @@ object RoutineAlarmScheduler {
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
             if (timeInMillis < System.currentTimeMillis()) {
                 add(Calendar.DAY_OF_YEAR, 1)
             }
@@ -59,6 +60,50 @@ object RoutineAlarmScheduler {
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent)
             pendingIntent.cancel()
+        }
+    }
+
+    fun rescheduleAlarms(context: Context) {
+        val morningEnabled = com.veganbeauty.app.data.local.ProfileSession.isMorningReminderEnabled(context)
+        val eveningEnabled = com.veganbeauty.app.data.local.ProfileSession.isEveningReminderEnabled(context)
+        val leadEnabled = com.veganbeauty.app.data.local.ProfileSession.isLeadReminderEnabled(context)
+
+        if (morningEnabled) {
+            val morningTime = com.veganbeauty.app.data.local.ProfileSession.getMorningReminderTime(context)
+            val morningParts = morningTime.split(":")
+            var mHour = morningParts.getOrNull(0)?.toIntOrNull() ?: 6
+            var mMinute = morningParts.getOrNull(1)?.toIntOrNull() ?: 30
+            if (leadEnabled) {
+                val cal = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, mHour)
+                    set(Calendar.MINUTE, mMinute)
+                }
+                cal.add(Calendar.MINUTE, -15)
+                mHour = cal.get(Calendar.HOUR_OF_DAY)
+                mMinute = cal.get(Calendar.MINUTE)
+            }
+            scheduleRoutineAlarm(context, "MORNING", mHour, mMinute, leadEnabled)
+        } else {
+            cancelRoutineAlarm(context, "MORNING")
+        }
+
+        if (eveningEnabled) {
+            val eveningTime = com.veganbeauty.app.data.local.ProfileSession.getEveningReminderTime(context)
+            val eveningParts = eveningTime.split(":")
+            var eHour = eveningParts.getOrNull(0)?.toIntOrNull() ?: 21
+            var eMinute = eveningParts.getOrNull(1)?.toIntOrNull() ?: 45
+            if (leadEnabled) {
+                val cal = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, eHour)
+                    set(Calendar.MINUTE, eMinute)
+                }
+                cal.add(Calendar.MINUTE, -15)
+                eHour = cal.get(Calendar.HOUR_OF_DAY)
+                eMinute = cal.get(Calendar.MINUTE)
+            }
+            scheduleRoutineAlarm(context, "EVENING", eHour, eMinute, leadEnabled)
+        } else {
+            cancelRoutineAlarm(context, "EVENING")
         }
     }
 }

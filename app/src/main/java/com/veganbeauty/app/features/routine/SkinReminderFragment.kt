@@ -179,7 +179,8 @@ class SkinReminderFragment : RootieFragment() {
 
             // Update Morning Reward Item Status (Keep "+ 10 xu" & "HÀNG NGÀY", only fade left details if not awarded)
             binding.tvMorningRewardXu.text = "+ 10 xu"
-            binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.tvMorningRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivMorningRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
             binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutMorningReward.alpha = 1.0f
@@ -198,6 +199,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Reward status
                 binding.tvMorningRewardXu.text = "+ 10 xu"
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivMorningRewardCoin.clearColorFilter()
                 binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutMorningReward.alpha = 1.0f
@@ -215,6 +217,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Gray out Morning Reward Item
                 binding.tvMorningRewardXu.text = "+ 10 xu"
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivMorningRewardCoin.clearColorFilter()
                 binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutMorningReward.alpha = 1.0f
@@ -236,6 +239,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Update Morning Reward Item Status
                 binding.tvMorningRewardXu.text = "+ 10 xu"
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivMorningRewardCoin.clearColorFilter()
                 binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutMorningReward.alpha = 1.0f
@@ -292,7 +296,8 @@ class SkinReminderFragment : RootieFragment() {
 
             // Update Evening Reward Item Status (Keep "+ 10 xu" & "HÀNG NGÀY", only fade left details if not awarded)
             binding.tvEveningRewardXu.text = "+ 10 xu"
-            binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.tvEveningRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivEveningRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
             binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutEveningReward.alpha = 1.0f
@@ -316,6 +321,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Update Evening Reward Item Status
                 binding.tvEveningRewardXu.text = "+ 10 xu"
                 binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivEveningRewardCoin.clearColorFilter()
                 binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutEveningReward.alpha = 1.0f
@@ -333,6 +339,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Update Evening Reward Item Status
                 binding.tvEveningRewardXu.text = "+ 10 xu"
                 binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivEveningRewardCoin.clearColorFilter()
                 binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutEveningReward.alpha = 1.0f
@@ -345,7 +352,8 @@ class SkinReminderFragment : RootieFragment() {
         // 5. Update Weekly Bonus Reward Item Status
         if (currentStreak >= 7) {
             binding.tvWeeklyRewardXu.text = "+ 50 xu"
-            binding.tvWeeklyRewardXu.setTextColor(Color.parseColor("#E1C02E"))
+            binding.tvWeeklyRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivWeeklyRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvWeeklyRewardFrequency.text = "HÀNG TUẦN"
             binding.tvWeeklyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutWeeklyReward.alpha = 1.0f
@@ -355,6 +363,7 @@ class SkinReminderFragment : RootieFragment() {
         } else {
             binding.tvWeeklyRewardXu.text = "+ 50 xu"
             binding.tvWeeklyRewardXu.setTextColor(Color.parseColor("#E1C02E"))
+            binding.ivWeeklyRewardCoin.clearColorFilter()
             binding.tvWeeklyRewardFrequency.text = "HÀNG TUẦN"
             binding.tvWeeklyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutWeeklyReward.alpha = 1.0f
@@ -366,7 +375,8 @@ class SkinReminderFragment : RootieFragment() {
         // 6. Update Loyalty Reward Item Status
         if (currentStreak >= 30) {
             binding.tvLoyaltyRewardXu.text = "+ 200 xu"
-            binding.tvLoyaltyRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.tvLoyaltyRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivLoyaltyRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvLoyaltyRewardFrequency.text = "HÀNG THÁNG"
             binding.tvLoyaltyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutLoyaltyReward.alpha = 1.0f
@@ -376,6 +386,7 @@ class SkinReminderFragment : RootieFragment() {
         } else {
             binding.tvLoyaltyRewardXu.text = "+ 200 xu"
             binding.tvLoyaltyRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.ivLoyaltyRewardCoin.clearColorFilter()
             binding.tvLoyaltyRewardFrequency.text = "HÀNG THÁNG"
             binding.tvLoyaltyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutLoyaltyReward.alpha = 1.0f
@@ -389,7 +400,8 @@ class SkinReminderFragment : RootieFragment() {
         val hasCompletedSocialToday = completedSocialDates.contains(todayStr)
         if (hasCompletedSocialToday) {
             binding.tvSocialRewardXu.text = "+ 10 xu"
-            binding.tvSocialRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.tvSocialRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivSocialRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvSocialRewardFrequency.text = "MỖI LƯỢT"
             binding.tvSocialRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.btnSocialTask.alpha = 1.0f
@@ -400,6 +412,7 @@ class SkinReminderFragment : RootieFragment() {
         } else {
             binding.tvSocialRewardXu.text = "+ 10 xu"
             binding.tvSocialRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.ivSocialRewardCoin.clearColorFilter()
             binding.tvSocialRewardFrequency.text = "MỖI LƯỢT"
             binding.tvSocialRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.btnSocialTask.alpha = 1.0f
@@ -514,6 +527,7 @@ class SkinReminderFragment : RootieFragment() {
                     timestamp = System.currentTimeMillis()
                 )
             )
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
             Toast.makeText(ctx, "Đã hoàn thành Routine Sáng! +10 xu", Toast.LENGTH_SHORT).show()
             checkStreakAndUpdate("morning")
             refreshUI()
@@ -536,6 +550,7 @@ class SkinReminderFragment : RootieFragment() {
                     timestamp = System.currentTimeMillis()
                 )
             )
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
             Toast.makeText(ctx, "Đã hoàn thành Routine Tối! +10 xu", Toast.LENGTH_SHORT).show()
             checkStreakAndUpdate("evening")
             refreshUI()
@@ -563,6 +578,7 @@ class SkinReminderFragment : RootieFragment() {
                     timestamp = System.currentTimeMillis()
                 )
             )
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
             ProfileSession.addSkinSocialCompletedDate(ctx, todayStr)
             Toast.makeText(ctx, "Kết nối thành công! +10 xu", Toast.LENGTH_SHORT).show()
             refreshUI()
@@ -617,6 +633,7 @@ class SkinReminderFragment : RootieFragment() {
                         timestamp = System.currentTimeMillis()
                     )
                 )
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
                 Toast.makeText(ctx, "Tuyệt vời! Đạt chuỗi 30 ngày chăm da +200 xu!", Toast.LENGTH_LONG).show()
             } else if (newStreak % 7 == 0) {
                 db.rewardPointDao().insertRewardPoints(
@@ -627,6 +644,7 @@ class SkinReminderFragment : RootieFragment() {
                         timestamp = System.currentTimeMillis()
                     )
                 )
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
                 Toast.makeText(ctx, "Tuyệt vời! Đạt chuỗi 7 ngày chăm da +50 xu!", Toast.LENGTH_LONG).show()
             }
         }

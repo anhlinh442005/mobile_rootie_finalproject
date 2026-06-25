@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/neutral">
 
     <!-- Top Bar Header -->
@@ -10,8 +11,8 @@
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/skin_bg_top_bar_gradient"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@color/neutral"
+        android:elevation="4dp">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -77,9 +78,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutHeader">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -172,7 +172,6 @@
                             android:textSize="13sp"
                             android:fontFamily="@font/be_vietnam_pro" />
                     </LinearLayout>
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
@@ -191,7 +190,7 @@
                     android:layout_marginEnd="8dp"
                     app:cardBackgroundColor="#FFFFFF"
                     app:cardCornerRadius="15dp"
-                    app:cardElevation="5dp">
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -242,7 +241,7 @@
                     android:layout_marginStart="8dp"
                     app:cardBackgroundColor="#FFFFFF"
                     app:cardCornerRadius="15dp"
-                    app:cardElevation="5dp">
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -423,9 +422,7 @@
                             android:textColor="#3E4D44"
                             android:textSize="13sp"
                             android:fontFamily="@font/be_vietnam_pro" />
-
                     </LinearLayout>
-
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -496,7 +493,6 @@
                                 android:textSize="13sp"
                                 android:fontFamily="@font/be_vietnam_pro" />
                         </LinearLayout>
-
                     </LinearLayout>
 
                     <!-- Tip pill container -->
@@ -539,9 +535,7 @@
                                 android:textSize="13sp"
                                 android:fontFamily="@font/be_vietnam_pro" />
                         </LinearLayout>
-
                     </LinearLayout>
-
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -643,4 +637,4 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

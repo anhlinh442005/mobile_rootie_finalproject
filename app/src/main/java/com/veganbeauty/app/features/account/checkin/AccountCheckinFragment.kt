@@ -257,6 +257,7 @@ class AccountCheckinFragment : RootieFragment() {
                     timestamp = System.currentTimeMillis()
                 )
             )
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(requireContext())
 
             // Show custom success dialog
             showSuccessDialog(pointsAwarded)

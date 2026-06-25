@@ -60,7 +60,7 @@
                 android:layout_height="16dp"
                 android:background="@drawable/bg_circle_grey"
                 android:padding="2dp"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:src="@drawable/ic_close"
                 app:tint="@color/content" />
         </LinearLayout>
     </LinearLayout>

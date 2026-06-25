@@ -12,7 +12,7 @@
         android:id="@+id/btn_close"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:src="@drawable/ic_close"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/black" />
@@ -22,7 +22,7 @@
         android:id="@+id/iv_warning"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@android:drawable/ic_dialog_alert"
+        android:src="@drawable/quiz_ic_warning_circle"
         app:layout_constraintBottom_toBottomOf="@id/tv_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_title" />
@@ -233,7 +233,7 @@
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@android:drawable/ic_dialog_info"
+            android:src="@drawable/ic_info_olive"
             app:tint="@color/gray_dark" />
 
         <TextView

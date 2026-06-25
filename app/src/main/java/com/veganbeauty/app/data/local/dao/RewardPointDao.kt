@@ -15,6 +15,9 @@ interface RewardPointDao {
     @Query("SELECT * FROM user_coin ORDER BY timestamp DESC")
     fun getAllRewardHistory(): Flow<List<RewardPointEntity>>
 
+    @Query("SELECT * FROM user_coin ORDER BY timestamp DESC")
+    suspend fun getAllRewardHistoryList(): List<RewardPointEntity>
+
     @Query("SELECT EXISTS(SELECT 1 FROM user_coin WHERE orderId = :orderId AND reason LIKE '%Đánh giá%')")
     suspend fun hasReceivedPointsForOrder(orderId: String): Boolean
 }

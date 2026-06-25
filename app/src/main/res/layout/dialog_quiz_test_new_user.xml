@@ -57,37 +57,6 @@
                         app:tint="#FEFBF4" />
                 </FrameLayout>
             </FrameLayout>
-
-            <!-- Glowing Sparkle Detail (Top-Left) -->
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center"
-                android:layout_marginEnd="42dp"
-                android:layout_marginBottom="30dp"
-                android:src="@drawable/quiz_ic_sparkles"
-                app:tint="#FF9F00" />
-
-            <!-- Soft Sparkle Detail (Bottom-Right) -->
-            <ImageView
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="44dp"
-                android:layout_marginTop="28dp"
-                android:src="@drawable/skin_ai_sparkles"
-                app:tint="#677559" />
-
-            <!-- Botanical Leaf Sparkle (Top-Right) -->
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="40dp"
-                android:layout_marginBottom="32dp"
-                android:src="@drawable/ic_skin_sparkle"
-                app:tint="#B3677559" />
-
         </FrameLayout>
 
         <!-- Premium Title -->

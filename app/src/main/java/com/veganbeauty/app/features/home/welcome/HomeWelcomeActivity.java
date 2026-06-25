@@ -192,7 +192,13 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(this, user.getAvatar() != null ? user.getAvatar() : "");
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPrimaryImage(this, user.getPrimary_image() != null ? user.getPrimary_image() : "");
 
-                navigateToMain();
+                com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncRewardPointsFromFirestore(this);
+                com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncUserProfileFromFirestore(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        navigateToMain();
+                    }
+                });
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
                 android.widget.Toast.makeText(this,
                         ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(),

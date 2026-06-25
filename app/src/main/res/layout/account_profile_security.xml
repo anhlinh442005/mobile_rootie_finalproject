@@ -16,13 +16,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
 
             <!-- Header Panel matching CSS spec -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="66dp"
-                android:background="@drawable/bg_header_security_gradient"
+                android:background="@drawable/bg_header_gradient"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="16dp">
 
@@ -51,7 +52,7 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <!-- Notification Bell -->
+                <!-- Notification Bell (Updated to ic_notification with the new vector badge) -->
                 <ImageView
                     android:id="@+id/btn_notification"
                     android:layout_width="36dp"
@@ -59,532 +60,552 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:padding="6dp"
-                    android:src="@drawable/home_ic_notification"
+                    android:src="@drawable/ic_notification"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true" />
             </RelativeLayout>
 
             <!-- SECTION 1: TÀI KHOẢN -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="26dp"
-                android:background="@color/neutral"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:text="Tài Khoản"
-                android:textColor="@color/primary"
-                android:textSize="14sp"
-                android:fontFamily="@font/lexend" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
                 android:orientation="vertical"
-                android:paddingHorizontal="16dp">
+                android:paddingTop="20dp">
 
-                <!-- 1. Hồ sơ của tôi -->
-                <RelativeLayout
-                    android:id="@+id/btn_my_profile"
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="24dp"
+                    android:paddingBottom="6dp"
+                    android:text="THÔNG TIN TÀI KHOẢN"
+                    android:textColor="@color/primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/lexend" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Hồ sơ của tôi"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-
-                    <ImageView
-                        android:id="@+id/iv_chevron_profile"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-                </RelativeLayout>
-
-                <View
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
 
-                <!-- 2. Tên người dùng -->
-                <RelativeLayout
-                    android:id="@+id/btn_username"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Tên người dùng"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-
-                    <ImageView
-                        android:id="@+id/iv_chevron_username"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-
-                    <TextView
-                        android:id="@+id/tv_username_val"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="8dp"
-                        android:layout_toStartOf="@id/iv_chevron_username"
-                        android:text="mrbeanintheworld"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
-
-                <!-- 3. Điện thoại -->
-                <RelativeLayout
-                    android:id="@+id/btn_phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Điện thoại"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-
-                    <ImageView
-                        android:id="@+id/iv_chevron_phone"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-
-                    <TextView
-                        android:id="@+id/tv_phone_val"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="8dp"
-                        android:layout_toStartOf="@id/iv_chevron_phone"
-                        android:text="******48"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
-
-                <!-- 4. Email nhận hóa đơn -->
-                <RelativeLayout
-                    android:id="@+id/btn_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Email nhận hóa đơn"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-
-                    <ImageView
-                        android:id="@+id/iv_chevron_email"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-
-                    <TextView
-                        android:id="@+id/tv_email_val"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="8dp"
-                        android:layout_toStartOf="@id/iv_chevron_email"
-                        android:text="b********1@uel.edu.vn"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
-
-                <!-- 5. Tài khoản mạng xã hội -->
-                <RelativeLayout
-                    android:id="@+id/btn_social"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Tài khoản mạng xã hội"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
-
-                <!-- 6. Đổi mật khẩu -->
-                <RelativeLayout
-                    android:id="@+id/btn_change_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Đổi mật khẩu"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
-
-                <!-- 7. Passkey -->
-                <RelativeLayout
-                    android:id="@+id/btn_passkey"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Passkey"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-
-                    <ImageView
-                        android:id="@+id/iv_chevron_passkey"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="8dp"
-                        android:layout_toStartOf="@id/iv_chevron_passkey"
-                        android:text="Thiết lập ngay"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/lexend" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
-
-                <!-- 8. Đăng nhập nhanh (Toggle Switch) -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:paddingVertical="8dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toStartOf="@id/switch_fast_login_container"
-                        android:layout_alignParentStart="true"
-                        android:orientation="vertical">
+                    <!-- 1. Hồ sơ của tôi -->
+                    <RelativeLayout
+                        android:id="@+id/btn_my_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Đăng nhập nhanh"
+                            android:layout_centerVertical="true"
+                            android:text="Hồ sơ của tôi"
                             android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:fontFamily="@font/lexend" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Cho phép đăng nhập nhanh trên thiết bị này"
-                            android:textColor="@color/gray_dark"
-                            android:textSize="13sp"
-                            android:fontFamily="@font/lexend" />
-                    </LinearLayout>
+                        <ImageView
+                            android:id="@+id/iv_chevron_profile"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+                    </RelativeLayout>
 
-                    <FrameLayout
-                        android:id="@+id/switch_fast_login_container"
-                        android:layout_width="48dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/ic_switch_track_off"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 2. Tên người dùng -->
+                    <RelativeLayout
+                        android:id="@+id/btn_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true">
 
-                        <ImageView
-                            android:id="@+id/switch_fast_login_thumb"
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:layout_gravity="center_vertical|start"
-                            android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
-                    </FrameLayout>
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
-
-                <!-- 9. Trợ lý AI (Nút nổi) (Toggle Switch) -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:paddingVertical="8dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toStartOf="@id/switch_floating_chat_container"
-                        android:layout_alignParentStart="true"
-                        android:orientation="vertical">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Trợ lý Rootie AI (Nút nổi)"
+                            android:layout_centerVertical="true"
+                            android:text="Tên người dùng"
                             android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:fontFamily="@font/lexend" />
 
+                        <ImageView
+                            android:id="@+id/iv_chevron_username"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+
                         <TextView
+                            android:id="@+id/tv_username_val"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Hiển thị biểu tượng chat nổi trên màn hình"
-                            android:textColor="@color/gray_dark"
-                            android:textSize="13sp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:layout_toStartOf="@id/iv_chevron_username"
+                            android:text="mrbeanintheworld"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
                             android:fontFamily="@font/lexend" />
-                    </LinearLayout>
+                    </RelativeLayout>
 
-                    <FrameLayout
-                        android:id="@+id/switch_floating_chat_container"
-                        android:layout_width="48dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/ic_switch_track_off"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 3. Điện thoại -->
+                    <RelativeLayout
+                        android:id="@+id/btn_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="Điện thoại"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
                         <ImageView
-                            android:id="@+id/switch_floating_chat_thumb"
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:layout_gravity="center_vertical|start"
-                            android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
-                    </FrameLayout>
-                </RelativeLayout>
+                            android:id="@+id/iv_chevron_phone"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+
+                        <TextView
+                            android:id="@+id/tv_phone_val"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:layout_toStartOf="@id/iv_chevron_phone"
+                            android:text="******48"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 4. Email nhận hóa đơn -->
+                    <RelativeLayout
+                        android:id="@+id/btn_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="Email nhận hóa đơn"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
+                        <ImageView
+                            android:id="@+id/iv_chevron_email"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+
+                        <TextView
+                            android:id="@+id/tv_email_val"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:layout_toStartOf="@id/iv_chevron_email"
+                            android:text="b********1@uel.edu.vn"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 5. Tài khoản mạng xã hội -->
+                    <RelativeLayout
+                        android:id="@+id/btn_social"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="Tài khoản mạng xã hội"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
+                        <ImageView
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 6. Đổi mật khẩu -->
+                    <RelativeLayout
+                        android:id="@+id/btn_change_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="Đổi mật khẩu"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
+                        <ImageView
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 7. Passkey -->
+                    <RelativeLayout
+                        android:id="@+id/btn_passkey"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="Passkey"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+
+                        <ImageView
+                            android:id="@+id/iv_chevron_passkey"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:layout_toStartOf="@id/iv_chevron_passkey"
+                            android:text="Thiết lập ngay"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/lexend" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 8. Đăng nhập nhanh (Switch trực tiếp) -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:background="?attr/selectableItemBackground">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_toStartOf="@id/switch_fast_login_container"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Đăng nhập nhanh"
+                                android:textColor="@color/primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/lexend" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Cho phép đăng nhập nhanh trên thiết bị này"
+                                android:textColor="@color/gray_dark"
+                                android:textSize="11sp"
+                                android:fontFamily="@font/lexend" />
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:id="@+id/switch_fast_login_container"
+                            android:layout_width="48dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/ic_switch_track_off"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <ImageView
+                                android:id="@+id/switch_fast_login_thumb"
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="2dp"
+                                android:src="@drawable/bg_switch_thumb" />
+                        </FrameLayout>
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 9. Trợ lý AI (Switch trực tiếp) -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:background="?attr/selectableItemBackground">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_toStartOf="@id/switch_floating_chat_container"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Trợ lý Rootie AI (Nút nổi)"
+                                android:textColor="@color/primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/lexend" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Hiển thị biểu tượng chat nổi trên màn hình"
+                                android:textColor="@color/gray_dark"
+                                android:textSize="11sp"
+                                android:fontFamily="@font/lexend" />
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:id="@+id/switch_floating_chat_container"
+                            android:layout_width="48dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/ic_switch_track_off"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <ImageView
+                                android:id="@+id/switch_floating_chat_thumb"
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="2dp"
+                                android:src="@drawable/bg_switch_thumb" />
+                        </FrameLayout>
+                    </RelativeLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <!-- SECTION 2: BẢO MẬT -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="26dp"
-                android:background="@color/neutral"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:text="Bảo Mật"
-                android:textColor="@color/primary"
-                android:textSize="14sp"
-                android:fontFamily="@font/lexend" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
                 android:orientation="vertical"
-                android:paddingHorizontal="16dp">
+                android:paddingTop="20dp">
 
-                <!-- 1. Kiểm tra hoạt động của tài khoản -->
-                <RelativeLayout
-                    android:id="@+id/btn_check_activity"
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="72dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingVertical="8dp">
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="24dp"
+                    android:paddingBottom="6dp"
+                    android:text="BẢO MẬT TÀI KHOẢN"
+                    android:textColor="@color/primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/lexend" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:layout_toStartOf="@id/iv_chevron_activity"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Kiểm tra hoạt động của tài khoản"
-                            android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/lexend" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Kiểm tra những lần đăng nhập và thay đổi tài khoản trong 30 ngày gần nhất"
-                            android:textColor="@color/gray_dark"
-                            android:textSize="13sp"
-                            android:fontFamily="@font/lexend" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/iv_chevron_activity"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-                </RelativeLayout>
-
-                <View
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_light" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
 
-                <!-- 2. Quản lý thiết bị đăng nhập -->
-                <RelativeLayout
-                    android:id="@+id/btn_manage_devices"
-                    android:layout_width="match_parent"
-                    android:layout_height="72dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingVertical="8dp">
+                    <!-- 1. Kiểm tra hoạt động của tài khoản -->
+                    <RelativeLayout
+                        android:id="@+id/btn_check_activity"
+                        android:layout_width="match_parent"
+                        android:layout_height="72dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingVertical="8dp">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:layout_toStartOf="@id/iv_chevron_devices"
-                        android:orientation="vertical">
-
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Quản lý thiết bị đăng nhập"
-                            android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/lexend" />
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_toStartOf="@id/iv_chevron_activity"
+                            android:orientation="vertical">
 
-                        <TextView
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kiểm tra hoạt động của tài khoản"
+                                android:textColor="@color/primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/lexend" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Kiểm tra những lần đăng nhập và thay đổi tài khoản trong 30 ngày gần nhất"
+                                android:textColor="@color/gray_dark"
+                                android:textSize="11sp"
+                                android:fontFamily="@font/lexend" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/iv_chevron_activity"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+
+                    <!-- 2. Quản lý thiết bị đăng nhập -->
+                    <RelativeLayout
+                        android:id="@+id/btn_manage_devices"
+                        android:layout_width="match_parent"
+                        android:layout_height="72dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingVertical="8dp">
+
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Quản lý các thiết bị đã đăng nhập vào tài khoản Rootie"
-                            android:textColor="@color/gray_dark"
-                            android:textSize="13sp"
-                            android:fontFamily="@font/lexend" />
-                    </LinearLayout>
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_toStartOf="@id/iv_chevron_devices"
+                            android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/iv_chevron_devices"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/gray_light" />
-                </RelativeLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Quản lý thiết bị đăng nhập"
+                                android:textColor="@color/primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/lexend" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Quản lý các thiết bị đã đăng nhập vào tài khoản Rootie"
+                                android:textColor="@color/gray_dark"
+                                android:textSize="11sp"
+                                android:fontFamily="@font/lexend" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/iv_chevron_devices"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="#7E8A83" />
+                    </RelativeLayout>
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

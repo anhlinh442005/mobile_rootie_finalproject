@@ -828,6 +828,7 @@ class QuizTestResultFragment : RootieFragment() {
                         timestamp = currentTime
                     )
                 )
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(requireContext())
                 
                 if (!silent) {
                     val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null)
@@ -839,7 +840,7 @@ class QuizTestResultFragment : RootieFragment() {
                     val tvConfirmText = dialogView.findViewById<TextView>(R.id.tv_dialog_confirm_text)
                     val btnCancel = dialogView.findViewById<android.view.View>(R.id.btn_dialog_cancel)
 
-                    tvTitle.text = "Nhận 100 xu thành công! 🎉"
+                    tvTitle.text = "Nhận 100 xu thành công!"
                     tvMsg.text = "Cảm ơn bạn đã cập nhật chỉ số da định kỳ. Bạn được cộng +100 xu vào ví thành viên!"
                     llCoinBadge.visibility = android.view.View.VISIBLE
                     tvCoinText.text = "Tặng +100 Xu thành viên"
@@ -872,7 +873,7 @@ class QuizTestResultFragment : RootieFragment() {
                 val tvConfirmText = dialogView.findViewById<TextView>(R.id.tv_dialog_confirm_text)
                 val btnCancel = dialogView.findViewById<android.view.View>(R.id.btn_dialog_cancel)
 
-                tvTitle.text = "Đã Lưu Hồ Sơ Da! 🎉"
+                tvTitle.text = "Đã lưu hồ sơ da!"
                 tvMsg.text = "Chỉ số da và loại da $skinType đã được lưu vào lịch sử của bạn."
                 tvConfirmText.text = "ĐỒNG Ý"
                 btnCancel.visibility = android.view.View.GONE
@@ -928,9 +929,9 @@ class QuizTestResultFragment : RootieFragment() {
         val tvConfirmText = dialogView.findViewById<TextView>(R.id.tv_dialog_confirm_text)
         val btnCancel = dialogView.findViewById<TextView>(R.id.btn_dialog_cancel)
 
-        tvTitle.text = "Áp dụng & Lưu thành công! 🎉"
+        tvTitle.text = "Áp dụng và lưu thành công!"
         tvMsg.text = "Đã lưu chỉ số da và áp dụng routine AI vào lịch trình hàng ngày.\n\nBạn có muốn thiết lập thời gian nhắc nhở routine không?"
-        tvConfirmText.text = "CÀI ĐẶT NHẮC HẸN ⏰"
+        tvConfirmText.text = "CÀI ĐẶT NHẮC HẸN"
         btnCancel.text = "ĐỂ SAU"
 
         val customDialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())

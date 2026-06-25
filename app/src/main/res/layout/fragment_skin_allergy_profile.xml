@@ -1095,20 +1095,26 @@
                         android:textStyle="bold" />
                 </FrameLayout>
 
-                <!-- Link Text: RETAKE QUIZ -->
-                <TextView
+                <!-- Button: QUAY LẠI LÀM QUIZ -->
+                <FrameLayout
                     android:id="@+id/btn_retake_quiz"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="8dp"
-                    android:fontFamily="@font/lexend"
-                    android:text="QUAY LẠI LÀM QUIZ"
-                    android:textColor="#3E4D44"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_btn_solid"
+                    android:backgroundTint="#F2F3EB"
                     android:clickable="true"
-                    android:focusable="true" />
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lexend"
+                        android:text="QUAY LẠI LÀM QUIZ"
+                        android:textColor="#3E4D44"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

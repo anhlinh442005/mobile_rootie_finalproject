@@ -59,24 +59,109 @@ class AccountProfileEditFragment : RootieFragment() {
         loadAvatarImage(avatarUrl)
 
         // Load values from ProfileSession
-        val username = com.veganbeauty.app.data.local.ProfileSession.getUsername(ctx)
         val fullName = com.veganbeauty.app.data.local.ProfileSession.getFullName(ctx)
         val email = com.veganbeauty.app.data.local.ProfileSession.getEmail(ctx)
         val phone = com.veganbeauty.app.data.local.ProfileSession.getPhone(ctx)
+        val dob = com.veganbeauty.app.data.local.ProfileSession.getDob(ctx)
+        val gender = com.veganbeauty.app.data.local.ProfileSession.getGender(ctx)
 
         binding.tvUsername.text = fullName
         binding.etEmail.setText(email)
         binding.etFullname.setText(fullName)
         binding.etPhone.setText(phone)
+        binding.tvDob.text = dob
 
-        // Back button action - saves current fields
+        when (gender) {
+            "Nam" -> binding.rbMale.isChecked = true
+            "Nữ" -> binding.rbFemale.isChecked = true
+            "Khác" -> binding.rbOther.isChecked = true
+            else -> binding.rbFemale.isChecked = true
+        }
+
+        // Separator lines focus highlighting
+        val focusListener = android.view.View.OnFocusChangeListener { v, hasFocus ->
+            val lineView = when (v.id) {
+                com.veganbeauty.app.R.id.et_email -> binding.viewEmailLine
+                com.veganbeauty.app.R.id.et_fullname -> binding.viewFullnameLine
+                com.veganbeauty.app.R.id.et_phone -> binding.viewPhoneLine
+                else -> null
+            }
+            lineView?.let { line ->
+                if (hasFocus) {
+                    line.setBackgroundColor(android.graphics.Color.parseColor("#3E4D44")) // Brand primary color
+                    line.layoutParams.height = (2 * resources.displayMetrics.density).toInt() // Thicker line
+                } else {
+                    line.setBackgroundColor(android.graphics.Color.parseColor("#E2E4E1")) // Default gray color
+                    line.layoutParams.height = (1 * resources.displayMetrics.density).toInt() // Normal 1dp
+                }
+                line.requestLayout()
+            }
+        }
+        binding.etEmail.onFocusChangeListener = focusListener
+        binding.etFullname.onFocusChangeListener = focusListener
+        binding.etPhone.onFocusChangeListener = focusListener
+
+        // Automatically hide Bottom Navigation when keyboard is open
+        val bottomNav = view.findViewById<android.view.View>(com.veganbeauty.app.R.id.bottom_nav)
+        if (bottomNav != null) {
+            val rootView = view
+            rootView.viewTreeObserver.addOnGlobalLayoutListener {
+                val rect = android.graphics.Rect()
+                rootView.getWindowVisibleDisplayFrame(rect)
+                val screenHeight = rootView.rootView.height
+                val keypadHeight = screenHeight - rect.bottom
+                if (keypadHeight > screenHeight * 0.15) {
+                    bottomNav.visibility = android.view.View.GONE
+                } else {
+                    bottomNav.visibility = android.view.View.VISIBLE
+                }
+            }
+        }
+
+        // Back button action - just pop backstack without saving (discard changes)
         binding.btnBack.setOnClickListener {
-            val saveCtx = requireContext()
-            com.veganbeauty.app.data.local.ProfileSession.setFullName(saveCtx, binding.etFullname.text.toString())
-            com.veganbeauty.app.data.local.ProfileSession.setEmail(saveCtx, binding.etEmail.text.toString())
-            com.veganbeauty.app.data.local.ProfileSession.setPhone(saveCtx, binding.etPhone.text.toString())
-            com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileToFirebaseAndLocal(saveCtx)
             parentFragmentManager.popBackStack()
+        }
+
+        // Save button action - saves current fields and syncs to Firebase
+        binding.btnSave.setOnClickListener {
+            val saveCtx = requireContext()
+            val newFullName = binding.etFullname.text.toString()
+            val newEmail = binding.etEmail.text.toString()
+            val newPhone = binding.etPhone.text.toString()
+            val newDob = binding.tvDob.text.toString()
+            val newGender = when {
+                binding.rbMale.isChecked -> "Nam"
+                binding.rbFemale.isChecked -> "Nữ"
+                binding.rbOther.isChecked -> "Khác"
+                else -> "Nữ"
+            }
+
+            com.veganbeauty.app.data.local.ProfileSession.setFullName(saveCtx, newFullName)
+            com.veganbeauty.app.data.local.ProfileSession.setEmail(saveCtx, newEmail)
+            com.veganbeauty.app.data.local.ProfileSession.setPhone(saveCtx, newPhone)
+            com.veganbeauty.app.data.local.ProfileSession.setDob(saveCtx, newDob)
+            com.veganbeauty.app.data.local.ProfileSession.setGender(saveCtx, newGender)
+
+            com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileToFirebaseAndLocal(saveCtx)
+            
+            // Show custom success dialog instead of standard Toast
+            val dialogView = layoutInflater.inflate(com.veganbeauty.app.R.layout.dialog_save_profile_success, null)
+            val dialog = androidx.appcompat.app.AlertDialog.Builder(saveCtx)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create()
+            
+            dialog.getWindow()?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            
+            dialogView.findViewById<android.view.View>(com.veganbeauty.app.R.id.btnDialogDismiss)?.setOnClickListener {
+                dialog.dismiss()
+                parentFragmentManager.popBackStack()
+            }
+            dialog.setOnDismissListener {
+                parentFragmentManager.popBackStack()
+            }
+            dialog.show()
         }
 
         // Highlight the "Tài khoản" tab as active in the bottom navigation menu
@@ -97,8 +182,45 @@ class AccountProfileEditFragment : RootieFragment() {
             showAvatarSourcePicker()
         }
 
+        // MaterialDatePicker for selecting date of birth
         binding.btnSelectDob.setOnClickListener {
-            Toast.makeText(context, "Mở trình chọn ngày sinh", Toast.LENGTH_SHORT).show()
+            val currentDob = binding.tvDob.text.toString()
+            val parts = currentDob.split("/")
+            var initialSelectionMs: Long? = null
+            if (parts.size == 3) {
+                try {
+                    val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+                    cal.clear()
+                    cal.set(java.util.Calendar.DAY_OF_MONTH, parts[0].toInt())
+                    cal.set(java.util.Calendar.MONTH, parts[1].toInt() - 1)
+                    cal.set(java.util.Calendar.YEAR, parts[2].toInt())
+                    initialSelectionMs = cal.timeInMillis
+                } catch (e: Exception) {}
+            }
+
+            val builder = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
+            builder.setTitleText("Chọn ngày sinh")
+            if (initialSelectionMs != null) {
+                builder.setSelection(initialSelectionMs)
+            }
+
+            val constraintsBuilder = com.google.android.material.datepicker.CalendarConstraints.Builder()
+            constraintsBuilder.setValidator(com.google.android.material.datepicker.DateValidatorPointBackward.now())
+            builder.setCalendarConstraints(constraintsBuilder.build())
+
+            val picker = builder.build()
+            picker.addOnPositiveButtonClickListener { selection ->
+                val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+                cal.timeInMillis = selection
+                val selectedDay = cal.get(java.util.Calendar.DAY_OF_MONTH)
+                val selectedMonth = cal.get(java.util.Calendar.MONTH) + 1
+                val selectedYear = cal.get(java.util.Calendar.YEAR)
+                
+                val formattedDay = String.format("%02d", selectedDay)
+                val formattedMonth = String.format("%02d", selectedMonth)
+                binding.tvDob.text = "$formattedDay/$formattedMonth/$selectedYear"
+            }
+            picker.show(parentFragmentManager, "DATE_PICKER")
         }
 
         binding.btnLinkedAccounts.setOnClickListener {
@@ -121,10 +243,6 @@ class AccountProfileEditFragment : RootieFragment() {
 
         binding.btnChangePassword.setOnClickListener {
             Toast.makeText(context, "Thay đổi mật khẩu", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnNotification.setOnClickListener {
-            Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show()
         }
     }
 

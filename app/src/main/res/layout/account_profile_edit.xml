@@ -38,15 +38,16 @@
             android:textStyle="bold"
             android:fontFamily="@font/lexend" />
 
-        <!-- Notification Icon -->
+        <!-- Save button -->
         <ImageView
-            android:id="@+id/btn_notification"
+            android:id="@+id/btn_save"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:padding="6dp"
-            android:src="@drawable/ic_notification"
+            android:padding="8dp"
+            android:src="@drawable/ic_check"
+            app:tint="#28362E"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true" />
@@ -195,6 +196,15 @@
                     android:orientation="vertical"
                     android:layout_marginBottom="20dp">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Địa chỉ Email"
+                        android:textColor="#7E8A83"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/lexend"
+                        android:layout_marginBottom="2dp" />
+
                     <EditText
                         android:id="@+id/et_email"
                         android:layout_width="match_parent"
@@ -202,12 +212,14 @@
                         android:background="@null"
                         android:inputType="textEmailAddress"
                         android:paddingVertical="8dp"
-                        android:text="binhsk23411@st.uel.edu.vn"
+                        android:hint="Nhập địa chỉ email của bạn"
+                        android:textColorHint="#97A49C"
                         android:textColor="#28362E"
                         android:textSize="14sp"
                         android:fontFamily="@font/lexend" />
 
                     <View
+                        android:id="@+id/view_email_line"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#E2E4E1" />
@@ -220,6 +232,15 @@
                     android:orientation="vertical"
                     android:layout_marginBottom="20dp">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Họ và Tên"
+                        android:textColor="#7E8A83"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/lexend"
+                        android:layout_marginBottom="2dp" />
+
                     <EditText
                         android:id="@+id/et_fullname"
                         android:layout_width="match_parent"
@@ -227,12 +248,14 @@
                         android:background="@null"
                         android:inputType="textPersonName"
                         android:paddingVertical="8dp"
-                        android:text="Sông Khánh Bình"
+                        android:hint="Nhập họ và tên đầy đủ"
+                        android:textColorHint="#97A49C"
                         android:textColor="#28362E"
                         android:textSize="14sp"
                         android:fontFamily="@font/lexend" />
 
                     <View
+                        android:id="@+id/view_fullname_line"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#E2E4E1" />
@@ -245,6 +268,15 @@
                     android:orientation="vertical"
                     android:layout_marginBottom="20dp">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Số điện thoại"
+                        android:textColor="#7E8A83"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/lexend"
+                        android:layout_marginBottom="2dp" />
+
                     <EditText
                         android:id="@+id/et_phone"
                         android:layout_width="match_parent"
@@ -252,12 +284,14 @@
                         android:background="@null"
                         android:inputType="phone"
                         android:paddingVertical="8dp"
-                        android:text="0123456789"
+                        android:hint="Nhập số điện thoại"
+                        android:textColorHint="#97A49C"
                         android:textColor="#28362E"
                         android:textSize="14sp"
                         android:fontFamily="@font/lexend" />
 
                     <View
+                        android:id="@+id/view_phone_line"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#E2E4E1" />
@@ -269,6 +303,15 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginBottom="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ngày sinh"
+                        android:textColor="#7E8A83"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/lexend"
+                        android:layout_marginBottom="2dp" />
 
                     <RelativeLayout
                         android:id="@+id/btn_select_dob"
@@ -283,7 +326,8 @@
                             android:layout_height="wrap_content"
                             android:layout_toStartOf="@id/iv_dob_chevron"
                             android:paddingVertical="8dp"
-                            android:text="01/01/2000"
+                            android:hint="Chọn ngày sinh"
+                            android:textColorHint="#97A49C"
                             android:textColor="#28362E"
                             android:textSize="14sp"
                             android:fontFamily="@font/lexend" />
@@ -294,12 +338,12 @@
                             android:layout_height="16dp"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:src="@drawable/ic_chevron_right"
-                            android:rotation="90"
+                            android:src="@drawable/ic_chevron_down_thin"
                             app:tint="#888888" />
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/view_dob_line"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#E2E4E1" />

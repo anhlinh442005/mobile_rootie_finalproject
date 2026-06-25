@@ -177,7 +177,7 @@
                     <ImageView
                         android:layout_width="14dp"
                         android:layout_height="14dp"
-                        android:src="@android:drawable/star_on"
+                        android:src="@drawable/ic_star"
                         app:tint="#FFC107" />
 
                     <TextView
@@ -450,7 +450,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_agenda"
+                                    android:src="@drawable/ic_checklist"
                                     app:tint="@color/primary" />
                                     
                                 <TextView
@@ -490,7 +490,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_sort_by_size"
+                                    android:src="@drawable/ic_leaf"
                                     app:tint="@color/primary" />
                                     
                                 <LinearLayout
@@ -537,7 +537,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_dialog_alert"
+                                    android:src="@drawable/quiz_ic_warning_circle"
                                     app:tint="#B91C1C" />
                                     
                                 <LinearLayout
@@ -746,7 +746,7 @@
                                     <ImageView
                                         android:layout_width="20dp"
                                         android:layout_height="20dp"
-                                        android:src="@android:drawable/ic_menu_info_details"
+                                        android:src="@drawable/ic_info_olive"
                                         app:tint="@color/primary" />
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -785,7 +785,7 @@
                                     <ImageView
                                         android:layout_width="20dp"
                                         android:layout_height="20dp"
-                                        android:src="@android:drawable/ic_menu_search"
+                                        android:src="@drawable/ic_search"
                                         app:tint="@color/primary" />
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -824,7 +824,7 @@
                                     <ImageView
                                         android:layout_width="20dp"
                                         android:layout_height="20dp"
-                                        android:src="@android:drawable/ic_dialog_info"
+                                        android:src="@drawable/ic_info_olive"
                                         app:tint="#D97706" />
                                     <LinearLayout
                                         android:layout_width="match_parent"

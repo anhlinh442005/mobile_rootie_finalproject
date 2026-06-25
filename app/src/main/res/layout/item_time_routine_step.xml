@@ -11,7 +11,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
         android:paddingHorizontal="16dp">
 
         <!-- Left Icon Container -->
@@ -67,6 +68,18 @@
                 android:textSize="12sp"
                 android:ellipsize="end"
                 android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/tvViewProductLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/lexend"
+                android:text="🛒 Xem sản phẩm gợi ý"
+                android:textColor="#38A169"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- Time Badge Container -->

@@ -97,12 +97,17 @@ object SyncDataHelper {
         val avatar = com.veganbeauty.app.data.local.ProfileSession.getAvatar(context)
         val address = com.veganbeauty.app.data.local.ProfileSession.getAddress(context)
         val cccd = com.veganbeauty.app.data.local.ProfileSession.getCCCD(context)
+        val dob = com.veganbeauty.app.data.local.ProfileSession.getDob(context)
+        val gender = com.veganbeauty.app.data.local.ProfileSession.getGender(context)
 
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 val db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(context)
-                val existingUser = db.userDao().getUserByEmail(email) ?: db.userDao().getUserByPhone(phone)
+                val existingUser = db.userDao().getUserByIdSync(userId)
+                    ?: db.userDao().getUserByEmail(email)
+                    ?: db.userDao().getUserByPhone(phone)
                 val password = existingUser?.password ?: "123456"
+                val totalPoints = db.rewardPointDao().getAllRewardHistoryList().sumOf { it.points }
 
                 val userEntity = com.veganbeauty.app.data.local.entities.UserEntity(
                     user_id = userId,
@@ -124,7 +129,10 @@ object SyncDataHelper {
                     "phone" to phone,
                     "avatar" to avatar,
                     "address" to address,
-                    "cccd" to cccd
+                    "cccd" to cccd,
+                    "dob" to dob,
+                    "gender" to gender,
+                    "coins" to totalPoints
                 )
                 firestoreDb.collection("users").document(userId)
                     .set(userMap, com.google.firebase.firestore.SetOptions.merge())
@@ -134,6 +142,81 @@ object SyncDataHelper {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("SyncData", "Failed to sync user profile: ${e.message}")
+            }
+        }
+    }
+
+    fun syncRewardPointsToFirestore(context: Context) {
+        val userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context)
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(context)
+                val history = db.rewardPointDao().getAllRewardHistoryList()
+                val firestoreDb = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                
+                val totalPoints = history.sumOf { it.points }
+                
+                firestoreDb.collection("users").document(userId)
+                    .update("coins", totalPoints)
+                    .await()
+                
+                val batch = firestoreDb.batch()
+                for (item in history) {
+                    val ref = firestoreDb.collection("users").document(userId)
+                        .collection("reward_history").document(item.id.toString())
+                    val data = hashMapOf(
+                        "id" to item.id,
+                        "orderId" to item.orderId,
+                        "points" to item.points,
+                        "reason" to item.reason,
+                        "timestamp" to item.timestamp
+                    )
+                    batch.set(ref, data, com.google.firebase.firestore.SetOptions.merge())
+                }
+                batch.commit().await()
+                Log.d("SyncData", "Successfully synced reward points to Firestore for user: $userId (Total: $totalPoints)")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("SyncData", "Failed to sync reward points: ${e.message}")
+            }
+        }
+    }
+
+    fun syncRewardPointsFromFirestore(context: Context) {
+        val userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context)
+        if (userId.isBlank()) return
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(context)
+                val firestoreDb = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                
+                val snapshot = firestoreDb.collection("users").document(userId)
+                    .collection("reward_history")
+                    .get()
+                    .await()
+                
+                if (!snapshot.isEmpty) {
+                    for (doc in snapshot.documents) {
+                        val id = doc.getLong("id")?.toInt() ?: continue
+                        val orderId = doc.getString("orderId") ?: ""
+                        val points = doc.getLong("points")?.toInt() ?: 0
+                        val reason = doc.getString("reason") ?: ""
+                        val timestamp = doc.getLong("timestamp") ?: System.currentTimeMillis()
+                        
+                        val entity = com.veganbeauty.app.data.local.entities.RewardPointEntity(
+                            id = id,
+                            orderId = orderId,
+                            points = points,
+                            reason = reason,
+                            timestamp = timestamp
+                        )
+                        db.rewardPointDao().insertRewardPoints(entity)
+                    }
+                    Log.d("SyncData", "Successfully pulled/synced reward points FROM Firestore: ${snapshot.size()} items for user $userId.")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("SyncData", "Failed to sync reward points from Firestore: ${e.message}")
             }
         }
     }
@@ -163,6 +246,74 @@ object SyncDataHelper {
         } catch (e: Exception) {
             e.printStackTrace()
             onComplete(null)
+        }
+    }
+
+    @JvmOverloads
+    fun syncUserProfileFromFirestore(context: Context, onComplete: Runnable? = null) {
+        val userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context)
+        if (userId.isBlank()) {
+            onComplete?.run()
+            return
+        }
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val firestoreDb = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                val doc = firestoreDb.collection("users").document(userId).get().await()
+                if (doc.exists()) {
+                    val username = doc.getString("username") ?: ""
+                    val fullName = doc.getString("full_name") ?: ""
+                    val email = doc.getString("email") ?: ""
+                    val phone = doc.getString("phone") ?: ""
+                    val avatar = doc.getString("avatar") ?: ""
+                    val address = doc.getString("address") ?: ""
+                    val cccd = doc.getString("cccd") ?: ""
+                    val dob = doc.getString("dob") ?: ""
+                    val gender = doc.getString("gender") ?: ""
+
+                    // Update ProfileSession
+                    com.veganbeauty.app.data.local.ProfileSession.setUserId(context, userId)
+                    if (username.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setUsername(context, username)
+                    if (fullName.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setFullName(context, fullName)
+                    if (email.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setEmail(context, email)
+                    if (phone.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setPhone(context, phone)
+                    if (avatar.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setAvatar(context, avatar)
+                    if (address.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setAddress(context, address)
+                    if (cccd.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setCCCD(context, cccd)
+                    if (dob.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setDob(context, dob)
+                    if (gender.isNotBlank()) com.veganbeauty.app.data.local.ProfileSession.setGender(context, gender)
+
+                    // Update SQLite UserDao
+                    val db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(context)
+                    val existingUser = db.userDao().getUserByIdSync(userId)
+                        ?: db.userDao().getUserByEmail(email)
+                        ?: db.userDao().getUserByPhone(phone)
+                    val password = existingUser?.password ?: "123456"
+                    val primaryImage = existingUser?.primary_image ?: (if (avatar.isNotBlank()) avatar else "")
+
+                    val userEntity = com.veganbeauty.app.data.local.entities.UserEntity(
+                        user_id = userId,
+                        username = if (username.isNotBlank()) username else (existingUser?.username ?: ""),
+                        full_name = if (fullName.isNotBlank()) fullName else (existingUser?.full_name ?: ""),
+                        email = if (email.isNotBlank()) email else (existingUser?.email ?: ""),
+                        phone = if (phone.isNotBlank()) phone else (existingUser?.phone ?: ""),
+                        password = password,
+                        avatar = if (avatar.isNotBlank()) avatar else (existingUser?.avatar ?: ""),
+                        primary_image = primaryImage
+                    )
+                    db.userDao().insertUser(userEntity)
+                    Log.d("SyncData", "Successfully synced user profile FROM Firestore for user $userId.")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("SyncData", "Failed to sync user profile from Firestore: ${e.message}")
+            } finally {
+                if (onComplete != null) {
+                    kotlinx.coroutines.withContext(Dispatchers.Main) {
+                        onComplete.run()
+                    }
+                }
+            }
         }
     }
 }

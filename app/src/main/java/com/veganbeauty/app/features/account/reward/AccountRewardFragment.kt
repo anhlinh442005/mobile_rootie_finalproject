@@ -836,8 +836,19 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             date.text = sdfTime.format(Date(item.timestamp))
             
             val formattedVal = String.format("%,d", item.points).replace(',', '.')
-            value.text = if (item.points > 0) "+ $formattedVal" else "$formattedVal"
-            value.setTextColor(Color.parseColor("#1A202C"))
+            if (item.points > 0) {
+                value.text = "+ $formattedVal"
+                value.setTextColor(Color.parseColor("#38A169"))
+                status.text = "Nhận xu thành công"
+                status.setTextColor(Color.parseColor("#2E7D32"))
+                status.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E8F5E9"))
+            } else {
+                value.text = "$formattedVal"
+                value.setTextColor(Color.parseColor("#E53E3E"))
+                status.text = "Đổi quà thành công"
+                status.setTextColor(Color.parseColor("#C53030"))
+                status.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FED7D7"))
+            }
 
             if (isMostRecent) {
                 dot.setBackgroundResource(R.drawable.bg_circle_green)
@@ -849,8 +860,6 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             lineTop.visibility = if (isFirst) View.INVISIBLE else View.VISIBLE
             lineBottom.visibility = if (isLast) View.INVISIBLE else View.VISIBLE
-
-            status.text = "Đã đổi quà"
         }
     }
 }

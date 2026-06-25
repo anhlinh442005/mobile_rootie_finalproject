@@ -200,6 +200,7 @@ class OrderRepository(
                     timestamp = System.currentTimeMillis()
                 )
             )
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(localJsonReader.getContext())
             // Add user gift
             userGiftDao.insertUserGift(
                 UserGiftEntity(
@@ -266,6 +267,7 @@ class OrderRepository(
                         reason = "Đánh giá đơn hàng $orderId kèm hình ảnh"
                     )
                 )
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(localJsonReader.getContext())
                 return true // Points awarded
             }
         }

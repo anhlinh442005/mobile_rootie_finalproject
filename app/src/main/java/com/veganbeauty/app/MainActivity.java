@@ -27,6 +27,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        // Schedule skincare routine notifications
+        try {
+            com.veganbeauty.app.features.routine.RoutineAlarmScheduler.INSTANCE.rescheduleAlarms(getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         if (savedInstanceState == null) {
             String navigateTo = getIntent().getStringExtra("NAVIGATE_TO");
             androidx.fragment.app.Fragment destination;
@@ -44,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (!com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(this)) {
             com.veganbeauty.app.features.shop.product.CartHelper.clearCart(this);
+        } else {
+            com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncRewardPointsFromFirestore(this);
+            com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncUserProfileFromFirestore(this, null);
         }
 
         // Trigger ONE-TIME SYNC of all mock data to Firebase
@@ -87,6 +97,12 @@ public class MainActivity extends AppCompatActivity {
                     org.json.JSONObject obj = jsonArray.getJSONObject(i);
                     String userId = obj.optString("user_id", "");
                     if (!teamIds.contains(userId)) continue;
+
+                    // Skip the currently logged-in user to avoid overriding their profile changes in Firestore and SQLite
+                    if (com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(getApplicationContext()) && 
+                        com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUserId(getApplicationContext()).equals(userId)) {
+                        continue;
+                    }
 
                     com.veganbeauty.app.data.local.entities.UserEntity existingUser = userDao.getUserByIdSync(userId);
 
