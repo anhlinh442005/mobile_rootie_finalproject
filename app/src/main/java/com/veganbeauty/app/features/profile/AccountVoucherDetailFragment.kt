@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.veganbeauty.app.features.home.BottomNavHelper
 
 class AccountVoucherDetailFragment : RootieFragment() {
 
@@ -176,10 +177,8 @@ class AccountVoucherDetailFragment : RootieFragment() {
             deleteVoucherFromList { success ->
                 if (success) {
                     Toast.makeText(context, "Mã voucher $voucherCode đã được áp dụng cho đơn hàng của bạn!", Toast.LENGTH_LONG).show()
-                    parentFragmentManager.popBackStack()
-                } else {
-                    Toast.makeText(context, "Áp dụng voucher thất bại", Toast.LENGTH_SHORT).show()
                 }
+                BottomNavHelper.navigate(this, R.id.nav_shop)
             }
         }
     }
@@ -263,9 +262,6 @@ class AccountVoucherDetailFragment : RootieFragment() {
             val expiryDate = sdf.parse(hsdStr) ?: return "Còn hiệu lực"
             
             val today = Calendar.getInstance().apply {
-                set(Calendar.YEAR, 2026)
-                set(Calendar.MONTH, Calendar.JUNE)
-                set(Calendar.DAY_OF_MONTH, 11)
                 set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)

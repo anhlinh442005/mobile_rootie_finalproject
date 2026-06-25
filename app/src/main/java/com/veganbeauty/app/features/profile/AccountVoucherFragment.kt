@@ -112,6 +112,9 @@ class AccountVoucherFragment : RootieFragment() {
                 .addToBackStack(null)
                 .commit()
         }
+        adapter.onUseClickListener = { voucher ->
+            BottomNavHelper.navigate(this, R.id.nav_shop)
+        }
         binding.rvVouchers.layoutManager = LinearLayoutManager(context)
         binding.rvVouchers.adapter = adapter
 
@@ -208,9 +211,6 @@ class AccountVoucherFragment : RootieFragment() {
             val expiryDate = sdf.parse(expiryStr) ?: return "valid"
             
             val today = Calendar.getInstance().apply {
-                set(Calendar.YEAR, 2026)
-                set(Calendar.MONTH, Calendar.JUNE)
-                set(Calendar.DAY_OF_MONTH, 11)
                 set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
