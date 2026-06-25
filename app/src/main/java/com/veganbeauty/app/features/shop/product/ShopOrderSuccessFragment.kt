@@ -185,7 +185,7 @@ class ShopOrderSuccessFragment : RootieFragment() {
                 android.R.anim.fade_in,
                 android.R.anim.fade_out
             )
-            .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(orderCode))
+            .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(orderCode, fromSuccess = true))
             .addToBackStack(null)
             .commit()
     }
@@ -206,10 +206,9 @@ class ShopOrderSuccessFragment : RootieFragment() {
     }
 
     private fun generateMockOrderCode(): String {
-        // Simple deterministic-ish mock that uses the current timestamp so each
-        // new order gets a fresh-looking code in the form "RDHddMMyyyyHHmmss".
-        val format = SimpleDateFormat("ddMMyyyyHHmmss", Locale("vi", "VN"))
-        return "RDH" + format.format(Date())
+        // Fallback ORD code
+        val format = SimpleDateFormat("HHmmss", Locale("vi", "VN"))
+        return "ORD-1" + format.format(Date())
     }
 
     private fun calculateEstimatedDelivery(): String {

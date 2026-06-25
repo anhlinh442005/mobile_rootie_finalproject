@@ -10,6 +10,10 @@ import kotlinx.coroutines.launch
 
 object CartHelper {
     fun addToCart(context: Context, coroutineScope: CoroutineScope, product: ProductEntity, quantity: Int): Boolean {
+        if (product.stock <= 0) {
+            Toast.makeText(context, "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show()
+            return false
+        }
         if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(context)) {
             Toast.makeText(context, "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show()
             return false

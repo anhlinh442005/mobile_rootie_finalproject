@@ -28,6 +28,7 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
     private var selectedVoucherCode: String? = null
     private var voucherDiscountAmount = 0L
     private val isVoucherApplied get() = !selectedVoucherCode.isNullOrEmpty()
+    private var isPointsChecked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +98,9 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         // Points Switch Toggle
-        binding.switchPoints.setOnCheckedChangeListener { _, _ ->
+        binding.switchPoints.setOnClickListener {
+            isPointsChecked = !isPointsChecked
+            updateSwitchUI(binding.switchPoints, binding.switchPointsThumb, isPointsChecked)
             updateUI(adapter.currentList)
         }
 
@@ -173,7 +176,7 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
         var finalPriceSum = selectedItems.sumOf { it.price * it.quantity }
 
         // Points deduction
-        if (binding.switchPoints.isChecked && finalPriceSum > 2400) {
+        if (isPointsChecked && finalPriceSum > 2400) {
             finalPriceSum -= 2400
         }
 
@@ -230,6 +233,24 @@ class CartBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun updateSwitchUI(container: android.widget.FrameLayout, thumb: android.widget.ImageView, enabled: Boolean) {
+        if (enabled) {
+            container.setBackgroundResource(R.drawable.ic_switch_track_on)
+            val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
+            lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
+            lp.marginStart = 0
+            lp.marginEnd = (2 * resources.displayMetrics.density).toInt()
+            thumb.layoutParams = lp
+        } else {
+            container.setBackgroundResource(R.drawable.ic_switch_track_off)
+            val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
+            lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+            lp.marginEnd = 0
+            lp.marginStart = (2 * resources.displayMetrics.density).toInt()
+            thumb.layoutParams = lp
+        }
     }
 
     companion object {

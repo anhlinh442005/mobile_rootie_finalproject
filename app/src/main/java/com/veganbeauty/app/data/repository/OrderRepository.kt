@@ -10,6 +10,9 @@ import com.veganbeauty.app.data.local.entities.UserGiftEntity
 import com.veganbeauty.app.data.local.LocalJsonReader
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 
 class OrderRepository(
     private val orderDao: OrderDao,
@@ -43,16 +46,65 @@ class OrderRepository(
      *    function falls back to the unfiltered [allOrders] flow so
      *    legacy / pre-fix installs do not regress to an empty list.
      */
+    companion object {
+        private var orderListener: com.google.firebase.firestore.ListenerRegistration? = null
+    }
+
+    fun startListeningToOrders(userId: String?, phone: String?) {
+        val safeUserId = userId?.trim().orEmpty()
+        val safePhone = phone?.trim().orEmpty()
+
+        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+        val query = when {
+            safeUserId.isNotEmpty() -> db.collection("orders").whereEqualTo("userId", safeUserId)
+            safePhone.isNotEmpty() -> db.collection("orders").whereEqualTo("billingPhone", safePhone)
+            else -> null
+        }
+
+        orderListener?.remove()
+        orderListener = null
+
+        if (query != null) {
+            orderListener = query.addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    android.util.Log.e("OrderRepository", "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val orders = mutableListOf<OrderEntity>()
+                    val gson = com.google.gson.Gson()
+                    for (doc in snapshot.documents) {
+                        try {
+                            val map = doc.data ?: continue
+                            val jsonTree = gson.toJsonTree(map)
+                            val order = gson.fromJson(jsonTree, OrderEntity::class.java)
+                            orders.add(order)
+                        } catch (ex: Exception) {
+                            android.util.Log.e("OrderRepository", "Error parsing order", ex)
+                        }
+                    }
+                    if (orders.isNotEmpty()) {
+                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                            orderDao.insertOrders(orders)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun getOrdersForBuyer(userId: String?, phone: String?): Flow<List<OrderEntity>> {
         val safeUserId = userId?.trim().orEmpty()
         val safePhone = phone?.trim().orEmpty()
+        startListeningToOrders(safeUserId, safePhone)
         return when {
             safeUserId.isNotEmpty() -> orderDao.getOrdersForUser(safeUserId)
             safePhone.isNotEmpty() -> orderDao.getOrdersForGuestPhone(safePhone)
             else -> orderDao.getAllOrders()
         }
     }
-    suspend fun refreshOrders() {
+
+    suspend fun refreshOrders(userId: String? = null, phone: String? = null) {
         try {
             // Clear all old orders first as requested
             orderDao.deleteAllOrders()
@@ -168,6 +220,40 @@ class OrderRepository(
                         )
                     )
                 )
+            }
+
+            // Fetch custom orders from Firebase Firestore
+            val safeUserId = userId?.trim().orEmpty()
+            val safePhone = phone?.trim().orEmpty()
+            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            val query = when {
+                safeUserId.isNotEmpty() -> db.collection("orders").whereEqualTo("userId", safeUserId)
+                safePhone.isNotEmpty() -> db.collection("orders").whereEqualTo("billingPhone", safePhone)
+                else -> null
+            }
+
+            query?.get()?.addOnSuccessListener { snapshot ->
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val orders = mutableListOf<OrderEntity>()
+                    val gson = com.google.gson.Gson()
+                    for (doc in snapshot.documents) {
+                        try {
+                            val map = doc.data ?: continue
+                            val jsonTree = gson.toJsonTree(map)
+                            val order = gson.fromJson(jsonTree, OrderEntity::class.java)
+                            orders.add(order)
+                        } catch (ex: Exception) {
+                            android.util.Log.e("OrderRepository", "Error parsing order on refresh", ex)
+                        }
+                    }
+                    if (orders.isNotEmpty()) {
+                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                            orderDao.insertOrders(orders)
+                        }
+                    }
+                }
+            }?.addOnFailureListener { e ->
+                android.util.Log.e("OrderRepository", "Failed to fetch orders on refresh", e)
             }
         } catch (e: Exception) {
             e.printStackTrace()

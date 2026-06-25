@@ -83,6 +83,12 @@ class ShopDetailFragment : RootieFragment() {
             }
         }
 
+        binding.llRatingHeader.setOnClickListener {
+            binding.nsvDetail.post {
+                binding.nsvDetail.smoothScrollTo(0, binding.rlReviewsHeader.top)
+            }
+        }
+
         binding.btnSearch.setOnClickListener {
             val searchFragment = com.veganbeauty.app.features.shop.search.ShopSearchFragment()
             parentFragmentManager.beginTransaction()
@@ -118,6 +124,10 @@ class ShopDetailFragment : RootieFragment() {
 
         binding.btnBuyOnline.setOnClickListener {
             product?.let { p ->
+                if (p.stock <= 0) {
+                    android.widget.Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", android.widget.Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 val bottomSheet = com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
                     product = p,
                     onAddToCartClick = { prod, quantity ->
@@ -144,6 +154,12 @@ class ShopDetailFragment : RootieFragment() {
         }
 
         binding.btnFindStore.setOnClickListener {
+            product?.let { p ->
+                if (p.stock <= 0) {
+                    android.widget.Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", android.widget.Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+            }
             val storeFragment = ShopStoreSystemFragment()
             parentFragmentManager.beginTransaction()
                 .replace(com.veganbeauty.app.R.id.main_container, storeFragment)
@@ -203,6 +219,16 @@ class ShopDetailFragment : RootieFragment() {
 
     private fun displayProduct(product: ProductEntity) {
         binding.tvProductName.text = product.name
+        
+        if (product.stock <= 0) {
+            binding.tvStockStatus.text = "Hết hàng"
+            binding.tvStockStatus.setTextColor(Color.parseColor("#888888"))
+            binding.viewStockIndicator.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#888888"))
+        } else {
+            binding.tvStockStatus.text = "Còn hàng"
+            binding.tvStockStatus.setTextColor(ContextCompat.getColor(requireContext(), com.veganbeauty.app.R.color.content))
+            binding.viewStockIndicator.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+        }
         
         val formatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
         binding.tvPrice.text = formatter.format(product.price)
