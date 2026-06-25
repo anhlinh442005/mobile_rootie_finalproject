@@ -23,6 +23,8 @@ import com.veganbeauty.app.data.local.entities.OrderItem
 import com.veganbeauty.app.databinding.ShopFragmentCheckoutBinding
 import com.veganbeauty.app.features.shop.store.ShopStoreSelectionFragment
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.tasks.await
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -142,6 +144,9 @@ class ShopCheckoutFragment : RootieFragment() {
     private var isVoucherApplied = false
     private var voucherDiscountAmount = 0L
     private var selectedVoucherCode: String? = null
+    private var isInvoiceChecked = false
+    private var isPointsChecked = false
+    private var isHideProductInfoChecked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -360,8 +365,20 @@ class ShopCheckoutFragment : RootieFragment() {
         }
 
         // 5. Points Switch changed
-        binding.switchPoints.setOnCheckedChangeListener { _, _ ->
+        binding.switchPoints.setOnClickListener {
+            isPointsChecked = !isPointsChecked
+            updateSwitchUI(binding.switchPoints, binding.switchPointsThumb, isPointsChecked)
             calculatePrices()
+        }
+
+        binding.switchInvoice.setOnClickListener {
+            isInvoiceChecked = !isInvoiceChecked
+            updateSwitchUI(binding.switchInvoice, binding.switchInvoiceThumb, isInvoiceChecked)
+        }
+
+        binding.switchHideProductInfo.setOnClickListener {
+            isHideProductInfoChecked = !isHideProductInfoChecked
+            updateSwitchUI(binding.switchHideProductInfo, binding.switchHideProductInfoThumb, isHideProductInfoChecked)
         }
 
         // 6. Checkout button
@@ -461,7 +478,7 @@ class ShopCheckoutFragment : RootieFragment() {
 
         // 2. Points discount: 2400đ
         var pointsDiscount = 0L
-        if (binding.switchPoints.isChecked && finalPriceSum > 2400) {
+        if (isPointsChecked && finalPriceSum > 2400) {
             pointsDiscount = 2400L
             finalPriceSum -= pointsDiscount
         }
@@ -619,7 +636,8 @@ class ShopCheckoutFragment : RootieFragment() {
         val etName = dialogView.findViewById<EditText>(R.id.et_dialog_name)
         val etPhone = dialogView.findViewById<EditText>(R.id.et_dialog_phone)
         val etAddress = dialogView.findViewById<EditText>(R.id.et_dialog_address)
-        val switchDefault = dialogView.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.switch_dialog_default)
+        val switchDefault = dialogView.findViewById<android.widget.FrameLayout>(R.id.switch_dialog_default)
+        val switchDefaultThumb = dialogView.findViewById<android.widget.ImageView>(R.id.switch_dialog_default_thumb)
         val btnCancel = dialogView.findViewById<View>(R.id.btn_dialog_cancel)
         val btnSave = dialogView.findViewById<View>(R.id.btn_dialog_save)
 
@@ -629,7 +647,14 @@ class ShopCheckoutFragment : RootieFragment() {
         etName.setText(addrItem.name)
         etPhone.setText(addrItem.phone)
         etAddress.setText(addrItem.details)
-        switchDefault.isChecked = addrItem.isDefault
+        
+        var isDefaultChecked = addrItem.isDefault
+        updateSwitchUI(switchDefault, switchDefaultThumb, isDefaultChecked)
+
+        switchDefault.setOnClickListener {
+            isDefaultChecked = !isDefaultChecked
+            updateSwitchUI(switchDefault, switchDefaultThumb, isDefaultChecked)
+        }
 
         val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogView)
@@ -650,7 +675,7 @@ class ShopCheckoutFragment : RootieFragment() {
                 addrItem.phone = phone
                 addrItem.details = addr
                 
-                if (switchDefault.isChecked) {
+                if (isDefaultChecked) {
                     memberAddresses.forEachIndexed { i, a ->
                         a.isDefault = (i == index)
                     }
@@ -675,7 +700,8 @@ class ShopCheckoutFragment : RootieFragment() {
         val etName = dialogView.findViewById<EditText>(R.id.et_dialog_name)
         val etPhone = dialogView.findViewById<EditText>(R.id.et_dialog_phone)
         val etAddress = dialogView.findViewById<EditText>(R.id.et_dialog_address)
-        val switchDefault = dialogView.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.switch_dialog_default)
+        val switchDefault = dialogView.findViewById<android.widget.FrameLayout>(R.id.switch_dialog_default)
+        val switchDefaultThumb = dialogView.findViewById<android.widget.ImageView>(R.id.switch_dialog_default_thumb)
         val btnCancel = dialogView.findViewById<View>(R.id.btn_dialog_cancel)
         val btnSave = dialogView.findViewById<View>(R.id.btn_dialog_save)
 
@@ -683,7 +709,14 @@ class ShopCheckoutFragment : RootieFragment() {
         etName.setText("")
         etPhone.setText("")
         etAddress.setText("")
-        switchDefault.isChecked = false
+        
+        var isDefaultChecked = false
+        updateSwitchUI(switchDefault, switchDefaultThumb, isDefaultChecked)
+
+        switchDefault.setOnClickListener {
+            isDefaultChecked = !isDefaultChecked
+            updateSwitchUI(switchDefault, switchDefaultThumb, isDefaultChecked)
+        }
 
         val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogView)
@@ -704,10 +737,10 @@ class ShopCheckoutFragment : RootieFragment() {
                     name = name,
                     phone = phone,
                     details = addr,
-                    isDefault = switchDefault.isChecked
+                    isDefault = isDefaultChecked
                 )
                 
-                if (switchDefault.isChecked) {
+                if (isDefaultChecked) {
                     memberAddresses.forEach { it.isDefault = false }
                 }
                 
@@ -795,7 +828,7 @@ class ShopCheckoutFragment : RootieFragment() {
         @Suppress("UNUSED_VARIABLE")
         val note = binding.etNote.text.toString().trim()
         @Suppress("UNUSED_VARIABLE")
-        val hideProductInfo = binding.switchHideProductInfo.isChecked
+        val hideProductInfo = isHideProductInfoChecked
 
         // Validate buyer info up front so the OTP step only runs when the
         // form is in a valid state.
@@ -804,19 +837,50 @@ class ShopCheckoutFragment : RootieFragment() {
         // Recalculate the final total so we can pass it to the success screen.
         val finalTotal = calculateFinalTotal()
 
-        // Build a quick mock order code based on current timestamp.
-        val mockOrderCode = "RDH" + java.text.SimpleDateFormat(
-            "ddMMyyyyHHmmss",
-            java.util.Locale("vi", "VN")
-        ).format(java.util.Date())
+        lifecycleScope.launch {
+            // Find highest existing ORD-xxxx suffix in Firebase to increment from
+            val maxIdNum = try {
+                val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                val snapshot = db.collection("orders").get().await()
+                val ids = snapshot.documents.mapNotNull { doc ->
+                    val idStr = doc.id
+                    if (idStr.startsWith("ORD-")) {
+                        val num = idStr.substring(4).toIntOrNull()
+                        if (num != null && num < 5000) num else null
+                    } else {
+                        null
+                    }
+                }
+                ids.maxOrNull() ?: 1460
+            } catch (e: Exception) {
+                android.util.Log.e(TAG, "Failed to query Firestore for max order code: ${e.message}", e)
+                val currentOrders = try {
+                    database.orderDao().getAllOrders().first()
+                } catch (ex: Exception) {
+                    emptyList()
+                }
+                currentOrders.mapNotNull { order ->
+                    val idStr = order.id
+                    if (idStr.startsWith("ORD-")) {
+                        val num = idStr.substring(4).toIntOrNull()
+                        if (num != null && num < 5000) num else null
+                    } else {
+                        null
+                    }
+                }.maxOrNull() ?: 1460
+            }
 
-        // Dispatch the right checkout branch. Order persistence happens
-        // inside [navigateToOrderSuccess] so we can guarantee the row
-        // is in Room by the time the user navigates to the tracking
-        // screen.
-        when {
-            isLoggedIn -> handleMemberCheckout(mockOrderCode, finalTotal)
-            else -> handleGuestCheckout(mockOrderCode, finalTotal, buyerInfo)
+            val nextNum = maxIdNum + 1
+            val mockOrderCode = "ORD-$nextNum"
+
+            // Dispatch the right checkout branch. Order persistence happens
+            // inside [navigateToOrderSuccess] so we can guarantee the row
+            // is in Room by the time the user navigates to the tracking
+            // screen.
+            when {
+                isLoggedIn -> handleMemberCheckout(mockOrderCode, finalTotal)
+                else -> handleGuestCheckout(mockOrderCode, finalTotal, buyerInfo)
+            }
         }
     }
 
@@ -1156,43 +1220,38 @@ class ShopCheckoutFragment : RootieFragment() {
         )
     }
 
-    /**
-     * Persist an [order] to Room. Suspended on the IO dispatcher so
-     * the caller can call it from a [lifecycleScope.launch] without
-     * blocking the UI thread. Failures are logged but never thrown —
-     * a missing row is preferable to crashing the checkout flow.
-     */
     private fun persistOrderSync(order: OrderEntity) {
         lifecycleScope.launch {
             try {
                 database.orderDao().insertOrder(order)
             } catch (e: Exception) {
-                android.util.Log.e(TAG, "persistOrderSync failed: ${e.message}", e)
+                android.util.Log.e(TAG, "persistOrderSync local DB write failed: ${e.message}", e)
             }
-        }
-        
-        // --- ADD FIREBASE SYNC FOR ADMIN ---
-        try {
-            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
-            // 1. Push order to Firebase
-            val orderMap = com.google.gson.Gson().fromJson(
-                com.google.gson.Gson().toJsonTree(order),
-                Map::class.java
-            ) as Map<String, Any>
-            db.collection("orders").document(order.id).set(orderMap)
             
-            // 2. Push notification for Admin
-            val newNotification = hashMapOf(
-                "title" to "Có đơn hàng mới! \uD83D\uDED2",
-                "message" to "Khách hàng ${order.shippingName} vừa đặt đơn hàng trị giá ${String.format("%,d", order.totalAmount)}đ.",
-                "type" to "NEW_ORDER",
-                "isRead" to false,
-                "createdAt" to System.currentTimeMillis(),
-                "orderId" to order.id
-            )
-            db.collection("notification_admin").add(newNotification)
-        } catch (e: Exception) {
-            android.util.Log.e(TAG, "Firebase sync failed: ${e.message}", e)
+            // --- ADD FIREBASE SYNC FOR ADMIN ---
+            try {
+                val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                // 1. Push order to Firebase
+                val orderMap = com.google.gson.Gson().fromJson(
+                    com.google.gson.Gson().toJsonTree(order),
+                    Map::class.java
+                ) as Map<String, Any>
+                db.collection("orders").document(order.id).set(orderMap).await()
+                
+                // 2. Push notification for Admin
+                val newNotification = hashMapOf(
+                    "title" to "Có đơn hàng mới! 🛒",
+                    "message" to "Khách hàng ${order.shippingName} vừa đặt đơn hàng trị giá ${String.format("%,d", order.totalAmount)}đ.",
+                    "type" to "NEW_ORDER",
+                    "isRead" to false,
+                    "createdAt" to System.currentTimeMillis(),
+                    "orderId" to order.id
+                )
+                db.collection("notification_admin").add(newNotification).await()
+                android.util.Log.d(TAG, "Firebase sync success for order ${order.id}")
+            } catch (e: Exception) {
+                android.util.Log.e(TAG, "Firebase sync failed: ${e.message}", e)
+            }
         }
     }
 
@@ -1308,7 +1367,7 @@ class ShopCheckoutFragment : RootieFragment() {
     private fun calculateFinalTotal(): Long {
         var finalPriceSum = checkoutItems.sumOf { it.price * it.quantity }
 
-        val pointsDiscount = if (binding.switchPoints.isChecked && finalPriceSum > 2400) 2400L else 0L
+        val pointsDiscount = if (isPointsChecked && finalPriceSum > 2400) 2400L else 0L
         finalPriceSum -= pointsDiscount
 
         if (isVoucherApplied && finalPriceSum > voucherDiscountAmount) {
@@ -1320,6 +1379,24 @@ class ShopCheckoutFragment : RootieFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun updateSwitchUI(container: android.widget.FrameLayout, thumb: android.widget.ImageView, enabled: Boolean) {
+        if (enabled) {
+            container.setBackgroundResource(R.drawable.ic_switch_track_on)
+            val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
+            lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
+            lp.marginStart = 0
+            lp.marginEnd = (2 * resources.displayMetrics.density).toInt()
+            thumb.layoutParams = lp
+        } else {
+            container.setBackgroundResource(R.drawable.ic_switch_track_off)
+            val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
+            lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+            lp.marginEnd = 0
+            lp.marginStart = (2 * resources.displayMetrics.density).toInt()
+            thumb.layoutParams = lp
+        }
     }
 
     companion object {

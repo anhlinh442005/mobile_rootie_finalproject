@@ -16,6 +16,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -143,20 +145,9 @@ class ShopStoreSystemFragment : RootieFragment() {
             }
         }
 
-        // Option 2: Image Map clicked opens Google Maps centered on current/selected location
-        binding.ivMapBackground.setOnClickListener {
-            val lat = if (displayedStoresList.isNotEmpty() && selectedIndex < displayedStoresList.size) {
-                displayedStoresList[selectedIndex].lat
-            } else {
-                userLocation?.latitude ?: 10.775
-            }
-            val lng = if (displayedStoresList.isNotEmpty() && selectedIndex < displayedStoresList.size) {
-                displayedStoresList[selectedIndex].lng
-            } else {
-                userLocation?.longitude ?: 106.701
-            }
-            openGoogleMaps(lat, lng)
-        }
+        // Set custom zoom and pan touch listener on map background
+        val zoomPanTouchListener = ZoomPanTouchListener(binding.flZoomableMapWrapper)
+        binding.ivMapBackground.setOnTouchListener(zoomPanTouchListener)
 
         // Uses My Location Overlay Button (Image 2 style)
         binding.btnUseMyLocation.setOnClickListener {
@@ -635,5 +626,86 @@ class ShopStoreSystemFragment : RootieFragment() {
             items = newItems
             notifyDataSetChanged()
         }
+    }
+}
+
+class ZoomPanTouchListener(private val container: View) : View.OnTouchListener {
+    private var scaleFactor = 1.0f
+    private val minScale = 1.0f
+    private val maxScale = 5.0f
+
+    private var lastTouchX = 0f
+    private var lastTouchY = 0f
+    private var activePointerId = MotionEvent.INVALID_POINTER_ID
+
+    private val scaleGestureDetector = ScaleGestureDetector(
+        container.context,
+        object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                scaleFactor *= detector.scaleFactor
+                scaleFactor = scaleFactor.coerceIn(minScale, maxScale)
+                container.scaleX = scaleFactor
+                container.scaleY = scaleFactor
+                adjustTranslationBoundaries()
+                return true
+            }
+        }
+    )
+
+    override fun onTouch(v: View, event: MotionEvent): Boolean {
+        scaleGestureDetector.onTouchEvent(event)
+
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                val index = event.actionIndex
+                lastTouchX = event.getX(index)
+                lastTouchY = event.getY(index)
+                activePointerId = event.getPointerId(index)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val pointerIndex = event.findPointerIndex(activePointerId)
+                if (pointerIndex != -1) {
+                    val x = event.getX(pointerIndex)
+                    val y = event.getY(pointerIndex)
+
+                    if (!scaleGestureDetector.isInProgress) {
+                        val dx = x - lastTouchX
+                        val dy = y - lastTouchY
+
+                        container.translationX += dx
+                        container.translationY += dy
+                        adjustTranslationBoundaries()
+                    }
+
+                    lastTouchX = x
+                    lastTouchY = y
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                activePointerId = MotionEvent.INVALID_POINTER_ID
+            }
+            MotionEvent.ACTION_POINTER_UP -> {
+                val pointerIndex = event.actionIndex
+                val pointerId = event.getPointerId(pointerIndex)
+                if (pointerId == activePointerId) {
+                    val newPointerIndex = if (pointerIndex == 0) 1 else 0
+                    lastTouchX = event.getX(newPointerIndex)
+                    lastTouchY = event.getY(newPointerIndex)
+                    activePointerId = event.getPointerId(newPointerIndex)
+                }
+            }
+        }
+        return true
+    }
+
+    private fun adjustTranslationBoundaries() {
+        val width = container.width
+        val height = container.height
+
+        val maxTx = (width * (scaleFactor - 1.0f)) / 2f
+        val maxTy = (height * (scaleFactor - 1.0f)) / 2f
+
+        container.translationX = container.translationX.coerceIn(-maxTx, maxTx)
+        container.translationY = container.translationY.coerceIn(-maxTy, maxTy)
     }
 }

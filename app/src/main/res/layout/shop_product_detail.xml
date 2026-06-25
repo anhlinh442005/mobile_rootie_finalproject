@@ -11,7 +11,7 @@
         android:id="@+id/clHeader"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@color/neutral"
+        android:background="@drawable/bg_header_gradient"
         android:elevation="2dp"
         android:paddingHorizontal="16dp"
         app:layout_constraintTop_toTopOf="parent">
@@ -97,6 +97,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvDetail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/llBottomBar"
@@ -155,12 +156,14 @@
 
                     <!-- In stock dot -->
                     <View
+                        android:id="@+id/viewStockIndicator"
                         android:layout_width="8dp"
                         android:layout_height="8dp"
                         android:background="@drawable/bg_chip_selected"
                         android:backgroundTint="#4CAF50" />
 
                     <TextView
+                        android:id="@+id/tvStockStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
@@ -173,33 +176,43 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_weight="1" />
-
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:src="@drawable/ic_star"
-                        app:tint="#FFC107" />
-
-                    <TextView
-                        android:id="@+id/tvRatingValue"
+                    <LinearLayout
+                        android:id="@+id/llRatingHeader"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="4.8"
-                        android:textColor="@color/primary"
-                        android:fontFamily="@font/be_vietnam_pro_bold"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackground">
 
-                    <TextView
-                        android:id="@+id/tvReviewsCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="(124 reviews)"
-                        android:textColor="@color/gray_dark"
-                        android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:textSize="13sp" />
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@android:drawable/star_on"
+                            app:tint="#FFC107" />
+
+                        <TextView
+                            android:id="@+id/tvRatingValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="4.8"
+                            android:textColor="@color/primary"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvReviewsCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="(124 reviews)"
+                            android:textColor="@color/gray_dark"
+                            android:fontFamily="@font/be_vietnam_pro_regular"
+                            android:textSize="13sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -453,22 +466,29 @@
                                     android:src="@drawable/ic_checklist"
                                     app:tint="@color/primary" />
                                     
-                                <TextView
-                                    android:layout_width="wrap_content"
+                                <LinearLayout
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
                                     android:layout_marginStart="12dp"
-                                    android:text="Thích hợp với:"
-                                    android:textColor="@color/primary"
-                                    android:fontFamily="@font/be_vietnam_pro_bold"
-                                    android:textStyle="bold" />
+                                    android:orientation="vertical">
                                     
-                                <TextView
-                                    android:id="@+id/tvSuitableFor"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:fontFamily="@font/be_vietnam_pro_regular"
-                                    android:textColor="@color/content" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Thích hợp với:"
+                                        android:textColor="@color/primary"
+                                        android:fontFamily="@font/be_vietnam_pro_bold"
+                                        android:textStyle="bold" />
+                                        
+                                    <TextView
+                                        android:id="@+id/tvSuitableFor"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:fontFamily="@font/be_vietnam_pro_regular"
+                                        android:textColor="@color/content" />
+                                </LinearLayout>
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
@@ -485,6 +505,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:padding="12dp"
+                                android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 
                                 <ImageView
@@ -494,8 +515,9 @@
                                     app:tint="@color/primary" />
                                     
                                 <LinearLayout
-                                    android:layout_width="match_parent"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
                                     android:layout_marginStart="12dp"
                                     android:orientation="vertical">
                                     <TextView
@@ -541,8 +563,9 @@
                                     app:tint="#B91C1C" />
                                     
                                 <LinearLayout
-                                    android:layout_width="match_parent"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
                                     android:layout_marginStart="12dp"
                                     android:orientation="vertical">
                                     <TextView
@@ -557,7 +580,7 @@
                                         android:id="@+id/tvAllergyInformation"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
+                                        android:layout_marginTop="4dp"
                                         android:fontFamily="@font/be_vietnam_pro_regular"
                                         android:textColor="@color/content" />
                                     </LinearLayout>
@@ -748,21 +771,30 @@
                                         android:layout_height="20dp"
                                         android:src="@drawable/ic_info_olive"
                                         app:tint="@color/primary" />
-                                    <TextView
-                                        android:layout_width="wrap_content"
+                                    
+                                    <LinearLayout
+                                        android:layout_width="0dp"
                                         android:layout_height="wrap_content"
+                                        android:layout_weight="1"
                                         android:layout_marginStart="12dp"
-                                        android:text="Lượng sử dụng:"
-                                        android:textColor="@color/primary"
-                                        android:fontFamily="@font/be_vietnam_pro_bold"
-                                        android:textStyle="bold"/>
-                                    <TextView
-                                        android:id="@+id/tvUsageAmount"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="8dp"
-                                        android:fontFamily="@font/be_vietnam_pro_regular"
-                                        android:textColor="@color/content"/>
+                                        android:orientation="vertical">
+                                        
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Lượng sử dụng:"
+                                            android:textColor="@color/primary"
+                                            android:fontFamily="@font/be_vietnam_pro_bold"
+                                            android:textStyle="bold"/>
+                                            
+                                        <TextView
+                                            android:id="@+id/tvUsageAmount"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:fontFamily="@font/be_vietnam_pro_regular"
+                                            android:textColor="@color/content"/>
+                                    </LinearLayout>
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -787,21 +819,30 @@
                                         android:layout_height="20dp"
                                         android:src="@drawable/ic_search"
                                         app:tint="@color/primary" />
-                                    <TextView
-                                        android:layout_width="wrap_content"
+                                        
+                                    <LinearLayout
+                                        android:layout_width="0dp"
                                         android:layout_height="wrap_content"
+                                        android:layout_weight="1"
                                         android:layout_marginStart="12dp"
-                                        android:text="Mùi hương:"
-                                        android:textColor="@color/primary"
-                                        android:fontFamily="@font/be_vietnam_pro_bold"
-                                        android:textStyle="bold"/>
-                                    <TextView
-                                        android:id="@+id/tvScent"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="8dp"
-                                        android:fontFamily="@font/be_vietnam_pro_regular"
-                                        android:textColor="@color/content"/>
+                                        android:orientation="vertical">
+                                        
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Mùi hương:"
+                                            android:textColor="@color/primary"
+                                            android:fontFamily="@font/be_vietnam_pro_bold"
+                                            android:textStyle="bold"/>
+                                            
+                                        <TextView
+                                            android:id="@+id/tvScent"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:fontFamily="@font/be_vietnam_pro_regular"
+                                            android:textColor="@color/content"/>
+                                    </LinearLayout>
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -827,8 +868,9 @@
                                         android:src="@drawable/ic_info_olive"
                                         app:tint="#D97706" />
                                     <LinearLayout
-                                        android:layout_width="match_parent"
+                                        android:layout_width="0dp"
                                         android:layout_height="wrap_content"
+                                        android:layout_weight="1"
                                         android:layout_marginStart="12dp"
                                         android:orientation="vertical">
                                         <TextView
@@ -842,7 +884,7 @@
                                             android:id="@+id/tvNotes"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:layout_marginTop="2dp"
+                                            android:layout_marginTop="4dp"
                                             android:fontFamily="@font/be_vietnam_pro_regular"
                                             android:textColor="#78350F"/>
                                     </LinearLayout>
@@ -879,6 +921,7 @@
 
                 <!-- Reviews -->
                 <RelativeLayout
+                    android:id="@+id/rlReviewsHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp">
@@ -896,10 +939,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:text="Xem tất cả"
-                        android:textColor="@color/gray_dark"
-                        android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:textSize="13sp"
+                        android:text="Xem tất cả &gt;&gt;"
+                        android:textColor="@color/secondary"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:textSize="12sp"
                         android:clickable="true"
                         android:focusable="true" />
                 </RelativeLayout>

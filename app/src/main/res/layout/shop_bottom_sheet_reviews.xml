@@ -205,12 +205,74 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Review List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvBottomSheetReviews"
+    <!-- Star Filter TabLayout (Fixed/Sticky at top) -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutStarFilter"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/shop_item_review"
-        tools:itemCount="5"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
+        app:tabMode="scrollable"
+        app:tabIndicatorColor="@color/primary"
+        app:tabSelectedTextColor="@color/primary"
+        app:tabTextColor="@color/gray_dark">
+        <com.google.android.material.tabs.TabItem android:text="Tất cả" />
+        <com.google.android.material.tabs.TabItem android:text="5 Sao" />
+        <com.google.android.material.tabs.TabItem android:text="4 Sao" />
+        <com.google.android.material.tabs.TabItem android:text="3 Sao" />
+        <com.google.android.material.tabs.TabItem android:text="2 Sao" />
+        <com.google.android.material.tabs.TabItem android:text="1 Sao" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- Scrollable container for reviews list and Xem thêm link -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Empty State TextView -->
+            <TextView
+                android:id="@+id/tvEmptyReviews"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:gravity="center"
+                android:text="Chưa có đánh giá nào cho mức sao này."
+                android:textColor="@color/gray_dark"
+                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <!-- Review List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvBottomSheetReviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/shop_item_review"
+                tools:itemCount="5"/>
+
+            <!-- Load More Link (Text View) -->
+            <TextView
+                android:id="@+id/btnLoadMoreReviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="Xem thêm đánh giá >>"
+                android:textColor="@color/secondary"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:textSize="13sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="8dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

@@ -11,15 +11,32 @@ import java.util.Locale
 
 class ShopListAdapter(
     private val onItemClick: (ProductEntity) -> Unit,
-    private val onAddToCartClick: (ProductEntity) -> Unit
+    private val onAddToCartClick: (ProductEntity) -> Unit,
+    private val isInfinite: Boolean = false
 ) : RecyclerView.Adapter<ShopListAdapter.ViewHolder>() {
 
+    private val originalItems = mutableListOf<ProductEntity>()
     private val items = mutableListOf<ProductEntity>()
 
     fun submitList(newItems: List<ProductEntity>) {
+        originalItems.clear()
+        originalItems.addAll(newItems)
         items.clear()
         items.addAll(newItems)
+        if (isInfinite && newItems.isNotEmpty()) {
+            repeat(4) {
+                items.addAll(newItems)
+            }
+        }
         notifyDataSetChanged()
+    }
+
+    fun duplicateItems() {
+        if (isInfinite && originalItems.isNotEmpty()) {
+            val startPosition = items.size
+            items.addAll(originalItems)
+            notifyItemRangeInserted(startPosition, originalItems.size)
+        }
     }
 
     inner class ViewHolder(private val binding: ShopProductCardBinding) : RecyclerView.ViewHolder(binding.root) {

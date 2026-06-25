@@ -92,6 +92,40 @@ object ProductReviewHelper {
         return result
     }
 
+    fun getRandomReviews(productName: String, category: String, count: Int): List<ProductReview> {
+        val rand = Random()
+        val nameLower = productName.lowercase()
+        val catLower = category.lowercase()
+        
+        val sourceList = when {
+            nameLower.contains("tóc") || nameLower.contains("gội") || nameLower.contains("xả") || nameLower.contains("bưởi") || catLower.contains("tóc") -> HAIR_REVIEWS
+            nameLower.contains("môi") || nameLower.contains("son") || catLower.contains("môi") -> LIP_REVIEWS
+            nameLower.contains("body") || nameLower.contains("tắm") || nameLower.contains("cơ thể") || catLower.contains("thể") || catLower.contains("tắm") -> BODY_REVIEWS
+            else -> FACE_REVIEWS
+        }
+
+        val result = mutableListOf<ProductReview>()
+        for (i in 0 until count) {
+            val name = REVIEWERS.random()
+            val rVal = rand.nextDouble()
+            val rating = when {
+                rVal < 0.60 -> 5
+                rVal < 0.80 -> 4
+                rVal < 0.90 -> 3
+                rVal < 0.95 -> 2
+                else -> 1
+            }
+            val comment = sourceList.random()
+            val modifiedComment = when (rating) {
+                1 -> "Chất lượng không như mong đợi. $comment"
+                2 -> "Tạm ổn nhưng không thích lắm. $comment"
+                else -> comment
+            }
+            result.add(ProductReview(name, rating, modifiedComment))
+        }
+        return result
+    }
+
     fun getRatingStats(productId: String): Pair<Double, Int> {
         val rand = Random(productId.hashCode().toLong() + 1)
         val reviewCount = 45 + rand.nextInt(320)

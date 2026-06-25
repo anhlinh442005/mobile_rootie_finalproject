@@ -159,12 +159,22 @@
                 android:textColor="@color/primary"
                 android:textSize="14sp" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <FrameLayout
                 android:id="@+id/switchPoints"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:thumbTint="@color/white"
-                app:trackTint="@color/gray_light" />
+                android:layout_width="48dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_switch_track_off"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/switchPointsThumb"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_marginStart="2dp"
+                    android:src="@drawable/bg_switch_thumb" />
+            </FrameLayout>
         </LinearLayout>
 
         <!-- Price Details Section (Collapsible) -->

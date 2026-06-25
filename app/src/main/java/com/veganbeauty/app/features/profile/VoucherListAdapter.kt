@@ -36,6 +36,7 @@ class VoucherListAdapter(
 
     var onDeleteClickListener: ((VoucherItem) -> Unit)? = null
     var onItemClickListener: ((VoucherItem) -> Unit)? = null
+    var onUseClickListener: ((VoucherItem) -> Unit)? = null
 
     class VoucherViewHolder(val binding: ItemVoucherBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -128,12 +129,12 @@ class VoucherListAdapter(
                 )
                 binding.tvVoucherCodeLabel.setTextColor(Color.parseColor("#666666"))
 
-                binding.btnVoucherAction.text = "Copy mã"
+                binding.btnVoucherAction.text = "Sử dụng ngay"
                 binding.btnVoucherAction.setBackgroundResource(R.drawable.bg_button_copy)
                 binding.btnVoucherAction.setTextColor(Color.WHITE)
                 binding.btnVoucherAction.isEnabled = true
                 binding.btnVoucherAction.setOnClickListener {
-                    copyToClipboard(context, item.code)
+                    onUseClickListener?.invoke(item)
                 }
             }
             "expired" -> {

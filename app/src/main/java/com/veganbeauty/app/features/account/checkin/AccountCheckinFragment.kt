@@ -1,5 +1,6 @@
 package com.veganbeauty.app.features.account.checkin
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -94,6 +95,11 @@ class AccountCheckinFragment : RootieFragment() {
                 }
             }
 
+            // Load from SharedPreferences as well
+            val prefs = requireContext().getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE)
+            val savedDates = prefs.getStringSet("checked_in_dates", emptySet()) ?: emptySet()
+            checkedInDates.addAll(savedDates)
+
             // Update Calendar Header
             val month = calendarInstance.get(Calendar.MONTH) + 1
             val year = calendarInstance.get(Calendar.YEAR)
@@ -104,7 +110,8 @@ class AccountCheckinFragment : RootieFragment() {
 
             // Calculate Streak
             val streak = calculateStreak(checkedInDates)
-            binding.tvStreakCount.text = "$streak/7"
+            val displayStreak = if (streak == 0) 0 else ((streak - 1) % 7) + 1
+            binding.tvStreakCount.text = "$displayStreak/7"
 
             // Highlight Reward Cards
             highlightRewardCard(streak)
@@ -112,6 +119,29 @@ class AccountCheckinFragment : RootieFragment() {
             // Update today status
             val todayStr = sdf.format(Date())
             val hasCheckedInToday = checkedInDates.contains(todayStr)
+            
+            // Dynamic encouragement message
+            val encouragementText = when {
+                !hasCheckedInToday -> {
+                    val nextStreakMod = (streak % 7) + 1
+                    when {
+                        nextStreakMod == 3 -> "Điểm danh hôm nay để nhận mốc thưởng +50 xu!"
+                        nextStreakMod == 7 -> "Điểm danh hôm nay để nhận mốc thưởng +200 xu!"
+                        nextStreakMod < 3 -> "Điểm danh hôm nay. Thêm ${3 - nextStreakMod} ngày nữa để nhận +50 xu!"
+                        else -> "Điểm danh hôm nay. Thêm ${7 - nextStreakMod} ngày nữa để nhận +200 xu!"
+                    }
+                }
+                else -> {
+                    when (displayStreak) {
+                        3 -> "Hôm nay bạn đã nhận mốc thưởng +50 xu! Thêm 4 ngày nữa để nhận +200 xu!"
+                        7 -> "Chúc mừng bạn đã hoàn thành chuỗi tuần này! Hãy duy trì vào ngày mai nhé!"
+                        in 1..2 -> "Điểm danh thêm ${3 - displayStreak} ngày nữa để nhận mốc thưởng +50 xu!"
+                        else -> "Điểm danh thêm ${7 - displayStreak} ngày nữa để nhận mốc thưởng +200 xu!"
+                    }
+                }
+            }
+            binding.tvStreakEncouragement.text = encouragementText
+
             if (hasCheckedInToday) {
                 // Alert Banner Status
                 binding.ivBannerIcon.setImageResource(R.drawable.ic_check)
@@ -207,13 +237,13 @@ class AccountCheckinFragment : RootieFragment() {
     }
 
     private fun highlightRewardCard(streak: Int) {
-        val currentMod = streak % 7
+        val currentMod = if (streak == 0) 0 else ((streak - 1) % 7) + 1
         // Reset all to default backgrounds
         binding.cardReward1.setBackgroundResource(R.drawable.bg_reward_card_default)
         binding.cardReward2.setBackgroundResource(R.drawable.bg_reward_card_default)
         binding.cardReward3.setBackgroundResource(R.drawable.bg_reward_card_default)
 
-        if (currentMod == 0 && streak > 0) {
+        if (currentMod == 7) {
             binding.cardReward3.setBackgroundResource(R.drawable.bg_reward_card_selected)
         } else if (currentMod >= 3) {
             binding.cardReward2.setBackgroundResource(R.drawable.bg_reward_card_selected)
@@ -258,6 +288,12 @@ class AccountCheckinFragment : RootieFragment() {
                 )
             )
             com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(requireContext())
+
+            // Save to SharedPreferences for extra persistence
+            val prefs = requireContext().getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE)
+            val dates = prefs.getStringSet("checked_in_dates", emptySet())?.toMutableSet() ?: mutableSetOf()
+            dates.add(todayStr)
+            prefs.edit().putStringSet("checked_in_dates", dates).apply()
 
             // Show custom success dialog
             showSuccessDialog(pointsAwarded)

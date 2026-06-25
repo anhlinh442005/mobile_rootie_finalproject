@@ -5,6 +5,9 @@ import com.veganbeauty.app.data.local.entities.ProductEntity
 
 @Dao
 interface ProductDao {
+    @Query("SELECT COUNT(*) FROM products")
+    suspend fun getProductCount(): Int
+
     @Query("SELECT * FROM products")
     fun getAllProducts(): kotlinx.coroutines.flow.Flow<List<ProductEntity>>
 
