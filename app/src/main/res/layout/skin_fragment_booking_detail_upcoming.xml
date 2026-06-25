@@ -5,38 +5,59 @@
     android:layout_height="match_parent"
     android:background="@color/neutral">
 
-    <!-- Header -->
-    <LinearLayout
+    <!-- Header App Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/skin_detail_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp"
+        android:layout_height="56dp"
+        android:background="@drawable/bg_header_gradient"
+        android:elevation="1dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/skin_detail_btn_back"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_chevron_left"
-            app:tint="@color/primary"
-            android:padding="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#3E4D44"
             android:clickable="true"
             android:focusable="true"/>
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Chi tiết lịch hẹn"
-            android:textAlignment="center"
-            android:textColor="@color/primary"
+            android:textColor="#3E4D44"
             android:textSize="20sp"
+            android:fontFamily="@font/be_vietnam_pro_bold"
             android:textStyle="bold"
-            android:fontFamily="@font/be_vietnam_pro"
-            android:layout_marginEnd="32dp"/>
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/skin_detail_btn_notification"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_notification"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#3E4D44"
+            android:clickable="true"
+            android:focusable="true"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -415,32 +436,16 @@
         android:background="@color/neutral">
 
         <TextView
-            android:id="@+id/skin_detail_btn_primary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/skin_bg_btn_solid_dark"
-            android:text="Xem chi tiết"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            android:fontFamily="@font/be_vietnam_pro"
-            android:padding="14dp"
-            android:layout_marginEnd="8dp"/>
-
-        <TextView
             android:id="@+id/skin_detail_btn_cancel"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/skin_bg_btn_outline_dark"
+            android:background="@drawable/skin_bg_btn_outline_red"
             android:text="Huỷ lịch"
-            android:textColor="@color/primary"
+            android:textColor="#D32F2F"
             android:textStyle="bold"
             android:textAlignment="center"
             android:fontFamily="@font/be_vietnam_pro"
-            android:padding="14dp"
-            android:layout_marginStart="8dp"/>
+            android:padding="14dp"/>
 
     </LinearLayout>
 

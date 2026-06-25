@@ -14,7 +14,8 @@ import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
 
 class BookingHistoryAdapter(
     private var items: List<Any>,
-    private val onViewDetailClick: (BookingHistoryEntity) -> Unit
+    private val onViewDetailClick: (BookingHistoryEntity) -> Unit,
+    private val onCancelClick: (BookingHistoryEntity) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -40,8 +41,9 @@ class BookingHistoryAdapter(
         if (holder is HeaderViewHolder && item is String) {
             holder.tvHeaderTitle.text = item
         } else if (holder is ItemViewHolder && item is BookingHistoryEntity) {
-            holder.tvDateNum.text = item.dateDisplay
-            holder.tvMonthDay.text = item.monthDisplay
+            val (dayNum, monthDayStr) = BookingDateParser.parseDateDisplay(item.dateDisplay, item.monthDisplay, item.dayOfWeek)
+            holder.tvDateNum.text = dayNum
+            holder.tvMonthDay.text = monthDayStr
             holder.tvServiceName.text = item.serviceName
             holder.tvTime.text = item.time
             
@@ -58,26 +60,26 @@ class BookingHistoryAdapter(
             holder.tvStatusTag.text = item.status
 
             // Style tag based on status
-            val context = holder.itemView.context
             when (item.status) {
                 "Sắp diễn ra", "Chờ xác nhận", "pending" -> {
                     if (item.status.equals("Chờ xác nhận", ignoreCase = true) || item.status.equals("pending", ignoreCase = true)) {
                         holder.tvStatusTag.text = "Chờ xác nhận"
-                        holder.tvStatusTag.setBackgroundColor(Color.parseColor("#FF9800")) // Orange
+                        holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_pending)
+                        holder.tvStatusTag.setTextColor(Color.parseColor("#E65100"))
                     } else {
                         holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_upcoming)
+                        holder.tvStatusTag.setTextColor(Color.parseColor("#1976D2"))
                     }
-                    holder.tvStatusTag.setTextColor(Color.WHITE)
                     holder.llActions.visibility = View.VISIBLE
                 }
                 "Đã hoàn thành" -> {
                     holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_completed)
-                    holder.tvStatusTag.setTextColor(Color.WHITE)
+                    holder.tvStatusTag.setTextColor(Color.parseColor("#2E7D32"))
                     holder.llActions.visibility = View.GONE
                 }
                 "Đã huỷ" -> {
                     holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_cancelled)
-                    holder.tvStatusTag.setTextColor(Color.WHITE)
+                    holder.tvStatusTag.setTextColor(Color.parseColor("#C62828"))
                     holder.llActions.visibility = View.GONE
                 }
                 else -> {
@@ -92,7 +94,7 @@ class BookingHistoryAdapter(
                 onViewDetailClick(item)
             }
             holder.btnCancel.setOnClickListener {
-                Toast.makeText(context, "Hủy lịch soi da", Toast.LENGTH_SHORT).show()
+                onCancelClick(item)
             }
             
             // Allow clicking entire card to view details
@@ -123,5 +125,54 @@ class BookingHistoryAdapter(
         val llActions: View = view.findViewById(R.id.ll_history_actions)
         val btnViewDetail: TextView = view.findViewById(R.id.btn_view_detail)
         val btnCancel: TextView = view.findViewById(R.id.btn_cancel_booking)
+    }
+}
+
+object BookingDateParser {
+    fun parseDateDisplay(dateDisplay: String, monthDisplay: String, dayOfWeek: String): Pair<String, String> {
+        val dateStr = dateDisplay.trim()
+        
+        // Case 1: "dd/MM/yyyy"
+        if (dateStr.contains("/")) {
+            val parts = dateStr.split("/")
+            if (parts.isNotEmpty()) {
+                val day = parts[0]
+                val monthNum = parts.getOrNull(1)?.toIntOrNull() ?: 0
+                val monthStr = if (monthNum > 0) "Tháng $monthNum" else "Tháng --"
+                val dayOfWeekShort = when (dayOfWeek.trim()) {
+                    "Thứ 2" -> "T.2"
+                    "Thứ 3" -> "T.3"
+                    "Thứ 4" -> "T.4"
+                    "Thứ 5" -> "T.5"
+                    "Thứ 6" -> "T.6"
+                    "Thứ 7" -> "T.7"
+                    "Chủ Nhật", "Chủ nhật", "CN" -> "CN"
+                    else -> dayOfWeek
+                }
+                return Pair(day, "$monthStr\n$dayOfWeekShort")
+            }
+        }
+        
+        // Case 2: "20 tháng 5, 2024"
+        val regex = Regex("(\\d+)\\s+tháng\\s+(\\d+)", RegexOption.IGNORE_CASE)
+        val match = regex.find(dateStr)
+        if (match != null) {
+            val day = match.groupValues[1]
+            val month = match.groupValues[2]
+            val dayOfWeekShort = when (dayOfWeek.trim()) {
+                "Thứ 2" -> "T.2"
+                "Thứ 3" -> "T.3"
+                "Thứ 4" -> "T.4"
+                "Thứ 5" -> "T.5"
+                "Thứ 6" -> "T.6"
+                "Thứ 7" -> "T.7"
+                "Chủ Nhật", "Chủ nhật", "CN" -> "CN"
+                else -> dayOfWeek
+            }
+            return Pair(day, "Tháng $month\n$dayOfWeekShort")
+        }
+        
+        // Fallback
+        return Pair(dateStr, monthDisplay.ifEmpty { dayOfWeek })
     }
 }

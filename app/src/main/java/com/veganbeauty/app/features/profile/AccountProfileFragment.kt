@@ -219,6 +219,14 @@ class AccountProfileFragment : RootieFragment() {
                 .commit()
         }
 
+        // Navigate to Spa Booking History page
+        binding.btnSpaHistory.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.myskin.BookingHistoryFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Navigate to Skincare Routine Reminder page
         binding.btnSkinReminder.setOnClickListener {
             parentFragmentManager.beginTransaction()

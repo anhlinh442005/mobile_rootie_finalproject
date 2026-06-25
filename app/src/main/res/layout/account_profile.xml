@@ -362,10 +362,14 @@
 
                     <!-- Spa Appointment -->
                     <LinearLayout
+                        android:id="@+id/btn_spa_history"
                         android:layout_width="82dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
 
                         <FrameLayout
                             android:layout_width="52dp"

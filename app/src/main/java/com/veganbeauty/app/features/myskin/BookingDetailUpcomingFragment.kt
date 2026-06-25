@@ -62,8 +62,11 @@ class BookingDetailUpcomingFragment : RootieFragment() {
             Toast.makeText(context, "Đã sao chép mã đặt lịch", Toast.LENGTH_SHORT).show()
         }
         
-        binding.skinDetailBtnPrimary.setOnClickListener {
-            Toast.makeText(context, "Xem chi tiết clicked", Toast.LENGTH_SHORT).show()
+        binding.skinDetailBtnNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
         }
         
         binding.skinDetailBtnCancel.setOnClickListener {
@@ -80,8 +83,9 @@ class BookingDetailUpcomingFragment : RootieFragment() {
         dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
         
         // Setup Dialog Data
-        dialogView.findViewById<android.widget.TextView>(R.id.tv_date).text = data.dateDisplay
-        dialogView.findViewById<android.widget.TextView>(R.id.tv_month_day).text = data.dayOfWeek
+        val (dayNum, monthDayStr) = BookingDateParser.parseDateDisplay(data.dateDisplay, data.monthDisplay, data.dayOfWeek)
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_date).text = dayNum
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_month_day).text = monthDayStr
         dialogView.findViewById<android.widget.TextView>(R.id.tv_service_name).text = data.serviceName
         dialogView.findViewById<android.widget.TextView>(R.id.tv_time).text = "${data.time} (${data.duration})"
         dialogView.findViewById<android.widget.TextView>(R.id.tv_store_name).text = data.storeName
@@ -89,7 +93,7 @@ class BookingDetailUpcomingFragment : RootieFragment() {
         
         // Setup Spinner
         val spReason = dialogView.findViewById<android.widget.Spinner>(R.id.sp_reason)
-        val reasons = listOf("Thay đổi lịch trình", "Tìm được địa điểm khác", "Lý do sức khoẻ", "Đã đặt nhầm dịch vụ", "Lý do khác")
+        val reasons = listOf("Chọn lý do hủy lịch", "Thay đổi lịch trình", "Tìm được địa điểm khác", "Lý do sức khoẻ", "Đã đặt nhầm dịch vụ", "Lý do khác")
         val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, reasons)
         spReason.adapter = adapter
         
@@ -101,9 +105,15 @@ class BookingDetailUpcomingFragment : RootieFragment() {
         dialogView.findViewById<View>(R.id.btn_confirm_cancel).setOnClickListener {
             val selectedReason = spReason.selectedItem.toString()
             val otherReason = etOtherReason.text.toString().trim()
-            val finalReason = if (selectedReason == "Lý do khác" && otherReason.isNotEmpty()) otherReason else selectedReason
+            val finalReason = when {
+                selectedReason == "Lý do khác" && otherReason.isNotEmpty() -> otherReason
+                selectedReason == "Lý do khác" -> "Lý do khác"
+                selectedReason == "Chọn lý do hủy lịch" && otherReason.isNotEmpty() -> otherReason
+                selectedReason == "Chọn lý do hủy lịch" -> "Không có lý do cụ thể"
+                else -> selectedReason
+            }
             
-            // Update in memory
+            // Update in memory & local storage
             com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).updateBookingStatus(data.id, "Đã huỷ", finalReason)
             
             // Update UI locally

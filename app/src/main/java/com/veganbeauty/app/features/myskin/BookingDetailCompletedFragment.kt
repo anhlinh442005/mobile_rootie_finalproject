@@ -44,6 +44,13 @@ class BookingDetailCompletedFragment : RootieFragment() {
             parentFragmentManager.popBackStack()
         }
 
+        binding.skinDetailBtnNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         val data = bookingData
         if (data != null) {
             populateUI(data)
