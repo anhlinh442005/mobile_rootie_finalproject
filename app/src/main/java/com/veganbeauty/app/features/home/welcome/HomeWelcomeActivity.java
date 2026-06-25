@@ -1152,6 +1152,12 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     if (!teamIds.contains(userId))
                         continue;
 
+                    // Skip the user associated with this device to avoid overriding their profile changes in SQLite
+                    String savedUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUserId(getApplicationContext());
+                    if (savedUserId != null && savedUserId.equals(userId)) {
+                        continue;
+                    }
+
                     com.veganbeauty.app.data.local.entities.UserEntity existingUser = userDao.getUserByIdSync(userId);
                     if (existingUser != null) {
                         continue;

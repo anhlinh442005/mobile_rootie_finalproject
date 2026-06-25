@@ -98,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
                     String userId = obj.optString("user_id", "");
                     if (!teamIds.contains(userId)) continue;
 
-                    // Skip the currently logged-in user to avoid overriding their profile changes in Firestore and SQLite
-                    if (com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(getApplicationContext()) && 
-                        com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUserId(getApplicationContext()).equals(userId)) {
+                    // Skip the user associated with this device to avoid overriding their profile changes in Firestore and SQLite
+                    String savedUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUserId(getApplicationContext());
+                    if (savedUserId != null && savedUserId.equals(userId)) {
                         continue;
                     }
 
@@ -136,15 +136,6 @@ public class MainActivity extends AppCompatActivity {
                         if (existingUser.getPrimary_image() != null && !existingUser.getPrimary_image().isEmpty()) {
                             primaryImage = existingUser.getPrimary_image();
                         }
-                    } else if (com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(getApplicationContext()) && 
-                               com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUserId(getApplicationContext()).equals(userId)) {
-                        android.content.Context ctx = getApplicationContext();
-                        username = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUsername(ctx);
-                        fullName = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getFullName(ctx);
-                        email = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getEmail(ctx);
-                        phone = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getPhone(ctx);
-                        avatar = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getAvatar(ctx);
-                        primaryImage = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getPrimaryImage(ctx);
                     }
 
                     com.veganbeauty.app.data.local.entities.UserEntity user =
@@ -162,17 +153,28 @@ public class MainActivity extends AppCompatActivity {
                     // Update avatar in SQLite (upsert) using the sync method
                     userDao.insertUserSync(user);
 
-                    // Sync user profile to Firestore
+                    // Sync user profile to Firestore ONLY if the document doesn't exist to prevent overwriting custom profiles
                     java.util.Map<String, Object> userMap = new java.util.HashMap<>();
                     userMap.put("username", user.getUsername());
                     userMap.put("avatar", user.getAvatar() != null ? user.getAvatar() : "");
                     userMap.put("email", user.getEmail());
                     userMap.put("phone", user.getPhone());
                     userMap.put("full_name", user.getFull_name());
+
+                    final String targetUserId = userId;
+                    final java.util.Map<String, Object> finalUserMap = userMap;
                     com.google.firebase.firestore.FirebaseFirestore.getInstance()
                         .collection("users")
-                        .document(userId)
-                        .set(userMap, com.google.firebase.firestore.SetOptions.merge());
+                        .document(targetUserId)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null && !task.getResult().exists()) {
+                                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .document(targetUserId)
+                                    .set(finalUserMap);
+                            }
+                        });
                 }
             } catch (Exception e) {
                 e.printStackTrace();
