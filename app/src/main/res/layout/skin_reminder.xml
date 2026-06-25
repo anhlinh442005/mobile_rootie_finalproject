@@ -6,12 +6,13 @@
     android:layout_height="match_parent"
     android:background="@color/neutral">
 
-    <!-- Top App Bar with gradient background -->
+    <!-- Top App Bar with solid background -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/skin_bg_top_bar_gradient"
+        android:background="@drawable/bg_header_gradient"
+        android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
@@ -209,188 +210,26 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:src="@drawable/ic_skin_fire"
-                            app:tint="#D8E8C6"
+                            app:tint="#FF5722"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true" />
                     </RelativeLayout>
 
-                    <!-- Days row -->
-                    <LinearLayout
+                    <!-- Horizontal Scroll View for Days -->
+                    <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="7"
+                        android:scrollbars="none"
                         android:layout_marginTop="16dp"
                         android:layout_marginBottom="12dp">
 
-                        <!-- T2 -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:id="@+id/layoutDaysContainer"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/ivDayMon"
-                                android:layout_width="37dp"
-                                android:layout_height="37dp"
-                                android:src="@drawable/ic_skin_calendar_todo" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="T2"
-                                android:textColor="#FFFFFF"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <!-- T3 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/ivDayTue"
-                                android:layout_width="37dp"
-                                android:layout_height="37dp"
-                                android:src="@drawable/ic_skin_calendar_todo" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="T3"
-                                android:textColor="#FFFFFF"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <!-- T4 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/ivDayWed"
-                                android:layout_width="37dp"
-                                android:layout_height="37dp"
-                                android:src="@drawable/ic_skin_calendar_todo" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="T4"
-                                android:textColor="#FFFFFF"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <!-- T5 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/ivDayThu"
-                                android:layout_width="37dp"
-                                android:layout_height="37dp"
-                                android:src="@drawable/ic_skin_calendar_todo" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="T5"
-                                android:textColor="#FFFFFF"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <!-- T6 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/ivDayFri"
-                                android:layout_width="37dp"
-                                android:layout_height="37dp"
-                                android:src="@drawable/ic_skin_calendar_todo" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="T6"
-                                android:textColor="#FFFFFF"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <!-- T7 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/ivDaySat"
-                                android:layout_width="37dp"
-                                android:layout_height="37dp"
-                                android:src="@drawable/ic_skin_calendar_todo" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="T7"
-                                android:textColor="#FFFFFF"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <!-- CN -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/ivDaySun"
-                                android:layout_width="37dp"
-                                android:layout_height="37dp"
-                                android:src="@drawable/ic_skin_calendar_todo" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="CN"
-                                android:textColor="#FFFFFF"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </LinearLayout>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical" />
+                    </HorizontalScrollView>
 
                     <TextView
                         android:id="@+id/tvStreakMotivation"
@@ -775,6 +614,7 @@
                         android:gravity="center_vertical">
 
                         <ImageView
+                            android:id="@+id/ivMorningRewardCoin"
                             android:layout_width="14dp"
                             android:layout_height="12dp"
                             android:layout_marginEnd="4dp"
@@ -864,6 +704,7 @@
                         android:gravity="center_vertical">
 
                         <ImageView
+                            android:id="@+id/ivEveningRewardCoin"
                             android:layout_width="14dp"
                             android:layout_height="12dp"
                             android:layout_marginEnd="4dp"
@@ -952,6 +793,7 @@
                         android:gravity="center_vertical">
 
                         <ImageView
+                            android:id="@+id/ivWeeklyRewardCoin"
                             android:layout_width="14dp"
                             android:layout_height="12dp"
                             android:layout_marginEnd="4dp"
@@ -1040,6 +882,7 @@
                         android:gravity="center_vertical">
 
                         <ImageView
+                            android:id="@+id/ivLoyaltyRewardCoin"
                             android:layout_width="14dp"
                             android:layout_height="12dp"
                             android:layout_marginEnd="4dp"
@@ -1130,6 +973,7 @@
                         android:gravity="center_vertical">
 
                         <ImageView
+                            android:id="@+id/ivSocialRewardCoin"
                             android:layout_width="14dp"
                             android:layout_height="12dp"
                             android:layout_marginEnd="4dp"

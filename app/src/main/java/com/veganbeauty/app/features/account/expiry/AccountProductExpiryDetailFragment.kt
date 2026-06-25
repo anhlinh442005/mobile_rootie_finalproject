@@ -26,6 +26,9 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
 
     private lateinit var repository: ProductRepository
     private var productId: String? = null
+    private var isWeek1Checked = false
+    private var isWeek2Checked = false
+    private var isNotificationChecked = false
 
     private val requestNotificationPermissionLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
@@ -98,16 +101,26 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
         val productWeek1Enabled = com.veganbeauty.app.data.local.ProfileSession.getProductWeek1Enabled(requireContext(), userId, pId)
         val productWeek2Enabled = com.veganbeauty.app.data.local.ProfileSession.getProductWeek2Enabled(requireContext(), userId, pId)
 
-        binding.switchNotification.isChecked = productNotiEnabled
-        binding.switchWeek1.isChecked = productWeek1Enabled
-        binding.switchWeek2.isChecked = productWeek2Enabled
-        binding.switchWeek1.isEnabled = productNotiEnabled
-        binding.switchWeek2.isEnabled = productNotiEnabled
+        isNotificationChecked = productNotiEnabled
+        isWeek1Checked = productWeek1Enabled
+        isWeek2Checked = productWeek2Enabled
+
+        updateSwitchUI(binding.switchNotification, binding.switchNotificationThumb, isNotificationChecked)
+        updateSwitchUI(binding.switchWeek1, binding.switchWeek1Thumb, isWeek1Checked)
+        updateSwitchUI(binding.switchWeek2, binding.switchWeek2Thumb, isWeek2Checked)
+        
+        binding.switchWeek1.isEnabled = isNotificationChecked
+        binding.switchWeek1.alpha = if (isNotificationChecked) 1.0f else 0.5f
+        binding.switchWeek2.isEnabled = isNotificationChecked
+        binding.switchWeek2.alpha = if (isNotificationChecked) 1.0f else 0.5f
 
         // Configure Switch listeners
-        binding.switchWeek1.setOnCheckedChangeListener { _, isChecked ->
-            com.veganbeauty.app.data.local.ProfileSession.setProductWeek1Enabled(requireContext(), userId, pId, isChecked)
-            if (isChecked) {
+        binding.switchWeek1.setOnClickListener {
+            if (!isNotificationChecked) return@setOnClickListener
+            isWeek1Checked = !isWeek1Checked
+            updateSwitchUI(binding.switchWeek1, binding.switchWeek1Thumb, isWeek1Checked)
+            com.veganbeauty.app.data.local.ProfileSession.setProductWeek1Enabled(requireContext(), userId, pId, isWeek1Checked)
+            if (isWeek1Checked) {
                 checkAndRequestNotiPermission {
                     val productName = binding.tvProductName.text.toString()
                     triggerCustomExpiryNotification(1, productName)
@@ -117,9 +130,12 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
             }
         }
 
-        binding.switchWeek2.setOnCheckedChangeListener { _, isChecked ->
-            com.veganbeauty.app.data.local.ProfileSession.setProductWeek2Enabled(requireContext(), userId, pId, isChecked)
-            if (isChecked) {
+        binding.switchWeek2.setOnClickListener {
+            if (!isNotificationChecked) return@setOnClickListener
+            isWeek2Checked = !isWeek2Checked
+            updateSwitchUI(binding.switchWeek2, binding.switchWeek2Thumb, isWeek2Checked)
+            com.veganbeauty.app.data.local.ProfileSession.setProductWeek2Enabled(requireContext(), userId, pId, isWeek2Checked)
+            if (isWeek2Checked) {
                 checkAndRequestNotiPermission {
                     val productName = binding.tvProductName.text.toString()
                     triggerCustomExpiryNotification(2, productName)
@@ -129,15 +145,25 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
             }
         }
 
-        binding.switchNotification.setOnCheckedChangeListener { _, isChecked ->
-            com.veganbeauty.app.data.local.ProfileSession.setProductNotiEnabled(requireContext(), userId, pId, isChecked)
-            binding.switchWeek1.isEnabled = isChecked
-            binding.switchWeek2.isEnabled = isChecked
-            if (!isChecked) {
-                binding.switchWeek1.isChecked = false
-                binding.switchWeek2.isChecked = false
+        binding.switchNotification.setOnClickListener {
+            isNotificationChecked = !isNotificationChecked
+            updateSwitchUI(binding.switchNotification, binding.switchNotificationThumb, isNotificationChecked)
+            com.veganbeauty.app.data.local.ProfileSession.setProductNotiEnabled(requireContext(), userId, pId, isNotificationChecked)
+            
+            binding.switchWeek1.isEnabled = isNotificationChecked
+            binding.switchWeek1.alpha = if (isNotificationChecked) 1.0f else 0.5f
+            binding.switchWeek2.isEnabled = isNotificationChecked
+            binding.switchWeek2.alpha = if (isNotificationChecked) 1.0f else 0.5f
+            
+            if (!isNotificationChecked) {
+                isWeek1Checked = false
+                isWeek2Checked = false
+                updateSwitchUI(binding.switchWeek1, binding.switchWeek1Thumb, false)
+                updateSwitchUI(binding.switchWeek2, binding.switchWeek2Thumb, false)
+                com.veganbeauty.app.data.local.ProfileSession.setProductWeek1Enabled(requireContext(), userId, pId, false)
+                com.veganbeauty.app.data.local.ProfileSession.setProductWeek2Enabled(requireContext(), userId, pId, false)
             }
-            val status = if (isChecked) "Bật" else "Tắt"
+            val status = if (isNotificationChecked) "Bật" else "Tắt"
             Toast.makeText(context, "$status nhận thông báo hạn sử dụng", Toast.LENGTH_SHORT).show()
         }
     }
@@ -299,6 +325,24 @@ class AccountProductExpiryDetailFragment : RootieFragment() {
             else -> android.graphics.Color.parseColor("#3E4D44") // Dark green for normal
         }
         binding.circularProgress.progressColor = progressColor
+    }
+
+    private fun updateSwitchUI(container: android.widget.FrameLayout, thumb: android.widget.ImageView, enabled: Boolean) {
+        if (enabled) {
+            container.setBackgroundResource(com.veganbeauty.app.R.drawable.ic_switch_track_on)
+            val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
+            lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
+            lp.marginStart = 0
+            lp.marginEnd = (2 * resources.displayMetrics.density).toInt()
+            thumb.layoutParams = lp
+        } else {
+            container.setBackgroundResource(com.veganbeauty.app.R.drawable.ic_switch_track_off)
+            val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
+            lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+            lp.marginEnd = 0
+            lp.marginStart = (2 * resources.displayMetrics.density).toInt()
+            thumb.layoutParams = lp
+        }
     }
 
     override fun onDestroyView() {

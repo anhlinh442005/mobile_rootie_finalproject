@@ -100,6 +100,7 @@ class AccountProfilePersonalInfoFragment : RootieFragment() {
             binding.etFullname.clearFocus()
             binding.etCccd.clearFocus()
             binding.etAddress.clearFocus()
+            com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileToFirebaseAndLocal(requireContext())
             parentFragmentManager.popBackStack()
         }
 

@@ -42,4 +42,22 @@
     <!-- ~70% neutral — hiệu ứng kính mờ trên ảnh peek -->
     <color name="home_peek_overlay">#B3FEFBF4</color>
     <color name="about_us_bg">#F4F7ED</color>
+
+    <!-- Status level colors for Weather Forecast -->
+    <color name="status_level_blue">#2D9CDB</color>
+    <color name="status_level_yellow">#E2B93B</color>
+    <color name="status_level_orange">#F2994A</color>
+    <color name="status_level_red">#EB5757</color>
+    <color name="status_level_green">#27AE60</color>
+
+    <color name="status_bg_blue">#EBF6FD</color>
+    <color name="status_bg_yellow">#FEF9E7</color>
+    <color name="status_bg_orange">#FDF2E9</color>
+    <color name="status_bg_red">#FDEDEC</color>
+    <color name="status_bg_green">#EBF7EE</color>
+
+    <color name="warning_text_yellow">#8A6D00</color>
+    <color name="warning_text_orange">#D35400</color>
+    <color name="warning_text_red">#C62828</color>
 </resources>
+

@@ -74,7 +74,8 @@ class ShopHomeFragment : RootieFragment() {
                 }
             )
             bottomSheet.show(parentFragmentManager, com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.TAG)
-        }
+        },
+        isInfinite = true
     )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -116,6 +117,23 @@ class ShopHomeFragment : RootieFragment() {
         // Thiết lập Adapter cho Sản phẩm gợi ý (2 cột)
         binding.rvSuggestedProducts.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvSuggestedProducts.adapter = productAdapter
+
+        // Lặp lại vô tận khi cuộn gần cuối + Ẩn/Hiện nút Back to top
+        binding.nestedScrollView.setOnScrollChangeListener(androidx.core.widget.NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
+            val child = v.getChildAt(0)
+            if (child != null && scrollY >= child.measuredHeight - v.measuredHeight - 400) {
+                productAdapter.duplicateItems()
+            }
+            if (scrollY > 1200) {
+                binding.fabBackToTop.visibility = View.VISIBLE
+            } else {
+                binding.fabBackToTop.visibility = View.GONE
+            }
+        })
+
+        binding.fabBackToTop.setOnClickListener {
+            binding.nestedScrollView.smoothScrollTo(0, 0)
+        }
 
         // Set click listener for View All button to show SuggestedProductsBottomSheet
         binding.btnViewAll.setOnClickListener {
@@ -207,7 +225,7 @@ class ShopHomeFragment : RootieFragment() {
         viewModel.suggestedProducts.observe(viewLifecycleOwner) { products ->
             val filtered = products.filter {
                 it.isNew || it.price >= 500000 || it.category.contains("Combo", ignoreCase = true)
-            }.take(4)
+            }
             productAdapter.submitList(filtered)
         }
 

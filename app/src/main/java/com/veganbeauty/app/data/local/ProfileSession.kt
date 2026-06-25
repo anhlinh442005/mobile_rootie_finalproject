@@ -181,6 +181,33 @@ object ProfileSession {
             .apply()
     }
 
+    private const val KEY_DOB = "dob"
+    private const val KEY_GENDER = "gender"
+
+    fun getDob(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_DOB, "01/01/2000") ?: "01/01/2000"
+    }
+
+    fun setDob(context: Context, dob: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_DOB, dob)
+            .apply()
+    }
+
+    fun getGender(context: Context): String {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_GENDER, "Nữ") ?: "Nữ"
+    }
+
+    fun setGender(context: Context, gender: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_GENDER, gender)
+            .apply()
+    }
+
     // --- Skincare Routine & Streak Helpers ---
     private const val KEY_COMPLETED_MORNING_DATES = "completed_morning_dates"
     private const val KEY_COMPLETED_EVENING_DATES = "completed_evening_dates"

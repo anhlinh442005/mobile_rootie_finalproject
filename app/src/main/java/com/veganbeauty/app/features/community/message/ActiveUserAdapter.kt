@@ -35,10 +35,18 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
             holder.ivAddStory.visibility = View.VISIBLE
             holder.vActiveDot.visibility = View.GONE
             
-            // Hardcode Ánh Linh's avatar
-            holder.ivAvatar.load("https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg") {
-                crossfade(true)
-                transformations(CircleCropTransformation())
+            val currentUserAvatar = com.veganbeauty.app.data.local.ProfileSession.getAvatar(holder.itemView.context)
+            if (!currentUserAvatar.isNullOrEmpty()) {
+                holder.ivAvatar.load(currentUserAvatar) {
+                    crossfade(true)
+                    placeholder(R.color.gray_light)
+                    error(R.drawable.mascot_message)
+                    transformations(CircleCropTransformation())
+                }
+            } else {
+                holder.ivAvatar.load(R.drawable.mascot_message) {
+                    transformations(CircleCropTransformation())
+                }
             }
             return
         }
@@ -50,8 +58,20 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
         val partnerId = (item.members ?: emptyList()).firstOrNull { it != currentUserId } ?: ""
         val partnerInfo = (item.memberInfo ?: emptyMap())[partnerId]
         
-        val partnerName = partnerInfo?.name ?: "Unknown"
-        val partnerAvatar = partnerInfo?.avatar ?: ""
+        var partnerName = partnerInfo?.name ?: "Unknown"
+        var partnerAvatar = partnerInfo?.avatar ?: ""
+
+        // Fix for legacy 'You' data stored in db
+        if (partnerName == "You" || partnerName == "Unknown" || partnerAvatar.isEmpty()) {
+            val user = com.veganbeauty.app.data.local.LocalJsonReader(holder.itemView.context).getUsers().find { it.user_id == partnerId }
+            if (user != null) {
+                if (partnerName == "You" || partnerName == "Unknown") partnerName = user.full_name ?: partnerName
+                if (partnerAvatar.isEmpty()) partnerAvatar = user.avatar ?: ""
+            } else if (partnerId == "test_001") {
+                if (partnerName == "You" || partnerName == "Unknown") partnerName = "Test User"
+            }
+        }
+        
         val isActive = (item.activeBy ?: emptyList()).contains(partnerId)
         
         // Convert name to username-like format (e.g., "Bảo Nguyên" -> "bao_nguyen")
@@ -83,7 +103,7 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
                 if (partnerId == "rootie_vn") {
                     error(R.drawable.ic_logo_rootie)
                 } else {
-                    error(R.drawable.img_avatar)
+                    error(R.drawable.mascot_message)
                 }
                 transformations(CircleCropTransformation())
             }
@@ -91,7 +111,7 @@ class ActiveUserAdapter(private var items: List<ConversationEntity>) :
             if (partnerId == "rootie_vn") {
                 holder.ivAvatar.setImageResource(R.drawable.ic_logo_rootie)
             } else {
-                holder.ivAvatar.setImageResource(R.drawable.img_avatar)
+                holder.ivAvatar.setImageResource(R.drawable.mascot_message)
             }
         }
     }

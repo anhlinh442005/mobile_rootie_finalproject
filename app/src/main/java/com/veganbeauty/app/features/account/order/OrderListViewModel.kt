@@ -73,7 +73,9 @@ class OrderListViewModel(
     fun refreshOrders() {
         viewModelScope.launch {
             try {
-                repository.refreshOrders()
+                val userId = if (ProfileSession.isLoggedIn(appContext)) ProfileSession.getUserId(appContext) else null
+                val guestPhone = if (!ProfileSession.isLoggedIn(appContext)) ProfileSession.getGuestPhone(appContext) else null
+                repository.refreshOrders(userId, guestPhone)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

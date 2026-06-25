@@ -63,35 +63,35 @@
                     android:id="@+id/ivStar1"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:src="@android:drawable/star_on"
+                    android:src="@drawable/ic_star"
                     app:tint="#FFC107"/>
 
                 <ImageView
                     android:id="@+id/ivStar2"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:src="@android:drawable/star_on"
+                    android:src="@drawable/ic_star"
                     app:tint="#FFC107"/>
 
                 <ImageView
                     android:id="@+id/ivStar3"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:src="@android:drawable/star_on"
+                    android:src="@drawable/ic_star"
                     app:tint="#FFC107"/>
 
                 <ImageView
                     android:id="@+id/ivStar4"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:src="@android:drawable/star_on"
+                    android:src="@drawable/ic_star"
                     app:tint="#FFC107"/>
 
                 <ImageView
                     android:id="@+id/ivStar5"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:src="@android:drawable/star_on"
+                    android:src="@drawable/ic_star"
                     app:tint="#FFC107"/>
             </LinearLayout>
         </LinearLayout>

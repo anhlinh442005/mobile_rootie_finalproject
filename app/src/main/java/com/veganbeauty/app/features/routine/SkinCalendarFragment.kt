@@ -56,11 +56,7 @@ class SkinCalendarFragment : RootieFragment() {
 
         // Load Avatar
         val avatarUrl = ProfileSession.getAvatar(ctx)
-        binding.ivAvatar.load(avatarUrl) {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-        }
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
 
         // 2. Load Streaks & Stats
         val morningDates = ProfileSession.getCompletedMorningDates(ctx)
@@ -116,9 +112,10 @@ class SkinCalendarFragment : RootieFragment() {
         populateTimeline(ctx)
 
         // 7. Dynamic Detailed History button text
-        val currentMonthFormat = SimpleDateFormat("'Nhật ký chi tiết tháng' M ' >'", Locale("vi", "VN"))
+        val currentMonthFormat = SimpleDateFormat("'Nhật ký chi tiết tháng' M", Locale("vi", "VN"))
         binding.btnDetailedHistory.text = currentMonthFormat.format(Date())
     }
+
 
     private fun calculateMaxStreak(morningDates: Set<String>, eveningDates: Set<String>): Int {
         val completedDaysSet = morningDates.intersect(eveningDates).mapNotNull {
@@ -281,7 +278,8 @@ class SkinCalendarFragment : RootieFragment() {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        topMargin = (12 * resources.displayMetrics.density).toInt()
+                        val density = ctx.resources.displayMetrics.density
+                        topMargin = (12 * density).toInt()
                     }
                 }
                 binding.layoutCalendarGrid.addView(rowLayout)
@@ -360,8 +358,9 @@ class SkinCalendarFragment : RootieFragment() {
 
     private fun selectTab(index: Int) {
         selectedTab = index
-        val activeBg = ContextCompat.getDrawable(requireContext(), R.drawable.com_bg_btn_dark_green)
-        val inactiveBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_pill_grey_translucent)
+        val ctx = context ?: return
+        val activeBg = ContextCompat.getDrawable(ctx, R.drawable.com_bg_btn_dark_green)
+        val inactiveBg = ContextCompat.getDrawable(ctx, R.drawable.bg_pill_grey_translucent)
         
         binding.btnTabMonth.background = if (index == 0) activeBg else inactiveBg
         binding.btnTabMonth.setTextColor(if (index == 0) Color.WHITE else Color.parseColor("#3E4D44"))
@@ -530,6 +529,15 @@ class SkinCalendarFragment : RootieFragment() {
 
             binding.layoutTimelineContainer.addView(viewDay)
             tempCal.add(Calendar.DAY_OF_YEAR, -1)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            val ctx = requireContext()
+            val avatarUrl = ProfileSession.getAvatar(ctx)
+            com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
         }
     }
 

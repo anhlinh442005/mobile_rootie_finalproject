@@ -9,17 +9,13 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import com.veganbeauty.app.R
 import com.veganbeauty.app.data.local.ProfileSession
 import com.veganbeauty.app.databinding.SkinChatBinding
 import com.veganbeauty.app.databinding.ItemSkinChatLeftBinding
 import com.veganbeauty.app.databinding.ItemSkinChatRightBinding
 import com.veganbeauty.app.databinding.ItemSkinChatTimeBinding
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.File
+import com.veganbeauty.app.features.community.message.MessageHelper
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -31,10 +27,7 @@ class SkinChatFragment : DialogFragment() {
 
     private lateinit var chatAdapter: SkinChatAdapter
     private val messagesList = mutableListOf<ChatMessage>()
-    private val handler = android.os.Handler(android.os.Looper.getMainLooper())
-    
-    private var firestoreListener: ListenerRegistration? = null
-    private val db = FirebaseFirestore.getInstance()
+    private var conversationId: String = ""
 
     enum class Sender {
         AGENT, USER, TIME
@@ -83,18 +76,22 @@ class SkinChatFragment : DialogFragment() {
         setupRecyclerView()
         setupListeners()
 
-        // 1. Load history from local JSON file
-        val history = loadLocalHistory()
-        messagesList.clear()
-        if (history.isNotEmpty()) {
-            messagesList.add(ChatMessage(Sender.TIME, "Lịch sử cuộc trò chuyện", "", System.currentTimeMillis()))
-            messagesList.addAll(history)
-        }
-        chatAdapter.notifyDataSetChanged()
-        binding.rvChatList.scrollToPosition(messagesList.size - 1)
+        val currentUserId = getCurrentUserId()
+        conversationId = MessageHelper.getOrCreateConversation(
+            requireContext(),
+            currentUserId,
+            "rootie_vn",
+            "Rootie VietNam",
+            "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png"
+        )
 
-        // 2. Start Firebase real-time listener for admin replies
-        startFirestoreListener()
+        loadConversationData()
+        
+        MessageHelper.listenToConversation(requireContext(), conversationId) {
+            if (isAdded) {
+                loadConversationData()
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -128,227 +125,80 @@ class SkinChatFragment : DialogFragment() {
         }
     }
 
-    private fun getCurrentTimeStr(): String {
-        return SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-    }
-
-    // JSON persistence helpers
-    private fun getLocalHistoryFile(): File {
-        return File(requireContext().filesDir, "chat_message.json")
-    }
-
-    private fun loadLocalHistory(): List<ChatMessage> {
-        val file = getLocalHistoryFile()
-        if (!file.exists()) {
-            try {
-                val jsonString = requireContext().assets.open("chat_message.json").bufferedReader().use { it.readText() }
-                file.writeText(jsonString)
-            } catch (e: Exception) {
-                try {
-                    file.writeText("[]")
-                } catch (e2: Exception) {
-                    e2.printStackTrace()
-                }
-            }
-        }
-
-        if (!file.exists()) return emptyList()
-        return try {
-            val jsonStr = file.readText()
-            val jsonArray = JSONArray(jsonStr)
-            val list = mutableListOf<ChatMessage>()
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-                list.add(
-                    ChatMessage(
-                        sender = Sender.valueOf(obj.getString("sender")),
-                        text = obj.getString("text"),
-                        time = obj.getString("time"),
-                        timestamp = obj.optLong("timestamp", System.currentTimeMillis())
-                    )
+    private fun loadConversationData() {
+        val currentUserId = getCurrentUserId()
+        MessageHelper.markAsRead(requireContext(), conversationId, currentUserId)
+        
+        val rawMessages = MessageHelper.getMessages(requireContext(), conversationId)
+        messagesList.clear()
+        messagesList.add(ChatMessage(Sender.TIME, "Lịch sử cuộc trò chuyện", "", System.currentTimeMillis()))
+        for (msg in rawMessages) {
+            val isAgent = msg.senderId == "rootie_vn"
+            val timestamp = parseIsoString(msg.sentAt)
+            val timeStr = formatTime(timestamp)
+            messagesList.add(
+                ChatMessage(
+                    sender = if (isAgent) Sender.AGENT else Sender.USER,
+                    text = msg.text,
+                    time = timeStr,
+                    timestamp = timestamp
                 )
-            }
-            list
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emptyList()
+            )
+        }
+        chatAdapter.notifyDataSetChanged()
+        if (messagesList.isNotEmpty()) {
+            binding.rvChatList.scrollToPosition(messagesList.size - 1)
         }
     }
 
-    private fun saveLocalHistory(list: List<ChatMessage>) {
-        val file = getLocalHistoryFile()
-        try {
-            val jsonArray = JSONArray()
-            for (msg in list) {
-                if (msg.sender == Sender.TIME) continue
-                val obj = JSONObject()
-                obj.put("sender", msg.sender.name)
-                obj.put("text", msg.text)
-                obj.put("time", msg.time)
-                obj.put("timestamp", msg.timestamp)
-                jsonArray.put(obj)
-            }
-            file.writeText(jsonArray.toString())
+    private fun parseIsoString(isoStr: String): Long {
+        return try {
+            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+            format.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            format.parse(isoStr)?.time ?: System.currentTimeMillis()
         } catch (e: Exception) {
-            e.printStackTrace()
+            System.currentTimeMillis()
         }
     }
+    
+    private fun formatTime(timestamp: Long): String {
+        return SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
+    }
 
-    // Firestore Synchronization
     private fun getCurrentUserId(): String {
         return ProfileSession.getCurrentUserId(requireContext()) ?: "guest_user"
-    }
-
-    private fun getCurrentUsername(): String {
-        return ProfileSession.getUsername(requireContext()) ?: "Khách"
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun startFirestoreListener() {
-        val currentUserId = getCurrentUserId()
-        
-        firestoreListener = db.collection("chat_messages").document(currentUserId)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    e.printStackTrace()
-                    return@addSnapshotListener
-                }
-                
-                if (snapshot != null && snapshot.exists()) {
-                    val messagesRaw = snapshot.get("messages") as? List<Map<String, Any>>
-                    if (messagesRaw != null) {
-                        val remoteList = messagesRaw.map { map ->
-                            val senderStr = map["sender"] as? String ?: "AGENT"
-                            ChatMessage(
-                                sender = Sender.valueOf(senderStr),
-                                text = map["text"] as? String ?: "",
-                                time = map["time"] as? String ?: "",
-                                timestamp = (map["timestamp"] as? Number)?.toLong() ?: System.currentTimeMillis()
-                            )
-                        }
-                        
-                        val localList = loadLocalHistory()
-                        if (isDifferent(localList, remoteList)) {
-                            // Save locally
-                            saveLocalHistory(remoteList)
-                            
-                            // Update display list
-                            messagesList.clear()
-                            messagesList.add(ChatMessage(Sender.TIME, "Lịch sử cuộc trò chuyện", "", System.currentTimeMillis()))
-                            messagesList.addAll(remoteList)
-                            chatAdapter.notifyDataSetChanged()
-                            binding.rvChatList.scrollToPosition(messagesList.size - 1)
-                        }
-                    }
-                }
-            }
-    }
-
-    private fun isDifferent(local: List<ChatMessage>, remote: List<ChatMessage>): Boolean {
-        if (local.size != remote.size) return true
-        for (i in local.indices) {
-            if (local[i].sender != remote[i].sender ||
-                local[i].text != remote[i].text ||
-                local[i].time != remote[i].time) {
-                return true
-            }
-        }
-        return false
-    }
-
-    private fun uploadChatToFirestore(list: List<ChatMessage>) {
-        val currentUserId = getCurrentUserId()
-        val currentUsername = getCurrentUsername()
-        
-        val actualMessages = list.filter { it.sender != Sender.TIME }
-        val lastMsg = actualMessages.lastOrNull()
-        
-        val dataMap = hashMapOf(
-            "userId" to currentUserId,
-            "username" to currentUsername,
-            "lastMessage" to (lastMsg?.text ?: ""),
-            "lastMessageAt" to (lastMsg?.timestamp ?: System.currentTimeMillis()),
-            "messages" to actualMessages.map { msg ->
-                hashMapOf(
-                    "sender" to msg.sender.name,
-                    "text" to msg.text,
-                    "time" to msg.time,
-                    "timestamp" to msg.timestamp
-                )
-            }
-        )
-        
-        db.collection("chat_messages").document(currentUserId)
-            .set(dataMap)
-            .addOnFailureListener { e ->
-                e.printStackTrace()
-            }
     }
 
     private fun sendMessage() {
         val text = binding.etMessageInput.text.toString().trim()
         if (text.isEmpty()) return
 
+        val currentUserId = getCurrentUserId()
+        
+        val rawMessages = MessageHelper.getMessages(requireContext(), conversationId)
         val now = System.currentTimeMillis()
-        val timeStr = getCurrentTimeStr()
-
-        // 1. Get history and check if session is active (diff <= 1 hour)
-        val history = loadLocalHistory()
-        val lastMsg = history.lastOrNull { it.sender != Sender.TIME }
-        val isNewSession = if (lastMsg == null) {
+        val isNewSession = if (rawMessages.isEmpty()) {
             true
         } else {
-            val diffMs = now - lastMsg.timestamp
-            diffMs > 3600000 // 1 hour threshold
+            val lastMsgTime = parseIsoString(rawMessages.last().sentAt)
+            (now - lastMsgTime) > 3600000
         }
 
-        // 2. Add user message
-        val userMsg = ChatMessage(Sender.USER, text, timeStr, now)
-        val updatedHistory = history.toMutableList()
-        updatedHistory.add(userMsg)
-
-        // Save locally and upload
-        saveLocalHistory(updatedHistory)
-        
-        // Update local display list
-        messagesList.clear()
-        messagesList.add(ChatMessage(Sender.TIME, "Lịch sử cuộc trò chuyện", "", now))
-        messagesList.addAll(updatedHistory)
-        chatAdapter.notifyDataSetChanged()
-        binding.rvChatList.scrollToPosition(messagesList.size - 1)
+        MessageHelper.sendMessage(requireContext(), conversationId, currentUserId, "rootie_vn", text)
         binding.etMessageInput.setText("")
+        loadConversationData()
 
-        // Sync user message to Firestore
-        uploadChatToFirestore(updatedHistory)
-
-        // 3. Trigger consultant greeting message only if it is a new session
         if (isNewSession) {
-            handler.postDelayed({
+            binding.rvChatList.postDelayed({
                 if (isAdded) {
-                    val greetingTimeStr = getCurrentTimeStr()
-                    val greetingTimeMs = System.currentTimeMillis()
-                    
-                    val greetingMsg = ChatMessage(
-                        Sender.AGENT,
-                        "Chào bạn, tôi là chuyên gia tư vấn Rootie. Tôi có thể giúp gì cho bạn hôm nay?",
-                        greetingTimeStr,
-                        greetingTimeMs
+                    MessageHelper.sendMessage(
+                        requireContext(), 
+                        conversationId, 
+                        "rootie_vn", 
+                        currentUserId, 
+                        "Chào bạn, tôi là chuyên gia tư vấn Rootie. Tôi có thể giúp gì cho bạn hôm nay?"
                     )
-                    
-                    val historyWithGreeting = loadLocalHistory().toMutableList()
-                    historyWithGreeting.add(greetingMsg)
-                    
-                    // Save and update UI
-                    saveLocalHistory(historyWithGreeting)
-                    
-                    messagesList.clear()
-                    messagesList.add(ChatMessage(Sender.TIME, "Lịch sử cuộc trò chuyện", "", greetingTimeMs))
-                    messagesList.addAll(historyWithGreeting)
-                    chatAdapter.notifyDataSetChanged()
-                    binding.rvChatList.scrollToPosition(messagesList.size - 1)
-                    
-                    // Sync greeting to Firestore
-                    uploadChatToFirestore(historyWithGreeting)
+                    loadConversationData()
                 }
             }, 1000)
         }
@@ -356,8 +206,7 @@ class SkinChatFragment : DialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        firestoreListener?.remove()
-        handler.removeCallbacksAndMessages(null)
+        MessageHelper.removeConversationListener(conversationId)
         _binding = null
     }
 

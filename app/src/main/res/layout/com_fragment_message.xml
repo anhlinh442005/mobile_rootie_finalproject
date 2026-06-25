@@ -22,7 +22,8 @@
             android:layout_height="28dp"
             android:src="@drawable/ic_arrow_back_thin"
             app:tint="@color/gray_dark"
-            android:padding="2dp" />
+            android:padding="2dp"
+            android:visibility="invisible" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -94,6 +95,7 @@
                     app:tint="@color/gray_dark" />
 
                 <EditText
+                    android:id="@+id/etSearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"

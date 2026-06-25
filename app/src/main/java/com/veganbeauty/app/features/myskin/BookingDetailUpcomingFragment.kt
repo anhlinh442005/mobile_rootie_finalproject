@@ -14,6 +14,8 @@ import com.veganbeauty.app.databinding.SkinFragmentBookingDetailUpcomingBinding
 import com.veganbeauty.app.data.remote.FirestoreService
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class BookingDetailUpcomingFragment : RootieFragment() {
 
@@ -63,8 +65,11 @@ class BookingDetailUpcomingFragment : RootieFragment() {
             Toast.makeText(context, "Đã sao chép mã đặt lịch", Toast.LENGTH_SHORT).show()
         }
         
-        binding.skinDetailBtnPrimary.setOnClickListener {
-            Toast.makeText(context, "Xem chi tiết clicked", Toast.LENGTH_SHORT).show()
+        binding.skinDetailBtnNotification.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
         }
         
         binding.skinDetailBtnCancel.setOnClickListener {
@@ -81,8 +86,9 @@ class BookingDetailUpcomingFragment : RootieFragment() {
         dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
         
         // Setup Dialog Data
-        dialogView.findViewById<android.widget.TextView>(R.id.tv_date).text = data.dateDisplay
-        dialogView.findViewById<android.widget.TextView>(R.id.tv_month_day).text = data.dayOfWeek
+        val (dayNum, monthDayStr) = BookingDateParser.parseDateDisplay(data.dateDisplay, data.monthDisplay, data.dayOfWeek)
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_date).text = dayNum
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_month_day).text = monthDayStr
         dialogView.findViewById<android.widget.TextView>(R.id.tv_service_name).text = data.serviceName
         dialogView.findViewById<android.widget.TextView>(R.id.tv_time).text = "${data.time} (${data.duration})"
         dialogView.findViewById<android.widget.TextView>(R.id.tv_store_name).text = data.storeName
@@ -90,7 +96,7 @@ class BookingDetailUpcomingFragment : RootieFragment() {
         
         // Setup Spinner
         val spReason = dialogView.findViewById<android.widget.Spinner>(R.id.sp_reason)
-        val reasons = listOf("Thay đổi lịch trình", "Tìm được địa điểm khác", "Lý do sức khoẻ", "Đã đặt nhầm dịch vụ", "Lý do khác")
+        val reasons = listOf("Chọn lý do hủy lịch", "Thay đổi lịch trình", "Tìm được địa điểm khác", "Lý do sức khoẻ", "Đã đặt nhầm dịch vụ", "Lý do khác")
         val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, reasons)
         spReason.adapter = adapter
         
@@ -102,7 +108,13 @@ class BookingDetailUpcomingFragment : RootieFragment() {
         dialogView.findViewById<View>(R.id.btn_confirm_cancel).setOnClickListener {
             val selectedReason = spReason.selectedItem.toString()
             val otherReason = etOtherReason.text.toString().trim()
-            val finalReason = if (selectedReason == "Lý do khác" && otherReason.isNotEmpty()) otherReason else selectedReason
+            val finalReason = when {
+                selectedReason == "Lý do khác" && otherReason.isNotEmpty() -> otherReason
+                selectedReason == "Lý do khác" -> "Lý do khác"
+                selectedReason == "Chọn lý do hủy lịch" && otherReason.isNotEmpty() -> otherReason
+                selectedReason == "Chọn lý do hủy lịch" -> "Không có lý do cụ thể"
+                else -> selectedReason
+            }
             
             // Update in Firestore
             viewLifecycleOwner.lifecycleScope.launch {
@@ -116,6 +128,21 @@ class BookingDetailUpcomingFragment : RootieFragment() {
                 Toast.makeText(requireContext(), "Hủy lịch thành công", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
+            // Update in memory & local storage
+            com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).updateBookingStatus(data.id, "Đã huỷ", finalReason)
+            
+            // Update UI locally
+            val updatedData = data.copy(status = "Đã huỷ", cancelReason = finalReason)
+            bookingData = updatedData
+            populateUI(updatedData)
+
+            // Update on Firestore
+            viewLifecycleOwner.lifecycleScope.launch {
+                com.veganbeauty.app.data.remote.FirestoreService().updateBookingStatus(data.id, "Đã huỷ", finalReason)
+            }
+            
+            Toast.makeText(requireContext(), "Hủy lịch thành công", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
         }
         
         dialog.show()
@@ -130,8 +157,13 @@ class BookingDetailUpcomingFragment : RootieFragment() {
         // Status Tag
         binding.skinDetailStatusTag.text = data.status
         when (data.status) {
-            "Sắp diễn ra" -> {
-                binding.skinDetailStatusTag.setBackgroundResource(R.drawable.skin_bg_btn_book) // Blue/Green
+            "Sắp diễn ra", "Chờ xác nhận", "pending" -> {
+                if (data.status.equals("Chờ xác nhận", ignoreCase = true) || data.status.equals("pending", ignoreCase = true)) {
+                    binding.skinDetailStatusTag.text = "Chờ xác nhận"
+                    binding.skinDetailStatusTag.setBackgroundColor(Color.parseColor("#FF9800")) // Orange
+                } else {
+                    binding.skinDetailStatusTag.setBackgroundResource(R.drawable.skin_bg_btn_book) // Blue/Green
+                }
                 binding.skinDetailStatusTag.setTextColor(Color.WHITE)
                 binding.skinDetailBottomActions.visibility = View.VISIBLE
             }

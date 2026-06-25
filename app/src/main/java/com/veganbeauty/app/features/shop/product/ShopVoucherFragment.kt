@@ -12,11 +12,25 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
+import com.veganbeauty.app.data.local.LocalJsonReader
+import com.veganbeauty.app.data.local.RootieDatabase
+import com.veganbeauty.app.data.repository.OrderRepository
 import com.veganbeauty.app.databinding.ShopFragmentVoucherBinding
+import com.veganbeauty.app.features.profile.AccountVoucherFragment
+import com.veganbeauty.app.features.profile.VoucherItem
+import kotlinx.coroutines.launch
+import org.json.JSONArray
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class ShopVoucherFragment : RootieFragment() {
 
@@ -25,34 +39,10 @@ class ShopVoucherFragment : RootieFragment() {
 
     private var selectedVoucherCode: String? = null
     private lateinit var adapter: ShopVoucherAdapter
+    private lateinit var repository: OrderRepository
 
-    // List of mock vouchers
-    private val voucherList = listOf(
-        VoucherUiModel(
-            code = "FIRST50K",
-            title = "Giảm 50k cho lần đầu tiên mua hàng",
-            minSpendText = "Đơn tối thiểu: 70.000đ",
-            expiryText = "Hết hạn trong: 2 ngày",
-            discountAmount = 50000L,
-            minSpendAmount = 70000L
-        ),
-        VoucherUiModel(
-            code = "WELCOME20K",
-            title = "Giảm 20k cho đơn hàng từ 50.000đ",
-            minSpendText = "Đơn tối thiểu: 50.000đ",
-            expiryText = "Hết hạn trong: 5 ngày",
-            discountAmount = 20000L,
-            minSpendAmount = 50000L
-        ),
-        VoucherUiModel(
-            code = "ROOTIE100K",
-            title = "Giảm 100k cho đơn hàng từ 300.000đ",
-            minSpendText = "Đơn tối thiểu: 300.000đ",
-            expiryText = "Hết hạn trong: 10 ngày",
-            discountAmount = 100000L,
-            minSpendAmount = 300000L
-        )
-    )
+    // List of active vouchers loaded dynamically
+    private val voucherList = mutableListOf<VoucherUiModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +67,7 @@ class ShopVoucherFragment : RootieFragment() {
 
         setupRecyclerView()
         setupListeners()
+        loadVouchers()
     }
 
     private fun setupRecyclerView() {
@@ -150,6 +141,162 @@ class ShopVoucherFragment : RootieFragment() {
         // Hide keyboard
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etCouponCode.windowToken, 0)
+    }
+
+    private fun loadVouchers() {
+        val context = requireContext()
+        val db = RootieDatabase.getDatabase(context)
+        repository = OrderRepository(
+            db.orderDao(),
+            db.rewardPointDao(),
+            db.userGiftDao(),
+            LocalJsonReader(context)
+        )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repository.getAllUserGifts().collect { dbGifts ->
+                val systemVouchers = loadVouchersFromAssets(context)
+                val mappedDbVouchers = dbGifts
+                    .filter { it.giftType == "voucher_discount" || it.giftType == "voucher_freeship" }
+                    .map { gift ->
+                        val statusVal = computeStatusFromExpiry(gift.expiryDate)
+                        VoucherItem(
+                            id = "db_${gift.id}",
+                            title = gift.title,
+                            description = gift.description,
+                            code = gift.code,
+                            status = statusVal,
+                            hsd = gift.expiryDate,
+                            type = if (gift.giftType == "voucher_freeship") "free ship" else "discount",
+                            fromGift = true,
+                            quantity = null,
+                            minOrderValue = gift.minOrderValue,
+                            applicableProducts = gift.applicableProducts,
+                            offerType = gift.offerType,
+                            discountValue = gift.discountValue
+                        )
+                    }
+
+                val activeSystem = systemVouchers.filter {
+                    it.id !in AccountVoucherFragment.deletedSystemVoucherIdsStatic
+                }
+                
+                val allVouchers = activeSystem + mappedDbVouchers
+                // Filter only valid or expiring vouchers
+                val activeVouchers = allVouchers.filter { it.status == "valid" || it.status == "expiring" }
+                
+                voucherList.clear()
+                activeVouchers.forEach { item ->
+                    val minSpendText = "Đơn tối thiểu: ${formatCurrency(item.minOrderValue)}đ"
+                    val expiryText = "Hết hạn: ${formatHsd(item.hsd)}"
+                    voucherList.add(
+                        VoucherUiModel(
+                            code = item.code,
+                            title = item.title,
+                            minSpendText = minSpendText,
+                            expiryText = expiryText,
+                            discountAmount = item.discountValue.toLong(),
+                            minSpendAmount = item.minOrderValue.toLong()
+                        )
+                    )
+                }
+                adapter.notifyDataSetChanged()
+                
+                // Select first matching selected code if set
+                selectedVoucherCode?.let { code ->
+                    val matched = voucherList.find { it.code == code }
+                    if (matched != null) {
+                        adapter.setSelectedCode(code)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun computeStatusFromExpiry(expiryStr: String): String {
+        return try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val expiryDate = sdf.parse(expiryStr) ?: return "valid"
+            
+            val today = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            
+            val expiry = Calendar.getInstance().apply {
+                time = expiryDate
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            
+            if (expiry.before(today)) {
+                "expired"
+            } else if (expiry.equals(today)) {
+                "expiring"
+            } else {
+                "valid"
+            }
+        } catch (e: Exception) {
+            "valid"
+        }
+    }
+
+    private fun formatCurrency(amount: Int): String {
+        val symbols = DecimalFormatSymbols(Locale.US).apply {
+            groupingSeparator = '.'
+        }
+        val df = DecimalFormat("#,###", symbols)
+        return df.format(amount)
+    }
+
+    private fun formatHsd(hsdStr: String): String {
+        return try {
+            val inputSdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val date = inputSdf.parse(hsdStr) ?: return hsdStr
+            val outputSdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            outputSdf.format(date)
+        } catch (e: Exception) {
+            if (hsdStr.contains(" ")) hsdStr.split(" ")[0] else hsdStr
+        }
+    }
+
+    private fun loadVouchersFromAssets(ctx: Context): List<VoucherItem> {
+        return try {
+            val jsonString = ctx.assets.open("vouchers.json").bufferedReader().use { it.readText() }
+            val jsonArray = JSONArray(jsonString)
+            val list = mutableListOf<VoucherItem>()
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val hsdStr = obj.optString("hsd", "")
+                val statusVal = computeStatusFromExpiry(hsdStr)
+                
+                list.add(
+                    VoucherItem(
+                        id = obj.optString("id", ""),
+                        title = obj.optString("title", ""),
+                        description = obj.optString("description", ""),
+                        code = obj.optString("code", ""),
+                        status = statusVal,
+                        hsd = hsdStr,
+                        type = obj.optString("type", "discount"),
+                        fromGift = obj.optBoolean("from-gift", false),
+                        quantity = if (obj.has("quantity")) obj.getInt("quantity") else null,
+                        minOrderValue = obj.optInt("minOrderValue", 0),
+                        applicableProducts = obj.optString("applicableProducts", "Tất cả sản phẩm"),
+                        offerType = obj.optString("offerType", "fixed_amount"),
+                        discountValue = obj.optInt("discountValue", 0)
+                    )
+                )
+            }
+            list
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
     }
 
     override fun onDestroyView() {

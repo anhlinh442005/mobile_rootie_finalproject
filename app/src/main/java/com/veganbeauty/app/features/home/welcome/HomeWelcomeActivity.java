@@ -150,8 +150,15 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 org.json.JSONArray jsonArray = new org.json.JSONArray(jsonString);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     org.json.JSONObject obj = jsonArray.getJSONObject(i);
+                    String userId = obj.optString("user_id", "");
+                    if (userId.isEmpty()) {
+                        userId = java.util.UUID.randomUUID().toString();
+                    }
+                    com.veganbeauty.app.data.local.entities.UserEntity existing = db.userDao().getUserByIdSync(userId);
+                    if (existing != null) continue;
+
                     com.veganbeauty.app.data.local.entities.UserEntity user = new com.veganbeauty.app.data.local.entities.UserEntity(
-                        obj.optString("user_id", java.util.UUID.randomUUID().toString()),
+                        userId,
                         obj.optString("username", ""),
                         obj.optString("full_name", ""),
                         obj.optString("email", ""),
@@ -185,7 +192,13 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(this, user.getAvatar() != null ? user.getAvatar() : "");
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPrimaryImage(this, user.getPrimary_image() != null ? user.getPrimary_image() : "");
 
-                navigateToMain();
+                com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncRewardPointsFromFirestore(this);
+                com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncUserProfileFromFirestore(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        navigateToMain();
+                    }
+                });
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
                 android.widget.Toast.makeText(this,
                         ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(),
@@ -1272,6 +1285,17 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     String userId = obj.optString("user_id", "");
                     if (!teamIds.contains(userId))
                         continue;
+
+                    // Skip the user associated with this device to avoid overriding their profile changes in SQLite
+                    String savedUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUserId(getApplicationContext());
+                    if (savedUserId != null && savedUserId.equals(userId)) {
+                        continue;
+                    }
+
+                    com.veganbeauty.app.data.local.entities.UserEntity existingUser = userDao.getUserByIdSync(userId);
+                    if (existingUser != null) {
+                        continue;
+                    }
 
                     com.veganbeauty.app.data.local.entities.UserEntity user = new com.veganbeauty.app.data.local.entities.UserEntity(
                             userId,

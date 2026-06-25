@@ -61,9 +61,24 @@ class AccountOrderDetailFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
+        val fromSuccess = arguments?.getBoolean(ARG_FROM_SUCCESS, false) == true
+
         // Back Navigation
         binding.btnBack.setOnClickListener {
-            activity?.onBackPressedDispatcher?.onBackPressed()
+            if (fromSuccess) {
+                navigateToShopHome()
+            } else {
+                activity?.onBackPressedDispatcher?.onBackPressed()
+            }
+        }
+
+        if (fromSuccess) {
+            val callback = object : androidx.activity.OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    navigateToShopHome()
+                }
+            }
+            activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, callback)
         }
 
         // Notification Navigation
@@ -75,6 +90,19 @@ class AccountOrderDetailFragment : RootieFragment() {
         }
         binding.layoutNotification.setOnClickListener(navigateToNotification)
         binding.btnNotification.setOnClickListener(navigateToNotification)
+    }
+
+    private fun navigateToShopHome() {
+        parentFragmentManager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        parentFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                android.R.anim.fade_in,
+                android.R.anim.fade_out,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out
+            )
+            .replace(R.id.main_container, com.veganbeauty.app.features.shop.home.ShopHomeFragment())
+            .commit()
     }
 
     override fun observeViewModel() {
@@ -395,11 +423,14 @@ class AccountOrderDetailFragment : RootieFragment() {
 
     companion object {
         private const val ARG_ORDER_ID = "arg_order_id"
+        private const val ARG_FROM_SUCCESS = "arg_from_success"
 
-        fun newInstance(orderId: String): AccountOrderDetailFragment {
+        @JvmOverloads
+        fun newInstance(orderId: String, fromSuccess: Boolean = false): AccountOrderDetailFragment {
             val fragment = AccountOrderDetailFragment()
             val args = Bundle()
             args.putString(ARG_ORDER_ID, orderId)
+            args.putBoolean(ARG_FROM_SUCCESS, fromSuccess)
             fragment.arguments = args
             return fragment
         }

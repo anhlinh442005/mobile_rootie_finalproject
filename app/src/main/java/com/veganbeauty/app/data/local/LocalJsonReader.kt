@@ -5,6 +5,7 @@ import com.veganbeauty.app.data.local.entities.*
 import org.json.JSONObject
 
 class LocalJsonReader(private val context: Context) {
+    fun getContext(): Context = context
 
     fun getSocialDataForUser(userId: String): Map<String, List<String>> {
         val result = mutableMapOf<String, List<String>>(
@@ -964,7 +965,12 @@ class LocalJsonReader(private val context: Context) {
         if (cachedBookings == null) {
             val list = mutableListOf<BookingHistoryEntity>()
             try {
-                val jsonString = context.assets.open("skin_bookings.json").bufferedReader().use { it.readText() }
+                val file = java.io.File(context.filesDir, "local_bookings.json")
+                val jsonString = if (file.exists()) {
+                    file.readText()
+                } else {
+                    context.assets.open("skin_bookings.json").bufferedReader().use { it.readText() }
+                }
                 val root = org.json.JSONObject(jsonString)
                 val jsonArray = root.getJSONArray("bookings")
                 for (i in 0 until jsonArray.length()) {
@@ -1056,10 +1062,68 @@ class LocalJsonReader(private val context: Context) {
         return cachedBookings!!.filter { it.userEmail == email }
     }
 
+    private fun saveBookingsToLocalFile(bookings: List<BookingHistoryEntity>) {
+        try {
+            val root = org.json.JSONObject()
+            val array = org.json.JSONArray()
+            for (booking in bookings) {
+                val obj = org.json.JSONObject()
+                obj.put("id", booking.id)
+                obj.put("userId", booking.userId)
+                obj.put("userName", booking.userName)
+                obj.put("userPhone", booking.userPhone)
+                obj.put("userEmail", booking.userEmail)
+                obj.put("serviceName", booking.serviceName)
+                obj.put("dateDisplay", booking.dateDisplay)
+                obj.put("monthDisplay", booking.monthDisplay)
+                obj.put("dayOfWeek", booking.dayOfWeek)
+                obj.put("time", booking.time)
+                obj.put("duration", booking.duration)
+                obj.put("storeName", booking.storeName)
+                obj.put("storeAddress", booking.storeAddress)
+                obj.put("storePhone", booking.storePhone)
+                obj.put("storeImage", booking.storeImage)
+                obj.put("note", booking.note)
+                obj.put("status", booking.status)
+                obj.put("policy", booking.policy)
+                obj.put("createdAt", booking.createdAt)
+                obj.put("completedAt", booking.completedAt)
+                
+                val skinResultsArray = org.json.JSONArray()
+                for (res in booking.skinResults) {
+                    skinResultsArray.put(res)
+                }
+                obj.put("skinResults", skinResultsArray)
+                
+                obj.put("consultantName", booking.consultantName)
+                obj.put("consultantAvatar", booking.consultantAvatar)
+                obj.put("consultantRating", booking.consultantRating.toDouble())
+                obj.put("userRating", booking.userRating.toDouble())
+                obj.put("userReview", booking.userReview)
+                obj.put("reviewDate", booking.reviewDate)
+                obj.put("beforeImage", booking.beforeImage)
+                obj.put("afterImage", booking.afterImage)
+                obj.put("earnedPoints", booking.earnedPoints)
+                obj.put("totalPoints", booking.totalPoints)
+                obj.put("nextAppointmentDate", booking.nextAppointmentDate)
+                obj.put("nextAppointmentText", booking.nextAppointmentText)
+                obj.put("cancelledAt", booking.cancelledAt)
+                obj.put("cancelReason", booking.cancelReason)
+                array.put(obj)
+            }
+            root.put("bookings", array)
+            val file = java.io.File(context.filesDir, "local_bookings.json")
+            file.writeText(root.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun updateBookingStatus(bookingId: String, newStatus: String, cancelReason: String = "") {
         cachedBookings = cachedBookings?.map {
             if (it.id == bookingId) it.copy(status = newStatus, cancelReason = cancelReason) else it
         }?.toMutableList()
+        cachedBookings?.let { saveBookingsToLocalFile(it) }
     }
 
     fun addBooking(booking: BookingHistoryEntity) {
@@ -1069,5 +1133,6 @@ class LocalJsonReader(private val context: Context) {
         }
         // Thêm lịch mới vào đầu danh sách
         cachedBookings?.add(0, booking)
+        cachedBookings?.let { saveBookingsToLocalFile(it) }
     }
 }

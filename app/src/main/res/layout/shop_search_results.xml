@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@color/neutral"
+        android:background="@drawable/bg_header_gradient"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp">
@@ -60,7 +60,7 @@
                 android:layout_height="16dp"
                 android:background="@drawable/bg_circle_grey"
                 android:padding="2dp"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:src="@drawable/ic_close"
                 app:tint="@color/content" />
         </LinearLayout>
     </LinearLayout>

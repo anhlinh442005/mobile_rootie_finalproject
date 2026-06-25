@@ -84,7 +84,7 @@ class SkinRoutineSettingsFragment : RootieFragment() {
 
             fun updateSwitchUI(container: android.view.ViewGroup, thumb: android.widget.ImageView, enabled: Boolean) {
                 if (enabled) {
-                    container.setBackgroundResource(R.drawable.ic_switch_track_on)
+                    container.setBackgroundResource(R.drawable.ic_switch_track_on_yellow)
                     val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
                     lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
                     lp.marginStart = 0

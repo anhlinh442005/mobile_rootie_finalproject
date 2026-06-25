@@ -29,19 +29,21 @@
                 <!-- Logo Mascot R -->
                 <ImageView
                     android:id="@+id/iv_logo"
-                    android:layout_width="28dp"
-                    android:layout_height="32dp"
+                    android:layout_width="55dp"
+                    android:layout_height="59dp"
                     android:layout_centerVertical="true"
                     android:src="@drawable/ic_logo_rootie" />
 
                 <!-- Search Input Bar -->
                 <LinearLayout
                     android:id="@+id/ll_search"
-                    android:layout_width="220dp"
+                    android:layout_width="match_parent"
                     android:layout_height="32dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
                     android:layout_toEndOf="@id/iv_logo"
+                    android:layout_toStartOf="@id/ll_right_actions"
                     android:background="@drawable/bg_search_bar"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
@@ -63,6 +65,7 @@
 
                 <!-- QR Scanner & Notification Bell Buttons -->
                 <LinearLayout
+                    android:id="@+id/ll_right_actions"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
@@ -88,7 +91,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/home_ic_notification" />
+                            android:src="@drawable/ic_notification" />
                     </FrameLayout>
                 </LinearLayout>
             </RelativeLayout>
@@ -359,10 +362,14 @@
 
                     <!-- Spa Appointment -->
                     <LinearLayout
+                        android:id="@+id/btn_spa_history"
                         android:layout_width="82dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
 
                         <FrameLayout
                             android:layout_width="52dp"

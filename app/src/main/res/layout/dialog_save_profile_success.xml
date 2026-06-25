@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_dialog_container"
+    android:gravity="center">
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_check_circle"
+        app:tint="#3E4D44"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lưu thành công"
+        android:textColor="#3E4D44"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/lexend"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thông tin cá nhân của bạn đã được cập nhật và đồng bộ hóa thành công!"
+        android:textColor="#677559"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:fontFamily="@font/lexend"
+        android:layout_marginBottom="24dp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnDialogDismiss"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_btn_pill_solid"
+        android:text="Hoàn tất"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:fontFamily="@font/lexend"
+        android:textStyle="bold" />
+
+</LinearLayout>

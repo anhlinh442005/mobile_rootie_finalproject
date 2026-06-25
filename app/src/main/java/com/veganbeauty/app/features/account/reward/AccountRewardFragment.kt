@@ -150,6 +150,7 @@ class AccountRewardFragment : RootieFragment() {
                     } else {
                         Toast.makeText(context, "Sử dụng quà tặng thất bại!", Toast.LENGTH_SHORT).show()
                     }
+                    com.veganbeauty.app.features.home.BottomNavHelper.navigate(this@AccountRewardFragment, R.id.nav_shop)
                 }
             }
         )
@@ -366,9 +367,6 @@ class AccountRewardFragment : RootieFragment() {
             val expiryDate = sdf.parse(expiryStr) ?: return "valid"
             
             val today = Calendar.getInstance().apply {
-                set(Calendar.YEAR, 2026)
-                set(Calendar.MONTH, Calendar.JUNE)
-                set(Calendar.DAY_OF_MONTH, 11)
                 set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
@@ -678,7 +676,8 @@ class MyGiftsAdapter(
             title.text = gift.title
             
             val displayHsd = if (gift.expiryDate.contains(" ")) gift.expiryDate.split(" ")[0] else gift.expiryDate
-            val isExpiringToday = gift.expiryDate.startsWith("2026-06-11")
+            val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            val isExpiringToday = gift.expiryDate.startsWith(todayStr)
             
             subtitle.text = "${gift.description}\nHSD: ${if (isExpiringToday) "Hôm nay" else displayHsd}"
             
@@ -690,9 +689,6 @@ class MyGiftsAdapter(
                 val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 val exp = sdf.parse(gift.expiryDate)
                 val today = Calendar.getInstance().apply {
-                    set(Calendar.YEAR, 2026)
-                    set(Calendar.MONTH, Calendar.JUNE)
-                    set(Calendar.DAY_OF_MONTH, 11)
                     set(Calendar.HOUR_OF_DAY, 0)
                     set(Calendar.MINUTE, 0)
                     set(Calendar.SECOND, 0)
@@ -836,8 +832,19 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             date.text = sdfTime.format(Date(item.timestamp))
             
             val formattedVal = String.format("%,d", item.points).replace(',', '.')
-            value.text = if (item.points > 0) "+ $formattedVal" else "$formattedVal"
-            value.setTextColor(Color.parseColor("#1A202C"))
+            if (item.points > 0) {
+                value.text = "+ $formattedVal"
+                value.setTextColor(Color.parseColor("#38A169"))
+                status.text = "Nhận xu thành công"
+                status.setTextColor(Color.parseColor("#2E7D32"))
+                status.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E8F5E9"))
+            } else {
+                value.text = "$formattedVal"
+                value.setTextColor(Color.parseColor("#E53E3E"))
+                status.text = "Đổi quà thành công"
+                status.setTextColor(Color.parseColor("#C53030"))
+                status.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FED7D7"))
+            }
 
             if (isMostRecent) {
                 dot.setBackgroundResource(R.drawable.bg_circle_green)
@@ -849,8 +856,6 @@ class HistoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             lineTop.visibility = if (isFirst) View.INVISIBLE else View.VISIBLE
             lineBottom.visibility = if (isLast) View.INVISIBLE else View.VISIBLE
-
-            status.text = "Đã đổi quà"
         }
     }
 }

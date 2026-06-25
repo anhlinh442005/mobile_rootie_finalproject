@@ -16,6 +16,8 @@ import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
 import com.veganbeauty.app.data.remote.FirestoreService
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class BookingHistoryFragment : RootieFragment() {
 
@@ -52,6 +54,14 @@ class BookingHistoryFragment : RootieFragment() {
             return
         }
 
+        val btnNoti = view.findViewById<View>(R.id.btn_notification)
+        btnNoti?.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Setup filter clicks
         filterAll.setOnClickListener { setFilter("Tất Cả", filterAll) }
         filterUpcoming.setOnClickListener { setFilter("Sắp diễn ra", filterUpcoming) }
@@ -59,24 +69,36 @@ class BookingHistoryFragment : RootieFragment() {
         filterCancelled.setOnClickListener { setFilter("Đã huỷ", filterCancelled) }
 
         // Initial setup for empty list
+        // Load data
+        val jsonReader = LocalJsonReader(requireContext())
+        val userEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext())
+        allHistory = jsonReader.getUserBookingHistory(userEmail)
+
+        // Init adapter
         rvHistory.layoutManager = LinearLayoutManager(context)
-        historyAdapter = BookingHistoryAdapter(emptyList()) { selectedBooking ->
-            val detailFragment = when (selectedBooking.status) {
-                "Đã hoàn thành" -> BookingDetailCompletedFragment.newInstance(selectedBooking)
-                "Đã huỷ" -> BookingDetailCancelledFragment.newInstance(selectedBooking)
-                else -> BookingDetailUpcomingFragment.newInstance(selectedBooking)
+        historyAdapter = BookingHistoryAdapter(
+            items = emptyList(),
+            onViewDetailClick = { selectedBooking ->
+                val detailFragment = when (selectedBooking.status) {
+                    "Đã hoàn thành" -> BookingDetailCompletedFragment.newInstance(selectedBooking)
+                    "Đã huỷ" -> BookingDetailCancelledFragment.newInstance(selectedBooking)
+                    else -> BookingDetailUpcomingFragment.newInstance(selectedBooking)
+                }
+                parentFragmentManager.beginTransaction()
+                    .setCustomAnimations(
+                        android.R.anim.fade_in,
+                        android.R.anim.fade_out,
+                        android.R.anim.fade_in,
+                        android.R.anim.fade_out
+                    )
+                    .replace(R.id.main_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit()
+            },
+            onCancelClick = { selectedBooking ->
+                showCancelDialog(selectedBooking)
             }
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out,
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out
-                )
-                .replace(R.id.main_container, detailFragment)
-                .addToBackStack(null)
-                .commit()
-        }
+        )
         rvHistory.adapter = historyAdapter
 
         // Load data from Firestore
@@ -89,6 +111,88 @@ class BookingHistoryFragment : RootieFragment() {
             allHistory = FirestoreService().getUserBookingHistory(userEmail)
             applyFilter()
         }
+        // Initial filter
+        applyFilter()
+
+        // Fetch from Firestore asynchronously
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val remoteBookings = com.veganbeauty.app.data.remote.FirestoreService().fetchBookingsForUser(userEmail)
+                if (remoteBookings.isNotEmpty()) {
+                    for (remote in remoteBookings) {
+                        val existing = allHistory.find { it.id == remote.id }
+                        if (existing != null) {
+                            jsonReader.updateBookingStatus(remote.id, remote.status, remote.cancelReason)
+                        } else {
+                            jsonReader.addBooking(remote)
+                        }
+                    }
+                    allHistory = jsonReader.getUserBookingHistory(userEmail)
+                    applyFilter()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun showCancelDialog(data: BookingHistoryEntity) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.skin_dialog_cancel_booking, null)
+        val dialogBuilder = android.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            
+        val dialog = dialogBuilder.create()
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+        
+        // Setup Dialog Data
+        val (dayNum, monthDayStr) = BookingDateParser.parseDateDisplay(data.dateDisplay, data.monthDisplay, data.dayOfWeek)
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_date).text = dayNum
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_month_day).text = monthDayStr
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_service_name).text = data.serviceName
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_time).text = "${data.time} (${data.duration})"
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_store_name).text = data.storeName
+        dialogView.findViewById<android.widget.TextView>(R.id.tv_store_address).text = data.storeAddress
+        
+        // Setup Spinner
+        val spReason = dialogView.findViewById<android.widget.Spinner>(R.id.sp_reason)
+        val reasons = listOf("Chọn lý do hủy lịch", "Thay đổi lịch trình", "Tìm được địa điểm khác", "Lý do sức khoẻ", "Đã đặt nhầm dịch vụ", "Lý do khác")
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, reasons)
+        spReason.adapter = adapter
+        
+        val etOtherReason = dialogView.findViewById<android.widget.EditText>(R.id.et_other_reason)
+        
+        dialogView.findViewById<View>(R.id.btn_close).setOnClickListener { dialog.dismiss() }
+        dialogView.findViewById<View>(R.id.btn_back).setOnClickListener { dialog.dismiss() }
+        
+        dialogView.findViewById<View>(R.id.btn_confirm_cancel).setOnClickListener {
+            val selectedReason = spReason.selectedItem.toString()
+            val otherReason = etOtherReason.text.toString().trim()
+            val finalReason = when {
+                selectedReason == "Lý do khác" && otherReason.isNotEmpty() -> otherReason
+                selectedReason == "Lý do khác" -> "Lý do khác"
+                selectedReason == "Chọn lý do hủy lịch" && otherReason.isNotEmpty() -> otherReason
+                selectedReason == "Chọn lý do hủy lịch" -> "Không có lý do cụ thể"
+                else -> selectedReason
+            }
+            
+            // Update in memory & local storage
+            LocalJsonReader(requireContext()).updateBookingStatus(data.id, "Đã huỷ", finalReason)
+            
+            // Reload local data
+            val userEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(requireContext())
+            allHistory = LocalJsonReader(requireContext()).getUserBookingHistory(userEmail)
+            applyFilter()
+
+            // Update on Firestore
+            viewLifecycleOwner.lifecycleScope.launch {
+                com.veganbeauty.app.data.remote.FirestoreService().updateBookingStatus(data.id, "Đã huỷ", finalReason)
+            }
+            
+            android.widget.Toast.makeText(requireContext(), "Hủy lịch thành công", android.widget.Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        
+        dialog.show()
     }
 
     override fun observeViewModel() {}
@@ -121,12 +225,24 @@ class BookingHistoryFragment : RootieFragment() {
     private fun applyFilter() {
         val filteredList = if (currentFilter == "Tất Cả") {
             allHistory
+        } else if (currentFilter == "Sắp diễn ra") {
+            allHistory.filter { 
+                it.status.equals("Sắp diễn ra", ignoreCase = true) || 
+                it.status.equals("Chờ xác nhận", ignoreCase = true) || 
+                it.status.equals("pending", ignoreCase = true)
+            }
         } else {
             allHistory.filter { it.status.equals(currentFilter, ignoreCase = true) }
         }
 
         // Group by status
-        val grouped = filteredList.groupBy { it.status }
+        val grouped = filteredList.groupBy { 
+            if (it.status.equals("Chờ xác nhận", ignoreCase = true) || it.status.equals("pending", ignoreCase = true)) {
+                "Sắp diễn ra"
+            } else {
+                it.status
+            }
+        }
         
         // Define order of groups to match UI design
         val order = listOf("Sắp diễn ra", "Đã hoàn thành", "Đã huỷ")

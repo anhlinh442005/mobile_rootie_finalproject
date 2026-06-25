@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_gradient_header"
+    android:background="@drawable/bg_header_gradient"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="16dp"
@@ -14,8 +14,8 @@
     <!-- Logo -->
     <ImageView
         android:id="@+id/home_header_logo"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:contentDescription="@string/app_name"
         android:src="@drawable/imv_logo" />
 
@@ -23,7 +23,7 @@
     <LinearLayout
         android:id="@+id/home_header_search_bar"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="52dp"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
         android:layout_weight="1"
@@ -35,8 +35,8 @@
 
         <ImageView
             android:id="@+id/home_header_search_icon"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:contentDescription="@null"
             android:src="@drawable/ic_search"
             android:tint="@color/primary" />
@@ -49,21 +49,21 @@
             android:text="@string/home_search_hint"
             android:textAppearance="@style/TextAppearance.Rootie.Content"
             android:textColor="@color/tertiary"
-            android:textSize="14sp" />
+            android:textSize="18sp" />
 
-    </LinearLayout>
+     </LinearLayout>
 
     <!-- QR Button -->
     <FrameLayout
         android:id="@+id/home_header_qr_btn"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="8dp"
         android:background="?attr/selectableItemBackgroundBorderless">
 
         <ImageView
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"
             android:contentDescription="@null"
             android:src="@drawable/home_ic_qr" />
@@ -73,13 +73,13 @@
     <!-- Notification Button -->
     <FrameLayout
         android:id="@+id/home_header_cart_btn"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:background="?attr/selectableItemBackgroundBorderless">
 
         <ImageView
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"
             android:contentDescription="@null"
             android:src="@drawable/ic_cart"

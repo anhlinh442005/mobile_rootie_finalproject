@@ -373,31 +373,6 @@ class CommunityNewsFragment : RootieFragment() {
         }
 
         binding.btnMessage.setOnClickListener {
-            // Hotfix: Clean up the corrupted conversation from previous bug
-            try {
-                val convFile = java.io.File(requireContext().filesDir, "conversations_local_v2.json")
-                if (convFile.exists()) {
-                    val array = org.json.JSONArray(convFile.readText())
-                    val newArray = org.json.JSONArray()
-                    for (i in 0 until array.length()) {
-                        val obj = array.getJSONObject(i)
-                        val partnerId = obj.optString("partner_id")
-                        val pArr = obj.optJSONArray("participants")
-                        var hasRootie = false
-                        if (pArr != null) {
-                            for (j in 0 until pArr.length()) {
-                                if (pArr.optString(j) == "rootie_vn") hasRootie = true
-                            }
-                        }
-                        if (partnerId == currentUserId && hasRootie) {
-                            // Skip this corrupted entry
-                            continue
-                        }
-                        newArray.put(obj)
-                    }
-                    convFile.writeText(newArray.toString())
-                }
-            } catch (e: Exception) { e.printStackTrace() }
 
             val convId = com.veganbeauty.app.features.community.message.MessageHelper.getOrCreateConversation(
                 requireContext(),

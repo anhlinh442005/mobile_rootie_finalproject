@@ -2,6 +2,7 @@ package com.veganbeauty.app.features.weather
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
@@ -22,7 +23,7 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
-import com.veganbeauty.app.databinding.WeatherForecastBinding
+import com.veganbeauty.app.databinding.SkinWeatherForecastBinding
 import com.veganbeauty.app.features.quiz.QuizTestIntroFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,10 +31,11 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlinx.coroutines.flow.first
 
-class WeatherForecastFragment : RootieFragment() {
+class SkinWeatherForecastFragment : RootieFragment() {
 
-    private var _binding: WeatherForecastBinding? = null
+    private var _binding: SkinWeatherForecastBinding? = null
     private val binding get() = _binding!!
 
     // API key for Google Gemini (Free tier). Replace with your own key.
@@ -43,6 +45,8 @@ class WeatherForecastFragment : RootieFragment() {
     // Ho Chi Minh City coordinates fallback
     private val defaultLat = 10.8231
     private val defaultLng = 106.6297
+
+    private var isViewingHistory = false
 
     // Permission request launcher
     private val requestLocationLauncher = registerForActivityResult(
@@ -64,7 +68,7 @@ class WeatherForecastFragment : RootieFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = WeatherForecastBinding.inflate(inflater, container, false)
+        _binding = SkinWeatherForecastBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -80,6 +84,12 @@ class WeatherForecastFragment : RootieFragment() {
                 .replace(R.id.main_container, com.veganbeauty.app.features.ai.SkinAiChatFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        binding.btnExitHistory.setOnClickListener {
+            isViewingHistory = false
+            binding.layoutHistoryBanner.visibility = View.GONE
+            checkLocationPermissionsAndLoad()
         }
 
         setupSkinWeatherNotificationSwitch()
@@ -98,6 +108,8 @@ class WeatherForecastFragment : RootieFragment() {
             if (nextState) {
                 com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(ctx)
                 Toast.makeText(ctx, "Đã bật thông báo thời tiết và da lúc 06:30 sáng", Toast.LENGTH_SHORT).show()
+                val testIntent = Intent(ctx, com.veganbeauty.app.features.weather.DailySkinWeatherReceiver::class.java)
+                ctx.sendBroadcast(testIntent)
             } else {
                 com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.cancelDailyNotification(ctx)
                 Toast.makeText(ctx, "Đã tắt thông báo thời tiết và da hàng ngày", Toast.LENGTH_SHORT).show()
@@ -107,7 +119,7 @@ class WeatherForecastFragment : RootieFragment() {
 
     private fun updateSwitchUI(container: android.widget.FrameLayout, thumb: ImageView, enabled: Boolean) {
         if (enabled) {
-            container.setBackgroundResource(R.drawable.ic_switch_track_on)
+            container.setBackgroundResource(R.drawable.ic_switch_track_on_yellow)
             val lp = thumb.layoutParams as android.widget.FrameLayout.LayoutParams
             lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
             lp.marginStart = 0
@@ -128,12 +140,16 @@ class WeatherForecastFragment : RootieFragment() {
         if (_binding != null) {
             val isEnabled = com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(requireContext())
             updateSwitchUI(binding.switchSkinWeatherForecast, binding.switchSkinWeatherForecastThumb, isEnabled)
+            loadUserProfileData()
         }
     }
 
     private fun setupToolbar() {
         binding.btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
+        }
+        binding.btnHistory.setOnClickListener {
+            showHistoryDialog()
         }
         binding.btnNotification.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -157,12 +173,9 @@ class WeatherForecastFragment : RootieFragment() {
 
         binding.tvUsername.text = username
 
-        // Load avatar profile photo from unsplash (sync with account profile)
-        binding.ivAvatar.load("https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80") {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-        }
+        // Load avatar profile photo using AvatarLoader
+        val avatarUrl = com.veganbeauty.app.data.local.ProfileSession.getAvatar(requireContext())
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
     }
 
     private fun updateRoutineLabels(skinType: String, temp: Double, humidity: Int, uv: Double, pm25: Int) {
@@ -278,24 +291,66 @@ class WeatherForecastFragment : RootieFragment() {
             val titleLayout = card.getChildAt(1) as? LinearLayout
             (titleLayout?.getChildAt(0) as? TextView)?.text = cleanserName
             (titleLayout?.getChildAt(1) as? TextView)?.text = finalCleanserSub
+            card.setOnClickListener {
+                navigateToProductDetail(matchedProducts["Cleanser"]?.id, cleanserName)
+            }
         }
 
         binding.layoutRoutineItem2.let { card ->
             val titleLayout = card.getChildAt(1) as? LinearLayout
             (titleLayout?.getChildAt(0) as? TextView)?.text = serumName
             (titleLayout?.getChildAt(1) as? TextView)?.text = serumSub
+            card.setOnClickListener {
+                navigateToProductDetail(matchedProducts["Serum"]?.id, serumName)
+            }
         }
 
         binding.layoutRoutineItem3.let { card ->
             val titleLayout = card.getChildAt(1) as? LinearLayout
             (titleLayout?.getChildAt(0) as? TextView)?.text = moisturizerName
             (titleLayout?.getChildAt(1) as? TextView)?.text = finalMoisturizerSub
+            card.setOnClickListener {
+                navigateToProductDetail(matchedProducts["Moisturizer"]?.id, moisturizerName)
+            }
         }
 
         binding.layoutRoutineItem4.let { card ->
             val titleLayout = card.getChildAt(1) as? LinearLayout
             (titleLayout?.getChildAt(0) as? TextView)?.text = sunscreenName
             (titleLayout?.getChildAt(1) as? TextView)?.text = finalSunscreenSub
+            card.setOnClickListener {
+                navigateToProductDetail(matchedProducts["Sunscreen"]?.id, sunscreenName)
+            }
+        }
+    }
+
+    private fun navigateToProductDetail(productId: String?, productName: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(requireContext())
+            var product: com.veganbeauty.app.data.local.entities.ProductEntity? = null
+            if (!productId.isNullOrEmpty()) {
+                product = db.productDao().getProductById(productId)
+            }
+            if (product == null && productName.isNotEmpty()) {
+                try {
+                    val all = db.productDao().getAllProducts().first()
+                    product = all.find { it.name.equals(productName, ignoreCase = true) }
+                        ?: all.find { it.name.contains(productName, ignoreCase = true) }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            if (product != null) {
+                val detailFragment = com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment().apply {
+                    setProduct(product)
+                }
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit()
+            } else {
+                Toast.makeText(context, "Sản phẩm không có sẵn trên cửa hàng!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -489,16 +544,16 @@ class WeatherForecastFragment : RootieFragment() {
         binding.tvTemperature.text = temp.toInt().toString()
         binding.tvWeatherCondition.text = weatherCondition
         binding.tvWeatherCondition.setTextColor(when {
-            temp >= 33 -> Color.parseColor("#EB5757")
-            temp >= 28 -> Color.parseColor("#E2B93B")
-            else -> Color.parseColor("#677559")
+            temp >= 33 -> androidx.core.content.ContextCompat.getColor(requireContext(), R.color.status_level_red)
+            temp >= 28 -> androidx.core.content.ContextCompat.getColor(requireContext(), R.color.status_level_yellow)
+            else -> androidx.core.content.ContextCompat.getColor(requireContext(), R.color.secondary)
         })
 
         // Set Sun icon for Day (6:00 AM - 5:59 PM) and Moon icon for Night (6:00 PM - 5:59 AM)
         val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
         val isNight = hour < 6 || hour >= 18
         if (isNight) {
-            binding.ivWeatherIcon.setImageResource(R.drawable.ic_moon_outline)
+            binding.ivWeatherIcon.setImageResource(R.drawable.ic_skin_moon)
             binding.ivWeatherIcon.setColorFilter(Color.parseColor("#90A4AE")) // Soft silver-blue
         } else {
             binding.ivWeatherIcon.setImageResource(R.drawable.ic_weather_sun)
@@ -513,7 +568,21 @@ class WeatherForecastFragment : RootieFragment() {
             else -> "Cao"
         }
         binding.tvHumidityLevel.text = humidityLevel
-        binding.tvHumidityLevel.setTextColor(if (humidity < 40) Color.parseColor("#E2B93B") else Color.parseColor("#3E4D44"))
+
+        val humidityColorRes = when {
+            humidity < 40 -> R.color.status_level_orange
+            humidity <= 65 -> R.color.status_level_blue
+            else -> R.color.status_level_blue
+        }
+        val humidityBgRes = when {
+            humidity < 40 -> R.drawable.bg_card_status_orange
+            humidity <= 65 -> R.drawable.bg_card_status_blue
+            else -> R.drawable.bg_card_status_blue
+        }
+        val humidityColorVal = androidx.core.content.ContextCompat.getColor(requireContext(), humidityColorRes)
+        binding.tvHumidity.setTextColor(humidityColorVal)
+        binding.tvHumidityLevel.setTextColor(humidityColorVal)
+        binding.layoutHumidityBox.setBackgroundResource(humidityBgRes)
 
         // 3. UV index level
         binding.tvUvIndex.text = String.format("%.1f", uv)
@@ -524,7 +593,23 @@ class WeatherForecastFragment : RootieFragment() {
             else -> "Nguy hiểm"
         }
         binding.tvUvLevel.text = uvLevel
-        binding.tvUvLevel.setTextColor(if (uv >= 8) Color.parseColor("#EB5757") else Color.parseColor("#E2B93B"))
+
+        val uvColorRes = when {
+            uv < 3 -> R.color.status_level_green
+            uv < 6 -> R.color.status_level_yellow
+            uv < 8 -> R.color.status_level_orange
+            else -> R.color.status_level_red
+        }
+        val uvBgRes = when {
+            uv < 3 -> R.drawable.bg_card_status_green
+            uv < 6 -> R.drawable.bg_card_status_yellow
+            uv < 8 -> R.drawable.bg_card_status_orange
+            else -> R.drawable.bg_card_status_red
+        }
+        val uvColorVal = androidx.core.content.ContextCompat.getColor(requireContext(), uvColorRes)
+        binding.tvUvIndex.setTextColor(uvColorVal)
+        binding.tvUvLevel.setTextColor(uvColorVal)
+        binding.layoutUvBox.setBackgroundResource(uvBgRes)
 
         // 4. Dust level PM2.5 (Use real PM2.5 or simulate if failed/offline)
         binding.tvDustIndex.text = pm25Val.toString()
@@ -534,7 +619,21 @@ class WeatherForecastFragment : RootieFragment() {
             else -> "Kém"
         }
         binding.tvDustLevel.text = dustLevel
-        binding.tvDustLevel.setTextColor(if (pm25Val >= 50) Color.parseColor("#EB5757") else Color.parseColor("#3E4D44"))
+
+        val dustColorRes = when {
+            pm25Val < 25 -> R.color.status_level_green
+            pm25Val < 50 -> R.color.status_level_yellow
+            else -> R.color.status_level_red
+        }
+        val dustBgRes = when {
+            pm25Val < 25 -> R.drawable.bg_card_status_green
+            pm25Val < 50 -> R.drawable.bg_card_status_yellow
+            else -> R.drawable.bg_card_status_red
+        }
+        val dustColorVal = androidx.core.content.ContextCompat.getColor(requireContext(), dustColorRes)
+        binding.tvDustIndex.setTextColor(dustColorVal)
+        binding.tvDustLevel.setTextColor(dustColorVal)
+        binding.layoutDustBox.setBackgroundResource(dustBgRes)
 
         // 5. Dynamic Warning Banner
         val warningMsg = when {
@@ -543,6 +642,16 @@ class WeatherForecastFragment : RootieFragment() {
             else -> "Hôm nay thời tiết khá nóng và độ ẩm trung bình. Hãy bảo vệ da khỏi tia UV hại và uống đủ nước!"
         }
         binding.tvWarningText.text = warningMsg
+
+        val (warningBgRes, warningTextColRes) = when {
+            uv >= 8 || pm25Val >= 50 -> Pair(R.drawable.bg_warning_red, R.color.warning_text_red)
+            humidity < 40 || uv >= 5.0 || pm25Val >= 25 -> Pair(R.drawable.bg_warning_orange, R.color.warning_text_orange)
+            else -> Pair(R.drawable.bg_warning_yellow, R.color.warning_text_yellow)
+        }
+        binding.layoutWarningBox.setBackgroundResource(warningBgRes)
+        val warningTextColorVal = androidx.core.content.ContextCompat.getColor(requireContext(), warningTextColRes)
+        binding.tvWarningText.setTextColor(warningTextColorVal)
+        binding.ivWarningIcon.setColorFilter(warningTextColorVal)
 
         // 6. Dynamic alert banner text
         binding.tvAlertText.text = when {
@@ -615,12 +724,33 @@ class WeatherForecastFragment : RootieFragment() {
 
         binding.tvOilyValue.text = "$oilyPercent%"
         binding.progressOily.progress = oilyPercent
+        val oilyColor = when {
+            oilyPercent < 40 -> ContextCompat.getColor(requireContext(), R.color.status_level_green)
+            oilyPercent <= 70 -> ContextCompat.getColor(requireContext(), R.color.status_level_yellow)
+            else -> ContextCompat.getColor(requireContext(), R.color.status_level_red)
+        }
+        binding.tvOilyValue.setTextColor(oilyColor)
+        binding.progressOily.progressTintList = android.content.res.ColorStateList.valueOf(oilyColor)
 
         binding.tvHydrationValue.text = "$hydrationPercent%"
         binding.progressHydration.progress = hydrationPercent
+        val hydrationColor = when {
+            hydrationPercent < 40 -> ContextCompat.getColor(requireContext(), R.color.status_level_red)
+            hydrationPercent <= 65 -> ContextCompat.getColor(requireContext(), R.color.status_level_yellow)
+            else -> ContextCompat.getColor(requireContext(), R.color.status_level_green)
+        }
+        binding.tvHydrationValue.setTextColor(hydrationColor)
+        binding.progressHydration.progressTintList = android.content.res.ColorStateList.valueOf(hydrationColor)
 
         binding.tvSensitivityValue.text = "$sensitivityPercent%"
         binding.progressSensitivity.progress = sensitivityPercent
+        val sensitivityColor = when {
+            sensitivityPercent < 30 -> ContextCompat.getColor(requireContext(), R.color.status_level_green)
+            sensitivityPercent <= 60 -> ContextCompat.getColor(requireContext(), R.color.status_level_yellow)
+            else -> ContextCompat.getColor(requireContext(), R.color.status_level_red)
+        }
+        binding.tvSensitivityValue.setTextColor(sensitivityColor)
+        binding.progressSensitivity.progressTintList = android.content.res.ColorStateList.valueOf(sensitivityColor)
 
         // Customise the three metrics dynamically based on skinType and weather
         val (uvImpact, hydrationImpact, dustImpact) = when {
@@ -859,6 +989,7 @@ class WeatherForecastFragment : RootieFragment() {
         sensitivity: Int,
         insightText: String
     ) {
+        if (isViewingHistory) return
         try {
             val sdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
             val dateStr = sdf.format(java.util.Date())
@@ -913,8 +1044,13 @@ class WeatherForecastFragment : RootieFragment() {
         val activeBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_btn_solid_feedback)
         val inactiveBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_btn_outlined_feedback)
 
-        val activeColor = Color.parseColor("#F8FDF0")
-        val inactiveColor = Color.parseColor("#67814D")
+        val colorAppropriate = Color.parseColor("#67814D")
+        val colorLighter = Color.parseColor("#D88B2A")
+        val colorUnsuitable = Color.parseColor("#E35B5B")
+
+        val bgAppropriate = Color.parseColor("#EAF3E8")
+        val bgLighter = Color.parseColor("#FDF7ED")
+        val bgUnsuitable = Color.parseColor("#FEEFEE")
 
         val btnAppropriate = binding.btnSuitAppropriate
         val btnLighter = binding.btnSuitLighter
@@ -930,47 +1066,54 @@ class WeatherForecastFragment : RootieFragment() {
 
         fun resetButtons() {
             btnAppropriate.background = inactiveBg
-            btnAppropriate.backgroundTintList = null
-            tvAppropriate.setTextColor(inactiveColor)
-            imgAppropriate.setColorFilter(inactiveColor)
+            btnAppropriate.backgroundTintList = android.content.res.ColorStateList.valueOf(bgAppropriate)
+            tvAppropriate.setTextColor(colorAppropriate)
+            imgAppropriate.setColorFilter(colorAppropriate)
 
             btnLighter.background = inactiveBg
-            btnLighter.backgroundTintList = null
-            tvLighter.setTextColor(inactiveColor)
-            imgLighter.setColorFilter(inactiveColor)
+            btnLighter.backgroundTintList = android.content.res.ColorStateList.valueOf(bgLighter)
+            tvLighter.setTextColor(colorLighter)
+            imgLighter.setColorFilter(colorLighter)
 
             btnUnsuitable.background = inactiveBg
-            btnUnsuitable.backgroundTintList = null
-            tvUnsuitable.setTextColor(inactiveColor)
-            imgUnsuitable.setColorFilter(inactiveColor)
+            btnUnsuitable.backgroundTintList = android.content.res.ColorStateList.valueOf(bgUnsuitable)
+            tvUnsuitable.setTextColor(colorUnsuitable)
+            imgUnsuitable.setColorFilter(colorUnsuitable)
         }
 
         btnAppropriate.setOnClickListener {
             resetButtons()
             btnAppropriate.background = activeBg
-            btnAppropriate.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.primary)
-            tvAppropriate.setTextColor(activeColor)
-            imgAppropriate.setColorFilter(activeColor)
+            btnAppropriate.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.status_level_green)
+            tvAppropriate.setTextColor(Color.WHITE)
+            imgAppropriate.setColorFilter(Color.WHITE)
             Toast.makeText(context, "Cảm ơn bạn đã phản hồi! Rootie sẽ tiếp tục duy trì chu trình này.", Toast.LENGTH_SHORT).show()
         }
 
         btnLighter.setOnClickListener {
             resetButtons()
             btnLighter.background = activeBg
-            btnLighter.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.primary)
-            tvLighter.setTextColor(activeColor)
-            imgLighter.setColorFilter(activeColor)
+            btnLighter.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.status_level_yellow)
+            tvLighter.setTextColor(Color.WHITE)
+            imgLighter.setColorFilter(Color.WHITE)
             Toast.makeText(context, "Ghi nhận! Chu trình chăm da tiếp theo sẽ mỏng nhẹ và tối giản hơn.", Toast.LENGTH_SHORT).show()
         }
 
         btnUnsuitable.setOnClickListener {
             resetButtons()
             btnUnsuitable.background = activeBg
-            btnUnsuitable.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.primary)
-            tvUnsuitable.setTextColor(activeColor)
-            imgUnsuitable.setColorFilter(activeColor)
+            btnUnsuitable.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.status_level_red)
+            tvUnsuitable.setTextColor(Color.WHITE)
+            imgUnsuitable.setColorFilter(Color.WHITE)
             Toast.makeText(context, "Rootie AI đang ghi nhận và điều chỉnh lại sản phẩm phù hợp hơn.", Toast.LENGTH_SHORT).show()
         }
+
+        // Set initial state: Appropriate is highlighted green
+        resetButtons()
+        btnAppropriate.background = activeBg
+        btnAppropriate.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.status_level_green)
+        tvAppropriate.setTextColor(Color.WHITE)
+        imgAppropriate.setColorFilter(Color.WHITE)
     }
 
     private fun setupBottomNavigation() {
@@ -1008,5 +1151,323 @@ class WeatherForecastFragment : RootieFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showHistoryDialog() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
+        val dialogView = layoutInflater.inflate(R.layout.dialog_skin_weather_history, null)
+        dialog.setContentView(dialogView)
+
+        val rvHistory = dialogView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rv_weather_history)
+        val btnClose = dialogView.findViewById<TextView>(R.id.btn_close_history)
+
+        rvHistory.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+
+        // Fetch history (Local first)
+        val localHistory = SkinWeatherHistoryManager.getHistory(requireContext())
+        val adapter = WeatherHistoryAdapter(localHistory) { selectedDiagnostic ->
+            displayHistoricalDiagnostic(selectedDiagnostic)
+            dialog.dismiss()
+        }
+        rvHistory.adapter = adapter
+
+        // Sync from Firestore to get latest
+        SkinWeatherHistoryManager.syncFromFirestore(requireContext()) { syncedList ->
+            if (isAdded && _binding != null) {
+                rvHistory.adapter = WeatherHistoryAdapter(syncedList) { selectedDiagnostic ->
+                    displayHistoricalDiagnostic(selectedDiagnostic)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun displayHistoricalDiagnostic(diagnostic: SkinWeatherDiagnostic) {
+        isViewingHistory = true
+        
+        // 1. Show history banner
+        binding.layoutHistoryBanner.visibility = View.VISIBLE
+        binding.tvHistoryBannerText.text = "Bạn đang xem dữ liệu lịch sử ngày ${diagnostic.date}"
+
+        // 2. Set city name
+        binding.tvLocation.text = diagnostic.city
+
+        // 3. Temp & Status
+        binding.tvTemperature.text = diagnostic.temperature.toInt().toString()
+        val weatherCondition = when {
+            diagnostic.temperature >= 33 -> "NẮNG NÓNG GAY GẮT"
+            diagnostic.temperature >= 28 -> "NẮNG NHIỀU, OI NHẸ"
+            else -> "MÁT MẺ, DỄ CHỊU"
+        }
+        binding.tvWeatherCondition.text = weatherCondition
+        binding.tvWeatherCondition.setTextColor(when {
+            diagnostic.temperature >= 33 -> ContextCompat.getColor(requireContext(), R.color.status_level_red)
+            diagnostic.temperature >= 28 -> ContextCompat.getColor(requireContext(), R.color.status_level_yellow)
+            else -> ContextCompat.getColor(requireContext(), R.color.secondary)
+        })
+
+        // Sun/Moon Icon
+        val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+        val isNight = hour < 6 || hour >= 18
+        if (isNight) {
+            binding.ivWeatherIcon.setImageResource(R.drawable.ic_skin_moon)
+            binding.ivWeatherIcon.setColorFilter(Color.parseColor("#90A4AE"))
+        } else {
+            binding.ivWeatherIcon.setImageResource(R.drawable.ic_weather_sun)
+            binding.ivWeatherIcon.setColorFilter(Color.parseColor("#F0C43D"))
+        }
+
+        // 4. Humidity
+        binding.tvHumidity.text = "${diagnostic.humidity}%"
+        val humidityLevel = when {
+            diagnostic.humidity < 40 -> "Thấp"
+            diagnostic.humidity <= 65 -> "Trung bình"
+            else -> "Cao"
+        }
+        binding.tvHumidityLevel.text = humidityLevel
+
+        val humidityColorRes = when {
+            diagnostic.humidity < 40 -> R.color.status_level_orange
+            diagnostic.humidity <= 65 -> R.color.status_level_blue
+            else -> R.color.status_level_blue
+        }
+        val humidityBgRes = when {
+            diagnostic.humidity < 40 -> R.drawable.bg_card_status_orange
+            diagnostic.humidity <= 65 -> R.drawable.bg_card_status_blue
+            else -> R.drawable.bg_card_status_blue
+        }
+        val humidityColorVal = ContextCompat.getColor(requireContext(), humidityColorRes)
+        binding.tvHumidity.setTextColor(humidityColorVal)
+        binding.tvHumidityLevel.setTextColor(humidityColorVal)
+        binding.layoutHumidityBox.setBackgroundResource(humidityBgRes)
+
+        // 5. UV Index
+        binding.tvUvIndex.text = String.format("%.1f", diagnostic.uv)
+        val uvLevel = when {
+            diagnostic.uv < 3 -> "Thấp"
+            diagnostic.uv < 6 -> "Trung bình"
+            diagnostic.uv < 8 -> "Cao"
+            else -> "Nguy hiểm"
+        }
+        binding.tvUvLevel.text = uvLevel
+
+        val uvColorRes = when {
+            diagnostic.uv < 3 -> R.color.status_level_green
+            diagnostic.uv < 6 -> R.color.status_level_yellow
+            diagnostic.uv < 8 -> R.color.status_level_orange
+            else -> R.color.status_level_red
+        }
+        val uvBgRes = when {
+            diagnostic.uv < 3 -> R.drawable.bg_card_status_green
+            diagnostic.uv < 6 -> R.drawable.bg_card_status_yellow
+            diagnostic.uv < 8 -> R.drawable.bg_card_status_orange
+            else -> R.drawable.bg_card_status_red
+        }
+        val uvColorVal = ContextCompat.getColor(requireContext(), uvColorRes)
+        binding.tvUvIndex.setTextColor(uvColorVal)
+        binding.tvUvLevel.setTextColor(uvColorVal)
+        binding.layoutUvBox.setBackgroundResource(uvBgRes)
+
+        // 6. PM2.5 Dust
+        binding.tvDustIndex.text = diagnostic.pm25.toString()
+        val dustLevel = when {
+            diagnostic.pm25 < 25 -> "Tốt"
+            diagnostic.pm25 < 50 -> "Trung bình"
+            else -> "Kém"
+        }
+        binding.tvDustLevel.text = dustLevel
+
+        val dustColorRes = when {
+            diagnostic.pm25 < 25 -> R.color.status_level_green
+            diagnostic.pm25 < 50 -> R.color.status_level_yellow
+            else -> R.color.status_level_red
+        }
+        val dustBgRes = when {
+            diagnostic.pm25 < 25 -> R.drawable.bg_card_status_green
+            diagnostic.pm25 < 50 -> R.drawable.bg_card_status_yellow
+            else -> R.drawable.bg_card_status_red
+        }
+        val dustColorVal = ContextCompat.getColor(requireContext(), dustColorRes)
+        binding.tvDustIndex.setTextColor(dustColorVal)
+        binding.tvDustLevel.setTextColor(dustColorVal)
+        binding.layoutDustBox.setBackgroundResource(dustBgRes)
+
+        // 7. Dynamic Warning Box
+        val warningMsg = when {
+            diagnostic.uv >= 8 -> "Hôm nay chỉ số UV ở mức nguy hiểm (${String.format("%.1f", diagnostic.uv)}). Bạn hãy bôi kem chống nắng kỹ và che chắn khi ra ngoài!"
+            diagnostic.humidity < 40 -> "Độ ẩm không khí hôm nay khá thấp (${diagnostic.humidity}%). Da bạn sẽ mất nước nhanh, hãy chú ý cấp khóa ẩm!"
+            else -> "Hôm nay thời tiết khá nóng và độ ẩm trung bình. Hãy bảo vệ da khỏi tia UV hại và uống đủ nước!"
+        }
+        binding.tvWarningText.text = warningMsg
+
+        val (warningBgRes, warningTextColRes) = when {
+            diagnostic.uv >= 8 || diagnostic.pm25 >= 50 -> Pair(R.drawable.bg_warning_red, R.color.warning_text_red)
+            diagnostic.humidity < 40 || diagnostic.uv >= 5.0 || diagnostic.pm25 >= 25 -> Pair(R.drawable.bg_warning_orange, R.color.warning_text_orange)
+            else -> Pair(R.drawable.bg_warning_yellow, R.color.warning_text_yellow)
+        }
+        binding.layoutWarningBox.setBackgroundResource(warningBgRes)
+        val warningTextColorVal = ContextCompat.getColor(requireContext(), warningTextColRes)
+        binding.tvWarningText.setTextColor(warningTextColorVal)
+        binding.ivWarningIcon.setColorFilter(warningTextColorVal)
+
+        // 8. General Alert Text
+        binding.tvAlertText.text = when {
+            diagnostic.uv >= 8 -> "Chỉ số UV hôm nay cực cao! Nhớ thoa lại kem chống nắng sau mỗi 2 giờ ra ngoài."
+            diagnostic.temperature >= 33 -> "Nhiệt độ nóng gay gắt, hãy dùng gel dưỡng ẩm mỏng nhẹ để tránh bít tắc lỗ chân lông."
+            else -> "Hôm nay da bạn cần chống nắng và cấp ẩm nhiều hơn. Đừng quên nhé!"
+        }
+
+        // 9. Progress values
+        binding.tvOilyValue.text = "${diagnostic.oilyPercent}%"
+        binding.progressOily.progress = diagnostic.oilyPercent
+        val oilyColor = when {
+            diagnostic.oilyPercent < 40 -> ContextCompat.getColor(requireContext(), R.color.status_level_green)
+            diagnostic.oilyPercent <= 70 -> ContextCompat.getColor(requireContext(), R.color.status_level_yellow)
+            else -> ContextCompat.getColor(requireContext(), R.color.status_level_red)
+        }
+        binding.tvOilyValue.setTextColor(oilyColor)
+        binding.progressOily.progressTintList = android.content.res.ColorStateList.valueOf(oilyColor)
+
+        binding.tvHydrationValue.text = "${diagnostic.hydrationPercent}%"
+        binding.progressHydration.progress = diagnostic.hydrationPercent
+        val hydrationColor = when {
+            diagnostic.hydrationPercent < 40 -> ContextCompat.getColor(requireContext(), R.color.status_level_red)
+            diagnostic.hydrationPercent <= 65 -> ContextCompat.getColor(requireContext(), R.color.status_level_yellow)
+            else -> ContextCompat.getColor(requireContext(), R.color.status_level_green)
+        }
+        binding.tvHydrationValue.setTextColor(hydrationColor)
+        binding.progressHydration.progressTintList = android.content.res.ColorStateList.valueOf(hydrationColor)
+
+        binding.tvSensitivityValue.text = "${diagnostic.sensitivityPercent}%"
+        binding.progressSensitivity.progress = diagnostic.sensitivityPercent
+        val sensitivityColor = when {
+            diagnostic.sensitivityPercent < 30 -> ContextCompat.getColor(requireContext(), R.color.status_level_green)
+            diagnostic.sensitivityPercent <= 60 -> ContextCompat.getColor(requireContext(), R.color.status_level_yellow)
+            else -> ContextCompat.getColor(requireContext(), R.color.status_level_red)
+        }
+        binding.tvSensitivityValue.setTextColor(sensitivityColor)
+        binding.progressSensitivity.progressTintList = android.content.res.ColorStateList.valueOf(sensitivityColor)
+
+        // 10. AI Metric rows (impacts)
+        val isOily = diagnostic.skinType.contains("dầu", ignoreCase = true)
+        val isDry = diagnostic.skinType.contains("khô", ignoreCase = true)
+        val isSensitive = diagnostic.skinType.contains("nhạy cảm", ignoreCase = true) || diagnostic.skinType.contains("kích ứng", ignoreCase = true)
+        val isCombination = diagnostic.skinType.contains("hỗn hợp", ignoreCase = true)
+        val isAging = diagnostic.skinType.contains("lão hóa", ignoreCase = true)
+        val isDehydrated = diagnostic.skinType.contains("mất nước", ignoreCase = true)
+
+        val (uvImpact, hydrationImpact, dustImpact) = when {
+            isOily -> 
+                Triple(
+                    if (diagnostic.uv >= 6.0) "Tăng bã nhờn & sạm da" else "Tăng tiết bã nhờn",
+                    if (diagnostic.humidity < 55) "Dầu nước mất cân bằng" else "Độ ẩm cân bằng",
+                    if (diagnostic.pm25 >= 50) "Nguy cơ tắc nghẽn mụn" else "Bám dính dầu nhờn"
+                )
+            isDry -> 
+                Triple(
+                    if (diagnostic.uv >= 6.0) "Dễ rát & sạm da khô" else "Dễ mất ẩm bong tróc",
+                    if (diagnostic.humidity < 55) "Thiếu nước nghiêm trọng" else "Giảm khô căng nhẹ",
+                    if (diagnostic.pm25 >= 50) "Hàng rào bảo vệ yếu" else "Khô ngứa do khói bụi"
+                )
+            isSensitive -> 
+                Triple(
+                    if (diagnostic.uv >= 5.0) "Nguy cơ đỏ rát cao" else "Dễ kích ứng nhẹ",
+                    if (diagnostic.humidity < 55) "Màng ẩm tổn thương" else "Đủ ẩm dễ chịu",
+                    if (diagnostic.pm25 >= 50) "Mẩn ngứa bít tắc" else "Bám dính bụi bẩn"
+                )
+            isCombination -> 
+                Triple(
+                    if (diagnostic.uv >= 6.0) "Vùng chữ T nhờn rát" else "Vùng chữ T tiết dầu",
+                    if (diagnostic.humidity < 55) "Hai bên má khô rát" else "Cân bằng vùng má",
+                    if (diagnostic.pm25 >= 50) "Bít tắc vùng chữ T" else "Tích tụ bụi nhẹ"
+                )
+            isAging -> 
+                Triple(
+                    if (diagnostic.uv >= 6.0) "Tia UV gây sạm nám" else "Đẩy nhanh lão hóa",
+                    if (diagnostic.humidity < 55) "Mất nước nếp nhăn sâu" else "Giữ ẩm tế bào",
+                    if (diagnostic.pm25 >= 50) "Tổn thương gốc tự do" else "Tác nhân ô nhiễm"
+                )
+            isDehydrated -> 
+                Triple(
+                    if (diagnostic.uv >= 6.0) "Rát sạm khô căng" else "Nếp nhăn giả do UV",
+                    if (diagnostic.humidity < 45) "Mất nước tế bào sâu" else "Cải thiện tình trạng khô",
+                    if (diagnostic.pm25 >= 50) "Tắc tuyến bã nhờn" else "Bụi gây khô bề mặt"
+                )
+            else -> 
+                Triple(
+                    if (diagnostic.uv >= 6.0) "Chống nắng tối đa" else "Bảo vệ dịu nhẹ",
+                    if (diagnostic.humidity < 55) "Cần cấp ẩm nhẹ" else "Duy trì ẩm tốt",
+                    if (diagnostic.pm25 >= 50) "Làm sạch sâu bụi mịn" else "Làm sạch bình thường"
+                )
+        }
+        binding.tvUvImpact.text = uvImpact
+        binding.tvHydrationImpact.text = hydrationImpact
+        binding.tvDustImpact.text = dustImpact
+
+        // 11. Routine Steps
+        val routineItems = diagnostic.recommendedRoutine
+        val layoutIds = listOf(
+            binding.layoutRoutineItem1,
+            binding.layoutRoutineItem2,
+            binding.layoutRoutineItem3,
+            binding.layoutRoutineItem4
+        )
+        for (i in layoutIds.indices) {
+            if (i < routineItems.size) {
+                val card = layoutIds[i]
+                val item = routineItems[i]
+                val titleLayout = card.getChildAt(1) as? LinearLayout
+                (titleLayout?.getChildAt(0) as? TextView)?.text = item.productName
+                (titleLayout?.getChildAt(1) as? TextView)?.text = item.description
+                card.setOnClickListener {
+                    navigateToProductDetail(null, item.productName)
+                }
+            }
+        }
+
+        // 12. AI Insight Description
+        binding.tvAiInsightDesc.text = diagnostic.insight
+    }
+
+    private inner class WeatherHistoryAdapter(
+        private val items: List<SkinWeatherDiagnostic>,
+        private val onItemClick: (SkinWeatherDiagnostic) -> Unit
+    ) : androidx.recyclerview.widget.RecyclerView.Adapter<WeatherHistoryAdapter.ViewHolder>() {
+
+        inner class ViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+            val tvDate: TextView = view.findViewById(R.id.tv_history_item_date)
+            val tvCity: TextView = view.findViewById(R.id.tv_history_item_city)
+            val tvTemp: TextView = view.findViewById(R.id.tv_history_item_temp)
+            val tvHumidity: TextView = view.findViewById(R.id.tv_history_item_humidity)
+            val tvUv: TextView = view.findViewById(R.id.tv_history_item_uv)
+            val tvInsight: TextView = view.findViewById(R.id.tv_history_item_insight)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_skin_weather_history, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val item = items[position]
+            holder.tvDate.text = item.date
+            holder.tvCity.text = item.city
+            holder.tvTemp.text = "${item.temperature.toInt()}°C"
+            holder.tvHumidity.text = "Độ ẩm: ${item.humidity}%"
+            holder.tvUv.text = "UV: ${String.format("%.1f", item.uv)}"
+            holder.tvInsight.text = item.insight
+
+            holder.itemView.setOnClickListener {
+                onItemClick(item)
+            }
+        }
+
+        override fun getItemCount(): Int = items.size
     }
 }

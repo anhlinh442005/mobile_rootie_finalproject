@@ -111,17 +111,45 @@ class ProductRepository @JvmOverloads constructor(
         }
     }
 
+    companion object {
+        private var lastSyncTime = 0L
+        private const val CACHE_DURATION = 5 * 60 * 1000L // 5 minutes
+    }
+
     // Làm mới dữ liệu từ Firebase Firestore (có fallback về dữ liệu local assets)
-    suspend fun refreshProducts() {
+    suspend fun refreshProducts(force: Boolean = false) {
+        val currentTime = System.currentTimeMillis()
+        var count = productDao.getProductCount()
+        
+        // Cải tiến: Nếu SQLite đang trống hoàn toàn, đọc nhanh từ assets và đổ vào SQLite trước để UI hiện sản phẩm ngay lập tức
+        if (count == 0) {
+            try {
+                val localProducts = localJsonReader.getAllProducts()
+                if (localProducts.isNotEmpty()) {
+                    productDao.insertProducts(localProducts)
+                    count = productDao.getProductCount()
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+        
+        if (!force && count > 0 && (currentTime - lastSyncTime < CACHE_DURATION)) {
+            // Dữ liệu đã được cache và local DB không rỗng, bỏ qua đồng bộ từ Firestore
+            return
+        }
+
         try {
             val remoteProducts = firestoreService.fetchAllProducts()
             if (remoteProducts.isNotEmpty()) {
                 productDao.insertProducts(remoteProducts)
+                lastSyncTime = currentTime
             } else {
                 // Fallback to local JSON if Firestore returns empty
                 val localProducts = localJsonReader.getAllProducts()
                 if (localProducts.isNotEmpty()) {
                     productDao.insertProducts(localProducts)
+                    lastSyncTime = currentTime
                 }
             }
         } catch (e: Exception) {

@@ -558,6 +558,7 @@ class FirestoreService {
         } catch (e: Exception) { emptyList() }
     }
 
+<<<<<<< HEAD
     // --- Bookings ---
     suspend fun uploadBookings(bookings: List<BookingHistoryEntity>) {
         try {
@@ -612,10 +613,84 @@ class FirestoreService {
     suspend fun getUserBookingHistory(email: String): List<BookingHistoryEntity> {
         return try {
             val snapshot = db.collection("skin_bookings")
+=======
+    suspend fun uploadBooking(booking: BookingHistoryEntity): Boolean {
+        return try {
+            val storeID = when {
+                booking.storeName.contains("Cơ sở 1", ignoreCase = true) || booking.storeAddress.contains("Minh Khai", ignoreCase = true) -> "CH001"
+                booking.storeName.contains("Cơ sở 5", ignoreCase = true) || booking.storeAddress.contains("Hoàng Văn Thụ", ignoreCase = true) -> "CH005"
+                else -> ""
+            }
+            val bookingMap = hashMapOf(
+                "userId" to booking.userId,
+                "userName" to booking.userName,
+                "userPhone" to booking.userPhone,
+                "userEmail" to booking.userEmail,
+                "serviceName" to booking.serviceName,
+                "dateDisplay" to booking.dateDisplay,
+                "monthDisplay" to booking.monthDisplay,
+                "dayOfWeek" to booking.dayOfWeek,
+                "time" to booking.time,
+                "duration" to booking.duration,
+                "storeName" to booking.storeName,
+                "storeAddress" to booking.storeAddress,
+                "storePhone" to booking.storePhone,
+                "storeImage" to booking.storeImage,
+                "note" to booking.note,
+                "status" to booking.status,
+                "policy" to booking.policy,
+                "createdAt" to booking.createdAt,
+                "completedAt" to booking.completedAt,
+                "consultantName" to booking.consultantName,
+                "consultantAvatar" to booking.consultantAvatar,
+                "consultantRating" to booking.consultantRating.toDouble(),
+                "userRating" to booking.userRating.toDouble(),
+                "userReview" to booking.userReview,
+                "reviewDate" to booking.reviewDate,
+                "beforeImage" to booking.beforeImage,
+                "afterImage" to booking.afterImage,
+                "earnedPoints" to booking.earnedPoints,
+                "totalPoints" to booking.totalPoints,
+                "nextAppointmentDate" to booking.nextAppointmentDate,
+                "nextAppointmentText" to booking.nextAppointmentText,
+                "cancelledAt" to booking.cancelledAt,
+                "cancelReason" to booking.cancelReason,
+                "storeID" to storeID,
+                "storeId" to storeID
+            )
+            db.collection("bookings").document(booking.id).set(bookingMap).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun updateBookingStatus(bookingId: String, status: String, cancelReason: String = ""): Boolean {
+        return try {
+            val updates = hashMapOf<String, Any>(
+                "status" to status
+            )
+            if (cancelReason.isNotEmpty()) {
+                updates["cancelReason"] = cancelReason
+            }
+            db.collection("bookings").document(bookingId).update(updates).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun fetchBookingsForUser(email: String): List<BookingHistoryEntity> {
+        return try {
+            val snapshot = db.collection("bookings")
+>>>>>>> cecd8e2c2c3689c121575a717c41e8e5730535df
                 .whereEqualTo("userEmail", email)
                 .get()
                 .await()
             snapshot.documents.mapNotNull { doc ->
+<<<<<<< HEAD
                 @Suppress("UNCHECKED_CAST")
                 BookingHistoryEntity(
                     id = doc.getString("id") ?: doc.id,
@@ -655,11 +730,56 @@ class FirestoreService {
                     cancelReason = doc.getString("cancelReason") ?: ""
                 )
             }.sortedByDescending { it.createdAt }
+=======
+                try {
+                    BookingHistoryEntity(
+                        id = doc.id,
+                        userId = doc.getString("userId") ?: "",
+                        userName = doc.getString("userName") ?: "",
+                        userPhone = doc.getString("userPhone") ?: "",
+                        userEmail = doc.getString("userEmail") ?: "",
+                        serviceName = doc.getString("serviceName") ?: "",
+                        dateDisplay = doc.getString("dateDisplay") ?: "",
+                        monthDisplay = doc.getString("monthDisplay") ?: "",
+                        dayOfWeek = doc.getString("dayOfWeek") ?: "",
+                        time = doc.getString("time") ?: "",
+                        duration = doc.getString("duration") ?: "",
+                        storeName = doc.getString("storeName") ?: "",
+                        storeAddress = doc.getString("storeAddress") ?: "",
+                        storePhone = doc.getString("storePhone") ?: "",
+                        storeImage = doc.getString("storeImage") ?: "",
+                        note = doc.getString("note") ?: "",
+                        status = doc.getString("status") ?: "",
+                        policy = doc.getString("policy") ?: "",
+                        createdAt = doc.getString("createdAt") ?: "",
+                        completedAt = doc.getString("completedAt") ?: "",
+                        consultantName = doc.getString("consultantName") ?: "",
+                        consultantAvatar = doc.getString("consultantAvatar") ?: "",
+                        consultantRating = doc.getDouble("consultantRating")?.toFloat() ?: 0.0f,
+                        userRating = doc.getDouble("userRating")?.toFloat() ?: 0.0f,
+                        userReview = doc.getString("userReview") ?: "",
+                        reviewDate = doc.getString("reviewDate") ?: "",
+                        beforeImage = doc.getString("beforeImage") ?: "",
+                        afterImage = doc.getString("afterImage") ?: "",
+                        earnedPoints = doc.getLong("earnedPoints")?.toInt() ?: 0,
+                        totalPoints = doc.getLong("totalPoints")?.toInt() ?: 0,
+                        nextAppointmentDate = doc.getString("nextAppointmentDate") ?: "",
+                        nextAppointmentText = doc.getString("nextAppointmentText") ?: "",
+                        cancelledAt = doc.getString("cancelledAt") ?: "",
+                        cancelReason = doc.getString("cancelReason") ?: ""
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
+            }
+>>>>>>> cecd8e2c2c3689c121575a717c41e8e5730535df
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
         }
     }
+<<<<<<< HEAD
 
     suspend fun addBooking(booking: BookingHistoryEntity) {
         try {
@@ -799,4 +919,6 @@ class FirestoreService {
         }
         return list
     }
+=======
+>>>>>>> cecd8e2c2c3689c121575a717c41e8e5730535df
 }

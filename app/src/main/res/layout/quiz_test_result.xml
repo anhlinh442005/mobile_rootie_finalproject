@@ -39,14 +39,31 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Notification Bell -->
+        <!-- Notification Button -->
+        <FrameLayout
+            android:id="@+id/btn_notification"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_notification" />
+        </FrameLayout>
     </RelativeLayout>
 
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/ll_footer_buttons"
+        android:layout_above="@+id/bottom_nav"
         android:layout_below="@id/rl_header"
         android:fillViewport="true">
 
@@ -505,97 +522,106 @@
                         android:textStyle="bold" />
                 </FrameLayout>
 
-                <!-- Link Text: RETAKE QUIZ INLINE -->
-                <TextView
+                <!-- Button: RETAKE QUIZ INLINE -->
+                <FrameLayout
                     android:id="@+id/tv_retake_quiz_inline"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="24dp"
-                    android:gravity="center"
-                    android:padding="8dp"
-                    android:fontFamily="@font/lexend"
-                    android:text="LÀM LẠI QUIZ"
-                    android:textColor="#3E4D44"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
+                    android:background="@drawable/bg_btn_solid"
+                    android:backgroundTint="#F2F3EB"
                     android:clickable="true"
-                    android:focusable="true" />
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lexend"
+                        android:text="LÀM LẠI QUIZ"
+                        android:textColor="#3E4D44"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Done Buttons (Now inside ScrollView, scrolling naturally) -->
+            <LinearLayout
+                android:id="@+id/ll_footer_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
+
+                <!-- Button 1: Save to Profile -->
+                <FrameLayout
+                    android:id="@+id/btn_save_profile"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_btn_solid"
+                    android:backgroundTint="#677559"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lexend"
+                        android:text="Lưu vào hồ sơ da"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+
+                <!-- Button 2: Suggest Routine -->
+                <FrameLayout
+                    android:id="@+id/btn_suggest_routine"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_btn_solid"
+                    android:backgroundTint="#DDDFC4"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lexend"
+                        android:text="Thiết lập Routine &amp; Nhắc hẹn"
+                        android:textColor="#677559"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+
+                <!-- Button 3: RETAKE QUIZ -->
+                <FrameLayout
+                    android:id="@+id/btn_done"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_btn_solid"
+                    android:backgroundTint="#F2F3EB"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lexend"
+                        android:text="LÀM LẠI QUIZ"
+                        android:textColor="#3E4D44"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
-    <!-- Done Buttons (Sticky Bottom) -->
-    <LinearLayout
-        android:id="@+id/ll_footer_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/bottom_nav"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="16dp"
-        android:background="#FEFBF4"
-        android:elevation="8dp">
-
-        <!-- Button 1: Save to Profile -->
-        <FrameLayout
-            android:id="@+id/btn_save_profile"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/bg_btn_solid"
-            android:backgroundTint="#677559"
-            android:clickable="true"
-            android:focusable="true">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/lexend"
-                android:text="Lưu vào hồ sơ da"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </FrameLayout>
-
-        <!-- Button 2: Suggest Routine -->
-        <FrameLayout
-            android:id="@+id/btn_suggest_routine"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/bg_btn_solid"
-            android:backgroundTint="#DDDFC4"
-            android:clickable="true"
-            android:focusable="true">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/lexend"
-                android:text="Thiết lập Routine &amp; Nhắc hẹn"
-                android:textColor="#677559"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </FrameLayout>
-
-        <!-- Link Text: RETAKE QUIZ -->
-        <TextView
-            android:id="@+id/btn_done"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="8dp"
-            android:fontFamily="@font/lexend"
-            android:text="LÀM LẠI QUIZ"
-            android:textColor="#3E4D44"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:clickable="true"
-            android:focusable="true" />
-    </LinearLayout>
 
     <!-- Bottom Navigation Bar -->
     <include

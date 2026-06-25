@@ -253,6 +253,8 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
             updateSwitchUI(binding.switchSkinWeatherContainer, binding.switchSkinWeatherThumb, nextState)
             if (nextState) {
                 com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(context)
+                val testIntent = Intent(context, com.veganbeauty.app.features.weather.DailySkinWeatherReceiver::class.java)
+                context.sendBroadcast(testIntent)
             } else {
                 com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.cancelDailyNotification(context)
             }
@@ -330,7 +332,11 @@ class AccountProfileNotiSettingFragment : RootieFragment() {
 
     private fun updateSwitchUI(container: FrameLayout, thumb: ImageView, enabled: Boolean) {
         if (enabled) {
-            container.setBackgroundResource(R.drawable.ic_switch_track_on)
+            if (container == binding.switchSkinWeatherContainer) {
+                container.setBackgroundResource(R.drawable.ic_switch_track_on_yellow)
+            } else {
+                container.setBackgroundResource(R.drawable.ic_switch_track_on)
+            }
             val lp = thumb.layoutParams as FrameLayout.LayoutParams
             lp.gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
             lp.marginStart = 0

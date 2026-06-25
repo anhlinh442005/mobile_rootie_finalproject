@@ -61,10 +61,11 @@ object NotificationPushHelper {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // 1. PendingIntent for body click: Opens MainActivity and routes to notifications list
+        // 1. PendingIntent for body click: Opens MainActivity and routes to correct screen
+        val actionName = if (notificationType.equals("skin_chat", ignoreCase = true)) "open_skin_chat" else "open_notification_list"
         val bodyIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra("extra_notification_action", "open_notification_list")
+            putExtra("extra_notification_action", actionName)
         }
         val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -154,7 +155,8 @@ object NotificationPushHelper {
         context: Context,
         id: String,
         title: String,
-        content: String
+        content: String,
+        actionName: String = "open_community_notification_list"
     ) {
         val isNotiEnabled = ProfileSession.isNotiEnabled(context)
         val systemNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
@@ -193,7 +195,7 @@ object NotificationPushHelper {
 
         val bodyIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra("extra_notification_action", "open_community_notification_list")
+            putExtra("extra_notification_action", actionName)
         }
         val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

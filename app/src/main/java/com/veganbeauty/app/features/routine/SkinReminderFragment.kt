@@ -102,11 +102,7 @@ class SkinReminderFragment : RootieFragment() {
 
         // Load Avatar & Full Name
         val avatarUrl = ProfileSession.getAvatar(ctx)
-        binding.ivAvatar.load(avatarUrl) {
-            crossfade(true)
-            transformations(CircleCropTransformation())
-            placeholder(android.R.color.darker_gray)
-        }
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl)
 
         val fullName = ProfileSession.getFullName(ctx)
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -148,6 +144,7 @@ class SkinReminderFragment : RootieFragment() {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val todayStr = sdf.format(Date())
         val hasCompletedMorningToday = ProfileSession.isMorningRewardAwarded(ctx, todayStr)
+        val isMorningSubmitted = ProfileSession.isRoutineSubmitted(ctx, "morning", todayStr)
 
         val rawMorningSteps = ProfileSession.getMorningSteps(ctx)
         val activeMorningStepsCount = rawMorningSteps.mapNotNull { raw ->
@@ -155,7 +152,7 @@ class SkinReminderFragment : RootieFragment() {
             if (parts.size >= 4 && parts[3].toBoolean()) 1 else null
         }.size
 
-        val completedMorningStepsCount = if (hasCompletedMorningToday) {
+        val completedMorningStepsCount = if (hasCompletedMorningToday || isMorningSubmitted) {
             activeMorningStepsCount
         } else {
             val completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr)
@@ -171,7 +168,7 @@ class SkinReminderFragment : RootieFragment() {
         binding.tvMorningProgressText.text = "$completedMorningStepsCount/$activeMorningStepsCount BƯỚC"
         binding.viewMorningProgressBar.progress = morningProgressPercentage
 
-        val isMorningSubmitted = ProfileSession.isRoutineSubmitted(ctx, "morning", todayStr)
+
 
         if (isMorningSubmitted) {
             binding.tvMorningHeaderStatus.text = "SÁNG NAY • ĐÃ HOÀN THÀNH"
@@ -182,7 +179,8 @@ class SkinReminderFragment : RootieFragment() {
 
             // Update Morning Reward Item Status (Keep "+ 10 xu" & "HÀNG NGÀY", only fade left details if not awarded)
             binding.tvMorningRewardXu.text = "+ 10 xu"
-            binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.tvMorningRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivMorningRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
             binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutMorningReward.alpha = 1.0f
@@ -201,6 +199,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Reward status
                 binding.tvMorningRewardXu.text = "+ 10 xu"
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivMorningRewardCoin.clearColorFilter()
                 binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutMorningReward.alpha = 1.0f
@@ -218,6 +217,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Gray out Morning Reward Item
                 binding.tvMorningRewardXu.text = "+ 10 xu"
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivMorningRewardCoin.clearColorFilter()
                 binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutMorningReward.alpha = 1.0f
@@ -239,6 +239,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Update Morning Reward Item Status
                 binding.tvMorningRewardXu.text = "+ 10 xu"
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivMorningRewardCoin.clearColorFilter()
                 binding.tvMorningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutMorningReward.alpha = 1.0f
@@ -266,7 +267,7 @@ class SkinReminderFragment : RootieFragment() {
             if (parts.size >= 4 && parts[3].toBoolean()) 1 else null
         }.size
 
-        val completedEveningStepsCount = if (hasCompletedEveningToday) {
+        val completedEveningStepsCount = if (hasCompletedEveningToday || isEveningSubmitted) {
             activeEveningStepsCount
         } else {
             val completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, eveningTargetDate)
@@ -295,7 +296,8 @@ class SkinReminderFragment : RootieFragment() {
 
             // Update Evening Reward Item Status (Keep "+ 10 xu" & "HÀNG NGÀY", only fade left details if not awarded)
             binding.tvEveningRewardXu.text = "+ 10 xu"
-            binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.tvEveningRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivEveningRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
             binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutEveningReward.alpha = 1.0f
@@ -319,6 +321,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Update Evening Reward Item Status
                 binding.tvEveningRewardXu.text = "+ 10 xu"
                 binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivEveningRewardCoin.clearColorFilter()
                 binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutEveningReward.alpha = 1.0f
@@ -336,6 +339,7 @@ class SkinReminderFragment : RootieFragment() {
                 // Update Evening Reward Item Status
                 binding.tvEveningRewardXu.text = "+ 10 xu"
                 binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+                binding.ivEveningRewardCoin.clearColorFilter()
                 binding.tvEveningRewardFrequency.text = "HÀNG NGÀY"
                 binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
                 binding.layoutEveningReward.alpha = 1.0f
@@ -348,7 +352,8 @@ class SkinReminderFragment : RootieFragment() {
         // 5. Update Weekly Bonus Reward Item Status
         if (currentStreak >= 7) {
             binding.tvWeeklyRewardXu.text = "+ 50 xu"
-            binding.tvWeeklyRewardXu.setTextColor(Color.parseColor("#E1C02E"))
+            binding.tvWeeklyRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivWeeklyRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvWeeklyRewardFrequency.text = "HÀNG TUẦN"
             binding.tvWeeklyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutWeeklyReward.alpha = 1.0f
@@ -358,6 +363,7 @@ class SkinReminderFragment : RootieFragment() {
         } else {
             binding.tvWeeklyRewardXu.text = "+ 50 xu"
             binding.tvWeeklyRewardXu.setTextColor(Color.parseColor("#E1C02E"))
+            binding.ivWeeklyRewardCoin.clearColorFilter()
             binding.tvWeeklyRewardFrequency.text = "HÀNG TUẦN"
             binding.tvWeeklyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutWeeklyReward.alpha = 1.0f
@@ -369,7 +375,8 @@ class SkinReminderFragment : RootieFragment() {
         // 6. Update Loyalty Reward Item Status
         if (currentStreak >= 30) {
             binding.tvLoyaltyRewardXu.text = "+ 200 xu"
-            binding.tvLoyaltyRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.tvLoyaltyRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivLoyaltyRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvLoyaltyRewardFrequency.text = "HÀNG THÁNG"
             binding.tvLoyaltyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutLoyaltyReward.alpha = 1.0f
@@ -379,6 +386,7 @@ class SkinReminderFragment : RootieFragment() {
         } else {
             binding.tvLoyaltyRewardXu.text = "+ 200 xu"
             binding.tvLoyaltyRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.ivLoyaltyRewardCoin.clearColorFilter()
             binding.tvLoyaltyRewardFrequency.text = "HÀNG THÁNG"
             binding.tvLoyaltyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.layoutLoyaltyReward.alpha = 1.0f
@@ -392,7 +400,8 @@ class SkinReminderFragment : RootieFragment() {
         val hasCompletedSocialToday = completedSocialDates.contains(todayStr)
         if (hasCompletedSocialToday) {
             binding.tvSocialRewardXu.text = "+ 10 xu"
-            binding.tvSocialRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.tvSocialRewardXu.setTextColor(Color.parseColor("#8E8E93"))
+            binding.ivSocialRewardCoin.setColorFilter(Color.parseColor("#8E8E93"))
             binding.tvSocialRewardFrequency.text = "MỖI LƯỢT"
             binding.tvSocialRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.btnSocialTask.alpha = 1.0f
@@ -403,6 +412,7 @@ class SkinReminderFragment : RootieFragment() {
         } else {
             binding.tvSocialRewardXu.text = "+ 10 xu"
             binding.tvSocialRewardXu.setTextColor(Color.parseColor("#FFCC00"))
+            binding.ivSocialRewardCoin.clearColorFilter()
             binding.tvSocialRewardFrequency.text = "MỖI LƯỢT"
             binding.tvSocialRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"))
             binding.btnSocialTask.alpha = 1.0f
@@ -434,45 +444,70 @@ class SkinReminderFragment : RootieFragment() {
 
     private fun updateWeekCalendar() {
         val ctx = requireContext()
+        binding.layoutDaysContainer.removeAllViews()
+
         val calendar = Calendar.getInstance()
         calendar.firstDayOfWeek = Calendar.MONDAY
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
 
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val weekDates = mutableListOf<String>()
-        for (i in 0 until 7) {
-            weekDates.add(sdf.format(calendar.time))
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
+        val todayStr = sdf.format(Date())
         val completedMornings = ProfileSession.getCompletedMorningDates(ctx)
         val completedEvenings = ProfileSession.getCompletedEveningDates(ctx)
 
-        // Helper to configure each day's ImageView
-        val dayViews = listOf(
-            binding.ivDayMon,
-            binding.ivDayTue,
-            binding.ivDayWed,
-            binding.ivDayThu,
-            binding.ivDayFri,
-            binding.ivDaySat,
-            binding.ivDaySun
-        )
-
-        for (i in 0 until 7) {
-            val dateStr = weekDates[i]
+        // Show 14 days (current week + next week)
+        for (i in 0 until 14) {
+            val dateStr = sdf.format(calendar.time)
             val isCompleted = completedMornings.contains(dateStr) && completedEvenings.contains(dateStr)
-            val imgView = dayViews[i]
+            val isToday = dateStr == todayStr
+
+            val itemBinding = com.veganbeauty.app.databinding.ItemStreakDayBinding.inflate(
+                LayoutInflater.from(ctx),
+                binding.layoutDaysContainer,
+                false
+            )
+
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+            val dayLabel = when (dayOfWeek) {
+                Calendar.MONDAY -> "T2"
+                Calendar.TUESDAY -> "T3"
+                Calendar.WEDNESDAY -> "T4"
+                Calendar.THURSDAY -> "T5"
+                Calendar.FRIDAY -> "T6"
+                Calendar.SATURDAY -> "T7"
+                Calendar.SUNDAY -> "CN"
+                else -> ""
+            }
+
+            itemBinding.tvDayLabel.text = dayLabel
+            itemBinding.tvDayNum.text = calendar.get(Calendar.DAY_OF_MONTH).toString()
+
+            if (isToday) {
+                itemBinding.tvDayLabel.setTextColor(Color.WHITE)
+                itemBinding.tvDayLabel.alpha = 1.0f
+            } else {
+                itemBinding.tvDayLabel.setTextColor(Color.parseColor("#80FFFFFF"))
+            }
 
             if (isCompleted) {
-                imgView.setImageResource(R.drawable.quiz_ic_wavy_check)
-                imgView.setBackgroundResource(R.drawable.skin_bg_circle_completed)
-                imgView.setColorFilter(Color.parseColor("#D8E8C6"))
+                itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_white)
+                itemBinding.ivDayIcon.setImageResource(R.drawable.ic_check)
+                itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#3E4D44")) // Dark green check
             } else {
-                imgView.setImageResource(R.drawable.ic_skin_calendar_todo)
-                imgView.background = null
-                imgView.clearColorFilter()
+                if (isToday) {
+                    itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_today_border)
+                    itemBinding.ivDayIcon.setImageResource(R.drawable.ic_calendar_outline)
+                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#E05D3B")) // Orange-red for today
+                } else {
+                    itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_white_border)
+                    itemBinding.ivDayIcon.setImageResource(R.drawable.ic_calendar_outline)
+                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#B3FFFFFF")) // 70% white
+                }
             }
+
+            binding.layoutDaysContainer.addView(itemBinding.root)
+
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
     }
 
@@ -492,6 +527,7 @@ class SkinReminderFragment : RootieFragment() {
                     timestamp = System.currentTimeMillis()
                 )
             )
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
             Toast.makeText(ctx, "Đã hoàn thành Routine Sáng! +10 xu", Toast.LENGTH_SHORT).show()
             checkStreakAndUpdate("morning")
             refreshUI()
@@ -514,6 +550,7 @@ class SkinReminderFragment : RootieFragment() {
                     timestamp = System.currentTimeMillis()
                 )
             )
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
             Toast.makeText(ctx, "Đã hoàn thành Routine Tối! +10 xu", Toast.LENGTH_SHORT).show()
             checkStreakAndUpdate("evening")
             refreshUI()
@@ -541,6 +578,7 @@ class SkinReminderFragment : RootieFragment() {
                     timestamp = System.currentTimeMillis()
                 )
             )
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
             ProfileSession.addSkinSocialCompletedDate(ctx, todayStr)
             Toast.makeText(ctx, "Kết nối thành công! +10 xu", Toast.LENGTH_SHORT).show()
             refreshUI()
@@ -595,6 +633,7 @@ class SkinReminderFragment : RootieFragment() {
                         timestamp = System.currentTimeMillis()
                     )
                 )
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
                 Toast.makeText(ctx, "Tuyệt vời! Đạt chuỗi 30 ngày chăm da +200 xu!", Toast.LENGTH_LONG).show()
             } else if (newStreak % 7 == 0) {
                 db.rewardPointDao().insertRewardPoints(
@@ -605,6 +644,7 @@ class SkinReminderFragment : RootieFragment() {
                         timestamp = System.currentTimeMillis()
                     )
                 )
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx)
                 Toast.makeText(ctx, "Tuyệt vời! Đạt chuỗi 7 ngày chăm da +50 xu!", Toast.LENGTH_LONG).show()
             }
         }

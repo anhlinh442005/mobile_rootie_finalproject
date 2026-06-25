@@ -1,0 +1,39 @@
+[
+    {
+        "id": "44ca0802-e1fc-4ba0-8e05-96527ff40165",
+        "timestamp": 1781753489901,
+        "date": "18\/06\/2026",
+        "city": "Thành phố Hồ Chí Minh",
+        "temperature": 30.7,
+        "humidity": 69,
+        "uv": 8.05,
+        "pm25": 36,
+        "skinType": "Da dầu nhạy cảm",
+        "oilyPercent": 78,
+        "hydrationPercent": 55,
+        "sensitivityPercent": 80,
+        "insight": "“Thời tiết nắng gắt với tia UV cực cao (8.1). Làn da dầu nhạy cảm rất dễ đỏ rát và kích ứng. Hãy ưu tiên bôi kem chống nắng vật lý mỏng nhẹ và che chắn kỹ.”",
+        "recommendedRoutine": [
+            {
+                "category": "Cleanser",
+                "productName": "Nước tẩy trang bí đao 500ml",
+                "description": "Làm sạch da hiệu quả (Phù hợp: 90%)"
+            },
+            {
+                "category": "Serum",
+                "productName": "Niacinamide 10% Serum",
+                "description": "Thu nhỏ lỗ chân lông, điều tiết dầu"
+            },
+            {
+                "category": "Moisturizer",
+                "productName": "Son dưỡng dầu dừa Bến Tre 5g",
+                "description": "Dưỡng ẩm môi (Phù hợp: 87%)"
+            },
+            {
+                "category": "Sunscreen",
+                "productName": "Sữa chống nắng bí đao 50ml",
+                "description": "Bảo vệ da khỏi tia UV (Phù hợp: 90%) (Tia UV nguy hiểm: 8.1 - thoa lại sau mỗi 2h)"
+            }
+        ]
+    }
+]

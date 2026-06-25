@@ -43,6 +43,20 @@ object NotificationIntentHandler {
             return
         }
 
+        if (action == "open_skin_chat") {
+            val dialog = com.veganbeauty.app.features.ai.SkinChatFragment()
+            dialog.show(supportFragmentManager, "SkinChatDialog")
+            return
+        }
+
+        if (action == "open_community_message_list") {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, com.veganbeauty.app.features.community.message.CommunityMessageFragment())
+                .addToBackStack(null)
+                .commit()
+            return
+        }
+
         if (action == "open_detail") {
             val type = (intent.getStringExtra("extra_notification_type") ?: "").lowercase()
             val voucherCode = intent.getStringExtra("extra_voucher_code")
@@ -97,7 +111,8 @@ object NotificationIntentHandler {
                 }
                 type == "schedule date" || !scheduleId.isNullOrEmpty() -> {
                     val actualScheduleId = scheduleId ?: "BK_NOTI_101"
-                    val bookings = LocalJsonReader(activity).getUserBookingHistory("xuannk23411@st.uel.edu.vn")
+                    val userEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(activity)
+                    val bookings = LocalJsonReader(activity).getUserBookingHistory(userEmail)
                     val realBooking = bookings.find { it.id == actualScheduleId }
                     val fragment = if (realBooking != null) {
                         when (realBooking.status) {
@@ -111,7 +126,7 @@ object NotificationIntentHandler {
                             userId = "user_1",
                             userName = "Nguyễn Khánh Xuân",
                             userPhone = "0901234567",
-                            userEmail = "xuannk23411@st.uel.edu.vn",
+                            userEmail = userEmail,
                             serviceName = "Chăm sóc da chuyên sâu Acne Free",
                             dateDisplay = "15 Tháng 6, 2026",
                             dayOfWeek = "Thứ Hai",

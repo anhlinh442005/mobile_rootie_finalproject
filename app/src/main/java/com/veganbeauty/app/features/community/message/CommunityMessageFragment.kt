@@ -20,6 +20,7 @@ class CommunityMessageFragment : Fragment() {
 
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var activeUserAdapter: ActiveUserAdapter
+    private var allConversations: List<com.veganbeauty.app.data.local.entities.ConversationEntity> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +34,14 @@ class CommunityMessageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         
         setupAdapters()
+        
+        // Force reset Firebase data once
+        val prefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        if (!prefs.getBoolean("has_reset_firebase_chat_v3", false)) {
+            MessageHelper.forceResetFirebaseFromAssets(requireContext())
+            prefs.edit().putBoolean("has_reset_firebase_chat_v3", true).apply()
+        }
+        
         loadData()
         setupBottomNavigation()
         setupInteractions()
@@ -61,14 +70,14 @@ class CommunityMessageFragment : Fragment() {
 
     private fun loadData() {
         try {
-            val conversations = MessageHelper.getConversations(requireContext())
-            messageAdapter.updateData(conversations)
+            val currentRealId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(requireContext())
+            allConversations = MessageHelper.getConversations(requireContext(), currentRealId)
+            filterConversations(binding.etSearch.text.toString())
             
             val currentUsername = com.veganbeauty.app.data.local.ProfileSession.getUsername(requireContext())
-            val currentRealId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(requireContext())
             
             // Only consider users active if they are in the activeBy list
-            val activeUsers = conversations.filter { conv ->
+            val activeUsers = allConversations.filter { conv ->
                 val partnerId = (conv.members ?: emptyList()).firstOrNull { it != currentRealId } ?: ""
                 (conv.activeBy ?: emptyList()).contains(partnerId)
             }
@@ -96,15 +105,35 @@ class CommunityMessageFragment : Fragment() {
     }
 
     private fun setupInteractions() {
-        binding.btnBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
         binding.ivNotification.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                 .replace(R.id.main_container, com.veganbeauty.app.features.community.notification.CommunityNotificationFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        binding.etSearch.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                filterConversations(s?.toString() ?: "")
+            }
+        })
+    }
+
+    private fun filterConversations(query: String) {
+        if (query.isEmpty()) {
+            messageAdapter.updateData(allConversations)
+        } else {
+            val currentRealId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(requireContext())
+            val filtered = allConversations.filter { conv ->
+                val partnerId = (conv.members ?: emptyList()).firstOrNull { it != currentRealId } ?: ""
+                val partnerInfo = (conv.memberInfo ?: emptyMap())[partnerId]
+                val partnerName = partnerInfo?.name ?: "Unknown"
+                partnerName.contains(query, ignoreCase = true)
+            }
+            messageAdapter.updateData(filtered)
         }
     }
 

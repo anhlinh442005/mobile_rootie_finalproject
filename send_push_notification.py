@@ -6,7 +6,7 @@ from firebase_admin import credentials, messaging
 def main():
     parser = argparse.ArgumentParser(description="Gửi thông báo đẩy FCM test đến máy ảo Android.")
     parser.add_argument("--token", required=True, help="FCM Registration Token của máy ảo Android.")
-    parser.add_argument("--type", choices=["regular", "community"], default="regular", help="Loại thông báo: 'regular' hoặc 'community'.")
+    parser.add_argument("--type", choices=["regular", "community", "admin_chat", "user_chat"], default="regular", help="Loại thông báo: 'regular', 'community', 'admin_chat' hoặc 'user_chat'.")
     args = parser.parse_args()
 
     cred_path = "serviceAccountKey.json"
@@ -38,7 +38,7 @@ def main():
             token=args.token
         )
         print("Đang gửi thông báo tài khoản/hệ thống...")
-    else:
+    elif args.type == "community":
         # Community notification
         data_payload = {
             "isCommunity": "true",
@@ -59,6 +59,54 @@ def main():
             token=args.token
         )
         print("Đang gửi thông báo cộng đồng...")
+    elif args.type == "admin_chat":
+        # Admin-to-User Chat message notification
+        data_payload = {
+            "id": "noti_admin_chat_fcm_test",
+            "title": "💬 Chuyên gia Rootie Việt Nam",
+            "content": "Chào bạn! Tôi có thể giúp gì cho làn da của bạn hôm nay?",
+            "category": "Tin nhắn",
+            "tag": "TƯ VẤN",
+            "notificationType": "skin_chat",
+            "iconResName": "ic_chat",
+            "extra_notification_action": "open_skin_chat"
+        }
+        
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title="💬 Chuyên gia Rootie Việt Nam",
+                body="Chào bạn! Tôi có thể giúp gì cho làn da của bạn hôm nay?"
+            ),
+            data=data_payload,
+            token=args.token
+        )
+        print("Đang gửi thông báo tin nhắn Admin -> User...")
+    else:
+        # User-to-User Community Chat notification
+        data_payload = {
+            "isCommunity": "true",
+            "id": "noti_user_chat_fcm_test",
+            "userId": "user_456",
+            "userName": "Khánh An",
+            "userAvatar": "https://i.pinimg.com/736x/ab/32/b1/ab32b13edefed48f94d93ee4b6f12f6b.jpg",
+            "type": "CHAT",
+            "actionType": "MESSAGE",
+            "content": "đã gửi tin nhắn: 'Routine này có dùng được cho da nhạy cảm không bạn?'",
+            "postId": "",
+            "title": "💬 Tin nhắn mới từ Khánh An",
+            "body": "Khánh An: Routine này có dùng được cho da nhạy cảm không bạn?",
+            "extra_notification_action": "open_community_message_list"
+        }
+        
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title="💬 Tin nhắn mới từ Khánh An",
+                body="Khánh An: Routine này có dùng được cho da nhạy cảm không bạn?"
+            ),
+            data=data_payload,
+            token=args.token
+        )
+        print("Đang gửi thông báo tin nhắn User -> User (Cộng đồng)...")
 
     try:
         response = messaging.send(message)

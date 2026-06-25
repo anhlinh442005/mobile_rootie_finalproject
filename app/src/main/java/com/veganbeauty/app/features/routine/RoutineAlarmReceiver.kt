@@ -25,6 +25,19 @@ class RoutineAlarmReceiver : BroadcastReceiver() {
 
         Log.d("RoutineAlarmReceiver", "onReceive triggered. Type: $type, isLead: $isLead")
 
+        val notiAllowed = com.veganbeauty.app.data.local.ProfileSession.isNotiEnabled(context)
+        val routineEnabled = if (type == "MORNING") {
+            com.veganbeauty.app.data.local.ProfileSession.isMorningReminderEnabled(context)
+        } else {
+            com.veganbeauty.app.data.local.ProfileSession.isEveningReminderEnabled(context)
+        }
+
+        if (!notiAllowed || !routineEnabled) {
+            Log.d("RoutineAlarmReceiver", "Notifications are disabled. Rescheduling and returning.")
+            RoutineAlarmScheduler.rescheduleAlarms(context)
+            return
+        }
+
         // 1. Check Notification permission on Android 13+ (API 33+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val hasPermission = androidx.core.content.ContextCompat.checkSelfPermission(
@@ -40,6 +53,7 @@ class RoutineAlarmReceiver : BroadcastReceiver() {
                     ).show()
                 }
                 Log.w("RoutineAlarmReceiver", "POST_NOTIFICATIONS permission NOT granted!")
+                RoutineAlarmScheduler.rescheduleAlarms(context)
                 return
             }
         }
@@ -120,6 +134,8 @@ class RoutineAlarmReceiver : BroadcastReceiver() {
             }
         } catch (e: Exception) {
             Log.e("RoutineAlarmReceiver", "Failed to show standard notification", e)
+        } finally {
+            RoutineAlarmScheduler.rescheduleAlarms(context)
         }
     }
 }
