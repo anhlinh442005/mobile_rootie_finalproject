@@ -123,3 +123,4 @@ class BlogCategoryFragment : Fragment() {
         }
     }
 }
+

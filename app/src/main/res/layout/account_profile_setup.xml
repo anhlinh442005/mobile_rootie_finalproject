@@ -435,7 +435,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:text="Điều khoản Rootie"
+                            android:text="Chính sách và Điều khoản Rootie"
                             android:textColor="@color/primary"
                             android:textSize="14sp" />
 

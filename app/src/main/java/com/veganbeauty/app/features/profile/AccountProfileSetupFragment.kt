@@ -88,7 +88,10 @@ class AccountProfileSetupFragment : RootieFragment() {
             Toast.makeText(context, "Tiêu chuẩn cộng đồng (Đang phát triển)", Toast.LENGTH_SHORT).show()
         }
         binding.btnTerms.setOnClickListener {
-            Toast.makeText(context, "Điều khoản Rootie (Đang phát triển)", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(com.veganbeauty.app.R.id.main_container, com.veganbeauty.app.features.home.HomePolicyFragment())
+                .addToBackStack(null)
+                .commit()
         }
         binding.btnRateApp.setOnClickListener {
             Toast.makeText(context, "Cảm ơn bạn đã đánh giá ứng dụng!", Toast.LENGTH_SHORT).show()

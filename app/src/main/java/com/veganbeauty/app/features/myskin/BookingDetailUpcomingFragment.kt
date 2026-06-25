@@ -11,6 +11,9 @@ import coil.load
 import com.veganbeauty.app.R
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
 import com.veganbeauty.app.databinding.SkinFragmentBookingDetailUpcomingBinding
+import com.veganbeauty.app.data.remote.FirestoreService
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class BookingDetailUpcomingFragment : RootieFragment() {
 
@@ -101,16 +104,18 @@ class BookingDetailUpcomingFragment : RootieFragment() {
             val otherReason = etOtherReason.text.toString().trim()
             val finalReason = if (selectedReason == "Lý do khác" && otherReason.isNotEmpty()) otherReason else selectedReason
             
-            // Update in memory
-            com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).updateBookingStatus(data.id, "Đã huỷ", finalReason)
-            
-            // Update UI locally
-            val updatedData = data.copy(status = "Đã huỷ", cancelReason = finalReason)
-            bookingData = updatedData
-            populateUI(updatedData)
-            
-            Toast.makeText(requireContext(), "Hủy lịch thành công", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
+            // Update in Firestore
+            viewLifecycleOwner.lifecycleScope.launch {
+                FirestoreService().updateBookingStatus(data.id, "Đã huỷ", finalReason)
+                
+                // Update UI locally
+                val updatedData = data.copy(status = "Đã huỷ", cancelReason = finalReason)
+                bookingData = updatedData
+                populateUI(updatedData)
+                
+                Toast.makeText(requireContext(), "Hủy lịch thành công", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
         }
         
         dialog.show()

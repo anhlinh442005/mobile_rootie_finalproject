@@ -11,8 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.veganbeauty.app.R
 import com.veganbeauty.app.core.base.RootieFragment
-import com.veganbeauty.app.data.local.LocalJsonReader
+import com.veganbeauty.app.data.local.ProfileSession
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity
+import com.veganbeauty.app.data.remote.FirestoreService
+import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
 
 class BookingHistoryFragment : RootieFragment() {
 
@@ -43,17 +46,19 @@ class BookingHistoryFragment : RootieFragment() {
         val btnBack = view.findViewById<ImageView>(R.id.btn_back)
         btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
+        if (!ProfileSession.isLoggedIn(requireContext())) {
+            com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+            parentFragmentManager.popBackStack()
+            return
+        }
+
         // Setup filter clicks
         filterAll.setOnClickListener { setFilter("Tất Cả", filterAll) }
         filterUpcoming.setOnClickListener { setFilter("Sắp diễn ra", filterUpcoming) }
         filterCompleted.setOnClickListener { setFilter("Đã hoàn thành", filterCompleted) }
         filterCancelled.setOnClickListener { setFilter("Đã huỷ", filterCancelled) }
 
-        // Load data
-        val jsonReader = LocalJsonReader(requireContext())
-        allHistory = jsonReader.getUserBookingHistory("xuannk23411@st.uel.edu.vn")
-
-        // Init adapter
+        // Initial setup for empty list
         rvHistory.layoutManager = LinearLayoutManager(context)
         historyAdapter = BookingHistoryAdapter(emptyList()) { selectedBooking ->
             val detailFragment = when (selectedBooking.status) {
@@ -74,8 +79,16 @@ class BookingHistoryFragment : RootieFragment() {
         }
         rvHistory.adapter = historyAdapter
 
-        // Initial filter
-        applyFilter()
+        // Load data from Firestore
+        loadDataFromFirestore()
+    }
+
+    private fun loadDataFromFirestore() {
+        val userEmail = ProfileSession.getEmail(requireContext()).takeIf { it.isNotBlank() } ?: "test@example.com"
+        viewLifecycleOwner.lifecycleScope.launch {
+            allHistory = FirestoreService().getUserBookingHistory(userEmail)
+            applyFilter()
+        }
     }
 
     override fun observeViewModel() {}

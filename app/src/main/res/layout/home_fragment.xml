@@ -5,10 +5,18 @@
     android:layout_height="match_parent"
     android:background="#FAFAF4">
 
+    <include
+        android:id="@+id/home_header"
+        layout="@layout/home_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/homeScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/home_header"
         android:layout_above="@id/bottom_nav"
         android:fillViewport="true"
         android:scrollbars="none">
@@ -17,11 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <include
-                layout="@layout/home_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
             <!-- Hero Banner Carousel -->
             <FrameLayout
@@ -32,14 +35,14 @@
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="wrap_content"
                     app:cardCornerRadius="10dp"
                     app:cardElevation="0dp">
 
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/vpBanner"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:clipChildren="true"
                         android:clipToPadding="true"
                         />
@@ -108,70 +111,270 @@
                 android:layout_height="wrap_content" />
 
             <!-- Featured Sunscreen Promo -->
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="#E6ECE2"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:background="#EFEFE8">
 
+                <!-- Left Text Section -->
+                <!-- Badge -->
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:id="@+id/llPromoBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pill_dark_olive"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
                     android:gravity="center_vertical"
-                    android:orientation="vertical"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="14dp">
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_shield_verified"
+                        app:tint="#FFFFFF"
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/home_promo_sunscreen_subtitle"
-                        android:textAllCaps="true"
-                        android:textColor="#4D6A4F"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/home_promo_sunscreen_title"
-                        android:textColor="#4D6A4F"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="@string/home_promo_sunscreen_desc"
-                        android:textColor="#4D6A4F"
-                        android:textSize="8sp" />
-
-                    <TextView
-                        android:id="@+id/btnPromoSunscreen"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:background="@drawable/bg_pill_green"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="8dp"
-                        android:text="@string/home_view_now"
-                        android:textColor="#02542D"
+                        android:layout_marginStart="4dp"
+                        android:text="CHỐNG NẮNG PHỔ RỘNG"
+                        android:textColor="#FFFFFF"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <VideoView
-                    android:id="@+id/vvPromoSunscreen"
+                <!-- Titles -->
+                <TextView
+                    android:id="@+id/tvPromoTitle1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:paddingEnd="10dp"/>
-            </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Sữa chống nắng"
+                    android:textColor="#1B3E2D"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/flVideoContainer"
+                    app:layout_constraintTop_toBottomOf="@id/llPromoBadge" />
+
+                <TextView
+                    android:id="@+id/tvPromoTitle2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:text="bí đao"
+                    android:textColor="#3D684C"
+                    android:textSize="44sp"
+                    android:fontFamily="@font/mightype"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/flVideoContainer"
+                    app:layout_constraintTop_toBottomOf="@id/tvPromoTitle1"
+                    android:layout_marginTop="-16dp" />
+
+                <TextView
+                    android:id="@+id/tvPromoSubtitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Bảo vệ da toàn diện – Thanh mát, nhẹ thoáng mỗi ngày"
+                    android:textColor="#28362E"
+                    android:textSize="11sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/flVideoContainer"
+                    app:layout_constraintTop_toBottomOf="@id/tvPromoTitle2"
+                    android:layout_marginTop="-4dp" />
+
+                <!-- Features -->
+                <LinearLayout
+                    android:id="@+id/llPromoFeatures"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/flVideoContainer"
+                    app:layout_constraintTop_toBottomOf="@id/tvPromoSubtitle">
+
+                    <!-- Feature 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_shield_verified"
+                            app:tint="#1B3E2D"
+                            android:contentDescription="@null" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chống nắng phổ rộng"
+                                android:textColor="#1B3E2D"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Bảo vệ da khỏi tia UVA/UVB &amp; ánh sáng xanh"
+                                android:textColor="#4A564A"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Feature 2 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_water_drop_outline"
+                            app:tint="#1B3E2D" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chiết xuất bí đao thiên nhiên"
+                                android:textColor="#1B3E2D"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Dịu mát, cấp ẩm &amp; hỗ trợ kiềm dầu"
+                                android:textColor="#4A564A"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Feature 3 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_leaf"
+                            app:tint="#1B3E2D" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kết cấu nhẹ tênh – Không bết dính"
+                                android:textColor="#1B3E2D"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thấm nhanh, nâng tone tự nhiên"
+                                android:textColor="#4A564A"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Feature 4 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_weather_sparkles"
+                            app:tint="#1B3E2D" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="An toàn cho mọi loại da"
+                                android:textColor="#1B3E2D"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kể cả da nhạy cảm"
+                                android:textColor="#4A564A"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Button -->
+                <TextView
+                    android:id="@+id/btnPromoSunscreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_pill_dark_olive"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp"
+                    android:text="BẢO VỆ DA – TỰ TIN TỎA SÁNG ❯"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/llPromoFeatures"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <!-- Right Video Section -->
+                <FrameLayout
+                    android:id="@+id/flVideoContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent="0.45"
+                    app:layout_constraintDimensionRatio="H,9:16"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintVertical_bias="0.5">
+
+                    <VideoView
+                        android:id="@+id/vvPromoSunscreen"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </FrameLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tvHomeSloganMarquee"
@@ -273,7 +476,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/homepage_flashsale_bg"/>
+                    android:src="@drawable/homepage_flashsale_bg"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:contentDescription="@null" />
 
                 <!-- The cards container -->
                 <FrameLayout
@@ -443,7 +650,6 @@
                     android:gravity="center_vertical"
                     android:baselineAligned="false">
 
-                    <!-- Left Text -->
                     <TextView
                         android:id="@+id/tvPromoLotusLeft"
                         android:layout_width="20dp"
@@ -452,7 +658,7 @@
                         android:fontFamily="@font/be_vietnam_pro"
                         android:text="Tinh chất\nxịt dưỡng\nSen Hậu Giang"
                         android:textColor="@color/primary"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <!-- Center Images Stack -->
@@ -498,7 +704,7 @@
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="Sản phẩm có kết cấu hai tầng dầu dưỡng và tinh chất hòa quyện, tạo nên những tia sương mịn nhẹ trên da. công thức kết hợp chiết xuất sen hữu cơ hậu giang, phức hợp prebiotics, squalane và các hoạt chất làm dịu giúp cấp ẩm sâu, tăng cường độ bóng khỏe tự nhiên, giúp bảo vệ hàng rào độ ẩm, ngăn ngừa và giảm thiểu tình trạng thoát nước qua da, hỗ trợ cân bằng hệ vi sinh cho da rất nhạy cảm."
                             android:textColor="@color/tertiary"
-                            android:textSize="7sp"
+                            android:textSize="10sp"
                             android:textStyle="normal"
                             android:lineSpacingExtra="2dp" />
 
@@ -510,7 +716,7 @@
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="MUA NGAY \u2192"
                             android:textColor="@color/primary"
-                            android:textSize="8sp"
+                            android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
@@ -561,7 +767,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="4dp"
@@ -608,7 +814,7 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="4dp"
@@ -649,48 +855,13 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Recommendations -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:paddingHorizontal="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/home_recommendations"
-                    android:textColor="#28362E"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvRecommendationsSeeAll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/home_see_all"
-                    android:textColor="@color/secondary"
-                    android:textSize="12sp" />
-            </RelativeLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvRecommendations"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
-                android:paddingStart="16dp"
-                android:paddingEnd="8dp" />
-
             <!-- About Us Section -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp">
 
@@ -745,6 +916,60 @@
                         app:drawableTint="@color/white" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+            <!-- Recommendations -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_recommendations"
+                    android:textColor="#28362E"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRecommendations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingHorizontal="10dp" />
+
+            <!-- Load More Button -->
+            <LinearLayout
+                android:id="@+id/btnLoadMoreRecommendations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/bg_pill_green"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xem tiếp sản phẩm"
+                    android:textColor="#02542D"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/ic_chevron_down"
+                    app:tint="#02542D" />
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

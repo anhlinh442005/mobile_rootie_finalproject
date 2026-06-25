@@ -35,4 +35,16 @@ interface UserDao {
 
     @Query("DELETE FROM users WHERE username = :username")
     fun deleteUserByUsernameSync(username: String)
+
+    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
+    fun getUserByEmailSync(email: String): UserEntity?
+
+    @Query("SELECT * FROM users WHERE phone = :phone LIMIT 1")
+    fun getUserByPhoneSync(phone: String): UserEntity?
+
+    @Query("UPDATE users SET password = :newPassword WHERE email = :email")
+    fun updatePasswordByEmailSync(email: String, newPassword: String)
+
+    @Query("UPDATE users SET password = :newPassword WHERE phone = :phone")
+    fun updatePasswordByPhoneSync(phone: String, newPassword: String)
 }

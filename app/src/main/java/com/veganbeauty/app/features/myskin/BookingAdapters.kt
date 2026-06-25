@@ -44,7 +44,7 @@ class BookingServiceAdapter(
         holder.ivCheck.visibility = if (isSelected) View.VISIBLE else View.GONE
         
         if (isSelected) {
-            holder.container.setBackgroundResource(R.drawable.skin_bg_store_card)
+            holder.container.setBackgroundResource(R.drawable.skin_bg_selected_item)
         } else {
             holder.container.setBackgroundResource(R.drawable.skin_bg_outline)
         }
@@ -88,7 +88,7 @@ class BookingDateAdapter(
 
         val isSelected = position == selectedIndex
         if (isSelected) {
-            holder.container.setBackgroundResource(R.drawable.skin_bg_store_card)
+            holder.container.setBackgroundResource(R.drawable.skin_bg_selected_item)
         } else {
             holder.container.setBackgroundResource(R.drawable.skin_bg_outline)
         }
@@ -144,7 +144,7 @@ class BookingTimeAdapter(
         } else {
             holder.container.alpha = 1.0f
             if (isSelected) {
-                holder.container.setBackgroundResource(R.drawable.skin_bg_store_card)
+                holder.container.setBackgroundResource(R.drawable.skin_bg_selected_item)
                 holder.tvTime.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.primary))
             } else {
                 holder.container.setBackgroundResource(R.drawable.skin_bg_outline)

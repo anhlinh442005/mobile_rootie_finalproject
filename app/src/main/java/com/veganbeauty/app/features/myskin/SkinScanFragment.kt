@@ -92,9 +92,22 @@ class SkinScanFragment : RootieFragment() {
 
         // Nút hướng dẫn
         binding.skinScanBtnGuide.setOnClickListener {
-            Toast.makeText(requireContext(),
-                "Hướng dẫn quét da: Đặt khuôn mặt vào khung hình, giữ điện thoại cách mặt 30cm, đảm bảo đủ ánh sáng tự nhiên.",
-                Toast.LENGTH_LONG).show()
+            val dialog = android.app.Dialog(requireContext())
+            dialog.setContentView(R.layout.skin_dialog_scan_instruction)
+            dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            
+            dialog.findViewById<View>(R.id.btn_close)?.setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.findViewById<View>(R.id.dialog_container)?.setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.findViewById<View>(R.id.dialog_content)?.setOnClickListener {
+                // Intercept click on content to prevent dismiss
+            }
+            
+            dialog.show()
         }
     }
 

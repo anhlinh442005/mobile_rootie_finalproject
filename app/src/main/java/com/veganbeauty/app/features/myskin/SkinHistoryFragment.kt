@@ -16,7 +16,10 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.veganbeauty.app.R
-import com.veganbeauty.app.data.local.LocalJsonReader
+import com.veganbeauty.app.data.local.ProfileSession
+import com.veganbeauty.app.data.remote.FirestoreService
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.veganbeauty.app.databinding.SkinFragmentHistoryBinding
 import org.json.JSONArray
 import org.json.JSONObject
@@ -39,12 +42,55 @@ class SkinHistoryFragment : RootieFragment() {
     }
 
     override fun setupUI(view: View) {
-        allHistory = LocalJsonReader(requireContext()).getSkinHistory()
-        currentHistory = allHistory
+        if (!ProfileSession.isLoggedIn(requireContext())) {
+            com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+            parentFragmentManager.popBackStack()
+            return
+        }
+
+        allHistory = JSONArray()
+        currentHistory = JSONArray()
 
         setupRecyclerView()
         setupListeners()
         setupFilters()
+        
+        loadDataFromFirestore()
+    }
+    
+    private fun loadDataFromFirestore() {
+        val userEmail = ProfileSession.getEmail(requireContext()).takeIf { it.isNotBlank() } ?: "test@example.com"
+        viewLifecycleOwner.lifecycleScope.launch {
+            allHistory = FirestoreService().getSkinHistory(userEmail)
+            currentHistory = allHistory
+            updateChartAndList(currentHistory)
+            
+            // Re-apply filter if any is selected (default is All)
+            val selectedFilter = when {
+                binding.skinHistoryFilterAi.currentTextColor == ContextCompat.getColor(requireContext(), R.color.white) -> "Quét AI"
+                binding.skinHistoryFilterOffline.currentTextColor == ContextCompat.getColor(requireContext(), R.color.white) -> "Soi da offline"
+                else -> null
+            }
+            if (selectedFilter != null) {
+                // Manually trigger filter
+                filterData(selectedFilter)
+            }
+        }
+    }
+    
+    private fun filterData(type: String?) {
+        if (type == null) {
+            currentHistory = allHistory
+        } else {
+            val filtered = JSONArray()
+            for (i in 0 until allHistory.length()) {
+                val item = allHistory.getJSONObject(i)
+                if (item.optString("scanType") == type) {
+                    filtered.put(item)
+                }
+            }
+            currentHistory = filtered
+        }
         updateChartAndList(currentHistory)
     }
 
@@ -87,19 +133,7 @@ class SkinHistoryFragment : RootieFragment() {
             }
             
             // Filter Data
-            if (type == null) {
-                currentHistory = allHistory
-            } else {
-                val filtered = JSONArray()
-                for (i in 0 until allHistory.length()) {
-                    val item = allHistory.getJSONObject(i)
-                    if (item.optString("scanType") == type) {
-                        filtered.put(item)
-                    }
-                }
-                currentHistory = filtered
-            }
-            updateChartAndList(currentHistory)
+            filterData(type)
         }
 
         binding.skinHistoryFilterAll.setOnClickListener { selectFilter(binding.skinHistoryFilterAll, null) }

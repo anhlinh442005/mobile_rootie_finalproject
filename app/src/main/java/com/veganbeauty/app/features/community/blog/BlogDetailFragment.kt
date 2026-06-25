@@ -182,3 +182,4 @@ class BlogDetailFragment : Fragment() {
         }
     }
 }
+

@@ -24,6 +24,20 @@ class AuthRepository(private val userDao: UserDao) {
             if (user != null) return user
         }
         
+        // --- ADD FIREBASE CHECK HERE ---
+        val firestoreService = com.veganbeauty.app.data.remote.FirestoreService()
+        val firebaseUser = firestoreService.authenticateUser(emailOrPhone, hashedPassword, password, isEmail)
+        if (firebaseUser != null) {
+            // Save to local DB to keep it in sync for future offline access
+            try {
+                // Remove existing if any, or just use insertUser which is likely REPLACE strategy
+                userDao.insertUser(firebaseUser)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return firebaseUser
+        }
+        
         val user = if (isEmail) {
             userDao.getUserByEmailAndPassword(emailOrPhone, hashedPassword)
         } else {

@@ -36,15 +36,24 @@ class CommunityRepository(
                 // 1. Always load local assets first (fresh data from JSON files)
                 loadFromLocalAssets()
                 
-                // Force sync the latest local data to Firebase BEFORE fetching it back down
-                firestoreService.forceSyncLocalPostsToFirebase(
-                    localJsonReader.getRawPostsJson(),
-                    localJsonReader.getRawNewsJson()
-                )
-                firestoreService.forceSyncCollection("users", localJsonReader.getRawUsersJson(), "user_id")
-                firestoreService.forceSyncCollection("community_reels_fb", localJsonReader.getRawReelsJson(), "video_id")
-                firestoreService.forceSyncCollection("ingredients", localJsonReader.getRawIngredientsJson(), "slug")
-                firestoreService.forceSyncCollection("products", localJsonReader.getRawProductsJson(), "id", "products")
+                // TẠM THỜI TẮT ĐỒNG BỘ CÁC BẢNG KHÁC THEO YÊU CẦU
+                /*
+                try {
+                    firestoreService.forceSyncLocalPostsToFirebase(
+                        localJsonReader.getRawPostsJson(),
+                        localJsonReader.getRawNewsJson()
+                    )
+                } catch (e: Exception) { e.printStackTrace() }
+                
+                try { firestoreService.forceSyncCollection("community_reels_fb", localJsonReader.getRawReelsJson(), "video_id") } catch (e: Exception) { e.printStackTrace() }
+                try { firestoreService.forceSyncCollection("ingredients", localJsonReader.getRawIngredientsJson(), "slug") } catch (e: Exception) { e.printStackTrace() }
+                try { firestoreService.forceSyncCollection("products", localJsonReader.getRawProductsJson(), "id", "products") } catch (e: Exception) { e.printStackTrace() }
+                */
+                
+                // MỞ LẠI ĐỒNG BỘ CHO USERS (Vì vừa sửa SĐT), CÙNG VỚI SKIN_HISTORY VÀ SKIN_BOOKINGS
+                try { firestoreService.forceSyncCollection("users", localJsonReader.getRawUsersJson(), "user_id") } catch (e: Exception) { e.printStackTrace() }
+                try { firestoreService.forceSyncCollection("skin_history", localJsonReader.getRawSkinHistoryJson(), "id") } catch (e: Exception) { e.printStackTrace() }
+                try { firestoreService.forceSyncCollection("skin_bookings", localJsonReader.getRawSkinBookingsJson(), "id", "bookings") } catch (e: Exception) { e.printStackTrace() }
 
                 // NOTE: We do NOT fetch posts/users back from Firebase.
                 // Local JSON files are the SINGLE SOURCE OF TRUTH for posts and users.

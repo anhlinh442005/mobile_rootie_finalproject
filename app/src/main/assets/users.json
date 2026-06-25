@@ -67,7 +67,7 @@
     "user_id": "test_001",
     "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
     "email": "test@example.com",
-    "phone": "0123456789",
+    "phone": "097 795 4530",
     "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
     "full_name": "Test User",
     "primary_image": "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780681827/ec7a32a6-29ce-479b-82ab-695c766b1409_cr3djn.png",
@@ -3224,7 +3224,7 @@
     "user_id": "rootie_official",
     "avatar": "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
     "email": "userrootie_official@example.com",
-    "phone": "0123456789",
+    "phone": "091 684 3269",
     "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
     "full_name": "Rootie Vietnam"
   },

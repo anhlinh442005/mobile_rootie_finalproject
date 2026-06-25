@@ -60,7 +60,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/skin_bg_btn_solid_dark"
+                android:background="@drawable/skin_bg_completed_card"
                 android:padding="16dp"
                 android:layout_marginBottom="16dp">
 
@@ -284,7 +284,7 @@
                         android:textColor="@color/primary"
                         android:textStyle="bold"
                         android:fontFamily="@font/be_vietnam_pro"
-                        android:background="@drawable/skin_bg_btn_book"
+                        android:background="@drawable/skin_bg_btn_book_light"
                         android:paddingVertical="8dp"
                         android:layout_marginTop="8dp"
                         android:textSize="12sp"/>
@@ -539,7 +539,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:background="@drawable/skin_bg_btn_book"
+                        android:background="@drawable/skin_bg_btn_book_light"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="8dp"
                         android:gravity="center_vertical">
@@ -649,7 +649,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:background="@drawable/skin_bg_btn_book"
+                        android:background="@drawable/skin_bg_btn_book_light"
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="8dp"
                         android:gravity="center_vertical">
@@ -826,7 +826,7 @@
                 android:textColor="@color/primary"
                 android:textSize="8sp"
                 android:textAlignment="center"
-                android:background="@drawable/skin_bg_btn_book"
+                android:background="@drawable/skin_bg_btn_book_light"
                 android:paddingVertical="8dp"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="@font/be_vietnam_pro"/>

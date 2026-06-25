@@ -479,3 +479,4 @@ class HandbookFragment : Fragment() {
         return null
     }
 }
+

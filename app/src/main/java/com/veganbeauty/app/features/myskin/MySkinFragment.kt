@@ -44,16 +44,68 @@ class MySkinFragment : RootieFragment() {
         binding.skinBannerContainer.setOnClickListener { openScanFragment() }
         binding.skinShortcutScanAi.setOnClickListener { openScanFragment() }
         binding.skinShortcutProfile.setOnClickListener {
-            android.widget.Toast.makeText(context, "Hồ sơ da — đang phát triển", android.widget.Toast.LENGTH_SHORT).show()
+            if (!ProfileSession.isLoggedIn(requireContext())) {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+                return@setOnClickListener
+            }
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.slide_in_left,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.slide_out_right
+                )
+                .replace(R.id.main_container, com.veganbeauty.app.features.profile.SkinAllergyProfileFragment())
+                .addToBackStack(null)
+                .commit()
         }
         binding.skinShortcutRoutine.setOnClickListener {
-            android.widget.Toast.makeText(context, "Routine chăm da — đang phát triển", android.widget.Toast.LENGTH_SHORT).show()
+            if (!ProfileSession.isLoggedIn(requireContext())) {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+                return@setOnClickListener
+            }
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.slide_in_left,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.slide_out_right
+                )
+                .replace(R.id.main_container, com.veganbeauty.app.features.routine.SkinTimeRoutineFragment())
+                .addToBackStack(null)
+                .commit()
         }
         binding.skinShortcutReminder.setOnClickListener {
-            android.widget.Toast.makeText(context, "Nhắc lịch — đang phát triển", android.widget.Toast.LENGTH_SHORT).show()
+            if (!ProfileSession.isLoggedIn(requireContext())) {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+                return@setOnClickListener
+            }
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.slide_in_left,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.slide_out_right
+                )
+                .replace(R.id.main_container, com.veganbeauty.app.features.routine.SkinReminderFragment())
+                .addToBackStack(null)
+                .commit()
         }
         binding.skinShortcutWeather.setOnClickListener {
-            android.widget.Toast.makeText(context, "Skin Weather — đang phát triển", android.widget.Toast.LENGTH_SHORT).show()
+            if (!ProfileSession.isLoggedIn(requireContext())) {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+                return@setOnClickListener
+            }
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.slide_in_left,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.slide_out_right
+                )
+                .replace(R.id.main_container, com.veganbeauty.app.features.weather.WeatherForecastFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         // Setup RecyclerView cho cửa hàng
@@ -96,6 +148,10 @@ class MySkinFragment : RootieFragment() {
 
         // Lịch sử lịch đặt
         binding.skinBtnBookingHistory.setOnClickListener {
+            if (!ProfileSession.isLoggedIn(requireContext())) {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+                return@setOnClickListener
+            }
             parentFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     android.R.anim.slide_in_left,

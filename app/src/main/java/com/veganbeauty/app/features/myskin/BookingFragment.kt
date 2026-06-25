@@ -18,6 +18,9 @@ import com.veganbeauty.app.core.base.RootieFragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import com.veganbeauty.app.data.remote.FirestoreService
 
 class BookingFragment : RootieFragment() {
 
@@ -259,25 +262,27 @@ class BookingFragment : RootieFragment() {
             consultantAvatar = "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
             consultantRating = 5.0f
         )
-        com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).addBooking(newBooking)
+        viewLifecycleOwner.lifecycleScope.launch {
+            FirestoreService().addBooking(newBooking)
 
-        val successFragment = BookingSuccessFragment.newInstance(
-            storeName = storeNameStr,
-            dateTime = dateTime,
-            specialist = specialist,
-            serviceName = service
-        )
-
-        parentFragmentManager.beginTransaction()
-            .setCustomAnimations(
-                android.R.anim.slide_in_left,
-                android.R.anim.fade_out,
-                android.R.anim.fade_in,
-                android.R.anim.slide_out_right
+            val successFragment = BookingSuccessFragment.newInstance(
+                storeName = storeNameStr,
+                dateTime = dateTime,
+                specialist = specialist,
+                serviceName = service
             )
-            .replace(R.id.main_container, successFragment)
-            .addToBackStack(null)
-            .commit()
+
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.slide_in_left,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.slide_out_right
+                )
+                .replace(R.id.main_container, successFragment)
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     override fun observeViewModel() {

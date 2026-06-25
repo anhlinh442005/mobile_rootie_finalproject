@@ -809,6 +809,8 @@ class LocalJsonReader(private val context: Context) {
     fun getRawReelsJson(): String = try { context.assets.open("community_reels_fb.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
     fun getRawIngredientsJson(): String = try { context.assets.open("ingredient.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
     fun getRawProductsJson(): String = try { context.assets.open("products.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "{}" }
+    fun getRawSkinHistoryJson(): String = try { context.assets.open("skin_history.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "[]" }
+    fun getRawSkinBookingsJson(): String = try { context.assets.open("skin_bookings.json").bufferedReader().use { it.readText() }.removePrefix("\uFEFF") } catch (e: Exception) { "{}" }
 
     fun getStores(): List<StoreEntity> = getAllStores()
 

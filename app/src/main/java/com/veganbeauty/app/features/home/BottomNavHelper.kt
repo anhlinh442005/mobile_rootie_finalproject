@@ -62,9 +62,61 @@ object BottomNavHelper {
       val isActive = tabId == activeTabId
       val color = if (isActive) ACTIVE_COLOR else INACTIVE_COLOR
 
-      icon?.setColorFilter(Color.parseColor(color))
-      label?.setTextColor(Color.parseColor(color))
-      label?.setTypeface(null, if (isActive) Typeface.BOLD else Typeface.NORMAL)
+      if (tabId == R.id.nav_myskin) {
+          icon?.clearColorFilter()
+          val ivMySkin = tab.findViewById<ImageView>(R.id.ivMySkin)
+          val vMySkinShadow = tab.findViewById<View>(R.id.vMySkinShadow)
+          
+          // Cancel previous animators if any
+          (ivMySkin?.getTag(R.id.nav_myskin) as? android.animation.Animator)?.cancel()
+          (vMySkinShadow?.getTag(R.id.nav_myskin) as? android.animation.Animator)?.cancel()
+
+          if (isActive) {
+              ivMySkin?.setImageResource(R.drawable.ic_skin_mainbar)
+              ivMySkin?.scaleX = 1f
+              ivMySkin?.scaleY = 1f
+              
+              vMySkinShadow?.visibility = View.VISIBLE
+              val shadowAnim = android.animation.ObjectAnimator.ofPropertyValuesHolder(
+                  vMySkinShadow,
+                  android.animation.PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 1.3f, 1.0f),
+                  android.animation.PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 1.3f, 1.0f),
+                  android.animation.PropertyValuesHolder.ofFloat(View.ALPHA, 0.6f, 0.1f, 0.6f)
+              ).apply {
+                  duration = 2000
+                  repeatCount = android.animation.ObjectAnimator.INFINITE
+                  start()
+              }
+              vMySkinShadow?.setTag(R.id.nav_myskin, shadowAnim)
+          } else {
+              ivMySkin?.setImageResource(R.drawable.ic_skin_mainbar_nonactive)
+              vMySkinShadow?.visibility = View.GONE
+              vMySkinShadow?.scaleX = 1f
+              vMySkinShadow?.scaleY = 1f
+              
+              val iconAnim = android.animation.ObjectAnimator.ofPropertyValuesHolder(
+                  ivMySkin,
+                  android.animation.PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 1.1f, 1.0f),
+                  android.animation.PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 1.1f, 1.0f)
+              ).apply {
+                  duration = 2000
+                  repeatCount = android.animation.ObjectAnimator.INFINITE
+                  start()
+              }
+              ivMySkin?.setTag(R.id.nav_myskin, iconAnim)
+          }
+          label?.setTextColor(Color.parseColor(color))
+          label?.setTypeface(null, if (isActive) Typeface.BOLD else Typeface.NORMAL)
+      } else {
+          icon?.setColorFilter(Color.parseColor(color))
+          if (isActive) {
+              icon?.setBackgroundResource(R.drawable.shape_nav_active_bg)
+          } else {
+              icon?.background = null
+          }
+          label?.setTextColor(Color.parseColor(color))
+          label?.setTypeface(null, if (isActive) Typeface.BOLD else Typeface.NORMAL)
+      }
     }
   }
 

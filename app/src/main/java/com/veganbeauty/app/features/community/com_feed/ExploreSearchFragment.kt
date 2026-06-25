@@ -45,10 +45,8 @@ class ExploreSearchFragment : RootieFragment() {
 
     override fun setupUI(view: View) {
         ivBack.setOnClickListener {
-            if (llResults.visibility == View.VISIBLE) {
-                llResults.visibility = View.GONE
-                svSuggestions.visibility = View.VISIBLE
-                etSearch.text.clear()
+            if (parentFragmentManager.backStackEntryCount > 0) {
+                parentFragmentManager.popBackStack()
             } else {
                 parentFragmentManager.beginTransaction()
                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -261,3 +259,4 @@ class ExploreSearchFragment : RootieFragment() {
         }
     }
 }
+

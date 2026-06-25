@@ -733,6 +733,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     : "";
             authViewModel.login(email, password);
         });
+
+        loginBinding.homeLoginGoogle.setOnClickListener(v -> {
+            android.widget.Toast.makeText(HomeWelcomeActivity.this, "Tính năng đang phát triển", android.widget.Toast.LENGTH_SHORT).show();
+        });
+
+        loginBinding.homeLoginFacebook.setOnClickListener(v -> {
+            android.widget.Toast.makeText(HomeWelcomeActivity.this, "Tính năng đang phát triển", android.widget.Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void transitionToRegister() {
@@ -865,6 +873,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
             authViewModel.register(fullName, emailOrPhone, password);
         });
+
+        registerBinding.homeRegisterGoogle.setOnClickListener(v -> {
+            android.widget.Toast.makeText(HomeWelcomeActivity.this, "Tính năng đang phát triển", android.widget.Toast.LENGTH_SHORT).show();
+        });
+
+        registerBinding.homeRegisterFacebook.setOnClickListener(v -> {
+            android.widget.Toast.makeText(HomeWelcomeActivity.this, "Tính năng đang phát triển", android.widget.Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void showTermsDialog() {
@@ -934,32 +950,97 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 sheetContent,
                 true);
 
-        // Bước 1: Gửi OTP
-        forgotPasswordBinding.fpBtnSendOtp.setOnClickListener(v -> {
-            String email = forgotPasswordBinding.fpInputEmail.getText() != null
-                    ? forgotPasswordBinding.fpInputEmail.getText().toString().trim()
-                    : "";
-            if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                android.widget.Toast.makeText(this, "Vui lòng nhập email hợp lệ", android.widget.Toast.LENGTH_SHORT)
-                        .show();
-                return;
-            }
-            // Sinh mã OTP 6 chữ số (giả lập)
-            generatedOtp = String.format(Locale.US, "%06d", new Random().nextInt(1000000));
-            android.widget.Toast.makeText(this, "[Demo] Mã OTP: " + generatedOtp, android.widget.Toast.LENGTH_LONG)
-                    .show();
-
-            // Chuyển sang bước 2
-            forgotPasswordBinding.fpStep1Container.setVisibility(View.GONE);
-            forgotPasswordBinding.fpStep2Container.setVisibility(View.VISIBLE);
-            String desc = "Mã OTP đã được gửi đến " + email + ". Mã có hiệu lực trong 5 phút.";
-            forgotPasswordBinding.fpOtpDesc.setText(desc);
-            setupOtpAutoFocus();
-            startOtpCountdown();
+        // Bước 0: Chọn phương thức
+        forgotPasswordBinding.fpBtnChooseEmail.setOnClickListener(v -> {
+            forgotPasswordBinding.fpStep0Container.setVisibility(View.GONE);
+            forgotPasswordBinding.fpStep1Container.setVisibility(View.VISIBLE);
+            forgotPasswordBinding.fpInputEmail.setHint("Địa chỉ email");
+            forgotPasswordBinding.fpStep1Desc.setText("Nhập email đã đăng ký, chúng tôi sẽ gửi mã OTP để xác minh");
+            forgotPasswordBinding.fpInputEmail.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            forgotPasswordBinding.fpBtnSendOtp.setTag("email");
         });
 
-        // Bước 1: Quay lại đăng nhập
-        forgotPasswordBinding.fpBackToLogin1.setOnClickListener(v -> transitionToLogin());
+        forgotPasswordBinding.fpBtnChoosePhone.setOnClickListener(v -> {
+            forgotPasswordBinding.fpStep0Container.setVisibility(View.GONE);
+            forgotPasswordBinding.fpStep1Container.setVisibility(View.VISIBLE);
+            forgotPasswordBinding.fpInputEmail.setHint("Số điện thoại");
+            forgotPasswordBinding.fpStep1Desc.setText("Nhập số điện thoại đã đăng ký, chúng tôi sẽ gửi mã OTP qua tin nhắn");
+            forgotPasswordBinding.fpInputEmail.setInputType(android.text.InputType.TYPE_CLASS_PHONE);
+            forgotPasswordBinding.fpBtnSendOtp.setTag("phone");
+        });
+
+        forgotPasswordBinding.fpBackToLogin0.setOnClickListener(v -> transitionToLogin());
+
+        // Bước 1: Gửi OTP
+        forgotPasswordBinding.fpBtnSendOtp.setOnClickListener(v -> {
+            boolean isEmail = "email".equals(v.getTag());
+            String input = forgotPasswordBinding.fpInputEmail.getText() != null
+                    ? forgotPasswordBinding.fpInputEmail.getText().toString().trim()
+                    : "";
+            
+            if (input.isEmpty()) {
+                android.widget.Toast.makeText(this, "Vui lòng nhập thông tin", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isEmail && !android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
+                android.widget.Toast.makeText(this, "Vui lòng nhập email hợp lệ", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            new Thread(() -> {
+                com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(this);
+                com.veganbeauty.app.data.local.entities.UserEntity user = isEmail 
+                    ? db.userDao().getUserByEmailSync(input)
+                    : db.userDao().getUserByPhoneSync(input);
+                
+                runOnUiThread(() -> {
+                    if (user == null) {
+                        String msg = isEmail ? "Email chưa tạo tài khoản, hãy đăng ký" : "Số điện thoại chưa tạo tài khoản, hãy đăng ký";
+                        android.widget.Toast.makeText(this, msg, android.widget.Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Sinh mã OTP 6 chữ số
+                    generatedOtp = String.format(Locale.US, "%06d", new Random().nextInt(1000000));
+                    
+                    if (isEmail) {
+                        // Show a toast that it's sending
+                        android.widget.Toast.makeText(this, "Đang gửi OTP qua Email...", android.widget.Toast.LENGTH_SHORT).show();
+                        // Send Email OTP thật bằng JavaMail
+                        com.veganbeauty.app.utils.MailSender.INSTANCE.sendOtpEmailAsync(input, generatedOtp, new com.veganbeauty.app.utils.MailSender.MailCallback() {
+                            @Override
+                            public void onSuccess() {
+                                android.widget.Toast.makeText(HomeWelcomeActivity.this, "Mã OTP đã được gửi qua Email thành công", android.widget.Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                e.printStackTrace();
+                                android.widget.Toast.makeText(HomeWelcomeActivity.this, "Lỗi gửi email: " + e.getMessage(), android.widget.Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } else {
+                        // Gửi SMS qua Notification
+                        sendSmsNotification(generatedOtp);
+                        android.widget.Toast.makeText(this, "Đã gửi OTP qua tin nhắn SMS", android.widget.Toast.LENGTH_SHORT).show();
+                    }
+
+                    // Chuyển sang bước 2
+                    forgotPasswordBinding.fpStep1Container.setVisibility(View.GONE);
+                    forgotPasswordBinding.fpStep2Container.setVisibility(View.VISIBLE);
+                    String desc = "Mã OTP đã được gửi đến " + input + ". Mã có hiệu lực trong 5 phút.";
+                    forgotPasswordBinding.fpOtpDesc.setText(desc);
+                    setupOtpAutoFocus();
+                    startOtpCountdown();
+                });
+            }).start();
+        });
+
+        // Bước 1: Quay lại chọn phương thức
+        forgotPasswordBinding.fpBackToLogin1.setOnClickListener(v -> {
+            forgotPasswordBinding.fpStep1Container.setVisibility(View.GONE);
+            forgotPasswordBinding.fpStep0Container.setVisibility(View.VISIBLE);
+        });
 
         // Bước 2: Xác minh OTP
         forgotPasswordBinding.fpBtnVerifyOtp.setOnClickListener(v -> {
@@ -1005,13 +1086,66 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                         .show();
                 return;
             }
-            // TODO: Gọi ViewModel/Repository để cập nhật mật khẩu trong DB
-            forgotPasswordBinding.fpStep3Container.setVisibility(View.GONE);
-            forgotPasswordBinding.fpStep4Container.setVisibility(View.VISIBLE);
+            
+            new Thread(() -> {
+                String input = forgotPasswordBinding.fpInputEmail.getText() != null
+                        ? forgotPasswordBinding.fpInputEmail.getText().toString().trim()
+                        : "";
+                boolean isEmail = "email".equals(forgotPasswordBinding.fpBtnSendOtp.getTag());
+                
+                com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(this);
+                if (isEmail) {
+                    db.userDao().updatePasswordByEmailSync(input, newPw);
+                } else {
+                    db.userDao().updatePasswordByPhoneSync(input, newPw);
+                }
+                
+                runOnUiThread(() -> {
+                    forgotPasswordBinding.fpStep3Container.setVisibility(View.GONE);
+                    forgotPasswordBinding.fpStep4Container.setVisibility(View.VISIBLE);
+                });
+            }).start();
         });
 
         // Bước 4: Đăng nhập ngay
         forgotPasswordBinding.fpBtnGoLogin.setOnClickListener(v -> transitionToLogin());
+    }
+
+    private void sendSmsNotification(String otp) {
+        String channelId = "sms_otp_channel";
+        android.app.NotificationManager notificationManager = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+        
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            android.app.NotificationChannel channel = new android.app.NotificationChannel(
+                    channelId,
+                    "SMS OTP Notifications",
+                    android.app.NotificationManager.IMPORTANCE_HIGH
+            );
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        androidx.core.app.NotificationCompat.Builder builder = new androidx.core.app.NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.mipmap.ic_launcher) // Fallback icon if not available
+                .setContentTitle("Tin nhắn từ Rootie")
+                .setContentText("Mã OTP khôi phục mật khẩu của bạn là: " + otp + ". Không chia sẻ mã này cho bất kỳ ai.")
+                .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        try {
+            // Check for POST_NOTIFICATIONS permission on Android 13+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
+                    // Still show toast as fallback if permission is not granted yet
+                    android.widget.Toast.makeText(this, "[SMS] Mã OTP của bạn là: " + otp, android.widget.Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+            notificationManager.notify(new Random().nextInt(1000), builder.build());
+        } catch (Exception e) {
+            e.printStackTrace();
+            android.widget.Toast.makeText(this, "[SMS] Mã OTP của bạn là: " + otp, android.widget.Toast.LENGTH_LONG).show();
+        }
     }
 
     private String getEnteredOtp() {

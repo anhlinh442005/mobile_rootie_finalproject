@@ -127,12 +127,7 @@ class CommunityExploreFragment : RootieFragment() {
         })
 
         // Setup UI Actions
-        binding.ivBack.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, CommunityFeedFragment())
-                .commit()
-        }
+        binding.ivBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
         binding.ivSearch.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -217,4 +212,5 @@ class CommunityExploreFragment : RootieFragment() {
         _binding = null
     }
 }
+
 

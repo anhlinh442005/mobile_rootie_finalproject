@@ -104,7 +104,34 @@ class AccountProfileSecurityFragment : RootieFragment() {
         }
 
         binding.btnUsername.setOnClickListener {
-            Toast.makeText(context, "Tên đăng nhập: $username", Toast.LENGTH_SHORT).show()
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_change_username, null)
+            val dialog = android.app.AlertDialog.Builder(context)
+                .setView(dialogView)
+                .create()
+            
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            
+            val etUsername = dialogView.findViewById<android.widget.EditText>(R.id.etUsername)
+            val btnCancel = dialogView.findViewById<TextView>(R.id.btnCancel)
+            val btnSave = dialogView.findViewById<TextView>(R.id.btnSave)
+            
+            etUsername.setText(username)
+            
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
+            
+            btnSave.setOnClickListener {
+                val newName = etUsername.text.toString().trim()
+                if (newName.isNotEmpty()) {
+                    binding.tvUsernameVal.text = newName
+                    ProfileSession.setUsername(context, newName)
+                    Toast.makeText(context, "Đã cập nhật tên người dùng", Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }
+            
+            dialog.show()
         }
 
         binding.btnPhone.setOnClickListener {
@@ -120,7 +147,8 @@ class AccountProfileSecurityFragment : RootieFragment() {
         }
 
         binding.btnChangePassword.setOnClickListener {
-            Toast.makeText(context, "Thay đổi mật khẩu (Đang phát triển)", Toast.LENGTH_SHORT).show()
+            val sheet = AccountChangePasswordSheet()
+            sheet.show(parentFragmentManager, "AccountChangePasswordSheet")
         }
 
         binding.btnPasskey.setOnClickListener {

@@ -107,6 +107,35 @@ class FirestoreService {
         } catch (e: Exception) { emptyList() }
     }
 
+    suspend fun authenticateUser(emailOrPhone: String, passwordHash: String, passwordPlain: String, isEmail: Boolean): UserEntity? {
+        return try {
+            val field = if (isEmail) "email" else "phone"
+            val snapshot = db.collection("users")
+                .whereEqualTo(field, emailOrPhone)
+                .get()
+                .await()
+            
+            for (doc in snapshot.documents) {
+                val dbPassword = doc.getString("password") ?: ""
+                if (dbPassword == passwordHash || dbPassword == passwordPlain) {
+                    return UserEntity(
+                        user_id = doc.id,
+                        username = doc.getString("username") ?: "",
+                        full_name = doc.getString("full_name") ?: "",
+                        email = doc.getString("email") ?: "",
+                        phone = doc.getString("phone") ?: "",
+                        password = dbPassword,
+                        avatar = doc.getString("avatar") ?: doc.getString("avatar_url") ?: ""
+                    )
+                }
+            }
+            null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     suspend fun saveUser(user: UserEntity): Boolean {
         return try {
             val userMap = hashMapOf(
@@ -527,5 +556,247 @@ class FirestoreService {
                 )
             }
         } catch (e: Exception) { emptyList() }
+    }
+
+    // --- Bookings ---
+    suspend fun uploadBookings(bookings: List<BookingHistoryEntity>) {
+        try {
+            val batch = db.batch()
+            for (booking in bookings) {
+                val ref = db.collection("skin_bookings").document(booking.id.ifEmpty { java.util.UUID.randomUUID().toString() })
+                val map = hashMapOf(
+                    "id" to booking.id,
+                    "userId" to booking.userId,
+                    "userName" to booking.userName,
+                    "userPhone" to booking.userPhone,
+                    "userEmail" to booking.userEmail,
+                    "serviceName" to booking.serviceName,
+                    "dateDisplay" to booking.dateDisplay,
+                    "monthDisplay" to booking.monthDisplay,
+                    "dayOfWeek" to booking.dayOfWeek,
+                    "time" to booking.time,
+                    "duration" to booking.duration,
+                    "storeName" to booking.storeName,
+                    "storeAddress" to booking.storeAddress,
+                    "storePhone" to booking.storePhone,
+                    "storeImage" to booking.storeImage,
+                    "note" to booking.note,
+                    "status" to booking.status,
+                    "policy" to booking.policy,
+                    "createdAt" to booking.createdAt,
+                    "completedAt" to booking.completedAt,
+                    "skinResults" to booking.skinResults,
+                    "consultantName" to booking.consultantName,
+                    "consultantAvatar" to booking.consultantAvatar,
+                    "consultantRating" to booking.consultantRating,
+                    "userRating" to booking.userRating,
+                    "userReview" to booking.userReview,
+                    "reviewDate" to booking.reviewDate,
+                    "beforeImage" to booking.beforeImage,
+                    "afterImage" to booking.afterImage,
+                    "earnedPoints" to booking.earnedPoints,
+                    "totalPoints" to booking.totalPoints,
+                    "nextAppointmentDate" to booking.nextAppointmentDate,
+                    "nextAppointmentText" to booking.nextAppointmentText,
+                    "cancelledAt" to booking.cancelledAt,
+                    "cancelReason" to booking.cancelReason
+                )
+                batch.set(ref, map)
+            }
+            batch.commit().await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun getUserBookingHistory(email: String): List<BookingHistoryEntity> {
+        return try {
+            val snapshot = db.collection("skin_bookings")
+                .whereEqualTo("userEmail", email)
+                .get()
+                .await()
+            snapshot.documents.mapNotNull { doc ->
+                @Suppress("UNCHECKED_CAST")
+                BookingHistoryEntity(
+                    id = doc.getString("id") ?: doc.id,
+                    userId = doc.getString("userId") ?: "",
+                    userName = doc.getString("userName") ?: "",
+                    userPhone = doc.getString("userPhone") ?: "",
+                    userEmail = doc.getString("userEmail") ?: "",
+                    serviceName = doc.getString("serviceName") ?: "",
+                    dateDisplay = doc.getString("dateDisplay") ?: "",
+                    monthDisplay = doc.getString("monthDisplay") ?: "",
+                    dayOfWeek = doc.getString("dayOfWeek") ?: "",
+                    time = doc.getString("time") ?: "",
+                    duration = doc.getString("duration") ?: "",
+                    storeName = doc.getString("storeName") ?: "",
+                    storeAddress = doc.getString("storeAddress") ?: "",
+                    storePhone = doc.getString("storePhone") ?: "",
+                    storeImage = doc.getString("storeImage") ?: "",
+                    note = doc.getString("note") ?: "",
+                    status = doc.getString("status") ?: "",
+                    policy = doc.getString("policy") ?: "",
+                    createdAt = doc.getString("createdAt") ?: "",
+                    completedAt = doc.getString("completedAt") ?: "",
+                    skinResults = (doc.get("skinResults") as? List<String>) ?: emptyList(),
+                    consultantName = doc.getString("consultantName") ?: "",
+                    consultantAvatar = doc.getString("consultantAvatar") ?: "",
+                    consultantRating = doc.getDouble("consultantRating")?.toFloat() ?: 0f,
+                    userRating = doc.getDouble("userRating")?.toFloat() ?: 0f,
+                    userReview = doc.getString("userReview") ?: "",
+                    reviewDate = doc.getString("reviewDate") ?: "",
+                    beforeImage = doc.getString("beforeImage") ?: "",
+                    afterImage = doc.getString("afterImage") ?: "",
+                    earnedPoints = doc.getLong("earnedPoints")?.toInt() ?: 0,
+                    totalPoints = doc.getLong("totalPoints")?.toInt() ?: 0,
+                    nextAppointmentDate = doc.getString("nextAppointmentDate") ?: "",
+                    nextAppointmentText = doc.getString("nextAppointmentText") ?: "",
+                    cancelledAt = doc.getString("cancelledAt") ?: "",
+                    cancelReason = doc.getString("cancelReason") ?: ""
+                )
+            }.sortedByDescending { it.createdAt }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    suspend fun addBooking(booking: BookingHistoryEntity) {
+        try {
+            val docId = booking.id.ifEmpty { java.util.UUID.randomUUID().toString() }
+            val ref = db.collection("skin_bookings").document(docId)
+            val finalBooking = booking.copy(id = docId)
+            val map = hashMapOf(
+                "id" to finalBooking.id,
+                "userId" to finalBooking.userId,
+                "userName" to finalBooking.userName,
+                "userPhone" to finalBooking.userPhone,
+                "userEmail" to finalBooking.userEmail,
+                "serviceName" to finalBooking.serviceName,
+                "dateDisplay" to finalBooking.dateDisplay,
+                "monthDisplay" to finalBooking.monthDisplay,
+                "dayOfWeek" to finalBooking.dayOfWeek,
+                "time" to finalBooking.time,
+                "duration" to finalBooking.duration,
+                "storeName" to finalBooking.storeName,
+                "storeAddress" to finalBooking.storeAddress,
+                "storePhone" to finalBooking.storePhone,
+                "storeImage" to finalBooking.storeImage,
+                "note" to finalBooking.note,
+                "status" to finalBooking.status,
+                "policy" to finalBooking.policy,
+                "createdAt" to finalBooking.createdAt,
+                "completedAt" to finalBooking.completedAt,
+                "skinResults" to finalBooking.skinResults,
+                "consultantName" to finalBooking.consultantName,
+                "consultantAvatar" to finalBooking.consultantAvatar,
+                "consultantRating" to finalBooking.consultantRating,
+                "userRating" to finalBooking.userRating,
+                "userReview" to finalBooking.userReview,
+                "reviewDate" to finalBooking.reviewDate,
+                "beforeImage" to finalBooking.beforeImage,
+                "afterImage" to finalBooking.afterImage,
+                "earnedPoints" to finalBooking.earnedPoints,
+                "totalPoints" to finalBooking.totalPoints,
+                "nextAppointmentDate" to finalBooking.nextAppointmentDate,
+                "nextAppointmentText" to finalBooking.nextAppointmentText,
+                "cancelledAt" to finalBooking.cancelledAt,
+                "cancelReason" to finalBooking.cancelReason
+            )
+            ref.set(map).await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun updateBookingStatus(bookingId: String, newStatus: String, cancelReason: String = "") {
+        try {
+            db.collection("skin_bookings").document(bookingId)
+                .update(
+                    "status", newStatus,
+                    "cancelReason", cancelReason,
+                    "cancelledAt", if (newStatus == "Đã huỷ") java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date()) else ""
+                ).await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // --- Skin History ---
+    suspend fun uploadSkinHistory(historiesArray: org.json.JSONArray) {
+        try {
+            val batch = db.batch()
+            for (i in 0 until historiesArray.length()) {
+                val obj = historiesArray.getJSONObject(i)
+                val id = obj.optString("id", java.util.UUID.randomUUID().toString())
+                val ref = db.collection("skin_history").document(id)
+                // Convert JSON string to Map
+                val map = org.json.JSONObject(obj.toString()).toMap()
+                batch.set(ref, map)
+            }
+            batch.commit().await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun getSkinHistory(email: String): org.json.JSONArray {
+        return try {
+            val snapshot = db.collection("skin_history")
+                .whereEqualTo("userEmail", email)
+                .get()
+                .await()
+            val array = org.json.JSONArray()
+            val docs = snapshot.documents.sortedByDescending { it.getString("date") + " " + it.getString("time") }
+            for (doc in docs) {
+                array.put(org.json.JSONObject(doc.data))
+            }
+            array
+        } catch (e: Exception) {
+            e.printStackTrace()
+            org.json.JSONArray()
+        }
+    }
+
+    suspend fun addSkinHistory(email: String, historyObj: org.json.JSONObject) {
+        try {
+            val id = historyObj.optString("id", java.util.UUID.randomUUID().toString())
+            historyObj.put("userEmail", email) // Ensure userEmail is attached
+            val ref = db.collection("skin_history").document(id)
+            ref.set(historyObj.toMap()).await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // Extension to convert JSONObject to Map deeply
+    private fun org.json.JSONObject.toMap(): Map<String, Any> {
+        val map = mutableMapOf<String, Any>()
+        val keys = this.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            var value = this.get(key)
+            if (value is org.json.JSONArray) {
+                value = value.toList()
+            } else if (value is org.json.JSONObject) {
+                value = value.toMap()
+            }
+            map[key] = value
+        }
+        return map
+    }
+
+    private fun org.json.JSONArray.toList(): List<Any> {
+        val list = mutableListOf<Any>()
+        for (i in 0 until this.length()) {
+            var value = this.get(i)
+            if (value is org.json.JSONArray) {
+                value = value.toList()
+            } else if (value is org.json.JSONObject) {
+                value = value.toMap()
+            }
+            list.add(value)
+        }
+        return list
     }
 }

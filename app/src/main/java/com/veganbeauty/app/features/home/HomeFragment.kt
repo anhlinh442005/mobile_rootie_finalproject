@@ -28,6 +28,7 @@ import com.veganbeauty.app.features.home.adapter.HomeBestsellerAdapter
 import com.veganbeauty.app.features.home.adapter.HomeCategoryAdapter
 import com.veganbeauty.app.features.home.adapter.HomeCategoryItem
 import com.veganbeauty.app.features.home.adapter.HomeProductCardAdapter
+import com.veganbeauty.app.features.home.adapter.HomeProductGridAdapter
 import com.veganbeauty.app.features.home.adapter.HomeFlashsaleAdapter
 import com.veganbeauty.app.features.home.adapter.HomeTopSearchAdapter
 import com.veganbeauty.app.features.shop.ShopViewModel
@@ -43,7 +44,7 @@ class HomeFragment : RootieFragment() {
   private lateinit var viewModel: ShopViewModel
 
   private val recentAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
-  private val recommendationsAdapter = HomeProductCardAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
+  private val recommendationsAdapter = HomeProductGridAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
   private val bestsellerAdapter = HomeBestsellerAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
   private val topSearchAdapter = HomeTopSearchAdapter(onItemClick = ::openProductDetail)
   private val flashSaleAdapter = HomeFlashsaleAdapter(onItemClick = ::openProductDetail, onAddToCart = ::addToCart)
@@ -65,18 +66,26 @@ class HomeFragment : RootieFragment() {
           .commit()
   }
 
+  private fun navigateIfLoggedIn(fragmentProvider: () -> androidx.fragment.app.Fragment) {
+      if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
+          com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext())
+          return
+      }
+      navigateToFragment(fragmentProvider())
+  }
+
   private val allShortcuts by lazy {
       listOf(
-          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Quét sản phẩm", R.drawable.ic_qrscan) { Toast.makeText(context, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show() },
-          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Soi Da AI", R.drawable.ic_face) { navigateToFragment(com.veganbeauty.app.features.myskin.SkinScanFragment()) },
-          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Đặt lịch soi da", R.drawable.ic_calendar) { navigateToFragment(com.veganbeauty.app.features.myskin.ChooseBranchFragment()) },
+          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Quét sản phẩm", R.drawable.ic_qrscan) { navigateToFragment(com.veganbeauty.app.features.shop.barcode.BarcodeScanFragment()) },
+          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Soi Da AI", R.drawable.ic_ai_outline) { navigateToFragment(com.veganbeauty.app.features.myskin.SkinScanFragment()) },
+          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Đặt lịch soi da", R.drawable.ic_calendar_outline) { navigateToFragment(com.veganbeauty.app.features.myskin.ChooseBranchFragment()) },
           com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Routine của tôi", R.drawable.ic_skincare) { navigateToFragment(com.veganbeauty.app.features.myskin.MySkinFragment()) },
-          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Dự báo da hôm nay", R.drawable.ic_water_drop) { Toast.makeText(context, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show() },
-          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Kiểm tra dị ứng", R.drawable.ic_warning_red) { navigateToFragment(com.veganbeauty.app.features.quiz.QuizTestIntroFragment()) },
-          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Hồ sơ làn da", R.drawable.ic_clipboard_outline) { navigateToFragment(com.veganbeauty.app.features.myskin.BookingHistoryFragment()) },
-          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Nhắc chăm da", R.drawable.ic_bell) { Toast.makeText(context, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show() },
+          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Dự báo da hôm nay", R.drawable.ic_water_drop_outline) { navigateIfLoggedIn { com.veganbeauty.app.features.weather.WeatherForecastFragment() } },
+          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Kiểm tra dị ứng", R.drawable.ic_shield_outline) { navigateToFragment(com.veganbeauty.app.features.quiz.QuizTestIntroFragment()) },
+          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Hồ sơ làn da", R.drawable.ic_clipboard_outline) { navigateIfLoggedIn { com.veganbeauty.app.features.myskin.SkinHistoryFragment() } },
+          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Nhắc chăm da", R.drawable.ic_bell) { navigateIfLoggedIn { com.veganbeauty.app.features.routine.SkinReminderFragment() } },
           com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Đổi quà Rootie Xu", R.drawable.ic_gift) { navigateToFragment(com.veganbeauty.app.features.account.reward.AccountRewardFragment()) },
-          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Cửa hàng gần bạn", R.drawable.ic_store) { navigateToFragment(com.veganbeauty.app.features.myskin.ChooseBranchFragment()) },
+          com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Cửa hàng gần bạn", R.drawable.ic_store_outline) { navigateToFragment(com.veganbeauty.app.features.shop.store.ShopStoreSystemFragment()) },
           com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Beauty Explore", R.drawable.ic_reel_outline) { navigateToFragment(com.veganbeauty.app.features.community.com_feed.ComLoadingFragment()) },
           com.veganbeauty.app.features.home.adapter.HomeShortcutItem("Tra cứu thành phần", R.drawable.ic_shortcut_ingredient) { Toast.makeText(context, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show() }
       )
@@ -84,6 +93,8 @@ class HomeFragment : RootieFragment() {
 
   private var flashSaleTimer: android.os.CountDownTimer? = null
   private var allProducts: List<ProductEntity> = emptyList()
+  private var recommendationLimit = 6
+  private var allRecommendationProducts: List<ProductEntity> = emptyList()
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -131,6 +142,21 @@ class HomeFragment : RootieFragment() {
     }
     setupStreakWidget()
     setupQuizReminder()
+
+    binding.btnLoadMoreRecommendations.setOnClickListener {
+        recommendationLimit += 6
+        updateRecommendationsList()
+    }
+  }
+
+  private fun updateRecommendationsList() {
+      val itemsToShow = allRecommendationProducts.take(recommendationLimit)
+      recommendationsAdapter.submitList(itemsToShow)
+      if (recommendationLimit >= allRecommendationProducts.size) {
+          binding.btnLoadMoreRecommendations.visibility = View.GONE
+      } else {
+          binding.btnLoadMoreRecommendations.visibility = View.VISIBLE
+      }
   }
 
   private fun setupShortcuts() {
@@ -304,8 +330,9 @@ class HomeFragment : RootieFragment() {
       adapter = recentAdapter
     }
     binding.rvRecommendations.apply {
-      layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+      layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
       adapter = recommendationsAdapter
+      isNestedScrollingEnabled = false
     }
     binding.rvBestsellers.apply {
       layoutManager = LinearLayoutManager(context)
@@ -334,7 +361,6 @@ class HomeFragment : RootieFragment() {
 
     binding.tvRecentSeeAll.setOnClickListener { openShop() }
     binding.tvCategoriesSeeAll.setOnClickListener { openShop() }
-    binding.tvRecommendationsSeeAll.setOnClickListener { openShop() }
   }
 
   private fun setupPromoClicks() {
@@ -376,7 +402,10 @@ class HomeFragment : RootieFragment() {
 
     flashSaleAdapter.submitList(products.shuffled().take(4))
     recentAdapter.submitList(products.take(8))
-    recommendationsAdapter.submitList(products.takeLast(8).reversed())
+
+    allRecommendationProducts = products.shuffled().take(20) // Get a random pool of products for recommendations
+    recommendationLimit = 6 // Reset limit when new products arrive
+    updateRecommendationsList()
 
     bestsellerAdapter.submitList(products.sortedByDescending { it.price }.take(3))
     topSearchAdapter.submitList(products.take(3))

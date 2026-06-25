@@ -52,6 +52,20 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    packaging {
+        resources {
+            pickFirsts.add("META-INF/NOTICE.md")
+            pickFirsts.add("META-INF/LICENSE.md")
+            pickFirsts.add("META-INF/DEPENDENCIES")
+            pickFirsts.add("META-INF/LICENSE")
+            pickFirsts.add("META-INF/NOTICE")
+            pickFirsts.add("META-INF/license.txt")
+            pickFirsts.add("META-INF/notice.txt")
+            pickFirsts.add("META-INF/ASL2.0")
+            pickFirsts.add("META-INF/*.kotlin_module")
+        }
+    }
 }
 
 kotlin {
@@ -97,11 +111,13 @@ dependencies {
     // Chart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
+    implementation("com.github.yalantis:ucrop:2.2.8")
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.sun.mail:android-mail:1.6.7")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
 }
-dependencies { implementation("com.github.yalantis:ucrop:2.2.8") }
-dependencies { implementation("com.google.firebase:firebase-database-ktx") }
-dependencies { implementation("com.google.code.gson:gson:2.10.1") }
-dependencies { implementation("com.google.firebase:firebase-messaging-ktx") }

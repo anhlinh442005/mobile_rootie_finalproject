@@ -19,6 +19,10 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.veganbeauty.app.R
 import com.veganbeauty.app.databinding.SkinFragmentScanResultBinding
 import org.json.JSONArray
+import com.veganbeauty.app.data.local.ProfileSession
+import com.veganbeauty.app.data.remote.FirestoreService
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class SkinScanResultFragment : RootieFragment() {
 
@@ -58,8 +62,11 @@ class SkinScanResultFragment : RootieFragment() {
 
         binding.skinResultBtnSave.setOnClickListener {
             currentData?.let {
-                com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).addSkinHistory(it)
-                Toast.makeText(requireContext(), "Đã lưu kết quả phân tích vào Lịch sử!", Toast.LENGTH_SHORT).show()
+                val userEmail = ProfileSession.getEmail(requireContext()).takeIf { e -> e.isNotBlank() } ?: "test@example.com"
+                viewLifecycleOwner.lifecycleScope.launch {
+                    FirestoreService().addSkinHistory(userEmail, it)
+                    Toast.makeText(requireContext(), "Đã lưu kết quả phân tích vào Lịch sử!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -86,33 +93,40 @@ class SkinScanResultFragment : RootieFragment() {
     }
 
     private fun loadData() {
-        try {
-            val historyArray = com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getSkinHistory()
-            if (historyArray.length() > 0) {
-                // Lấy data mới nhất (mock) để dùng làm kết quả phân tích
-                val data = org.json.JSONObject(historyArray.getJSONObject(0).toString())
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val userEmail = ProfileSession.getEmail(requireContext()).takeIf { e -> e.isNotBlank() } ?: "test@example.com"
+                val historyArray = FirestoreService().getSkinHistory(userEmail)
                 
-                // Cập nhật thời gian hiện tại cho kết quả quét mới
-                val cal = java.util.Calendar.getInstance()
-                val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale("vi"))
-                val timeFormat = java.text.SimpleDateFormat("HH:mm", java.util.Locale("vi"))
-                data.put("date", dateFormat.format(cal.time))
-                data.put("time", timeFormat.format(cal.time))
+                // If the user has history, use it. Otherwise, use mock from local
+                val arrayToUse = if (historyArray.length() > 0) historyArray else com.veganbeauty.app.data.local.LocalJsonReader(requireContext()).getSkinHistory()
                 
-                // Cập nhật id mới
-                data.put("id", "sh_" + System.currentTimeMillis())
-                
-                val imageUri = arguments?.getString(ARG_IMAGE_URI)
-                if (imageUri != null) {
-                    data.put("imageUrl", imageUri)
-                }
+                if (arrayToUse.length() > 0) {
+                    // Lấy data mới nhất để dùng làm template kết quả phân tích
+                    val data = org.json.JSONObject(arrayToUse.getJSONObject(0).toString())
+                    
+                    // Cập nhật thời gian hiện tại cho kết quả quét mới
+                    val cal = java.util.Calendar.getInstance()
+                    val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale("vi"))
+                    val timeFormat = java.text.SimpleDateFormat("HH:mm", java.util.Locale("vi"))
+                    data.put("date", dateFormat.format(cal.time))
+                    data.put("time", timeFormat.format(cal.time))
+                    
+                    // Cập nhật id mới
+                    data.put("id", "sh_" + System.currentTimeMillis())
+                    
+                    val imageUri = arguments?.getString(ARG_IMAGE_URI)
+                    if (imageUri != null) {
+                        data.put("imageUrl", imageUri)
+                    }
 
-                currentData = data
-                bindData(data)
+                    currentData = data
+                    bindData(data)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(requireContext(), "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show()
         }
     }
 
