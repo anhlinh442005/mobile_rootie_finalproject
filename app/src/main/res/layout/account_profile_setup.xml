@@ -555,11 +555,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-<<<<<<< HEAD
-                            android:text="Chính sách và Điều khoản Rootie"
-=======
                             android:text="Điều khoản sử dụng Rootie"
->>>>>>> cecd8e2c2c3689c121575a717c41e8e5730535df
                             android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:fontFamily="@font/lexend" />

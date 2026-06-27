@@ -1,0 +1,842 @@
+package com.veganbeauty.app.features.community.com_feed;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
+import coil.Coil;
+import coil.ImageLoader;
+import coil.request.ImageRequest;
+import coil.decode.SvgDecoder;
+import coil.transform.CircleCropTransformation;
+
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.veganbeauty.app.R;
+import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.data.local.RootieDatabase;
+import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
+import com.veganbeauty.app.data.local.entities.CommunityProduct;
+import com.veganbeauty.app.data.local.entities.ReelEntity;
+import com.veganbeauty.app.data.local.entities.UserEntity;
+import com.veganbeauty.app.databinding.ComItemPostBinding;
+import com.veganbeauty.app.databinding.ComItemReelBinding;
+import com.veganbeauty.app.databinding.ComItemStoryBinding;
+import com.veganbeauty.app.databinding.ComItemSuggestedReelsFeedBinding;
+import com.veganbeauty.app.databinding.ComItemSuggestedUsersFeedBinding;
+import com.veganbeauty.app.databinding.ComItemSuggestionBinding;
+import com.veganbeauty.app.features.community.UserMemoryHelper;
+import com.veganbeauty.app.features.community.beauty_hub.CommunityNewsFragment;
+import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
+import com.veganbeauty.app.utils.TimeFormatter;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import kotlinx.coroutines.BuildersKt;
+import kotlinx.coroutines.CoroutineScope;
+import kotlinx.coroutines.Dispatchers;
+
+abstract class CommunityFeedItem {
+    static class Post extends CommunityFeedItem {
+        final CommunityPostEntity post;
+        Post(CommunityPostEntity post) { this.post = post; }
+    }
+    static class SuggestedUsers extends CommunityFeedItem {
+        final List<UserEntity> users;
+        SuggestedUsers(List<UserEntity> users) { this.users = users; }
+    }
+    static class SuggestedReels extends CommunityFeedItem {
+        final List<ReelEntity> reels;
+        SuggestedReels(List<ReelEntity> reels) { this.reels = reels; }
+    }
+}
+
+class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.ImageViewHolder> {
+    List<String> imageUrls;
+
+    public ImageSliderAdapter(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
+
+    static class ImageViewHolder extends RecyclerView.ViewHolder {
+        final ImageView imageView;
+        ImageViewHolder(ImageView imageView) {
+            super(imageView);
+            this.imageView = imageView;
+        }
+    }
+
+    @NonNull
+    @Override
+    public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ImageView imageView = new ImageView(parent.getContext());
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        ));
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setBackgroundColor(Color.parseColor("#EEEEEE"));
+        return new ImageViewHolder(imageView);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+        String url = imageUrls.get(position);
+        try {
+            ImageLoader imageLoader = Coil.imageLoader(holder.itemView.getContext());
+            ImageRequest.Builder requestBuilder = new ImageRequest.Builder(holder.itemView.getContext())
+                    .crossfade(true)
+                    .placeholder(android.R.color.darker_gray)
+                    .error(android.R.color.darker_gray)
+                    .target(holder.imageView);
+
+            if (url.startsWith("content://") || url.startsWith("file://")) {
+                requestBuilder.data(Uri.parse(url));
+            } else {
+                requestBuilder.data(url);
+            }
+            imageLoader.enqueue(requestBuilder.build());
+        } catch (Exception e) {
+            holder.imageView.setBackgroundColor(Color.DKGRAY);
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return imageUrls.size();
+    }
+
+    public void updateData(List<String> newUrls) {
+        this.imageUrls = newUrls;
+        notifyDataSetChanged();
+    }
+}
+
+class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHolder> {
+    private List<UserEntity> stories;
+
+    public StoryAdapter(List<UserEntity> stories) {
+        this.stories = stories;
+    }
+
+    static class StoryViewHolder extends RecyclerView.ViewHolder {
+        final ComItemStoryBinding binding;
+        StoryViewHolder(ComItemStoryBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    @NonNull
+    @Override
+    public StoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ComItemStoryBinding binding = ComItemStoryBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new StoryViewHolder(binding);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull StoryViewHolder holder, int position) {
+        UserEntity story = stories.get(position);
+        holder.binding.tvUsername.setText(story.getUsername());
+
+        if (position == 0) {
+            holder.binding.ivAdd.setVisibility(View.VISIBLE);
+        } else {
+            holder.binding.ivAdd.setVisibility(View.GONE);
+        }
+
+        if (story.getAvatar() != null && !story.getAvatar().isEmpty()) {
+            ImageLoader imageLoader = new ImageLoader.Builder(holder.itemView.getContext())
+                    .components(registry -> registry.add(new SvgDecoder.Factory(false)))
+                    .build();
+            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
+                    .data(story.getAvatar())
+                    .crossfade(true)
+                    .placeholder(android.R.color.darker_gray)
+                    .error(R.drawable.logo)
+                    .target(holder.binding.ivAvatar)
+                    .build();
+            imageLoader.enqueue(request);
+        } else {
+            holder.binding.ivAvatar.setImageResource(android.R.color.darker_gray);
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return stories.size();
+    }
+
+    public void updateData(List<UserEntity> newStories) {
+        this.stories = newStories;
+        notifyDataSetChanged();
+    }
+}
+
+class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private List<CommunityFeedItem> items = new ArrayList<>();
+    private List<CommunityProduct> globalProducts = new ArrayList<>();
+
+    private static final int VIEW_TYPE_POST = 0;
+    private static final int VIEW_TYPE_SUGGESTED_USERS = 1;
+    private static final int VIEW_TYPE_SUGGESTED_REELS = 2;
+
+    static class PostViewHolder extends RecyclerView.ViewHolder {
+        final ComItemPostBinding binding;
+        PostViewHolder(ComItemPostBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    static class SuggestedUsersViewHolder extends RecyclerView.ViewHolder {
+        final ComItemSuggestedUsersFeedBinding binding;
+        SuggestedUsersViewHolder(ComItemSuggestedUsersFeedBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    static class SuggestedReelsViewHolder extends RecyclerView.ViewHolder {
+        final ComItemSuggestedReelsFeedBinding binding;
+        SuggestedReelsViewHolder(ComItemSuggestedReelsFeedBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        CommunityFeedItem item = items.get(position);
+        if (item instanceof CommunityFeedItem.Post) return VIEW_TYPE_POST;
+        if (item instanceof CommunityFeedItem.SuggestedUsers) return VIEW_TYPE_SUGGESTED_USERS;
+        if (item instanceof CommunityFeedItem.SuggestedReels) return VIEW_TYPE_SUGGESTED_REELS;
+        return VIEW_TYPE_POST;
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == VIEW_TYPE_SUGGESTED_USERS) {
+            return new SuggestedUsersViewHolder(ComItemSuggestedUsersFeedBinding.inflate(inflater, parent, false));
+        } else if (viewType == VIEW_TYPE_SUGGESTED_REELS) {
+            return new SuggestedReelsViewHolder(ComItemSuggestedReelsFeedBinding.inflate(inflater, parent, false));
+        } else {
+            return new PostViewHolder(ComItemPostBinding.inflate(inflater, parent, false));
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        CommunityFeedItem item = items.get(position);
+        if (item instanceof CommunityFeedItem.Post) {
+            PostViewHolder postHolder = (PostViewHolder) holder;
+            CommunityPostEntity post = ((CommunityFeedItem.Post) item).post;
+
+            String authorName = post.getAuthorDisplayName() != null && !post.getAuthorDisplayName().isEmpty() ? post.getAuthorDisplayName() : post.getAuthorUsername();
+            postHolder.binding.tvAuthorName.setText(authorName);
+
+            if ("rootie_official".equals(post.getAuthorId()) || "rootie_vn".equals(post.getAuthorId())) {
+                android.graphics.drawable.Drawable verifiedIcon = ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_verified);
+                if (verifiedIcon != null) {
+                    verifiedIcon.setBounds(0, 0, 36, 36);
+                    postHolder.binding.tvAuthorName.setCompoundDrawables(null, null, verifiedIcon, null);
+                    postHolder.binding.tvAuthorName.setCompoundDrawablePadding(8);
+                }
+
+                long timestamp = 0;
+                try {
+                    timestamp = Long.parseLong(post.getCreatedAt());
+                } catch (Exception ignored) {}
+
+                String dateStr = "11 thg 3";
+                if (timestamp > 0) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("d 'thg' M", new Locale("vi"));
+                    dateStr = sdf.format(new Date(timestamp * 1000));
+                }
+
+                String text = dateStr + " •  ";
+                SpannableStringBuilder spannable = new SpannableStringBuilder(text);
+                android.graphics.drawable.Drawable publicIcon = ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_public);
+                if (publicIcon != null) {
+                    publicIcon.setBounds(0, 0, 36, 36);
+                    ImageSpan imageSpan = new ImageSpan(publicIcon, ImageSpan.ALIGN_BASELINE);
+                    spannable.setSpan(imageSpan, text.length() - 1, text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+                postHolder.binding.tvSkinType.setText(spannable);
+                postHolder.binding.tvCreatedAt.setVisibility(View.GONE);
+            } else {
+                postHolder.binding.tvAuthorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                List<String> tagList = new ArrayList<>();
+                if (post.getSkinType() != null && !post.getSkinType().trim().isEmpty() && !"Không xác định".equals(post.getSkinType())) {
+                    tagList.add(post.getSkinType());
+                }
+                if (post.getConcern() != null && !post.getConcern().trim().isEmpty() && !"Khác".equals(post.getConcern()) && !"Chung".equals(post.getConcern())) {
+                    tagList.add(post.getConcern());
+                }
+                if (post.getType() != null && !post.getType().trim().isEmpty()) {
+                    tagList.add(post.getType());
+                }
+                StringBuilder tags = new StringBuilder();
+                for (int i = 0; i < tagList.size(); i++) {
+                    tags.append(tagList.get(i));
+                    if (i < tagList.size() - 1) tags.append(" • ");
+                }
+                postHolder.binding.tvSkinType.setText(tags.toString());
+                postHolder.binding.tvCreatedAt.setVisibility(View.VISIBLE);
+                postHolder.binding.tvCreatedAt.setText(TimeFormatter.INSTANCE.getTimeAgo(post.getCreatedAt()));
+            }
+
+            postHolder.binding.tvLikes.setText(String.valueOf(post.getLikesCount()));
+            postHolder.binding.tvComments.setText(String.valueOf(post.getCommentsCount()));
+            postHolder.binding.tvContent.setText(post.getContent());
+
+            if (post.getAuthorAvatarUrl() != null && !post.getAuthorAvatarUrl().isEmpty()) {
+                ImageLoader imageLoader = new ImageLoader.Builder(holder.itemView.getContext())
+                        .components(registry -> registry.add(new SvgDecoder.Factory(false)))
+                        .build();
+                ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
+                        .data(post.getAuthorAvatarUrl())
+                        .crossfade(true)
+                        .placeholder(android.R.color.darker_gray)
+                        .error(R.drawable.img_avatar)
+                        .target(postHolder.binding.ivAuthorAvatar)
+                        .build();
+                imageLoader.enqueue(request);
+            } else {
+                if ("rootie_official".equals(post.getAuthorId()) || "rootie_vn".equals(post.getAuthorId())) {
+                    postHolder.binding.ivAuthorAvatar.setImageResource(R.drawable.imv_logo);
+                } else {
+                    postHolder.binding.ivAuthorAvatar.setImageResource(android.R.color.darker_gray);
+                }
+            }
+
+            List<String> linkedIds = new ArrayList<>();
+            if (post.getLinkedProductIds() != null) {
+                for (String id : post.getLinkedProductIds().split(",")) {
+                    String trim = id.trim();
+                    if (!trim.isEmpty()) linkedIds.add(trim);
+                }
+            }
+
+            if (!linkedIds.isEmpty() && !globalProducts.isEmpty()) {
+                List<CommunityProduct> matchingProducts = new ArrayList<>();
+                for (CommunityProduct p : globalProducts) {
+                    if (linkedIds.contains(p.getId())) matchingProducts.add(p);
+                }
+                if (!matchingProducts.isEmpty()) {
+                    postHolder.binding.llUsedProducts.setVisibility(View.VISIBLE);
+                    postHolder.binding.rvLinkedProducts.setAdapter(new PostLinkedProductAdapter(matchingProducts, post.getPostId(), post.getAuthorId()));
+                } else {
+                    postHolder.binding.llUsedProducts.setVisibility(View.GONE);
+                }
+            } else {
+                postHolder.binding.llUsedProducts.setVisibility(View.GONE);
+            }
+
+            List<String> urls = new ArrayList<>();
+            if (post.getMediaUrlsString() != null) {
+                for (String url : post.getMediaUrlsString().split(",")) {
+                    if (!url.trim().isEmpty()) urls.add(url.trim());
+                }
+            }
+
+            ViewGroup rootLayout = (ViewGroup) postHolder.binding.getRoot();
+            View contentContainer = postHolder.binding.llContentContainer;
+            int currentIdx = rootLayout.indexOfChild(contentContainer);
+
+            if (!urls.isEmpty()) {
+                ImageSliderAdapter sliderAdapter = null;
+                if (postHolder.binding.vpPostImages.getAdapter() instanceof ImageSliderAdapter) {
+                    sliderAdapter = (ImageSliderAdapter) postHolder.binding.vpPostImages.getAdapter();
+                }
+
+                if (sliderAdapter == null) {
+                    sliderAdapter = new ImageSliderAdapter(urls);
+                    postHolder.binding.vpPostImages.setAdapter(sliderAdapter);
+                    new TabLayoutMediator(postHolder.binding.tabIndicator, postHolder.binding.vpPostImages, (tab, position1) -> {}).attach();
+                } else {
+                    if (!sliderAdapter.imageUrls.equals(urls)) {
+                        sliderAdapter.updateData(urls);
+                    }
+                }
+
+                if (urls.size() <= 1) {
+                    postHolder.binding.tabIndicator.setVisibility(View.GONE);
+                } else {
+                    postHolder.binding.tabIndicator.setVisibility(View.VISIBLE);
+                }
+                postHolder.binding.flPostImagesContainer.setVisibility(View.VISIBLE);
+
+                int expectedIdx = rootLayout.getChildCount() - 1;
+                if (currentIdx != expectedIdx) {
+                    rootLayout.removeView(contentContainer);
+                    rootLayout.addView(contentContainer);
+                }
+            } else {
+                postHolder.binding.flPostImagesContainer.setVisibility(View.GONE);
+                postHolder.binding.tabIndicator.setVisibility(View.GONE);
+                if (currentIdx != 1) {
+                    rootLayout.removeView(contentContainer);
+                    rootLayout.addView(contentContainer, 1);
+                }
+            }
+
+            android.content.SharedPreferences sharedPrefs = postHolder.itemView.getContext().getSharedPreferences("rootie_prefs", Context.MODE_PRIVATE);
+            final boolean[] isLiked = {sharedPrefs.getBoolean("liked_" + post.getPostId(), false)};
+            final int[] currentLikesCount = {post.getLikesCount()};
+
+            if (isLiked[0]) {
+                postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_filled);
+            } else {
+                postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_outline);
+            }
+
+            postHolder.binding.ivLike.setOnClickListener(v -> {
+                isLiked[0] = !isLiked[0];
+                if (isLiked[0]) {
+                    postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_filled);
+                    currentLikesCount[0]++;
+                    postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
+                    sharedPrefs.edit().putBoolean("liked_" + post.getPostId(), true).apply();
+                    BuildersKt.launch(CoroutineScopeKt(Dispatchers.getIO()), null, null, (scope, continuation) -> {
+                        RootieDatabase.Companion.getDatabase(holder.itemView.getContext()).communityDao().incrementLikesCount(post.getPostId());
+                        return kotlin.Unit.INSTANCE;
+                    });
+                } else {
+                    postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_outline);
+                    currentLikesCount[0] = Math.max(0, currentLikesCount[0] - 1);
+                    postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
+                    sharedPrefs.edit().putBoolean("liked_" + post.getPostId(), false).apply();
+                    BuildersKt.launch(CoroutineScopeKt(Dispatchers.getIO()), null, null, (scope, continuation) -> {
+                        RootieDatabase.Companion.getDatabase(holder.itemView.getContext()).communityDao().decrementLikesCount(post.getPostId());
+                        return kotlin.Unit.INSTANCE;
+                    });
+                }
+            });
+
+            postHolder.binding.tvComments.setText(String.valueOf(post.getCommentsCount()));
+            postHolder.binding.tvReups.setText(String.valueOf(post.getReupsCount()));
+
+            postHolder.binding.ivComment.setOnClickListener(v -> {
+                Context context = v.getContext();
+                if (context instanceof FragmentActivity) {
+                    CommunityCommentBottomSheet bottomSheet = CommunityCommentBottomSheet.Companion.newInstance(post.getPostId(), post.getCommentsCount());
+                    bottomSheet.show(((FragmentActivity) context).getSupportFragmentManager(), CommunityCommentBottomSheet.Companion.getTAG());
+                }
+            });
+
+            View.OnClickListener onProfileClick = v -> {
+                Context context = v.getContext();
+                if (context instanceof FragmentActivity) {
+                    if ("rootie_official".equals(post.getAuthorId()) || "rootie_vn".equals(post.getAuthorId()) || (post.getAuthorDisplayName() != null && post.getAuthorDisplayName().toLowerCase().contains("rootie"))) {
+                        CommunityNewsFragment newsFragment = new CommunityNewsFragment();
+                        ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
+                                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                                .replace(R.id.main_container, newsFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    } else {
+                        CommunityProfileFragment profileFragment = new CommunityProfileFragment();
+                        Bundle args = new Bundle();
+                        args.putString("USER_ID", post.getAuthorId());
+                        args.putString("AVATAR_URL", post.getAuthorAvatarUrl());
+                        args.putString("USER_NAME", post.getAuthorDisplayName());
+                        profileFragment.setArguments(args);
+                        ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
+                                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                                .replace(R.id.main_container, profileFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                }
+            };
+
+            Context context = postHolder.itemView.getContext();
+            String ownUserId = getOwnUserId(context);
+
+            if (ownUserId.equals(post.getAuthorId())) {
+                postHolder.binding.tvFollow.setVisibility(View.GONE);
+                postHolder.binding.ivMore.setOnClickListener(v -> {
+                    View popupView = LayoutInflater.from(context).inflate(R.layout.com_popup_more_author, null);
+                    PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    popupWindow.setElevation(8f);
+                    popupView.findViewById(R.id.tvEdit).setOnClickListener(v1 -> popupWindow.dismiss());
+                    popupView.findViewById(R.id.tvDelete).setOnClickListener(v1 -> popupWindow.dismiss());
+                    popupView.findViewById(R.id.tvPrivacy).setOnClickListener(v1 -> popupWindow.dismiss());
+                    int xOffset = -(int) (160 * context.getResources().getDisplayMetrics().density) + v.getWidth();
+                    popupWindow.showAsDropDown(v, xOffset, 0);
+                });
+            } else {
+                postHolder.binding.tvFollow.setVisibility(View.VISIBLE);
+                postHolder.binding.ivMore.setOnClickListener(v -> {
+                    View popupView = LayoutInflater.from(context).inflate(R.layout.com_popup_more_other, null);
+                    PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    popupWindow.setElevation(8f);
+                    popupView.findViewById(R.id.tvReport).setOnClickListener(v1 -> popupWindow.dismiss());
+                    popupView.findViewById(R.id.tvHide).setOnClickListener(v1 -> popupWindow.dismiss());
+                    int xOffset = -(int) (160 * context.getResources().getDisplayMetrics().density) + v.getWidth();
+                    popupWindow.showAsDropDown(v, xOffset, 0);
+                });
+            }
+
+            final boolean[] isReuped = {UserMemoryHelper.INSTANCE.isPostReposted(context, ownUserId, post.getPostId())};
+            final int[] currentReupsCount = {post.getReupsCount()};
+
+            if (isReuped[0]) {
+                postHolder.binding.ivReup.setColorFilter(Color.parseColor("#4CAF50"));
+            } else {
+                postHolder.binding.ivReup.clearColorFilter();
+            }
+
+            postHolder.binding.ivReup.setOnClickListener(v -> {
+                isReuped[0] = UserMemoryHelper.INSTANCE.toggleRepost(context, ownUserId, post.getPostId());
+                if (isReuped[0]) {
+                    postHolder.binding.ivReup.setColorFilter(Color.parseColor("#4CAF50"));
+                    currentReupsCount[0]++;
+                } else {
+                    postHolder.binding.ivReup.clearColorFilter();
+                    currentReupsCount[0] = Math.max(0, currentReupsCount[0] - 1);
+                }
+                postHolder.binding.tvReups.setText(String.valueOf(currentReupsCount[0]));
+            });
+
+            final boolean[] isBookmarked = {UserMemoryHelper.INSTANCE.isPostSaved(context, ownUserId, post.getPostId())};
+            if (isBookmarked[0]) {
+                postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark);
+                postHolder.binding.ivBookmark.setColorFilter(Color.parseColor("#FFC107"));
+            } else {
+                postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark_outline);
+                postHolder.binding.ivBookmark.clearColorFilter();
+            }
+
+            postHolder.binding.ivBookmark.setOnClickListener(v -> {
+                isBookmarked[0] = UserMemoryHelper.INSTANCE.toggleSave(context, ownUserId, post.getPostId());
+                if (isBookmarked[0]) {
+                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark);
+                    postHolder.binding.ivBookmark.setColorFilter(Color.parseColor("#FFC107"));
+                } else {
+                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark_outline);
+                    postHolder.binding.ivBookmark.clearColorFilter();
+                }
+            });
+
+            postHolder.binding.tvAuthorName.setOnClickListener(onProfileClick);
+            postHolder.binding.ivAuthorAvatar.setOnClickListener(onProfileClick);
+
+        } else if (item instanceof CommunityFeedItem.SuggestedUsers) {
+            SuggestedUsersViewHolder usersHolder = (SuggestedUsersViewHolder) holder;
+            SuggestionAdapter suggestionAdapter = new SuggestionAdapter(((CommunityFeedItem.SuggestedUsers) item).users);
+            usersHolder.binding.rvSuggestions.setAdapter(suggestionAdapter);
+
+            usersHolder.binding.tvSeeAllSuggestions.setOnClickListener(v -> {
+                Context context = v.getContext();
+                if (context instanceof FragmentActivity) {
+                    ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                            .replace(R.id.main_container, new CommunityDiscoverPeopleFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+        } else if (item instanceof CommunityFeedItem.SuggestedReels) {
+            SuggestedReelsViewHolder reelsHolder = (SuggestedReelsViewHolder) holder;
+            ReelAdapter reelAdapter = new ReelAdapter(((CommunityFeedItem.SuggestedReels) item).reels, false);
+            reelsHolder.binding.rvSuggestedReels.setAdapter(reelAdapter);
+        }
+    }
+
+    private CoroutineScope CoroutineScopeKt(kotlin.coroutines.CoroutineContext io) {
+        return kotlinx.coroutines.CoroutineScopeKt.CoroutineScope(io);
+    }
+
+    private String getOwnUserId(Context context) {
+        String ownId = "test_001";
+        try {
+            String loggedInEmail = ProfileSession.getEmail(context);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(context.getAssets().open("users.json")));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) sb.append(line);
+            JSONArray usersJsonArray = new JSONArray(sb.toString());
+            for (int i = 0; i < usersJsonArray.length(); i++) {
+                JSONObject obj = usersJsonArray.getJSONObject(i);
+                if (loggedInEmail != null && loggedInEmail.equals(obj.optString("email"))) {
+                    ownId = obj.optString("user_id", "test_001");
+                    break;
+                }
+            }
+        } catch (Exception ignored) {}
+        return ownId;
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public void updateData(
+            List<CommunityPostEntity> newPosts,
+            List<UserEntity> newUsers,
+            List<ReelEntity> newReels,
+            List<CommunityProduct> newProducts
+    ) {
+        if (newProducts != null && !newProducts.isEmpty()) {
+            this.globalProducts = newProducts;
+        }
+        List<CommunityFeedItem> mergedItems = new ArrayList<>();
+
+        for (int i = 0; i < newPosts.size(); i++) {
+            mergedItems.add(new CommunityFeedItem.Post(newPosts.get(i)));
+
+            if (i == 4 && newUsers != null && !newUsers.isEmpty()) {
+                mergedItems.add(new CommunityFeedItem.SuggestedUsers(newUsers));
+            }
+
+            if (i == 8 && newReels != null && !newReels.isEmpty()) {
+                mergedItems.add(new CommunityFeedItem.SuggestedReels(newReels));
+            }
+        }
+
+        if (newPosts.size() <= 4) {
+            if (newUsers != null && !newUsers.isEmpty()) mergedItems.add(new CommunityFeedItem.SuggestedUsers(newUsers));
+            if (newReels != null && !newReels.isEmpty()) mergedItems.add(new CommunityFeedItem.SuggestedReels(newReels));
+        } else if (newPosts.size() <= 8) {
+            if (newReels != null && !newReels.isEmpty()) mergedItems.add(new CommunityFeedItem.SuggestedReels(newReels));
+        }
+
+        this.items = mergedItems;
+        notifyDataSetChanged();
+    }
+}
+
+class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.SuggestionViewHolder> {
+    private List<UserEntity> users;
+
+    public SuggestionAdapter(List<UserEntity> users) {
+        this.users = users;
+    }
+
+    static class SuggestionViewHolder extends RecyclerView.ViewHolder {
+        final ComItemSuggestionBinding binding;
+        SuggestionViewHolder(ComItemSuggestionBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    @NonNull
+    @Override
+    public SuggestionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new SuggestionViewHolder(ComItemSuggestionBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull SuggestionViewHolder holder, int position) {
+        UserEntity user = users.get(position);
+        holder.binding.tvUsername.setText(user.getUsername());
+
+        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+            ImageLoader imageLoader = new ImageLoader.Builder(holder.itemView.getContext())
+                    .components(registry -> registry.add(new SvgDecoder.Factory(false)))
+                    .build();
+            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
+                    .data(user.getAvatar())
+                    .crossfade(true)
+                    .placeholder(android.R.color.darker_gray)
+                    .error(R.drawable.logo)
+                    .target(holder.binding.ivAvatar)
+                    .build();
+            imageLoader.enqueue(request);
+        } else {
+            holder.binding.ivAvatar.setImageResource(android.R.color.darker_gray);
+        }
+
+        if (user.getMutualCount() > 0) {
+            String friendName = user.getFirstMutualFriendName() != null ? user.getFirstMutualFriendName() : "Ai đó";
+            if (user.getMutualCount() == 1) {
+                holder.binding.tvMutualCount.setText("Có " + friendName + " đang theo dõi");
+            } else {
+                holder.binding.tvMutualCount.setText("Có " + friendName + " và " + (user.getMutualCount() - 1) + " người khác đang theo dõi");
+            }
+            holder.binding.llMutualInfo.setVisibility(View.VISIBLE);
+
+            List<String> avatars = user.getMutualFriendAvatars();
+            if (avatars != null && !avatars.isEmpty()) {
+                holder.binding.flMutualAvatars.setVisibility(View.VISIBLE);
+
+                if (avatars.size() >= 1) {
+                    holder.binding.cvMutual1.setVisibility(View.VISIBLE);
+                    loadMutualAvatar(holder.itemView.getContext(), avatars.get(0), holder.binding.ivMutual1);
+                } else {
+                    holder.binding.cvMutual1.setVisibility(View.GONE);
+                }
+
+                if (avatars.size() >= 2) {
+                    holder.binding.cvMutual2.setVisibility(View.VISIBLE);
+                    loadMutualAvatar(holder.itemView.getContext(), avatars.get(1), holder.binding.ivMutual2);
+                } else {
+                    holder.binding.cvMutual2.setVisibility(View.GONE);
+                }
+
+                if (avatars.size() >= 3) {
+                    holder.binding.cvMutual3.setVisibility(View.VISIBLE);
+                    loadMutualAvatar(holder.itemView.getContext(), avatars.get(2), holder.binding.ivMutual3);
+                } else {
+                    holder.binding.cvMutual3.setVisibility(View.GONE);
+                }
+            } else {
+                holder.binding.flMutualAvatars.setVisibility(View.GONE);
+            }
+        } else {
+            holder.binding.llMutualInfo.setVisibility(View.GONE);
+            holder.binding.flMutualAvatars.setVisibility(View.GONE);
+        }
+
+        holder.binding.getRoot().setOnClickListener(v -> {
+            Context context = v.getContext();
+            if (context instanceof FragmentActivity) {
+                if ("rootie_official".equals(user.getUser_id()) || "rootie_vn".equals(user.getUser_id()) || (user.getUsername() != null && user.getUsername().toLowerCase().contains("rootie"))) {
+                    CommunityNewsFragment newsFragment = new CommunityNewsFragment();
+                    ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                            .replace(R.id.main_container, newsFragment)
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    CommunityProfileFragment profileFragment = new CommunityProfileFragment();
+                    Bundle args = new Bundle();
+                    args.putString("USER_ID", user.getUser_id());
+                    args.putString("AVATAR_URL", user.getAvatar());
+                    args.putString("USER_NAME", user.getUsername());
+                    profileFragment.setArguments(args);
+                    ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                            .replace(R.id.main_container, profileFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
+        });
+    }
+
+    private void loadMutualAvatar(Context context, String url, ImageView target) {
+        ImageLoader imageLoader = new ImageLoader.Builder(context)
+                .components(registry -> registry.add(new SvgDecoder.Factory(false)))
+                .build();
+        ImageRequest request = new ImageRequest.Builder(context)
+                .data(url)
+                .crossfade(true)
+                .transformations(new CircleCropTransformation())
+                .error(R.drawable.img_avatar)
+                .target(target)
+                .build();
+        imageLoader.enqueue(request);
+    }
+
+    @Override
+    public int getItemCount() {
+        return users.size();
+    }
+
+    public void updateData(List<UserEntity> newUsers) {
+        this.users = newUsers;
+        notifyDataSetChanged();
+    }
+}
+
+class ReelAdapter extends RecyclerView.Adapter<ReelAdapter.ReelViewHolder> {
+    private List<ReelEntity> reels;
+    private final boolean isGrid;
+
+    public ReelAdapter(List<ReelEntity> reels, boolean isGrid) {
+        this.reels = reels;
+        this.isGrid = isGrid;
+    }
+
+    static class ReelViewHolder extends RecyclerView.ViewHolder {
+        final ComItemReelBinding binding;
+        ReelViewHolder(ComItemReelBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    @NonNull
+    @Override
+    public ReelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ComItemReelBinding binding = ComItemReelBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        if (isGrid) {
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) binding.getRoot().getLayoutParams();
+            lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int marginInPx = (int) (1 * parent.getContext().getResources().getDisplayMetrics().density);
+            lp.setMargins(marginInPx, marginInPx, marginInPx, marginInPx);
+            lp.setMarginStart(marginInPx);
+            lp.setMarginEnd(marginInPx);
+            binding.getRoot().setLayoutParams(lp);
+        }
+        return new ReelViewHolder(binding);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ReelViewHolder holder, int position) {
+        ReelEntity reel = reels.get(position);
+        if (reel.getThumbnailUrl() != null && !reel.getThumbnailUrl().isEmpty()) {
+            ImageLoader imageLoader = Coil.imageLoader(holder.itemView.getContext());
+            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
+                    .data(reel.getThumbnailUrl())
+                    .crossfade(true)
+                    .placeholder(android.R.color.darker_gray)
+                    .target(holder.binding.ivThumbnail)
+                    .build();
+            imageLoader.enqueue(request);
+        } else {
+            holder.binding.ivThumbnail.setImageResource(android.R.color.darker_gray);
+        }
+
+        holder.binding.getRoot().setOnClickListener(v -> {
+            Context context = holder.binding.getRoot().getContext();
+            if (context instanceof FragmentActivity) {
+                ReelPlayerDialog dialog = new ReelPlayerDialog(reels, holder.getBindingAdapterPosition());
+                dialog.show(((FragmentActivity) context).getSupportFragmentManager(), "ReelPlayerDialog");
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return reels.size();
+    }
+
+    public void updateData(List<ReelEntity> newReels) {
+        this.reels = newReels;
+        notifyDataSetChanged();
+    }
+}
