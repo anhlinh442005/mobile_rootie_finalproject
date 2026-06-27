@@ -461,58 +461,7 @@
                         android:textColor="@color/secondary"
                         android:textSize="14sp" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/skin_bg_card_outline"
-                            android:backgroundTint="#F4F5F7"
-                            android:gravity="center"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp">
-                            <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:src="@drawable/ic_sun_outline"
-                                app:tint="@color/primary" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:fontFamily="@font/be_vietnam_pro_bold"
-                                android:text="Buổi sáng"
-                                android:textColor="@color/primary"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/skin_bg_card_outline"
-                            android:gravity="center"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp">
-                            <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:src="@drawable/ic_moon_outline"
-                                app:tint="@color/content" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:fontFamily="@font/be_vietnam_pro"
-                                android:text="Buổi tối"
-                                android:textColor="@color/content"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-                    </LinearLayout>
+                    
                 </RelativeLayout>
 
                 <HorizontalScrollView
@@ -528,6 +477,9 @@
                         android:orientation="horizontal"
                         android:paddingVertical="8dp">
                         <!-- Routine items populated dynamically -->
+                        <include layout="@layout/item_skin_routine" />
+                        <include layout="@layout/item_skin_routine" />
+                        <include layout="@layout/item_skin_routine" />
                     </LinearLayout>
                 </HorizontalScrollView>
             </LinearLayout>

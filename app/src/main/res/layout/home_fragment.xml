@@ -228,14 +228,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="Chống nắng phổ rộng"
                                 android:textColor="#1B3E2D"
-                                android:textSize="10sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Bảo vệ da khỏi tia UVA/UVB &amp; ánh sáng xanh"
                                 android:textColor="#4A564A"
-                                android:textSize="8sp" />
+                                android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -261,14 +261,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="Chiết xuất bí đao thiên nhiên"
                                 android:textColor="#1B3E2D"
-                                android:textSize="10sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Dịu mát, cấp ẩm &amp; hỗ trợ kiềm dầu"
                                 android:textColor="#4A564A"
-                                android:textSize="8sp" />
+                                android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -294,14 +294,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="Kết cấu nhẹ tênh – Không bết dính"
                                 android:textColor="#1B3E2D"
-                                android:textSize="10sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Thấm nhanh, nâng tone tự nhiên"
                                 android:textColor="#4A564A"
-                                android:textSize="8sp" />
+                                android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -326,14 +326,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="An toàn cho mọi loại da"
                                 android:textColor="#1B3E2D"
-                                android:textSize="10sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Kể cả da nhạy cảm"
                                 android:textColor="#4A564A"
-                                android:textSize="8sp" />
+                                android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -542,7 +542,7 @@
                                 android:gravity="center"
                                 android:text="00"
                                 android:textColor="#3E4D44"
-                                android:textSize="7sp" />
+                                android:textSize="10sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -550,7 +550,7 @@
                                 android:fontFamily="@font/be_vietnam_pro_regular"
                                 android:text="Giờ"
                                 android:textColor="@color/white"
-                                android:textSize="7sp" />
+                                android:textSize="10sp" />
                         </LinearLayout>
 
                         <TextView
@@ -578,7 +578,7 @@
                                 android:gravity="center"
                                 android:text="00"
                                 android:textColor="#3E4D44"
-                                android:textSize="7sp" />
+                                android:textSize="10sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -587,7 +587,7 @@
                                 android:fontFamily="@font/be_vietnam_pro_regular"
                                 android:text="Phút"
                                 android:textColor="@color/white"
-                                android:textSize="7sp" />
+                                android:textSize="10sp" />
                         </LinearLayout>
 
                         <TextView
@@ -615,7 +615,7 @@
                                 android:gravity="center"
                                 android:text="00"
                                 android:textColor="#3E4D44"
-                                android:textSize="7sp" />
+                                android:textSize="10sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -623,7 +623,7 @@
                                 android:fontFamily="@font/be_vietnam_pro_regular"
                                 android:text="Giây"
                                 android:textColor="@color/white"
-                                android:textSize="7sp" />
+                                android:textSize="10sp" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -704,7 +704,7 @@
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="Sản phẩm có kết cấu hai tầng dầu dưỡng và tinh chất hòa quyện, tạo nên những tia sương mịn nhẹ trên da. công thức kết hợp chiết xuất sen hữu cơ hậu giang, phức hợp prebiotics, squalane và các hoạt chất làm dịu giúp cấp ẩm sâu, tăng cường độ bóng khỏe tự nhiên, giúp bảo vệ hàng rào độ ẩm, ngăn ngừa và giảm thiểu tình trạng thoát nước qua da, hỗ trợ cân bằng hệ vi sinh cho da rất nhạy cảm."
                             android:textColor="@color/tertiary"
-                            android:textSize="10sp"
+                            android:textSize="12sp"
                             android:textStyle="normal"
                             android:lineSpacingExtra="2dp" />
 
@@ -762,13 +762,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:paddingHorizontal="16dp">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="4dp"
                     android:elevation="4dp"
@@ -786,7 +785,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/home_bestsellers"
                             android:textColor="#4A564A"
-                            android:textSize="10sp"
+                            android:textSize="14sp"
                             android:fontFamily="@font/be_vietnam_pro_bolditalic" />
 
                         <TextView
@@ -796,7 +795,7 @@
                             android:layout_centerVertical="true"
                             android:text="Xem tất cả >"
                             android:textColor="#7A8B7B"
-                            android:textSize="8sp"
+                            android:textSize="12sp"
                             android:fontFamily="@font/be_vietnam_pro_regular" />
                     </RelativeLayout>
 
@@ -808,14 +807,13 @@
                 </LinearLayout>
 
                 <View
-                    android:layout_width="12dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
                     android:background="@android:color/transparent" />
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="4dp"
                     android:elevation="4dp"
@@ -833,7 +831,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/home_top_search"
                             android:textColor="#4A564A"
-                            android:textSize="10sp"
+                            android:textSize="14sp"
                             android:fontFamily="@font/be_vietnam_pro_bolditalic" />
 
                         <TextView
@@ -843,7 +841,7 @@
                             android:layout_centerVertical="true"
                             android:text="Xem tất cả >"
                             android:textColor="#7A8B7B"
-                            android:textSize="8sp"
+                            android:textSize="12sp"
                             android:fontFamily="@font/be_vietnam_pro_regular" />
                     </RelativeLayout>
 

@@ -13,11 +13,7 @@ public class CartHelper {
             Toast.makeText(context, "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(context)) {
-            Toast.makeText(context, "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        
+
         new Thread(() -> {
             try {
                 RootieDatabase db = RootieDatabase.getDatabase(context);

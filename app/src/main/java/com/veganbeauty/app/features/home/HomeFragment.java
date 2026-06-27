@@ -416,7 +416,35 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void addToCart(ProductEntity product) {
-        CartHelper.addToCart(requireContext(), getViewLifecycleOwner(), product, 1);
+        com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet bottomSheet = new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
+                product,
+                new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
+                    @Override
+                    public void onAddToCartClick(ProductEntity p, int quantity) {
+                        CartHelper.addToCart(requireContext(), getViewLifecycleOwner(), p, quantity);
+                    }
+
+                    @Override
+                    public void onBuyNowClick(ProductEntity p, int quantity) {
+                        com.veganbeauty.app.data.local.entities.CartItemEntity checkoutItem = new com.veganbeauty.app.data.local.entities.CartItemEntity(
+                                p.getId(),
+                                p.getName(),
+                                p.getMainImage(),
+                                p.getPrice(),
+                                quantity,
+                                true
+                        );
+                        ArrayList<com.veganbeauty.app.data.local.entities.CartItemEntity> list = new ArrayList<>();
+                        list.add(checkoutItem);
+                        com.veganbeauty.app.features.shop.product.ShopCheckoutFragment checkoutFragment = com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(list);
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.main_container, checkoutFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                }
+        );
+        bottomSheet.show(getParentFragmentManager(), com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.TAG);
     }
 
     private void openShop() {
