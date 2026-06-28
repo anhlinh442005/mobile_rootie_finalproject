@@ -13,21 +13,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.local.entities.OrderItem;
 import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderDetailFragmentBinding;
@@ -38,10 +35,9 @@ import com.veganbeauty.app.features.shop.home.ShopHomeFragment;
 import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.flow.FlowCollector;
+import androidx.lifecycle.FlowLiveDataConversions;
 
 public class AccountOrderDetailFragment extends RootieFragment {
 
@@ -141,24 +137,17 @@ public class AccountOrderDetailFragment extends RootieFragment {
 
     @Override
     protected void observeViewModel() {
-        viewModel.getOrder().observe(getViewLifecycleOwner(), order -> {
+        viewModel.order.observe(getViewLifecycleOwner(), order -> {
             if (order != null) {
                 bindOrderDetails(order);
             }
         });
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            NotificationRepository.getInstance(requireContext()).getUnreadCount().collect(new FlowCollector<Integer>() {
-                @Nullable
-                @Override
-                public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                    if (binding != null) {
-                        binding.viewNotificationBadge.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
+        FlowLiveDataConversions.asLiveData(
+                NotificationRepository.getInstance(requireContext()).getUnreadCount()
+        ).observe(getViewLifecycleOwner(), count -> {
+            if (binding == null) return;
+            binding.viewNotificationBadge.setVisibility(count != null && count > 0 ? View.VISIBLE : View.GONE);
         });
     }
 
@@ -208,51 +197,45 @@ public class AccountOrderDetailFragment extends RootieFragment {
 
         binding.layoutProductsContainer.removeAllViews();
         long subtotal = 0L;
-        if (order.getItems() != null) {
-            for (OrderItem item : order.getItems()) {
-                subtotal += item.getPrice() * item.getQuantity();
-                AccountOrderDetailProductItemBinding productBinding = AccountOrderDetailProductItemBinding.inflate(
-                        LayoutInflater.from(context),
-                        binding.layoutProductsContainer,
-                        false
-                );
+        List<OrderEntity.OrderItem> items = order.getItems();
+        if (items != null) {
+            for (OrderEntity.OrderItem item : items) {
+                        subtotal += item.getPrice() * item.getQuantity();
+                        AccountOrderDetailProductItemBinding productBinding = AccountOrderDetailProductItemBinding.inflate(
+                                LayoutInflater.from(context),
+                                binding.layoutProductsContainer,
+                                false
+                        );
 
-                productBinding.tvProductName.setText(item.getProductName());
-                productBinding.tvProductQuantity.setText("x" + item.getQuantity());
-                productBinding.tvProductPrice.setText(formatCurrency(item.getPrice()));
+                        productBinding.tvProductName.setText(item.getProductName());
+                        productBinding.tvProductQuantity.setText("x" + item.getQuantity());
+                        productBinding.tvProductPrice.setText(formatCurrency(item.getPrice()));
 
-                String attribute;
-                if (item.getProductName().contains("50ml")) {
-                    attribute = "Dung tích: 50ml";
-                } else if (item.getProductName().contains("30ml")) {
-                    attribute = "Dung tích: 30ml";
-                } else if (item.getProductName().contains("70ml")) {
-                    attribute = "Dung tích: 70ml";
-                } else if (item.getProductName().contains("140ml")) {
-                    attribute = "Dung tích: 140ml";
-                } else if (item.getProductName().contains("100ml")) {
-                    attribute = "Dung tích: 100ml";
-                } else if ("product_hair_grapefruit".equals(item.getProductId())) {
-                    attribute = "Dung tích: 140ml";
-                } else if ("product_rose_cream".equals(item.getProductId())) {
-                    attribute = "Dung tích: 50ml";
-                } else if (item.getProductName().contains("Combo")) {
-                    attribute = "Phân loại: Bộ sản phẩm";
-                } else {
-                    attribute = "Dung tích: 100ml";
-                }
-                productBinding.tvProductAttribute.setText(attribute);
+                        String attribute;
+                        if (item.getProductName().contains("50ml")) {
+                            attribute = "Dung tích: 50ml";
+                        } else if (item.getProductName().contains("30ml")) {
+                            attribute = "Dung tích: 30ml";
+                        } else if (item.getProductName().contains("70ml")) {
+                            attribute = "Dung tích: 70ml";
+                        } else if (item.getProductName().contains("140ml")) {
+                            attribute = "Dung tích: 140ml";
+                        } else if (item.getProductName().contains("100ml")) {
+                            attribute = "Dung tích: 100ml";
+                        } else if ("product_hair_grapefruit".equals(item.getProductId())) {
+                            attribute = "Dung tích: 140ml";
+                        } else if ("product_rose_cream".equals(item.getProductId())) {
+                            attribute = "Dung tích: 50ml";
+                        } else if (item.getProductName().contains("Combo")) {
+                            attribute = "Phân loại: Bộ sản phẩm";
+                        } else {
+                            attribute = "Dung tích: 100ml";
+                        }
+                        productBinding.tvProductAttribute.setText(attribute);
 
-                ImageRequest request = new ImageRequest.Builder(context)
-                        .data(item.getProductImage())
-                        .crossfade(true)
-                        .placeholder(android.R.color.darker_gray)
-                        .error(android.R.color.darker_gray)
-                        .target(productBinding.ivProductImage)
-                        .build();
-                Coil.imageLoader(context).enqueue(request);
+                        com.bumptech.glide.Glide.with(productBinding.ivProductImage.getContext()).load(item.getProductImage()).placeholder(android.R.color.darker_gray).error(android.R.color.darker_gray).into(productBinding.ivProductImage);
 
-                binding.layoutProductsContainer.addView(productBinding.getRoot());
+                        binding.layoutProductsContainer.addView(productBinding.getRoot());
             }
         }
 
@@ -373,20 +356,25 @@ public class AccountOrderDetailFragment extends RootieFragment {
                 binding.btnActionRight.setText("Mua lại");
                 binding.btnActionRight.setOnClickListener(v -> {
                     ArrayList<CartItemEntity> checkoutItems = new ArrayList<>();
-                    if (order.getItems() != null) {
-                        for (OrderItem item : order.getItems()) {
-                            checkoutItems.add(new CartItemEntity(
-                                    item.getProductId(),
-                                    item.getProductName(),
-                                    item.getProductImage(),
-                                    item.getPrice(),
-                                    item.getQuantity(),
-                                    true
-                            ));
+                    List<OrderEntity.OrderItem> items = order.getItems();
+                    if (items != null) {
+                        try {
+                            for (OrderEntity.OrderItem item : items) {
+                                checkoutItems.add(new CartItemEntity(
+                                        item.getProductId(),
+                                        item.getProductName(),
+                                        item.getProductImage(),
+                                        item.getPrice(),
+                                        item.getQuantity(),
+                                        true
+                                ));
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                     getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems))
+                            .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems, "", 0L))
                             .addToBackStack(null)
                             .commit();
                 });
@@ -403,20 +391,25 @@ public class AccountOrderDetailFragment extends RootieFragment {
                 binding.btnActionRight.setText("Mua lại");
                 binding.btnActionRight.setOnClickListener(v -> {
                     ArrayList<CartItemEntity> checkoutItems = new ArrayList<>();
-                    if (order.getItems() != null) {
-                        for (OrderItem item : order.getItems()) {
-                            checkoutItems.add(new CartItemEntity(
-                                    item.getProductId(),
-                                    item.getProductName(),
-                                    item.getProductImage(),
-                                    item.getPrice(),
-                                    item.getQuantity(),
-                                    true
-                            ));
+                    List<OrderEntity.OrderItem> items = order.getItems();
+                    if (items != null) {
+                        try {
+                            for (OrderEntity.OrderItem item : items) {
+                                checkoutItems.add(new CartItemEntity(
+                                        item.getProductId(),
+                                        item.getProductName(),
+                                        item.getProductImage(),
+                                        item.getPrice(),
+                                        item.getQuantity(),
+                                        true
+                                ));
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                     getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems))
+                            .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems, "", 0L))
                             .addToBackStack(null)
                             .commit();
                 });

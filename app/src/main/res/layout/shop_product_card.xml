@@ -23,8 +23,8 @@
                 android:id="@+id/ivProduct"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
+                android:background="@color/white"
                 android:scaleType="centerCrop"
-                android:src="@android:color/darker_gray"
                 app:shapeAppearanceOverlay="@style/RoundedImageView4dp" />
 
             <TextView

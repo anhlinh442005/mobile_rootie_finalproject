@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.veganbeauty.app.R;
@@ -36,9 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.flow.FlowCollector;
+import androidx.lifecycle.FlowLiveDataConversions;
 
 public class AccountCheckinFragment extends RootieFragment {
 
@@ -64,20 +61,6 @@ public class AccountCheckinFragment extends RootieFragment {
                 .addToBackStack(null)
                 .commit());
 
-        ViewGroup navAccount = view.findViewById(R.id.nav_account);
-        if (navAccount != null) {
-            View iconView = navAccount.getChildAt(0);
-            View labelView = navAccount.getChildAt(1);
-            if (iconView instanceof ImageView) {
-                ((ImageView) iconView).setColorFilter(Color.parseColor("#677559"));
-            }
-            if (labelView instanceof TextView) {
-                TextView label = (TextView) labelView;
-                label.setTextColor(Color.parseColor("#677559"));
-                label.setTypeface(null, Typeface.BOLD);
-            }
-        }
-
         binding.btnPrevMonth.setOnClickListener(v -> {
             calendarInstance.add(Calendar.MONTH, -1);
             refreshUI();
@@ -95,106 +78,108 @@ public class AccountCheckinFragment extends RootieFragment {
         refreshUI();
     }
 
+    @Override
+    protected void observeViewModel() {
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getAllRewardHistory())
+                .observe(getViewLifecycleOwner(), this::updateFromHistory);
+    }
+
+    private void updateFromHistory(List<RewardPointEntity> allHistory) {
+        if (binding == null || !isAdded()) return;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Set<String> newCheckedInDates = new HashSet<>();
+        if (allHistory != null) {
+            for (RewardPointEntity item : allHistory) {
+                if (item.getReason() != null && item.getReason().contains("Điểm danh")) {
+                    newCheckedInDates.add(sdf.format(new Date(item.getTimestamp())));
+                }
+            }
+        }
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE);
+        Set<String> savedDates = prefs.getStringSet("checked_in_dates", new HashSet<>());
+        if (savedDates != null) {
+            newCheckedInDates.addAll(savedDates);
+        }
+
+        checkedInDates.clear();
+        checkedInDates.addAll(newCheckedInDates);
+        refreshUI();
+    }
+
     private void refreshUI() {
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            BuildersKt.launch(coroutineScope, Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (innerScope, innerCont) -> {
-                db.rewardPointDao().getAllRewardHistory().collect(new FlowCollector<List<RewardPointEntity>>() {
-                    @Nullable
-                    @Override
-                    public Object emit(List<RewardPointEntity> allHistory, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                        Set<String> newCheckedInDates = new HashSet<>();
-                        for (RewardPointEntity item : allHistory) {
-                            if (item.getReason() != null && item.getReason().contains("Điểm danh")) {
-                                newCheckedInDates.add(sdf.format(new Date(item.getTimestamp())));
-                            }
-                        }
+        if (binding == null) return;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-                        SharedPreferences prefs = requireContext().getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE);
-                        Set<String> savedDates = prefs.getStringSet("checked_in_dates", new HashSet<>());
-                        if (savedDates != null) {
-                            newCheckedInDates.addAll(savedDates);
-                        }
+        int month = calendarInstance.get(Calendar.MONTH) + 1;
+        int year = calendarInstance.get(Calendar.YEAR);
+        binding.tvCalendarMonth.setText("Tháng " + month + ", " + year);
 
-                        BuildersKt.launch(coroutineScope, Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (mainScope, mainCont) -> {
-                            checkedInDates.clear();
-                            checkedInDates.addAll(newCheckedInDates);
+        updateCalendarGrid(checkedInDates);
 
-                            int month = calendarInstance.get(Calendar.MONTH) + 1;
-                            int year = calendarInstance.get(Calendar.YEAR);
-                            binding.tvCalendarMonth.setText("Tháng " + month + ", " + year);
+        int streak = calculateStreak(checkedInDates);
+        int displayStreak = (streak == 0) ? 0 : ((streak - 1) % 7) + 1;
+        binding.tvStreakCount.setText(displayStreak + "/7");
 
-                            updateCalendarGrid(checkedInDates);
+        highlightRewardCard(streak);
 
-                            int streak = calculateStreak(checkedInDates);
-                            int displayStreak = (streak == 0) ? 0 : ((streak - 1) % 7) + 1;
-                            binding.tvStreakCount.setText(displayStreak + "/7");
+        String todayStr = sdf.format(new Date());
+        boolean hasCheckedInToday = checkedInDates.contains(todayStr);
 
-                            highlightRewardCard(streak);
+        updateEncouragementText(streak, hasCheckedInToday, displayStreak);
 
-                            String todayStr = sdf.format(new Date());
-                            boolean hasCheckedInToday = checkedInDates.contains(todayStr);
+        if (hasCheckedInToday) {
+            binding.ivBannerIcon.setImageResource(R.drawable.ic_check);
+            binding.ivBannerIcon.setColorFilter(Color.parseColor("#879578"));
+            binding.tvBannerText.setText("Đã check-in hôm nay");
+            binding.tvBannerText.setTextColor(Color.parseColor("#879578"));
+            binding.btnBannerCheckin.setVisibility(View.GONE);
+            binding.tvBannerCompletedText.setVisibility(View.VISIBLE);
 
-                            String encouragementText;
-                            if (!hasCheckedInToday) {
-                                int nextStreakMod = (streak % 7) + 1;
-                                if (nextStreakMod == 3) {
-                                    encouragementText = "Điểm danh hôm nay để nhận mốc thưởng +50 xu!";
-                                } else if (nextStreakMod == 7) {
-                                    encouragementText = "Điểm danh hôm nay để nhận mốc thưởng +200 xu!";
-                                } else if (nextStreakMod < 3) {
-                                    encouragementText = "Điểm danh hôm nay. Thêm " + (3 - nextStreakMod) + " ngày nữa để nhận +50 xu!";
-                                } else {
-                                    encouragementText = "Điểm danh hôm nay. Thêm " + (7 - nextStreakMod) + " ngày nữa để nhận +200 xu!";
-                                }
-                            } else {
-                                if (displayStreak == 3) {
-                                    encouragementText = "Hôm nay bạn đã nhận mốc thưởng +50 xu! Thêm 4 ngày nữa để nhận +200 xu!";
-                                } else if (displayStreak == 7) {
-                                    encouragementText = "Chúc mừng bạn đã hoàn thành chuỗi tuần này! Hãy duy trì vào ngày mai nhé!";
-                                } else if (displayStreak >= 1 && displayStreak <= 2) {
-                                    encouragementText = "Điểm danh thêm " + (3 - displayStreak) + " ngày nữa để nhận mốc thưởng +50 xu!";
-                                } else {
-                                    encouragementText = "Điểm danh thêm " + (7 - displayStreak) + " ngày nữa để nhận mốc thưởng +200 xu!";
-                                }
-                            }
-                            binding.tvStreakEncouragement.setText(encouragementText);
+            binding.btnBottomCheckin.setEnabled(false);
+            binding.btnBottomCheckin.setText("Đã điểm danh hôm nay");
+            binding.btnBottomCheckin.setBackgroundResource(R.drawable.bg_pill_grey);
+            binding.btnBottomCheckin.setTextColor(Color.parseColor("#888888"));
+        } else {
+            binding.ivBannerIcon.setImageResource(R.drawable.ic_info_olive);
+            binding.ivBannerIcon.setColorFilter(Color.parseColor("#8A9A3D"));
+            binding.tvBannerText.setText("Chưa check-in hôm nay");
+            binding.tvBannerText.setTextColor(Color.parseColor("#8A9A3D"));
+            binding.btnBannerCheckin.setVisibility(View.VISIBLE);
+            binding.tvBannerCompletedText.setVisibility(View.GONE);
 
-                            if (hasCheckedInToday) {
-                                binding.ivBannerIcon.setImageResource(R.drawable.ic_check);
-                                binding.ivBannerIcon.setColorFilter(Color.parseColor("#879578"));
-                                binding.tvBannerText.setText("Đã check-in hôm nay");
-                                binding.tvBannerText.setTextColor(Color.parseColor("#879578"));
-                                binding.btnBannerCheckin.setVisibility(View.GONE);
-                                binding.tvBannerCompletedText.setVisibility(View.VISIBLE);
+            binding.btnBottomCheckin.setEnabled(true);
+            binding.btnBottomCheckin.setText("Check-in ngay");
+            binding.btnBottomCheckin.setBackgroundResource(R.drawable.bg_btn_checkin_bottom);
+            binding.btnBottomCheckin.setTextColor(Color.parseColor("#FFFFFF"));
+        }
+    }
 
-                                binding.btnBottomCheckin.setEnabled(false);
-                                binding.btnBottomCheckin.setText("Đã điểm danh hôm nay");
-                                binding.btnBottomCheckin.setBackgroundResource(R.drawable.bg_pill_grey);
-                                binding.btnBottomCheckin.setTextColor(Color.parseColor("#888888"));
-                            } else {
-                                binding.ivBannerIcon.setImageResource(R.drawable.ic_info_olive);
-                                binding.ivBannerIcon.setColorFilter(Color.parseColor("#8A9A3D"));
-                                binding.tvBannerText.setText("Chưa check-in hôm nay");
-                                binding.tvBannerText.setTextColor(Color.parseColor("#8A9A3D"));
-                                binding.btnBannerCheckin.setVisibility(View.VISIBLE);
-                                binding.tvBannerCompletedText.setVisibility(View.GONE);
-
-                                binding.btnBottomCheckin.setEnabled(true);
-                                binding.btnBottomCheckin.setText("Check-in ngay");
-                                binding.btnBottomCheckin.setBackgroundResource(R.drawable.bg_btn_checkin_bottom);
-                                binding.btnBottomCheckin.setTextColor(Color.parseColor("#FFFFFF"));
-                            }
-                            return kotlin.Unit.INSTANCE;
-                        }, innerCont);
-
-                        return kotlin.Unit.INSTANCE;
-                    }
-                }, innerCont);
-                return kotlin.Unit.INSTANCE;
-            });
-            return kotlin.Unit.INSTANCE;
-        });
+    private void updateEncouragementText(int streak, boolean hasCheckedInToday, int displayStreak) {
+        String encouragementText;
+        if (!hasCheckedInToday) {
+            int nextStreakMod = (streak % 7) + 1;
+            if (nextStreakMod == 3) {
+                encouragementText = "Điểm danh hôm nay để nhận mốc thưởng +50 xu!";
+            } else if (nextStreakMod == 7) {
+                encouragementText = "Điểm danh hôm nay để nhận mốc thưởng +200 xu!";
+            } else if (nextStreakMod < 3) {
+                encouragementText = "Điểm danh hôm nay. Thêm " + (3 - nextStreakMod) + " ngày nữa để nhận +50 xu!";
+            } else {
+                encouragementText = "Điểm danh hôm nay. Thêm " + (7 - nextStreakMod) + " ngày nữa để nhận +200 xu!";
+            }
+        } else {
+            if (displayStreak == 3) {
+                encouragementText = "Hôm nay bạn đã nhận mốc thưởng +50 xu! Thêm 4 ngày nữa để nhận +200 xu!";
+            } else if (displayStreak == 7) {
+                encouragementText = "Chúc mừng bạn đã hoàn thành chuỗi tuần này! Hãy duy trì vào ngày mai nhé!";
+            } else if (displayStreak >= 1 && displayStreak <= 2) {
+                encouragementText = "Điểm danh thêm " + (3 - displayStreak) + " ngày nữa để nhận mốc thưởng +50 xu!";
+            } else {
+                encouragementText = "Điểm danh thêm " + (7 - displayStreak) + " ngày nữa để nhận +200 xu!";
+            }
+        }
+        binding.tvStreakEncouragement.setText(encouragementText);
     }
 
     private void updateCalendarGrid(Set<String> checkedInDates) {
@@ -273,41 +258,42 @@ public class AccountCheckinFragment extends RootieFragment {
     }
 
     private void performCheckIn() {
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String todayStr = sdf.format(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String todayStr = sdf.format(new Date());
 
-            if (checkedInDates.contains(todayStr)) {
-                Toast.makeText(requireContext(), "Bạn đã điểm danh hôm nay rồi!", Toast.LENGTH_SHORT).show();
-                return kotlin.Unit.INSTANCE;
-            }
+        if (checkedInDates.contains(todayStr)) {
+            Toast.makeText(requireContext(), "Bạn đã điểm danh hôm nay rồi!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            Calendar yesterdayCal = Calendar.getInstance();
-            yesterdayCal.add(Calendar.DAY_OF_YEAR, -1);
-            String yesterdayStr = sdf.format(yesterdayCal.getTime());
+        Calendar yesterdayCal = Calendar.getInstance();
+        yesterdayCal.add(Calendar.DAY_OF_YEAR, -1);
+        String yesterdayStr = sdf.format(yesterdayCal.getTime());
 
-            boolean isYesterdayChecked = checkedInDates.contains(yesterdayStr);
-            int currentStreak = calculateStreak(checkedInDates);
-            int newStreak = isYesterdayChecked ? currentStreak + 1 : 1;
+        boolean isYesterdayChecked = checkedInDates.contains(yesterdayStr);
+        int currentStreak = calculateStreak(checkedInDates);
+        int newStreak = isYesterdayChecked ? currentStreak + 1 : 1;
 
-            int pointsAwarded;
-            if (newStreak % 7 == 0) {
-                pointsAwarded = 200;
-            } else if (newStreak % 7 == 3) {
-                pointsAwarded = 50;
-            } else {
-                pointsAwarded = 10;
-            }
+        int pointsAwarded;
+        if (newStreak % 7 == 0) {
+            pointsAwarded = 200;
+        } else if (newStreak % 7 == 3) {
+            pointsAwarded = 50;
+        } else {
+            pointsAwarded = 10;
+        }
 
-            BuildersKt.launch(coroutineScope, Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (innerScope, innerCont) -> {
+        new Thread(() -> {
+            try {
                 SimpleDateFormat reasonSdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
+                        0,
                         "DAILY_CHECKIN",
                         pointsAwarded,
                         "Điểm danh hàng ngày (" + reasonSdf.format(new Date()) + ")",
                         System.currentTimeMillis()
                 ));
-                SyncDataHelper.INSTANCE.syncRewardPointsToFirestore(requireContext());
+                SyncDataHelper.syncRewardPointsToFirestore(requireContext());
 
                 SharedPreferences prefs = requireContext().getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE);
                 Set<String> savedDates = prefs.getStringSet("checked_in_dates", new HashSet<>());
@@ -315,17 +301,16 @@ public class AccountCheckinFragment extends RootieFragment {
                 dates.add(todayStr);
                 prefs.edit().putStringSet("checked_in_dates", dates).apply();
 
-                BuildersKt.launch(innerScope, Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (mainScope, mainCont) -> {
-                    showSuccessDialog(pointsAwarded);
-                    refreshUI();
-                    return kotlin.Unit.INSTANCE;
-                }, innerCont);
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        });
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        showSuccessDialog(pointsAwarded);
+                        refreshUI();
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void showSuccessDialog(int points) {
@@ -336,10 +321,10 @@ public class AccountCheckinFragment extends RootieFragment {
 
         AlertDialog dialog = builder.create();
         TextView tvDialogPoints = dialogView.findViewById(R.id.tvDialogPoints);
-        tvDialogPoints.setText("+" + points + " xu");
+        if (tvDialogPoints != null) tvDialogPoints.setText("+" + points + " xu");
 
         View btnDialogDismiss = dialogView.findViewById(R.id.btnDialogDismiss);
-        btnDialogDismiss.setOnClickListener(v -> dialog.dismiss());
+        if (btnDialogDismiss != null) btnDialogDismiss.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }

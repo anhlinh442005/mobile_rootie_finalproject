@@ -125,6 +125,7 @@ public class SkinScanFragment extends RootieFragment {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext());
         cameraProviderFuture.addListener(() -> {
             try {
+                if (binding == null || !isAdded()) return;
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
 
                 Preview preview = new Preview.Builder().build();

@@ -196,7 +196,7 @@ public class ShopVoucherFragment extends RootieFragment {
                                             "db_" + gift.getId(), gift.getTitle(), gift.getDescription(),
                                             gift.getCode(), statusVal, gift.getExpiryDate(),
                                             "voucher_freeship".equals(gift.getGiftType()) ? "free ship" : "discount",
-                                            true, null, gift.getMinOrderValue(), gift.getApplicableProducts(),
+                                            true, 0, gift.getMinOrderValue(), gift.getApplicableProducts(),
                                             gift.getOfferType(), gift.getDiscountValue()
                                     ));
                                 }
@@ -204,7 +204,7 @@ public class ShopVoucherFragment extends RootieFragment {
 
                             List<VoucherItem> activeSystem = new ArrayList<>();
                             for (VoucherItem sys : systemVouchers) {
-                                if (!AccountVoucherFragment.Companion.getDeletedSystemVoucherIdsStatic().contains(sys.getId())) {
+                                if (!AccountVoucherFragment.getDeletedSystemVoucherIdsStatic().contains(sys.getId())) {
                                     activeSystem.add(sys);
                                 }
                             }

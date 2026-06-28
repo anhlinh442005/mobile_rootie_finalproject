@@ -10,14 +10,14 @@
     <FrameLayout
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:background="@color/neutral">
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/ivProduct"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@android:color/darker_gray" />
+            android:background="@color/white"
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/tvBadgeNew"

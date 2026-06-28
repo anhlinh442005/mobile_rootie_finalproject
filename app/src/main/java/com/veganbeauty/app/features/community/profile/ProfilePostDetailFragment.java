@@ -16,8 +16,8 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
-import com.veganbeauty.app.data.local.entities.PostEntity;
-import com.veganbeauty.app.data.local.entities.ProductEntity;
+import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
+import com.veganbeauty.app.data.local.entities.CommunityProduct;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.features.community.UserMemoryHelper;
@@ -106,13 +106,13 @@ public class ProfilePostDetailFragment extends Fragment {
         rvPosts.setAdapter(adapter);
 
         LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
-        List<ProductEntity> productsList = jsonReader.getProducts();
+        List<CommunityProduct> productsList = jsonReader.getProducts();
 
         viewModel.getPosts().observe(getViewLifecycleOwner(), dbPosts -> {
             executor.execute(() -> {
                 try {
-                    List<PostEntity> newsList = jsonReader.getCommunityNews();
-                    List<PostEntity> allPostsCombined = new ArrayList<>();
+                    List<CommunityPostEntity> newsList = jsonReader.getCommunityNews();
+                    List<CommunityPostEntity> allPostsCombined = new ArrayList<>();
                     if (dbPosts != null) allPostsCombined.addAll(dbPosts);
                     if (newsList != null) allPostsCombined.addAll(newsList);
 
@@ -125,7 +125,7 @@ public class ProfilePostDetailFragment extends Fragment {
                             while ((line = reader.readLine()) != null) {
                                 sb.append(line);
                             }
-                            JSONArray usersJsonArray = new JSONArray(sb.toString());
+                            JSONArray usersJsonArray = new JSONArray(sb.toString().replace("\uFEFF", ""));
                             for (int i = 0; i < usersJsonArray.length(); i++) {
                                 JSONObject obj = usersJsonArray.getJSONObject(i);
                                 if (loggedInEmail != null && loggedInEmail.equals(obj.optString("email"))) {
@@ -138,7 +138,7 @@ public class ProfilePostDetailFragment extends Fragment {
 
                     String finalUserId = userId;
                     if (targetPostId != null && !targetPostId.isEmpty()) {
-                        for (PostEntity p : allPostsCombined) {
+                        for (CommunityPostEntity p : allPostsCombined) {
                             if (targetPostId.equals(p.getPostId())) {
                                 finalUserId = p.getAuthorId();
                                 break;
@@ -146,9 +146,9 @@ public class ProfilePostDetailFragment extends Fragment {
                         }
                     }
 
-                    List<PostEntity> myPosts = new ArrayList<>();
+                    List<CommunityPostEntity> myPosts = new ArrayList<>();
                     Set<String> addedPostIds = new HashSet<>();
-                    for (PostEntity post : allPostsCombined) {
+                    for (CommunityPostEntity post : allPostsCombined) {
                         boolean shouldInclude = false;
                         switch (currentTab) {
                             case 0:
@@ -172,7 +172,7 @@ public class ProfilePostDetailFragment extends Fragment {
                         }
                     }
 
-                    Collections.sort(myPosts, (p1, p2) -> Long.compare(p2.getCreatedAt(), p1.getCreatedAt()));
+                    Collections.sort(myPosts, (p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
 
                     int scrollPos = initialPosition;
                     if (targetPostId != null && !targetPostId.isEmpty()) {
@@ -185,12 +185,14 @@ public class ProfilePostDetailFragment extends Fragment {
                     }
                     
                     final int finalScrollPos = scrollPos;
-                    requireActivity().runOnUiThread(() -> {
-                        if (isAdded()) {
-                            adapter.updateData(myPosts, new ArrayList<>(), new ArrayList<>(), productsList);
-                            layoutManager.scrollToPositionWithOffset(finalScrollPos, 0);
-                        }
-                    });
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            if (isAdded()) {
+                                adapter.updateData(myPosts, new ArrayList<>(), new ArrayList<>(), productsList);
+                                layoutManager.scrollToPositionWithOffset(finalScrollPos, 0);
+                            }
+                        });
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();

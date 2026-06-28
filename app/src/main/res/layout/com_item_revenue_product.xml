@@ -10,10 +10,9 @@
         android:id="@+id/ivProduct"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="#F5F5F5"
-        android:padding="8dp"
+        android:background="#F0F0F0"
         android:scaleType="centerCrop"
-        app:shapeAppearanceOverlay="@style/RoundedSquareImageView" />
+        app:shapeAppearanceOverlay="@style/RoundedImageView4dp" />
         
     <TextView
         android:id="@+id/tvProductName"

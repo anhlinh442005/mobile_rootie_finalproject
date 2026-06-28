@@ -162,7 +162,7 @@ public class ShopStoreSelectionFragment extends RootieFragment {
         });
 
         binding.clRegionSelectorInner.setOnClickListener(v -> {
-            ShopAddressSelectionFragment addressFragment = ShopAddressSelectionFragment.Companion.newInstance(null, null);
+            ShopAddressSelectionFragment addressFragment = ShopAddressSelectionFragment.newInstance();
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, addressFragment)
                     .addToBackStack(null)
@@ -247,7 +247,7 @@ public class ShopStoreSelectionFragment extends RootieFragment {
                 }, cont));
 
         LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) -> {
-            repository.refreshStores(cont);
+            repository.refreshStores();
             return kotlin.Unit.INSTANCE;
         });
     }
@@ -451,7 +451,7 @@ public class ShopStoreSelectionFragment extends RootieFragment {
         public void onBindViewHolder(@NonNull StoreViewHolder holder, int position) {
             StoreEntity store = filteredStoresList.get(position);
             holder.binding.tvStoreName.setText(store.getTenCuaHang());
-            holder.binding.tvStoreHours.setText("Mở cửa từ " + store.getMoCua() + " đến " + store.getDongCua());
+            holder.binding.tvStoreHours.setText("Mở cửa từ " + (store.getMoCua() != null ? store.getMoCua() : "") + " đến " + (store.getDongCua() != null ? store.getDongCua() : ""));
             holder.binding.tvStoreAddress.setText(store.getDiaChiDayDu());
 
             holder.binding.ivRadio.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
@@ -470,7 +470,7 @@ public class ShopStoreSelectionFragment extends RootieFragment {
                 });
             } else {
                 holder.binding.getRoot().setOnClickListener(v -> {
-                    ShopStoreDetailFragment detailFragment = ShopStoreDetailFragment.Companion.newInstance(store);
+                    ShopStoreDetailFragment detailFragment = ShopStoreDetailFragment.newInstance(store);
                     getParentFragmentManager().beginTransaction()
                             .replace(R.id.main_container, detailFragment)
                             .addToBackStack(null)

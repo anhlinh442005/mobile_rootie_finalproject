@@ -73,34 +73,28 @@ public class SkinHistoryFragment extends RootieFragment {
         String email = ProfileSession.getEmail(requireContext());
         final String userEmail = (email != null && !email.trim().isEmpty()) ? email : "test@example.com";
         
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            BuildersKt.launch(coroutineScope, Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (ioScope, ioContinuation) -> {
-                try {
-                    allHistory = new FirestoreService().getSkinHistory(userEmail, ioContinuation);
-                    currentHistory = allHistory;
-                    
-                    BuildersKt.launch(ioScope, Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (mainScope, mainContinuation) -> {
+        new Thread(() -> {
+            try {
+                allHistory = new FirestoreService().getSkinHistory(userEmail);
+                currentHistory = allHistory;
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
                         updateChartAndList(currentHistory);
-
                         String selectedFilter = null;
                         if (_binding.skinHistoryFilterAi.getCurrentTextColor() == ContextCompat.getColor(requireContext(), R.color.white)) {
                             selectedFilter = "Quét AI";
                         } else if (_binding.skinHistoryFilterOffline.getCurrentTextColor() == ContextCompat.getColor(requireContext(), R.color.white)) {
                             selectedFilter = "Soi da offline";
                         }
-
                         if (selectedFilter != null) {
                             filterData(selectedFilter);
                         }
-                        return kotlin.Unit.INSTANCE;
-                    }, ioContinuation);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    });
                 }
-                return kotlin.Unit.INSTANCE;
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
-        });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void filterData(String type) {
@@ -127,7 +121,6 @@ public class SkinHistoryFragment extends RootieFragment {
         adapter = new SkinHistoryAdapter(currentHistory, item -> {
             SkinScanResultDialogFragment dialog = SkinScanResultDialogFragment.newInstance(item.toString());
             dialog.show(getParentFragmentManager(), "SkinScanResultDialog");
-            return null;
         });
         _binding.skinHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         _binding.skinHistoryRecyclerView.setAdapter(adapter);

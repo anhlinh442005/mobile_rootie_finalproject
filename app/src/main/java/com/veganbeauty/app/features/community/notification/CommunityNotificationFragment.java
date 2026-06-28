@@ -92,7 +92,7 @@ public class CommunityNotificationFragment extends RootieFragment {
                                     .commit();
                         } else {
                             String targetUserId = item.getUserId() != null ? item.getUserId() : "test_001";
-                            com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment postDetailFragment = com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment.newInstance(targetUserId, 0, item.getPostId());
+                            com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment postDetailFragment = com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment.newInstance(targetUserId, 0, 0, item.getPostId());
                             getParentFragmentManager().beginTransaction()
                                     .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                                     .replace(R.id.main_container, postDetailFragment)
@@ -132,11 +132,9 @@ public class CommunityNotificationFragment extends RootieFragment {
                     }
                     break;
             }
-            return kotlin.Unit.INSTANCE;
         }, item -> {
             viewModel.deleteNotification(requireContext(), item.getId());
             Toast.makeText(requireContext(), "Đã xóa thông báo", Toast.LENGTH_SHORT).show();
-            return kotlin.Unit.INSTANCE;
         });
 
         _binding.rvNotifications.setAdapter(adapter);

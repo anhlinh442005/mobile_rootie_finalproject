@@ -1,9 +1,12 @@
 package com.veganbeauty.app.features.community.com_feed;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +21,9 @@ import androidx.core.view.GravityCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import coil.Coil;
-import coil.ImageLoader;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.google.android.material.navigation.NavigationView;
 import com.veganbeauty.app.MainActivity;
@@ -45,17 +42,17 @@ import com.veganbeauty.app.features.community.message.CommunityMessageFragment;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
-import com.veganbeauty.app.features.home.HomeFragment;
+import com.veganbeauty.app.utils.SideMenuHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CommunityFeedFragment extends RootieFragment {
 
@@ -71,6 +68,9 @@ public class CommunityFeedFragment extends RootieFragment {
     private List<CommunityPostEntity> allFilteredPosts = new ArrayList<>();
     private String currentFilter = "Tất cả";
 
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,8 +80,10 @@ public class CommunityFeedFragment extends RootieFragment {
     }
 
     private void setupViewModel() {
-        RootieDatabase db = RootieDatabase.Companion.getDatabase(requireContext());
-        CommunityRepository repository = new CommunityRepository(db.communityDao(), new LocalJsonReader(requireContext()), new FirestoreService());
+        Context ctx = getContext();
+        if (ctx == null) return;
+        RootieDatabase db = RootieDatabase.getDatabase(ctx);
+        CommunityRepository repository = new CommunityRepository(db.communityDao(), new LocalJsonReader(ctx), new FirestoreService());
         CommunityViewModelFactory factory = new CommunityViewModelFactory(repository);
         viewModel = new ViewModelProvider(requireActivity(), factory).get(CommunityViewModel.class);
     }
@@ -93,13 +95,12 @@ public class CommunityFeedFragment extends RootieFragment {
 
         binding.ivHome.setOnClickListener(v -> {
             getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            BottomNavHelper.INSTANCE.navigate(this, R.id.nav_home);
+            BottomNavHelper.navigate(this, R.id.nav_home);
         });
 
         binding.ivMenu.setOnClickListener(v -> {
-            DrawerLayout drawerLayout = view.findViewById(R.id.drawerLayout);
-            if (drawerLayout != null) {
-                drawerLayout.openDrawer(GravityCompat.START);
+            if (binding.drawerLayout != null) {
+                binding.drawerLayout.openDrawer(GravityCompat.START);
             }
         });
 
@@ -114,9 +115,8 @@ public class CommunityFeedFragment extends RootieFragment {
         View ivCloseMenu = view.findViewById(R.id.ivCloseMenu);
         if (ivCloseMenu != null) {
             ivCloseMenu.setOnClickListener(v -> {
-                DrawerLayout drawerLayout = view.findViewById(R.id.drawerLayout);
-                if (drawerLayout != null) {
-                    drawerLayout.closeDrawer(GravityCompat.START);
+                if (binding.drawerLayout != null) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
                 }
             });
         }
@@ -162,16 +162,9 @@ public class CommunityFeedFragment extends RootieFragment {
 
         binding.comBottomNav.navComFeed.setOnClickListener(v -> {
             binding.nsvFeed.smoothScrollTo(0, 0);
-            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, continuation) -> {
-                return BuildersKt.withContext(Dispatchers.getMain(), (coroutineScope, continuation1) -> {
-                    try {
-                        kotlinx.coroutines.DelayKt.delay(800, continuation1);
-                        updateFeedData(true);
-                    } catch (Exception ignored) {
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
-            });
+            mainHandler.postDelayed(() -> {
+                if (isAdded()) updateFeedData(true);
+            }, 800);
         });
 
         binding.comBottomNav.navComProfile.setOnClickListener(v -> {
@@ -200,7 +193,7 @@ public class CommunityFeedFragment extends RootieFragment {
             getParentFragmentManager().beginTransaction()
                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.main_container, new CommunityMessageFragment())
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         binding.nsvFeed.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
@@ -223,19 +216,13 @@ public class CommunityFeedFragment extends RootieFragment {
         setupFilters();
 
         binding.swipeRefreshLayout.setColorSchemeResources(R.color.primary);
-
         binding.swipeRefreshLayout.setOnRefreshListener(() -> {
-            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, continuation) -> {
-                return BuildersKt.withContext(Dispatchers.getMain(), (coroutineScope, continuation1) -> {
-                    try {
-                        kotlinx.coroutines.DelayKt.delay(800, continuation1);
-                        updateFeedData(true);
-                        binding.swipeRefreshLayout.setRefreshing(false);
-                    } catch (Exception ignored) {
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
-            });
+            mainHandler.postDelayed(() -> {
+                if (isAdded()) {
+                    updateFeedData(true);
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                }
+            }, 800);
         });
 
         binding.ivPlus.setOnClickListener(v -> {
@@ -243,48 +230,14 @@ public class CommunityFeedFragment extends RootieFragment {
             bottomSheet.show(getParentFragmentManager(), ComCreatePostBottomSheet.TAG);
         });
 
-        updateSideMenuUserInfo(null);
+        SideMenuHelper.bindCurrentUser(binding.navView);
     }
 
-    private void updateSideMenuUserInfo(UserEntity user) {
-        if (getView() == null) return;
-        NavigationView navView = getView().findViewById(R.id.navView);
-        if (navView == null) return;
-
-        ImageView ivAvatar = navView.findViewById(R.id.ivSideMenuAvatar);
-        TextView tvDisplayName = navView.findViewById(R.id.tvSideMenuDisplayName);
-        TextView tvUsername = navView.findViewById(R.id.tvSideMenuUsername);
-
-        if (user != null) {
-            if (tvDisplayName != null) tvDisplayName.setText(user.getUsername());
-            if (tvUsername != null) tvUsername.setText("@" + user.getUsername().toLowerCase().replace(" ", "_"));
-
-            if (user.getAvatar() != null && !user.getAvatar().isEmpty() && ivAvatar != null) {
-                ivAvatar.setVisibility(View.VISIBLE);
-                ImageLoader imageLoader = Coil.imageLoader(requireContext());
-                ImageRequest request = new ImageRequest.Builder(requireContext())
-                        .data(user.getAvatar())
-                        .crossfade(true)
-                        .transformations(new CircleCropTransformation())
-                        .placeholder(R.drawable.img_avatar)
-                        .target(ivAvatar)
-                        .build();
-                imageLoader.enqueue(request);
-            }
-        } else {
-            if (tvDisplayName != null) tvDisplayName.setText("Ánh Linh");
-            if (tvUsername != null) tvUsername.setText("@eng_lyns");
-            if (ivAvatar != null) {
-                ImageLoader imageLoader = Coil.imageLoader(requireContext());
-                ImageRequest request = new ImageRequest.Builder(requireContext())
-                        .data("https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg")
-                        .crossfade(true)
-                        .transformations(new CircleCropTransformation())
-                        .placeholder(R.drawable.img_avatar)
-                        .target(ivAvatar)
-                        .build();
-                imageLoader.enqueue(request);
-            }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (binding != null && binding.navView != null) {
+            SideMenuHelper.bindCurrentUser(binding.navView);
         }
     }
 
@@ -344,11 +297,12 @@ public class CommunityFeedFragment extends RootieFragment {
     }
 
     private void updateFeedData(boolean resetData) {
+        if (viewModel == null) return;
         List<CommunityPostEntity> postsList = viewModel.getPosts().getValue();
         if (postsList == null) postsList = new ArrayList<>();
         List<UserEntity> usersList = viewModel.getUsers().getValue();
         if (usersList == null) usersList = new ArrayList<>();
-        List<CommunityPostEntity> reelsList = viewModel.getReels().getValue();
+        List<com.veganbeauty.app.data.local.entities.ReelEntity> reelsList = viewModel.getReels().getValue();
         if (reelsList == null) reelsList = new ArrayList<>();
 
         if ("Reels".equals(currentFilter)) {
@@ -368,177 +322,161 @@ public class CommunityFeedFragment extends RootieFragment {
 
             final List<CommunityPostEntity> finalPostsList = postsList;
             final List<UserEntity> finalUsersList = usersList;
-            final List<CommunityPostEntity> finalReelsList = reelsList;
+            final List<com.veganbeauty.app.data.local.entities.ReelEntity> finalReelsList = reelsList;
 
-            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, continuation) -> {
-                return BuildersKt.withContext(Dispatchers.getIO(), (coroutineScope, continuation1) -> {
-                    try {
-                        LocalJsonReader reader = new LocalJsonReader(requireContext());
-                        if (FeedDataCache.productsList == null) {
-                            FeedDataCache.productsList = reader.getProducts();
-                        }
-                        if (FeedDataCache.newsList == null) {
-                            FeedDataCache.newsList = reader.getCommunityNews();
-                        }
-                        if (FeedDataCache.mySocialData == null) {
-                            FeedDataCache.mySocialData = reader.getSocialDataForUser("test_001");
-                        }
+            executor.execute(() -> {
+                Context ctx = getContext();
+                if (ctx == null) return;
+                LocalJsonReader reader = new LocalJsonReader(ctx);
+                if (FeedDataCache.productsList == null) FeedDataCache.productsList = reader.getProducts();
+                if (FeedDataCache.newsList == null) FeedDataCache.newsList = reader.getCommunityNews();
+                if (FeedDataCache.mySocialData == null) FeedDataCache.mySocialData = reader.getSocialDataForUser("test_001");
 
-                        BuildersKt.withContext(Dispatchers.getMain(), (coroutineScopeMain, continuationMain) -> {
-                            if (resetData) {
-                                allFilteredPosts.clear();
-                                if (!"Tất cả".equals(currentFilter)) {
-                                    Set<String> seenIds = new HashSet<>();
-                                    for (CommunityPostEntity post : finalPostsList) {
-                                        if (currentFilter.equalsIgnoreCase(post.getType()) ||
-                                                currentFilter.equalsIgnoreCase(post.getSkinType()) ||
-                                                currentFilter.equalsIgnoreCase(post.getConcern())) {
-                                            if (!seenIds.contains(post.getPostId())) {
-                                                allFilteredPosts.add(post);
-                                                seenIds.add(post.getPostId());
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    Set<String> seenIds = new HashSet<>();
-                                    for (CommunityPostEntity post : finalPostsList) {
-                                        if (!seenIds.contains(post.getPostId())) {
-                                            allFilteredPosts.add(post);
-                                            seenIds.add(post.getPostId());
-                                        }
-                                    }
-                                }
-                                Collections.sort(allFilteredPosts, (o1, o2) -> Long.compare(o2.getCreatedAt(), o1.getCreatedAt()));
-
-                                if (FeedDataCache.newsList != null && !FeedDataCache.newsList.isEmpty()) {
-                                    if ("Tất cả".equals(currentFilter)) {
-                                        CommunityPostEntity randomNews = FeedDataCache.newsList.get(new Random().nextInt(FeedDataCache.newsList.size()));
-                                        allFilteredPosts.add(0, randomNews);
-                                    } else {
-                                        List<CommunityPostEntity> filteredNews = new ArrayList<>();
-                                        for (CommunityPostEntity n : FeedDataCache.newsList) {
-                                            if (currentFilter.equalsIgnoreCase(n.getType()) ||
-                                                    currentFilter.equalsIgnoreCase(n.getSkinType()) ||
-                                                    currentFilter.equalsIgnoreCase(n.getConcern())) {
-                                                filteredNews.add(n);
-                                            }
-                                        }
-                                        if (!filteredNews.isEmpty()) {
-                                            CommunityPostEntity randomNews = filteredNews.get(new Random().nextInt(filteredNews.size()));
-                                            allFilteredPosts.add(0, randomNews);
-                                        }
-                                    }
-                                }
-                                currentPage = 1;
-                            }
-
-                            int endIndex = Math.min(currentPage * postsPerPage, allFilteredPosts.size());
-                            List<CommunityPostEntity> pagedPostsList = new ArrayList<>(allFilteredPosts.subList(0, endIndex));
-
-                            Map<String, List<String>> mySocialData = FeedDataCache.mySocialData;
-                            List<String> suggestedIds = mySocialData != null && mySocialData.containsKey("suggested") ? mySocialData.get("suggested") : new ArrayList<>();
-                            List<String> myFriendsList = mySocialData != null && mySocialData.containsKey("friends") ? mySocialData.get("friends") : new ArrayList<>();
-                            Set<String> myFriends = new HashSet<>(myFriendsList);
-
-                            List<UserEntity> suggestedUsers = new ArrayList<>();
-                            for (UserEntity u : finalUsersList) {
-                                if (suggestedIds.contains(u.getUser_id()) && !"test_001".equals(u.getUser_id())) {
-                                    suggestedUsers.add(u);
+                mainHandler.post(() -> {
+                    if (!isAdded()) return;
+                    if (resetData) {
+                        allFilteredPosts.clear();
+                        Set<String> seenIds = new HashSet<>();
+                        for (CommunityPostEntity post : finalPostsList) {
+                            if ("Tất cả".equals(currentFilter) ||
+                                    currentFilter.equalsIgnoreCase(post.getType()) ||
+                                    currentFilter.equalsIgnoreCase(post.getSkinType()) ||
+                                    currentFilter.equalsIgnoreCase(post.getConcern())) {
+                                if (post.getPostId() != null && !seenIds.contains(post.getPostId())) {
+                                    allFilteredPosts.add(post);
+                                    seenIds.add(post.getPostId());
                                 }
                             }
+                        }
+                        
+                        Collections.sort(allFilteredPosts, (o1, o2) -> {
+                            if (o1.getCreatedAt() == null || o2.getCreatedAt() == null) return 0;
+                            try {
+                                return Long.compare(Long.parseLong(o2.getCreatedAt()), Long.parseLong(o1.getCreatedAt()));
+                            } catch (Exception e) {
+                                return o2.getCreatedAt().compareTo(o1.getCreatedAt());
+                            }
+                        });
 
-                            if (suggestedUsers.size() < 5) {
-                                List<UserEntity> extra = new ArrayList<>();
-                                for (UserEntity u : finalUsersList) {
-                                    if (!"test_001".equals(u.getUser_id()) && !myFriends.contains(u.getUser_id()) && !suggestedUsers.contains(u)) {
-                                        extra.add(u);
+                        if (FeedDataCache.newsList != null && !FeedDataCache.newsList.isEmpty()) {
+                            CommunityPostEntity news = null;
+                            if ("Tất cả".equals(currentFilter)) {
+                                news = FeedDataCache.newsList.get(new Random().nextInt(FeedDataCache.newsList.size()));
+                            } else {
+                                List<CommunityPostEntity> filteredNews = new ArrayList<>();
+                                for (CommunityPostEntity n : FeedDataCache.newsList) {
+                                    if (currentFilter.equalsIgnoreCase(n.getType()) || currentFilter.equalsIgnoreCase(n.getSkinType()) || currentFilter.equalsIgnoreCase(n.getConcern())) {
+                                        filteredNews.add(n);
                                     }
                                 }
-                                Collections.shuffle(extra);
-                                int limit = Math.min(10 - suggestedUsers.size(), extra.size());
-                                suggestedUsers.addAll(extra.subList(0, limit));
+                                if (!filteredNews.isEmpty()) news = filteredNews.get(new Random().nextInt(filteredNews.size()));
                             }
-
-                            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope2, continuation2) -> {
-                                return BuildersKt.withContext(Dispatchers.getIO(), (coroutineScopeIO, continuationIO) -> {
-                                    List<String> sUserIds = new ArrayList<>();
-                                    for (UserEntity u : suggestedUsers) sUserIds.add(u.getUser_id());
-                                    Map<String, List<String>> mutualMap = new LocalJsonReader(requireContext()).getMutualFriendsForUsers(myFriends, sUserIds);
-
-                                    BuildersKt.withContext(Dispatchers.getMain(), (coroutineScopeMain2, continuationMain2) -> {
-                                        for (UserEntity user : suggestedUsers) {
-                                            List<String> mutualIds = mutualMap.containsKey(user.getUser_id()) ? mutualMap.get(user.getUser_id()) : new ArrayList<>();
-                                            user.setMutualCount(mutualIds.size());
-                                            if (!mutualIds.isEmpty()) {
-                                                List<UserEntity> mutualUsers = new ArrayList<>();
-                                                for (UserEntity u : finalUsersList) {
-                                                    if (mutualIds.contains(u.getUser_id())) {
-                                                        mutualUsers.add(u);
-                                                    }
-                                                }
-                                                if (!mutualUsers.isEmpty()) {
-                                                    UserEntity first = mutualUsers.get(0);
-                                                    user.setFirstMutualFriendName((first.getFull_name() != null && !first.getFull_name().trim().isEmpty()) ? first.getFull_name() : first.getUsername());
-                                                    List<String> avatars = new ArrayList<>();
-                                                    for (UserEntity mu : mutualUsers) {
-                                                        if (mu.getAvatar() != null) avatars.add(mu.getAvatar());
-                                                        if (avatars.size() == 3) break;
-                                                    }
-                                                    user.setMutualFriendAvatars(avatars);
-                                                }
-                                            }
-                                        }
-
-                                        postAdapter.updateData(pagedPostsList, suggestedUsers, finalReelsList, FeedDataCache.productsList);
-                                        isLoadingMore = false;
-                                        return kotlin.Unit.INSTANCE;
-                                    }, continuationIO);
-                                    return kotlin.Unit.INSTANCE;
-                                }, continuation2);
-                            });
-
-                            return kotlin.Unit.INSTANCE;
-                        }, continuation1);
-                    } catch (Exception ignored) {
+                            if (news != null) allFilteredPosts.add(0, news);
+                        }
+                        currentPage = 1;
                     }
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
+
+                    int endIndex = Math.min(currentPage * postsPerPage, allFilteredPosts.size());
+                    List<CommunityPostEntity> pagedPostsList = new ArrayList<>(allFilteredPosts.subList(0, endIndex));
+
+                    Map<String, List<String>> mySocialData = FeedDataCache.mySocialData;
+                    List<String> suggestedIds = mySocialData != null && mySocialData.containsKey("suggested") ? mySocialData.get("suggested") : new ArrayList<>();
+                    List<String> myFriendsList = mySocialData != null && mySocialData.containsKey("friends") ? mySocialData.get("friends") : new ArrayList<>();
+                    Set<String> myFriends = new HashSet<>(myFriendsList);
+
+                    List<UserEntity> suggestedUsers = new ArrayList<>();
+                    for (UserEntity u : finalUsersList) {
+                        if (suggestedIds.contains(u.getUser_id()) && !"test_001".equals(u.getUser_id())) {
+                            suggestedUsers.add(u);
+                        }
+                    }
+
+                    if (suggestedUsers.size() < 5) {
+                        List<UserEntity> extra = new ArrayList<>();
+                        for (UserEntity u : finalUsersList) {
+                            if (!"test_001".equals(u.getUser_id()) && !myFriends.contains(u.getUser_id()) && !suggestedUsers.contains(u)) {
+                                extra.add(u);
+                            }
+                        }
+                        Collections.shuffle(extra);
+                        int limit = Math.min(10 - suggestedUsers.size(), extra.size());
+                        suggestedUsers.addAll(extra.subList(0, limit));
+                    }
+
+                    executor.execute(() -> {
+                        Context ctx2 = getContext();
+                        if (ctx2 == null) return;
+                        List<String> sUserIds = new ArrayList<>();
+                        for (UserEntity u : suggestedUsers) sUserIds.add(u.getUser_id());
+                        Map<String, List<String>> mutualMap = new LocalJsonReader(ctx2).getMutualFriendsForUsers(new ArrayList<>(myFriends), new ArrayList<>(sUserIds));
+
+                        mainHandler.post(() -> {
+                            if (!isAdded()) return;
+                            for (UserEntity user : suggestedUsers) {
+                                List<String> mutualIds = mutualMap.getOrDefault(user.getUser_id(), new ArrayList<>());
+                                user.setMutualCount(mutualIds.size());
+                                if (!mutualIds.isEmpty()) {
+                                    List<UserEntity> mutualUsers = new ArrayList<>();
+                                    for (UserEntity u : finalUsersList) {
+                                        if (mutualIds.contains(u.getUser_id())) mutualUsers.add(u);
+                                    }
+                                    if (!mutualUsers.isEmpty()) {
+                                        UserEntity first = mutualUsers.get(0);
+                                        user.setFirstMutualFriendName((first.getFull_name() != null && !first.getFull_name().trim().isEmpty()) ? first.getFull_name() : first.getUsername());
+                                        List<String> avatars = new ArrayList<>();
+                                        for (UserEntity mu : mutualUsers) {
+                                            if (mu.getAvatar() != null) avatars.add(mu.getAvatar());
+                                            if (avatars.size() == 3) break;
+                                        }
+                                        user.setMutualFriendAvatars(avatars);
+                                    }
+                                }
+                            }
+                            postAdapter.updateData(pagedPostsList, suggestedUsers, finalReelsList, FeedDataCache.productsList);
+                            isLoadingMore = false;
+                        });
+                    });
+                });
             });
         }
     }
 
     @Override
     public void observeViewModel() {
+        if (viewModel == null) return;
         viewModel.getUsers().observe(getViewLifecycleOwner(), users -> {
-            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, continuation) -> {
-                return BuildersKt.withContext(Dispatchers.getIO(), (coroutineScope, continuation1) -> {
-                    try {
-                        List<String> myFriendsIdsList = new LocalJsonReader(requireContext()).getFriendsForUser("test_001");
-                        Set<String> myFriendsIds = new HashSet<>(myFriendsIdsList);
+            executor.execute(() -> {
+                Context ctx = getContext();
+                if (ctx == null) return;
+                List<String> myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser("test_001");
+                Set<String> myFriendsIds = new HashSet<>(myFriendsIdsList);
 
-                        BuildersKt.withContext(Dispatchers.getMain(), (coroutineScopeMain, continuationMain) -> {
-                            List<UserEntity> allStories = new ArrayList<>(users);
-                            Collections.sort(allStories, (o1, o2) -> {
-                                boolean f1 = myFriendsIds.contains(o1.getUser_id());
-                                boolean f2 = myFriendsIds.contains(o2.getUser_id());
-                                return Boolean.compare(f2, f1);
-                            });
+                mainHandler.post(() -> {
+                    if (!isAdded()) return;
+                    List<UserEntity> safeUsers = users != null ? users : Collections.emptyList();
+                    List<UserEntity> allStories = new ArrayList<>(safeUsers);
+                    Collections.sort(allStories, (o1, o2) -> {
+                        boolean f1 = myFriendsIds.contains(o1.getUser_id());
+                        boolean f2 = myFriendsIds.contains(o2.getUser_id());
+                        return Boolean.compare(f2, f1);
+                    });
 
-                            if (!allStories.isEmpty()) {
-                                UserEntity myStory = new UserEntity(
-                                        "test_001", "Tin của bạn", allStories.get(0).getFull_name(), "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg",
-                                        allStories.get(0).getBio(), allStories.get(0).getSkinType(), allStories.get(0).getConcerns()
-                                );
-                                allStories.add(0, myStory);
-                            }
-                            storyAdapter.updateData(allStories);
-                            updateFeedData(true);
-                            return kotlin.Unit.INSTANCE;
-                        }, continuation1);
-                    } catch (Exception ignored) {
+                    if (!allStories.isEmpty()) {
+                        String avatarUrl = allStories.get(0).getAvatar();
+                        if (avatarUrl == null || avatarUrl.isEmpty()) {
+                            avatarUrl = "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg";
+                        }
+                        UserEntity myStory = new UserEntity(
+                                "test_001", "Tin của bạn", "Tin của bạn", "", "", "", avatarUrl, null
+                        );
+                        myStory.setBio(allStories.get(0).getBio());
+                        myStory.setSkinType(allStories.get(0).getSkinType());
+                        myStory.setConcerns(allStories.get(0).getConcerns());
+                        allStories.add(0, myStory);
                     }
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
+                    storyAdapter.updateData(allStories);
+                    updateFeedData(true);
+                });
             });
         });
 

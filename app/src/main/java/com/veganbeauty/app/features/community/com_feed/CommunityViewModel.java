@@ -2,7 +2,6 @@ package com.veganbeauty.app.features.community.com_feed;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelKt;
 
 import com.veganbeauty.app.data.local.entities.CommunityBlogEntity;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
@@ -14,14 +13,9 @@ import com.veganbeauty.app.data.repository.CommunityRepository;
 
 import java.util.List;
 
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.launch;
-
 public class CommunityViewModel extends ViewModel {
     private final CommunityRepository repository;
 
-    // We can't directly use asLiveData() in Java without extension wrapper, so we leave it as flow or use LiveData builder if needed.
-    // For translation parity, assuming repository has livedata or we use androidx.lifecycle.FlowLiveDataConversions
     public final LiveData<List<CommunityPostEntity>> posts;
     public final LiveData<List<UserEntity>> users;
     public final LiveData<List<ReelEntity>> reels;
@@ -42,18 +36,12 @@ public class CommunityViewModel extends ViewModel {
     }
 
     public void refreshData() {
-        // ViewModelKt.getViewModelScope(this).launch
-        // Since Java Coroutines interop is tricky, we use standard thread for translation parity or RxJava.
-        // For exact parity we'll use a thread since we can't write simple coroutine in Java easily.
-        new Thread(() -> {
-            try {
-                // Assuming refreshCommunityData is suspend, we'd need a runBlocking or Coroutine builder.
-                // kotlinx.coroutines.BuildersKt.runBlocking(...)
-                // But for now, just calling it if it's synchronous in Java translation.
-                repository.refreshCommunityData();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        repository.refreshCommunityData();
     }
+
+    public LiveData<List<CommunityPostEntity>> getPosts() { return posts; }
+    public LiveData<List<UserEntity>> getUsers() { return users; }
+    public LiveData<List<ReelEntity>> getReels() { return reels; }
+    public LiveData<List<YtVideoEntity>> getExploreVideos() { return exploreVideos; }
+    public LiveData<List<IngredientEntity>> getIngredients() { return ingredients; }
 }

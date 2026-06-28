@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.veganbeauty.app.features.home.HomeFragment;
+import com.veganbeauty.app.utils.RootieBrandHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,14 +23,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Schedule daily weather & skin advice notification at 6:30 AM
         try {
-            com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.INSTANCE.scheduleDailyNotification(getApplicationContext());
+            com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(getApplicationContext());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // Schedule skincare routine notifications
         try {
-            com.veganbeauty.app.features.routine.RoutineAlarmScheduler.INSTANCE.rescheduleAlarms(getApplicationContext());
+            com.veganbeauty.app.features.routine.RoutineAlarmScheduler.rescheduleAlarms(getApplicationContext());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,15 +50,51 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
         }
 
-        if (!com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(this)) {
+        if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(this)) {
             com.veganbeauty.app.features.shop.product.CartHelper.clearCart(this);
         } else {
-            com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncRewardPointsFromFirestore(this);
-            com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncUserProfileFromFirestore(this, null);
+            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsFromFirestore(this);
+            com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(this, null);
         }
 
-        // Trigger ONE-TIME SYNC of all mock data to Firebase
-        com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncAllLocalDataToFirebase(this);
+        // One-time wipe + re-upload canonical asset data to Firebase
+        android.content.SharedPreferences syncPrefs = getSharedPreferences("rootie_prefs", MODE_PRIVATE);
+        if (!syncPrefs.getBoolean("firebase_assets_sync_v2", false)) {
+            com.veganbeauty.app.utils.SyncDataHelper.syncAllLocalDataToFirebase(this, success -> {
+                if (success) {
+                    syncPrefs.edit().putBoolean("firebase_assets_sync_v2", true).apply();
+                }
+            });
+        }
+
+        // Preload product catalog + images from assets in background
+        new Thread(() -> {
+            try {
+                com.veganbeauty.app.utils.ProductImageCache.preload(getApplicationContext());
+                com.veganbeauty.app.data.local.RootieDatabase db =
+                        com.veganbeauty.app.data.local.RootieDatabase.getDatabase(getApplicationContext());
+                com.veganbeauty.app.data.repository.ProductRepository productRepository =
+                        new com.veganbeauty.app.data.repository.ProductRepository(
+                                db.productDao(),
+                                new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()),
+                                new com.veganbeauty.app.data.remote.FirestoreService(),
+                                db.userProductExpiryDao()
+                        );
+                productRepository.seedProductsFromAssets();
+                productRepository.refreshProducts(true);
+
+                com.veganbeauty.app.data.repository.OrderRepository orderRepository =
+                        new com.veganbeauty.app.data.repository.OrderRepository(
+                                db.orderDao(),
+                                db.rewardPointDao(),
+                                db.userGiftDao(),
+                                new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext())
+                        );
+                orderRepository.seedOrdersFromAssetsIfNeeded();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
 
         // Sync team users from users.json into SQLite + Firebase on background thread
         new Thread(() -> {
@@ -99,11 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     if (!teamIds.contains(userId)) continue;
 
                     // Skip the user associated with this device to avoid overriding their profile changes in Firestore and SQLite
-                    String savedUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getUserId(getApplicationContext());
-                    if (savedUserId != null && savedUserId.equals(userId)) {
-                        continue;
-                    }
-
+                    String savedUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(getApplicationContext());
                     com.veganbeauty.app.data.local.entities.UserEntity existingUser = userDao.getUserByIdSync(userId);
 
                     String username = obj.optString("username", "");
@@ -114,7 +147,9 @@ public class MainActivity extends AppCompatActivity {
                     String avatar = obj.optString("avatar", null);
                     String primaryImage = obj.optString("primary_image", null);
 
-                    if (existingUser != null) {
+                    if (RootieBrandHelper.isRootieUser(userId)) {
+                        avatar = RootieBrandHelper.AVATAR_URL;
+                    } else if (existingUser != null) {
                         if (existingUser.getUsername() != null && !existingUser.getUsername().isEmpty()) {
                             username = existingUser.getUsername();
                         }
@@ -130,12 +165,32 @@ public class MainActivity extends AppCompatActivity {
                         if (existingUser.getPassword() != null && !existingUser.getPassword().isEmpty()) {
                             password = existingUser.getPassword();
                         }
-                        if (existingUser.getAvatar() != null && !existingUser.getAvatar().isEmpty()) {
-                            avatar = existingUser.getAvatar();
+                        if (savedUserId != null && savedUserId.equals(userId)) {
+                            String jsonAvatar = obj.optString("avatar", null);
+                            if (jsonAvatar != null && !jsonAvatar.trim().isEmpty()) {
+                                avatar = jsonAvatar.trim();
+                            }
+                            String jsonPrimary = obj.optString("primary_image", null);
+                            if (jsonPrimary != null && !jsonPrimary.trim().isEmpty()) {
+                                primaryImage = jsonPrimary.trim();
+                            }
+                        } else {
+                            if (existingUser.getAvatar() != null && !existingUser.getAvatar().isEmpty()) {
+                                avatar = existingUser.getAvatar();
+                            }
+                            if (existingUser.getPrimary_image() != null && !existingUser.getPrimary_image().isEmpty()) {
+                                primaryImage = existingUser.getPrimary_image();
+                            }
                         }
-                        if (existingUser.getPrimary_image() != null && !existingUser.getPrimary_image().isEmpty()) {
-                            primaryImage = existingUser.getPrimary_image();
-                        }
+                    }
+
+                    if (savedUserId != null && savedUserId.equals(userId)) {
+                        com.veganbeauty.app.utils.ProfileSessionHelper.syncSessionFromUser(
+                                getApplicationContext(),
+                                new com.veganbeauty.app.data.local.entities.UserEntity(
+                                        userId, username, fullName, email, phone, password, avatar, primaryImage
+                                )
+                        );
                     }
 
                     com.veganbeauty.app.data.local.entities.UserEntity user =
@@ -211,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Upload FCM Token to Firestore under users/{userId}
                 try {
-                    String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(MainActivity.this);
+                    String currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(MainActivity.this);
                     com.google.firebase.firestore.FirebaseFirestore.getInstance()
                         .collection("users")
                         .document(currentUserId)
@@ -547,14 +602,14 @@ public class MainActivity extends AppCompatActivity {
         updateUnreadBadges();
 
         com.veganbeauty.app.features.ai.SkinAiChatFragment dialog = new com.veganbeauty.app.features.ai.SkinAiChatFragment();
-        dialog.show(getSupportFragmentManager(), "SkinAiChatDialog");
+        loadFragment(dialog);
     }
 
     private void openSkinChatDialog() {
         collapseExtraBubblesImmediately();
         String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
         String skinChatConvId = "chat_rootie_vn_" + currentUserId;
-        com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.markAsRead(this, skinChatConvId, currentUserId);
+        com.veganbeauty.app.features.community.message.MessageHelper.markAsRead(this, skinChatConvId, currentUserId);
         updateUnreadBadges();
 
         com.veganbeauty.app.features.ai.SkinChatFragment dialog = new com.veganbeauty.app.features.ai.SkinChatFragment();
@@ -576,16 +631,16 @@ public class MainActivity extends AppCompatActivity {
         final String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
         final String skinChatConvId = "chat_rootie_vn_" + currentUserId;
         com.veganbeauty.app.data.local.entities.ConversationEntity conv =
-            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.getConversation(this, skinChatConvId);
+            com.veganbeauty.app.features.community.message.MessageHelper.getConversationById(this, skinChatConvId);
         if (conv == null || conv.getMessages() == null || conv.getMessages().isEmpty()) {
-            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.getOrCreateConversation(
+            com.veganbeauty.app.features.community.message.MessageHelper.getOrCreateConversation(
                 this,
                 currentUserId,
-                "rootie_vn",
+                RootieBrandHelper.USER_ID_VN,
                 "Rootie VietNam",
-                "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png"
+                RootieBrandHelper.AVATAR_URL
             );
-            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.sendMessage(
+            com.veganbeauty.app.features.community.message.MessageHelper.sendMessage(
                 this,
                 skinChatConvId,
                 "rootie_vn",
@@ -595,12 +650,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Start listening to the expert conversation
-        com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.listenToConversation(this, skinChatConvId, new kotlin.jvm.functions.Function0<kotlin.Unit>() {
-            @Override
-            public kotlin.Unit invoke() {
-                updateUnreadBadges();
-                return kotlin.Unit.INSTANCE;
-            }
+        com.veganbeauty.app.features.community.message.MessageHelper.listenToConversation(this, skinChatConvId, () -> {
+            updateUnreadBadges();
         });
 
         // Initial update of badges
@@ -616,7 +667,7 @@ public class MainActivity extends AppCompatActivity {
         String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
         String skinChatConvId = "chat_rootie_vn_" + currentUserId;
         com.veganbeauty.app.data.local.entities.ConversationEntity conv =
-            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.getConversation(this, skinChatConvId);
+            com.veganbeauty.app.features.community.message.MessageHelper.getConversationById(this, skinChatConvId);
         
         boolean isHumanUnread = false;
         if (conv != null && conv.getUnreadBy() != null) {
@@ -652,7 +703,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
             String skinChatConvId = "chat_rootie_vn_" + currentUserId;
-            com.veganbeauty.app.features.community.message.MessageHelper.INSTANCE.removeConversationListener(skinChatConvId);
+            com.veganbeauty.app.features.community.message.MessageHelper.removeConversationListener(skinChatConvId);
         } catch (Exception e) {
             e.printStackTrace();
         }

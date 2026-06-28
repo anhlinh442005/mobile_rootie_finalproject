@@ -17,7 +17,7 @@ public interface UserGiftDao {
     long insertUserGift(UserGiftEntity gift);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    List<Long> insertUserGifts(List<UserGiftEntity> gifts);
+    long[] insertUserGifts(List<UserGiftEntity> gifts);
 
     @Query("SELECT * FROM user_gifts ORDER BY acquiredTimestamp DESC")
     Flow<List<UserGiftEntity>> getAllUserGiftsFlow();

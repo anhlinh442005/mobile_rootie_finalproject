@@ -15,8 +15,10 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.StoreEntity;
 import com.veganbeauty.app.databinding.SkinFragmentHomeBinding;
+import com.veganbeauty.app.features.home.HomeHeaderHelper;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MySkinFragment extends RootieFragment {
@@ -45,9 +47,10 @@ public class MySkinFragment extends RootieFragment {
                 R.id.nav_myskin,
                 tabId -> {
                     BottomNavHelper.navigate(this, tabId);
-                    return null;
                 }
         );
+
+        HomeHeaderHelper.setup(this, view);
 
         binding.skinBannerContainer.setOnClickListener(v -> openScanFragment());
         binding.skinShortcutScanAi.setOnClickListener(v -> openScanFragment());
@@ -117,11 +120,12 @@ public class MySkinFragment extends RootieFragment {
                     )
                     .replace(R.id.main_container, new com.veganbeauty.app.features.weather.SkinWeatherForecastFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
         List<StoreEntity> allStores = jsonReader.getAllStores();
+        if (allStores == null) allStores = new ArrayList<>();
         List<StoreEntity> topStores = allStores.size() > 5 ? allStores.subList(0, 5) : allStores;
 
         binding.rvSkinStores.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));

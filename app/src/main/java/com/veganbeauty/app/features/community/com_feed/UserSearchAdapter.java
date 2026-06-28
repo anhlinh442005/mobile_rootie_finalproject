@@ -9,9 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 
@@ -64,14 +61,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
         holder.tvUsername.setText("@" + username.toLowerCase().replace(" ", "_"));
         
         if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(user.getAvatar())
-                    .target(holder.ivAvatar)
-                    .crossfade(true)
-                    .transformations(new CircleCropTransformation())
-                    .placeholder(R.drawable.img_avatar)
-                    .build();
-            Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(holder.ivAvatar.getContext()).load(user.getAvatar()).circleCrop().into(holder.ivAvatar);
         } else {
             holder.ivAvatar.setImageResource(R.drawable.img_avatar);
         }

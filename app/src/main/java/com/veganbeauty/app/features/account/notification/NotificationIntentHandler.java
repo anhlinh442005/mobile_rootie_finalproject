@@ -14,7 +14,7 @@ import com.veganbeauty.app.features.myskin.BookingDetailUpcomingFragment;
 import com.veganbeauty.app.features.myskin.BookingDetailCompletedFragment;
 import com.veganbeauty.app.features.myskin.BookingDetailCancelledFragment;
 import com.veganbeauty.app.features.profile.AccountVoucherDetailFragment;
-import com.veganbeauty.app.features.profile.VoucherItem;
+import com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem;
 import com.veganbeauty.app.features.routine.SkinReminderFragment;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.features.community.message.CommunityMessageFragment;
@@ -66,7 +66,7 @@ public class NotificationIntentHandler {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_container, new CommunityMessageFragment())
                 .addToBackStack(null)
-                .commit();
+                .commitAllowingStateLoss();
             return;
         }
 

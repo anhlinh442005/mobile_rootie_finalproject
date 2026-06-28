@@ -16,8 +16,9 @@ import androidx.fragment.app.Fragment;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.local.entities.OrderItemEntity;
+import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 
@@ -33,8 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 public class CommunityRevenueFragment extends Fragment {
 
@@ -126,7 +125,7 @@ public class CommunityRevenueFragment extends Fragment {
 
             LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
             List<OrderEntity> allOrders = jsonReader.getAllOrders();
-            String currentUserId = "test_001"; // Or get from session
+            String currentUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
 
             long totalRevenue = 0L;
             long totalCommission = 0L;
@@ -187,12 +186,14 @@ public class CommunityRevenueFragment extends Fragment {
                 if (tvUserName != null) tvUserName.setText("Xin chào, " + currentUser.getFull_name() + " \ud83c\udf3f");
 
                 ImageView ivAvatar = view.findViewById(R.id.ivAvatar);
-                if (ivAvatar != null && currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) {
-                    ImageRequest req = new ImageRequest.Builder(requireContext())
-                            .data(currentUser.getAvatar())
-                            .target(ivAvatar)
-                            .build();
-                    Coil.imageLoader(requireContext()).enqueue(req);
+                if (ivAvatar != null) {
+                    String avatarUrl = currentUser != null ? currentUser.getAvatar() : null;
+                    com.bumptech.glide.Glide.with(ivAvatar.getContext())
+                            .load(avatarUrl != null && !avatarUrl.isEmpty() ? avatarUrl : R.drawable.img_avatar)
+                            .circleCrop()
+                            .placeholder(R.drawable.img_avatar)
+                            .error(R.drawable.img_avatar)
+                            .into(ivAvatar);
                 }
             }
 
@@ -218,7 +219,6 @@ public class CommunityRevenueFragment extends Fragment {
                     String affiliateId = order.getAffiliate().getAffiliate_id() != null ? order.getAffiliate().getAffiliate_id() : order.getId();
                     String orderDate = order.getOrderDate();
                     long orderValue = order.getTotalAmount();
-                    String status = order.getStatus();
                     long commission = order.getAffiliate().getCommissionAmount();
 
                     View rowView = LayoutInflater.from(requireContext()).inflate(R.layout.com_item_revenue_order, llOrdersContainer, false);
@@ -233,27 +233,32 @@ public class CommunityRevenueFragment extends Fragment {
                     tvOrderValue.setText(format.format(orderValue));
 
                     TextView tvStatus = rowView.findViewById(R.id.tvStatus);
-                    if ("Hoàn tất".equals(status) || "Đã duyệt".equals(status) || "Thành công".equals(status)) {
-                        tvStatus.setText("Thành công");
-                        tvStatus.setTextColor(Color.parseColor("#6E846A"));
-                        tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#EAF1E7")));
-                        tvStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    } else {
-                        tvStatus.setText("Đang xử lý");
-                        tvStatus.setTextColor(Color.parseColor("#FF9800"));
-                        tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFF3E0")));
-                        tvStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    String displayStatus = CommunityAffiliateOrdersFragment.getDisplayStatus(order);
+                    tvStatus.setText(displayStatus);
+                    tvStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    switch (displayStatus) {
+                        case "Thành công":
+                            tvStatus.setTextColor(Color.parseColor("#6E846A"));
+                            tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#EAF1E7")));
+                            break;
+                        case "Đang giao":
+                            tvStatus.setTextColor(Color.parseColor("#1976D2"));
+                            tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E3F2FD")));
+                            break;
+                        default:
+                            tvStatus.setTextColor(Color.parseColor("#FF9800"));
+                            tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFF3E0")));
+                            break;
                     }
 
                     ImageView ivProductImage = rowView.findViewById(R.id.ivProductImage);
                     if (order.getItems() != null && !order.getItems().isEmpty()) {
-                        OrderItemEntity firstItem = order.getItems().get(0);
+                        OrderItem firstItem = order.getItems().get(0);
                         if (firstItem.getProductImage() != null && !firstItem.getProductImage().isEmpty()) {
-                            ImageRequest req = new ImageRequest.Builder(requireContext())
-                                    .data(firstItem.getProductImage())
-                                    .target(ivProductImage)
-                                    .build();
-                            Coil.imageLoader(requireContext()).enqueue(req);
+                            com.bumptech.glide.Glide.with(ivProductImage.getContext())
+                                    .load(firstItem.getProductImage())
+                                    .centerCrop()
+                                    .into(ivProductImage);
                         }
                     }
 
@@ -262,7 +267,7 @@ public class CommunityRevenueFragment extends Fragment {
                     }
 
                     if (order.getItems() != null) {
-                        for (OrderItemEntity item : order.getItems()) {
+                        for (OrderItem item : order.getItems()) {
                             String productId = item.getProductId();
                             String name = item.getProductName();
                             String image = item.getProductImage();
@@ -298,11 +303,10 @@ public class CommunityRevenueFragment extends Fragment {
 
                 ImageView ivProduct = prodView.findViewById(R.id.ivProduct);
                 if (stats.image != null && !stats.image.isEmpty()) {
-                    ImageRequest req = new ImageRequest.Builder(requireContext())
-                            .data(stats.image)
-                            .target(ivProduct)
-                            .build();
-                    Coil.imageLoader(requireContext()).enqueue(req);
+                    com.bumptech.glide.Glide.with(ivProduct.getContext())
+                            .load(stats.image)
+                            .centerCrop()
+                            .into(ivProduct);
                 }
 
                 if (llProductsSoldContainer != null) {

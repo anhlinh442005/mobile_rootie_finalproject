@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.Locale;
 
 public class AccountProfileEditFragment extends RootieFragment {
 
@@ -163,7 +164,7 @@ public class AccountProfileEditFragment extends RootieFragment {
             ProfileSession.INSTANCE.setDob(saveCtx, newDob);
             ProfileSession.INSTANCE.setGender(saveCtx, newGender);
 
-            SyncDataHelper.INSTANCE.syncUserProfileToFirebaseAndLocal(saveCtx);
+            SyncDataHelper.syncUserProfileToFirebaseAndLocal(saveCtx);
 
             View dialogView = getLayoutInflater().inflate(R.layout.dialog_save_profile_success, null);
             AlertDialog dialog = new AlertDialog.Builder(saveCtx)
@@ -256,7 +257,7 @@ public class AccountProfileEditFragment extends RootieFragment {
     }
 
     private void loadAvatarImage(String uri) {
-        AvatarLoader.INSTANCE.loadAvatar(binding.ivAvatar, uri);
+        AvatarLoader.loadAvatar(binding.ivAvatar, uri);
     }
 
     private void showAvatarSourcePicker() {
@@ -439,7 +440,7 @@ public class AccountProfileEditFragment extends RootieFragment {
         Toast progressToast = Toast.makeText(context, "Đang tải ảnh đại diện lên Firebase...", Toast.LENGTH_LONG);
         progressToast.show();
 
-        SyncDataHelper.INSTANCE.uploadAvatarToFirebase(context, fileUri, downloadUrl -> {
+        SyncDataHelper.uploadAvatarToFirebase(context, fileUri, downloadUrl -> {
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
                     if (downloadUrl != null) {
@@ -450,7 +451,6 @@ public class AccountProfileEditFragment extends RootieFragment {
                     }
                 });
             }
-            return kotlin.Unit.INSTANCE;
         });
     }
 

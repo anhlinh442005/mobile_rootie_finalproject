@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-importവിടandroid.graphics.RectF;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -41,7 +41,7 @@ public class BottomNavBackground extends View {
 
     private void init(Context context) {
         bgColor = context.getColor(R.color.neutral);
-        cornerRadius = dp(24f);
+        cornerRadius = dp(20f);
         shadowRadius = dp(12f);
         shadowDy = dp(-2f);
         shadowColor = Color.parseColor("#10000000");
@@ -59,39 +59,18 @@ public class BottomNavBackground extends View {
 
         float w = getWidth();
         float h = getHeight();
-        float bodyHeight = dp(64f);
-        float p = h - bodyHeight;
         float r = cornerRadius;
-        float cx = w / 2f;
-
-        float bumpWidth = dp(76f);
-        float bumpHeight = dp(16f);
 
         path.reset();
-        path.moveTo(0f, p + r);
-        path.arcTo(new RectF(0f, p, r * 2, p + r * 2), 180f, 90f);
-
-        path.lineTo(cx - bumpWidth / 2f, p);
-
-        path.cubicTo(
-            cx - bumpWidth / 3f, p,
-            cx - bumpWidth / 4f, p - bumpHeight,
-            cx, p - bumpHeight
-        );
-        path.cubicTo(
-            cx + bumpWidth / 4f, p - bumpHeight,
-            cx + bumpWidth / 3f, p,
-            cx + bumpWidth / 2f, p
-        );
-
-        path.lineTo(w - r, p);
-        path.arcTo(new RectF(w - r * 2, p, w, p + r * 2), 270f, 90f);
-
+        path.moveTo(0f, h);
+        path.lineTo(0f, r);
+        path.arcTo(new RectF(0f, 0f, r * 2, r * 2), 180f, 90f);
+        path.lineTo(w - r, 0f);
+        path.arcTo(new RectF(w - r * 2, 0f, w, r * 2), 270f, 90f);
         path.lineTo(w, h);
         path.lineTo(0f, h);
-        path.lineTo(0f, p + r);
-
         path.close();
+
         canvas.drawPath(path, bgPaint);
     }
 

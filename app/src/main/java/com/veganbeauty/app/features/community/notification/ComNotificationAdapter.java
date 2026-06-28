@@ -13,9 +13,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.databinding.ComItemNotificationBinding;
@@ -104,15 +101,7 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
 
             String avatarUrl = item.getUserAvatar();
             if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                ImageRequest request = new ImageRequest.Builder(context)
-                        .data(avatarUrl)
-                        .crossfade(true)
-                        .transformations(new CircleCropTransformation())
-                        .placeholder(R.drawable.img_avatar)
-                        .error(R.drawable.img_avatar)
-                        .target(binding.ivAvatar)
-                        .build();
-                Coil.imageLoader(context).enqueue(request);
+                com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(avatarUrl).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(binding.ivAvatar);
             } else {
                 binding.ivAvatar.setImageResource(R.drawable.img_avatar);
             }

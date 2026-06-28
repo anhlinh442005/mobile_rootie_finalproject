@@ -14,15 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.features.community.affiliate.AffiliateProductsHelper;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -123,10 +122,14 @@ public class CommunityAffiliateProductsFragment extends Fragment {
 
             Map<String, ProductStats> productMap = new HashMap<>();
 
-            String currentUserId = "test_001";
+            String currentUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
+            if (currentUserId == null || currentUserId.isEmpty()) {
+                currentUserId = "test_001";
+            }
+            final String finalUserId = currentUserId;
             LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
 
-            List<String> eligibleProductIds = jsonReader.getShowcaseProductsForUser(currentUserId);
+            List<String> eligibleProductIds = AffiliateProductsHelper.getShowcaseProductIds(requireContext(), finalUserId);
             List<ProductEntity> allProducts = jsonReader.getAllProducts();
 
             for (String pId : eligibleProductIds) {
@@ -146,7 +149,7 @@ public class CommunityAffiliateProductsFragment extends Fragment {
             List<OrderEntity> allOrders = jsonReader.getAllOrders();
             List<OrderEntity> completedOrders = new ArrayList<>();
             for (OrderEntity order : allOrders) {
-                if ("Hoàn tất".equals(order.getStatus()) && order.getAffiliate() != null && currentUserId.equals(order.getAffiliate().getReferrerUserId())) {
+                if ("Hoàn tất".equals(order.getStatus()) && order.getAffiliate() != null && finalUserId.equals(order.getAffiliate().getReferrerUserId())) {
                     completedOrders.add(order);
                 }
             }
@@ -173,7 +176,7 @@ public class CommunityAffiliateProductsFragment extends Fragment {
                 String prodId = entry.getKey();
                 ProductStats stats = entry.getValue();
                 
-                boolean isDisplayed = AffiliateProductsHelper.isProductDisplayed(requireContext(), currentUserId, prodId);
+                boolean isDisplayed = AffiliateProductsHelper.isProductDisplayed(requireContext(), finalUserId, prodId);
                 if (!isDisplayed) continue;
 
                 View prodView = LayoutInflater.from(getContext()).inflate(R.layout.com_item_affiliate_product_card, llProductsContainer, false);
@@ -187,20 +190,11 @@ public class CommunityAffiliateProductsFragment extends Fragment {
 
                 ImageView ivProduct = prodView.findViewById(R.id.ivProductImage);
                 if (ivProduct != null && !stats.image.isEmpty()) {
-                    ImageRequest request = new ImageRequest.Builder(requireContext())
-                            .data(stats.image)
-                            .target(ivProduct)
-                            .build();
-                    Coil.imageLoader(requireContext()).enqueue(request);
+                    com.bumptech.glide.Glide.with(ivProduct.getContext()).load(stats.image).into(ivProduct);
                 }
 
                 prodView.setOnClickListener(v -> {
-                    ShopDetailFragment detailFragment = new ShopDetailFragment();
-                    getParentFragmentManager().beginTransaction()
-                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                            .replace(R.id.main_container, detailFragment)
-                            .addToBackStack(null)
-                            .commit();
+                    ProductDetailLauncher.open(this, prodId);
                 });
 
                 Switch swDisplay = prodView.findViewById(R.id.swDisplay);
@@ -226,7 +220,7 @@ public class CommunityAffiliateProductsFragment extends Fragment {
                                 if (llProductsContainer != null) {
                                     llProductsContainer.removeView(prodView);
                                 }
-                                AffiliateProductsHelper.setProductDisplayed(requireContext(), currentUserId, prodId, false);
+                                AffiliateProductsHelper.setProductDisplayed(requireContext(), finalUserId, prodId, false);
                                 dialog.dismiss();
                             });
 

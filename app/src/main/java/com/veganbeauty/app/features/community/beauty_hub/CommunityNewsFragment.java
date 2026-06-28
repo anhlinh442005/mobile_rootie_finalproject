@@ -18,11 +18,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+
 import coil.Coil;
 import coil.ImageLoader;
 import coil.decode.SvgDecoder;
 import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -33,6 +33,7 @@ import com.veganbeauty.app.databinding.ComFragmentNewsBinding;
 import com.veganbeauty.app.features.community.com_feed.PostAdapter;
 import com.veganbeauty.app.features.community.message.ChatDetailFragment;
 import com.veganbeauty.app.features.community.message.MessageHelper;
+import com.veganbeauty.app.utils.RootieBrandHelper;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
 
@@ -96,14 +97,7 @@ public class CommunityNewsFragment extends RootieFragment {
         binding.tvName.setText("Rootie VietNam");
         binding.ivAvatar.setImageResource(R.drawable.imv_logo);
 
-        ImageRequest coverRequest = new ImageRequest.Builder(requireContext())
-                .data("https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780843940/bbc9ba9c-790c-481c-9600-ad6736337cba_mszen2.png")
-                .crossfade(true)
-                .error(R.drawable.img_beautyhub_banner)
-                .placeholder(R.drawable.img_beautyhub_banner)
-                .target(binding.ivCover)
-                .build();
-        Coil.imageLoader(requireContext()).enqueue(coverRequest);
+        com.bumptech.glide.Glide.with(binding.ivCover.getContext()).load("https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780843940/bbc9ba9c-790c-481c-9600-ad6736337cba_mszen2.png").placeholder(R.drawable.img_beautyhub_banner).error(R.drawable.img_beautyhub_banner).into(binding.ivCover);
 
         try {
             String loggedInEmail = ProfileSession.getEmail(requireContext());
@@ -116,7 +110,7 @@ public class CommunityNewsFragment extends RootieFragment {
             JSONArray usersArray = new JSONArray(sb.toString());
             for (int i = 0; i < usersArray.length(); i++) {
                 JSONObject obj = usersArray.getJSONObject(i);
-                if (loggedInEmail.equals(obj.optString("email"))) {
+                if (loggedInEmail != null && loggedInEmail.equals(obj.optString("email"))) {
                     currentUserId = obj.optString("user_id", "test_001");
                     break;
                 }
@@ -248,7 +242,7 @@ public class CommunityNewsFragment extends RootieFragment {
                     currentUserId,
                     "rootie_vn",
                     "Rootie VietNam",
-                    "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png"
+                    RootieBrandHelper.AVATAR_URL
             );
             getParentFragmentManager().beginTransaction()
                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
@@ -331,37 +325,31 @@ public class CommunityNewsFragment extends RootieFragment {
 
                         ImageLoader imageLoader = Coil.imageLoader(requireContext());
                         if (avatars.size() > 0) {
-                            ImageRequest req = new ImageRequest.Builder(requireContext())
+                            imageLoader.enqueue(new ImageRequest.Builder(binding.ivMutual1.getContext())
                                     .data(avatars.get(0))
                                     .decoderFactory(new SvgDecoder.Factory())
-                                    .transformations(new CircleCropTransformation())
-                                    .crossfade(true)
                                     .error(R.drawable.img_avatar)
+                                    .transformations(new coil.transform.CircleCropTransformation())
                                     .target(binding.ivMutual1)
-                                    .build();
-                            imageLoader.enqueue(req);
+                                    .build());
                         }
                         if (avatars.size() > 1) {
-                            ImageRequest req = new ImageRequest.Builder(requireContext())
+                            imageLoader.enqueue(new ImageRequest.Builder(binding.ivMutual2.getContext())
                                     .data(avatars.get(1))
                                     .decoderFactory(new SvgDecoder.Factory())
-                                    .transformations(new CircleCropTransformation())
-                                    .crossfade(true)
                                     .error(R.drawable.img_avatar)
+                                    .transformations(new coil.transform.CircleCropTransformation())
                                     .target(binding.ivMutual2)
-                                    .build();
-                            imageLoader.enqueue(req);
+                                    .build());
                         }
                         if (avatars.size() > 2) {
-                            ImageRequest req = new ImageRequest.Builder(requireContext())
+                            imageLoader.enqueue(new ImageRequest.Builder(binding.ivMutual3.getContext())
                                     .data(avatars.get(2))
                                     .decoderFactory(new SvgDecoder.Factory())
-                                    .transformations(new CircleCropTransformation())
-                                    .crossfade(true)
                                     .error(R.drawable.img_avatar)
+                                    .transformations(new coil.transform.CircleCropTransformation())
                                     .target(binding.ivMutual3)
-                                    .build();
-                            imageLoader.enqueue(req);
+                                    .build());
                         }
 
                         int count = mutualUsers.size();
@@ -386,14 +374,12 @@ public class CommunityNewsFragment extends RootieFragment {
 
                                 tvName.setText(user.getFirst());
                                 if (!user.getSecond().isEmpty()) {
-                                    ImageRequest req = new ImageRequest.Builder(requireContext())
+                                    imageLoader.enqueue(new ImageRequest.Builder(ivAvatar.getContext())
                                             .data(user.getSecond())
                                             .decoderFactory(new SvgDecoder.Factory())
-                                            .crossfade(true)
                                             .error(R.drawable.img_avatar)
                                             .target(ivAvatar)
-                                            .build();
-                                    imageLoader.enqueue(req);
+                                            .build());
                                 }
 
                                 itemView.setOnClickListener(iv -> {
@@ -418,7 +404,17 @@ public class CommunityNewsFragment extends RootieFragment {
                         binding.llMutualInfo.setVisibility(View.GONE);
                     }
 
-                    Collections.sort(newsPosts, (p1, p2) -> Long.compare(p2.getCreatedAt(), p1.getCreatedAt()));
+                    Collections.sort(newsPosts, (p1, p2) -> {
+                        String c1 = p1.getCreatedAt();
+                        String c2 = p2.getCreatedAt();
+                        if (c1 == null) c1 = "";
+                        if (c2 == null) c2 = "";
+                        try {
+                            return Long.compare(Long.parseLong(c2), Long.parseLong(c1));
+                        } catch (Exception e) {
+                            return c2.compareTo(c1);
+                        }
+                    });
                     postAdapter.updateData(newsPosts, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
                     Bundle args = getArguments();

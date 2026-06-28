@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -71,14 +69,7 @@ public class ExpiryActionBottomSheet extends BottomSheetDialogFragment {
         binding.tvProductName.setText(productName);
         binding.tvProductExpiry.setText("Hạn sử dụng: " + productExpiry);
 
-        ImageRequest request = new ImageRequest.Builder(requireContext())
-                .data(productImage)
-                .target(binding.ivProductImage)
-                .crossfade(true)
-                .placeholder(android.R.color.darker_gray)
-                .error(android.R.color.darker_gray)
-                .build();
-        Coil.imageLoader(requireContext()).enqueue(request);
+        com.bumptech.glide.Glide.with(binding.ivProductImage.getContext()).load(productImage).placeholder(android.R.color.darker_gray).into(binding.ivProductImage);
 
         binding.btnBuyAgain.setOnClickListener(v -> {
             if (actionListener != null) {

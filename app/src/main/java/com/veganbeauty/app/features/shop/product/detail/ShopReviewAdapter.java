@@ -21,7 +21,7 @@ public class ShopReviewAdapter extends RecyclerView.Adapter<ShopReviewAdapter.Vi
     }
 
     public void updateData(List<ProductReview> newItems) {
-        this.items = newItems;
+        this.items = newItems != null ? newItems : new java.util.ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -41,7 +41,7 @@ public class ShopReviewAdapter extends RecyclerView.Adapter<ShopReviewAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items != null ? items.size() : 0;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -9,8 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.CommunityBlogEntity;
 
@@ -66,14 +64,7 @@ public class LatestKnowledgeAdapter extends RecyclerView.Adapter<LatestKnowledge
         }
         
         if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(item.getImageUrl())
-                    .target(holder.ivBlog)
-                    .crossfade(true)
-                    .placeholder(R.drawable.img_placeholder)
-                    .error(R.drawable.img_placeholder)
-                    .build();
-            Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(holder.ivBlog.getContext()).load(item.getImageUrl()).placeholder(R.drawable.img_placeholder).into(holder.ivBlog);
         } else {
             holder.ivBlog.setImageResource(R.drawable.img_placeholder);
         }

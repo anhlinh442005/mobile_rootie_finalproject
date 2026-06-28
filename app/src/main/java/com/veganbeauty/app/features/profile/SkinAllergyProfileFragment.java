@@ -13,12 +13,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwnerKt;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
-import com.veganbeauty.app.data.local.RootieDatabase;
-import com.veganbeauty.app.data.local.entities.OrderItemEntity;
+import com.veganbeauty.app.data.local.LocalJsonReader;
+import com.veganbeauty.app.data.local.entities.OrderEntity;
+import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.databinding.FragmentSkinAllergyProfileBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.quiz.QuizTestIntroFragment;
@@ -34,14 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
-
-import coil.Coil;
-import coil.ImageLoader;
-import coil.request.ImageRequest;
-import coil.transform.RoundedCornersTransformation;
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
 
 public class SkinAllergyProfileFragment extends RootieFragment {
 
@@ -58,12 +52,14 @@ public class SkinAllergyProfileFragment extends RootieFragment {
     public void setupUI(View view) {
         Context ctx = requireContext();
         SharedPreferences prefs = ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
-        String skinType = prefs.getString("SAVED_USER_SKIN_TYPE", "Da hỗn hợp thiên dầu");
-        if (skinType == null) skinType = "Da hỗn hợp thiên dầu";
-        String recommendation = prefs.getString("SAVED_RECOMMENDATION", "Hãy duy trì thói quen chăm sóc da lành tính hàng ngày...");
-        if (recommendation == null) recommendation = "Hãy duy trì thói quen chăm sóc da lành tính hàng ngày...";
-        Set<String> flaggedSet = prefs.getStringSet("SAVED_FLAGGED_GROUPS", new HashSet<>());
-        if (flaggedSet == null) flaggedSet = new HashSet<>();
+        String skinTypeRaw = prefs.getString("SAVED_USER_SKIN_TYPE", "Da hỗn hợp thiên dầu");
+        final String skinType = skinTypeRaw != null ? skinTypeRaw : "Da hỗn hợp thiên dầu";
+        
+        String recRaw = prefs.getString("SAVED_RECOMMENDATION", "Hãy duy trì thói quen chăm sóc da lành tính hàng ngày...");
+        final String recommendation = recRaw != null ? recRaw : "Hãy duy trì thói quen chăm sóc da lành tính hàng ngày...";
+        
+        Set<String> flaggedRaw = prefs.getStringSet("SAVED_FLAGGED_GROUPS", new HashSet<>());
+        final Set<String> flaggedSet = flaggedRaw != null ? flaggedRaw : new HashSet<>();
 
         binding.tvSkinTypeResult.setText(skinType);
         binding.tvRecommendation.setText(recommendation);
@@ -81,8 +77,8 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         int savedSebum = prefs.getInt("SAVED_SEBUM", -1);
         int sebum = savedSebum != -1 ? savedSebum : getDerivedSebum(skinType);
         
-        String skinAreas = prefs.getString("SAVED_SKIN_AREAS", null);
-        if (skinAreas == null) skinAreas = getDerivedSkinAreas(skinType);
+        String skinAreasRaw = prefs.getString("SAVED_SKIN_AREAS", null);
+        final String skinAreas = skinAreasRaw != null ? skinAreasRaw : getDerivedSkinAreas(skinType);
 
         binding.pbSensitivity.setProgress(sensitivity); binding.tvSensitivityVal.setText(sensitivity + "%");
         binding.pbHydration.setProgress(hydration); binding.tvHydrationVal.setText(hydration + "%");
@@ -98,21 +94,21 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                         .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                         .addToBackStack(null).commit());
 
-        String finalSkinType = skinType;
-        String finalRecommendation = recommendation;
-        Set<String> finalFlaggedSet = flaggedSet;
-        String finalSkinAreas = skinAreas;
+        int finalSensitivity = sensitivity;
+        int finalHydration = hydration;
+        int finalElasticity = elasticity;
+        int finalSebum = sebum;
 
         binding.btnViewSkinReport.setOnClickListener(v -> {
             prefs.edit()
-                    .putString("SKIN_TYPE_RESULT", finalSkinType)
-                    .putString("RECOMMENDATION", finalRecommendation)
-                    .putStringSet("FLAGGED_GROUPS", finalFlaggedSet)
-                    .putInt("SENSITIVITY_PERCENT", sensitivity)
-                    .putInt("HYDRATION_PERCENT", hydration)
-                    .putInt("ELASTICITY_PERCENT", elasticity)
-                    .putInt("SEBUM_PERCENT", sebum)
-                    .putString("SKIN_AREAS_DESC", finalSkinAreas)
+                    .putString("SKIN_TYPE_RESULT", skinType)
+                    .putString("RECOMMENDATION", recommendation)
+                    .putStringSet("FLAGGED_GROUPS", flaggedSet)
+                    .putInt("SENSITIVITY_PERCENT", finalSensitivity)
+                    .putInt("HYDRATION_PERCENT", finalHydration)
+                    .putInt("ELASTICITY_PERCENT", finalElasticity)
+                    .putInt("SEBUM_PERCENT", finalSebum)
+                    .putString("SKIN_AREAS_DESC", skinAreas)
                     .apply();
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new QuizTestResultFragment())
@@ -134,7 +130,6 @@ public class SkinAllergyProfileFragment extends RootieFragment {
 
         BottomNavHelper.setup(this, binding.getRoot(), R.id.nav_account, tabId -> {
             BottomNavHelper.navigate(this, tabId);
-            return null;
         });
     }
 
@@ -294,20 +289,18 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                     "1e499ed75a31e4a02af2d962", "50c50369a5552d24a4c319b6"
             ));
 
-            RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                    BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                        db.orderDao().getAllOrders().collect(orderList -> {
-                            Set<String> combinedIds = new HashSet<>(inUseIds);
-                            for (com.veganbeauty.app.data.local.entities.OrderEntity order : orderList) {
-                                for (OrderItemEntity item : order.getItems()) {
-                                    combinedIds.add(item.getProductId());
-                                }
-                            }
-                            renderProductsInUse(jsonArray, combinedIds, avoidChemicals, cautionChemicals);
-                        }, c2);
-                        return kotlin.Unit.INSTANCE;
-                    }, cont));
+            List<OrderEntity> orderList = new LocalJsonReader(requireContext()).getAllOrders();
+            Set<String> combinedIds = new HashSet<>(inUseIds);
+            if (orderList != null) {
+                for (OrderEntity order : orderList) {
+                    if (order.getItems() != null) {
+                        for (OrderItem item : order.getItems()) {
+                            combinedIds.add(item.getProductId());
+                        }
+                    }
+                }
+            }
+            renderProductsInUse(jsonArray, combinedIds, avoidChemicals, cautionChemicals);
 
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -357,14 +350,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 tvProdName.setText(prodName);
 
                 if (!mainImage.isEmpty()) {
-                    ImageRequest req = new ImageRequest.Builder(requireContext())
-                            .data(mainImage)
-                            .crossfade(true)
-                            .transformations(new RoundedCornersTransformation(10f))
-                            .placeholder(R.drawable.myphamxanh)
-                            .target(ivImage)
-                            .build();
-                    Coil.imageLoader(requireContext()).enqueue(req);
+                    com.bumptech.glide.Glide.with(ivImage.getContext()).load(mainImage).placeholder(R.drawable.myphamxanh).into(ivImage);
                 } else {
                     ivImage.setImageResource(R.drawable.myphamxanh);
                 }
@@ -533,7 +519,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 if (sensDiff < 0) list.add("giảm độ nhạy cảm kích ứng (" + sensDiff + "%)");
                 if (elastDiff > 0) list.add("tăng cường độ săn chắc đàn hồi (+" + elastDiff + "%)");
                 sb.append(String.join(", ", list)).append(".\n");
-                sb.append("=> Cho thấy các sản phẩm dưỡng da lành tính (như thạch/gel Bí Đao, tinh chất Rau Má) đang hoạt động tối ưu và tương thích tốt trên nền da của bạn.\n");
+                sb.append("=> Cho thấy các sản phẩm dưỡng da lành tính (như thạch/gel Bí Đao, tinh chất Rau Má) đang hoạt động tối ưu và tương tương thích tốt trên nền da của bạn.\n");
             }
 
             if (!improvedAny) sb.append("- Chỉ số da duy trì ở mức ổn định. Hãy theo dõi thêm và duy trì routine đều đặn để đạt hiệu quả cao nhất.\n");

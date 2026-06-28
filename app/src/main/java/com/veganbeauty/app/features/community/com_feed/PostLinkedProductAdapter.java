@@ -12,12 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.CommunityProduct;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 
 import org.json.JSONObject;
 
@@ -60,14 +58,7 @@ public class PostLinkedProductAdapter extends RecyclerView.Adapter<PostLinkedPro
         CommunityProduct product = products.get(position);
         holder.tvProductName.setText(product.getName());
         
-        ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                .data(product.getMainImage())
-                .target(holder.ivProductImage)
-                .crossfade(true)
-                .placeholder(android.R.color.darker_gray)
-                .error(R.drawable.logo)
-                .build();
-        Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+        com.bumptech.glide.Glide.with(holder.ivProductImage.getContext()).load(product.getMainImage()).placeholder(android.R.color.darker_gray).into(holder.ivProductImage);
         
         holder.itemView.setOnClickListener(v -> {
             Context context = holder.itemView.getContext();
@@ -96,13 +87,7 @@ public class PostLinkedProductAdapter extends RecyclerView.Adapter<PostLinkedPro
                 productEntity.setStock(100);
                 productEntity.setMainImage(product.getMainImage());
                 
-                ShopDetailFragment detailFragment = new ShopDetailFragment();
-                detailFragment.setProduct(productEntity);
-                
-                ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, detailFragment)
-                        .addToBackStack(null)
-                        .commit();
+                ProductDetailLauncher.open((androidx.fragment.app.FragmentActivity) context, product.getId());
             }
         });
     }

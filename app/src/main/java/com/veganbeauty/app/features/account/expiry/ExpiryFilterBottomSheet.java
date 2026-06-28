@@ -42,7 +42,7 @@ public class ExpiryFilterBottomSheet extends BottomSheetDialogFragment {
         
         viewModel = new ViewModelProvider(parent).get(AccountProductExpiryViewModel.class);
 
-        viewModel.getSelectedFilter().observe(getViewLifecycleOwner(), selectedState -> {
+        viewModel.selectedFilter.observe(getViewLifecycleOwner(), selectedState -> {
             binding.ivCheckAll.setVisibility(selectedState == ExpiryFilterState.ALL ? View.VISIBLE : View.GONE);
             binding.ivCheckExpired.setVisibility(selectedState == ExpiryFilterState.EXPIRED ? View.VISIBLE : View.GONE);
             binding.ivCheckSoon.setVisibility(selectedState == ExpiryFilterState.SOON ? View.VISIBLE : View.GONE);

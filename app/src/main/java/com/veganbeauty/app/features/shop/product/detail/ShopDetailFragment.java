@@ -20,8 +20,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.veganbeauty.app.R;
@@ -42,6 +44,8 @@ import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
 import com.veganbeauty.app.features.shop.product.ShopVoucherFragment;
 import com.veganbeauty.app.features.shop.search.ShopSearchFragment;
 import com.veganbeauty.app.features.shop.store.ShopStoreSystemFragment;
+import com.veganbeauty.app.utils.ProductImageCache;
+import com.veganbeauty.app.utils.ProductImageHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -57,17 +61,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.flow.FlowCollector;
-
 public class ShopDetailFragment extends RootieFragment {
+
+    private static final String ARG_PRODUCT_ID = "PRODUCT_ID";
 
     private ShopProductDetailBinding binding;
 
     private ProductEntity product = null;
+    private String pendingProductId = null;
+    private List<ProductEntity> cachedAllProducts = null;
     private String cartVoucherCode = null;
     private long cartVoucherDiscount = 0L;
 
@@ -75,16 +77,60 @@ public class ShopDetailFragment extends RootieFragment {
     private ShopReviewAdapter reviewAdapter;
     private ShopHorizontalProductAdapter relatedAdapter;
     private ShopHorizontalProductAdapter recentlyViewedAdapter;
+    private ViewPager2.OnPageChangeCallback pageChangeCallback;
+
+    public static ShopDetailFragment newInstance(String productId) {
+        ShopDetailFragment fragment = new ShopDetailFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PRODUCT_ID, productId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            pendingProductId = args.getString(ARG_PRODUCT_ID);
+        }
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = ShopProductDetailBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+        try {
+            binding = ShopProductDetailBinding.inflate(inflater, container, false);
+            return binding.getRoot();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Context ctx = getContext();
+            if (ctx == null) ctx = inflater.getContext();
+            android.widget.FrameLayout fallback = new android.widget.FrameLayout(ctx);
+            android.widget.TextView message = new android.widget.TextView(ctx);
+            message.setText("Không thể tải trang sản phẩm");
+            message.setPadding(48, 48, 48, 48);
+            fallback.addView(message);
+            return fallback;
+        }
     }
 
     @Override
     public void setupUI(View view) {
+        try {
+            setupDetailUi(view);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Context ctx = getContext();
+            if (ctx != null) {
+                Toast.makeText(ctx, "Không thể mở trang sản phẩm", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void setupDetailUi(View view) {
+        if (binding == null) return;
+
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         handbookAdapter = new NotebookVideoAdapter(new ArrayList<>());
@@ -97,11 +143,9 @@ public class ShopDetailFragment extends RootieFragment {
                 new ArrayList<>(),
                 prod -> {
                     navigateToProduct(prod);
-                    return kotlin.Unit.INSTANCE;
                 },
                 prod -> {
                     addToCart(prod);
-                    return kotlin.Unit.INSTANCE;
                 }
         );
         binding.rvRelatedProducts.setAdapter(relatedAdapter);
@@ -110,18 +154,16 @@ public class ShopDetailFragment extends RootieFragment {
                 new ArrayList<>(),
                 prod -> {
                     navigateToProduct(prod);
-                    return kotlin.Unit.INSTANCE;
                 },
                 prod -> {
                     addToCart(prod);
-                    return kotlin.Unit.INSTANCE;
                 }
         );
         binding.rvRecentlyViewed.setAdapter(recentlyViewedAdapter);
 
         binding.btnAllReviews.setOnClickListener(v -> {
             if (product != null) {
-                ProductReviewsBottomSheet bottomSheet = ProductReviewsBottomSheet.Companion.newInstance(product.getId(), product.getName(), product.getCategory());
+                ProductReviewsBottomSheet bottomSheet = ProductReviewsBottomSheet.newInstance(product.getId(), product.getName(), product.getCategory());
                 bottomSheet.show(getParentFragmentManager(), ProductReviewsBottomSheet.TAG);
             }
         });
@@ -139,7 +181,7 @@ public class ShopDetailFragment extends RootieFragment {
         });
 
         binding.btnCart.setOnClickListener(v -> {
-            CartBottomSheetFragment cartSheet = CartBottomSheetFragment.Companion.newInstance(cartVoucherCode, cartVoucherDiscount);
+            CartBottomSheetFragment cartSheet = CartBottomSheetFragment.newInstance(cartVoucherCode, cartVoucherDiscount);
             cartSheet.show(getParentFragmentManager(), CartBottomSheetFragment.TAG);
         });
 
@@ -147,7 +189,7 @@ public class ShopDetailFragment extends RootieFragment {
             cartVoucherCode = bundle.getString(ShopVoucherFragment.RESULT_VOUCHER_CODE);
             cartVoucherDiscount = bundle.getLong(ShopVoucherFragment.RESULT_VOUCHER_DISCOUNT, 0L);
 
-            CartBottomSheetFragment cartSheet = CartBottomSheetFragment.Companion.newInstance(cartVoucherCode, cartVoucherDiscount);
+            CartBottomSheetFragment cartSheet = CartBottomSheetFragment.newInstance(cartVoucherCode, cartVoucherDiscount);
             cartSheet.show(getParentFragmentManager(), CartBottomSheetFragment.TAG);
         });
 
@@ -157,19 +199,22 @@ public class ShopDetailFragment extends RootieFragment {
                     Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(product, (prod, quantity) -> {
-                    CartHelper.INSTANCE.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), prod, quantity);
-                    return kotlin.Unit.INSTANCE;
-                }, (prod, quantity) -> {
-                    CartItemEntity checkoutItem = new CartItemEntity(prod.getId(), prod.getName(), prod.getMainImage(), prod.getPrice(), quantity, true);
-                    ArrayList<CartItemEntity> list = new ArrayList<>();
-                    list.add(checkoutItem);
-                    ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.Companion.newInstance(list);
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, checkoutFragment)
-                            .addToBackStack(null)
-                            .commit();
-                    return kotlin.Unit.INSTANCE;
+                ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(product, new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
+                    @Override
+                    public void onAddToCartClick(ProductEntity prod, int quantity) {
+                        CartHelper.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), prod, quantity);
+                    }
+                    @Override
+                    public void onBuyNowClick(ProductEntity prod, int quantity) {
+                        CartItemEntity checkoutItem = new CartItemEntity(prod.getId(), prod.getName(), prod.getMainImage(), prod.getPrice(), quantity, true);
+                        ArrayList<CartItemEntity> list = new ArrayList<>();
+                        list.add(checkoutItem);
+                        ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.newInstance(list, cartVoucherCode, cartVoucherDiscount);
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.main_container, checkoutFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
                 });
                 bottomSheet.show(getParentFragmentManager(), ChooseQuantityBottomSheet.TAG);
             }
@@ -210,45 +255,163 @@ public class ShopDetailFragment extends RootieFragment {
             @Override public void onTabReselected(TabLayout.Tab tab) {}
         });
 
+        loadProductAsync();
+    }
+
+    private void loadProductAsync() {
         if (product != null) {
-            displayProduct(product);
+            bindProductSafely(product);
+            return;
+        }
+        if (pendingProductId == null || pendingProductId.isEmpty()) {
+            showProductNotFound();
+            return;
+        }
+
+        binding.tvProductName.setText("Đang tải sản phẩm...");
+
+        new Thread(() -> {
+            ProductEntity resolved = null;
+            try {
+                Context ctx = getContext();
+                if (ctx != null) {
+                    ProductImageCache.preload(ctx.getApplicationContext());
+                    resolved = new LocalJsonReader(ctx.getApplicationContext()).getProductById(pendingProductId);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            ProductEntity finalProduct = resolved;
+            if (getActivity() == null) return;
+            getActivity().runOnUiThread(() -> {
+                if (!isAdded() || binding == null) return;
+                if (finalProduct != null) {
+                    product = finalProduct;
+                    bindProductSafely(finalProduct);
+                } else {
+                    showProductNotFound();
+                }
+            });
+        }).start();
+    }
+
+    private void bindProductSafely(ProductEntity loadedProduct) {
+        try {
+            displayProduct(loadedProduct);
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                displayMinimalProduct(loadedProduct);
+            } catch (Exception inner) {
+                inner.printStackTrace();
+                Context ctx = getContext();
+                if (ctx != null) {
+                    Toast.makeText(ctx, "Không thể hiển thị đầy đủ thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private void displayMinimalProduct(ProductEntity product) {
+        if (binding == null || product == null) return;
+        binding.tvProductName.setText(safeStr(product.getName()));
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        binding.tvPrice.setText(formatter.format(product.getPrice()));
+        List<String> albumList = new ArrayList<>();
+        String mainImage = safeStr(product.getMainImage());
+        if (!ProductImageCache.isValidImageUrl(mainImage) && getContext() != null) {
+            mainImage = ProductImageCache.getImageUrl(getContext(), product.getId(), product.getSku());
+        }
+        if (ProductImageCache.isValidImageUrl(mainImage)) {
+            albumList.add(mainImage);
+        }
+        if (albumList.isEmpty()) {
+            albumList.add("");
+        }
+        binding.vpProductImage.setAdapter(new ProductImageAdapter(albumList));
+    }
+
+    private void showProductNotFound() {
+        if (binding == null) return;
+        binding.tvProductName.setText("Không tìm thấy sản phẩm");
+        Context ctx = getContext();
+        if (ctx != null) {
+            Toast.makeText(ctx, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void observeViewModel() {
         super.observeViewModel();
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-                    db.cartDao().getAllCartItems().collect(new FlowCollector<List<CartItemEntity>>() {
-                        @Nullable
-                        @Override
-                        public Object emit(List<CartItemEntity> items, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            int totalQty = 0;
-                            for (CartItemEntity it : items) totalQty += it.getQuantity();
-                            if (totalQty > 0) {
-                                binding.tvCartBadge.setVisibility(View.VISIBLE);
-                                binding.tvCartBadge.setText(String.valueOf(totalQty));
-                            } else {
-                                binding.tvCartBadge.setVisibility(View.GONE);
-                            }
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+        Context ctx = getContext();
+        if (ctx == null || binding == null) return;
+
+        try {
+            FlowLiveDataConversions.asLiveData(
+                    RootieDatabase.getDatabase(ctx).cartDao().getAllCartItems()
+            ).observe(getViewLifecycleOwner(), this::updateCartBadge);
+
+            FlowLiveDataConversions.asLiveData(
+                    RootieDatabase.getDatabase(ctx).productDao().getAllProducts()
+            ).observe(getViewLifecycleOwner(), allProducts -> {
+                try {
+                    cachedAllProducts = allProducts;
+                    if (product != null && binding != null && allProducts != null) {
+                        updateRelatedProducts(allProducts, product);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateCartBadge(List<CartItemEntity> items) {
+        if (binding == null) return;
+        int totalQty = 0;
+        if (items != null) {
+            for (CartItemEntity it : items) totalQty += it.getQuantity();
+        }
+        if (totalQty > 0) {
+            binding.tvCartBadge.setVisibility(View.VISIBLE);
+            binding.tvCartBadge.setText(String.valueOf(totalQty));
+        } else {
+            binding.tvCartBadge.setVisibility(View.GONE);
+        }
+    }
+
+    private static String safeStr(String value) {
+        return value != null ? value : "";
+    }
+
+    private static List<String> safeList(List<String> list) {
+        return list != null ? list : Collections.emptyList();
+    }
+
+    private static List<com.veganbeauty.app.data.local.entities.KeyIngredient> safeKeyIngredients(
+            List<com.veganbeauty.app.data.local.entities.KeyIngredient> list) {
+        return list != null ? list : Collections.emptyList();
     }
 
     public void setProduct(ProductEntity product) {
         this.product = product;
-        if (binding != null) {
-            displayProduct(product);
+        if (product != null && product.getId() != null) {
+            this.pendingProductId = product.getId();
+        }
+        if (binding != null && product != null) {
+            bindProductSafely(product);
         }
     }
 
     private void displayProduct(ProductEntity product) {
-        binding.tvProductName.setText(product.getName());
+        if (binding == null || product == null || !isAdded()) return;
+        Context ctx = getContext();
+        if (ctx == null) return;
+
+        binding.tvProductName.setText(safeStr(product.getName()));
 
         if (product.getStock() <= 0) {
             binding.tvStockStatus.setText("Hết hàng");
@@ -256,7 +419,7 @@ public class ShopDetailFragment extends RootieFragment {
             binding.viewStockIndicator.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#888888")));
         } else {
             binding.tvStockStatus.setText("Còn hàng");
-            binding.tvStockStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.content));
+            binding.tvStockStatus.setTextColor(ContextCompat.getColor(ctx, R.color.content));
             binding.viewStockIndicator.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
         }
 
@@ -267,7 +430,23 @@ public class ShopDetailFragment extends RootieFragment {
         binding.tvOriginalPrice.setText(formatter.format(originalPrice));
         binding.tvOriginalPrice.setPaintFlags(binding.tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
-        List<String> albumList = !product.getAlbum().isEmpty() ? product.getAlbum() : Arrays.asList(product.getMainImage());
+        List<String> album = safeList(product.getAlbum());
+        String mainImage = safeStr(product.getMainImage());
+        if (!ProductImageCache.isValidImageUrl(mainImage) && getContext() != null) {
+            mainImage = ProductImageCache.getImageUrl(getContext(), product.getId(), product.getSku());
+        }
+        List<String> albumList = new ArrayList<>();
+        for (String url : album) {
+            if (ProductImageCache.isValidImageUrl(url)) {
+                albumList.add(url.trim());
+            }
+        }
+        if (albumList.isEmpty() && ProductImageCache.isValidImageUrl(mainImage)) {
+            albumList.add(mainImage);
+        }
+        if (albumList.isEmpty()) {
+            albumList.add("");
+        }
         binding.vpProductImage.setAdapter(new ProductImageAdapter(albumList));
         setupIndicators(albumList.size());
 
@@ -279,37 +458,39 @@ public class ShopDetailFragment extends RootieFragment {
         binding.llTabBenefits.setVisibility(View.GONE);
         binding.llTabUsage.setVisibility(View.GONE);
 
-        binding.tvDescription.setText(product.getDescription());
-        binding.tvSuitableFor.setText(product.getSuitableFor());
-        binding.tvMainIngredientsSummary.setText(product.getMainIngredientsSummary());
+        binding.tvDescription.setText(safeStr(product.getDescription()));
+        binding.tvSuitableFor.setText(safeStr(product.getSuitableFor()));
+        binding.tvMainIngredientsSummary.setText(safeStr(product.getMainIngredientsSummary()));
 
-        if (!product.getAllergyInformation().isEmpty()) {
+        String allergyInfo = safeStr(product.getAllergyInformation());
+        if (!allergyInfo.isEmpty()) {
             binding.cvAllergy.setVisibility(View.VISIBLE);
-            binding.tvAllergyInformation.setText(product.getAllergyInformation());
+            binding.tvAllergyInformation.setText(allergyInfo);
         } else {
             binding.cvAllergy.setVisibility(View.VISIBLE);
             binding.tvAllergyInformation.setText("Sản phẩm chứa thành phần tự nhiên lành tính. Thử trên vùng da nhỏ trước khi sử dụng nếu bạn có cơ địa nhạy cảm.");
         }
 
         binding.llKeyIngredientsContainer.removeAllViews();
-        if (product.getKeyIngredients().isEmpty()) {
-            TextView emptyTv = new TextView(requireContext());
+        List<com.veganbeauty.app.data.local.entities.KeyIngredient> keyIngredients = safeKeyIngredients(product.getKeyIngredients());
+        if (keyIngredients.isEmpty()) {
+            TextView emptyTv = new TextView(ctx);
             emptyTv.setText("Chưa cập nhật thông tin thành phần nổi bật.");
             emptyTv.setTextColor(Color.parseColor("#888888"));
             emptyTv.setTextSize(14f);
             emptyTv.setPadding(0, 8, 0, 8);
             binding.llKeyIngredientsContainer.addView(emptyTv);
         } else {
-            for (IngredientEntity ingredient : product.getKeyIngredients()) {
-                TextView titleTv = new TextView(requireContext());
-                titleTv.setText("• " + ingredient.getName());
+            for (com.veganbeauty.app.data.local.entities.KeyIngredient ingredient : keyIngredients) {
+                TextView titleTv = new TextView(ctx);
+                titleTv.setText("• " + safeStr(ingredient.getName()));
                 titleTv.setTextColor(Color.parseColor("#333333"));
                 titleTv.setTypeface(null, Typeface.BOLD);
                 titleTv.setTextSize(14f);
                 titleTv.setPadding(0, 8, 0, 4);
 
-                TextView descTv = new TextView(requireContext());
-                descTv.setText(ingredient.getDescription());
+                TextView descTv = new TextView(ctx);
+                descTv.setText(safeStr(ingredient.getDescription()));
                 descTv.setTextColor(Color.parseColor("#666666"));
                 descTv.setTextSize(13f);
                 descTv.setPadding(16, 0, 0, 8);
@@ -319,23 +500,20 @@ public class ShopDetailFragment extends RootieFragment {
             }
         }
 
-        if (!product.getDetailedIngredients().isEmpty()) {
-            binding.tvDetailedIngredients.setText(String.join(", ", product.getDetailedIngredients()));
+        List<String> detailedIngredients = safeList(product.getDetailedIngredients());
+        if (!detailedIngredients.isEmpty()) {
+            binding.tvDetailedIngredients.setText(String.join(", ", detailedIngredients));
         } else {
             binding.tvDetailedIngredients.setText("Chưa cập nhật bảng thành phần đầy đủ.");
         }
 
-        if (!product.getStoryDescription().isEmpty()) {
-            binding.tvStoryDescription.setText(product.getStoryDescription());
-            if (!product.getStoryImage().isEmpty()) {
+        String storyDescription = safeStr(product.getStoryDescription());
+        if (!storyDescription.isEmpty()) {
+            binding.tvStoryDescription.setText(storyDescription);
+            String storyImage = safeStr(product.getStoryImage());
+            if (!storyImage.isEmpty()) {
                 binding.cvStoryImage.setVisibility(View.VISIBLE);
-                ImageRequest req = new ImageRequest.Builder(requireContext())
-                        .data(product.getStoryImage())
-                        .crossfade(true)
-                        .placeholder(android.R.color.darker_gray)
-                        .target(binding.ivStoryImage)
-                        .build();
-                Coil.imageLoader(requireContext()).enqueue(req);
+                com.bumptech.glide.Glide.with(binding.ivStoryImage.getContext()).load(storyImage).placeholder(android.R.color.darker_gray).into(binding.ivStoryImage);
             } else {
                 binding.cvStoryImage.setVisibility(View.GONE);
             }
@@ -345,17 +523,18 @@ public class ShopDetailFragment extends RootieFragment {
         }
 
         binding.llIdealForContainer.removeAllViews();
-        if (product.getIdealFor().isEmpty()) {
+        List<String> idealFor = safeList(product.getIdealFor());
+        if (idealFor.isEmpty()) {
             binding.tvIdealForHeader.setVisibility(View.GONE);
         } else {
             binding.tvIdealForHeader.setVisibility(View.VISIBLE);
-            for (String ideal : product.getIdealFor()) {
-                LinearLayout row = new LinearLayout(requireContext());
+            for (String ideal : idealFor) {
+                LinearLayout row = new LinearLayout(ctx);
                 row.setOrientation(LinearLayout.HORIZONTAL);
                 row.setPadding(0, 4, 0, 4);
                 row.setGravity(Gravity.CENTER_VERTICAL);
 
-                ImageView icon = new ImageView(requireContext());
+                ImageView icon = new ImageView(ctx);
                 int sizePx = (int) (16 * getResources().getDisplayMetrics().density);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(sizePx, sizePx);
                 lp.setMarginEnd((int) (8 * getResources().getDisplayMetrics().density));
@@ -363,7 +542,7 @@ public class ShopDetailFragment extends RootieFragment {
                 icon.setImageResource(R.drawable.ic_check);
                 icon.setColorFilter(Color.parseColor("#455B49"));
 
-                TextView text = new TextView(requireContext());
+                TextView text = new TextView(ctx);
                 text.setText(ideal);
                 text.setTextColor(Color.parseColor("#444444"));
                 text.setTextSize(14f);
@@ -375,17 +554,18 @@ public class ShopDetailFragment extends RootieFragment {
         }
 
         binding.llBenefitsContainer.removeAllViews();
-        if (product.getBenefits().isEmpty()) {
+        List<String> benefits = safeList(product.getBenefits());
+        if (benefits.isEmpty()) {
             binding.tvBenefitsHeader.setVisibility(View.GONE);
         } else {
             binding.tvBenefitsHeader.setVisibility(View.VISIBLE);
-            for (String benefit : product.getBenefits()) {
-                LinearLayout row = new LinearLayout(requireContext());
+            for (String benefit : benefits) {
+                LinearLayout row = new LinearLayout(ctx);
                 row.setOrientation(LinearLayout.HORIZONTAL);
                 row.setPadding(0, 4, 0, 4);
                 row.setGravity(Gravity.CENTER_VERTICAL);
 
-                ImageView icon = new ImageView(requireContext());
+                ImageView icon = new ImageView(ctx);
                 int sizePx = (int) (16 * getResources().getDisplayMetrics().density);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(sizePx, sizePx);
                 lp.setMarginEnd((int) (8 * getResources().getDisplayMetrics().density));
@@ -393,7 +573,7 @@ public class ShopDetailFragment extends RootieFragment {
                 icon.setImageResource(R.drawable.ic_check);
                 icon.setColorFilter(Color.parseColor("#455B49"));
 
-                TextView text = new TextView(requireContext());
+                TextView text = new TextView(ctx);
                 text.setText(benefit);
                 text.setTextColor(Color.parseColor("#444444"));
                 text.setTextSize(14f);
@@ -404,200 +584,188 @@ public class ShopDetailFragment extends RootieFragment {
             }
         }
 
-        if (!product.getUsage().isEmpty()) {
-            binding.tvUsage.setText(product.getUsage());
+        String usage = safeStr(product.getUsage());
+        if (!usage.isEmpty()) {
+            binding.tvUsage.setText(usage);
         } else {
             binding.tvUsage.setText("Chưa cập nhật hướng dẫn sử dụng sản phẩm.");
         }
 
-        if (!product.getUsageAmount().isEmpty()) {
+        String usageAmount = safeStr(product.getUsageAmount());
+        if (!usageAmount.isEmpty()) {
             binding.cvUsageAmount.setVisibility(View.VISIBLE);
-            binding.tvUsageAmount.setText(product.getUsageAmount());
+            binding.tvUsageAmount.setText(usageAmount);
         } else {
             binding.cvUsageAmount.setVisibility(View.GONE);
         }
 
-        if (!product.getScent().isEmpty()) {
+        String scent = safeStr(product.getScent());
+        if (!scent.isEmpty()) {
             binding.cvScent.setVisibility(View.VISIBLE);
-            binding.tvScent.setText(product.getScent());
+            binding.tvScent.setText(scent);
         } else {
             binding.cvScent.setVisibility(View.GONE);
         }
 
-        if (!product.getNotes().isEmpty()) {
+        String notes = safeStr(product.getNotes());
+        if (!notes.isEmpty()) {
             binding.cvNotes.setVisibility(View.VISIBLE);
-            binding.tvNotes.setText(product.getNotes());
+            binding.tvNotes.setText(notes);
         } else {
             binding.cvNotes.setVisibility(View.GONE);
         }
 
-        kotlin.Pair<Double, Integer> ratingStats = ProductReviewHelper.INSTANCE.getRatingStats(product.getId());
-        double averageRating = ratingStats.getFirst();
-        int totalReviews = ratingStats.getSecond();
+        ProductReviewHelper.RatingStats ratingStats = ProductReviewHelper.getRatingStats(safeStr(product.getId()));
+        double averageRating = ratingStats.rating;
+        int totalReviews = ratingStats.reviewCount;
         binding.tvRatingValue.setText(String.format(Locale.US, "%.1f", averageRating));
         binding.tvReviewsCount.setText("(" + totalReviews + " reviews)");
 
-        List<ProductReviewHelper.ReviewData> reviews = ProductReviewHelper.INSTANCE.getReviews(product.getId(), product.getName(), product.getCategory());
-        reviewAdapter.updateData(reviews.subList(0, Math.min(3, reviews.size())));
+        List<ProductReviewHelper.ProductReview> helperReviews = ProductReviewHelper.getReviews(
+                safeStr(product.getId()), safeStr(product.getName()), safeStr(product.getCategory()));
+        List<ProductReview> reviewItems = new ArrayList<>();
+        for (ProductReviewHelper.ProductReview review : helperReviews) {
+            reviewItems.add(new ProductReview(
+                    review.getReviewerName(),
+                    review.getRating(),
+                    review.getComment()
+            ));
+        }
+        if (!reviewItems.isEmpty()) {
+            reviewAdapter.updateData(new ArrayList<>(reviewItems.subList(0, Math.min(3, reviewItems.size()))));
+        } else {
+            reviewAdapter.updateData(Collections.emptyList());
+        }
 
-        SharedPreferences sharedPrefs = requireContext().getSharedPreferences("rootie_prefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPrefs = ctx.getSharedPreferences("rootie_prefs", Context.MODE_PRIVATE);
         String recentlyViewedStr = sharedPrefs.getString("recently_viewed_ids", "");
         if (recentlyViewedStr == null) recentlyViewedStr = "";
         List<String> idList = new ArrayList<>(Arrays.asList(recentlyViewedStr.split(",")));
         idList.remove("");
-        idList.remove(product.getId());
-        idList.add(0, product.getId());
+        String productId = product.getId();
+        if (productId != null && !productId.isEmpty()) {
+            idList.remove(productId);
+            idList.add(0, productId);
+        }
         List<String> limitedList = idList.subList(0, Math.min(10, idList.size()));
         sharedPrefs.edit().putString("recently_viewed_ids", String.join(",", limitedList)).apply();
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-                    db.productDao().getAllProducts().collect(new FlowCollector<List<ProductEntity>>() {
-                        @Nullable
-                        @Override
-                        public Object emit(List<ProductEntity> allProducts, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            List<ProductEntity> otherProducts = new ArrayList<>();
-                            for (ProductEntity p : allProducts) {
-                                if (!p.getId().equals(product.getId())) otherProducts.add(p);
-                            }
+        if (cachedAllProducts != null) {
+            try {
+                updateRelatedProducts(cachedAllProducts, product);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
-                            List<String> currentSubcategories = new ArrayList<>();
-                            for (String s : product.getCategoryIds().split(",")) {
-                                if (!s.isEmpty()) currentSubcategories.add(s);
-                            }
+        checkProductCompatibilitySafe(product);
+    }
 
-                            List<String> subcategoryIds = Arrays.asList(
-                                    "f5877af6a55f88bcf57c17b4", "389971929086b2ce7fba9dd0", "36cbf3f5c4b7a299ce2a2d0c",
-                                    "4e20d6bbc1203015ee2ecd48", "b1b6cd208332d4f1e015a26c", "7667d982515426a9d88b787b",
-                                    "bb88a3306cf95af20d073594", "9882d5fa14c74dd053e17f33", "c211afa24702f5d1ff86fe42",
-                                    "7c70e845e829b374e57ee7b1", "b703bb813e660aa88076ee5a", "8fce5340c618672aa1ae7fb3",
-                                    "24a75aa9d541feed638b1970", "755731e01d8c579c633ae4d2", "ded17e0716783c133b1a5b9a"
-                            );
+    private void updateRelatedProducts(List<ProductEntity> allProducts, ProductEntity product) {
+        if (binding == null || product == null || allProducts == null || relatedAdapter == null || recentlyViewedAdapter == null) return;
+        String currentProductId = product.getId();
 
-                            List<String> productSubcategories = new ArrayList<>();
-                            List<String> productParentCategories = new ArrayList<>();
-                            for (String c : currentSubcategories) {
-                                if (subcategoryIds.contains(c)) productSubcategories.add(c);
-                                else productParentCategories.add(c);
-                            }
+        List<ProductEntity> otherProducts = new ArrayList<>();
+        for (ProductEntity p : allProducts) {
+            if (p == null || p.getId() == null) continue;
+            if (currentProductId == null || !currentProductId.equals(p.getId())) otherProducts.add(p);
+        }
 
-                            List<ProductEntity> subcategoryMatches = new ArrayList<>();
-                            for (ProductEntity other : otherProducts) {
-                                boolean match = false;
-                                for (String id : other.getCategoryIds().split(",")) {
-                                    if (productSubcategories.contains(id)) { match = true; break; }
-                                }
-                                if (match) subcategoryMatches.add(other);
-                            }
+        List<String> currentSubcategories = new ArrayList<>();
+        String categoryIdsStr = safeStr(product.getCategoryIds());
+        for (String s : categoryIdsStr.split(",")) {
+            if (!s.isEmpty()) currentSubcategories.add(s);
+        }
 
-                            List<ProductEntity> parentMatches = new ArrayList<>();
-                            for (ProductEntity other : otherProducts) {
-                                if (subcategoryMatches.contains(other)) continue;
-                                boolean match = false;
-                                for (String id : other.getCategoryIds().split(",")) {
-                                    if (productParentCategories.contains(id)) { match = true; break; }
-                                }
-                                if (match) parentMatches.add(other);
-                            }
+        List<String> subcategoryIds = Arrays.asList(
+                "f5877af6a55f88bcf57c17b4", "389971929086b2ce7fba9dd0", "36cbf3f5c4b7a299ce2a2d0c",
+                "4e20d6bbc1203015ee2ecd48", "b1b6cd208332d4f1e015a26c", "7667d982515426a9d88b787b",
+                "bb88a3306cf95af20d073594", "9882d5fa14c74dd053e17f33", "c211afa24702f5d1ff86fe42",
+                "7c70e845e829b374e57ee7b1", "b703bb813e660aa88076ee5a", "8fce5340c618672aa1ae7fb3",
+                "24a75aa9d541feed638b1970", "755731e01d8c579c633ae4d2", "ded17e0716783c133b1a5b9a"
+        );
 
-                            List<ProductEntity> generalCategoryMatches = new ArrayList<>();
-                            for (ProductEntity other : otherProducts) {
-                                if (subcategoryMatches.contains(other) || parentMatches.contains(other)) continue;
-                                if (other.getCategory().equalsIgnoreCase(product.getCategory())) {
-                                    generalCategoryMatches.add(other);
-                                }
-                            }
+        List<String> productSubcategories = new ArrayList<>();
+        List<String> productParentCategories = new ArrayList<>();
+        for (String c : currentSubcategories) {
+            if (subcategoryIds.contains(c)) productSubcategories.add(c);
+            else productParentCategories.add(c);
+        }
 
-                            List<ProductEntity> finalRelated = new ArrayList<>(subcategoryMatches);
-                            finalRelated.addAll(parentMatches);
-                            finalRelated.addAll(generalCategoryMatches);
-                            relatedAdapter.updateData(finalRelated.subList(0, Math.min(8, finalRelated.size())));
+        List<ProductEntity> subcategoryMatches = new ArrayList<>();
+        for (ProductEntity other : otherProducts) {
+            boolean match = false;
+            String otherCategoryIds = safeStr(other.getCategoryIds());
+            for (String id : otherCategoryIds.split(",")) {
+                if (productSubcategories.contains(id)) { match = true; break; }
+            }
+            if (match) subcategoryMatches.add(other);
+        }
 
-                            String currentViewedStr = sharedPrefs.getString("recently_viewed_ids", "");
-                            if (currentViewedStr == null) currentViewedStr = "";
-                            List<String> currentIds = new ArrayList<>();
-                            for (String s : currentViewedStr.split(",")) {
-                                if (!s.isEmpty()) currentIds.add(s);
-                            }
+        List<ProductEntity> parentMatches = new ArrayList<>();
+        for (ProductEntity other : otherProducts) {
+            if (subcategoryMatches.contains(other)) continue;
+            boolean match = false;
+            String otherCategoryIds = safeStr(other.getCategoryIds());
+            for (String id : otherCategoryIds.split(",")) {
+                if (productParentCategories.contains(id)) { match = true; break; }
+            }
+            if (match) parentMatches.add(other);
+        }
 
-                            List<ProductEntity> viewedProducts = new ArrayList<>();
-                            for (String id : currentIds) {
-                                if (id.equals(product.getId())) continue;
-                                for (ProductEntity p : allProducts) {
-                                    if (p.getId().equals(id)) { viewedProducts.add(p); break; }
-                                }
-                            }
+        String productCategory = safeStr(product.getCategory());
+        List<ProductEntity> generalCategoryMatches = new ArrayList<>();
+        for (ProductEntity other : otherProducts) {
+            if (subcategoryMatches.contains(other) || parentMatches.contains(other)) continue;
+            String otherCategory = safeStr(other.getCategory());
+            if (!otherCategory.isEmpty() && otherCategory.equalsIgnoreCase(productCategory)) {
+                generalCategoryMatches.add(other);
+            }
+        }
 
-                            recentlyViewedAdapter.updateData(viewedProducts);
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+        List<ProductEntity> finalRelated = new ArrayList<>(subcategoryMatches);
+        finalRelated.addAll(parentMatches);
+        finalRelated.addAll(generalCategoryMatches);
+        if (!finalRelated.isEmpty()) {
+            relatedAdapter.updateData(finalRelated.subList(0, Math.min(8, finalRelated.size())));
+        } else {
+            relatedAdapter.updateData(Collections.emptyList());
+        }
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-                    db.communityDao().getAllExploreVideos().collect(new FlowCollector<List<ExploreVideoEntity>>() {
-                        @Nullable
-                        @Override
-                        public Object emit(List<ExploreVideoEntity> allVideos, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            List<ExploreVideoEntity> videos = allVideos;
-                            if (videos.isEmpty()) {
-                                LocalJsonReader localReader = new LocalJsonReader(requireContext());
-                                List<ExploreVideoEntity> localVideos = localReader.getExploreVideos();
-                                if (!localVideos.isEmpty()) {
-                                    LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((s3, c3) -> {
-                                        db.communityDao().insertExploreVideos(localVideos);
-                                        return kotlin.Unit.INSTANCE;
-                                    });
-                                }
-                                videos = localVideos;
-                            }
+        Context ctx = getContext();
+        if (ctx == null) return;
+        SharedPreferences sharedPrefs = ctx.getSharedPreferences("rootie_prefs", Context.MODE_PRIVATE);
+        String currentViewedStr = sharedPrefs.getString("recently_viewed_ids", "");
+        if (currentViewedStr == null) currentViewedStr = "";
+        List<String> currentIds = new ArrayList<>();
+        for (String s : currentViewedStr.split(",")) {
+            if (!s.isEmpty()) currentIds.add(s);
+        }
 
-                            List<ExploreVideoEntity> filteredVideos = new ArrayList<>();
-                            for (ExploreVideoEntity video : videos) {
-                                if (video.getType().toLowerCase().contains("notebook")) filteredVideos.add(video);
-                            }
+        List<ProductEntity> viewedProducts = new ArrayList<>();
+        for (String id : currentIds) {
+            if (id == null || id.isEmpty()) continue;
+            if (currentProductId != null && id.equals(currentProductId)) continue;
+            for (ProductEntity p : allProducts) {
+                if (p == null || p.getId() == null) continue;
+                if (p.getId().equals(id)) {
+                    viewedProducts.add(p);
+                    break;
+                }
+            }
+        }
+        recentlyViewedAdapter.updateData(viewedProducts);
+    }
 
-                            List<Pair<ExploreVideoEntity, Integer>> rankedVideos = new ArrayList<>();
-                            for (ExploreVideoEntity video : filteredVideos) {
-                                int score = 0;
-                                String textToSearch = (video.getTitle() + " " + video.getDescription()).toLowerCase();
-                                List<String> ingredients = Arrays.asList("bí đao", "nghệ", "cà phê", "bưởi", "hoa hồng", "dừa", "tràm trà", "sen", "rau má", "bồ kết");
-                                for (String ing : ingredients) {
-                                    if (product.getName().toLowerCase().contains(ing)) {
-                                        if (textToSearch.contains(ing)) score += 10;
-                                        if (ing.equals("bí đao") && (textToSearch.contains("mụn") || textToSearch.contains("thâm"))) score += 5;
-                                        if (ing.equals("nghệ") && (textToSearch.contains("sáng da") || textToSearch.contains("thâm") || textToSearch.contains("curcumin"))) score += 5;
-                                        if (ing.equals("bưởi") && (textToSearch.contains("tóc") || textToSearch.contains("rụng") || textToSearch.contains("gội"))) score += 5;
-                                        if (ing.equals("cà phê") && (textToSearch.contains("tẩy tế bào chết") || textToSearch.contains("body") || textToSearch.contains("scrub"))) score += 5;
-                                    }
-                                }
-
-                                if (product.getCategory().toLowerCase().contains("da") || product.getCategoryIds().contains("7176b5e7966be88daf95cfd4")) {
-                                    if (textToSearch.contains("skincare") || textToSearch.contains("da") || textToSearch.contains("mặt")) {
-                                        score += 2;
-                                    }
-                                }
-                                rankedVideos.add(new Pair<>(video, score));
-                            }
-
-                            Collections.sort(rankedVideos, (o1, o2) -> Integer.compare(o2.second, o1.second));
-
-                            List<ExploreVideoEntity> finalVideos = new ArrayList<>();
-                            for (int i = 0; i < Math.min(4, rankedVideos.size()); i++) {
-                                finalVideos.add(rankedVideos.get(i).first);
-                            }
-                            handbookAdapter.updateData(finalVideos);
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
-
-        checkProductCompatibility(product);
+    private void checkProductCompatibilitySafe(ProductEntity product) {
+        try {
+            checkProductCompatibility(product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (binding != null) {
+                binding.cvSkinCompatibility.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void checkProductCompatibility(ProductEntity product) {
@@ -656,7 +824,7 @@ public class ShopDetailFragment extends RootieFragment {
         } catch (Exception e) { e.printStackTrace(); }
 
         List<String> detailedIngredientsList = new ArrayList<>();
-        for (String s : product.getDetailedIngredients()) detailedIngredientsList.add(s.toLowerCase());
+        for (String s : safeList(product.getDetailedIngredients())) detailedIngredientsList.add(s.toLowerCase());
 
         List<String> triggeredAvoids = new ArrayList<>();
         List<String> triggeredCautions = new ArrayList<>();
@@ -769,7 +937,15 @@ public class ShopDetailFragment extends RootieFragment {
 
     private void setupIndicators(int count) {
         binding.llIndicatorContainer.removeAllViews();
+        if (pageChangeCallback != null) {
+            binding.vpProductImage.unregisterOnPageChangeCallback(pageChangeCallback);
+            pageChangeCallback = null;
+        }
         if (count <= 1) return;
+
+        Context ctx = getContext();
+        if (ctx == null) return;
+
         List<ImageView> indicators = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
@@ -777,15 +953,16 @@ public class ShopDetailFragment extends RootieFragment {
             int sizePx = (int) (size * getResources().getDisplayMetrics().density);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(sizePx, sizePx);
             lp.setMargins(4, 0, 4, 0);
-            ImageView imageView = new ImageView(requireContext());
+            ImageView imageView = new ImageView(ctx);
             imageView.setImageResource((i == 0) ? R.drawable.bg_circle_green : R.drawable.bg_circle_grey);
             indicators.add(imageView);
             binding.llIndicatorContainer.addView(imageView, lp);
         }
 
-        binding.vpProductImage.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
+                if (binding == null) return;
                 for (int i = 0; i < count; i++) {
                     int size = (i == position) ? 8 : 6;
                     int sizePx = (int) (size * getResources().getDisplayMetrics().density);
@@ -795,11 +972,16 @@ public class ShopDetailFragment extends RootieFragment {
                     indicators.get(i).setImageResource((i == position) ? R.drawable.bg_circle_green : R.drawable.bg_circle_grey);
                 }
             }
-        });
+        };
+        binding.vpProductImage.registerOnPageChangeCallback(pageChangeCallback);
     }
 
     @Override
     public void onDestroyView() {
+        if (binding != null && pageChangeCallback != null) {
+            binding.vpProductImage.unregisterOnPageChangeCallback(pageChangeCallback);
+            pageChangeCallback = null;
+        }
         super.onDestroyView();
         binding = null;
     }
@@ -820,13 +1002,16 @@ public class ShopDetailFragment extends RootieFragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            ImageRequest req = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(images.get(position))
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .target(holder.imageView)
-                    .build();
-            Coil.imageLoader(holder.itemView.getContext()).enqueue(req);
+            String imageUrl = images.get(position);
+            ProductImageHelper.clearToWhitePlaceholder(holder.imageView);
+            if (!ProductImageCache.isValidImageUrl(imageUrl)) {
+                return;
+            }
+            com.bumptech.glide.Glide.with(holder.imageView.getContext())
+                    .load(imageUrl)
+                    .placeholder(android.R.color.white)
+                    .error(android.R.color.white)
+                    .into(holder.imageView);
         }
 
         @Override
@@ -844,15 +1029,10 @@ public class ShopDetailFragment extends RootieFragment {
     }
 
     private void navigateToProduct(ProductEntity prod) {
-        ShopDetailFragment detailFragment = new ShopDetailFragment();
-        detailFragment.setProduct(prod);
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_container, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        ProductDetailLauncher.open(this, prod);
     }
 
     private void addToCart(ProductEntity prod) {
-        CartHelper.INSTANCE.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), prod, 1);
+        CartHelper.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), prod, 1);
     }
 }

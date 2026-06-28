@@ -195,7 +195,7 @@ public class ShopOrderSuccessFragment extends RootieFragment {
         String orderCode = (getArguments() != null && getArguments().getString(ARG_ORDER_CODE) != null) ? getArguments().getString(ARG_ORDER_CODE) : "";
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, AccountOrderDetailFragment.Companion.newInstance(orderCode, true))
+                .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(orderCode, true))
                 .addToBackStack(null)
                 .commit();
     }

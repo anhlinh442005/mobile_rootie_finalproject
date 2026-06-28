@@ -15,15 +15,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.local.entities.OrderItemEntity;
+import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.features.community.affiliate.AffiliateProductsHelper;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -110,8 +110,10 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
 
     private void loadData() {
         try {
-            String currentEmail = ProfileSession.getEmail(requireContext());
-            String currentUserId = "test_001";
+            String currentUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
+            if (currentUserId == null || currentUserId.isEmpty()) {
+                currentUserId = "test_001";
+            }
             try {
                 StringBuilder usersStr = new StringBuilder();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(requireContext().getAssets().open("users.json")))) {
@@ -123,8 +125,9 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
                 JSONArray usersArr = new JSONArray(usersStr.toString());
                 for (int i = 0; i < usersArr.length(); i++) {
                     JSONObject obj = usersArr.getJSONObject(i);
-                    if (currentEmail != null && currentEmail.equals(obj.optString("email"))) {
-                        currentUserId = obj.optString("user_id", "test_001");
+                    if (ProfileSession.getEmail(requireContext()) != null
+                            && ProfileSession.getEmail(requireContext()).equals(obj.optString("email"))) {
+                        currentUserId = obj.optString("user_id", currentUserId);
                         break;
                     }
                 }
@@ -136,7 +139,7 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
             List<OrderEntity> orders = new LocalJsonReader(requireContext()).getAllOrders();
             for (OrderEntity order : orders) {
                 if (currentUserId.equals(order.getUserId()) && "Hoàn tất".equals(order.getStatus())) {
-                    for (OrderItemEntity item : order.getItems()) {
+                    for (OrderItem item : order.getItems()) {
                         if (item.getProductId() != null && !item.getProductId().isEmpty()) {
                             purchasedProductIds.add(item.getProductId());
                         }
@@ -171,6 +174,12 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
 
     private void renderProducts() {
         llAddProductsContainer.removeAllViews();
+
+        String showcaseUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
+        if (showcaseUserId == null || showcaseUserId.isEmpty()) {
+            showcaseUserId = "test_001";
+        }
+        final String finalShowcaseUserId = showcaseUserId;
 
         List<JSONObject> filtered = new ArrayList<>();
         for (JSONObject p : allProducts) {
@@ -213,8 +222,7 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
             long commission = (long) (price * 0.08);
 
             boolean isPurchased = purchasedProductIds.contains(id);
-            String currentUserId = "test_001";
-            boolean isDisplayed = AffiliateProductsHelper.isProductDisplayed(requireContext(), currentUserId, id);
+            boolean isDisplayed = AffiliateProductsHelper.isProductDisplayed(requireContext(), finalShowcaseUserId, id);
             boolean isShowcased = isPurchased && isDisplayed;
 
             View item = LayoutInflater.from(getContext()).inflate(R.layout.com_item_affiliate_add_product_card, llAddProductsContainer, false);
@@ -230,11 +238,7 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
 
             ImageView ivProduct = item.findViewById(R.id.ivProductImage);
             if (ivProduct != null && !img.isEmpty()) {
-                ImageRequest request = new ImageRequest.Builder(requireContext())
-                        .data(img)
-                        .target(ivProduct)
-                        .build();
-                Coil.imageLoader(requireContext()).enqueue(request);
+                com.bumptech.glide.Glide.with(ivProduct.getContext()).load(img).into(ivProduct);
             }
 
             View vOverlay = item.findViewById(R.id.vOverlay);
@@ -257,7 +261,7 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
                         btnAdd.setText("Đã trưng bày");
                         btnAdd.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#9E9E9E")));
                         btnAdd.setEnabled(false);
-                        AffiliateProductsHelper.setProductDisplayed(requireContext(), currentUserId, id, true);
+                        AffiliateProductsHelper.setProductDisplayed(requireContext(), finalShowcaseUserId, id, true);
                         Toast.makeText(getContext(), "Đã thêm sản phẩm vào cửa hàng", Toast.LENGTH_SHORT).show();
                     });
                 }
@@ -272,14 +276,7 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
                 }
             }
 
-            item.setOnClickListener(v -> {
-                com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment detailFragment = new com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment();
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_container, detailFragment)
-                        .addToBackStack(null)
-                        .commit();
-            });
+            item.setOnClickListener(v -> ProductDetailLauncher.open(CommunityAddAffiliateProductsFragment.this, id));
 
             llAddProductsContainer.addView(item);
         }

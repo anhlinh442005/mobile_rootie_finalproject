@@ -24,7 +24,7 @@ public class BlogRepository {
         this.context = context;
     }
 
-    public List<BlogPost> getBlogPosts(int limit, String targetCategory, int offset) {
+    public List<BlogPost> getBlogPostsSync(int limit, String targetCategory, int offset) {
         List<BlogPost> result = new ArrayList<>();
         try {
             InputStream stream = context.getAssets().open("community_blog.json");
@@ -210,16 +210,16 @@ public class BlogRepository {
         return result;
     }
 
-    public List<BlogPost> getBlogPosts(int limit, String targetCategory) {
-        return getBlogPosts(limit, targetCategory, 0);
+    public List<BlogPost> getBlogPostsSync(int limit, String targetCategory) {
+        return getBlogPostsSync(limit, targetCategory, 0);
     }
 
-    public List<BlogPost> getBlogPosts(int limit) {
-        return getBlogPosts(limit, null, 0);
+    public List<BlogPost> getBlogPostsSync(int limit) {
+        return getBlogPostsSync(limit, null, 0);
     }
 
-    public List<BlogPost> getBlogPosts() {
-        return getBlogPosts(10, null, 0);
+    public List<BlogPost> getBlogPostsSync() {
+        return getBlogPostsSync(10, null, 0);
     }
 
     public Map<String, Integer> getCategoryCounts() {

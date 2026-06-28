@@ -17,7 +17,7 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.ShopBottomSheetSuggestedProductsBinding;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.features.shop.product.list.ShopListAdapter;
 
 import java.util.ArrayList;
@@ -112,14 +112,7 @@ public class SuggestedProductsBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void navigateToDetail(ProductEntity product) {
-        ShopDetailFragment detailFragment = new ShopDetailFragment();
-        detailFragment.setProduct(product);
-
-        getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        ProductDetailLauncher.open(this, product);
     }
 
     private void showChooseQuantityBottomSheet(ProductEntity product) {
@@ -128,7 +121,7 @@ public class SuggestedProductsBottomSheet extends BottomSheetDialogFragment {
                 new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
                     @Override
                     public void onAddToCartClick(ProductEntity p, int quantity) {
-                        CartHelper.addToCartAsync(requireContext(), p, quantity);
+                        CartHelper.addToCart(requireContext(), androidx.lifecycle.LifecycleOwnerKt.getLifecycleScope(SuggestedProductsBottomSheet.this), p, quantity);
                     }
 
                     @Override
@@ -139,7 +132,7 @@ public class SuggestedProductsBottomSheet extends BottomSheetDialogFragment {
                         );
                         ArrayList<CartItemEntity> items = new ArrayList<>();
                         items.add(checkoutItem);
-                        ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.newInstance(items);
+                        ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.newInstance(items, "", 0L);
                         getParentFragmentManager().beginTransaction()
                                 .replace(R.id.main_container, checkoutFragment)
                                 .addToBackStack(null)

@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.LifecycleOwnerKt;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -26,11 +25,10 @@ import com.veganbeauty.app.features.account.notification.AccountNotificationFrag
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.flow.FlowCollector;
+import androidx.lifecycle.FlowLiveDataConversions;
 
 public class AccountOrderTrackingFragment extends RootieFragment {
 
@@ -60,7 +58,7 @@ public class AccountOrderTrackingFragment extends RootieFragment {
     }
 
     private void setupViewModel() {
-        RootieDatabase db = RootieDatabase.Companion.getDatabase(requireContext());
+        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
         OrderRepository repository = new OrderRepository(
                 db.orderDao(), db.rewardPointDao(), db.userGiftDao(), new LocalJsonReader(requireContext())
         );
@@ -94,24 +92,17 @@ public class AccountOrderTrackingFragment extends RootieFragment {
 
     @Override
     public void observeViewModel() {
-        viewModel.getOrder().observe(getViewLifecycleOwner(), order -> {
+        viewModel.order.observe(getViewLifecycleOwner(), order -> {
             if (order != null) {
                 bindOrderTracking(order);
             }
         });
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), null, (coroutineScope, continuation) -> {
-            NotificationRepository.Companion.getInstance(requireContext()).getUnreadCount().collect(new FlowCollector<Integer>() {
-                @Nullable
-                @Override
-                public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                    if (_binding != null) {
-                        _binding.viewNotificationBadge.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
+        FlowLiveDataConversions.asLiveData(
+                NotificationRepository.getInstance(requireContext()).getUnreadCount()
+        ).observe(getViewLifecycleOwner(), count -> {
+            if (_binding == null) return;
+            _binding.viewNotificationBadge.setVisibility(count != null && count > 0 ? View.VISIBLE : View.GONE);
         });
     }
 

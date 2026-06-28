@@ -41,10 +41,11 @@ import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.SkinWeatherForecastBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.ai.SkinAiChatFragment;
+import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.home.HomeFragment;
 import com.veganbeauty.app.features.profile.AccountProfileFragment;
 import com.veganbeauty.app.features.shop.home.ShopHomeFragment;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.utils.AvatarLoader;
 
 import org.json.JSONArray;
@@ -201,7 +202,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         getBinding().tvUsername.setText(username);
 
         String avatarUrl = ProfileSession.INSTANCE.getAvatar(requireContext());
-        AvatarLoader.INSTANCE.loadAvatar(getBinding().ivAvatar, avatarUrl);
+        AvatarLoader.loadAvatar(getBinding().ivAvatar, avatarUrl);
     }
 
     private void updateRoutineLabels(String skinType, double temp, int humidity, double uv, int pm25) {
@@ -213,10 +214,10 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         boolean isAging = skinLower.contains("lão hóa");
         boolean isDehydrated = skinLower.contains("mất nước");
 
-        Map<String, SkinWeatherProductMatcher.RecommendedProduct> matchedProducts = SkinWeatherProductMatcher.matchProductsForWeatherAndSkin(requireContext(), temp, humidity, skinType);
+        Map<String, SkinWeatherProductMatcher.ProductMatch> matchedProducts = SkinWeatherProductMatcher.matchProductsForWeatherAndSkin(requireContext(), temp, humidity, skinType);
 
         // 1. Cleanser
-        SkinWeatherProductMatcher.RecommendedProduct matchedCleanser = matchedProducts.get("Cleanser");
+        SkinWeatherProductMatcher.ProductMatch matchedCleanser = matchedProducts.get("Cleanser");
         String cleanserName = matchedCleanser != null ? matchedCleanser.getName() : 
             (isOily ? "Gel rửa mặt BHA/Salicylic" :
              isSensitive ? "Sữa rửa mặt không bọt" :
@@ -236,7 +237,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         String finalCleanserSub = pm25 >= 50 ? cleanserSub + " & sạch sâu bụi mịn PM2.5" : cleanserSub;
 
         // 2. Serum
-        SkinWeatherProductMatcher.RecommendedProduct matchedSerum = matchedProducts.get("Serum");
+        SkinWeatherProductMatcher.ProductMatch matchedSerum = matchedProducts.get("Serum");
         String serumName = matchedSerum != null ? matchedSerum.getName() :
             (isOily ? "Niacinamide 10% Serum" :
              isSensitive ? "Serum phục hồi B5" :
@@ -254,7 +255,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
              isDehydrated ? "Bơm nước căng mọng tế bào da" : "Làm sáng và đều màu da tự nhiên");
 
         // 3. Moisturizer
-        SkinWeatherProductMatcher.RecommendedProduct matchedMoisturizer = matchedProducts.get("Moisturizer");
+        SkinWeatherProductMatcher.ProductMatch matchedMoisturizer = matchedProducts.get("Moisturizer");
         String moisturizerName = matchedMoisturizer != null ? matchedMoisturizer.getName() :
             (isOily ? "Dưỡng ẩm dạng Gel" :
              isSensitive ? "Kem dưỡng Ceramide phục hồi" :
@@ -275,7 +276,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                                      temp >= 33 ? moisturizerSub + " (Thoa lớp mỏng nhẹ tránh bí tắc ngày nóng)" : moisturizerSub;
 
         // 4. Sunscreen
-        SkinWeatherProductMatcher.RecommendedProduct matchedSunscreen = matchedProducts.get("Sunscreen");
+        SkinWeatherProductMatcher.ProductMatch matchedSunscreen = matchedProducts.get("Sunscreen");
         String sunscreenName = matchedSunscreen != null ? matchedSunscreen.getName() :
             (isOily ? "Kem chống nắng kiềm dầu" :
              isSensitive ? "KCN vật lý thuần chay" :
@@ -301,7 +302,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         setupRoutineCard(getBinding().layoutRoutineItem4, sunscreenName, finalSunscreenSub, matchedProducts.get("Sunscreen"));
     }
 
-    private void setupRoutineCard(View card, String name, String sub, SkinWeatherProductMatcher.RecommendedProduct product) {
+    private void setupRoutineCard(View card, String name, String sub, SkinWeatherProductMatcher.ProductMatch product) {
         if (card instanceof ViewGroup) {
             ViewGroup vg = (ViewGroup) card;
             if (vg.getChildCount() > 1 && vg.getChildAt(1) instanceof LinearLayout) {
@@ -319,30 +320,13 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
     private void navigateToProductDetail(String productId, String productName) {
         BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), null, (coroutineScope, continuation) -> {
-            RootieDatabase db = RootieDatabase.Companion.getDatabase(requireContext());
+            RootieDatabase db = RootieDatabase.getDatabase(requireContext());
             ProductEntity[] productRef = new ProductEntity[1];
             
             BuildersKt.withContext(Dispatchers.getIO(), (coroutineScopeIO, contIO) -> {
                 try {
                     if (productId != null && !productId.isEmpty()) {
-                        productRef[0] = db.productDao().getProductById(productId, contIO);
-                    }
-                    if (productRef[0] == null && productName != null && !productName.isEmpty()) {
-                        List<ProductEntity> all = (List<ProductEntity>) FlowKt.first(db.productDao().getAllProducts(), contIO);
-                        for (ProductEntity p : all) {
-                            if (p.getName().equalsIgnoreCase(productName)) {
-                                productRef[0] = p;
-                                break;
-                            }
-                        }
-                        if (productRef[0] == null) {
-                            for (ProductEntity p : all) {
-                                if (p.getName().toLowerCase().contains(productName.toLowerCase())) {
-                                    productRef[0] = p;
-                                    break;
-                                }
-                            }
-                        }
+                        productRef[0] = db.productDao().getProductById(productId);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -351,12 +335,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
             }, continuation);
 
             if (productRef[0] != null) {
-                ShopDetailFragment detailFragment = new ShopDetailFragment();
-                detailFragment.setProduct(productRef[0]);
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, detailFragment)
-                        .addToBackStack(null)
-                        .commit();
+                ProductDetailLauncher.open(this, productRef[0]);
             } else {
                 Toast.makeText(getContext(), "Sản phẩm không có sẵn trên cửa hàng!", Toast.LENGTH_SHORT).show();
             }
@@ -421,9 +400,9 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         }
     }
 
-    private String getCityName(double lat, double lng) {
+    private String getCityName(Context context, double lat, double lng) {
         try {
-            Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
@@ -438,8 +417,11 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     }
 
     private void loadWeatherForCoordinates(double lat, double lng) {
+        final Context appContext = getContext();
+        if (appContext == null) return;
+
         BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), null, (coroutineScope, continuation) -> {
-            String cityName = getCityName(lat, lng);
+            String cityName = getCityName(appContext, lat, lng);
             try {
                 String urlString = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng + "&current=temperature_2m,relative_humidity_2m&daily=uv_index_max&timezone=auto";
                 URL url = new URL(urlString);
@@ -630,6 +612,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         boolean isCombination = skinLower.contains("hỗn hợp");
         boolean isNormal = skinLower.contains("thường");
         boolean isDehydrated = skinLower.contains("mất nước");
+        boolean isAging = skinLower.contains("lão hóa");
 
         int baseOily = isOily ? 70 : isCombination ? 55 : isDehydrated ? 50 : isNormal ? 40 : isDry ? 20 : 45;
         baseOily += temp >= 33 ? 15 : temp >= 28 ? 8 : temp < 22 ? -5 : 0;
@@ -874,7 +857,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                     System.currentTimeMillis(),
                     dateStr,
                     cityName,
-                    temp,
+                    (int) temp,
                     humidity,
                     uv,
                     pm25,
@@ -886,7 +869,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                     routineItems
             );
 
-            SkinWeatherHistoryManager.INSTANCE.saveDiagnostic(requireContext(), diagnostic);
+            SkinWeatherHistoryManager.saveDiagnostic(requireContext(), diagnostic);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -968,33 +951,30 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     }
 
     private void setupBottomNavigation() {
-        LinearLayout navMySkin = getBinding().layoutBottomNav.navMyskin;
-        ImageView icon = navMySkin.getChildCount() > 0 ? (ImageView) navMySkin.getChildAt(0) : null;
-        TextView label = navMySkin.getChildCount() > 1 ? (TextView) navMySkin.getChildAt(1) : null;
-
-        if (icon != null) icon.setColorFilter(Color.parseColor("#677559"));
-        if (label != null) {
-            label.setTextColor(Color.parseColor("#677559"));
-            label.setTypeface(null, Typeface.BOLD);
+        try {
+            View navRoot = getBinding().layoutBottomNav.getRoot();
+            BottomNavHelper.setup(this, navRoot, R.id.nav_myskin, tabId -> {
+                if (tabId == R.id.nav_home) {
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, new HomeFragment())
+                            .commitAllowingStateLoss();
+                } else if (tabId == R.id.nav_shop) {
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, new ShopHomeFragment())
+                            .commitAllowingStateLoss();
+                } else if (tabId == R.id.nav_account) {
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, new AccountProfileFragment())
+                            .commitAllowingStateLoss();
+                } else if (tabId == R.id.nav_myskin) {
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, new com.veganbeauty.app.features.myskin.MySkinFragment())
+                            .commitAllowingStateLoss();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        getBinding().layoutBottomNav.navAccount.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new AccountProfileFragment())
-                    .commit();
-        });
-
-        getBinding().layoutBottomNav.navShop.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new ShopHomeFragment())
-                    .commit();
-        });
-
-        getBinding().layoutBottomNav.navHome.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new HomeFragment())
-                    .commit();
-        });
     }
 
     @Override
@@ -1013,7 +993,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
         rvHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        List<SkinWeatherDiagnostic> localHistory = SkinWeatherHistoryManager.INSTANCE.getHistory(requireContext());
+        List<SkinWeatherDiagnostic> localHistory = SkinWeatherHistoryManager.getHistory(requireContext());
         WeatherHistoryAdapter adapter = new WeatherHistoryAdapter(localHistory, selectedDiagnostic -> {
             displayHistoricalDiagnostic(selectedDiagnostic);
             dialog.dismiss();
@@ -1021,7 +1001,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         });
         rvHistory.setAdapter(adapter);
 
-        SkinWeatherHistoryManager.INSTANCE.syncFromFirestore(requireContext(), syncedList -> {
+        SkinWeatherHistoryManager.syncFromFirestore(requireContext(), syncedList -> {
             if (isAdded() && _binding != null) {
                 rvHistory.setAdapter(new WeatherHistoryAdapter(syncedList, selectedDiagnostic -> {
                     displayHistoricalDiagnostic(selectedDiagnostic);
@@ -1029,7 +1009,6 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                     return null;
                 }));
             }
-            return kotlin.Unit.INSTANCE;
         });
 
         btnClose.setOnClickListener(v -> dialog.dismiss());

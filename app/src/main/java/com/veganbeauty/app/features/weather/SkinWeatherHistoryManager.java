@@ -22,70 +22,7 @@ public class SkinWeatherHistoryManager {
 
     private static final String FILE_NAME = "skin_weather_history.json";
 
-    public static class SkinWeatherDiagnostic {
-        private final String id;
-        private final long timestamp;
-        private final String date;
-        private final String city;
-        private final double temperature;
-        private final int humidity;
-        private final double uv;
-        private final int pm25;
-        private final String skinType;
-        private final int oilyPercent;
-        private final int hydrationPercent;
-        private final int sensitivityPercent;
-        private final String insight;
-        private final List<RoutineItem> recommendedRoutine;
 
-        public SkinWeatherDiagnostic(String id, long timestamp, String date, String city, double temperature, int humidity, double uv, int pm25, String skinType, int oilyPercent, int hydrationPercent, int sensitivityPercent, String insight, List<RoutineItem> recommendedRoutine) {
-            this.id = id;
-            this.timestamp = timestamp;
-            this.date = date;
-            this.city = city;
-            this.temperature = temperature;
-            this.humidity = humidity;
-            this.uv = uv;
-            this.pm25 = pm25;
-            this.skinType = skinType;
-            this.oilyPercent = oilyPercent;
-            this.hydrationPercent = hydrationPercent;
-            this.sensitivityPercent = sensitivityPercent;
-            this.insight = insight;
-            this.recommendedRoutine = recommendedRoutine;
-        }
-
-        public String getId() { return id; }
-        public long getTimestamp() { return timestamp; }
-        public String getDate() { return date; }
-        public String getCity() { return city; }
-        public double getTemperature() { return temperature; }
-        public int getHumidity() { return humidity; }
-        public double getUv() { return uv; }
-        public int getPm25() { return pm25; }
-        public String getSkinType() { return skinType; }
-        public int getOilyPercent() { return oilyPercent; }
-        public int getHydrationPercent() { return hydrationPercent; }
-        public int getSensitivityPercent() { return sensitivityPercent; }
-        public String getInsight() { return insight; }
-        public List<RoutineItem> getRecommendedRoutine() { return recommendedRoutine; }
-
-        public static class RoutineItem {
-            private final String category;
-            private final String productName;
-            private final String description;
-
-            public RoutineItem(String category, String productName, String description) {
-                this.category = category;
-                this.productName = productName;
-                this.description = description;
-            }
-
-            public String getCategory() { return category; }
-            public String getProductName() { return productName; }
-            public String getDescription() { return description; }
-        }
-    }
 
     public static void saveDiagnostic(Context context, SkinWeatherDiagnostic diagnostic) {
         saveToLocalOnly(context, diagnostic);

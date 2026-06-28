@@ -76,7 +76,7 @@ public class ShopStoreDetailFragment extends RootieFragment {
 
         if (currentStore != null) {
             binding.tvStoreNameDetail.setText(currentStore.getTenCuaHang());
-            binding.tvStoreHoursDetail.setText("Mở cửa từ " + currentStore.getMoCua() + " đến " + currentStore.getDongCua());
+            binding.tvStoreHoursDetail.setText("Mở cửa từ " + (currentStore.getMoCua() != null ? currentStore.getMoCua() : "") + " đến " + (currentStore.getDongCua() != null ? currentStore.getDongCua() : ""));
             binding.tvStoreAddressDetail.setText(currentStore.getDiaChiDayDu());
             populateAmenities();
         }
@@ -136,17 +136,7 @@ public class ShopStoreDetailFragment extends RootieFragment {
 
     private void loadNearbyStores() {
         LifecycleCoroutineScope scope = LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner());
-        scope.launchWhenStarted(new kotlin.coroutines.Continuation<kotlin.Unit>() {
-            @NonNull
-            @Override
-            public kotlin.coroutines.CoroutineContext getContext() {
-                return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
-            }
 
-            @Override
-            public void resumeWith(@NonNull Object o) {
-            }
-        });
 
         // Use traditional coroutine launch via flow collection
         kotlinx.coroutines.BuildersKt.launch(scope, null, null, (coroutineScope, continuation) -> {
@@ -231,7 +221,7 @@ public class ShopStoreDetailFragment extends RootieFragment {
             ShopItemStoreBinding b = holder.itemBinding;
 
             b.tvStoreName.setText(store.getTenCuaHang());
-            b.tvStoreHours.setText("Mở cửa từ " + store.getMoCua() + " đến " + store.getDongCua());
+            b.tvStoreHours.setText("Mở cửa từ " + (store.getMoCua() != null ? store.getMoCua() : "") + " đến " + (store.getDongCua() != null ? store.getDongCua() : ""));
             b.tvStoreAddress.setText(store.getDiaChiDayDu());
             b.ivRadio.setVisibility(View.GONE);
 

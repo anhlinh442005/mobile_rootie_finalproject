@@ -1,9 +1,5 @@
 package com.veganbeauty.app.features.community.com_feed;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -11,19 +7,13 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
@@ -67,8 +57,7 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        YtVideoEntity video = videos.get(position);
-        holder.bind(video);
+        holder.bind(videos.get(position));
     }
 
     @Override
@@ -94,169 +83,113 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
     public class VideoViewHolder extends RecyclerView.ViewHolder {
 
         private final VideoView videoView;
-        private final ImageView ivThumbnail;
         private final ProgressBar progressBar;
-        private final ImageView ivPlayPause;
-        private final FrameLayout videoContainer;
-
+        private final View clickZone;
         private final TextView tvUsername;
         private final TextView tvDescription;
-        private final TextView tvMusic;
         private final ImageView ivAvatar;
-        private final LinearLayout llProfileInfo;
-        private final TextView tvFollowBtn;
-
-        private final LinearLayout llLike;
-        private final ImageView ivLike;
         private final TextView tvLikeCount;
-        private final LinearLayout llComment;
         private final TextView tvCommentCount;
-        private final LinearLayout llSave;
-        private final ImageView ivSave;
         private final TextView tvSaveCount;
-        private final LinearLayout llShare;
         private final TextView tvShareCount;
-        private final LinearLayout llMore;
+        private final ImageView ivLike;
+        private final ImageView ivBigHeart;
 
-        private final LinearLayout llProductLink;
-        private final TextView tvProductName;
-        private final ImageView ivProductImage;
-
-        private boolean isPlaying = false;
         private final Handler doubleTapHandler = new Handler(Looper.getMainLooper());
         private boolean isDoubleTapping = false;
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             videoView = itemView.findViewById(R.id.videoView);
-            ivThumbnail = itemView.findViewById(R.id.ivThumbnail);
-            progressBar = itemView.findViewById(R.id.progressBar);
-            ivPlayPause = itemView.findViewById(R.id.ivPlayPause);
-            videoContainer = itemView.findViewById(R.id.videoContainer);
-
-            tvUsername = itemView.findViewById(R.id.tvUsername);
-            tvDescription = itemView.findViewById(R.id.tvDescription);
-            tvMusic = itemView.findViewById(R.id.tvMusic);
-            ivAvatar = itemView.findViewById(R.id.ivAvatar);
-            llProfileInfo = itemView.findViewById(R.id.llProfileInfo);
-            tvFollowBtn = itemView.findViewById(R.id.tvFollowBtn);
-
-            llLike = itemView.findViewById(R.id.llLike);
-            ivLike = itemView.findViewById(R.id.ivLike);
-            tvLikeCount = itemView.findViewById(R.id.tvLikeCount);
-            llComment = itemView.findViewById(R.id.llComment);
-            tvCommentCount = itemView.findViewById(R.id.tvCommentCount);
-            llSave = itemView.findViewById(R.id.llSave);
-            ivSave = itemView.findViewById(R.id.ivSave);
-            tvSaveCount = itemView.findViewById(R.id.tvSaveCount);
-            llShare = itemView.findViewById(R.id.llShare);
+            progressBar = itemView.findViewById(R.id.pbLoading);
+            clickZone = itemView.findViewById(R.id.viewClickZone);
+            tvUsername = itemView.findViewById(R.id.tvAuthorName);
+            tvDescription = itemView.findViewById(R.id.tvCaption);
+            ivAvatar = itemView.findViewById(R.id.ivAuthorAvatarRight);
+            tvLikeCount = itemView.findViewById(R.id.tvLikesCount);
+            tvCommentCount = itemView.findViewById(R.id.tvCommentsCount);
+            tvSaveCount = itemView.findViewById(R.id.tvBookmarkCount);
             tvShareCount = itemView.findViewById(R.id.tvShareCount);
-            llMore = itemView.findViewById(R.id.llMore);
-
-            llProductLink = itemView.findViewById(R.id.llProductLink);
-            tvProductName = itemView.findViewById(R.id.tvProductName);
-            ivProductImage = itemView.findViewById(R.id.ivProductImage);
+            ivLike = itemView.findViewById(R.id.ivLike);
+            ivBigHeart = itemView.findViewById(R.id.ivBigHeart);
         }
 
         public void bind(YtVideoEntity video) {
             setupVideoSource(video);
             setupUserInfo(video);
             setupEngagementStats(video);
-            setupProductLink(video);
             setupInteractions(video);
             setupDescription(video);
         }
 
         private void setupVideoSource(YtVideoEntity video) {
+            String url = video.getUrl() != null ? video.getUrl() : "";
             progressBar.setVisibility(View.VISIBLE);
-            ivThumbnail.setVisibility(View.VISIBLE);
-            ivPlayPause.setVisibility(View.GONE);
+            videoView.setVisibility(View.VISIBLE);
 
-            String thumbUrl = getThumbnailUrl(video);
-            ImageRequest thumbRequest = new ImageRequest.Builder(itemView.getContext())
-                    .data(thumbUrl)
-                    .crossfade(true)
-                    .target(ivThumbnail)
-                    .build();
-            Coil.imageLoader(itemView.getContext()).enqueue(thumbRequest);
-
-            if (video.getUrl().toLowerCase().contains("cloudinary") && video.getUrl().toLowerCase().endsWith(".mp4")) {
-                videoView.setVideoURI(Uri.parse(video.getUrl()));
+            if (url.toLowerCase().contains("cloudinary") && url.toLowerCase().endsWith(".mp4")) {
+                videoView.setVideoURI(Uri.parse(url));
                 videoView.setOnPreparedListener(mp -> {
                     mp.setLooping(true);
                     progressBar.setVisibility(View.GONE);
-                    float videoRatio = mp.getVideoWidth() / (float) mp.getVideoHeight();
-                    float screenRatio = videoView.getWidth() / (float) videoView.getHeight();
-                    float scaleX = videoRatio / screenRatio;
-                    if (scaleX >= 1f) {
-                        videoView.setScaleX(scaleX);
-                    } else {
-                        videoView.setScaleY(1f / scaleX);
+                    if (videoView.getWidth() > 0 && videoView.getHeight() > 0) {
+                        float videoRatio = mp.getVideoWidth() / (float) mp.getVideoHeight();
+                        float screenRatio = videoView.getWidth() / (float) videoView.getHeight();
+                        float scaleX = videoRatio / screenRatio;
+                        if (scaleX >= 1f) {
+                            videoView.setScaleX(scaleX);
+                        } else {
+                            videoView.setScaleY(1f / scaleX);
+                        }
                     }
                 });
 
                 videoView.setOnInfoListener((mp, what, extra) -> {
                     if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                        ivThumbnail.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE);
                         return true;
                     }
                     return false;
                 });
-                
+
                 videoView.setOnErrorListener((mp, what, extra) -> {
                     progressBar.setVisibility(View.GONE);
                     return true;
                 });
-
             } else {
                 progressBar.setVisibility(View.GONE);
+                videoView.setVisibility(View.GONE);
             }
-        }
-
-        private String getThumbnailUrl(YtVideoEntity video) {
-            if (video.getUrl().toLowerCase().contains("cloudinary") && video.getUrl().toLowerCase().endsWith(".mp4")) {
-                return video.getUrl().replaceAll("(?i)\\.mp4$", ".jpg");
-            }
-
-            String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\\u200C\\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
-            Pattern compiledPattern = Pattern.compile(pattern);
-            Matcher matcher = compiledPattern.matcher(video.getUrl());
-            if (matcher.find()) {
-                String videoId = matcher.group();
-                return "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
-            }
-            return video.getUrl();
         }
 
         private void setupUserInfo(YtVideoEntity video) {
-            tvUsername.setText(video.getUsername().trim().isEmpty() ? "@rootie_community" : "@" + video.getUsername().replace(" ", ""));
+            String username = video.getUsername() != null ? video.getUsername().trim() : "";
+            tvUsername.setText(username.isEmpty() ? "@rootie_community" : "@" + username.replace(" ", ""));
 
             int[] avatarRes = {R.drawable.img_avatar, R.drawable.ic_user_outline, R.drawable.img_avatar, R.drawable.ic_user_outline};
             int randomAvatar = avatarRes[(int) (Math.random() * avatarRes.length)];
 
-            String avatarUrl = video.getAvatarUrl() == null || video.getAvatarUrl().trim().isEmpty() ? String.valueOf(randomAvatar) : video.getAvatarUrl();
+            String avatarUrl = video.getAvatarUrl() == null || video.getAvatarUrl().trim().isEmpty()
+                    ? String.valueOf(randomAvatar) : video.getAvatarUrl();
 
-            ImageRequest avatarRequest = new ImageRequest.Builder(itemView.getContext())
-                    .data(avatarUrl.matches("\\d+") ? Integer.parseInt(avatarUrl) : avatarUrl)
-                    .crossfade(true)
-                    .transformations(new CircleCropTransformation())
-                    .target(ivAvatar)
-                    .build();
-            Coil.imageLoader(itemView.getContext()).enqueue(avatarRequest);
-
-            tvMusic.setText("♬ Nhạc nền gốc - " + (video.getUsername().trim().isEmpty() ? "Rootie" : video.getUsername()));
-            tvMusic.setSelected(true);
+            com.bumptech.glide.Glide.with(ivAvatar.getContext())
+                    .load(avatarUrl.matches("\\d+") ? Integer.parseInt(avatarUrl) : avatarUrl)
+                    .circleCrop()
+                    .into(ivAvatar);
         }
 
         private void setupDescription(YtVideoEntity video) {
-            String fullDesc = video.getTitle() + "\n" + video.getDescription() + "\n" + video.getHashtags();
+            String title = video.getTitle() != null ? video.getTitle() : "";
+            String desc = video.getDescription() != null ? video.getDescription() : "";
+            String hashtags = video.getHashtags() != null ? video.getHashtags() : "";
+            String fullDesc = title + "\n" + desc + "\n" + hashtags;
+
             if (expandedDescIds.contains(video.getId())) {
                 tvDescription.setMaxLines(Integer.MAX_VALUE);
-                tvDescription.setText(fullDesc);
             } else {
                 tvDescription.setMaxLines(2);
-                tvDescription.setText(fullDesc);
             }
+            tvDescription.setText(fullDesc);
 
             tvDescription.setOnClickListener(v -> {
                 if (expandedDescIds.contains(video.getId())) {
@@ -280,9 +213,6 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             tvCommentCount.setText(formatCount(video.getLikesCount() / 10));
             tvSaveCount.setText(formatCount(displaySaves));
             tvShareCount.setText(formatCount(video.getLikesCount() / 20));
-
-            updateLikeUI(isLiked);
-            updateSaveUI(isSaved);
         }
 
         private String formatCount(int count) {
@@ -295,28 +225,9 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             }
         }
 
-        private void setupProductLink(YtVideoEntity video) {
-            if (video.getHashtags().contains("review") || video.getHashtags().contains("skincare") || video.getTitle().contains("serum")) {
-                llProductLink.setVisibility(View.VISIBLE);
-                tvProductName.setText("Serum phục hồi da nhạy cảm " + (video.getUsername().trim().isEmpty() ? "B5" : video.getUsername()));
-
-                ImageRequest prodRequest = new ImageRequest.Builder(itemView.getContext())
-                        .data(R.drawable.img_product_placeholder_1)
-                        .crossfade(true)
-                        .target(ivProductImage)
-                        .build();
-                Coil.imageLoader(itemView.getContext()).enqueue(prodRequest);
-
-                llProductLink.setOnClickListener(v -> {
-                    if (listener != null) listener.onProductClick(video);
-                });
-            } else {
-                llProductLink.setVisibility(View.GONE);
-            }
-        }
-
         private void setupInteractions(YtVideoEntity video) {
-            videoContainer.setOnClickListener(v -> {
+            if (clickZone == null) return;
+            clickZone.setOnClickListener(v -> {
                 if (isDoubleTapping) {
                     handleDoubleTap(video);
                     isDoubleTapping = false;
@@ -329,80 +240,27 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                     }, 300);
                 }
             });
-
-            llProfileInfo.setOnClickListener(v -> {
-                if (listener != null) listener.onProfileClick(video.getUsername());
-            });
-
-            tvFollowBtn.setOnClickListener(v -> {
-                tvFollowBtn.setVisibility(View.GONE);
-            });
-
-            llLike.setOnClickListener(v -> {
-                boolean currentlyLiked = likedVideoIds.contains(video.getId());
-                if (currentlyLiked) {
-                    likedVideoIds.remove(video.getId());
-                } else {
-                    likedVideoIds.add(video.getId());
-                }
-                updateLikeUI(!currentlyLiked);
-                setupEngagementStats(video);
-                if (listener != null) listener.onLikeClick(video, !currentlyLiked);
-            });
-
-            llComment.setOnClickListener(v -> {
-                if (listener != null) listener.onCommentClick(video);
-            });
-
-            llShare.setOnClickListener(v -> {
-                if (listener != null) listener.onShareClick(video);
-            });
-
-            llSave.setOnClickListener(v -> {
-                boolean currentlySaved = savedVideoIds.contains(video.getId());
-                if (currentlySaved) {
-                    savedVideoIds.remove(video.getId());
-                } else {
-                    savedVideoIds.add(video.getId());
-                }
-                updateSaveUI(!currentlySaved);
-                setupEngagementStats(video);
-                if (listener != null) listener.onSaveClick(video, !currentlySaved);
-            });
         }
 
         private void handleDoubleTap(YtVideoEntity video) {
             if (!likedVideoIds.contains(video.getId())) {
                 likedVideoIds.add(video.getId());
-                updateLikeUI(true);
                 setupEngagementStats(video);
+                if (ivLike != null) {
+                    ivLike.setImageResource(R.drawable.ic_heart_filled);
+                }
+                if (ivBigHeart != null) {
+                    ivBigHeart.setVisibility(View.VISIBLE);
+                    ivBigHeart.setAlpha(1f);
+                    ivBigHeart.animate().alpha(0f).setDuration(600).withEndAction(() ->
+                            ivBigHeart.setVisibility(View.INVISIBLE)).start();
+                }
                 if (listener != null) listener.onLikeClick(video, true);
             }
-
-            final ImageView heartAnim = itemView.findViewById(R.id.ivHeartAnim);
-            heartAnim.setVisibility(View.VISIBLE);
-            heartAnim.setScaleX(0.5f);
-            heartAnim.setScaleY(0.5f);
-            heartAnim.setAlpha(1f);
-
-            heartAnim.animate()
-                    .scaleX(1.5f)
-                    .scaleY(1.5f)
-                    .setDuration(200)
-                    .withEndAction(() -> {
-                        heartAnim.animate()
-                                .scaleX(1f)
-                                .scaleY(1f)
-                                .alpha(0f)
-                                .setDuration(300)
-                                .setStartDelay(200)
-                                .withEndAction(() -> heartAnim.setVisibility(View.GONE))
-                                .start();
-                    })
-                    .start();
         }
 
         private void togglePlayPause() {
+            if (videoView.getVisibility() != View.VISIBLE) return;
             if (videoView.isPlaying()) {
                 pauseVideo();
             } else {
@@ -411,51 +269,14 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
         }
 
         public void playVideo() {
-            if (!videoView.isPlaying() && videoView.getVisibility() == View.VISIBLE) {
+            if (videoView.getVisibility() == View.VISIBLE && !videoView.isPlaying()) {
                 videoView.start();
-                isPlaying = true;
-                ivPlayPause.setVisibility(View.GONE);
             }
         }
 
         public void pauseVideo() {
             if (videoView.isPlaying()) {
                 videoView.pause();
-                isPlaying = false;
-                showPlayPauseIcon();
-            }
-        }
-
-        private void showPlayPauseIcon() {
-            ivPlayPause.setVisibility(View.VISIBLE);
-            ivPlayPause.setAlpha(1f);
-            ivPlayPause.setScaleX(0.5f);
-            ivPlayPause.setScaleY(0.5f);
-
-            ivPlayPause.animate()
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setDuration(150)
-                    .start();
-        }
-
-        private void updateLikeUI(boolean isLiked) {
-            if (isLiked) {
-                ivLike.setImageResource(R.drawable.ic_heart_filled);
-                ivLike.setColorFilter(Color.parseColor("#FF3B30"));
-            } else {
-                ivLike.setImageResource(R.drawable.ic_heart_outline);
-                ivLike.setColorFilter(Color.WHITE);
-            }
-        }
-
-        private void updateSaveUI(boolean isSaved) {
-            if (isSaved) {
-                ivSave.setImageResource(R.drawable.ic_bookmark_filled);
-                ivSave.setColorFilter(Color.parseColor("#FDB913"));
-            } else {
-                ivSave.setImageResource(R.drawable.ic_bookmark_outline);
-                ivSave.setColorFilter(Color.WHITE);
             }
         }
     }

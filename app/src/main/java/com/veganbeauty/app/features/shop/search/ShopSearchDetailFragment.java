@@ -23,7 +23,7 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.repository.ProductRepository;
 import com.veganbeauty.app.databinding.ShopSearchDetailBinding;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.features.shop.product.list.ShopListFragment;
 
 public class ShopSearchDetailFragment extends RootieFragment {
@@ -86,7 +86,20 @@ public class ShopSearchDetailFragment extends RootieFragment {
         binding.rvCategorySuggestions.setAdapter(contentSuggestionAdapter);
         binding.rvCategorySuggestions.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        previewProductsAdapter = new HotDealsAdapter(this::navigateToDetail);
+        previewProductsAdapter = new HotDealsAdapter(
+                this::navigateToDetail,
+                product -> {
+                    com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet bottomSheet = new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(product, new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
+                        @Override
+                        public void onAddToCartClick(com.veganbeauty.app.data.local.entities.ProductEntity p, int quantity) {
+                            com.veganbeauty.app.features.shop.product.CartHelper.addToCart(requireContext(), androidx.lifecycle.LifecycleOwnerKt.getLifecycleScope(ShopSearchDetailFragment.this), p, quantity);
+                        }
+                        @Override
+                        public void onBuyNowClick(com.veganbeauty.app.data.local.entities.ProductEntity p, int quantity) {}
+                    });
+                    bottomSheet.show(getParentFragmentManager(), "ChooseQuantity");
+                }
+        );
         binding.rvSearchResults.setAdapter(previewProductsAdapter);
         binding.rvSearchResults.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -126,7 +139,7 @@ public class ShopSearchDetailFragment extends RootieFragment {
 
     @Override
     protected void observeViewModel() {
-        searchViewModel.getSuggestions().observe(getViewLifecycleOwner(), suggestions -> {
+        searchViewModel.suggestions.observe(getViewLifecycleOwner(), suggestions -> {
             keywordSuggestionAdapter.submitList(suggestions.getProductNames());
             contentSuggestionAdapter.submitList(suggestions.getContentItems());
             previewProductsAdapter.submitList(suggestions.getPreviewProducts());
@@ -147,9 +160,14 @@ public class ShopSearchDetailFragment extends RootieFragment {
 
     private void handleContentSuggestionClick(ContentSuggestion item) {
         if (item.getType() == ContentSuggestionType.CATEGORY) {
+            String parentCategory = item.getParentCategory();
             String category = item.getCategoryName();
-            if (category == null) return;
-            navigateToCategoryList(category, item.getSubcategoryName());
+            if (parentCategory == null && category == null) return;
+            if (parentCategory != null) {
+                navigateToCategoryList(parentCategory, category);
+            } else {
+                navigateToCategoryList(category, null);
+            }
         } else if (item.getType() == ContentSuggestionType.VIDEO) {
             if (item.getVideoUrl() != null) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(item.getVideoUrl())));
@@ -185,12 +203,7 @@ public class ShopSearchDetailFragment extends RootieFragment {
     }
 
     private void navigateToDetail(ProductEntity product) {
-        ShopDetailFragment fragment = new ShopDetailFragment();
-        fragment.setProduct(product);
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_container, fragment)
-                .addToBackStack(null)
-                .commit();
+        ProductDetailLauncher.open(this, product);
     }
 
     @Override

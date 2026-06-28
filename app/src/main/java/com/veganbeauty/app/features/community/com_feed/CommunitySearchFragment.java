@@ -21,6 +21,7 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
+import com.veganbeauty.app.data.local.entities.CommunityProduct;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.ReelEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
@@ -152,14 +153,11 @@ public class CommunitySearchFragment extends RootieFragment {
 
         String lowerQuery = query.toLowerCase();
 
-        List<UserEntity> allUsers = viewModel.getUsers().getValue();
-        if (allUsers == null) allUsers = new ArrayList<>();
+        List<UserEntity> allUsers = viewModel.getUsers().getValue() != null ? viewModel.getUsers().getValue() : new ArrayList<>();
         
-        List<CommunityPostEntity> allPosts = viewModel.getPosts().getValue();
-        if (allPosts == null) allPosts = new ArrayList<>();
+        List<CommunityPostEntity> allPosts = viewModel.getPosts().getValue() != null ? viewModel.getPosts().getValue() : new ArrayList<>();
         
-        List<ReelEntity> allReels = viewModel.getReels().getValue();
-        if (allReels == null) allReels = new ArrayList<>();
+        final List<ReelEntity> allReels = viewModel.getReels().getValue() != null ? viewModel.getReels().getValue() : new ArrayList<>();
 
         List<UserEntity> matchedUsers = new ArrayList<>();
         for (UserEntity user : allUsers) {
@@ -193,13 +191,7 @@ public class CommunitySearchFragment extends RootieFragment {
             Context ctx = getContext();
             if (ctx == null) return;
             
-            List<ProductEntity> productsList = FeedDataCache.productsList;
-            if (productsList == null) {
-                productsList = new LocalJsonReader(ctx).getProducts();
-                FeedDataCache.productsList = productsList;
-            }
-            
-            final List<ProductEntity> finalProductsList = productsList;
+            final List<CommunityProduct> finalProductsList = new LocalJsonReader(ctx).getProducts();
             
             requireActivity().runOnUiThread(() -> {
                 userAdapter.updateData(matchedUsers);

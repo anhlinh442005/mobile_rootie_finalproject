@@ -128,7 +128,7 @@ public class AdvancedFilterBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
-    private void updateChipsUi(List<Object> chipsObj) {
+    private void updateChipsUi(List<?> chipsObj) {
         Typeface regTypeface = ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro_regular);
         Typeface medTypeface = ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro_medium);
 

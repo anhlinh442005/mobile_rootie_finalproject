@@ -7,10 +7,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import coil.Coil;
+import coil.ImageLoader;
 import coil.decode.SvgDecoder;
 import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.UserEntity;
@@ -60,15 +61,15 @@ public class DiscoverPeopleAdapter extends RecyclerView.Adapter<DiscoverPeopleAd
         holder.binding.tvUsername.setText(user.getUsername());
 
         if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
+            ImageLoader imageLoader = Coil.imageLoader(holder.binding.ivAvatar.getContext());
+            ImageRequest request = new ImageRequest.Builder(holder.binding.ivAvatar.getContext())
                     .data(user.getAvatar())
                     .decoderFactory(new SvgDecoder.Factory())
-                    .crossfade(true)
                     .placeholder(android.R.color.darker_gray)
                     .error(R.drawable.img_avatar)
                     .target(holder.binding.ivAvatar)
                     .build();
-            Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+            imageLoader.enqueue(request);
         } else {
             holder.binding.ivAvatar.setImageResource(android.R.color.darker_gray);
         }
@@ -143,15 +144,15 @@ public class DiscoverPeopleAdapter extends RecyclerView.Adapter<DiscoverPeopleAd
     }
 
     private void loadImage(android.content.Context context, String url, android.widget.ImageView target) {
-        ImageRequest request = new ImageRequest.Builder(context)
+        ImageLoader imageLoader = Coil.imageLoader(target.getContext());
+        ImageRequest request = new ImageRequest.Builder(target.getContext())
                 .data(url)
                 .decoderFactory(new SvgDecoder.Factory())
-                .transformations(new CircleCropTransformation())
-                .crossfade(true)
                 .error(R.drawable.img_avatar)
+                .transformations(new coil.transform.CircleCropTransformation())
                 .target(target)
                 .build();
-        Coil.imageLoader(context).enqueue(request);
+        imageLoader.enqueue(request);
     }
 
     @Override

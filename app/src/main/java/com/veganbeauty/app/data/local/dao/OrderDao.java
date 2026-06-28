@@ -31,30 +31,42 @@ public interface OrderDao {
     @Query("SELECT * FROM orders WHERE userId = :userId")
     Flow<List<OrderEntity>> getOrdersForUser(String userId);
 
+    @Query("SELECT * FROM orders WHERE userId = :userId OR shippingPhone = :phone OR REPLACE(shippingPhone, ' ', '') = REPLACE(:phone, ' ', '')")
+    Flow<List<OrderEntity>> getOrdersForBuyerIdentity(String userId, String phone);
+
     @Query("SELECT * FROM orders WHERE isGuest = 1 AND billingPhone = :phone")
     Flow<List<OrderEntity>> getOrdersForGuestPhone(String phone);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertOrders(List<OrderEntity> orders, kotlin.coroutines.Continuation<? super List<Long>> continuation);
+    long[] insertOrders(List<OrderEntity> orders);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertOrder(OrderEntity order, kotlin.coroutines.Continuation<? super Long> continuation);
+    long insertOrder(OrderEntity order);
 
     @Query("UPDATE orders SET status = :status WHERE id = :orderId")
-    Object updateOrderStatus(String orderId, String status, kotlin.coroutines.Continuation<? super Integer> continuation);
+    int updateOrderStatus(String orderId, String status);
+
+    @androidx.annotation.Nullable
+    @Query("SELECT * FROM orders WHERE id = :orderId")
+    OrderEntity getOrderById(String orderId);
 
     @Query("SELECT * FROM orders WHERE id = :orderId")
-    Object getOrderById(String orderId, kotlin.coroutines.Continuation<? super OrderEntity> continuation);
-
-    @Query("SELECT * FROM orders WHERE id = :orderId")
-    Flow<OrderEntity> getOrderByIdFlow(String orderId);
+    Flow<List<OrderEntity>> getOrderByIdFlow(String orderId);
 
     @Query("SELECT COUNT(*) FROM orders")
-    Object getOrderCount(kotlin.coroutines.Continuation<? super Integer> continuation);
+    int getOrderCount();
 
     @Query("UPDATE orders SET hasReview = :hasReview WHERE id = :orderId")
-    Object updateOrderReviewStatus(String orderId, boolean hasReview, kotlin.coroutines.Continuation<? super Integer> continuation);
+    int updateOrderReviewStatus(String orderId, boolean hasReview);
 
     @Query("DELETE FROM orders")
-    Object deleteAllOrders(kotlin.coroutines.Continuation<? super Integer> continuation);
+    int deleteAllOrders();
+
+    // Sync versions
+    @Query("UPDATE orders SET status = :status WHERE id = :orderId")
+    int updateOrderStatusSync(String orderId, String status);
+
+    @androidx.annotation.Nullable
+    @Query("SELECT * FROM orders WHERE id = :orderId")
+    OrderEntity getOrderByIdSync(String orderId);
 }

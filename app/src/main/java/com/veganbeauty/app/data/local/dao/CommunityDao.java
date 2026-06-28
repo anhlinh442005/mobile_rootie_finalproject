@@ -23,16 +23,16 @@ public interface CommunityDao {
     Flow<List<CommunityPostEntity>> getAllPosts();
 
     @Query("DELETE FROM community_posts WHERE content LIKE :keyword")
-    Object deletePostByContent(String keyword, kotlin.coroutines.Continuation<? super Integer> continuation);
+    int deletePostByContent(String keyword);
 
     @Query("DELETE FROM community_posts WHERE authorId = :authorId")
-    Object deletePostsByAuthorId(String authorId, kotlin.coroutines.Continuation<? super Integer> continuation);
+    int deletePostsByAuthorId(String authorId);
 
     @Query("DELETE FROM community_posts")
-    Object deleteAllPosts(kotlin.coroutines.Continuation<? super Integer> continuation);
+    int deleteAllPosts();
 
     @Query("DELETE FROM users")
-    Object deleteAllUsers(kotlin.coroutines.Continuation<? super Integer> continuation);
+    int deleteAllUsers();
 
     @Query("SELECT * FROM users")
     Flow<List<UserEntity>> getAllUsers();
@@ -41,47 +41,47 @@ public interface CommunityDao {
     Flow<List<ReelEntity>> getAllReels();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertPosts(List<CommunityPostEntity> posts, kotlin.coroutines.Continuation<? super List<Long>> continuation);
+    long[] insertPosts(List<CommunityPostEntity> posts);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertUsers(List<UserEntity> users, kotlin.coroutines.Continuation<? super List<Long>> continuation);
+    long[] insertUsers(List<UserEntity> users);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertReels(List<ReelEntity> reels, kotlin.coroutines.Continuation<? super List<Long>> continuation);
+    long[] insertReels(List<ReelEntity> reels);
 
     @Query("SELECT * FROM explore_videos")
     Flow<List<YtVideoEntity>> getAllExploreVideos();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertExploreVideos(List<YtVideoEntity> videos, kotlin.coroutines.Continuation<? super List<Long>> continuation);
+    long[] insertExploreVideos(List<YtVideoEntity> videos);
 
     @Query("DELETE FROM explore_videos")
-    Object deleteAllExploreVideos(kotlin.coroutines.Continuation<? super Integer> continuation);
+    int deleteAllExploreVideos();
 
     @Query("SELECT * FROM user_memory ORDER BY timestamp DESC")
     Flow<List<UserMemoryEntity>> getAllUserMemories();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertUserMemory(UserMemoryEntity memory, kotlin.coroutines.Continuation<? super Long> continuation);
+    long insertUserMemory(UserMemoryEntity memory);
 
     @Query("SELECT * FROM ingredients")
     Flow<List<IngredientEntity>> getAllIngredients();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertIngredients(List<IngredientEntity> ingredients, kotlin.coroutines.Continuation<? super List<Long>> continuation);
+    long[] insertIngredients(List<IngredientEntity> ingredients);
 
     @Query("SELECT * FROM community_blogs ORDER BY publishedAt DESC")
     Flow<List<CommunityBlogEntity>> getAllBlogs();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertBlogs(List<CommunityBlogEntity> blogs, kotlin.coroutines.Continuation<? super List<Long>> continuation);
+    long[] insertBlogs(List<CommunityBlogEntity> blogs);
 
     @Query("UPDATE community_posts SET commentsCount = commentsCount + 1 WHERE postId = :postId")
-    Object incrementCommentsCount(String postId, kotlin.coroutines.Continuation<? super Integer> continuation);
+    int incrementCommentsCount(String postId);
 
     @Query("UPDATE community_posts SET likesCount = likesCount + 1 WHERE postId = :postId")
-    Object incrementLikesCount(String postId, kotlin.coroutines.Continuation<? super Integer> continuation);
+    int incrementLikesCount(String postId);
 
     @Query("UPDATE community_posts SET likesCount = MAX(0, likesCount - 1) WHERE postId = :postId")
-    Object decrementLikesCount(String postId, kotlin.coroutines.Continuation<? super Integer> continuation);
+    int decrementLikesCount(String postId);
 }

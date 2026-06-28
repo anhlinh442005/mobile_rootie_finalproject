@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.HomeItemBestsellerBinding;
 
@@ -70,13 +68,7 @@ public class HomeBestsellerAdapter extends ListAdapter<ProductEntity, HomeBestse
             binding.tvOriginalPrice.setText(priceFormatter.format(originalPrice));
             binding.tvOriginalPrice.setPaintFlags(binding.tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
-            ImageRequest request = new ImageRequest.Builder(binding.getRoot().getContext())
-                    .data(product.getMainImage())
-                    .target(binding.ivProduct)
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .build();
-            Coil.imageLoader(binding.getRoot().getContext()).enqueue(request);
+            com.veganbeauty.app.utils.ProductImageHelper.loadProductImage(binding.ivProduct, product);
         }
     }
 

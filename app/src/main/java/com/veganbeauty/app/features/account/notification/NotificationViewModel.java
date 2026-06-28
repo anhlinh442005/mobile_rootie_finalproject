@@ -1,5 +1,6 @@
 package com.veganbeauty.app.features.account.notification;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -36,18 +37,27 @@ public class NotificationViewModel extends RootieViewModel {
     public NotificationViewModel(NotificationRepository repository) {
         this.repository = repository;
 
-        Flow<List<NotificationItem>> allNotifications = repository.getAllNotifications();
+        Flow<List<NotificationItem>> allNotifications = repository.notifications;
         
         executor.execute(() -> {
             try {
                 allNotifications.collect(new FlowCollector<List<NotificationItem>>() {
                     @Override
-                    public Object emit(List<NotificationItem> value, kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+                    public Object emit(List<NotificationItem> value, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
                         currentAllNotifications = value;
                         updateItems(value, _selectedTab.getValue(), _searchQuery.getValue());
                         return kotlin.Unit.INSTANCE;
                     }
-                }, null);
+                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
+                    @NonNull
+                    @Override
+                    public kotlin.coroutines.CoroutineContext getContext() {
+                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
+                    }
+
+                    @Override
+                    public void resumeWith(@NonNull Object o) {}
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -167,18 +177,5 @@ public class NotificationViewModel extends RootieViewModel {
                 e.printStackTrace();
             }
         });
-    }
-
-    public static abstract class NotificationListItem {
-        public static class Header extends NotificationListItem {
-            private final String title;
-            public Header(String title) { this.title = title; }
-            public String getTitle() { return title; }
-        }
-        public static class Notification extends NotificationListItem {
-            private final NotificationItem item;
-            public Notification(NotificationItem item) { this.item = item; }
-            public NotificationItem getItem() { return item; }
-        }
     }
 }

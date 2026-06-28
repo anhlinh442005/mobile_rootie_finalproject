@@ -113,7 +113,7 @@ public class ShopStoresBottomSheetFragment extends BottomSheetDialogFragment {
             ShopItemStoreBinding b = holder.itemBinding;
 
             b.tvStoreName.setText(store.getTenCuaHang());
-            b.tvStoreHours.setText("Mở cửa từ " + store.getMoCua() + " đến " + store.getDongCua());
+            b.tvStoreHours.setText("Mở cửa từ " + (store.getMoCua() != null ? store.getMoCua() : "") + " đến " + (store.getDongCua() != null ? store.getDongCua() : ""));
             b.tvStoreAddress.setText(store.getDiaChiDayDu());
             b.ivRadio.setVisibility(View.GONE);
 

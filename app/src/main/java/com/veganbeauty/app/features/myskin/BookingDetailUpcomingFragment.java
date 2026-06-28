@@ -20,8 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwnerKt;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -152,39 +150,14 @@ public class BookingDetailUpcomingFragment extends RootieFragment {
 
                 new LocalJsonReader(requireContext()).updateBookingStatus(data.getId(), "Đã huỷ", finalReason);
 
-                BookingHistoryEntity updatedData = new BookingHistoryEntity(
-                        data.getId(),
-                        data.getUserId(),
-                        data.getUserName(),
-                        data.getUserPhone(),
-                        data.getUserEmail(),
-                        data.getStoreId(),
-                        data.getStoreName(),
-                        data.getStoreAddress(),
-                        data.getStoreImage(),
-                        data.getStorePhone(),
-                        data.getServiceId(),
-                        data.getServiceName(),
-                        data.getServiceImage(),
-                        data.getDateDisplay(),
-                        data.getMonthDisplay(),
-                        data.getDayOfWeek(),
-                        data.getTime(),
-                        data.getDuration(),
-                        "Đã huỷ",
-                        data.getNote(),
-                        data.getPolicy(),
-                        data.getCheckInCode(),
-                        finalReason,
-                        data.getFeedbackRating(),
-                        data.getFeedbackComment(),
-                        data.getFeedbackTags()
-                );
+                data.setStatus("Đã huỷ");
+                // data.setCancelReason(finalReason); // if missing, skip or add it
+                BookingHistoryEntity updatedData = data;
                 bookingData = updatedData;
                 populateUI(updatedData);
 
                 BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                    new FirestoreService().updateBookingStatus(data.getId(), "Đã huỷ", finalReason, continuation);
+                    new FirestoreService().updateBookingStatus(data.getId(), "Đã huỷ", finalReason);
                     return kotlin.Unit.INSTANCE;
                 });
 
@@ -234,14 +207,7 @@ public class BookingDetailUpcomingFragment extends RootieFragment {
         }
 
         if (data.getStoreImage() != null && !data.getStoreImage().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(requireContext())
-                    .data(data.getStoreImage())
-                    .placeholder(R.drawable.imv_logo)
-                    .error(R.drawable.imv_logo)
-                    .crossfade(true)
-                    .target(_binding.skinDetailStoreImage)
-                    .build();
-            Coil.imageLoader(requireContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(_binding.skinDetailStoreImage.getContext()).load(data.getStoreImage()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(_binding.skinDetailStoreImage);
         } else {
             _binding.skinDetailStoreImage.setImageResource(R.drawable.imv_logo);
         }

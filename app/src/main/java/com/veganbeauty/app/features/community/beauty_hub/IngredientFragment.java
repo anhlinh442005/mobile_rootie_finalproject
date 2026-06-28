@@ -20,8 +20,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
@@ -222,13 +220,7 @@ public class IngredientFragment extends Fragment {
             holder.tvDesc.setText(item.getDescription());
 
             if (item.getImage() != null && !item.getImage().isEmpty()) {
-                ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                        .data(item.getImage())
-                        .crossfade(true)
-                        .error(R.drawable.img_placeholder)
-                        .target(holder.ivIngredient)
-                        .build();
-                Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+                com.bumptech.glide.Glide.with(holder.ivIngredient.getContext()).load(item.getImage()).error(R.drawable.img_placeholder).into(holder.ivIngredient);
             } else {
                 holder.ivIngredient.setImageResource(R.drawable.img_placeholder);
             }

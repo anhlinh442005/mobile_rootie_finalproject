@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.databinding.HomeItemBannerBinding;
 
 import java.util.ArrayList;
@@ -61,12 +59,7 @@ public class HomeBannerAdapter extends RecyclerView.Adapter<HomeBannerAdapter.Ba
             if (item.getImageRes() != null) {
                 binding.ivBanner.setImageResource(item.getImageRes());
             } else if (item.getImageUrl() != null && !item.getImageUrl().trim().isEmpty()) {
-                ImageRequest request = new ImageRequest.Builder(binding.getRoot().getContext())
-                        .data(item.getImageUrl())
-                        .target(binding.ivBanner)
-                        .crossfade(true)
-                        .build();
-                Coil.imageLoader(binding.getRoot().getContext()).enqueue(request);
+                com.bumptech.glide.Glide.with(binding.ivBanner.getContext()).load(item.getImageUrl()).into(binding.ivBanner);
             }
         }
     }

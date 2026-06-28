@@ -23,9 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.features.community.affiliate.AffiliateBankAccount;
-import com.veganbeauty.app.features.community.affiliate.AffiliateBankAccountAdapter;
 import com.veganbeauty.app.features.community.affiliate.AffiliateHelper;
+import com.veganbeauty.app.features.community.profile.AffiliateBankAccount;
+import com.veganbeauty.app.features.community.profile.AffiliateBankAccountAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -90,7 +90,7 @@ public class CommunityAffiliateWithdrawFragment extends Fragment {
             symbols.setGroupingSeparator('.');
             DecimalFormat format = new DecimalFormat("#,###đ", symbols);
             
-            JSONArray jsonArray = AffiliateHelper.INSTANCE.getAffiliateData(requireContext());
+            JSONArray jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext());
             if (jsonArray.length() == 0) return;
 
             JSONObject data = jsonArray.getJSONObject(0);
@@ -191,7 +191,6 @@ public class CommunityAffiliateWithdrawFragment extends Fragment {
             }
             selectedAcc.setDefault(true);
             if (adapter != null) adapter.notifyDataSetChanged();
-            return kotlin.Unit.INSTANCE;
         });
 
         rvBankAccounts.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -344,7 +343,7 @@ public class CommunityAffiliateWithdrawFragment extends Fragment {
 
         LinearLayout llContainer = dialogView.findViewById(R.id.llWithdrawalsContainer);
         try {
-            JSONArray jsonArray = AffiliateHelper.INSTANCE.getAffiliateData(requireContext());
+            JSONArray jsonArray = com.veganbeauty.app.features.community.affiliate.AffiliateHelper.getAffiliateData(requireContext());
             if (jsonArray.length() > 0) {
                 JSONObject data = jsonArray.getJSONObject(0);
                 JSONArray withdrawals = data.optJSONArray("withdrawals");

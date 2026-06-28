@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.BlogRepository;
@@ -62,12 +60,7 @@ public class BlogDetailFragment extends Fragment {
 
         if (post.getImageUrl() != null && !post.getImageUrl().isEmpty()) {
             ImageView ivPrimaryImage = view.findViewById(R.id.ivPrimaryImage);
-            ImageRequest request = new ImageRequest.Builder(requireContext())
-                    .data(post.getImageUrl())
-                    .crossfade(true)
-                    .target(ivPrimaryImage)
-                    .build();
-            Coil.imageLoader(requireContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(ivPrimaryImage.getContext()).load(post.getImageUrl()).into(ivPrimaryImage);
         }
 
         ((TextView) view.findViewById(R.id.tvCategory)).setText(post.getCategory());
@@ -91,13 +84,7 @@ public class BlogDetailFragment extends Fragment {
             ((TextView) view.findViewById(R.id.tvDoctorBio)).setText(post.getDoctorBio());
             if (post.getDoctorAvatar() != null && !post.getDoctorAvatar().isEmpty()) {
                 ImageView ivDoctorAvatar = view.findViewById(R.id.ivDoctorAvatar);
-                ImageRequest request = new ImageRequest.Builder(requireContext())
-                        .data(post.getDoctorAvatar())
-                        .crossfade(true)
-                        .error(R.drawable.img_avatar)
-                        .target(ivDoctorAvatar)
-                        .build();
-                Coil.imageLoader(requireContext()).enqueue(request);
+                com.bumptech.glide.Glide.with(ivDoctorAvatar.getContext()).load(post.getDoctorAvatar()).error(R.drawable.img_avatar).into(ivDoctorAvatar);
             }
         } else {
             View tvDoctorName = view.findViewById(R.id.tvDoctorName);
@@ -117,7 +104,7 @@ public class BlogDetailFragment extends Fragment {
         rvRelatedArticles.setAdapter(blogAdapter);
 
         BlogRepository blogRepo = new BlogRepository(requireContext());
-        List<BlogPost> allPosts = blogRepo.getBlogPosts(10, post.getCategory());
+        List<BlogPost> allPosts = blogRepo.getBlogPostsSync(10, post.getCategory());
         List<BlogPost> relatedPosts = new ArrayList<>();
         for (BlogPost bp : allPosts) {
             if (!bp.getTitle().equals(post.getTitle())) {
@@ -137,14 +124,7 @@ public class BlogDetailFragment extends Fragment {
 
             ImageView ivFeaturedImage = view.findViewById(R.id.ivFeaturedImage);
             if (featuredPost.getImageUrl() != null && !featuredPost.getImageUrl().isEmpty()) {
-                ImageRequest request = new ImageRequest.Builder(requireContext())
-                        .data(featuredPost.getImageUrl())
-                        .crossfade(true)
-                        .error(R.color.gray_light)
-                        .placeholder(R.color.gray_light)
-                        .target(ivFeaturedImage)
-                        .build();
-                Coil.imageLoader(requireContext()).enqueue(request);
+                com.bumptech.glide.Glide.with(ivFeaturedImage.getContext()).load(featuredPost.getImageUrl()).placeholder(R.color.gray_light).error(R.color.gray_light).into(ivFeaturedImage);
             } else {
                 ivFeaturedImage.setImageResource(R.color.gray_light);
             }
@@ -169,8 +149,8 @@ public class BlogDetailFragment extends Fragment {
         RecyclerView rvRelatedProducts = view.findViewById(R.id.rvRelatedProducts);
         rvRelatedProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         ShopListAdapter productAdapter = new ShopListAdapter(
-                p -> { /* no-op */ return kotlin.Unit.INSTANCE; },
-                p -> { /* no-op */ return kotlin.Unit.INSTANCE; }
+                p -> { /* no-op */ },
+                p -> { /* no-op */ }
         );
         rvRelatedProducts.setAdapter(productAdapter);
 

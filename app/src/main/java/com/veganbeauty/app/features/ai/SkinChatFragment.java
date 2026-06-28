@@ -21,6 +21,8 @@ import com.veganbeauty.app.databinding.ItemSkinChatTimeBinding;
 import com.veganbeauty.app.databinding.SkinChatBinding;
 import com.veganbeauty.app.features.community.message.MessageHelper;
 import com.veganbeauty.app.data.local.entities.ChatMessageEntity;
+import com.veganbeauty.app.utils.AvatarLoader;
+import com.veganbeauty.app.utils.RootieBrandHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,13 +91,15 @@ public class SkinChatFragment extends DialogFragment {
         setupRecyclerView();
         setupListeners();
 
+        AvatarLoader.loadAvatar(_binding.ivHeaderAvatar, RootieBrandHelper.AVATAR_URL);
+
         String currentUserId = getCurrentUserId();
         conversationId = MessageHelper.getOrCreateConversation(
                 requireContext(),
                 currentUserId,
-                "rootie_vn",
+                RootieBrandHelper.USER_ID_VN,
                 "Rootie VietNam",
-                "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png"
+                RootieBrandHelper.AVATAR_URL
         );
 
         loadConversationData();
@@ -104,7 +108,6 @@ public class SkinChatFragment extends DialogFragment {
             if (isAdded()) {
                 loadConversationData();
             }
-            return kotlin.Unit.INSTANCE;
         });
     }
 
@@ -266,6 +269,7 @@ public class SkinChatFragment extends DialogFragment {
                 LeftViewHolder h = (LeftViewHolder) holder;
                 h.binding.tvMessage.setText(item.text);
                 h.binding.tvTime.setText(item.time);
+                AvatarLoader.loadAvatar(h.binding.ivAvatar, RootieBrandHelper.AVATAR_URL);
             } else if (holder instanceof RightViewHolder) {
                 RightViewHolder h = (RightViewHolder) holder;
                 h.binding.tvMessage.setText(item.text);

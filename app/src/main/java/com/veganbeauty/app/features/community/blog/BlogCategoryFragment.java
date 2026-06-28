@@ -13,8 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.BlogRepository;
 
@@ -74,7 +72,6 @@ public class BlogCategoryFragment extends Fragment {
                     .replace(R.id.main_container, BlogDetailFragment.newInstance(post))
                     .addToBackStack(null)
                     .commit();
-            return null;
         });
         rvBlogList.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvBlogList.setAdapter(adapter);
@@ -112,13 +109,7 @@ public class BlogCategoryFragment extends Fragment {
                             
                             ImageView ivFeaturedImage = view.findViewById(R.id.ivFeaturedImage);
                             if (ivFeaturedImage != null && featured.getImageUrl() != null && !featured.getImageUrl().isEmpty()) {
-                                ImageRequest request = new ImageRequest.Builder(requireContext())
-                                        .data(featured.getImageUrl())
-                                        .target(ivFeaturedImage)
-                                        .crossfade(true)
-                                        .error(R.color.gray_light)
-                                        .build();
-                                Coil.imageLoader(requireContext()).enqueue(request);
+                                com.bumptech.glide.Glide.with(ivFeaturedImage.getContext()).load(featured.getImageUrl()).into(ivFeaturedImage);
                             }
                             
                             if (tvFeaturedTitle != null && tvFeaturedTitle.getParent() != null && tvFeaturedTitle.getParent().getParent() != null) {

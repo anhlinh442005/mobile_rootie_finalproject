@@ -1,5 +1,6 @@
 package com.veganbeauty.app.features.community.beauty_hub;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,9 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
-
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -66,7 +64,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         binding = ComFragmentBeautyHubBinding.inflate(inflater, container, false);
         setupViewModel();
         return binding.getRoot();
@@ -74,7 +73,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
     private void setupViewModel() {
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-        CommunityRepository repository = new CommunityRepository(db.communityDao(), new LocalJsonReader(requireContext()), new FirestoreService());
+        CommunityRepository repository = new CommunityRepository(db.communityDao(),
+                new LocalJsonReader(requireContext()), new FirestoreService());
         CommunityViewModelFactory factory = new CommunityViewModelFactory(repository);
         viewModel = new ViewModelProvider(this, factory).get(CommunityViewModel.class);
     }
@@ -98,7 +98,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
         binding.ivNotification.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left,
+                            R.anim.slide_out_right)
                     .replace(R.id.main_container, new CommunityNotificationFragment())
                     .addToBackStack(null)
                     .commit();
@@ -106,7 +107,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
         binding.llShortcutNews.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in,
+                            android.R.anim.fade_out)
                     .replace(R.id.main_container, new CommunityNewsFragment())
                     .addToBackStack(null)
                     .commit();
@@ -114,7 +116,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
         binding.llShortcutBlog.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in,
+                            android.R.anim.fade_out)
                     .replace(R.id.main_container, new CommunityBlogFragment())
                     .addToBackStack(null)
                     .commit();
@@ -122,7 +125,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
         binding.llShortcutIngredient.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in,
+                            android.R.anim.fade_out)
                     .replace(R.id.main_container, new IngredientFragment())
                     .addToBackStack(null)
                     .commit();
@@ -132,7 +136,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
         if (llShortcutHandbook != null) {
             llShortcutHandbook.setOnClickListener(v -> {
                 getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in,
+                                android.R.anim.fade_out)
                         .replace(R.id.main_container, new HandbookFragment())
                         .addToBackStack(null)
                         .commit();
@@ -161,31 +166,35 @@ public class CommunityBeautyHubFragment extends RootieFragment {
             mainHandler.postDelayed(() -> binding.swipeRefreshLayout.setRefreshing(false), 800);
         });
 
-        binding.nsvHub.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-            int dy = scrollY - oldScrollY;
-            if (dy > 15) {
-                hideBottomNavigation();
-            } else if (dy < -15) {
-                showBottomNavigation();
-            }
-            if (!v.canScrollVertically(1) && hasMoreBlogs && !isLoadingMoreBlogs) {
-                loadNextBlogPage();
-            }
-        });
+        binding.nsvHub.setOnScrollChangeListener(
+                (NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                    int dy = scrollY - oldScrollY;
+                    if (dy > 15) {
+                        hideBottomNavigation();
+                    } else if (dy < -15) {
+                        showBottomNavigation();
+                    }
+                    if (!v.canScrollVertically(1) && hasMoreBlogs && !isLoadingMoreBlogs) {
+                        loadNextBlogPage();
+                    }
+                });
 
         setupBottomNavigation();
         loadNextBlogPage();
     }
 
     private void loadNextBlogPage() {
-        if (isLoadingMoreBlogs || !hasMoreBlogs) return;
-        if (getContext() == null) return;
+        if (isLoadingMoreBlogs || !hasMoreBlogs)
+            return;
+        if (getContext() == null)
+            return;
         isLoadingMoreBlogs = true;
+        final Context appContext = getContext();
 
         executor.execute(() -> {
             List<CommunityBlogEntity> newBlogs;
             try {
-                newBlogs = new LocalJsonReader(requireContext()).getCommunityBlogs(blogsPerPage, blogCurrentOffset);
+                newBlogs = new LocalJsonReader(appContext).getCommunityBlogs(blogsPerPage, blogCurrentOffset);
             } catch (Exception e) {
                 e.printStackTrace();
                 newBlogs = new ArrayList<>();
@@ -193,7 +202,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
             List<CommunityBlogEntity> finalNewBlogs = newBlogs;
             mainHandler.post(() -> {
-                if (!isAdded()) return;
+                if (!isAdded())
+                    return;
                 if (finalNewBlogs.isEmpty()) {
                     hasMoreBlogs = false;
                 } else {
@@ -206,14 +216,11 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
                         binding.layoutFeaturedBlog.setVisibility(View.VISIBLE);
                         binding.tvFeaturedBlogTitle.setText(featuredBlog.getTitle());
-                        binding.tvFeaturedBlogDate.setText(featuredBlog.getPublishedAt() + " • " + featuredBlog.getShortDescription());
+                        binding.tvFeaturedBlogDate
+                                .setText(featuredBlog.getPublishedAt() + " • " + featuredBlog.getShortDescription());
 
-                        ImageRequest req = new ImageRequest.Builder(requireContext())
-                                .data(featuredBlog.getImageUrl())
-                                .crossfade(true)
-                                .target(binding.ivFeaturedBlog)
-                                .build();
-                        Coil.imageLoader(requireContext()).enqueue(req);
+                        com.bumptech.glide.Glide.with(binding.ivFeaturedBlog.getContext())
+                                .load(featuredBlog.getImageUrl()).into(binding.ivFeaturedBlog);
 
                         blogAdapter.updateData(new ArrayList<>(remainingBlogs));
                     }
@@ -266,7 +273,7 @@ public class CommunityBeautyHubFragment extends RootieFragment {
                 getParentFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                         .replace(R.id.main_container, new CommunityMessageFragment())
-                        .commit();
+                        .commitAllowingStateLoss();
             } else {
                 BottomNavHelper.showLoginRequiredDialog(requireContext());
             }
@@ -293,7 +300,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
     }
 
     private void hideBottomNavigation() {
-        if (!isNavVisible) return;
+        if (!isNavVisible)
+            return;
         isNavVisible = false;
         binding.comBottomNav.getRoot().animate()
                 .translationY(binding.comBottomNav.getRoot().getHeight())
@@ -303,7 +311,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
     }
 
     private void showBottomNavigation() {
-        if (isNavVisible) return;
+        if (isNavVisible)
+            return;
         isNavVisible = true;
         binding.comBottomNav.getRoot().animate()
                 .translationY(0f)

@@ -2,6 +2,8 @@ package com.veganbeauty.app.features.community.notification;
 
 import android.content.Context;
 
+import com.veganbeauty.app.utils.RootieBrandHelper;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -60,7 +62,8 @@ public class CommunityNotificationHelper {
                             obj.getString("date"),
                             obj.optBoolean("isRead", false),
                             (itemPostId.isEmpty() || itemPostId.equals("null")) ? null : itemPostId,
-                            (itemCommentId.isEmpty() || itemCommentId.equals("null")) ? null : itemCommentId
+                            (itemCommentId.isEmpty() || itemCommentId.equals("null")) ? null : itemCommentId,
+                            ""
                     ));
                 }
             } catch (Exception e) {
@@ -92,7 +95,8 @@ public class CommunityNotificationHelper {
                             obj.getString("date"),
                             obj.optBoolean("isRead", false),
                             (itemPostId.isEmpty() || itemPostId.equals("null")) ? null : itemPostId,
-                            (itemCommentId.isEmpty() || itemCommentId.equals("null")) ? null : itemCommentId
+                            (itemCommentId.isEmpty() || itemCommentId.equals("null")) ? null : itemCommentId,
+                            ""
                     ));
                 }
             } catch (Exception e) {
@@ -107,7 +111,7 @@ public class CommunityNotificationHelper {
                 id,
                 userId,
                 userName,
-                userAvatar != null ? userAvatar : "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png",
+                userAvatar != null ? userAvatar : RootieBrandHelper.AVATAR_URL,
                 type,
                 actionType,
                 content,
@@ -115,7 +119,8 @@ public class CommunityNotificationHelper {
                 currentDate,
                 false,
                 postId,
-                commentId
+                commentId,
+                ""
         );
 
         for (int i = 0; i < list.size(); i++) {

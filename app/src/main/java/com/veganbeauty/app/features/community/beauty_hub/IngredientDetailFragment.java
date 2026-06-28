@@ -14,12 +14,11 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.IngredientEntity;
+import com.veganbeauty.app.data.local.entities.KeyIngredient;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.features.shop.product.list.ShopListAdapter;
 
@@ -102,7 +101,7 @@ public class IngredientDetailFragment extends Fragment {
                     if (!match && p.getName() != null && p.getName().toLowerCase().contains(ingredient.getName().toLowerCase())) match = true;
                     if (!match && p.getDescription() != null && p.getDescription().toLowerCase().contains(ingredient.getName().toLowerCase())) match = true;
                     if (!match && p.getKeyIngredients() != null) {
-                        for (ProductEntity.KeyIngredient ki : p.getKeyIngredients()) {
+                        for (KeyIngredient ki : p.getKeyIngredients()) {
                             if (ki.getName().toLowerCase().contains(ingredient.getName().toLowerCase())) {
                                 match = true;
                                 break;
@@ -132,12 +131,7 @@ public class IngredientDetailFragment extends Fragment {
 
                 ImageView ivHeader = view.findViewById(R.id.ivHeader);
                 if (ivHeader != null && ingredient.getImage() != null) {
-                    ImageRequest request = new ImageRequest.Builder(requireContext())
-                            .data(ingredient.getImage())
-                            .target(ivHeader)
-                            .crossfade(true)
-                            .build();
-                    Coil.imageLoader(requireContext()).enqueue(request);
+                    com.bumptech.glide.Glide.with(ivHeader.getContext()).load(ingredient.getImage()).into(ivHeader);
                 }
 
                 TextView tvName = view.findViewById(R.id.tvName);

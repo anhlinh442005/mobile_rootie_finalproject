@@ -14,8 +14,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.utils.VietQRHelper;
@@ -74,14 +72,7 @@ public class ShopPaymentDialogs {
                 orderCode,
                 "qr_only"
         );
-        ImageRequest request = new ImageRequest.Builder(ctx)
-                .data(qrUrl)
-                .crossfade(true)
-                .placeholder(R.drawable.ic_qr_placeholder)
-                .error(R.drawable.ic_qr_placeholder)
-                .target(ivQrCode)
-                .build();
-        Coil.imageLoader(ctx).enqueue(request);
+        com.bumptech.glide.Glide.with(ivQrCode.getContext()).load(qrUrl).placeholder(R.drawable.ic_qr_placeholder).error(R.drawable.ic_qr_placeholder).into(ivQrCode);
 
         btnCopy.setOnClickListener(v -> {
             ClipboardManager clipboard = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -185,7 +176,8 @@ public class ShopPaymentDialogs {
                 notificationType,
                 isStorePickup,
                 storeName,
-                storeAddress
+                storeAddress,
+                null
         );
         try {
             fm.popBackStack();

@@ -20,11 +20,12 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
-import com.veganbeauty.app.data.model.UserGift;
+import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountVoucherBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -73,7 +74,7 @@ public class AccountVoucherFragment extends RootieFragment {
     }
 
     private void setupRepository() {
-        RootieDatabase db = RootieDatabase.Companion.getDatabase(requireContext());
+        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
         repository = new OrderRepository(
                 db.orderDao(),
                 db.rewardPointDao(),
@@ -101,21 +102,14 @@ public class AccountVoucherFragment extends RootieFragment {
                 String dbIdStr = voucher.getId().substring(3);
                 try {
                     int dbId = Integer.parseInt(dbIdStr);
-                    BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                        Object result = repository.deleteUserGiftById(dbId, continuation);
-                        if (result != kotlin.coroutines.intrinsics.IntrinsicsKt.getCOROUTINE_SUSPENDED()) {
-                            boolean success = (Boolean) result;
-                            BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (innerScope, innerContinuation) -> {
-                                if (success) {
-                                    Toast.makeText(context, "Đã xoá voucher thành công", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(context, "Xoá voucher thất bại", Toast.LENGTH_SHORT).show();
-                                }
-                                return Unit.INSTANCE;
+                    new Thread(() -> {
+                        repository.deleteUserGiftById(dbId);
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                Toast.makeText(context, "Đã xoá voucher thành công", Toast.LENGTH_SHORT).show();
                             });
                         }
-                        return result;
-                    });
+                    }).start();
                 } catch (NumberFormatException e) {
                     // Ignore
                 }
@@ -138,7 +132,6 @@ public class AccountVoucherFragment extends RootieFragment {
                 Toast.makeText(context, "Đã xoá voucher thành công", Toast.LENGTH_SHORT).show();
                 refreshVoucherList();
             }
-            return Unit.INSTANCE;
         });
         
         adapter.setOnItemClickListener(voucher -> {
@@ -147,12 +140,10 @@ public class AccountVoucherFragment extends RootieFragment {
                     .replace(R.id.main_container, detailFragment)
                     .addToBackStack(null)
                     .commit();
-            return Unit.INSTANCE;
         });
 
         adapter.setOnUseClickListener(voucher -> {
-            BottomNavHelper.INSTANCE.navigate(this, R.id.nav_shop);
-            return Unit.INSTANCE;
+            BottomNavHelper.navigate(this, R.id.nav_shop);
         });
 
         binding.rvVouchers.setLayoutManager(new LinearLayoutManager(context));
@@ -181,13 +172,12 @@ public class AccountVoucherFragment extends RootieFragment {
 
         highlightBottomTab(view);
 
-        BottomNavHelper.INSTANCE.setup(
+        BottomNavHelper.setup(
                 this,
                 binding.getRoot(),
                 R.id.nav_account,
                 tabId -> {
-                    BottomNavHelper.INSTANCE.navigate(this, tabId);
-                    return Unit.INSTANCE;
+                    BottomNavHelper.navigate(this, tabId);
                 }
         );
     }
@@ -195,12 +185,12 @@ public class AccountVoucherFragment extends RootieFragment {
     @Override
     public void observeViewModel() {
         BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            kotlinx.coroutines.flow.FlowKt.collect(repository.getAllUserGifts(), new kotlinx.coroutines.flow.FlowCollector<List<UserGift>>() {
+            kotlinx.coroutines.flow.FlowKt.launchIn(kotlinx.coroutines.flow.FlowKt.onEach(repository.getAllUserGifts(), new kotlin.jvm.functions.Function2<List<UserGiftEntity>, kotlin.coroutines.Continuation<? super kotlin.Unit>, Object>() {
                 @Nullable
                 @Override
-                public Object emit(List<UserGift> dbGifts, @NonNull kotlin.coroutines.Continuation<? super Unit> continuation) {
+                public Object invoke(List<UserGiftEntity> dbGifts, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
                     List<VoucherItem> mappedDbVouchers = new ArrayList<>();
-                    for (UserGift gift : dbGifts) {
+                    for (UserGiftEntity gift : dbGifts) {
                         if ("voucher_discount".equals(gift.getGiftType()) || "voucher_freeship".equals(gift.getGiftType())) {
                             String statusVal = computeStatusFromExpiry(gift.getExpiryDate());
                             mappedDbVouchers.add(new VoucherItem(
@@ -235,7 +225,7 @@ public class AccountVoucherFragment extends RootieFragment {
                     refreshVoucherList();
                     return Unit.INSTANCE;
                 }
-            }, continuation);
+            }), coroutineScope);
             return Unit.INSTANCE;
         });
     }

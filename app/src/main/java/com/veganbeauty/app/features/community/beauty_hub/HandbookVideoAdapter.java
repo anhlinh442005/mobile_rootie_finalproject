@@ -11,8 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 
@@ -136,12 +134,7 @@ public class HandbookVideoAdapter extends RecyclerView.Adapter<HandbookVideoAdap
         String videoId = extractYouTubeVideoId(video.getUrl());
         String thumbnailUrl = videoId != null ? "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg" : video.getUrl();
         
-        ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                .data(thumbnailUrl)
-                .target(holder.ivThumbnail)
-                .crossfade(true)
-                .build();
-        Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+        com.bumptech.glide.Glide.with(holder.ivThumbnail.getContext()).load(thumbnailUrl).into(holder.ivThumbnail);
         
         int min = random.nextInt(16) + 5;
         int sec = random.nextInt(50) + 10;

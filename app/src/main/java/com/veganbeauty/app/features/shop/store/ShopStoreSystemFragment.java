@@ -91,7 +91,7 @@ public class ShopStoreSystemFragment extends RootieFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        database = RootieDatabase.Companion.getDatabase(requireContext());
+        database = RootieDatabase.getDatabase(requireContext());
         repository = new StoreRepository(database.storeDao(), new LocalJsonReader(requireContext()));
         locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
     }
@@ -196,13 +196,13 @@ public class ShopStoreSystemFragment extends RootieFragment {
                 kotlin.coroutines.EmptyCoroutineContext.INSTANCE,
                 kotlinx.coroutines.CoroutineStart.DEFAULT,
                 (coroutineScope, continuation) -> {
-                    kotlinx.coroutines.flow.FlowKt.collect(repository.getAllStores(), new kotlinx.coroutines.flow.FlowCollector<List<StoreEntity>>() {
+                    repository.getAllStores().collect(new kotlinx.coroutines.flow.FlowCollector<List<StoreEntity>>() {
                         @Override
                         public Object emit(List<StoreEntity> stores, Continuation<? super Unit> continuation) {
                             allStoresList = stores;
                             if (allStoresList.isEmpty()) {
                                 try {
-                                    repository.refreshStores(continuation);
+                                    repository.refreshStores();
                                 } catch (Exception ignored) {}
                             } else {
                                 if (!hasCheckedPermissionOnStart) {
@@ -642,7 +642,7 @@ public class ShopStoreSystemFragment extends RootieFragment {
             ShopItemStoreCardHorizontalBinding b = holder.itemBinding;
 
             b.tvStoreName.setText(store.getTenCuaHang());
-            b.tvStoreHours.setText("Mở cửa từ " + store.getMoCua() + " đến " + store.getDongCua());
+            b.tvStoreHours.setText("Mở cửa từ " + (store.getMoCua() != null ? store.getMoCua() : "") + " đến " + (store.getDongCua() != null ? store.getDongCua() : ""));
             b.tvStoreAddress.setText(store.getDiaChiDayDu());
 
             b.btnDirections.setOnClickListener(v -> openGoogleMaps(store.getLat(), store.getLng()));

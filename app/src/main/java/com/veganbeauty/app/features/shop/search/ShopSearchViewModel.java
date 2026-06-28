@@ -1,11 +1,10 @@
 package com.veganbeauty.app.features.shop.search;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelKt;
 
 import com.veganbeauty.app.data.local.dao.CommunityDao;
 import com.veganbeauty.app.data.local.entities.CommunityBlogEntity;
@@ -22,17 +21,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.flow.FlowCollector;
-import kotlinx.coroutines.flow.FlowKt;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ShopSearchViewModel extends ViewModel {
 
     private final ProductRepository repository;
     private final CommunityDao communityDao;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final MutableLiveData<List<ProductEntity>> _hotDeals = new MutableLiveData<>();
     public final LiveData<List<ProductEntity>> hotDeals = _hotDeals;
@@ -43,7 +41,7 @@ public class ShopSearchViewModel extends ViewModel {
     private final MutableLiveData<SearchSuggestions> _suggestions = new MutableLiveData<>();
     public final LiveData<SearchSuggestions> suggestions = _suggestions;
 
-    private final MutableLiveData<Boolean> _dataReady = new MutableLiveData<>(false);
+    private final MediatorLiveData<Boolean> _dataReady = new MediatorLiveData<>();
     public final LiveData<Boolean> dataReady = _dataReady;
 
     private List<ProductEntity> allProducts = new ArrayList<>();
@@ -103,52 +101,146 @@ public class ShopSearchViewModel extends ViewModel {
         this.repository = repository;
         this.communityDao = communityDao;
 
-        ViewModelKt.getViewModelScope(this).launch((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
-                    try {
-                        repository.refreshProducts(c2);
-                    } catch (Exception ignored) {}
-                    return kotlin.Unit.INSTANCE;
-                }, cont)
-        );
+        initData();
+    }
 
-        ViewModelKt.getViewModelScope(this).launch((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    FlowKt.combine(
-                            repository.getAllProducts(),
-                            communityDao.getAllExploreVideos(),
-                            communityDao.getAllBlogs(),
-                            communityDao.getAllPosts(),
-                            (Object[] args, kotlin.coroutines.Continuation c) -> {
-                                List<ProductEntity> products = (List<ProductEntity>) args[0];
-                                List<YtVideoEntity> videos = (List<YtVideoEntity>) args[1];
-                                List<CommunityBlogEntity> blogs = (List<CommunityBlogEntity>) args[2];
-                                List<CommunityPostEntity> posts = (List<CommunityPostEntity>) args[3];
+    private static final List<String> FALLBACK_SEARCH_TERMS = Arrays.asList(
+            "Sữa rửa mặt", "Chống nắng", "Kem dưỡng", "Tinh chất", "Mặt nạ", "Combo/Giftbox"
+    );
 
-                                allProducts = products;
-                                allVideos = videos;
-                                allBlogs = blogs;
-                                allPosts = posts;
+    private void initData() {
+        executor.execute(() -> {
+            try {
+                List<ProductEntity> products = repository.ensureProductsLoaded();
+                allProducts = products != null ? products : new ArrayList<>();
+                publishProductSections();
+            } catch (Exception ignored) {
+            }
+        });
 
-                                loadHotDeals(products);
-                                loadTopSearchTerms(products);
-                                _dataReady.setValue(true);
-                                return kotlin.Unit.INSTANCE;
-                            }
-                    ).collect(new FlowCollector<kotlin.Unit>() {
-                        @Nullable
-                        @Override
-                        public Object emit(kotlin.Unit value, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont)
-        );
+        LiveData<List<ProductEntity>> productsLive = androidx.lifecycle.FlowLiveDataConversions.asLiveData(repository.getAllProducts());
+        LiveData<List<YtVideoEntity>> videosLive = androidx.lifecycle.FlowLiveDataConversions.asLiveData(communityDao.getAllExploreVideos());
+        LiveData<List<CommunityBlogEntity>> blogsLive = androidx.lifecycle.FlowLiveDataConversions.asLiveData(communityDao.getAllBlogs());
+        LiveData<List<CommunityPostEntity>> postsLive = androidx.lifecycle.FlowLiveDataConversions.asLiveData(communityDao.getAllPosts());
+
+        _dataReady.addSource(productsLive, list -> {
+            allProducts = list != null ? list : new ArrayList<>();
+            if (!allProducts.isEmpty()) {
+                publishProductSections();
+            }
+            checkDataReady();
+        });
+
+        _dataReady.addSource(videosLive, list -> {
+            allVideos = list != null ? list : new ArrayList<>();
+            checkDataReady();
+        });
+
+        _dataReady.addSource(blogsLive, list -> {
+            allBlogs = list != null ? list : new ArrayList<>();
+            checkDataReady();
+        });
+
+        _dataReady.addSource(postsLive, list -> {
+            allPosts = list != null ? list : new ArrayList<>();
+            checkDataReady();
+        });
+    }
+
+    private void checkDataReady() {
+        _dataReady.setValue(!allProducts.isEmpty());
+    }
+
+    private void publishProductSections() {
+        updateHotDeals();
+        updateTopSearchTerms();
+    }
+
+    private void updateHotDeals() {
+        List<ProductEntity> deals = new ArrayList<>();
+        for (ProductEntity p : allProducts) {
+            if (isHotOrNew(p)) {
+                deals.add(p);
+                if (deals.size() >= 3) {
+                    break;
+                }
+            }
+        }
+        if (deals.isEmpty() && !allProducts.isEmpty()) {
+            deals.addAll(allProducts.subList(0, Math.min(3, allProducts.size())));
+        }
+        _hotDeals.postValue(deals);
+    }
+
+    private void updateTopSearchTerms() {
+        if (allProducts.isEmpty()) {
+            _topSearchTerms.postValue(new ArrayList<>(FALLBACK_SEARCH_TERMS));
+            return;
+        }
+
+        Map<String, Integer> idCounts = new HashMap<>();
+        for (ProductEntity p : allProducts) {
+            if (p.getCategoryIds() == null) continue;
+            String[] ids = p.getCategoryIds().split(",");
+            for (String id : ids) {
+                String trimmed = id.trim();
+                if (!trimmed.isEmpty()) {
+                    idCounts.put(trimmed, idCounts.getOrDefault(trimmed, 0) + 1);
+                }
+            }
+        }
+
+        List<kotlin.Pair<String, Integer>> termCounts = new ArrayList<>();
+        for (Map.Entry<String, String> entry : subcategoryToIdMap.entrySet()) {
+            Integer count = idCounts.get(entry.getValue());
+            if (count != null) {
+                termCounts.add(new kotlin.Pair<>(entry.getKey(), count));
+            }
+        }
+
+        Collections.sort(termCounts, (o1, o2) -> Integer.compare(o2.getSecond(), o1.getSecond()));
+
+        List<String> terms = new ArrayList<>();
+        for (kotlin.Pair<String, Integer> pair : termCounts) {
+            terms.add(pair.getFirst());
+        }
+
+        if (terms.size() < 6) {
+            Set<String> existing = new HashSet<>(terms);
+            for (String category : parentCategories) {
+                if (existing.size() >= 6) break;
+                for (ProductEntity p : allProducts) {
+                    if (p.getCategory() != null && p.getCategory().toLowerCase().contains(category.toLowerCase())) {
+                        existing.add(category);
+                        break;
+                    }
+                }
+            }
+            terms = new ArrayList<>(existing);
+        }
+
+        if (terms.isEmpty()) {
+            terms = new ArrayList<>(FALLBACK_SEARCH_TERMS);
+        } else if (terms.size() > 6) {
+            terms = terms.subList(0, 6);
+        }
+        _topSearchTerms.postValue(terms);
+    }
+
+    public void ensureProductsLoaded() {
+        executor.execute(() -> {
+            try {
+                List<ProductEntity> products = repository.ensureProductsLoaded();
+                allProducts = products != null ? products : new ArrayList<>();
+                publishProductSections();
+            } catch (Exception ignored) {
+            }
+        });
     }
 
     public boolean isHotOrNew(ProductEntity product) {
-        return product.isNew() || product.getPrice() >= 500000 || product.getCategory().toLowerCase().contains("combo");
+        String cat = product.getCategory();
+        return product.isNew() || product.getPrice() >= 500000 || (cat != null && cat.toLowerCase().contains("combo"));
     }
 
     public String getSubcategoryId(String name) {
@@ -164,7 +256,7 @@ public class ShopSearchViewModel extends ViewModel {
 
     public void updateSuggestions(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            _suggestions.setValue(SearchSuggestions.Companion.getEMPTY());
+            _suggestions.setValue(SearchSuggestions.EMPTY);
         } else {
             _suggestions.setValue(computeSuggestions(keyword));
         }
@@ -181,7 +273,7 @@ public class ShopSearchViewModel extends ViewModel {
                 return cmp;
             });
         } else if ("PRICE_LOW".equals(sortOrder)) {
-            Collections.sort(results, Comparator.comparingLong(ProductEntity::getPrice));
+            Collections.sort(results, (p1, p2) -> Long.compare(p1.getPrice(), p2.getPrice()));
         } else if ("PRICE_HIGH".equals(sortOrder)) {
             Collections.sort(results, (p1, p2) -> Long.compare(p2.getPrice(), p1.getPrice()));
         }
@@ -230,15 +322,20 @@ public class ShopSearchViewModel extends ViewModel {
         String lowerKw = keyword.toLowerCase();
         String subcategoryId = getSubcategoryId(keyword);
 
-        if (product.getName().toLowerCase().contains(lowerKw) ||
-                product.getDescription().toLowerCase().contains(lowerKw) ||
-                product.getCategory().toLowerCase().contains(lowerKw)) {
+        String name = product.getName();
+        String description = product.getDescription();
+        String category = product.getCategory();
+        if ((name != null && name.toLowerCase().contains(lowerKw)) ||
+                (description != null && description.toLowerCase().contains(lowerKw)) ||
+                (category != null && category.toLowerCase().contains(lowerKw))) {
             return true;
         }
-        for (String ingredient : product.getDetailedIngredients()) {
-            if (ingredient.toLowerCase().contains(lowerKw)) return true;
+        if (product.getDetailedIngredients() != null) {
+            for (String ingredient : product.getDetailedIngredients()) {
+                if (ingredient.toLowerCase().contains(lowerKw)) return true;
+            }
         }
-        if (subcategoryId != null) {
+        if (subcategoryId != null && product.getCategoryIds() != null) {
             String[] ids = product.getCategoryIds().split(",");
             for (String id : ids) {
                 if (id.trim().equals(subcategoryId)) return true;
@@ -376,67 +473,6 @@ public class ShopSearchViewModel extends ViewModel {
                 }
             }
             break;
-        }
-    }
-
-    private void loadHotDeals(List<ProductEntity> products) {
-        List<ProductEntity> deals = new ArrayList<>();
-        for (ProductEntity p : products) {
-            if (isHotOrNew(p)) {
-                deals.add(p);
-                if (deals.size() >= 3) break;
-            }
-        }
-        _hotDeals.setValue(deals);
-    }
-
-    private void loadTopSearchTerms(List<ProductEntity> products) {
-        if (products.isEmpty()) {
-            _topSearchTerms.setValue(new ArrayList<>());
-            return;
-        }
-
-        Map<String, Integer> idCounts = new HashMap<>();
-        for (ProductEntity p : products) {
-            String[] ids = p.getCategoryIds().split(",");
-            for (String id : ids) {
-                String trimmed = id.trim();
-                if (!trimmed.isEmpty()) {
-                    idCounts.put(trimmed, idCounts.getOrDefault(trimmed, 0) + 1);
-                }
-            }
-        }
-
-        List<kotlin.Pair<String, Integer>> termCounts = new ArrayList<>();
-        for (Map.Entry<String, String> entry : subcategoryToIdMap.entrySet()) {
-            Integer count = idCounts.get(entry.getValue());
-            if (count != null) {
-                termCounts.add(new kotlin.Pair<>(entry.getKey(), count));
-            }
-        }
-
-        Collections.sort(termCounts, (o1, o2) -> Integer.compare(o2.getSecond(), o1.getSecond()));
-
-        List<String> terms = new ArrayList<>();
-        for (kotlin.Pair<String, Integer> pair : termCounts) {
-            terms.add(pair.getFirst());
-        }
-
-        if (terms.size() < 6) {
-            Set<String> existing = new HashSet<>(terms);
-            for (String category : parentCategories) {
-                if (existing.size() >= 6) break;
-                for (ProductEntity p : products) {
-                    if (p.getCategory().toLowerCase().contains(category.toLowerCase())) {
-                        existing.add(category);
-                        break;
-                    }
-                }
-            }
-            List<String> finalTerms = new ArrayList<>(existing);
-            _topSearchTerms.setValue(finalTerms.subList(0, Math.min(6, finalTerms.size())));
-        } else {
-            _topSearchTerms.setValue(terms.subList(0, 6));
         }
     }
 }

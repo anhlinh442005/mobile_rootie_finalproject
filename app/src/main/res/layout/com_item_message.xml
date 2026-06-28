@@ -45,54 +45,45 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:maxLines="1"
         android:text="Name"
         android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold"
-        android:fontFamily="@font/be_vietnam_pro"
+        app:layout_constraintEnd_toStartOf="@+id/tvTime"
         app:layout_constraintStart_toEndOf="@id/flAvatar"
+        app:layout_constraintTop_toTopOf="@id/flAvatar" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="Time"
+        android:textColor="@color/gray_dark"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvName"
         app:layout_constraintEnd_toStartOf="@+id/vUnreadDot"
-        app:layout_constraintTop_toTopOf="@id/flAvatar"
-        app:layout_constraintBottom_toTopOf="@+id/tvLastMessage"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintStart_toEndOf="@id/tvName" />
 
     <TextView
         android:id="@+id/tvLastMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:maxLines="1"
         android:text="Last message"
         android:textColor="@color/gray_dark"
         android:textSize="13sp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:fontFamily="@font/be_vietnam_pro"
-        app:layout_constraintStart_toStartOf="@id/tvName"
-        app:layout_constraintTop_toBottomOf="@id/tvName"
         app:layout_constraintBottom_toBottomOf="@id/flAvatar"
-        app:layout_constraintEnd_toStartOf="@+id/tvDot" />
-
-    <TextView
-        android:id="@+id/tvDot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="  •  "
-        android:textColor="@color/gray_dark"
-        android:textSize="13sp"
-        app:layout_constraintStart_toEndOf="@id/tvLastMessage"
-        app:layout_constraintEnd_toStartOf="@+id/tvTime"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvLastMessage" />
-
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Time"
-        android:textColor="@color/gray_dark"
-        android:textSize="13sp"
-        android:fontFamily="@font/be_vietnam_pro"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvLastMessage" />
+        app:layout_constraintStart_toStartOf="@id/tvName"
+        app:layout_constraintTop_toBottomOf="@id/tvName" />
 
     <View
         android:id="@+id/vUnreadDot"

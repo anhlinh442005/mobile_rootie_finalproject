@@ -9,8 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.StoreEntity;
 
@@ -58,20 +56,15 @@ public class SkinStoreAdapter extends RecyclerView.Adapter<SkinStoreAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         StoreEntity store = stores.get(position);
-        holder.storeName.setText(store.getTenCuaHang());
-        holder.storeAddress.setText(store.getDiaChiDayDu());
-        holder.storeHours.setText(store.getMoCua() + " - " + store.getDongCua());
+        holder.storeName.setText(store.getTenCuaHang() != null ? store.getTenCuaHang() : "");
+        holder.storeAddress.setText(store.getDiaChiDayDu() != null ? store.getDiaChiDayDu() : "");
+        String open = store.getMoCua() != null ? store.getMoCua() : "";
+        String close = store.getDongCua() != null ? store.getDongCua() : "";
+        holder.storeHours.setText(open + " - " + close);
         
-        String imageUrl = "";
+        String imageUrl = store.getImageUrl() != null ? store.getImageUrl() : "";
         if (!imageUrl.isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(imageUrl)
-                    .target(holder.storeImage)
-                    .placeholder(R.drawable.imv_logo)
-                    .error(R.drawable.imv_logo)
-                    .crossfade(true)
-                    .build();
-            Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(holder.storeImage.getContext()).load(imageUrl).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(holder.storeImage);
         } else {
             holder.storeImage.setImageResource(R.drawable.imv_logo);
         }

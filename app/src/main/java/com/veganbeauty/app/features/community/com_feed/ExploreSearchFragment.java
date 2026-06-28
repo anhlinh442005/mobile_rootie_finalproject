@@ -19,9 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -207,7 +204,7 @@ public class ExploreSearchFragment extends RootieFragment {
         bottomNav.findViewById(R.id.nav_com_chat).setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new com.veganbeauty.app.features.community.message.CommunityMessageFragment())
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         LinearLayout exploreNav = bottomNav.findViewById(R.id.nav_com_explore);
@@ -280,31 +277,14 @@ public class ExploreSearchFragment extends RootieFragment {
                 thumbUrl = video.getUrl();
             }
 
-            ImageRequest thumbRequest = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(thumbUrl)
-                    .crossfade(true)
-                    .target(holder.ivThumbnail)
-                    .build();
-            Coil.imageLoader(holder.itemView.getContext()).enqueue(thumbRequest);
+            com.bumptech.glide.Glide.with(holder.ivThumbnail.getContext()).load(thumbUrl).into(holder.ivThumbnail);
 
             if (video.getAvatarUrl() == null || video.getAvatarUrl().trim().isEmpty()) {
                 int[] avatarRes = {R.drawable.img_avatar, R.drawable.ic_user_outline, R.drawable.img_avatar, R.drawable.ic_user_outline};
                 int randomAvatar = avatarRes[(int) (Math.random() * avatarRes.length)];
-                ImageRequest avatarRequest = new ImageRequest.Builder(holder.itemView.getContext())
-                        .data(randomAvatar)
-                        .crossfade(true)
-                        .transformations(new CircleCropTransformation())
-                        .target(holder.ivAvatar)
-                        .build();
-                Coil.imageLoader(holder.itemView.getContext()).enqueue(avatarRequest);
+                com.bumptech.glide.Glide.with(holder.ivAvatar.getContext()).load(randomAvatar).circleCrop().into(holder.ivAvatar);
             } else {
-                ImageRequest avatarRequest = new ImageRequest.Builder(holder.itemView.getContext())
-                        .data(video.getAvatarUrl())
-                        .crossfade(true)
-                        .transformations(new CircleCropTransformation())
-                        .target(holder.ivAvatar)
-                        .build();
-                Coil.imageLoader(holder.itemView.getContext()).enqueue(avatarRequest);
+                com.bumptech.glide.Glide.with(holder.ivAvatar.getContext()).load(video.getAvatarUrl()).circleCrop().into(holder.ivAvatar);
             }
         }
 

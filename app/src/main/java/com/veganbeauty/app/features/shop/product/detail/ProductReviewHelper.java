@@ -80,9 +80,10 @@ public class ProductReviewHelper {
     );
 
     public static List<ProductReview> getReviews(String productId, String productName, String category) {
-        Random rand = new Random(productId.hashCode());
-        String nameLower = productName.toLowerCase();
-        String catLower = category.toLowerCase();
+        String safeId = productId != null ? productId : "";
+        Random rand = new Random(safeId.hashCode());
+        String nameLower = productName != null ? productName.toLowerCase() : "";
+        String catLower = category != null ? category.toLowerCase() : "";
 
         List<String> sourceList;
         if (nameLower.contains("tóc") || nameLower.contains("gội") || nameLower.contains("xả") || nameLower.contains("bưởi") || catLower.contains("tóc")) {
@@ -124,8 +125,8 @@ public class ProductReviewHelper {
 
     public static List<ProductReview> getRandomReviews(String productName, String category, int count) {
         Random rand = new Random();
-        String nameLower = productName.toLowerCase();
-        String catLower = category.toLowerCase();
+        String nameLower = productName != null ? productName.toLowerCase() : "";
+        String catLower = category != null ? category.toLowerCase() : "";
 
         List<String> sourceList;
         if (nameLower.contains("tóc") || nameLower.contains("gội") || nameLower.contains("xả") || nameLower.contains("bưởi") || catLower.contains("tóc")) {
@@ -174,7 +175,8 @@ public class ProductReviewHelper {
     }
 
     public static RatingStats getRatingStats(String productId) {
-        Random rand = new Random(productId.hashCode() + 1);
+        String safeId = productId != null ? productId : "";
+        Random rand = new Random(safeId.hashCode() + 1);
         int reviewCount = 45 + rand.nextInt(320);
         double rating = 4.5 + rand.nextDouble() * 0.5;
         double formattedRating = Math.round(rating * 10.0) / 10.0;

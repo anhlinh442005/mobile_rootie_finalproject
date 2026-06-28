@@ -94,6 +94,7 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerTimeRange.setAdapter(timeAdapter);
 
+        /*
         int freqIdx = freqs.indexOf(ProfileSession.getPromotionFrequency(ctx));
         if (freqIdx >= 0) binding.spinnerFrequency.setSelection(freqIdx);
         int timeIdx = timeRanges.indexOf(ProfileSession.getPromotionTimeRange(ctx));
@@ -107,6 +108,7 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
             @Override public void onItemSelected(AdapterView<?> p, View v, int pos, long id) { ProfileSession.setPromotionTimeRange(requireContext(), timeRanges.get(pos)); }
             @Override public void onNothingSelected(AdapterView<?> p) {}
         });
+        */
 
         loadSwitchesState();
         setupSwitchListeners();

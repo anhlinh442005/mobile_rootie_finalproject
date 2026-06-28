@@ -12,8 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
@@ -89,14 +87,7 @@ public class BookingDetailCancelledFragment extends RootieFragment {
         }
 
         if (data.getStoreImage() != null && !data.getStoreImage().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(requireContext())
-                    .data(data.getStoreImage())
-                    .target(binding.skinDetailStoreImage)
-                    .placeholder(R.drawable.imv_logo)
-                    .error(R.drawable.imv_logo)
-                    .crossfade(true)
-                    .build();
-            Coil.imageLoader(requireContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(binding.skinDetailStoreImage.getContext()).load(data.getStoreImage()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(binding.skinDetailStoreImage);
         }
 
         if (data.getCancelReason() != null && !data.getCancelReason().isEmpty()) {

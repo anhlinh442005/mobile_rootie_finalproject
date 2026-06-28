@@ -1,7 +1,7 @@
 package com.veganbeauty.app.data.local;
 
 import androidx.room.TypeConverter;
-import com.veganbeauty.app.data.local.entities.OrderItem;
+import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -37,13 +37,13 @@ public class OrderConverters {
             JSONArray array = new JSONArray(value);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
-                list.add(new OrderItem(
-                    obj.getString("productId"),
-                    obj.getString("productName"),
-                    obj.getString("productImage"),
-                    obj.getInt("quantity"),
-                    obj.getLong("price")
-                ));
+                OrderItem item = new OrderItem();
+                item.setProductId(obj.getString("productId"));
+                item.setProductName(obj.getString("productName"));
+                item.setProductImage(obj.getString("productImage"));
+                item.setQuantity(obj.getInt("quantity"));
+                item.setPrice(obj.getLong("price"));
+                list.add(item);
             }
         } catch (Exception e) {
             e.printStackTrace();

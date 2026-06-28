@@ -13,21 +13,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.LifecycleOwnerKt;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
-import com.veganbeauty.app.data.local.LocalJsonReader;
-import com.veganbeauty.app.data.local.RootieDatabase;
-import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
-import com.veganbeauty.app.data.repository.ProductRepository;
 import com.veganbeauty.app.databinding.ShopHomeBinding;
+import com.veganbeauty.app.features.home.HomeHeaderHelper;
 import com.veganbeauty.app.features.home.BottomNavHelper;
-import com.veganbeauty.app.features.shop.barcode.BarcodeScanFragment;
 import com.veganbeauty.app.features.shop.home.models.CategoryUiModel;
 import com.veganbeauty.app.features.shop.product.CartBottomSheetFragment;
 import com.veganbeauty.app.features.shop.product.CartHelper;
@@ -35,17 +30,12 @@ import com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet;
 import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
 import com.veganbeauty.app.features.shop.product.ShopVoucherFragment;
 import com.veganbeauty.app.features.shop.product.SuggestedProductsBottomSheet;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.features.shop.product.list.ShopListAdapter;
 import com.veganbeauty.app.features.shop.product.list.ShopListFragment;
-import com.veganbeauty.app.features.shop.search.ShopSearchFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.flow.FlowCollector;
 
 public class ShopHomeFragment extends RootieFragment {
 
@@ -77,35 +67,27 @@ public class ShopHomeFragment extends RootieFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = ShopHomeBinding.inflate(inflater, container, false);
+        com.veganbeauty.app.utils.ProductImageCache.preload(requireContext());
         setupViewModel();
         
         categoryAdapter = new ShopHomeCategoryAdapter(category -> {
             navigateToCategoryList(category);
-            return kotlin.Unit.INSTANCE;
         });
 
         productAdapter = new ShopListAdapter(
             product -> {
                 navigateToDetail(product);
-                return kotlin.Unit.INSTANCE;
             },
             product -> {
-                ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(product, (p, quantity) -> {
-                    CartHelper.INSTANCE.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), p, quantity);
-                    return kotlin.Unit.INSTANCE;
-                }, (p, quantity) -> {
-                    CartItemEntity checkoutItem = new CartItemEntity(p.getId(), p.getName(), p.getMainImage(), p.getPrice(), quantity, true);
-                    ArrayList<CartItemEntity> list = new ArrayList<>();
-                    list.add(checkoutItem);
-                    ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.Companion.newInstance(list);
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, checkoutFragment)
-                            .addToBackStack(null)
-                            .commit();
-                    return kotlin.Unit.INSTANCE;
+                ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(product, new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
+                    @Override
+                    public void onAddToCartClick(com.veganbeauty.app.data.local.entities.ProductEntity p, int quantity) {
+                        CartHelper.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), p, quantity);
+                    }
+                    @Override
+                    public void onBuyNowClick(com.veganbeauty.app.data.local.entities.ProductEntity p, int quantity) {}
                 });
                 bottomSheet.show(getParentFragmentManager(), ChooseQuantityBottomSheet.TAG);
-                return kotlin.Unit.INSTANCE;
             },
             true
         );
@@ -114,16 +96,10 @@ public class ShopHomeFragment extends RootieFragment {
     }
 
     private void setupViewModel() {
-        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-        ProductRepository repository = new ProductRepository(db.productDao(), new LocalJsonReader(requireContext()));
-
-        viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
-            @NonNull
-            @Override
-            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) new ShopHomeViewModel(repository);
-            }
-        }).get(ShopHomeViewModel.class);
+        viewModel = new ViewModelProvider(
+                requireActivity(),
+                ShopHomeViewModelFactory.create(requireContext())
+        ).get(ShopHomeViewModel.class);
     }
 
     @Override
@@ -159,118 +135,51 @@ public class ShopHomeFragment extends RootieFragment {
         binding.fabBackToTop.setOnClickListener(v -> binding.nestedScrollView.smoothScrollTo(0, 0));
 
         binding.btnViewAll.setOnClickListener(v -> {
-            SuggestedProductsBottomSheet suggestedBottomSheet = SuggestedProductsBottomSheet.Companion.newInstance();
+            SuggestedProductsBottomSheet suggestedBottomSheet = SuggestedProductsBottomSheet.newInstance();
             suggestedBottomSheet.show(getParentFragmentManager(), SuggestedProductsBottomSheet.TAG);
         });
 
-        binding.flCartContainer.setOnClickListener(v -> {
-            CartBottomSheetFragment cartSheet = CartBottomSheetFragment.Companion.newInstance(cartVoucherCode, cartVoucherDiscount);
-            cartSheet.show(getParentFragmentManager(), CartBottomSheetFragment.TAG);
-        });
+        HomeHeaderHelper.setup(this, binding.getRoot());
 
         getParentFragmentManager().setFragmentResultListener(ShopVoucherFragment.REQUEST_KEY, getViewLifecycleOwner(), (requestKey, bundle) -> {
             cartVoucherCode = bundle.getString(ShopVoucherFragment.RESULT_VOUCHER_CODE);
             cartVoucherDiscount = bundle.getLong(ShopVoucherFragment.RESULT_VOUCHER_DISCOUNT, 0L);
 
-            CartBottomSheetFragment cartSheet = CartBottomSheetFragment.Companion.newInstance(cartVoucherCode, cartVoucherDiscount);
+            CartBottomSheetFragment cartSheet = CartBottomSheetFragment.newInstance(cartVoucherCode, cartVoucherDiscount);
             cartSheet.show(getParentFragmentManager(), CartBottomSheetFragment.TAG);
         });
 
-        View.OnClickListener searchClickListener = v -> {
-            ShopSearchFragment searchFragment = new ShopSearchFragment();
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, searchFragment)
-                    .addToBackStack(null)
-                    .commit();
-        };
-
-        binding.llSearchBar.setOnClickListener(searchClickListener);
-        binding.etSearch.setFocusable(false);
-        binding.etSearch.setClickable(true);
-        binding.etSearch.setOnClickListener(searchClickListener);
-
-        binding.ivQrScan.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, new BarcodeScanFragment())
-                .addToBackStack(null)
-                .commit());
-
         BottomNavHelper.setup(this, binding.getRoot(), R.id.nav_shop, tabId -> {
             BottomNavHelper.navigate(this, tabId);
-            return null;
         });
     }
 
     @Override
     public void observeViewModel() {
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    viewModel.getBanners().collect(new FlowCollector<List<com.veganbeauty.app.features.shop.home.models.BannerUiModel>>() {
-                        @Nullable
-                        @Override
-                        public Object emit(List<com.veganbeauty.app.features.shop.home.models.BannerUiModel> banners, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            bannerAdapter.submitList(banners);
-                            setupBannerDots(banners.size());
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+        viewModel.banners.observe(getViewLifecycleOwner(), banners -> {
+            bannerAdapter.submitList(banners);
+            setupBannerDots(banners.size());
+        });
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    viewModel.getCategories().collect(new FlowCollector<List<CategoryUiModel>>() {
-                        @Nullable
-                        @Override
-                        public Object emit(List<CategoryUiModel> categories, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            categoryAdapter.submitList(categories);
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+        viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
+            categoryAdapter.submitList(categories);
+        });
 
-        viewModel.getSuggestedProducts().observe(getViewLifecycleOwner(), products -> {
+        viewModel.suggestedProducts.observe(getViewLifecycleOwner(), products -> {
+            if (products == null) return;
             List<ProductEntity> filtered = new ArrayList<>();
             for (ProductEntity p : products) {
-                if (p.isNew() || p.getPrice() >= 500000 || p.getCategory().toLowerCase().contains("combo")) {
+                String cat = p.getCategory();
+                if (p.isNew() || p.getPrice() >= 500000 || (cat != null && cat.toLowerCase().contains("combo"))) {
                     filtered.add(p);
                 }
             }
             productAdapter.submitList(filtered);
         });
-
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-                    db.cartDao().getAllCartItems().collect(new FlowCollector<List<CartItemEntity>>() {
-                        @Nullable
-                        @Override
-                        public Object emit(List<CartItemEntity> items, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            int totalQty = 0;
-                            for (CartItemEntity it : items) totalQty += it.getQuantity();
-                            if (totalQty > 0) {
-                                binding.tvCartBadge.setVisibility(View.VISIBLE);
-                                binding.tvCartBadge.setText(String.valueOf(totalQty));
-                            } else {
-                                binding.tvCartBadge.setVisibility(View.GONE);
-                            }
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
     }
 
     private void navigateToDetail(ProductEntity product) {
-        ShopDetailFragment detailFragment = new ShopDetailFragment();
-        detailFragment.setProduct(product);
-
-        getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        ProductDetailLauncher.open(this, product);
     }
 
     private void navigateToCategoryList(CategoryUiModel category) {

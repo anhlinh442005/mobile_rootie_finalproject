@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.databinding.ShopItemCheckoutProductBinding;
 
@@ -55,13 +53,7 @@ public class ShopCheckoutProductAdapter extends ListAdapter<CartItemEntity, Shop
             binding.tvOriginalPrice.setPaintFlags(binding.tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
             if (item.getImage() != null && !item.getImage().isEmpty()) {
-                ImageRequest request = new ImageRequest.Builder(binding.getRoot().getContext())
-                        .data(item.getImage())
-                        .target(binding.ivProduct)
-                        .crossfade(true)
-                        .placeholder(android.R.color.darker_gray)
-                        .build();
-                Coil.imageLoader(binding.getRoot().getContext()).enqueue(request);
+                com.bumptech.glide.Glide.with(binding.ivProduct.getContext()).load(item.getImage()).into(binding.ivProduct);
             }
         }
     }

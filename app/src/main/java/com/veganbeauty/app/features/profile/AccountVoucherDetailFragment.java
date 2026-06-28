@@ -23,6 +23,7 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountVoucherDetailFragmentBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -111,7 +112,7 @@ public class AccountVoucherDetailFragment extends RootieFragment {
     }
 
     private void setupRepository() {
-        RootieDatabase db = RootieDatabase.Companion.getDatabase(requireContext());
+        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
         repository = new OrderRepository(
                 db.orderDao(),
                 db.rewardPointDao(),
@@ -202,7 +203,7 @@ public class AccountVoucherDetailFragment extends RootieFragment {
             if (success) {
                 Toast.makeText(context, "Mã voucher " + voucherCode + " đã được áp dụng cho đơn hàng của bạn!", Toast.LENGTH_LONG).show();
             }
-            BottomNavHelper.INSTANCE.navigate(this, R.id.nav_shop);
+            BottomNavHelper.navigate(this, R.id.nav_shop);
         }));
     }
 
@@ -215,16 +216,12 @@ public class AccountVoucherDetailFragment extends RootieFragment {
             String dbIdStr = voucherId.substring(3);
             try {
                 int dbId = Integer.parseInt(dbIdStr);
-                BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                    Object result = repository.deleteUserGiftById(dbId, continuation);
-                    if (result != kotlin.coroutines.intrinsics.IntrinsicsKt.getCOROUTINE_SUSPENDED()) {
-                        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (innerScope, innerContinuation) -> {
-                            onComplete.onComplete((Boolean) result);
-                            return Unit.INSTANCE;
-                        });
+                new Thread(() -> {
+                    repository.deleteUserGiftById(dbId);
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> onComplete.onComplete(true));
                     }
-                    return result;
-                });
+                }).start();
             } catch (NumberFormatException e) {
                 onComplete.onComplete(false);
             }
@@ -244,22 +241,15 @@ public class AccountVoucherDetailFragment extends RootieFragment {
                         String dbIdStr = voucherId.substring(3);
                         try {
                             int dbId = Integer.parseInt(dbIdStr);
-                            BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                                Object result = repository.deleteUserGiftById(dbId, continuation);
-                                if (result != kotlin.coroutines.intrinsics.IntrinsicsKt.getCOROUTINE_SUSPENDED()) {
-                                    boolean success = (Boolean) result;
-                                    BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (innerScope, innerContinuation) -> {
-                                        if (success) {
-                                            Toast.makeText(context, "Đã xoá voucher thành công", Toast.LENGTH_SHORT).show();
-                                            getParentFragmentManager().popBackStack();
-                                        } else {
-                                            Toast.makeText(context, "Xoá voucher thất bại", Toast.LENGTH_SHORT).show();
-                                        }
-                                        return Unit.INSTANCE;
+                            new Thread(() -> {
+                                repository.deleteUserGiftById(dbId);
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
+                                        Toast.makeText(context, "Đã xoá voucher thành công", Toast.LENGTH_SHORT).show();
+                                        getParentFragmentManager().popBackStack();
                                     });
                                 }
-                                return result;
-                            });
+                            }).start();
                         } catch (NumberFormatException e) {
                             Toast.makeText(context, "Xoá voucher thất bại", Toast.LENGTH_SHORT).show();
                         }

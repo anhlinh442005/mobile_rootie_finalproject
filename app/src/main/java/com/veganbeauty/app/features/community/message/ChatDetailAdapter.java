@@ -12,9 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.ProfileSession;
@@ -183,22 +180,9 @@ public class ChatDetailAdapter extends RecyclerView.Adapter<ChatDetailAdapter.Ch
             } else {
                 holder.ivPartnerAvatar.setVisibility(View.VISIBLE);
                 if (!partnerAvatar.isEmpty()) {
-                    ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                            .data(partnerAvatar)
-                            .crossfade(true)
-                            .placeholder(R.color.gray_light)
-                            .error(R.drawable.mascot_message)
-                            .transformations(new CircleCropTransformation())
-                            .target(holder.ivPartnerAvatar)
-                            .build();
-                    Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+                    com.bumptech.glide.Glide.with(holder.ivPartnerAvatar.getContext()).load(partnerAvatar).placeholder(R.color.gray_light).error(R.drawable.mascot_message).circleCrop().into(holder.ivPartnerAvatar);
                 } else {
-                    ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                            .data(R.drawable.mascot_message)
-                            .transformations(new CircleCropTransformation())
-                            .target(holder.ivPartnerAvatar)
-                            .build();
-                    Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+                    com.bumptech.glide.Glide.with(holder.ivPartnerAvatar.getContext()).load(R.drawable.mascot_message).circleCrop().into(holder.ivPartnerAvatar);
                 }
             }
         }

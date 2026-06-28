@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.ShopProductCardBinding;
 
@@ -32,13 +30,13 @@ public class ShopHorizontalProductAdapter extends RecyclerView.Adapter<ShopHoriz
     private final OnAddToCartClickListener onAddToCartClick;
 
     public ShopHorizontalProductAdapter(List<ProductEntity> items, OnItemClickListener onItemClick, OnAddToCartClickListener onAddToCartClick) {
-        this.items = items;
+        this.items = items != null ? items : new java.util.ArrayList<>();
         this.onItemClick = onItemClick;
         this.onAddToCartClick = onAddToCartClick;
     }
 
     public void updateData(List<ProductEntity> newItems) {
-        this.items = newItems;
+        this.items = newItems != null ? newItems : new java.util.ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -68,7 +66,7 @@ public class ShopHorizontalProductAdapter extends RecyclerView.Adapter<ShopHoriz
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items != null ? items.size() : 0;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -95,13 +93,7 @@ public class ShopHorizontalProductAdapter extends RecyclerView.Adapter<ShopHoriz
                 binding.tvBadgeNew.setVisibility(View.GONE);
             }
 
-            ImageRequest request = new ImageRequest.Builder(binding.getRoot().getContext())
-                    .data(product.getMainImage())
-                    .target(binding.ivProduct)
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .build();
-            Coil.imageLoader(binding.getRoot().getContext()).enqueue(request);
+            com.veganbeauty.app.utils.ProductImageHelper.loadProductImage(binding.ivProduct, product);
 
             binding.getRoot().setOnClickListener(v -> onItemClick.onItemClick(product));
             binding.btnAddToCart.setOnClickListener(v -> onAddToCartClick.onAddToCartClick(product));

@@ -23,7 +23,6 @@ import java.util.Set;
 
 import kotlinx.coroutines.flow.MutableStateFlow;
 import kotlinx.coroutines.flow.StateFlow;
-import kotlinx.coroutines.flow.StateFlowKt;
 import kotlinx.coroutines.flow.Flow;
 import kotlinx.coroutines.flow.FlowKt;
 
@@ -32,18 +31,10 @@ public class NotificationRepository {
     private final Context context;
     private final LocalJsonReader localJsonReader;
 
-    private final MutableStateFlow<List<NotificationItem>> _notifications = StateFlowKt.MutableStateFlow(new ArrayList<>());
-    public final StateFlow<List<NotificationItem>> allNotifications = StateFlowKt.asStateFlow(_notifications);
+    private final MutableStateFlow<List<NotificationItem>> _notifications = kotlinx.coroutines.flow.StateFlowKt.MutableStateFlow(new ArrayList<>());
+    public final StateFlow<List<NotificationItem>> notifications = _notifications;
 
-    public final Flow<Integer> unreadCount = FlowKt.map(_notifications, list -> {
-        int count = 0;
-        for (NotificationItem item : list) {
-            if (!item.isRead()) {
-                count++;
-            }
-        }
-        return count;
-    });
+    private final MutableStateFlow<Integer> _unreadCount = kotlinx.coroutines.flow.StateFlowKt.MutableStateFlow(0);
 
     private NotificationRepository(Context context) {
         this.context = context.getApplicationContext();
@@ -51,61 +42,62 @@ public class NotificationRepository {
         refreshNotifications();
     }
 
+    public Flow<Integer> getUnreadCount() {
+        return _unreadCount;
+    }
+
+    private void updateUnreadCount(List<NotificationItem> list) {
+        int count = 0;
+        if (list != null) {
+            for (NotificationItem item : list) {
+                if (!item.isRead()) {
+                    count++;
+                }
+            }
+        }
+        _unreadCount.setValue(count);
+    }
+
     public void refreshNotifications() {
         List<NotificationItem> assetList = localJsonReader.getAllNotifications();
         List<NotificationItem> localList = loadNotificationsFromLocal();
 
+        List<NotificationItem> finalList;
         if (localList.isEmpty()) {
-            _notifications.setValue(assetList);
-            saveNotificationsToLocal(assetList);
-            return;
-        }
-
-        Map<String, NotificationItem> assetMap = new HashMap<>();
-        for (NotificationItem item : assetList) {
-            assetMap.put(item.getId(), item);
-        }
-
-        List<NotificationItem> updatedList = new ArrayList<>();
-
-        for (NotificationItem localItem : localList) {
-            NotificationItem assetItem = assetMap.get(localItem.getId());
-            if (assetItem != null) {
-                NotificationItem merged = new NotificationItem(
-                        assetItem.getId(),
-                        assetItem.getTitle(),
-                        assetItem.getContent(),
-                        assetItem.getTime(),
-                        assetItem.getCategory(),
-                        assetItem.getTag(),
-                        assetItem.getVoucherCode(),
-                        assetItem.getActionText(),
-                        localItem.isRead(),
-                        assetItem.getSection(),
-                        assetItem.getIconResName(),
-                        assetItem.getNotificationType(),
-                        assetItem.getOrderId(),
-                        assetItem.getScheduleId()
-                );
-                updatedList.add(merged);
-            } else {
-                updatedList.add(localItem);
+            finalList = assetList;
+        } else {
+            Map<String, NotificationItem> assetMap = new HashMap<>();
+            for (NotificationItem item : assetList) {
+                assetMap.put(item.getId(), item);
             }
-        }
 
-        Set<String> localIds = new HashSet<>();
-        for (NotificationItem item : localList) {
-            localIds.add(item.getId());
-        }
-
-        for (NotificationItem assetItem : assetList) {
-            if (!localIds.contains(assetItem.getId())) {
-                updatedList.add(assetItem);
+            List<NotificationItem> updatedList = new ArrayList<>();
+            for (NotificationItem localItem : localList) {
+                NotificationItem assetItem = assetMap.get(localItem.getId());
+                if (assetItem != null) {
+                    updatedList.add(new NotificationItem(
+                            assetItem.getId(), assetItem.getTitle(), assetItem.getContent(), assetItem.getTime(),
+                            assetItem.getCategory(), assetItem.getTag(), assetItem.getVoucherCode(),
+                            assetItem.getActionText(), localItem.isRead(), assetItem.getSection(),
+                            assetItem.getIconResName(), assetItem.getNotificationType(),
+                            assetItem.getOrderId(), assetItem.getScheduleId()
+                    ));
+                } else {
+                    updatedList.add(localItem);
+                }
             }
+
+            Set<String> localIds = new HashSet<>();
+            for (NotificationItem item : localList) localIds.add(item.getId());
+            for (NotificationItem assetItem : assetList) {
+                if (!localIds.contains(assetItem.getId())) updatedList.add(assetItem);
+            }
+            finalList = updatedList;
         }
 
-        _notifications.setValue(updatedList);
-        saveNotificationsToLocal(updatedList);
+        _notifications.setValue(finalList);
+        updateUnreadCount(finalList);
+        saveNotificationsToLocal(finalList);
     }
 
     private List<NotificationItem> loadNotificationsFromLocal() {
@@ -193,6 +185,7 @@ public class NotificationRepository {
             }
         }
         _notifications.setValue(updatedList);
+        updateUnreadCount(updatedList);
         saveNotificationsToLocal(updatedList);
     }
 
@@ -208,6 +201,7 @@ public class NotificationRepository {
             ));
         }
         _notifications.setValue(updatedList);
+        updateUnreadCount(updatedList);
         saveNotificationsToLocal(updatedList);
     }
 
@@ -215,12 +209,14 @@ public class NotificationRepository {
         List<NotificationItem> currentList = new ArrayList<>(_notifications.getValue());
         currentList.removeIf(item -> item.getId().equals(id));
         _notifications.setValue(currentList);
+        updateUnreadCount(currentList);
         saveNotificationsToLocal(currentList);
     }
 
     public void deleteAllNotifications() {
         List<NotificationItem> emptyList = new ArrayList<>();
         _notifications.setValue(emptyList);
+        updateUnreadCount(emptyList);
         saveNotificationsToLocal(emptyList);
     }
 
@@ -229,6 +225,7 @@ public class NotificationRepository {
         currentList.removeIf(it -> it.getId().equals(item.getId()));
         currentList.add(0, item);
         _notifications.setValue(currentList);
+        updateUnreadCount(currentList);
         saveNotificationsToLocal(currentList);
     }
 

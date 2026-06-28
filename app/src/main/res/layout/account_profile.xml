@@ -5,10 +5,18 @@
     android:layout_height="match_parent"
     android:background="@color/neutral">
 
+    <include
+        android:id="@+id/home_header"
+        layout="@layout/home_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
+
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/home_header"
         android:layout_above="@id/bottom_nav"
         android:fillViewport="true"
         android:scrollbars="none">
@@ -18,83 +26,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="24dp">
-
-            <!-- Header: Tìm kiếm / Search Header -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="66dp"
-                android:background="@drawable/bg_header_gradient"
-                android:paddingHorizontal="16dp">
-
-                <!-- Logo Mascot R -->
-                <ImageView
-                    android:id="@+id/iv_logo"
-                    android:layout_width="55dp"
-                    android:layout_height="59dp"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_logo_rootie" />
-
-                <!-- Search Input Bar -->
-                <LinearLayout
-                    android:id="@+id/ll_search"
-                    android:layout_width="match_parent"
-                    android:layout_height="32dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_toEndOf="@id/iv_logo"
-                    android:layout_toStartOf="@id/ll_right_actions"
-                    android:background="@drawable/bg_search_bar"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="12dp">
-
-                    <ImageView
-                        android:layout_width="9dp"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_search" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Tìm kiếm"
-                        android:textColor="#3E4D44"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <!-- QR Scanner & Notification Bell Buttons -->
-                <LinearLayout
-                    android:id="@+id/ll_right_actions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <!-- QR Scanner -->
-                    <ImageView
-                        android:id="@+id/btn_qr_scan"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_qr_code" />
-
-                    <!-- Bell with badge overlay (SVG icon already contains the badge) -->
-                    <FrameLayout
-                        android:id="@+id/btn_notification"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="?attr/selectableItemBackgroundBorderless">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_notification" />
-                    </FrameLayout>
-                </LinearLayout>
-            </RelativeLayout>
 
             <!-- Profile Info Section (Avatar, Name, Email, Badges) -->
 
@@ -618,6 +549,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:orientation="horizontal">
 
                     <!-- Step 1: Chờ xử lý -->
@@ -629,20 +562,46 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <FrameLayout
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_primary_light"
-                            android:padding="10dp">
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:clipChildren="false"
+                            android:clipToPadding="false">
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_bag"
-                                app:tint="@color/primary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/bg_circle_primary_light">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_bag"
+                                    app:tint="@color/primary" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:id="@+id/tv_order_badge_pending"
+                                android:layout_width="wrap_content"
+                                android:layout_height="14dp"
+                                android:layout_gravity="top|end"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginEnd="1dp"
+                                android:background="@drawable/home_bg_notification_badge"
+                                android:gravity="center"
+                                android:minWidth="14dp"
+                                android:paddingHorizontal="3dp"
+                                android:textColor="@color/white"
+                                android:textSize="8sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
                         </FrameLayout>
 
                         <TextView
@@ -664,20 +623,46 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <FrameLayout
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_primary_light"
-                            android:padding="10dp">
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:clipChildren="false"
+                            android:clipToPadding="false">
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_box"
-                                app:tint="@color/primary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/bg_circle_primary_light">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_box"
+                                    app:tint="@color/primary" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:id="@+id/tv_order_badge_processing"
+                                android:layout_width="wrap_content"
+                                android:layout_height="14dp"
+                                android:layout_gravity="top|end"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginEnd="1dp"
+                                android:background="@drawable/home_bg_notification_badge"
+                                android:gravity="center"
+                                android:minWidth="14dp"
+                                android:paddingHorizontal="3dp"
+                                android:textColor="@color/white"
+                                android:textSize="8sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
                         </FrameLayout>
 
                         <TextView
@@ -699,20 +684,46 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <FrameLayout
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_primary_light"
-                            android:padding="10dp">
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:clipChildren="false"
+                            android:clipToPadding="false">
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_truck"
-                                app:tint="@color/primary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/bg_circle_primary_light">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_truck"
+                                    app:tint="@color/primary" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:id="@+id/tv_order_badge_delivering"
+                                android:layout_width="wrap_content"
+                                android:layout_height="14dp"
+                                android:layout_gravity="top|end"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginEnd="1dp"
+                                android:background="@drawable/home_bg_notification_badge"
+                                android:gravity="center"
+                                android:minWidth="14dp"
+                                android:paddingHorizontal="3dp"
+                                android:textColor="@color/white"
+                                android:textSize="8sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
                         </FrameLayout>
 
                         <TextView
@@ -734,20 +745,46 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <FrameLayout
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_primary_light"
-                            android:padding="10dp">
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:clipChildren="false"
+                            android:clipToPadding="false">
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_check"
-                                app:tint="@color/primary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/bg_circle_primary_light">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_check"
+                                    app:tint="@color/primary" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:id="@+id/tv_order_badge_success"
+                                android:layout_width="wrap_content"
+                                android:layout_height="14dp"
+                                android:layout_gravity="top|end"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginEnd="1dp"
+                                android:background="@drawable/home_bg_notification_badge"
+                                android:gravity="center"
+                                android:minWidth="14dp"
+                                android:paddingHorizontal="3dp"
+                                android:textColor="@color/white"
+                                android:textSize="8sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
                         </FrameLayout>
 
                         <TextView
@@ -769,20 +806,46 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <FrameLayout
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_circle_primary_light"
-                            android:padding="11dp">
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:clipChildren="false"
+                            android:clipToPadding="false">
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/ic_cancel"
-                                app:tint="@color/primary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/bg_circle_primary_light">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_cancel"
+                                    app:tint="@color/primary" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:id="@+id/tv_order_badge_cancelled"
+                                android:layout_width="wrap_content"
+                                android:layout_height="14dp"
+                                android:layout_gravity="top|end"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginEnd="1dp"
+                                android:background="@drawable/home_bg_notification_badge"
+                                android:gravity="center"
+                                android:minWidth="14dp"
+                                android:paddingHorizontal="3dp"
+                                android:textColor="@color/white"
+                                android:textSize="8sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
                         </FrameLayout>
 
                         <TextView

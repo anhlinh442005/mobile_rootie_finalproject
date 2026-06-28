@@ -27,6 +27,7 @@ import com.veganbeauty.app.features.shop.product.CartHelper;
 import com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet;
 import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
 import com.veganbeauty.app.features.shop.product.ShopVoucherFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.features.shop.search.ShopSearchFragment;
 
 import java.util.ArrayList;
@@ -69,14 +70,7 @@ public class ShopListFragment extends RootieFragment {
     }
 
     private void navigateToDetail(ProductEntity product) {
-        com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment detailFragment = new com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment();
-        detailFragment.setProduct(product);
-
-        getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        ProductDetailLauncher.open(this, product);
     }
 
     @Override
@@ -86,26 +80,27 @@ public class ShopListFragment extends RootieFragment {
                 product -> {
                     ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(
                             product,
-                            (p, quantity) -> {
-                                CartHelper.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), p, quantity);
-                                return kotlin.Unit.INSTANCE;
-                            },
-                            (p, quantity) -> {
-                                CartItemEntity checkoutItem = new CartItemEntity(
-                                        p.getId(), p.getName(), p.getMainImage(), p.getPrice(), quantity, true
-                                );
-                                ArrayList<CartItemEntity> list = new ArrayList<>();
-                                list.add(checkoutItem);
-                                ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.newInstance(list);
-                                getParentFragmentManager().beginTransaction()
-                                        .replace(R.id.main_container, checkoutFragment)
-                                        .addToBackStack(null)
-                                        .commit();
-                                return kotlin.Unit.INSTANCE;
+                            new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
+                                @Override
+                                public void onAddToCartClick(ProductEntity p, int quantity) {
+                                    CartHelper.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), p, quantity);
+                                }
+                                @Override
+                                public void onBuyNowClick(ProductEntity p, int quantity) {
+                                    CartItemEntity checkoutItem = new CartItemEntity(
+                                            p.getId(), p.getName(), p.getMainImage(), p.getPrice(), quantity, true
+                                    );
+                                    ArrayList<CartItemEntity> list = new ArrayList<>();
+                                    list.add(checkoutItem);
+                                    ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.newInstance(list, "", 0L);
+                                    getParentFragmentManager().beginTransaction()
+                                            .replace(R.id.main_container, checkoutFragment)
+                                            .addToBackStack(null)
+                                            .commit();
+                                }
                             }
                     );
                     bottomSheet.show(getParentFragmentManager(), ChooseQuantityBottomSheet.TAG);
-                    return kotlin.Unit.INSTANCE;
                 }
         );
 
@@ -114,18 +109,17 @@ public class ShopListFragment extends RootieFragment {
         subcategoryAdapter = new SubcategoryAdapter(subcategory -> {
             subcategoryAdapter.setSelectedSubcategory(subcategory);
             viewModel.setSubcategoryFilter(subcategory);
-            return kotlin.Unit.INSTANCE;
         });
         _binding.rvSubcategories.setAdapter(subcategoryAdapter);
 
         _binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         _binding.btnSearch.setOnClickListener(v -> {
-            ShopSearchFragment searchFragment = new ShopSearchFragment();
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, searchFragment)
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.main_container, new ShopSearchFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         _binding.btnFilterAdvanced.setOnClickListener(v -> {
@@ -215,12 +209,12 @@ public class ShopListFragment extends RootieFragment {
 
     @Override
     protected void observeViewModel() {
-        viewModel.getProducts().observe(getViewLifecycleOwner(), products -> {
+        viewModel.products.observe(getViewLifecycleOwner(), products -> {
             productAdapter.submitList(products);
             _binding.rvProducts.scrollToPosition(0);
         });
 
-        viewModel.getSubcategories().observe(getViewLifecycleOwner(), subcategories -> {
+        viewModel.subcategories.observe(getViewLifecycleOwner(), subcategories -> {
             subcategoryAdapter.submitList(subcategories);
             Bundle args = getArguments();
             String subcategoryName = args != null ? args.getString("SUBCATEGORY_NAME") : null;

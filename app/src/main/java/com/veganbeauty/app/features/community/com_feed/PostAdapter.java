@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -23,8 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import coil.Coil;
 import coil.ImageLoader;
 import coil.request.ImageRequest;
-import coil.decode.SvgDecoder;
-import coil.transform.CircleCropTransformation;
 
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.veganbeauty.app.R;
@@ -55,10 +54,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.CoroutineScope;
-import kotlinx.coroutines.Dispatchers;
 
 abstract class CommunityFeedItem {
     static class Post extends CommunityFeedItem {
@@ -170,17 +165,7 @@ class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHolder> {
         }
 
         if (story.getAvatar() != null && !story.getAvatar().isEmpty()) {
-            ImageLoader imageLoader = new ImageLoader.Builder(holder.itemView.getContext())
-                    .components(registry -> registry.add(new SvgDecoder.Factory(false)))
-                    .build();
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(story.getAvatar())
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .error(R.drawable.logo)
-                    .target(holder.binding.ivAvatar)
-                    .build();
-            imageLoader.enqueue(request);
+            com.bumptech.glide.Glide.with(holder.binding.ivAvatar.getContext()).load(story.getAvatar()).placeholder(android.R.color.darker_gray).error(R.drawable.img_avatar).into(holder.binding.ivAvatar);
         } else {
             holder.binding.ivAvatar.setImageResource(android.R.color.darker_gray);
         }
@@ -197,7 +182,7 @@ class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHolder> {
     }
 }
 
-class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<CommunityFeedItem> items = new ArrayList<>();
     private List<CommunityProduct> globalProducts = new ArrayList<>();
 
@@ -309,7 +294,7 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 postHolder.binding.tvSkinType.setText(tags.toString());
                 postHolder.binding.tvCreatedAt.setVisibility(View.VISIBLE);
-                postHolder.binding.tvCreatedAt.setText(TimeFormatter.INSTANCE.getTimeAgo(post.getCreatedAt()));
+                postHolder.binding.tvCreatedAt.setText(TimeFormatter.getTimeAgo(post.getCreatedAt()));
             }
 
             postHolder.binding.tvLikes.setText(String.valueOf(post.getLikesCount()));
@@ -317,23 +302,13 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             postHolder.binding.tvContent.setText(post.getContent());
 
             if (post.getAuthorAvatarUrl() != null && !post.getAuthorAvatarUrl().isEmpty()) {
-                ImageLoader imageLoader = new ImageLoader.Builder(holder.itemView.getContext())
-                        .components(registry -> registry.add(new SvgDecoder.Factory(false)))
-                        .build();
-                ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                        .data(post.getAuthorAvatarUrl())
-                        .crossfade(true)
-                        .placeholder(android.R.color.darker_gray)
-                        .error(R.drawable.img_avatar)
-                        .target(postHolder.binding.ivAuthorAvatar)
-                        .build();
-                imageLoader.enqueue(request);
+                String avatarUrl = com.veganbeauty.app.utils.RootieBrandHelper.resolveAvatar(
+                        post.getAuthorId(), post.getAuthorAvatarUrl());
+                com.bumptech.glide.Glide.with(postHolder.binding.ivAuthorAvatar.getContext()).load(avatarUrl).placeholder(android.R.color.darker_gray).error(R.drawable.img_avatar).into(postHolder.binding.ivAuthorAvatar);
+            } else if (com.veganbeauty.app.utils.RootieBrandHelper.isRootieUser(post.getAuthorId(), post.getAuthorDisplayName())) {
+                com.bumptech.glide.Glide.with(postHolder.binding.ivAuthorAvatar.getContext()).load(com.veganbeauty.app.utils.RootieBrandHelper.AVATAR_URL).placeholder(android.R.color.darker_gray).error(R.drawable.img_avatar).into(postHolder.binding.ivAuthorAvatar);
             } else {
-                if ("rootie_official".equals(post.getAuthorId()) || "rootie_vn".equals(post.getAuthorId())) {
-                    postHolder.binding.ivAuthorAvatar.setImageResource(R.drawable.imv_logo);
-                } else {
-                    postHolder.binding.ivAuthorAvatar.setImageResource(android.R.color.darker_gray);
-                }
+                postHolder.binding.ivAuthorAvatar.setImageResource(android.R.color.darker_gray);
             }
 
             List<String> linkedIds = new ArrayList<>();
@@ -407,7 +382,8 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
 
-            android.content.SharedPreferences sharedPrefs = postHolder.itemView.getContext().getSharedPreferences("rootie_prefs", Context.MODE_PRIVATE);
+            Context context = postHolder.itemView.getContext();
+            android.content.SharedPreferences sharedPrefs = context.getSharedPreferences("rootie_prefs", Context.MODE_PRIVATE);
             final boolean[] isLiked = {sharedPrefs.getBoolean("liked_" + post.getPostId(), false)};
             final int[] currentLikesCount = {post.getLikesCount()};
 
@@ -424,19 +400,13 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     currentLikesCount[0]++;
                     postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
                     sharedPrefs.edit().putBoolean("liked_" + post.getPostId(), true).apply();
-                    BuildersKt.launch(CoroutineScopeKt(Dispatchers.getIO()), null, null, (scope, continuation) -> {
-                        RootieDatabase.Companion.getDatabase(holder.itemView.getContext()).communityDao().incrementLikesCount(post.getPostId());
-                        return kotlin.Unit.INSTANCE;
-                    });
+                    new Thread(() -> RootieDatabase.getDatabase(context).communityDao().incrementLikesCount(post.getPostId())).start();
                 } else {
                     postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_outline);
                     currentLikesCount[0] = Math.max(0, currentLikesCount[0] - 1);
                     postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
                     sharedPrefs.edit().putBoolean("liked_" + post.getPostId(), false).apply();
-                    BuildersKt.launch(CoroutineScopeKt(Dispatchers.getIO()), null, null, (scope, continuation) -> {
-                        RootieDatabase.Companion.getDatabase(holder.itemView.getContext()).communityDao().decrementLikesCount(post.getPostId());
-                        return kotlin.Unit.INSTANCE;
-                    });
+                    new Thread(() -> RootieDatabase.getDatabase(context).communityDao().decrementLikesCount(post.getPostId())).start();
                 }
             });
 
@@ -444,15 +414,13 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             postHolder.binding.tvReups.setText(String.valueOf(post.getReupsCount()));
 
             postHolder.binding.ivComment.setOnClickListener(v -> {
-                Context context = v.getContext();
                 if (context instanceof FragmentActivity) {
-                    CommunityCommentBottomSheet bottomSheet = CommunityCommentBottomSheet.Companion.newInstance(post.getPostId(), post.getCommentsCount());
-                    bottomSheet.show(((FragmentActivity) context).getSupportFragmentManager(), CommunityCommentBottomSheet.Companion.getTAG());
+                    CommunityCommentBottomSheet bottomSheet = CommunityCommentBottomSheet.newInstance(post.getPostId(), post.getCommentsCount());
+                    bottomSheet.show(((FragmentActivity) context).getSupportFragmentManager(), CommunityCommentBottomSheet.TAG);
                 }
             });
 
             View.OnClickListener onProfileClick = v -> {
-                Context context = v.getContext();
                 if (context instanceof FragmentActivity) {
                     if ("rootie_official".equals(post.getAuthorId()) || "rootie_vn".equals(post.getAuthorId()) || (post.getAuthorDisplayName() != null && post.getAuthorDisplayName().toLowerCase().contains("rootie"))) {
                         CommunityNewsFragment newsFragment = new CommunityNewsFragment();
@@ -477,7 +445,6 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             };
 
-            Context context = postHolder.itemView.getContext();
             String ownUserId = getOwnUserId(context);
 
             if (ownUserId.equals(post.getAuthorId())) {
@@ -507,7 +474,7 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
             }
 
-            final boolean[] isReuped = {UserMemoryHelper.INSTANCE.isPostReposted(context, ownUserId, post.getPostId())};
+            final boolean[] isReuped = {UserMemoryHelper.isPostReposted(context, ownUserId, post.getPostId())};
             final int[] currentReupsCount = {post.getReupsCount()};
 
             if (isReuped[0]) {
@@ -517,7 +484,7 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
             postHolder.binding.ivReup.setOnClickListener(v -> {
-                isReuped[0] = UserMemoryHelper.INSTANCE.toggleRepost(context, ownUserId, post.getPostId());
+                isReuped[0] = UserMemoryHelper.toggleRepost(context, ownUserId, post.getPostId());
                 if (isReuped[0]) {
                     postHolder.binding.ivReup.setColorFilter(Color.parseColor("#4CAF50"));
                     currentReupsCount[0]++;
@@ -528,7 +495,7 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 postHolder.binding.tvReups.setText(String.valueOf(currentReupsCount[0]));
             });
 
-            final boolean[] isBookmarked = {UserMemoryHelper.INSTANCE.isPostSaved(context, ownUserId, post.getPostId())};
+            final boolean[] isBookmarked = {UserMemoryHelper.isPostSaved(context, ownUserId, post.getPostId())};
             if (isBookmarked[0]) {
                 postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark);
                 postHolder.binding.ivBookmark.setColorFilter(Color.parseColor("#FFC107"));
@@ -538,7 +505,7 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
             postHolder.binding.ivBookmark.setOnClickListener(v -> {
-                isBookmarked[0] = UserMemoryHelper.INSTANCE.toggleSave(context, ownUserId, post.getPostId());
+                isBookmarked[0] = UserMemoryHelper.toggleSave(context, ownUserId, post.getPostId());
                 if (isBookmarked[0]) {
                     postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark);
                     postHolder.binding.ivBookmark.setColorFilter(Color.parseColor("#FFC107"));
@@ -573,10 +540,6 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    private CoroutineScope CoroutineScopeKt(kotlin.coroutines.CoroutineContext io) {
-        return kotlinx.coroutines.CoroutineScopeKt.CoroutineScope(io);
-    }
-
     private String getOwnUserId(Context context) {
         String ownId = "test_001";
         try {
@@ -585,7 +548,7 @@ class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) sb.append(line);
-            JSONArray usersJsonArray = new JSONArray(sb.toString());
+            JSONArray usersJsonArray = new JSONArray(sb.toString().replace("\uFEFF", ""));
             for (int i = 0; i < usersJsonArray.length(); i++) {
                 JSONObject obj = usersJsonArray.getJSONObject(i);
                 if (loggedInEmail != null && loggedInEmail.equals(obj.optString("email"))) {
@@ -664,17 +627,7 @@ class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Suggestio
         holder.binding.tvUsername.setText(user.getUsername());
 
         if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-            ImageLoader imageLoader = new ImageLoader.Builder(holder.itemView.getContext())
-                    .components(registry -> registry.add(new SvgDecoder.Factory(false)))
-                    .build();
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(user.getAvatar())
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .error(R.drawable.logo)
-                    .target(holder.binding.ivAvatar)
-                    .build();
-            imageLoader.enqueue(request);
+            com.bumptech.glide.Glide.with(holder.binding.ivAvatar.getContext()).load(user.getAvatar()).placeholder(android.R.color.darker_gray).error(R.drawable.logo).into(holder.binding.ivAvatar);
         } else {
             holder.binding.ivAvatar.setImageResource(android.R.color.darker_gray);
         }
@@ -748,17 +701,7 @@ class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Suggestio
     }
 
     private void loadMutualAvatar(Context context, String url, ImageView target) {
-        ImageLoader imageLoader = new ImageLoader.Builder(context)
-                .components(registry -> registry.add(new SvgDecoder.Factory(false)))
-                .build();
-        ImageRequest request = new ImageRequest.Builder(context)
-                .data(url)
-                .crossfade(true)
-                .transformations(new CircleCropTransformation())
-                .error(R.drawable.img_avatar)
-                .target(target)
-                .build();
-        imageLoader.enqueue(request);
+        com.bumptech.glide.Glide.with(target.getContext()).load(url).error(R.drawable.img_avatar).circleCrop().into(target);
     }
 
     @Override
@@ -810,13 +753,7 @@ class ReelAdapter extends RecyclerView.Adapter<ReelAdapter.ReelViewHolder> {
         ReelEntity reel = reels.get(position);
         if (reel.getThumbnailUrl() != null && !reel.getThumbnailUrl().isEmpty()) {
             ImageLoader imageLoader = Coil.imageLoader(holder.itemView.getContext());
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(reel.getThumbnailUrl())
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .target(holder.binding.ivThumbnail)
-                    .build();
-            imageLoader.enqueue(request);
+            com.bumptech.glide.Glide.with(holder.binding.ivThumbnail.getContext()).load(reel.getThumbnailUrl()).placeholder(android.R.color.darker_gray).into(holder.binding.ivThumbnail);
         } else {
             holder.binding.ivThumbnail.setImageResource(android.R.color.darker_gray);
         }
@@ -824,7 +761,7 @@ class ReelAdapter extends RecyclerView.Adapter<ReelAdapter.ReelViewHolder> {
         holder.binding.getRoot().setOnClickListener(v -> {
             Context context = holder.binding.getRoot().getContext();
             if (context instanceof FragmentActivity) {
-                ReelPlayerDialog dialog = new ReelPlayerDialog(reels, holder.getBindingAdapterPosition());
+                ReelPlayerDialog dialog = new ReelPlayerDialog(reels, holder.getAbsoluteAdapterPosition());
                 dialog.show(((FragmentActivity) context).getSupportFragmentManager(), "ReelPlayerDialog");
             }
         });

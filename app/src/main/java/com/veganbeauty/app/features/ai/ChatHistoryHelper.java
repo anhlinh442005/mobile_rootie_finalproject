@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.veganbeauty.app.features.ai.RootieChatAdapter.RootieChatItem;
+
 public class ChatHistoryHelper {
 
     private static final String FILE_NAME = "rootie_chat_history.json";
@@ -33,24 +35,24 @@ public class ChatHistoryHelper {
                 if (item.getDiagnosticData() != null) {
                     RootieChatItem.DiagnosticData diag = item.getDiagnosticData();
                     JSONObject diagJson = new JSONObject();
-                    diagJson.put("assessment", diag.getAssessment());
-                    diagJson.put("detailExplanation", diag.getDetailExplanation());
-                    diagJson.put("moistureVal", diag.getMoistureVal());
-                    diagJson.put("sensitivityVal", diag.getSensitivityVal());
-                    diagJson.put("barrierVal", diag.getBarrierVal());
-                    diagJson.put("whyExplanation", diag.getWhyExplanation());
+                    diagJson.put("assessment", diag.assessment);
+                    diagJson.put("detailExplanation", diag.detailExplanation);
+                    diagJson.put("moistureVal", diag.moistureVal);
+                    diagJson.put("sensitivityVal", diag.sensitivityVal);
+                    diagJson.put("barrierVal", diag.barrierVal);
+                    diagJson.put("whyExplanation", diag.whyExplanation);
 
-                    if (diag.getRecommendedProductIds() != null) {
-                        diagJson.put("recommendedProductIds", new JSONArray(diag.getRecommendedProductIds()));
+                    if (diag.recommendedProductIds != null) {
+                        diagJson.put("recommendedProductIds", new JSONArray(diag.recommendedProductIds));
                     }
-                    if (diag.getProductPhases() != null) {
-                        diagJson.put("productPhases", new JSONArray(diag.getProductPhases()));
+                    if (diag.productPhases != null) {
+                        diagJson.put("productPhases", new JSONArray(diag.productPhases));
                     }
-                    if (diag.getProductSubcategories() != null) {
-                        diagJson.put("productSubcategories", new JSONArray(diag.getProductSubcategories()));
+                    if (diag.productSubcategories != null) {
+                        diagJson.put("productSubcategories", new JSONArray(diag.productSubcategories));
                     }
-                    if (diag.getProductExpertReasons() != null) {
-                        diagJson.put("productExpertReasons", new JSONArray(diag.getProductExpertReasons()));
+                    if (diag.productExpertReasons != null) {
+                        diagJson.put("productExpertReasons", new JSONArray(diag.productExpertReasons));
                     }
 
                     jsonObject.put("diagnosticData", diagJson);

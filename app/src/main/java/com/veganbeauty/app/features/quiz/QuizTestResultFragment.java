@@ -43,9 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.RoundedCornersTransformation;
 import kotlinx.coroutines.BuildersKt;
 import kotlinx.coroutines.Dispatchers;
 
@@ -129,7 +126,6 @@ public class QuizTestResultFragment extends RootieFragment {
 
         BottomNavHelper.setup(this, binding.getRoot(), R.id.nav_myskin, tabId -> {
             BottomNavHelper.navigate(this, tabId);
-            return null;
         });
     }
 
@@ -294,14 +290,7 @@ public class QuizTestResultFragment extends RootieFragment {
 
                 tvProdName.setText(prodName);
                 if (!mainImage.isEmpty()) {
-                    ImageRequest req = new ImageRequest.Builder(requireContext())
-                            .data(mainImage)
-                            .crossfade(true)
-                            .transformations(new RoundedCornersTransformation(10f))
-                            .placeholder(R.drawable.myphamxanh)
-                            .target(ivImage)
-                            .build();
-                    Coil.imageLoader(requireContext()).enqueue(req);
+                    com.bumptech.glide.Glide.with(ivImage.getContext()).load(mainImage).placeholder(R.drawable.myphamxanh).into(ivImage);
                 } else {
                     ivImage.setImageResource(R.drawable.myphamxanh);
                 }
@@ -472,19 +461,24 @@ public class QuizTestResultFragment extends RootieFragment {
                                     JSONArray eveningJson = routineObj.getJSONArray("evening_steps");
 
                                     BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
-                                        morningSteps.clear();
-                                        for (int i = 0; i < morningJson.length(); i++) {
-                                            JSONObject step = morningJson.getJSONObject(i);
-                                            morningSteps.add(new AiSkincareStep(i, step.getString("name"), step.getString("product"), step.getString("reason"), true));
-                                        }
+                                        try {
+                                            morningSteps.clear();
+                                            for (int i = 0; i < morningJson.length(); i++) {
+                                                JSONObject step = morningJson.getJSONObject(i);
+                                                morningSteps.add(new AiSkincareStep(i, step.getString("name"), step.getString("product"), step.getString("reason"), true));
+                                            }
 
-                                        eveningSteps.clear();
-                                        for (int i = 0; i < eveningJson.length(); i++) {
-                                            JSONObject step = eveningJson.getJSONObject(i);
-                                            eveningSteps.add(new AiSkincareStep(i, step.getString("name"), step.getString("product"), step.getString("reason"), true));
-                                        }
+                                            eveningSteps.clear();
+                                            for (int i = 0; i < eveningJson.length(); i++) {
+                                                JSONObject step = eveningJson.getJSONObject(i);
+                                                eveningSteps.add(new AiSkincareStep(i, step.getString("name"), step.getString("product"), step.getString("reason"), true));
+                                            }
 
-                                        populateSteps();
+                                            populateSteps();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            generateRuleBasedRoutine(skinType, hydration, sebum, sensitivity, elasticity);
+                                        }
                                         return kotlin.Unit.INSTANCE;
                                     }, c2);
                                     return kotlin.Unit.INSTANCE;

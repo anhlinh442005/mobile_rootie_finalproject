@@ -18,9 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
@@ -32,6 +29,8 @@ import com.veganbeauty.app.databinding.ComFragmentEditProfileBinding;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
+import com.veganbeauty.app.data.local.entities.UserEntity;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.yalantis.ucrop.UCrop;
 
 import org.json.JSONArray;
@@ -54,13 +53,7 @@ public class CommunityEditProfileFragment extends Fragment {
                     Uri resultUri = UCrop.getOutput(result.getData());
                     if (resultUri != null) {
                         selectedAvatarUri = resultUri;
-                        ImageRequest request = new ImageRequest.Builder(requireContext())
-                                .data(resultUri)
-                                .crossfade(true)
-                                .transformations(new CircleCropTransformation())
-                                .target(binding.ivAvatar)
-                                .build();
-                        Coil.imageLoader(requireContext()).enqueue(request);
+                        com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(resultUri).circleCrop().into(binding.ivAvatar);
                     }
                 }
             }
@@ -102,37 +95,47 @@ public class CommunityEditProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Context ctx = requireContext();
-        String ownUserId = "test_001";
+        String ownUserId = ProfileSessionHelper.getEffectiveUserId(ctx);
+        if (ownUserId == null || ownUserId.isEmpty()) {
+            ownUserId = ProfileSession.getCurrentUserId(ctx);
+        }
+        final String finalOwnUserId = ownUserId;
 
         binding.etDisplayName.setText(ProfileSession.getFullName(ctx));
         String uname = ProfileSession.getUsername(ctx);
         binding.etUsername.setText(uname.startsWith("@") ? uname : "@" + uname);
         binding.etBio.setText(ProfileSession.getBio(ctx));
 
-        String avatarUrl = ProfileSession.getAvatar(ctx);
-        if (!avatarUrl.isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(ctx)
-                    .data(avatarUrl)
-                    .crossfade(true)
-                    .transformations(new CircleCropTransformation())
-                    .placeholder(android.R.color.darker_gray)
-                    .error(R.drawable.img_avatar)
-                    .target(binding.ivAvatar)
-                    .build();
-            Coil.imageLoader(ctx).enqueue(request);
-        } else {
-            binding.ivAvatar.setImageResource(R.drawable.img_avatar);
-        }
+        bindAvatarImage(ctx, ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx));
+
+        new Thread(() -> {
+            UserEntity savedUser = ProfileSessionHelper.findCurrentUser(ctx);
+            if (savedUser == null || getActivity() == null) {
+                return;
+            }
+            String resolvedAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx, savedUser);
+            getActivity().runOnUiThread(() -> {
+                if (!isAdded() || binding == null) {
+                    return;
+                }
+                if (savedUser.getFull_name() != null && !savedUser.getFull_name().trim().isEmpty()) {
+                    binding.etDisplayName.setText(savedUser.getFull_name().trim());
+                }
+                if (savedUser.getUsername() != null && !savedUser.getUsername().trim().isEmpty()) {
+                    String savedUname = savedUser.getUsername().trim();
+                    binding.etUsername.setText(savedUname.startsWith("@") ? savedUname : "@" + savedUname);
+                }
+                if (savedUser.getBio() != null && !savedUser.getBio().trim().isEmpty()) {
+                    binding.etBio.setText(savedUser.getBio().trim());
+                }
+                ProfileSession.setAvatar(ctx, resolvedAvatar);
+                bindAvatarImage(ctx, resolvedAvatar);
+            });
+        }).start();
 
         String coverUrl = ProfileSession.getPrimaryImage(ctx);
         if (!coverUrl.isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(ctx)
-                    .data(coverUrl)
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .target(binding.ivCover)
-                    .build();
-            Coil.imageLoader(ctx).enqueue(request);
+            com.bumptech.glide.Glide.with(binding.ivCover.getContext()).load(coverUrl).placeholder(android.R.color.darker_gray).into(binding.ivCover);
         }
 
         try {
@@ -148,7 +151,7 @@ public class CommunityEditProfileFragment extends Fragment {
             int followingCount = 0;
             for (int i = 0; i < friendJsonArray.length(); i++) {
                 JSONObject obj = friendJsonArray.getJSONObject(i);
-                if (ownUserId.equals(obj.optString("user_id"))) {
+                if (obj.optString("user_id").equals(finalOwnUserId)) {
                     followersCount = obj.optJSONArray("followers") != null ? obj.optJSONArray("followers").length() : 0;
                     followingCount = obj.optJSONArray("following") != null ? obj.optJSONArray("following").length() : 0;
                     break;
@@ -171,7 +174,7 @@ public class CommunityEditProfileFragment extends Fragment {
                 if (allPosts != null) {
                     int myPostCount = 0;
                     for (CommunityPostEntity post : allPosts) {
-                        if (ownUserId.equals(post.getAuthorId())) {
+                        if (finalOwnUserId.equals(post.getAuthorId())) {
                             myPostCount++;
                         }
                     }
@@ -206,9 +209,13 @@ public class CommunityEditProfileFragment extends Fragment {
             ProfileSession.setUsername(ctx, newUname);
             ProfileSession.setBio(ctx, newBio);
 
+            String avatarToSave = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx);
             if (selectedAvatarUri != null) {
-                ProfileSession.setAvatar(ctx, selectedAvatarUri.toString());
+                avatarToSave = selectedAvatarUri.toString();
             }
+            ProfileSession.setAvatar(ctx, avatarToSave);
+
+            persistProfileChanges(ctx, finalOwnUserId, newName, newUname, newBio, avatarToSave);
 
             Toast.makeText(ctx, "Lưu thông tin thành công", Toast.LENGTH_SHORT).show();
             getParentFragmentManager().popBackStack();
@@ -229,6 +236,54 @@ public class CommunityEditProfileFragment extends Fragment {
         binding.btnChangeCover.setOnClickListener(v -> {
             Toast.makeText(ctx, "Tính năng đổi ảnh bìa đang được cập nhật", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void bindAvatarImage(Context ctx, String avatarUrl) {
+        if (binding == null || binding.ivAvatar == null) {
+            return;
+        }
+        com.bumptech.glide.Glide.with(binding.ivAvatar.getContext())
+                .load(avatarUrl)
+                .placeholder(R.drawable.img_avatar)
+                .error(R.drawable.img_avatar)
+                .circleCrop()
+                .into(binding.ivAvatar);
+    }
+
+    private void persistProfileChanges(Context ctx, String userId, String fullName, String username, String bio, String avatar) {
+        new Thread(() -> {
+            try {
+                UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
+                if (user == null) {
+                    user = new UserEntity(
+                            userId,
+                            username.replace("@", "").trim(),
+                            fullName,
+                            ProfileSession.getEmail(ctx) != null ? ProfileSession.getEmail(ctx) : "",
+                            ProfileSession.getPhone(ctx) != null ? ProfileSession.getPhone(ctx) : "",
+                            "",
+                            avatar,
+                            ProfileSession.getPrimaryImage(ctx)
+                    );
+                    user.setBio(bio);
+                } else {
+                    user.setFull_name(fullName);
+                    user.setUsername(username.replace("@", "").trim());
+                    user.setAvatar(avatar);
+                    user.setBio(bio);
+                    String primaryImage = ProfileSession.getPrimaryImage(ctx);
+                    if (primaryImage != null && !primaryImage.trim().isEmpty()) {
+                        user.setPrimary_image(primaryImage);
+                    }
+                }
+
+                ProfileSessionHelper.syncSessionFromUser(ctx, user);
+                RootieDatabase.getDatabase(ctx).userDao().insertUserSync(user);
+                new FirestoreService().saveUser(user);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     @Override

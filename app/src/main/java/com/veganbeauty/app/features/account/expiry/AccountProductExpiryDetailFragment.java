@@ -28,8 +28,6 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwnerKt;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -88,6 +86,7 @@ public class AccountProductExpiryDetailFragment extends RootieFragment {
         repository = new ProductRepository(
                 db.productDao(),
                 new LocalJsonReader(requireContext()),
+                new com.veganbeauty.app.data.remote.FirestoreService(),
                 db.userProductExpiryDao()
         );
 
@@ -111,28 +110,21 @@ public class AccountProductExpiryDetailFragment extends RootieFragment {
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         if (productId != null) {
-            BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                BuildersKt.launch(coroutineScope, Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (innerScope, innerCont) -> {
-                    String userId = ProfileSession.INSTANCE.getUserId(requireContext());
-                    ProductEntity product = repository.getExpiryProductById(userId, productId);
-                    if (product != null) {
-                        BuildersKt.launch(innerScope, Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (mainScope, mainCont) -> {
-                            bindProductDetails(product);
-                            return kotlin.Unit.INSTANCE;
-                        }, innerCont);
-                    }
-                    return kotlin.Unit.INSTANCE;
-                });
-                return kotlin.Unit.INSTANCE;
+            java.util.concurrent.Executors.newSingleThreadExecutor().execute(() -> {
+                String userId = ProfileSession.getUserId(requireContext());
+                com.veganbeauty.app.data.local.entities.ProductEntity product = repository.getExpiryProductById(userId, productId);
+                if (product != null) {
+                    requireActivity().runOnUiThread(() -> bindProductDetails(product));
+                }
             });
         }
 
-        String userId = ProfileSession.INSTANCE.getUserId(requireContext());
+        String userId = ProfileSession.getUserId(requireContext());
         String pId = (productId != null) ? productId : "";
 
-        isNotificationChecked = ProfileSession.INSTANCE.getProductNotiEnabled(requireContext(), userId, pId);
-        isWeek1Checked = ProfileSession.INSTANCE.getProductWeek1Enabled(requireContext(), userId, pId);
-        isWeek2Checked = ProfileSession.INSTANCE.getProductWeek2Enabled(requireContext(), userId, pId);
+        isNotificationChecked = ProfileSession.getProductNotiEnabled(requireContext(), userId, pId);
+        isWeek1Checked = ProfileSession.getProductWeek1Enabled(requireContext(), userId, pId);
+        isWeek2Checked = ProfileSession.getProductWeek2Enabled(requireContext(), userId, pId);
 
         updateSwitchUI(binding.switchNotification, binding.switchNotificationThumb, isNotificationChecked);
         updateSwitchUI(binding.switchWeek1, binding.switchWeek1Thumb, isWeek1Checked);
@@ -147,7 +139,7 @@ public class AccountProductExpiryDetailFragment extends RootieFragment {
             if (!isNotificationChecked) return;
             isWeek1Checked = !isWeek1Checked;
             updateSwitchUI(binding.switchWeek1, binding.switchWeek1Thumb, isWeek1Checked);
-            ProfileSession.INSTANCE.setProductWeek1Enabled(requireContext(), userId, pId, isWeek1Checked);
+            ProfileSession.setProductWeek1Enabled(requireContext(), userId, pId, isWeek1Checked);
             if (isWeek1Checked) {
                 checkAndRequestNotiPermission(() -> {
                     String productName = binding.tvProductName.getText().toString();
@@ -162,7 +154,7 @@ public class AccountProductExpiryDetailFragment extends RootieFragment {
             if (!isNotificationChecked) return;
             isWeek2Checked = !isWeek2Checked;
             updateSwitchUI(binding.switchWeek2, binding.switchWeek2Thumb, isWeek2Checked);
-            ProfileSession.INSTANCE.setProductWeek2Enabled(requireContext(), userId, pId, isWeek2Checked);
+            ProfileSession.setProductWeek2Enabled(requireContext(), userId, pId, isWeek2Checked);
             if (isWeek2Checked) {
                 checkAndRequestNotiPermission(() -> {
                     String productName = binding.tvProductName.getText().toString();
@@ -176,7 +168,7 @@ public class AccountProductExpiryDetailFragment extends RootieFragment {
         binding.switchNotification.setOnClickListener(v -> {
             isNotificationChecked = !isNotificationChecked;
             updateSwitchUI(binding.switchNotification, binding.switchNotificationThumb, isNotificationChecked);
-            ProfileSession.INSTANCE.setProductNotiEnabled(requireContext(), userId, pId, isNotificationChecked);
+            ProfileSession.setProductNotiEnabled(requireContext(), userId, pId, isNotificationChecked);
 
             binding.switchWeek1.setEnabled(isNotificationChecked);
             binding.switchWeek1.setAlpha(isNotificationChecked ? 1.0f : 0.5f);
@@ -188,8 +180,8 @@ public class AccountProductExpiryDetailFragment extends RootieFragment {
                 isWeek2Checked = false;
                 updateSwitchUI(binding.switchWeek1, binding.switchWeek1Thumb, false);
                 updateSwitchUI(binding.switchWeek2, binding.switchWeek2Thumb, false);
-                ProfileSession.INSTANCE.setProductWeek1Enabled(requireContext(), userId, pId, false);
-                ProfileSession.INSTANCE.setProductWeek2Enabled(requireContext(), userId, pId, false);
+                ProfileSession.setProductWeek1Enabled(requireContext(), userId, pId, false);
+                ProfileSession.setProductWeek2Enabled(requireContext(), userId, pId, false);
             }
             String status = isNotificationChecked ? "Bật" : "Tắt";
             Toast.makeText(getContext(), status + " nhận thông báo hạn sử dụng", Toast.LENGTH_SHORT).show();
@@ -278,14 +270,7 @@ public class AccountProductExpiryDetailFragment extends RootieFragment {
 
     private void bindProductDetails(ProductEntity product) {
         binding.tvProductName.setText(product.getName());
-        ImageRequest request = new ImageRequest.Builder(requireContext())
-                .data(product.getMainImage())
-                .crossfade(true)
-                .placeholder(android.R.color.darker_gray)
-                .error(android.R.color.darker_gray)
-                .target(binding.ivProductImage)
-                .build();
-        Coil.imageLoader(requireContext()).enqueue(request);
+        com.bumptech.glide.Glide.with(binding.ivProductImage.getContext()).load(product.getMainImage()).placeholder(android.R.color.darker_gray).error(android.R.color.darker_gray).into(binding.ivProductImage);
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         Date expiry = null;

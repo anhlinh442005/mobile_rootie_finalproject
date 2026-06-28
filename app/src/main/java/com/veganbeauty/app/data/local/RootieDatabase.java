@@ -9,6 +9,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import com.veganbeauty.app.data.local.ProductConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -25,9 +26,9 @@ import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.CommunityBlogEntity;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.local.entities.IngredientEntity;
-import com.veganbeauty.app.data.local.entities.OrderConverters;
+
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.local.entities.ProductConverters;
+
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.ReelEntity;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
@@ -62,9 +63,10 @@ import java.util.UUID;
                 StoreEntity.class,
                 UserProductExpiryEntity.class
         },
-        version = 36 // bumped to force destructive migration
+        version = 37 // bumped after entity/schema changes
 )
-@TypeConverters({OrderConverters.class, ProductConverters.class})
+
+@TypeConverters({ProductConverters.class})
 public abstract class RootieDatabase extends RoomDatabase {
 
     public abstract CommunityDao communityDao();
@@ -134,50 +136,92 @@ public abstract class RootieDatabase extends RoomDatabase {
 
     private static volatile RootieDatabase INSTANCE;
 
+    private static RootieDatabase buildDatabase(Context context) {
+        return Room.databaseBuilder(
+                context.getApplicationContext(),
+                RootieDatabase.class,
+                "rootie-db"
+        )
+        .addCallback(new RoomDatabase.Callback() {
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+                seedUsersFromAssets(context, db);
+            }
+        })
+        .addMigrations(MIGRATION_23_24)
+        .fallbackToDestructiveMigration()
+        .build();
+    }
+
+    private static void seedUsersFromAssets(Context context, SupportSQLiteDatabase db) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(context.getAssets().open("users.json")))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            }
+            JSONArray jsonArray = new JSONArray(sb.toString());
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = jsonArray.getJSONObject(i);
+                ContentValues values = new ContentValues();
+                values.put("user_id", obj.optString("user_id", UUID.randomUUID().toString()));
+                values.put("username", obj.optString("username", ""));
+                values.put("full_name", obj.optString("full_name", ""));
+                values.put("email", obj.optString("email", ""));
+                values.put("phone", obj.optString("phone", ""));
+                values.put("password", obj.optString("password", ""));
+                values.put("avatar", obj.optString("avatar", ""));
+
+                db.insert("users", SQLiteDatabase.CONFLICT_IGNORE, values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean isIntegrityError(Throwable error) {
+        while (error != null) {
+            String message = error.getMessage();
+            if (message != null && message.toLowerCase().contains("integrity")) {
+                return true;
+            }
+            error = error.getCause();
+        }
+        return false;
+    }
+
+    public static void resetDatabase(Context context) {
+        synchronized (RootieDatabase.class) {
+            if (INSTANCE != null) {
+                if (INSTANCE.isOpen()) {
+                    INSTANCE.close();
+                }
+                INSTANCE = null;
+            }
+            context.getApplicationContext().deleteDatabase("rootie-db");
+        }
+    }
+
     public static RootieDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (RootieDatabase.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(
-                            context.getApplicationContext(),
-                            RootieDatabase.class,
-                            "rootie-db"
-                    )
-                    .addCallback(new RoomDatabase.Callback() {
-                        @Override
-                        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                            super.onCreate(db);
-                            try {
-                                StringBuilder sb = new StringBuilder();
-                                try (BufferedReader reader = new BufferedReader(
-                                        new InputStreamReader(context.getAssets().open("users.json")))) {
-                                    String line;
-                                    while ((line = reader.readLine()) != null) {
-                                        sb.append(line);
-                                    }
-                                }
-                                JSONArray jsonArray = new JSONArray(sb.toString());
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject obj = jsonArray.getJSONObject(i);
-                                    ContentValues values = new ContentValues();
-                                    values.put("user_id", obj.optString("user_id", UUID.randomUUID().toString()));
-                                    values.put("username", obj.optString("username", ""));
-                                    values.put("full_name", obj.optString("full_name", ""));
-                                    values.put("email", obj.optString("email", ""));
-                                    values.put("phone", obj.optString("phone", ""));
-                                    values.put("password", obj.optString("password", ""));
-                                    values.put("avatar", obj.optString("avatar", ""));
-                                    
-                                    db.insert("users", SQLiteDatabase.CONFLICT_IGNORE, values);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                    try {
+                        INSTANCE = buildDatabase(context);
+                        INSTANCE.getOpenHelper().getWritableDatabase();
+                    } catch (RuntimeException e) {
+                        if (isIntegrityError(e)) {
+                            resetDatabase(context);
+                            INSTANCE = buildDatabase(context);
+                            INSTANCE.getOpenHelper().getWritableDatabase();
+                        } else {
+                            throw e;
                         }
-                    })
-                    .addMigrations(MIGRATION_23_24)
-                    .fallbackToDestructiveMigration()
-                    .build();
+                    }
                 }
             }
         }

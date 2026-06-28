@@ -45,6 +45,20 @@ public class YtVideoEntity {
         this.shareCount = shareCount;
     }
 
+    public YtVideoEntity() {
+        this.id = "";
+        this.title = "";
+        this.url = "";
+        this.description = "";
+        this.username = "";
+        this.type = "";
+    }
+
+    @Ignore
+    public YtVideoEntity(String id, String title, String url, String description, String username, String avatar, String type) {
+        this(id, title, url, description, username, avatar, type, 0, 0, 0);
+    }
+
     @NonNull public String getId() { return id; }
     public void setId(@NonNull String id) { this.id = id; }
     @NonNull public String getTitle() { return title; }

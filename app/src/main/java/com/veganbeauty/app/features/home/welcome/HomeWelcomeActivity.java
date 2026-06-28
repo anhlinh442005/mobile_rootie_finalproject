@@ -178,7 +178,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         com.veganbeauty.app.features.auth.AuthViewModelFactory factory = new com.veganbeauty.app.features.auth.AuthViewModelFactory(repository);
         authViewModel = new androidx.lifecycle.ViewModelProvider(this, factory).get(com.veganbeauty.app.features.auth.AuthViewModel.class);
 
-        authViewModel.getLoginState().observe(this, state -> {
+        authViewModel.loginState.observe(this, state -> {
             if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) {
                 com.veganbeauty.app.data.local.entities.UserEntity user = ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) state)
                         .getUser();
@@ -189,11 +189,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setEmail(this, user.getEmail());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPhone(this, user.getPhone());
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUsername(this, user.getUsername());
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(this, user.getAvatar() != null ? user.getAvatar() : "");
+                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(
+                        this,
+                        com.veganbeauty.app.utils.ProfileSessionHelper.resolveAvatarUrl(user)
+                );
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPrimaryImage(this, user.getPrimary_image() != null ? user.getPrimary_image() : "");
 
-                com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncRewardPointsFromFirestore(this);
-                com.veganbeauty.app.utils.SyncDataHelper.INSTANCE.syncUserProfileFromFirestore(this, new Runnable() {
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsFromFirestore(this);
+                com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(this, new Runnable() {
                     @Override
                     public void run() {
                         navigateToMain();
@@ -206,7 +209,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             }
         });
 
-        authViewModel.getRegisterState().observe(this, state -> {
+        authViewModel.registerState.observe(this, state -> {
             if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) {
                 android.widget.Toast.makeText(this, "Đăng ký thành công", android.widget.Toast.LENGTH_SHORT).show();
                 transitionToLogin();
@@ -1020,7 +1023,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                         // Show a toast that it's sending
                         android.widget.Toast.makeText(this, "Đang gửi OTP qua Email...", android.widget.Toast.LENGTH_SHORT).show();
                         // Send Email OTP thật bằng JavaMail
-                        com.veganbeauty.app.utils.MailSender.INSTANCE.sendOtpEmailAsync(input, generatedOtp, new com.veganbeauty.app.utils.MailSender.MailCallback() {
+                        com.veganbeauty.app.utils.MailSender.sendOtpEmailAsync(input, generatedOtp, new com.veganbeauty.app.utils.MailSender.MailCallback() {
                             @Override
                             public void onSuccess() {
                                 android.widget.Toast.makeText(HomeWelcomeActivity.this, "Mã OTP đã được gửi qua Email thành công", android.widget.Toast.LENGTH_LONG).show();

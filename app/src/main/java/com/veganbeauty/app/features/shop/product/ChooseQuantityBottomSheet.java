@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.ShopBottomSheetBuyBinding;
@@ -56,13 +54,7 @@ public class ChooseQuantityBottomSheet extends BottomSheetDialogFragment {
     private void setupProductInfo() {
         binding.tvProductName.setText(product.getName());
 
-        ImageRequest request = new ImageRequest.Builder(requireContext())
-                .data(product.getMainImage())
-                .target(binding.ivProduct)
-                .crossfade(true)
-                .placeholder(android.R.color.darker_gray)
-                .build();
-        Coil.imageLoader(requireContext()).enqueue(request);
+        com.veganbeauty.app.utils.ProductImageHelper.loadProductImage(binding.ivProduct, product);
 
         binding.tvQuantityValue.setText(String.valueOf(currentQuantity));
     }

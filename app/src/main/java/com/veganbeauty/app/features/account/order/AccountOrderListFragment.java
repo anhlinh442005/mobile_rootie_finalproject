@@ -13,26 +13,27 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.LifecycleOwnerKt;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
-import com.veganbeauty.app.data.local.entities.OrderItemEntity;
 import com.veganbeauty.app.features.ai.SkinAiChatFragment;
 import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderListFragmentBinding;
 import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
-import kotlinx.coroutines.flow.FlowCollector;
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import androidx.lifecycle.FlowLiveDataConversions;
 
 public class AccountOrderListFragment extends RootieFragment {
 
@@ -61,57 +62,53 @@ public class AccountOrderListFragment extends RootieFragment {
                     .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(order.getId()))
                     .addToBackStack(null)
                     .commit();
-                return null;
             },
             order -> {
                 showCancelConfirmationDialog(order);
-                return null;
             },
             order -> {
                 getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderDetailFragment.newInstance(order.getId()))
                     .addToBackStack(null)
                     .commit();
-                return null;
             },
             order -> {
                 ArrayList<CartItemEntity> checkoutItems = new ArrayList<>();
-                for (OrderItemEntity item : order.getItems()) {
-                    checkoutItems.add(new CartItemEntity(
-                        item.getProductId(),
-                        item.getProductName(),
-                        item.getProductImage(),
-                        item.getPrice(),
-                        item.getQuantity(),
-                        true
-                    ));
+                List<OrderEntity.OrderItem> items = order.getItems();
+                if (items != null) {
+                    for (OrderEntity.OrderItem item : items) {
+                        checkoutItems.add(new CartItemEntity(
+                            item.getProductId(),
+                            item.getProductName(),
+                            item.getProductImage(),
+                            item.getPrice(),
+                            item.getQuantity(),
+                            true
+                        ));
+                    }
                 }
                 getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems))
+                    .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems, "", 0L))
                     .addToBackStack(null)
                     .commit();
-                return null;
             },
             order -> {
                 getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderTrackingFragment.newInstance(order.getId()))
                     .addToBackStack(null)
                     .commit();
-                return null;
             },
             order -> {
                 getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new SkinAiChatFragment())
                     .addToBackStack(null)
                     .commit();
-                return null;
             },
             order -> {
                 getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderReviewFragment.newInstance(order.getId()))
                     .addToBackStack(null)
                     .commit();
-                return null;
             }
         );
 
@@ -139,7 +136,7 @@ public class AccountOrderListFragment extends RootieFragment {
 
         _binding.btnBack.setOnClickListener(v -> {
             if (getActivity() != null) {
-                getActivity().onBackPressedDispatcher().onBackPressed();
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
 
@@ -164,32 +161,32 @@ public class AccountOrderListFragment extends RootieFragment {
 
     @Override
     protected void observeViewModel() {
-        viewModel.getFilteredOrders().observe(getViewLifecycleOwner(), orders -> {
+        viewModel.filteredOrders.observe(getViewLifecycleOwner(), orders -> {
             orderAdapter.submitList(orders);
         });
 
-        viewModel.getOrderStats().observe(getViewLifecycleOwner(), stats -> {
+        viewModel.orderStats.observe(getViewLifecycleOwner(), stats -> {
             _binding.tvOrderStats.setText(stats);
         });
 
-        viewModel.getSelectedStatus().observe(getViewLifecycleOwner(), this::updateTabStyles);
+        viewModel.selectedStatus.observe(getViewLifecycleOwner(), this::updateTabStyles);
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            NotificationRepository.getInstance(requireContext()).getUnreadCount().collect(new FlowCollector<Integer>() {
-                @Nullable
-                @Override
-                public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                    if (_binding != null) {
-                        _binding.viewNotificationBadge.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
+        FlowLiveDataConversions.asLiveData(
+                NotificationRepository.getInstance(requireContext()).getUnreadCount()
+        ).observe(getViewLifecycleOwner(), count -> {
+            if (_binding == null) return;
+            _binding.viewNotificationBadge.setVisibility(count != null && count > 0 ? View.VISIBLE : View.GONE);
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        _binding = null;
+    }
+
     private void updateTabStyles(String activeStatus) {
+        if (_binding == null) return;
         Map<String, TextView> tabs = new HashMap<>();
         tabs.put("Tất cả", _binding.tabAll);
         tabs.put("Chờ xử lý", _binding.tabPending);
@@ -221,11 +218,5 @@ public class AccountOrderListFragment extends RootieFragment {
             })
             .setNegativeButton("Quay lại", null)
             .show();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        _binding = null;
     }
 }

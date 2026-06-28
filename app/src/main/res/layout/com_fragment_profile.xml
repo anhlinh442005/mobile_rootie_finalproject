@@ -303,30 +303,16 @@
                     </LinearLayout>
                     
                     <!-- Skin type badge -->
-                    <LinearLayout
-                        android:id="@+id/llSkinBadge"
+                    <TextView
+                        android:id="@+id/tvProfileSkinType"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-                        
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_leaf"
-                            app:tint="#6E846A" />
-                            
-                        <TextView android:fontFamily="@font/be_vietnam_pro"
-                            android:id="@+id/tvProfileSkinType"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="Sức khoẻ - Làm đẹp"
-                            android:textColor="#6E846A"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="Sức khoẻ - Làm đẹp"
+                        android:textColor="#6E846A"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                     <!-- Highlights (Hidden as they break the Tiktok layout, but IDs kept) -->
                     <LinearLayout

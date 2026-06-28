@@ -17,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,7 +25,9 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
+import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.data.local.entities.UserGiftEntity;
+import com.veganbeauty.app.data.local.dao.RewardPointDao;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountRewardFragmentBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
@@ -44,8 +45,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
+import androidx.lifecycle.FlowLiveDataConversions;
 
 public class AccountRewardFragment extends RootieFragment {
 
@@ -136,10 +136,10 @@ public class AccountRewardFragment extends RootieFragment {
     public void observeViewModel() {
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) -> {
-            return BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                db.rewardPointDao().getTotalPointsFlow().collect(points -> {
-                    int pts = points != null ? points : 0;
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+                .observe(getViewLifecycleOwner(), ptsList -> {
+                    if (binding == null || !isAdded()) return;
+                    int pts = (ptsList != null && !ptsList.isEmpty()) ? ptsList.get(0).total : 0;
                     currentPoints = pts;
                     binding.tvCurrentPoints.setText(String.format("%,d", pts).replace(',', '.'));
 
@@ -147,51 +147,49 @@ public class AccountRewardFragment extends RootieFragment {
                     int pct;
                     if (pts >= 20000) { rank = "Hạng VIP"; progressText = "Đạt hạng cao nhất"; pct = 100; }
                     else if (pts >= 10000) { rank = "Hạng Vàng"; progressText = "Còn " + String.format("%,d", 20000 - pts).replace(',', '.') + " xu để đến VIP"; pct = (pts - 10000) * 100 / 10000; }
-                    else if (pts >= 5000) { rank = "Hạng Bạc"; progressText = "Còn " + String.format("%,d", 10000 - pts).replace(',', '.') + " xu để đến Vàng"; pct = (pts - 5000) * 100 / 5000; }
+                    else if (pts >= 5000) { rank = "Hạng Bạc"; progressText = "Còn " + String.format("%,d", 10000 - pts).replace(',', '.') + " xu đến Vàng"; pct = (pts - 5000) * 100 / 5000; }
                     else { rank = "Hạng Thường"; progressText = "Còn " + String.format("%,d", 5000 - pts).replace(',', '.') + " xu để đến Bạc"; pct = pts * 100 / 5000; }
 
                     binding.tvCurrentRank.setText(rank);
                     binding.tvNextRankHint.setText(progressText);
                     binding.pbRankProgress.setProgress(pct);
                     applyExchangeFilter();
-                }, c2);
-                return kotlin.Unit.INSTANCE;
-            }, cont);
-        });
+                });
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-            BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                repository.getAllUserGifts().collect(gifts -> {
+        FlowLiveDataConversions.asLiveData(repository.getAllUserGifts())
+                .observe(getViewLifecycleOwner(), gifts -> {
+                    if (binding == null || !isAdded()) return;
                     myGiftsList.clear();
-                    myGiftsList.addAll(gifts);
+                    if (gifts != null) myGiftsList.addAll(gifts);
                     List<String> ownedIds = new ArrayList<>();
-                    for (UserGiftEntity g : gifts) ownedIds.add(g.getGiftId());
+                    for (UserGiftEntity g : myGiftsList) ownedIds.add(g.getGiftId());
                     for (RedeemableGift g : redeemableGifts) g.setStatus(ownedIds.contains(g.getGiftId()) ? "redeemed" : "unredeemed");
                     applyGiftsFilter();
                     applyExchangeFilter();
-                }, c2);
-                return kotlin.Unit.INSTANCE;
-            }, cont));
+                });
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-            BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                db.rewardPointDao().getAllRewardHistory().collect(history -> {
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getAllRewardHistory())
+                .observe(getViewLifecycleOwner(), history -> {
+                    if (binding == null || !isAdded()) return;
                     List<HistoryItem> histItems = new ArrayList<>();
+                    if (history == null) {
+                        historyAdapter.submitList(histItems);
+                        return;
+                    }
                     SimpleDateFormat sdfGroup = new SimpleDateFormat("'Tháng' MM, yyyy", Locale.getDefault());
-                    Map<String, List<com.veganbeauty.app.data.local.entities.RewardPointEntity>> grouped = new LinkedHashMap<>();
-                    for (var item : history) {
+                    Map<String, List<RewardPointEntity>> grouped = new LinkedHashMap<>();
+                    for (RewardPointEntity item : history) {
                         if ("SYSTEM".equals(item.getOrderId())) continue;
                         String key = sdfGroup.format(new Date(item.getTimestamp()));
-                        grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(item);
+                        if (!grouped.containsKey(key)) grouped.put(key, new ArrayList<>());
+                        grouped.get(key).add(item);
                     }
-                    for (Map.Entry<String, List<com.veganbeauty.app.data.local.entities.RewardPointEntity>> e : grouped.entrySet()) {
+                    for (Map.Entry<String, List<RewardPointEntity>> e : grouped.entrySet()) {
                         histItems.add(new HistoryItem.Header(e.getKey()));
-                        for (var item : e.getValue()) histItems.add(new HistoryItem.Transaction(item));
+                        for (RewardPointEntity item : e.getValue()) histItems.add(new HistoryItem.Transaction(item));
                     }
                     historyAdapter.submitList(histItems);
-                }, c2);
-                return kotlin.Unit.INSTANCE;
-            }, cont));
+                });
     }
 
     @Override
@@ -257,12 +255,13 @@ public class AccountRewardFragment extends RootieFragment {
     private void applyExchangeFilter() {
         List<RedeemableGift> filtered = new ArrayList<>();
         for (RedeemableGift g : redeemableGifts) {
-            boolean include = switch (activeExchangeFilter) {
-                case "Voucher giảm giá" -> g.getGiftType().equals("voucher_discount") || g.getGiftType().equals("voucher_freeship");
-                case "Sản phẩm" -> g.getGiftType().equals("product");
-                case "Quà tặng" -> g.getGiftType().equals("gift");
-                default -> true;
-            };
+            boolean include = false;
+            switch (activeExchangeFilter) {
+                case "Voucher giảm giá": include = g.getGiftType().equals("voucher_discount") || g.getGiftType().equals("voucher_freeship"); break;
+                case "Sản phẩm": include = g.getGiftType().equals("product"); break;
+                case "Quà tặng": include = g.getGiftType().equals("gift"); break;
+                default: include = true; break;
+            }
             if (include) filtered.add(g);
         }
         if (exchangeAdapter != null) exchangeAdapter.submitList(filtered, currentPoints);
@@ -272,11 +271,12 @@ public class AccountRewardFragment extends RootieFragment {
         filteredGiftsList.clear();
         for (UserGiftEntity g : myGiftsList) {
             String status = computeStatusFromExpiry(g.getExpiryDate());
-            boolean include = switch (activeFilter) {
-                case "Còn hạn" -> status.equals("valid") || status.equals("expiring");
-                case "Hết hạn" -> status.equals("expired");
-                default -> true;
-            };
+            boolean include = false;
+            switch (activeFilter) {
+                case "Còn hạn": include = status.equals("valid") || status.equals("expiring"); break;
+                case "Hết hạn": include = status.equals("expired"); break;
+                default: include = true; break;
+            }
             if (include) filteredGiftsList.add(g);
         }
         if (giftsAdapter != null) giftsAdapter.submitList(filteredGiftsList);

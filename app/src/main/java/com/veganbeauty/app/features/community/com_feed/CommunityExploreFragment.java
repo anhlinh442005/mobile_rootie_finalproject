@@ -21,7 +21,7 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentExploreBinding;
-import com.veganbeauty.app.data.local.entities.CommunityVideo;
+import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +31,7 @@ public class CommunityExploreFragment extends RootieFragment {
     private ComFragmentExploreBinding _binding;
 
     private CommunityViewModel viewModel;
-    private ExploreVideoAdapter exploreAdapter = new ExploreVideoAdapter(new ArrayList<>());
+    private ExploreVideoAdapter exploreAdapter = new ExploreVideoAdapter(new ArrayList<>(), null);
 
     private boolean isNavVisible = true;
 
@@ -61,7 +61,7 @@ public class CommunityExploreFragment extends RootieFragment {
     }
 
     private void updateVideoContentTranslation(float translationY) {
-        exploreAdapter.setContentTranslationY(translationY);
+        // exploreAdapter.setContentTranslationY(translationY);
         RecyclerView rv = (RecyclerView) _binding.viewPagerExplore.getChildAt(0);
         if (rv != null && rv.getLayoutManager() instanceof LinearLayoutManager) {
             LinearLayoutManager layoutManager = (LinearLayoutManager) rv.getLayoutManager();
@@ -70,9 +70,9 @@ public class CommunityExploreFragment extends RootieFragment {
             if (first != -1 && last != -1) {
                 for (int i = first; i <= last; i++) {
                     RecyclerView.ViewHolder holder = rv.findViewHolderForAdapterPosition(i);
-                    if (holder instanceof ExploreVideoAdapter.ExploreVideoViewHolder) {
-                        ((ExploreVideoAdapter.ExploreVideoViewHolder) holder).animateContent(translationY);
-                    }
+                    // if (holder instanceof ExploreVideoAdapter.VideoViewHolder) {
+                    //    ((ExploreVideoAdapter.VideoViewHolder) holder).animateContent(translationY);
+                    // }
                 }
             }
         }
@@ -90,7 +90,7 @@ public class CommunityExploreFragment extends RootieFragment {
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
         CommunityRepository repository = new CommunityRepository(db.communityDao(), new LocalJsonReader(requireContext()), new FirestoreService());
         CommunityViewModelFactory factory = new CommunityViewModelFactory(repository);
-        viewModel = new ViewModelProvider(this, factory).get(CommunityViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), factory).get(CommunityViewModel.class);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class CommunityExploreFragment extends RootieFragment {
         _binding.viewPagerExplore.setOffscreenPageLimit(1);
 
         _binding.viewPagerExplore.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            private ExploreVideoAdapter.ExploreVideoViewHolder currentPlayingHolder = null;
+            // private ExploreVideoAdapter.VideoViewHolder currentPlayingHolder = null;
             private int lastPosition = 0;
 
             @Override
@@ -113,22 +113,22 @@ public class CommunityExploreFragment extends RootieFragment {
                 }
                 lastPosition = position;
                 
-                if (currentPlayingHolder != null) {
-                    currentPlayingHolder.stopVideo();
-                }
+                // if (currentPlayingHolder != null) {
+                //    currentPlayingHolder.stopVideo();
+                // }
                 
                 RecyclerView rv = (RecyclerView) _binding.viewPagerExplore.getChildAt(0);
                 if (rv != null) {
                     RecyclerView.ViewHolder holder = rv.findViewHolderForAdapterPosition(position);
-                    if (holder instanceof ExploreVideoAdapter.ExploreVideoViewHolder) {
-                        ((ExploreVideoAdapter.ExploreVideoViewHolder) holder).playVideo();
-                        currentPlayingHolder = (ExploreVideoAdapter.ExploreVideoViewHolder) holder;
+                    if (holder instanceof ExploreVideoAdapter.VideoViewHolder) {
+                        // ((ExploreVideoAdapter.VideoViewHolder) holder).playVideo();
+                        // currentPlayingHolder = (ExploreVideoAdapter.VideoViewHolder) holder;
                     } else {
                         new Handler(Looper.getMainLooper()).postDelayed(() -> {
                             RecyclerView.ViewHolder delayedHolder = rv.findViewHolderForAdapterPosition(position);
-                            if (delayedHolder instanceof ExploreVideoAdapter.ExploreVideoViewHolder) {
-                                ((ExploreVideoAdapter.ExploreVideoViewHolder) delayedHolder).playVideo();
-                                currentPlayingHolder = (ExploreVideoAdapter.ExploreVideoViewHolder) delayedHolder;
+                            if (delayedHolder instanceof ExploreVideoAdapter.VideoViewHolder) {
+                                // ((ExploreVideoAdapter.VideoViewHolder) delayedHolder).playVideo();
+                                // currentPlayingHolder = (ExploreVideoAdapter.VideoViewHolder) delayedHolder;
                             }
                         }, 200);
                     }
@@ -163,7 +163,7 @@ public class CommunityExploreFragment extends RootieFragment {
         _binding.comBottomNav.navComHub.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, new com.veganbeauty.app.features.community.beauty_hub.CommunityBeautyHubFragment())
+                .replace(R.id.main_container, new com.veganbeauty.app.features.community.beauty_hub.HandbookFragment())
                 .commit();
         });
 
@@ -171,7 +171,7 @@ public class CommunityExploreFragment extends RootieFragment {
             getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.main_container, new com.veganbeauty.app.features.community.message.CommunityMessageFragment())
-                .commit();
+                .commitAllowingStateLoss();
         });
 
         ImageView exploreIcon = (ImageView) _binding.comBottomNav.navComExplore.getChildAt(0);
@@ -198,13 +198,14 @@ public class CommunityExploreFragment extends RootieFragment {
     @Override
     protected void observeViewModel() {
         viewModel.getExploreVideos().observe(getViewLifecycleOwner(), videos -> {
-            List<CommunityVideo> finalVideos = new ArrayList<>(videos);
+            List<YtVideoEntity> safeVideos = videos != null ? videos : Collections.emptyList();
+            List<YtVideoEntity> finalVideos = new ArrayList<>(safeVideos);
             Collections.shuffle(finalVideos);
             
             String targetId = getArguments() != null ? getArguments().getString("target_video_id") : null;
             if (targetId != null) {
-                CommunityVideo targetVideo = null;
-                for (CommunityVideo v : finalVideos) {
+                YtVideoEntity targetVideo = null;
+                for (YtVideoEntity v : finalVideos) {
                     if (v.getId().equals(targetId)) {
                         targetVideo = v;
                         break;
@@ -223,8 +224,8 @@ public class CommunityExploreFragment extends RootieFragment {
                     RecyclerView rv = (RecyclerView) _binding.viewPagerExplore.getChildAt(0);
                     if (rv != null) {
                         RecyclerView.ViewHolder holder = rv.findViewHolderForAdapterPosition(0);
-                        if (holder instanceof ExploreVideoAdapter.ExploreVideoViewHolder) {
-                            ((ExploreVideoAdapter.ExploreVideoViewHolder) holder).playVideo();
+                        if (holder instanceof ExploreVideoAdapter.VideoViewHolder) {
+                            // ((ExploreVideoAdapter.VideoViewHolder) holder).playVideo();
                         }
                     }
                 }, 500);

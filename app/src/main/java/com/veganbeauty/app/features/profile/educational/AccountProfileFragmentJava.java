@@ -12,9 +12,6 @@ import androidx.fragment.app.Fragment;
 
 import com.veganbeauty.app.databinding.AccountProfileBinding;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 /**
  * FILE TÀI LIỆU HỌC TẬP - PHIÊN BẢN JAVA ĐỂ ĐỐI CHIẾU
@@ -40,27 +37,9 @@ public class AccountProfileFragmentJava extends Fragment {
 
     private void setupUI() {
         // Load ảnh đại diện từ mạng bằng thư viện Coil trong Java
-        ImageRequest request = new ImageRequest.Builder(requireContext())
-                .data("https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80")
-                .target(binding.ivAvatar)
-                .transformations(new CircleCropTransformation())
-                .crossfade(true)
-                .placeholder(android.R.color.darker_gray)
-                .build();
-        Coil.imageLoader(requireContext()).enqueue(request);
+        com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load("https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80").circleCrop().into(binding.ivAvatar);
 
-        // Đăng ký sự kiện click cho các nút bấm trong Java (Sử dụng biểu thức Lambda rút gọn)
-        binding.llSearch.setOnClickListener(v -> 
-            Toast.makeText(getContext(), "Tính năng tìm kiếm đang phát triển", Toast.LENGTH_SHORT).show()
-        );
-
-        binding.btnQrScan.setOnClickListener(v -> 
-            Toast.makeText(getContext(), "Mở trình quét mã QR", Toast.LENGTH_SHORT).show()
-        );
-
-        binding.btnNotification.setOnClickListener(v -> 
-            Toast.makeText(getContext(), "Không có thông báo mới", Toast.LENGTH_SHORT).show()
-        );
+        com.veganbeauty.app.features.home.HomeHeaderHelper.setup(this, binding.getRoot());
 
         // Sự kiện khi click vào dòng Địa chỉ giao hàng
         binding.getRoot().findViewById(com.veganbeauty.app.R.id.iv_chevron).setOnClickListener(v ->

@@ -17,7 +17,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+
 import coil.Coil;
+import coil.ImageLoader;
 import coil.decode.SvgDecoder;
 import coil.request.ImageRequest;
 
@@ -170,15 +172,15 @@ public class ReelPlayerDialog extends DialogFragment {
             itemBinding.tvShareCount.setText(formatCount(reel.getShareCount()));
 
             if (reel.getAuthorAvatarUrl() != null && !reel.getAuthorAvatarUrl().isEmpty()) {
-                ImageRequest request = new ImageRequest.Builder(itemView.getContext())
+                ImageLoader imageLoader = Coil.imageLoader(itemBinding.ivAuthorAvatarRight.getContext());
+                ImageRequest request = new ImageRequest.Builder(itemBinding.ivAuthorAvatarRight.getContext())
                         .data(reel.getAuthorAvatarUrl())
-                        .decoderFactory(new SvgDecoder.Factory(false))
-                        .crossfade(true)
+                        .decoderFactory(new SvgDecoder.Factory())
                         .placeholder(android.R.color.darker_gray)
                         .error(R.drawable.logo)
                         .target(itemBinding.ivAuthorAvatarRight)
                         .build();
-                Coil.imageLoader(itemView.getContext()).enqueue(request);
+                imageLoader.enqueue(request);
             } else {
                 itemBinding.ivAuthorAvatarRight.setImageResource(android.R.color.darker_gray);
             }

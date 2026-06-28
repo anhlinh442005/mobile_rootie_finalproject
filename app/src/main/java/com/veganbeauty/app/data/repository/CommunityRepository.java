@@ -10,12 +10,9 @@ import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import kotlinx.coroutines.Dispatchers;
 import kotlinx.coroutines.flow.Flow;
-import kotlinx.coroutines.BuildersKt;
 
 public class CommunityRepository {
 
@@ -53,125 +50,76 @@ public class CommunityRepository {
         return communityDao.getAllBlogs();
     }
 
-    public Object refreshCommunityData(kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-        return BuildersKt.withContext(Dispatchers.getIO(), (scope, suspendContinuation) -> {
+    public void seedFromAssetsSync() {
+        seedFromAssets();
+    }
+
+    public void refreshCommunityData() {
+        new Thread(() -> {
             try {
-                communityDao.deleteAllPosts();
-                communityDao.deleteAllUsers();
-                communityDao.deleteAllExploreVideos();
+                seedFromAssets();
 
-                loadFromLocalAssets();
-
-                try {
-                    firestoreService.forceSyncCollection("users", localJsonReader.getRawUsersJson(), "user_id");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    firestoreService.forceSyncCollection("skin_history", localJsonReader.getRawSkinHistoryJson(), "id");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    firestoreService.forceSyncCollection("skin_bookings", localJsonReader.getRawSkinBookingsJson(), "id", "bookings");
-                } catch (Exception e) {
-                    e.printStackTrace();
+                List<CommunityPostEntity> remotePosts = firestoreService.fetchAllCommunityPosts();
+                if (remotePosts != null && !remotePosts.isEmpty()) {
+                    communityDao.insertPosts(remotePosts);
                 }
 
+                List<UserEntity> remoteUsers = firestoreService.fetchAllUsers();
+                if (remoteUsers != null && !remoteUsers.isEmpty()) {
+                    communityDao.insertUsers(remoteUsers);
+                }
+
+                List<ReelEntity> remoteReels = firestoreService.fetchAllReels();
+                if (remoteReels != null && !remoteReels.isEmpty()) {
+                    communityDao.insertReels(remoteReels);
+                }
+
+                List<YtVideoEntity> remoteVideos = firestoreService.fetchAllExploreVideos();
+                if (remoteVideos != null && !remoteVideos.isEmpty()) {
+                    communityDao.insertExploreVideos(remoteVideos);
+                }
+
+                List<IngredientEntity> remoteIngredients = firestoreService.fetchAllIngredients();
+                if (remoteIngredients != null && !remoteIngredients.isEmpty()) {
+                    communityDao.insertIngredients(remoteIngredients);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return kotlin.Unit.INSTANCE;
-        }, continuation);
+        }).start();
     }
 
-    private void loadFromLocalAssets() {
+    private void seedFromAssets() {
         try {
-            List<UserEntity> localUsers = localJsonReader.getUsers();
-            
-            List<CommunityPostEntity> rawPosts = localJsonReader.getCommunityPosts();
-            List<CommunityPostEntity> localPosts = new ArrayList<>();
-            if (rawPosts != null) {
-                for (CommunityPostEntity post : rawPosts) {
-                    UserEntity matchedUser = null;
-                    if (localUsers != null) {
-                        for (UserEntity u : localUsers) {
-                            if (u.getUser_id() != null && u.getUser_id().equals(post.getAuthorId()) ||
-                                (u.getUsername() != null && u.getUsername().equalsIgnoreCase(post.getAuthorUsername()))) {
-                                matchedUser = u;
-                                break;
-                            }
-                        }
-                    }
-                    if (matchedUser != null && matchedUser.getAvatar() != null && !matchedUser.getAvatar().isEmpty()) {
-                        post.setAuthorAvatarUrl(matchedUser.getAvatar());
-                    }
-                    localPosts.add(post);
-                }
+            List<CommunityPostEntity> posts = localJsonReader.getCommunityPosts();
+            if (posts != null && !posts.isEmpty()) {
+                communityDao.insertPosts(posts);
             }
 
-            List<ReelEntity> rawReels = localJsonReader.getReels();
-            List<ReelEntity> localReels = new ArrayList<>();
-            if (rawReels != null) {
-                for (ReelEntity reel : rawReels) {
-                    UserEntity matchedUser = null;
-                    if (localUsers != null) {
-                        for (UserEntity u : localUsers) {
-                            if (u.getUser_id() != null && u.getUser_id().equals(reel.getAuthorId()) ||
-                                (u.getUsername() != null && u.getUsername().equalsIgnoreCase(reel.getAuthorUsername()))) {
-                                matchedUser = u;
-                                break;
-                            }
-                        }
-                    }
-                    if (matchedUser != null && matchedUser.getAvatar() != null && !matchedUser.getAvatar().isEmpty()) {
-                        reel.setAuthorAvatarUrl(matchedUser.getAvatar());
-                    }
-                    localReels.add(reel);
-                }
+            List<UserEntity> users = localJsonReader.getUsers();
+            if (users != null && !users.isEmpty()) {
+                communityDao.insertUsers(users);
             }
 
-            List<YtVideoEntity> rawVideos = localJsonReader.getExploreVideos();
-            List<YtVideoEntity> localVideos = new ArrayList<>();
-            if (rawVideos != null) {
-                for (YtVideoEntity video : rawVideos) {
-                    UserEntity matchedUser = null;
-                    if (localUsers != null) {
-                        for (UserEntity u : localUsers) {
-                            if (u.getUsername() != null && u.getUsername().equalsIgnoreCase(video.getUsername())) {
-                                matchedUser = u;
-                                break;
-                            }
-                        }
-                    }
-                    if (matchedUser != null && matchedUser.getAvatar() != null && !matchedUser.getAvatar().isEmpty()) {
-                        video.setAvatarUrl(matchedUser.getAvatar());
-                    }
-                    localVideos.add(video);
-                }
+            List<ReelEntity> reels = localJsonReader.getReels();
+            if (reels != null && !reels.isEmpty()) {
+                communityDao.insertReels(reels);
             }
 
-            if (localUsers != null && !localUsers.isEmpty()) {
-                communityDao.deleteAllUsers();
-                communityDao.insertUsers(localUsers);
-            }
-            if (!localPosts.isEmpty()) {
-                communityDao.deleteAllPosts();
-                communityDao.insertPosts(localPosts);
-            }
-            if (!localReels.isEmpty()) {
-                communityDao.insertReels(localReels);
-            }
-            if (!localVideos.isEmpty()) {
-                communityDao.deleteAllExploreVideos();
-                communityDao.insertExploreVideos(localVideos);
+            List<YtVideoEntity> videos = localJsonReader.getExploreVideos();
+            if (videos != null && !videos.isEmpty()) {
+                communityDao.insertExploreVideos(videos);
             }
 
-            List<IngredientEntity> localIngredients = localJsonReader.getIngredients();
-            if (localIngredients != null && !localIngredients.isEmpty()) {
-                communityDao.insertIngredients(localIngredients);
+            List<IngredientEntity> ingredients = localJsonReader.getIngredients();
+            if (ingredients != null && !ingredients.isEmpty()) {
+                communityDao.insertIngredients(ingredients);
             }
 
+            List<CommunityBlogEntity> blogs = localJsonReader.getCommunityBlogs(200, 0);
+            if (blogs != null && !blogs.isEmpty()) {
+                communityDao.insertBlogs(blogs);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

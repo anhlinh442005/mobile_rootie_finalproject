@@ -36,8 +36,8 @@ public abstract class RootieFragment extends Fragment {
         setupUI(view);
 
         if (!shouldSkipNotificationSync()) {
-            injectNotificationButtonIfNeeded(view);
             try {
+                injectNotificationButtonIfNeeded(view);
                 setupNotificationBellAndBadge(view);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -54,27 +54,9 @@ public abstract class RootieFragment extends Fragment {
     }
 
     private boolean shouldSkipNotificationSync() {
-        String className = this.getClass().getSimpleName();
-        String fullName = this.getClass().getName();
-
-        // Skip community fragments (com_ / community)
-        if (className.toLowerCase().startsWith("com") ||
-                fullName.toLowerCase().contains("community")) {
-            return true;
-        }
-
-        // Skip shop fragments (shop_ / shop)
-        if (className.toLowerCase().startsWith("shop") ||
-                fullName.toLowerCase().contains("shop")) {
-            return true;
-        }
-
-        // Skip AccountNotificationFragment itself, to avoid infinite self-navigation/redundant UI
-        if ("AccountNotificationFragment".equals(className)) {
-            return true;
-        }
-
-        return false;
+        // Auto-inject/manipulation of the view tree is fragile and crashes on inner navigation.
+        // Screens that need notification wire btn_notification in their own setupUI.
+        return true;
     }
 
     private void injectNotificationButtonIfNeeded(View view) {
@@ -181,7 +163,7 @@ public abstract class RootieFragment extends Fragment {
                     }
                 }
 
-                View cartContainer = cl.findViewById(R.id.flCartContainer);
+                View cartContainer = cl.findViewById(R.id.home_header_cart_btn);
 
                 cl.addView(notificationContainer);
                 ConstraintSet set = new ConstraintSet();
@@ -422,24 +404,44 @@ public abstract class RootieFragment extends Fragment {
 
         if (badgeTextView != null) {
             TextView finalBadge = badgeTextView;
-            BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                NotificationRepository.getInstance(requireContext())
-                        .getUnreadCount()
-                        .collect(new kotlinx.coroutines.flow.FlowCollector<Integer>() {
-                            @Nullable
-                            @Override
-                            public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                                if (count > 0) {
-                                    finalBadge.setText(String.valueOf(count));
-                                    finalBadge.setVisibility(View.VISIBLE);
-                                } else {
-                                    finalBadge.setVisibility(View.GONE);
+            new Thread(() -> {
+                try {
+                    // Chờ một chút để Fragment ổn định
+                    Thread.sleep(500);
+                    Context ctx = getContext();
+                    if (ctx == null) return;
+
+                    NotificationRepository.getInstance(ctx)
+                            .getUnreadCount()
+                            .collect(new kotlinx.coroutines.flow.FlowCollector<Integer>() {
+                                @Override
+                                public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+                                    androidx.fragment.app.FragmentActivity activity = getActivity();
+                                    if (activity != null) {
+                                        activity.runOnUiThread(() -> {
+                                            if (count > 0) {
+                                                finalBadge.setText(String.valueOf(count));
+                                                finalBadge.setVisibility(View.VISIBLE);
+                                            } else {
+                                                finalBadge.setVisibility(View.GONE);
+                                            }
+                                        });
+                                    }
+                                    return kotlin.Unit.INSTANCE;
                                 }
-                                return kotlin.Unit.INSTANCE;
-                            }
-                        }, continuation);
-                return kotlin.Unit.INSTANCE;
-            });
+                            }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
+                                @NonNull
+                                @Override
+                                public kotlin.coroutines.CoroutineContext getContext() {
+                                    return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
+                                }
+                                @Override
+                                public void resumeWith(@NonNull Object o) {}
+                            });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
     }
 }

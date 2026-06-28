@@ -91,29 +91,29 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
     private void setupRecyclerView() {
         adapter = new CartAdapter(
                 (item, newQuantity) -> {
-                    BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+                    new Thread(() -> {
                         if (newQuantity <= 0) {
-                            database.cartDao().deleteCartItem(item, continuation);
-                            Toast.makeText(requireContext(), "Đã xóa " + item.getName() + " khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
+                            database.cartDao().deleteCartItem(item);
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    Toast.makeText(requireContext(), "Đã xóa " + item.getName() + " khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
+                                });
+                            }
                         } else {
                             CartItemEntity updatedItem = new CartItemEntity(
                                     item.getId(), item.getName(), item.getImage(), item.getPrice(), newQuantity, item.isSelected()
                             );
-                            database.cartDao().updateCartItem(updatedItem, continuation);
+                            database.cartDao().updateCartItem(updatedItem);
                         }
-                        return kotlin.Unit.INSTANCE;
-                    });
-                    return kotlin.Unit.INSTANCE;
+                    }).start();
                 },
                 (item, isSelected) -> {
-                    BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+                    new Thread(() -> {
                         CartItemEntity updatedItem = new CartItemEntity(
                                 item.getId(), item.getName(), item.getImage(), item.getPrice(), item.getQuantity(), isSelected
                         );
-                        database.cartDao().updateCartItem(updatedItem, continuation);
-                        return kotlin.Unit.INSTANCE;
-                    });
-                    return kotlin.Unit.INSTANCE;
+                        database.cartDao().updateCartItem(updatedItem);
+                    }).start();
                 }
         );
 
@@ -132,15 +132,14 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
                 }
             }
             boolean finalAllSelected = allSelected;
-            BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+            new Thread(() -> {
                 for (CartItemEntity item : currentList) {
                     CartItemEntity updatedItem = new CartItemEntity(
                             item.getId(), item.getName(), item.getImage(), item.getPrice(), item.getQuantity(), !finalAllSelected
                     );
-                    database.cartDao().updateCartItem(updatedItem, continuation);
+                    database.cartDao().updateCartItem(updatedItem);
                 }
-                return kotlin.Unit.INSTANCE;
-            });
+            }).start();
         });
 
         _binding.switchPoints.setOnClickListener(v -> {

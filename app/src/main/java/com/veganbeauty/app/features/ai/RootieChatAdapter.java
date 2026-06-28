@@ -11,8 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
@@ -74,6 +72,7 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         public Sender getSender() { return sender; }
+        public String getId() { return id; }
         public String getMessageText() { return messageText; }
         public String getTimeStr() { return timeStr; }
         public ItemType getType() { return type; }
@@ -265,13 +264,7 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     TextView tvName = pView.findViewById(R.id.tvProductName);
                     TextView tvReason = pView.findViewById(R.id.tvExpertReason);
 
-                    ImageRequest request = new ImageRequest.Builder(context)
-                            .data(product.getMainImage())
-                            .crossfade(true)
-                            .placeholder(android.R.color.darker_gray)
-                            .target(ivProdImage)
-                            .build();
-                    Coil.imageLoader(context).enqueue(request);
+                    com.bumptech.glide.Glide.with(ivProdImage.getContext()).load(product.getMainImage()).placeholder(android.R.color.darker_gray).into(ivProdImage);
 
                     tvPhase.setText(idx < data.productPhases.size() ? data.productPhases.get(idx) : "GIAI ĐOẠN " + (idx + 1));
 

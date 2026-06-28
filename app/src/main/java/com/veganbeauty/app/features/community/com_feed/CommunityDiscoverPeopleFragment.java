@@ -38,7 +38,7 @@ public class CommunityDiscoverPeopleFragment extends RootieFragment {
     private void handleUserAction(UserEntity user, String action) {
         String content = "FOLLOW".equals(action) ? "Bạn đã bắt đầu theo dõi " + user.getUsername() : "Bạn đã chấp nhận yêu cầu theo dõi của " + user.getUsername();
         UserMemoryEntity memory = new UserMemoryEntity(
-                0,
+                java.util.UUID.randomUUID().toString(),
                 action,
                 user.getUser_id(),
                 user.getUsername(),

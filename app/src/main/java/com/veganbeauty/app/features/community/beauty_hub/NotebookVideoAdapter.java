@@ -11,8 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 
@@ -69,12 +67,7 @@ public class NotebookVideoAdapter extends RecyclerView.Adapter<NotebookVideoAdap
             }
         }
         
-        ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                .data(thumbnailUrl)
-                .target(holder.ivThumbnail)
-                .crossfade(true)
-                .build();
-        Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+        com.bumptech.glide.Glide.with(holder.ivThumbnail.getContext()).load(thumbnailUrl).into(holder.ivThumbnail);
             
         holder.tvDuration.setText("14:25");
         

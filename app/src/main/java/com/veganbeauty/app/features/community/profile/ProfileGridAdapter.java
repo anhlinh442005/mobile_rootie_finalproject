@@ -9,8 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 
@@ -69,13 +67,7 @@ public class ProfileGridAdapter extends RecyclerView.Adapter<ProfileGridAdapter.
             holder.imageView.setVisibility(View.VISIBLE);
             holder.tvGridText.setVisibility(View.GONE);
             
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(mediaUrls.get(0))
-                    .target(holder.imageView)
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .build();
-            Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(holder.imageView.getContext()).load(mediaUrls.get(0)).into(holder.imageView);
         } else {
             holder.imageView.setVisibility(View.GONE);
             holder.tvGridText.setVisibility(View.VISIBLE);

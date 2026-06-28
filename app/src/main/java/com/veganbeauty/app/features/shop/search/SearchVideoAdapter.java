@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import com.veganbeauty.app.databinding.ShopSearchVideoItemBinding;
 
@@ -83,13 +81,7 @@ public class SearchVideoAdapter extends RecyclerView.Adapter<SearchVideoAdapter.
             }
 
             if (thumbnailUrl != null) {
-                ImageRequest request = new ImageRequest.Builder(binding.getRoot().getContext())
-                        .data(thumbnailUrl)
-                        .target(binding.ivThumbnail)
-                        .crossfade(true)
-                        .placeholder(android.R.color.darker_gray)
-                        .build();
-                Coil.imageLoader(binding.getRoot().getContext()).enqueue(request);
+                com.bumptech.glide.Glide.with(binding.ivThumbnail.getContext()).load(thumbnailUrl).into(binding.ivThumbnail);
             }
 
             binding.getRoot().setOnClickListener(v -> {

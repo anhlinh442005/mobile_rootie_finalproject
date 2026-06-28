@@ -83,6 +83,8 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.material)
     implementation(libs.viewpager2)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     
     // Firebase
@@ -98,6 +100,9 @@ dependencies {
     // Coil
     implementation(libs.coil)
     implementation(libs.coil.svg)
+    
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.guava)
 
     // CameraX
@@ -118,7 +123,9 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.sun.mail:android-mail:1.6.7")
 
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
 }
+dependencies { implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.21") }

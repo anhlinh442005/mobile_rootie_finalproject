@@ -41,8 +41,12 @@ public class BookingHistoryEntity {
     @NonNull private String cancelledAt;
     @NonNull private String cancelReason;
 
+    public BookingHistoryEntity(@NonNull String id, @NonNull String userId, @NonNull String userName, @NonNull String userPhone, @NonNull String userEmail, @NonNull String serviceName, @NonNull String dateDisplay, @NonNull String dayOfWeek, @NonNull String time, @NonNull String duration, @NonNull String storeName, @NonNull String storeAddress, @NonNull String status) {
+        this(id, userId, userName, userPhone, userEmail, serviceName, dateDisplay, "", dayOfWeek, time, duration, storeName, storeAddress, "", "", "", status, "", "", "", Collections.emptyList(), "", "", 0f, 0f, "", "", "", "", 0, 0, "", "", "", "");
+    }
+
     public BookingHistoryEntity(@NonNull String id, @NonNull String userId, @NonNull String userName, @NonNull String userPhone, @NonNull String userEmail, @NonNull String serviceName, @NonNull String dateDisplay, @NonNull String monthDisplay, @NonNull String dayOfWeek, @NonNull String time, @NonNull String duration, @NonNull String storeName, @NonNull String storeAddress, @NonNull String storePhone, @NonNull String storeImage, @NonNull String note, @NonNull String status, @NonNull String policy, @NonNull String createdAt, @NonNull String completedAt, @NonNull List<String> skinResults, @NonNull String consultantName, @NonNull String consultantAvatar, float consultantRating, float userRating, @NonNull String userReview, @NonNull String reviewDate, @NonNull String beforeImage, @NonNull String afterImage, int earnedPoints, int totalPoints, @NonNull String nextAppointmentDate, @NonNull String nextAppointmentText, @NonNull String cancelledAt, @NonNull String cancelReason) {
-        this.id = id; this.userId = userId; this.userName = userName; this.userPhone = userPhone; this.userEmail = userEmail; this.serviceName = serviceName; this.dateDisplay = dateDisplay; this.monthDisplay = monthDisplay; this.dayOfWeek = dayOfWeek; this.time = time; this.duration = duration; this.storeName = storeName; this.storeAddress = storeAddress; this.storePhone = storePhone; this.storeImage = storeImage; this.note = note; this.status = status; this.policy = policy; this.createdAt = createdAt; this.completedAt = completedAt; this.skinResults = skinResults; this.consultantName = consultantName; this.consultantAvatar = consultantAvatar; this.consultantRating = consultantRating; this.userRating = userRating; this.userReview = userReview; this.reviewDate = reviewDate; this.beforeImage = beforeImage; this.afterImage = afterImage; this.earnedPoints = earnedPoints; this.totalPoints = totalPoints; this.nextAppointmentDate = nextAppointmentDate; this.nextAppointmentText = nextAppointmentText; this.cancelledAt = cancelledAt; this.cancelReason = cancelReason;
+        this.id = id; this.userId = userId; this.userName = userName; this.userPhone = userPhone; this.userEmail = userEmail; this.serviceName = serviceName; this.dateDisplay = dateDisplay; this.monthDisplay = monthDisplay; this.dayOfWeek = dayOfWeek; this.time = time; this.duration = duration; this.storeName = storeName; this.storeAddress = storeAddress; this.storePhone = storePhone; this.storeImage = storeImage; this.note = note; this.status = status; this.policy = policy; this.createdAt = createdAt; this.completedAt = completedAt; this.skinResults = skinResults != null ? skinResults : Collections.emptyList(); this.consultantName = consultantName; this.consultantAvatar = consultantAvatar; this.consultantRating = consultantRating; this.userRating = userRating; this.userReview = userReview; this.reviewDate = reviewDate; this.beforeImage = beforeImage; this.afterImage = afterImage; this.earnedPoints = earnedPoints; this.totalPoints = totalPoints; this.nextAppointmentDate = nextAppointmentDate; this.nextAppointmentText = nextAppointmentText; this.cancelledAt = cancelledAt; this.cancelReason = cancelReason;
     }
 
     @NonNull public String getId() { return id; }
@@ -80,4 +84,20 @@ public class BookingHistoryEntity {
     @NonNull public String getNextAppointmentText() { return nextAppointmentText; }
     @NonNull public String getCancelledAt() { return cancelledAt; }
     @NonNull public String getCancelReason() { return cancelReason; }
+
+    public void setStatus(@NonNull String status) { this.status = status; }
+    public void setMonthDisplay(@NonNull String monthDisplay) { this.monthDisplay = monthDisplay; }
+    public void setStorePhone(@NonNull String storePhone) { this.storePhone = storePhone; }
+    public void setStoreImage(@NonNull String storeImage) { this.storeImage = storeImage; }
+    public void setCreatedAt(@NonNull String createdAt) { this.createdAt = createdAt; }
+    public void setConsultantName(@NonNull String consultantName) { this.consultantName = consultantName; }
+    public void setConsultantAvatar(@NonNull String consultantAvatar) { this.consultantAvatar = consultantAvatar; }
+    public void setConsultantRating(float consultantRating) { this.consultantRating = consultantRating; }
+    @NonNull public List<String> getFeedbackTags() { return Collections.emptyList(); }
+    @NonNull public String getStoreId() { return ""; }
+    @NonNull public String getServiceId() { return ""; }
+    @NonNull public String getServiceImage() { return ""; }
+    @NonNull public String getCheckInCode() { return ""; }
+    public float getFeedbackRating() { return 0f; }
+    @NonNull public String getFeedbackComment() { return ""; }
 }

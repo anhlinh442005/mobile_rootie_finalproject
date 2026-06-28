@@ -18,8 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -105,14 +103,7 @@ public class BookingDetailCompletedFragment extends RootieFragment {
         }
 
         if (data.getStoreImage() != null && !data.getStoreImage().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(requireContext())
-                    .data(data.getStoreImage())
-                    .placeholder(R.drawable.imv_logo)
-                    .error(R.drawable.imv_logo)
-                    .crossfade(true)
-                    .target(binding.skinDetailStoreImage)
-                    .build();
-            Coil.imageLoader(requireContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(binding.skinDetailStoreImage.getContext()).load(data.getStoreImage()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(binding.skinDetailStoreImage);
         }
 
         binding.skinDetailResultsList.removeAllViews();
@@ -148,14 +139,7 @@ public class BookingDetailCompletedFragment extends RootieFragment {
 
         binding.skinDetailConsultantName.setText(data.getConsultantName());
         if (data.getConsultantAvatar() != null && !data.getConsultantAvatar().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(requireContext())
-                    .data(data.getConsultantAvatar())
-                    .placeholder(R.drawable.imv_logo)
-                    .error(R.drawable.imv_logo)
-                    .crossfade(true)
-                    .target(binding.skinDetailConsultantAvatar)
-                    .build();
-            Coil.imageLoader(requireContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(binding.skinDetailConsultantAvatar.getContext()).load(data.getConsultantAvatar()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(binding.skinDetailConsultantAvatar);
         }
 
         binding.skinDetailUserRatingNum.setText(String.format(java.util.Locale.US, "%.1f", data.getUserRating()));
@@ -163,23 +147,11 @@ public class BookingDetailCompletedFragment extends RootieFragment {
         binding.skinDetailReviewDate.setText(data.getReviewDate());
 
         if (data.getBeforeImage() != null && !data.getBeforeImage().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(requireContext())
-                    .data(data.getBeforeImage())
-                    .placeholder(R.drawable.imv_logo)
-                    .error(R.drawable.imv_logo)
-                    .target(binding.skinDetailBeforeImg)
-                    .build();
-            Coil.imageLoader(requireContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(binding.skinDetailBeforeImg.getContext()).load(data.getBeforeImage()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(binding.skinDetailBeforeImg);
         }
 
         if (data.getAfterImage() != null && !data.getAfterImage().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(requireContext())
-                    .data(data.getAfterImage())
-                    .placeholder(R.drawable.imv_logo)
-                    .error(R.drawable.imv_logo)
-                    .target(binding.skinDetailAfterImg)
-                    .build();
-            Coil.imageLoader(requireContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(binding.skinDetailAfterImg.getContext()).load(data.getAfterImage()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(binding.skinDetailAfterImg);
         }
 
         binding.skinDetailEarnedPoints.setText("+" + data.getEarnedPoints());

@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 
 public class AccountProductExpiryAdapter extends ListAdapter<ExpiryProductUiModel, AccountProductExpiryAdapter.ViewHolder> {
@@ -96,14 +94,7 @@ public class AccountProductExpiryAdapter extends ListAdapter<ExpiryProductUiMode
             tvProductName.setText(uiModel.getProduct().getName());
             tvExpiryDuration.setText(uiModel.getDurationText());
 
-            ImageRequest request = new ImageRequest.Builder(itemView.getContext())
-                    .data(uiModel.getProduct().getMainImage())
-                    .target(ivProductImage)
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .error(android.R.color.darker_gray)
-                    .build();
-            Coil.imageLoader(itemView.getContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(ivProductImage.getContext()).load(uiModel.getProduct().getMainImage()).placeholder(android.R.color.darker_gray).into(ivProductImage);
 
             pbExpiry.setProgress(uiModel.getProgressPercent());
 

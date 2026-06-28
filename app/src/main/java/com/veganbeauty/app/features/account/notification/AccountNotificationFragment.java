@@ -37,12 +37,15 @@ import com.veganbeauty.app.features.myskin.BookingDetailCancelledFragment;
 import com.veganbeauty.app.features.myskin.BookingDetailCompletedFragment;
 import com.veganbeauty.app.features.myskin.BookingDetailUpcomingFragment;
 import com.veganbeauty.app.features.profile.AccountVoucherDetailFragment;
-import com.veganbeauty.app.features.profile.VoucherItem;
+import com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem;
 import com.veganbeauty.app.features.routine.SkinReminderFragment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import kotlinx.coroutines.flow.FlowCollector;
 
 public class AccountNotificationFragment extends RootieFragment {
 
@@ -83,7 +86,6 @@ public class AccountNotificationFragment extends RootieFragment {
                 item -> {
                     viewModel.markAsRead(item.getId());
                     handleNotificationNavigation(item);
-                    return null;
                 },
                 item -> {
                     viewModel.markAsRead(item.getId());
@@ -94,15 +96,12 @@ public class AccountNotificationFragment extends RootieFragment {
                         }
                     }
                     handleNotificationNavigation(item);
-                    return null;
                 },
                 item -> {
                     viewModel.markAsRead(item.getId());
-                    return null;
                 },
                 item -> {
                     viewModel.deleteNotification(item.getId());
-                    return null;
                 }
         );
 
@@ -111,7 +110,7 @@ public class AccountNotificationFragment extends RootieFragment {
     }
 
     private void setupViewModel() {
-        NotificationRepository repository = NotificationRepository.Companion.getInstance(requireContext());
+        NotificationRepository repository = NotificationRepository.getInstance(requireContext());
         viewModel = new ViewModelProvider(this, new NotificationViewModelFactory(repository)).get(NotificationViewModel.class);
     }
 
@@ -163,7 +162,7 @@ public class AccountNotificationFragment extends RootieFragment {
 
     @Override
     public void observeViewModel() {
-        viewModel.getNotificationItems().observe(getViewLifecycleOwner(), items -> {
+        viewModel.notificationItems.observe(getViewLifecycleOwner(), items -> {
             listAdapter.submitList(items);
             boolean isEmpty = items.isEmpty();
             getBinding().layoutEmptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
@@ -171,7 +170,28 @@ public class AccountNotificationFragment extends RootieFragment {
             getBinding().layoutHeaderActions.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
         });
 
-        viewModel.getSelectedTab().observe(getViewLifecycleOwner(), this::updateTabStyles);
+        viewModel.selectedTab.observe(getViewLifecycleOwner(), this::updateTabStyles);
+
+        new Thread(() -> {
+            try {
+                NotificationRepository.getInstance(requireContext()).getUnreadCount().collect(new FlowCollector<Integer>() {
+                    @Override
+                    public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+                        return kotlin.Unit.INSTANCE;
+                    }
+                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
+                    @NonNull
+                    @Override
+                    public kotlin.coroutines.CoroutineContext getContext() {
+                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
+                    }
+                    @Override
+                    public void resumeWith(@NonNull Object o) {}
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void updateTabStyles(String activeTab) {
@@ -201,7 +221,7 @@ public class AccountNotificationFragment extends RootieFragment {
 
         if (type.equals("voucher") || category.contains("khuyến mãi") || title.contains("voucher") || content.contains("voucher")) {
             String code = item.getVoucherCode() != null ? item.getVoucherCode() : "RT50KDEC";
-            VoucherItem voucher = NotificationIntentHandler.Companion.findVoucherByCode(requireContext(), code);
+            VoucherItem voucher = NotificationIntentHandler.findVoucherByCode(requireContext(), code);
             if (voucher == null) {
                 voucher = new VoucherItem(
                         item.getId(),
@@ -219,7 +239,13 @@ public class AccountNotificationFragment extends RootieFragment {
                         50000
                 );
             }
-            AccountVoucherDetailFragment fragment = AccountVoucherDetailFragment.Companion.newInstance(voucher);
+            com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem mappedVoucher = new com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem(
+                    voucher.getId(), voucher.getTitle(), voucher.getDescription(), voucher.getCode(),
+                    voucher.getStatus(), voucher.getHsd(), voucher.getType(), voucher.isFromGift(),
+                    voucher.getQuantity(), voucher.getMinOrderValue(), voucher.getApplicableProducts(),
+                    voucher.getOfferType(), voucher.getDiscountValue()
+            );
+            AccountVoucherDetailFragment fragment = AccountVoucherDetailFragment.newInstance(mappedVoucher);
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, fragment)
                     .addToBackStack(null)
@@ -227,7 +253,7 @@ public class AccountNotificationFragment extends RootieFragment {
 
         } else if (type.equals("order") || category.contains("đơn hàng") || title.contains("đơn hàng") || content.contains("đơn hàng")) {
             String orderId = item.getOrderId() != null ? item.getOrderId() : "RT8829";
-            AccountOrderDetailFragment fragment = AccountOrderDetailFragment.Companion.newInstance(orderId);
+            AccountOrderDetailFragment fragment = AccountOrderDetailFragment.newInstance(orderId);
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, fragment)
                     .addToBackStack(null)
@@ -249,7 +275,7 @@ public class AccountNotificationFragment extends RootieFragment {
 
         } else if (type.equals("schedule date") || title.contains("lịch hẹn") || content.contains("lịch hẹn")) {
             String scheduleId = item.getScheduleId() != null ? item.getScheduleId() : "BK_NOTI_101";
-            String userEmail = ProfileSession.INSTANCE.getEmail(requireContext());
+            String userEmail = ProfileSession.getEmail(requireContext());
             List<BookingHistoryEntity> bookings = new LocalJsonReader(requireContext()).getUserBookingHistory(userEmail);
             
             BookingHistoryEntity realBooking = null;
@@ -264,23 +290,23 @@ public class AccountNotificationFragment extends RootieFragment {
             if (realBooking != null) {
                 switch (realBooking.getStatus()) {
                     case "Đã hoàn thành":
-                        fragment = BookingDetailCompletedFragment.Companion.newInstance(realBooking);
+                        fragment = BookingDetailCompletedFragment.newInstance(realBooking);
                         break;
                     case "Đã huỷ":
-                        fragment = BookingDetailCancelledFragment.Companion.newInstance(realBooking);
+                        fragment = BookingDetailCancelledFragment.newInstance(realBooking);
                         break;
                     default:
-                        fragment = BookingDetailUpcomingFragment.Companion.newInstance(realBooking);
+                        fragment = BookingDetailUpcomingFragment.newInstance(realBooking);
                         break;
                 }
             } else {
                 BookingHistoryEntity mockBooking = new BookingHistoryEntity(
                         scheduleId, "user_1", "Nguyễn Khánh Xuân", "0901234567", userEmail,
-                        "Chăm sóc da chuyên sâu Acne Free", "15 Tháng 6, 2026", "", "Thứ Hai",
+                        "Chăm sóc da chuyên sâu Acne Free", "15 Tháng 6, 2026", "Thứ Hai",
                         "14:00 - 15:30", "90 phút", "Rootie Quận 1", "123 Nguyễn Thị Minh Khai, Quận 1, TP. HCM",
-                        "", "", "", "Sắp diễn ra", "", "", "", null, "", "", 0f, 0f, "", "", "", "", 0, 0, "", "", "", ""
+                        "Sắp diễn ra"
                 );
-                fragment = BookingDetailUpcomingFragment.Companion.newInstance(mockBooking);
+                fragment = BookingDetailUpcomingFragment.newInstance(mockBooking);
             }
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, fragment)

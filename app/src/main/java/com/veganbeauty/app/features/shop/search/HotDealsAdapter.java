@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.ShopProductHorizontalBinding;
@@ -93,13 +91,7 @@ public class HotDealsAdapter extends RecyclerView.Adapter<HotDealsAdapter.ViewHo
                 binding.tvBadgeNew.setVisibility(View.GONE);
             }
 
-            ImageRequest request = new ImageRequest.Builder(binding.getRoot().getContext())
-                    .data(product.getMainImage())
-                    .target(binding.ivProduct)
-                    .crossfade(true)
-                    .placeholder(android.R.color.darker_gray)
-                    .build();
-            Coil.imageLoader(binding.getRoot().getContext()).enqueue(request);
+            com.veganbeauty.app.utils.ProductImageHelper.loadProductImage(binding.ivProduct, product);
 
             binding.getRoot().setOnClickListener(v -> onItemClick.onItemClick(product));
         }

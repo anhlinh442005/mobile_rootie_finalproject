@@ -16,8 +16,9 @@ public interface StoreDao {
     Flow<List<StoreEntity>> getAllStores();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    List<Long> insertStores(List<StoreEntity> stores);
+    long[] insertStores(List<StoreEntity> stores);
 
+    @androidx.annotation.Nullable
     @Query("SELECT * FROM stores WHERE id = :storeId LIMIT 1")
     StoreEntity getStoreById(String storeId);
 }

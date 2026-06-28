@@ -50,6 +50,7 @@
 
         <!-- Loading Subtext -->
         <TextView
+            android:id="@+id/tvLoadingMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Đang kết nối đến cộng đồng Rootie..."

@@ -13,12 +13,10 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.local.entities.OrderItem;
+import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.databinding.AccountOrderItemBinding;
 
 import java.util.List;
@@ -191,14 +189,7 @@ public class OrderListAdapter extends ListAdapter<OrderEntity, OrderListAdapter.
                 String itemPriceFormatted = String.format("%,dđ", item.getPrice()).replace(',', '.');
                 tvPrice.setText(itemPriceFormatted);
 
-                ImageRequest request = new ImageRequest.Builder(context)
-                        .data(item.getProductImage())
-                        .crossfade(true)
-                        .placeholder(android.R.color.darker_gray)
-                        .error(android.R.color.darker_gray)
-                        .target(ivImage)
-                        .build();
-                Coil.imageLoader(context).enqueue(request);
+                com.bumptech.glide.Glide.with(ivImage.getContext()).load(item.getProductImage()).placeholder(android.R.color.darker_gray).error(android.R.color.darker_gray).into(ivImage);
 
                 binding.llProductsContainer.addView(rowView);
             }
@@ -249,7 +240,7 @@ public class OrderListAdapter extends ListAdapter<OrderEntity, OrderListAdapter.
                     break;
                 case "Hoàn tất":
                     binding.btnActionOutlined.setVisibility(View.VISIBLE);
-                    binding.btnActionOutlined.setText(order.getHasReview() ? "Xem đánh giá" : "Đánh giá");
+                    binding.btnActionOutlined.setText(order.isHasReview() ? "Xem đánh giá" : "Đánh giá");
                     binding.btnActionOutlined.setOnClickListener(v -> onReviewClick.onClick(order));
                     binding.btnActionFilled.setVisibility(View.VISIBLE);
                     binding.btnActionFilled.setText("Mua lại");

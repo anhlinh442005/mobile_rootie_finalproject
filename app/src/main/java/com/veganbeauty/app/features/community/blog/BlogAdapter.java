@@ -9,8 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 import com.veganbeauty.app.R;
 
 import java.util.List;
@@ -62,14 +60,7 @@ public class BlogAdapter extends RecyclerView.Adapter<BlogAdapter.BlogViewHolder
         holder.tvPostDesc.setText("🕒 " + post.getDate() + " " + post.getDescription());
         
         if (post.getImageUrl() != null && !post.getImageUrl().isEmpty()) {
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(post.getImageUrl())
-                    .target(holder.ivPostImage)
-                    .crossfade(true)
-                    .error(R.color.gray_light)
-                    .placeholder(R.color.gray_light)
-                    .build();
-            Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+            com.bumptech.glide.Glide.with(holder.ivPostImage.getContext()).load(post.getImageUrl()).error(R.color.gray_light).into(holder.ivPostImage);
         } else {
             holder.ivPostImage.setImageResource(R.color.gray_light);
         }

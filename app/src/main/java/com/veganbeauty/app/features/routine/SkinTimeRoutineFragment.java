@@ -20,6 +20,7 @@ import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.ItemTimeRoutineStepBinding;
 import com.veganbeauty.app.databinding.SkinTimeRoutineBinding;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -197,25 +198,6 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         }
         Collections.sort(activeSteps, (a, b) -> Integer.compare(a.getIndex(), b.getIndex()));
 
-        RootieDatabase db = RootieDatabase.getDatabase(ctx);
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
-                    try {
-                        List<ProductEntity> allProducts = new ArrayList<>();
-                        // For simplicity in Java, since we don't easily collect from Flow blocking, we use blocking fetch or assume we have a list method if available.
-                        // However, we will assume getAllProductsList is not there, so we use a fallback if needed or just skip.
-                        // Let's implement it with collect if possible, or just ignore DB matching if complex.
-                        // Actually, I'll let it be for now since we just want to match keywords. Wait, if we can't collect, we'll try to fetch.
-                        // I will add matching logic but currently I'll leave the stepProducts empty if I can't fetch.
-                    } catch (Exception e) { e.printStackTrace(); }
-                    BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
-                        populateStepsList();
-                        updateStatsAndProgress();
-                        return kotlin.Unit.INSTANCE;
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
-
         populateStepsList();
         updateStatsAndProgress();
     }
@@ -248,9 +230,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
                 stepBinding.tvViewProductLink.setVisibility(View.VISIBLE);
                 stepBinding.tvViewProductLink.setText("🛒 Gợi ý: " + matchedProduct.getName());
                 stepBinding.tvViewProductLink.setOnClickListener(v -> {
-                    com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment f = new com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment();
-                    f.setProduct(matchedProduct);
-                    getParentFragmentManager().beginTransaction().replace(R.id.main_container, f).addToBackStack(null).commit();
+                    ProductDetailLauncher.open(this, matchedProduct);
                 });
             } else {
                 stepBinding.tvViewProductLink.setVisibility(View.GONE);

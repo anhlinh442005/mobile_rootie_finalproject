@@ -1,12 +1,13 @@
 package com.veganbeauty.app.features.account.expiry;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelKt;
 
 import com.veganbeauty.app.data.local.entities.ProductEntity;
+import com.veganbeauty.app.data.local.entities.UserProductExpiryEntity;
 import com.veganbeauty.app.data.repository.ProductRepository;
 
 import java.text.SimpleDateFormat;
@@ -41,7 +42,7 @@ public class AccountProductExpiryViewModel extends ViewModel {
     public final LiveData<List<ExpiryProductUiModel>> soonExpiryProducts = _soonExpiryProducts;
 
     private Date baselineDate;
-    private List<ProductEntity> currentProducts = new ArrayList<>();
+    private List<UserProductExpiryEntity> currentProducts = new ArrayList<>();
 
     public AccountProductExpiryViewModel(ProductRepository repository, String userId) {
         this.repository = repository;
@@ -69,18 +70,26 @@ public class AccountProductExpiryViewModel extends ViewModel {
     }
 
     private void observeProducts() {
-        Flow<List<ProductEntity>> productsFlow = repository.getExpiryProductsForUser(userId);
+        Flow<List<UserProductExpiryEntity>> productsFlow = repository.getExpiryProductsForUser(userId);
         executor.execute(() -> {
             try {
-                productsFlow.collect(new FlowCollector<List<ProductEntity>>() {
+                productsFlow.collect(new FlowCollector<List<UserProductExpiryEntity>>() {
                     @Override
-                    public Object emit(List<ProductEntity> value, kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+                    public Object emit(List<UserProductExpiryEntity> value, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
                         currentProducts = value != null ? value : new ArrayList<>();
                         updateAllProducts();
                         updateSoonProducts();
                         return kotlin.Unit.INSTANCE;
                     }
-                }, null);
+                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
+                    @NonNull
+                    @Override
+                    public kotlin.coroutines.CoroutineContext getContext() {
+                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
+                    }
+                    @Override
+                    public void resumeWith(@NonNull Object o) {}
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -92,8 +101,8 @@ public class AccountProductExpiryViewModel extends ViewModel {
         ExpiryFilterState filter = _selectedFilter.getValue() != null ? _selectedFilter.getValue() : ExpiryFilterState.ALL;
 
         List<ExpiryProductUiModel> filtered = new ArrayList<>();
-        for (ProductEntity product : currentProducts) {
-            ExpiryProductUiModel uiModel = mapToUiModel(product);
+        for (UserProductExpiryEntity product : currentProducts) {
+            ExpiryProductUiModel uiModel = mapToUiModel(product.toProductEntity());
             boolean matchesQuery = uiModel.getProduct().getName().toLowerCase().contains(query);
             boolean matchesFilter = false;
 
@@ -123,8 +132,8 @@ public class AccountProductExpiryViewModel extends ViewModel {
 
     private void updateSoonProducts() {
         List<ExpiryProductUiModel> soon = new ArrayList<>();
-        for (ProductEntity product : currentProducts) {
-            ExpiryProductUiModel uiModel = mapToUiModel(product);
+        for (UserProductExpiryEntity product : currentProducts) {
+            ExpiryProductUiModel uiModel = mapToUiModel(product.toProductEntity());
             if (uiModel.isUrgent()) {
                 soon.add(uiModel);
             }
@@ -155,7 +164,9 @@ public class AccountProductExpiryViewModel extends ViewModel {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         Date expiry = null;
         try {
-            expiry = sdf.parse(product.getExpiryDate());
+            if (product.getExpiryDate() != null) {
+                expiry = sdf.parse(product.getExpiryDate());
+            }
         } catch (Exception e) {
             // ignored
         }

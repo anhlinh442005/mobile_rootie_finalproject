@@ -52,7 +52,7 @@ public class SoonExpiryBottomSheet extends BottomSheetDialogFragment {
 
         if (getParentFragment() != null) {
             viewModel = new ViewModelProvider(getParentFragment()).get(AccountProductExpiryViewModel.class);
-            viewModel.getSoonExpiryProducts().observe(getViewLifecycleOwner(), products -> {
+            viewModel.soonExpiryProducts.observe(getViewLifecycleOwner(), products -> {
                 listAdapter.submitList(products);
             });
         }

@@ -36,8 +36,9 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.local.entities.OrderItem;
+import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.databinding.ShopFragmentCheckoutBinding;
+import com.veganbeauty.app.utils.AffiliateTrackingHelper;
 import com.veganbeauty.app.features.shop.store.ShopStoreSelectionFragment;
 
 import org.json.JSONArray;
@@ -137,8 +138,14 @@ public class ShopCheckoutFragment extends RootieFragment {
         database = RootieDatabase.getDatabase(requireContext());
         isLoggedIn = ProfileSession.isLoggedIn(requireContext());
         if (getArguments() != null) {
-            checkoutItems = (ArrayList<CartItemEntity>) getArguments().getSerializable(ARG_CHECKOUT_ITEMS);
-            if (checkoutItems == null) checkoutItems = new ArrayList<>();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                @SuppressWarnings("unchecked")
+                ArrayList<CartItemEntity> items = getArguments().getSerializable(ARG_CHECKOUT_ITEMS, ArrayList.class);
+                checkoutItems = items != null ? items : new ArrayList<>();
+            } else {
+                checkoutItems = (ArrayList<CartItemEntity>) getArguments().getSerializable(ARG_CHECKOUT_ITEMS);
+                if (checkoutItems == null) checkoutItems = new ArrayList<>();
+            }
             selectedVoucherCode = getArguments().getString(ARG_INITIAL_VOUCHER_CODE);
             voucherDiscountAmount = getArguments().getLong(ARG_INITIAL_VOUCHER_DISCOUNT, 0L);
             isVoucherApplied = (selectedVoucherCode != null && !selectedVoucherCode.isEmpty());
@@ -305,7 +312,7 @@ public class ShopCheckoutFragment extends RootieFragment {
 
         binding.btnChangeAddress.setOnClickListener(v -> {
             if ("Nhận tại cửa hàng".equals(deliveryType)) {
-                ShopStoreSelectionFragment storeFragment = ShopStoreSelectionFragment.Companion.newInstance(true, selectedStoreId);
+                ShopStoreSelectionFragment storeFragment = ShopStoreSelectionFragment.newInstance(true, selectedStoreId, false, null, null);
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, storeFragment)
                         .addToBackStack(null)
@@ -316,7 +323,7 @@ public class ShopCheckoutFragment extends RootieFragment {
         });
 
         binding.btnChangeStore.setOnClickListener(v -> {
-            ShopStoreSelectionFragment storeFragment = ShopStoreSelectionFragment.Companion.newInstance(true, selectedStoreId);
+            ShopStoreSelectionFragment storeFragment = ShopStoreSelectionFragment.newInstance(true, selectedStoreId, false, null, null);
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, storeFragment)
                     .addToBackStack(null)
@@ -341,7 +348,7 @@ public class ShopCheckoutFragment extends RootieFragment {
         binding.btnChangePaymentMethod.setOnClickListener(v -> showPaymentMethodBottomSheet());
 
         binding.llVoucherRow.setOnClickListener(v -> {
-            ShopVoucherFragment voucherFragment = ShopVoucherFragment.Companion.newInstance(selectedVoucherCode);
+            ShopVoucherFragment voucherFragment = ShopVoucherFragment.newInstance(selectedVoucherCode);
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, voucherFragment)
                     .addToBackStack(null)
@@ -760,40 +767,46 @@ public class ShopCheckoutFragment extends RootieFragment {
         if (buyerInfo == null) return;
 
         long finalTotal = calculateFinalTotal();
+        final boolean memberCheckout = isLoggedIn;
+        final BuyerInfo guestInfo = buyerInfo;
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    new Thread(() -> {
-                        int maxIdNum = 1460;
+        binding.btnCheckout.setEnabled(false);
+
+        new Thread(() -> {
+            int maxIdNum = 1460;
+            try {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                QuerySnapshot snapshot = com.google.android.gms.tasks.Tasks.await(db.collection("orders").get());
+                for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                    String idStr = doc.getId();
+                    if (idStr.startsWith("ORD-")) {
                         try {
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            QuerySnapshot snapshot = TasksKt.await(db.collection("orders").get());
-                            for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                                String idStr = doc.getId();
-                                if (idStr.startsWith("ORD-")) {
-                                    try {
-                                        int num = Integer.parseInt(idStr.substring(4));
-                                        if (num < 5000 && num > maxIdNum) maxIdNum = num;
-                                    } catch (Exception ignored) {}
-                                }
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Failed to query Firestore for max order code", e);
-                            try {
-                                /* In real java coroutines integration, room queries that return flow can be tricky to block on thread.
-                                   Here we just rely on maxIdNum 1460 if firestore fails. */
-                            } catch (Exception ex) {}
-                        }
-                        int nextNum = maxIdNum + 1;
-                        String mockOrderCode = "ORD-" + nextNum;
+                            int num = Integer.parseInt(idStr.substring(4));
+                            if (num < 5000 && num > maxIdNum) maxIdNum = num;
+                        } catch (Exception ignored) {}
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to query Firestore for max order code", e);
+            }
 
-                        requireActivity().runOnUiThread(() -> {
-                            if (isLoggedIn) handleMemberCheckout(mockOrderCode, finalTotal);
-                            else handleGuestCheckout(mockOrderCode, finalTotal, buyerInfo);
-                        });
-                    }).start();
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+            int nextNum = maxIdNum + 1;
+            String mockOrderCode = "ORD-" + nextNum;
+
+            android.app.Activity activity = getActivity();
+            if (activity == null) return;
+            activity.runOnUiThread(() -> {
+                if (binding != null) {
+                    binding.btnCheckout.setEnabled(true);
+                }
+                if (!isAdded() || binding == null) return;
+                if (memberCheckout) {
+                    handleMemberCheckout(mockOrderCode, finalTotal);
+                } else {
+                    handleGuestCheckout(mockOrderCode, finalTotal, guestInfo);
+                }
+            });
+        }).start();
     }
 
     private BuyerInfo collectAndValidateBuyerInfo() {
@@ -833,20 +846,24 @@ public class ShopCheckoutFragment extends RootieFragment {
     }
 
     private void handleMemberCheckout(String mockOrderCode, long finalTotal) {
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
-                    for (CartItemEntity item : checkoutItems) database.cartDao().deleteCartItem(item);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+        new Thread(() -> {
+            try {
+                for (CartItemEntity item : checkoutItems) {
+                    database.cartDao().deleteCartItem(item);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to clear cart after checkout", e);
+            }
+        }).start();
 
         if ("Thanh toán tiền mặt khi nhận hàng".equals(paymentMethod)) {
             navigateToOrderSuccess(mockOrderCode, finalTotal, paymentMethod, false, false);
         } else if ("Thẻ ATM nội địa/Internet Banking".equals(paymentMethod)) {
-            ShopPaymentDialogs.INSTANCE.showAtmVnpayQrDialog(this, mockOrderCode, finalTotal, false);
+            ShopPaymentDialogs.showAtmVnpayQrDialog(this, mockOrderCode, finalTotal, false);
         } else if ("Thanh toán trực tuyến VNPay".equals(paymentMethod)) {
-            ShopPaymentDialogs.INSTANCE.showAtmVnpayQrDialog(this, mockOrderCode, finalTotal, true);
+            ShopPaymentDialogs.showAtmVnpayQrDialog(this, mockOrderCode, finalTotal, true);
         } else if ("Thanh toán trực tuyến MoMo".equals(paymentMethod)) {
-            ShopPaymentDialogs.INSTANCE.showMomoRedirectDialog(this, mockOrderCode, finalTotal);
+            ShopPaymentDialogs.showMomoRedirectDialog(this, mockOrderCode, finalTotal);
         } else {
             navigateToOrderSuccess(mockOrderCode, finalTotal, paymentMethod, false, false);
         }
@@ -908,11 +925,11 @@ public class ShopCheckoutFragment extends RootieFragment {
         if ("Thanh toán tiền mặt khi nhận hàng".equals(paymentMethod)) {
             navigateToOrderSuccess(mockOrderCode, finalTotal, paymentMethod, true, hasEmail);
         } else if ("Thẻ ATM nội địa/Internet Banking".equals(paymentMethod)) {
-            ShopPaymentDialogs.INSTANCE.showAtmVnpayQrDialog(this, mockOrderCode, finalTotal, false);
+            ShopPaymentDialogs.showAtmVnpayQrDialog(this, mockOrderCode, finalTotal, false);
         } else if ("Thanh toán trực tuyến VNPay".equals(paymentMethod)) {
-            ShopPaymentDialogs.INSTANCE.showAtmVnpayQrDialog(this, mockOrderCode, finalTotal, true);
+            ShopPaymentDialogs.showAtmVnpayQrDialog(this, mockOrderCode, finalTotal, true);
         } else if ("Thanh toán trực tuyến MoMo".equals(paymentMethod)) {
-            ShopPaymentDialogs.INSTANCE.showMomoRedirectDialog(this, mockOrderCode, finalTotal);
+            ShopPaymentDialogs.showMomoRedirectDialog(this, mockOrderCode, finalTotal);
         } else {
             navigateToOrderSuccess(mockOrderCode, finalTotal, paymentMethod, true, hasEmail);
         }
@@ -925,13 +942,13 @@ public class ShopCheckoutFragment extends RootieFragment {
         String notificationType = isEmailNotification ? "email" : "sms";
 
         if (isGuest) {
-            PushNotiDialog.INSTANCE.show(
+            PushNotiDialog.show(
                     requireContext(),
                     orderCode,
                     recipientName,
                     isEmailNotification,
-                    () -> { commitSuccessNavigation(orderCode, totalAmount, method, isGuest, notificationType); return kotlin.Unit.INSTANCE; },
-                    () -> { commitSuccessNavigation(orderCode, totalAmount, method, isGuest, notificationType); return kotlin.Unit.INSTANCE; },
+                    () -> commitSuccessNavigation(orderCode, totalAmount, method, isGuest, notificationType),
+                    () -> commitSuccessNavigation(orderCode, totalAmount, method, isGuest, notificationType),
                     this
             );
         } else {
@@ -940,7 +957,7 @@ public class ShopCheckoutFragment extends RootieFragment {
     }
 
     private OrderEntity buildOrderEntitySnapshot(String orderCode, long totalAmount, String method, boolean isGuest) {
-        String finalUserId = isLoggedIn ? ProfileSession.getUserId(requireContext()) : null;
+        String finalUserId = isLoggedIn ? com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext()) : null;
         List<OrderItem> orderItems = new ArrayList<>();
         long subTotal = 0;
         for (CartItemEntity ci : checkoutItems) {
@@ -954,38 +971,45 @@ public class ShopCheckoutFragment extends RootieFragment {
         String billingEmail = isGuest ? binding.etGuestEmail.getText().toString().trim() : ProfileSession.getEmail(requireContext());
         if (billingEmail != null && billingEmail.trim().isEmpty()) billingEmail = null;
 
-        return new OrderEntity(
+        OrderEntity order = new OrderEntity(
                 orderCode, nowDate, nowTime, "Chờ xử lý", totalAmount, subTotal, orderItems,
                 finalUserId, isGuest, recipientName, recipientPhone, recipientAddress, 0L,
                 voucherDiscountAmount, method, null, false, 0, null, null, false, false,
                 recipientName, recipientPhone, billingEmail
         );
+        AffiliateTrackingHelper.applyAffiliateAttribution(requireContext(), order, checkoutItems);
+        return order;
     }
 
     private void persistOrderSync(OrderEntity order) {
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
-                    try {
-                        database.orderDao().insertOrder(order);
-                    } catch (Exception e) { Log.e(TAG, "persistOrderSync local DB write failed", e); }
+        final android.content.Context appContext = requireContext().getApplicationContext();
+        new Thread(() -> {
+            try {
+                database.orderDao().insertOrder(order);
+                AffiliateTrackingHelper.recordAffiliateSideEffects(appContext, order);
+                AffiliateTrackingHelper.clearAttributionForItems(appContext, checkoutItems);
+            } catch (Exception e) {
+                Log.e(TAG, "persistOrderSync local DB write failed", e);
+            }
 
-                    try {
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        Map<String, Object> orderMap = new Gson().fromJson(new Gson().toJsonTree(order), Map.class);
-                        TasksKt.await(db.collection("orders").document(order.getId()).set(orderMap));
+            try {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Map<String, Object> orderMap = new Gson().fromJson(new Gson().toJsonTree(order), Map.class);
+                com.google.android.gms.tasks.Tasks.await(db.collection("orders").document(order.getId()).set(orderMap));
 
-                        Map<String, Object> newNotification = new HashMap<>();
-                        newNotification.put("title", "Có đơn hàng mới! \uD83D\uDED2");
-                        newNotification.put("message", "Khách hàng " + order.getShippingName() + " vừa đặt đơn hàng trị giá " + String.format(Locale.US, "%,d", order.getTotalAmount()) + "đ.");
-                        newNotification.put("type", "NEW_ORDER");
-                        newNotification.put("isRead", false);
-                        newNotification.put("createdAt", System.currentTimeMillis());
-                        newNotification.put("orderId", order.getId());
-                        TasksKt.await(db.collection("notification_admin").add(newNotification));
-                        Log.d(TAG, "Firebase sync success for order " + order.getId());
-                    } catch (Exception e) { Log.e(TAG, "Firebase sync failed", e); }
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+                Map<String, Object> newNotification = new HashMap<>();
+                newNotification.put("title", "Có đơn hàng mới! \uD83D\uDED2");
+                newNotification.put("message", "Khách hàng " + order.getShippingName() + " vừa đặt đơn hàng trị giá " + String.format(Locale.US, "%,d", order.getTotalAmount()) + "đ.");
+                newNotification.put("type", "NEW_ORDER");
+                newNotification.put("isRead", false);
+                newNotification.put("createdAt", System.currentTimeMillis());
+                newNotification.put("orderId", order.getId());
+                com.google.android.gms.tasks.Tasks.await(db.collection("notification_admin").add(newNotification));
+                Log.d(TAG, "Firebase sync success for order " + order.getId());
+            } catch (Exception e) {
+                Log.e(TAG, "Firebase sync failed", e);
+            }
+        }).start();
     }
 
     public void persistOrderFromDialog(String orderCode, long totalAmount, String method, boolean isGuest, boolean isEmailNotification) {
@@ -995,13 +1019,13 @@ public class ShopCheckoutFragment extends RootieFragment {
         String notificationType = isEmailNotification ? "email" : "sms";
 
         if (isGuest) {
-            PushNotiDialog.INSTANCE.show(
+            PushNotiDialog.show(
                     requireContext(),
                     orderCode,
                     recipientName,
                     isEmailNotification,
-                    () -> { commitSuccessNavigation(orderCode, totalAmount, method, isGuest, notificationType); return kotlin.Unit.INSTANCE; },
-                    () -> { commitSuccessNavigation(orderCode, totalAmount, method, isGuest, notificationType); return kotlin.Unit.INSTANCE; },
+                    () -> commitSuccessNavigation(orderCode, totalAmount, method, isGuest, notificationType),
+                    () -> commitSuccessNavigation(orderCode, totalAmount, method, isGuest, notificationType),
                     this
             );
         } else {
@@ -1018,7 +1042,7 @@ public class ShopCheckoutFragment extends RootieFragment {
     }
 
     private void commitSuccessNavigation(String orderCode, long totalAmount, String method, boolean isGuest, String notificationType) {
-        ShopOrderSuccessFragment successFragment = ShopOrderSuccessFragment.Companion.newInstance(
+        ShopOrderSuccessFragment successFragment = ShopOrderSuccessFragment.newInstance(
                 orderCode, totalAmount, method, isGuest, notificationType,
                 "Nhận tại cửa hàng".equals(deliveryType), selectedStoreName, selectedStoreAddress, recipientName
         );

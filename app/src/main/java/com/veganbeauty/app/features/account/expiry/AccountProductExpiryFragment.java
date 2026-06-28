@@ -22,7 +22,7 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.repository.ProductRepository;
 import com.veganbeauty.app.databinding.AccountProductExpiryFragmentBinding;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 
 import java.util.List;
@@ -115,39 +115,25 @@ public class AccountProductExpiryFragment extends RootieFragment {
                 uiModel.getProduct().getExpiryDate(),
                 uiModel.getProduct().getMainImage()
         );
-        actionBottomSheet.setActions(
-                () -> {
-                    executorService.execute(() -> {
-                        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-                        ProductEntity fullProduct = db.productDao().getProductById(uiModel.getProduct().getId());
-                        ShopDetailFragment detailFragment = new ShopDetailFragment();
-                        detailFragment.setProduct(fullProduct != null ? fullProduct : uiModel.getProduct());
-                        
-                        requireActivity().runOnUiThread(() -> {
-                            getParentFragmentManager().beginTransaction()
-                                    .setCustomAnimations(
-                                            android.R.anim.fade_in,
-                                            android.R.anim.fade_out,
-                                            android.R.anim.fade_in,
-                                            android.R.anim.fade_out
-                                    )
-                                    .replace(R.id.main_container, detailFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        });
-                    });
-                },
-                () -> {
-                    viewModel.deleteExpiryProduct(uiModel.getProduct().getId());
-                    Toast.makeText(requireContext(), "Đã xoá " + uiModel.getProduct().getName() + " khỏi kệ", Toast.LENGTH_SHORT).show();
-                }
-        );
+        actionBottomSheet.setActionListener(new ExpiryActionBottomSheet.OnActionClickListener() {
+            @Override
+            public void onBuyAgain() {
+                String productId = uiModel.getProduct().getId();
+                requireActivity().runOnUiThread(() -> ProductDetailLauncher.open(AccountProductExpiryFragment.this, productId));
+            }
+
+            @Override
+            public void onDelete() {
+                viewModel.deleteExpiryProduct(uiModel.getProduct().getId());
+                Toast.makeText(requireContext(), "Đã xoá " + uiModel.getProduct().getName() + " khỏi kệ", Toast.LENGTH_SHORT).show();
+            }
+        });
         actionBottomSheet.show(getChildFragmentManager(), ExpiryActionBottomSheet.TAG);
     }
 
     @Override
     protected void observeViewModel() {
-        viewModel.getSoonExpiryProducts().observe(getViewLifecycleOwner(), products -> {
+        viewModel.soonExpiryProducts.observe(getViewLifecycleOwner(), products -> {
             if (products != null) {
                 soonAdapter.submitList(products.size() > 5 ? products.subList(0, 5) : products);
                 if (products.isEmpty()) {
@@ -162,14 +148,14 @@ public class AccountProductExpiryFragment extends RootieFragment {
             }
         });
 
-        viewModel.getAllExpiryProducts().observe(getViewLifecycleOwner(), products -> {
+        viewModel.allExpiryProducts.observe(getViewLifecycleOwner(), products -> {
             if (products != null) {
                 allAdapter.submitList(products);
             }
         });
     }
 
-    private void navigateToDetail(ExpiryProductUiModel uiModel) {
+    public void navigateToDetail(ExpiryProductUiModel uiModel) {
         AccountProductExpiryDetailFragment detailFragment = AccountProductExpiryDetailFragment.newInstance(uiModel.getProduct().getId());
 
         getParentFragmentManager().beginTransaction()

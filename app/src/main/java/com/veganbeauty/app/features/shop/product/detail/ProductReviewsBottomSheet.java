@@ -27,7 +27,7 @@ public class ProductReviewsBottomSheet extends BottomSheetDialogFragment {
     private static final String ARG_CATEGORY = "arg_category";
 
     private ShopBottomSheetReviewsBinding binding;
-    private final List<ProductReview> allReviews = new ArrayList<>();
+    private final List<ProductReviewHelper.ProductReview> allReviews = new ArrayList<>();
     private ShopReviewAdapter adapter;
     private int selectedStars = 0;
 
@@ -62,12 +62,12 @@ public class ProductReviewsBottomSheet extends BottomSheetDialogFragment {
             category = getArguments().getString(ARG_CATEGORY, "");
         }
 
-        Pair<Double, Integer> stats = ProductReviewHelper.getRatingStats(productId);
+        ProductReviewHelper.RatingStats stats = ProductReviewHelper.getRatingStats(productId);
         
-        binding.tvAverageRating.setText(String.format(Locale.US, "%.1f", stats.getFirst()));
-        binding.tvTotalRatingCount.setText(stats.getSecond() + " reviews");
+        binding.tvAverageRating.setText(String.format(Locale.US, "%.1f", stats.rating));
+        binding.tvTotalRatingCount.setText(stats.reviewCount + " reviews");
 
-        List<ProductReview> initialReviews = ProductReviewHelper.getReviews(productId, productName, category);
+        List<ProductReviewHelper.ProductReview> initialReviews = ProductReviewHelper.getReviews(productId, productName, category);
         allReviews.addAll(initialReviews);
         
         updateProgressBars();
@@ -100,7 +100,7 @@ public class ProductReviewsBottomSheet extends BottomSheetDialogFragment {
         String finalProductName = productName;
         String finalCategory = category;
         binding.btnLoadMoreReviews.setOnClickListener(v -> {
-            List<ProductReview> newReviews = ProductReviewHelper.getRandomReviews(finalProductName, finalCategory, 5);
+            List<ProductReviewHelper.ProductReview> newReviews = ProductReviewHelper.getRandomReviews(finalProductName, finalCategory, 5);
             allReviews.addAll(newReviews);
             updateProgressBars();
             filterAndDisplayReviews();
@@ -111,7 +111,7 @@ public class ProductReviewsBottomSheet extends BottomSheetDialogFragment {
         int total = allReviews.size();
         if (total > 0) {
             int star5 = 0, star4 = 0, star3 = 0, star2 = 0, star1 = 0;
-            for (ProductReview r : allReviews) {
+            for (ProductReviewHelper.ProductReview r : allReviews) {
                 if (r.getRating() == 5) star5++;
                 else if (r.getRating() == 4) star4++;
                 else if (r.getRating() == 3) star3++;
@@ -128,18 +128,18 @@ public class ProductReviewsBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void filterAndDisplayReviews() {
-        List<ProductReview> filtered = new ArrayList<>();
+        List<ProductReviewHelper.ProductReview> filtered = new ArrayList<>();
         if (selectedStars == 0) {
             filtered.addAll(allReviews);
         } else {
-            for (ProductReview r : allReviews) {
+            for (ProductReviewHelper.ProductReview r : allReviews) {
                 if (r.getRating() == selectedStars) {
                     filtered.add(r);
                 }
             }
         }
 
-        adapter.updateData(filtered);
+        adapter.updateData((List) filtered);
 
         if (filtered.isEmpty()) {
             binding.rvBottomSheetReviews.setVisibility(View.GONE);

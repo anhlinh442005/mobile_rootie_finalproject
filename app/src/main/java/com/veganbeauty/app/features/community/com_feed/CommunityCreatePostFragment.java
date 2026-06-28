@@ -30,10 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.LifecycleOwnerKt;
 
-import coil.Coil;
-import coil.ImageLoader;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -42,6 +38,11 @@ import com.google.android.material.shape.ShapeAppearanceModel;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
+import com.veganbeauty.app.data.local.RootieDatabase;
+
+import coil.Coil;
+import coil.ImageLoader;
+import coil.request.ImageRequest;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.dao.CommunityDao;
@@ -251,7 +252,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         setupHideKeyboard(binding.getRoot());
-        RootieDatabase db = RootieDatabase.Companion.getDatabase(requireContext());
+        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
         communityDao = db.communityDao();
 
         loadCurrentUserInfo();
@@ -260,14 +261,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
         if (binding.ivUserAvatar != null) {
             if (!loggedAvatarUrl.isEmpty()) {
                 ImageLoader imageLoader = Coil.imageLoader(requireContext());
-                ImageRequest request = new ImageRequest.Builder(requireContext())
-                        .data(loggedAvatarUrl)
-                        .crossfade(true)
-                        .transformations(new CircleCropTransformation())
-                        .placeholder(R.drawable.img_avatar)
-                        .target(binding.ivUserAvatar)
-                        .build();
-                imageLoader.enqueue(request);
+                com.bumptech.glide.Glide.with(binding.ivUserAvatar.getContext()).load(loggedAvatarUrl).placeholder(R.drawable.img_avatar).circleCrop().into(binding.ivUserAvatar);
             } else {
                 binding.ivUserAvatar.setImageResource(R.drawable.img_avatar);
             }
@@ -557,12 +551,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
 
                     if (!img.isEmpty()) {
                         ImageLoader imageLoader = Coil.imageLoader(requireContext());
-                        ImageRequest request = new ImageRequest.Builder(requireContext())
-                                .data(img)
-                                .crossfade(true)
-                                .target(iv)
-                                .build();
-                        imageLoader.enqueue(request);
+                        com.bumptech.glide.Glide.with(iv.getContext()).load(img).into(iv);
                     } else {
                         iv.setImageResource(R.color.gray_light);
                     }
@@ -606,12 +595,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
                                 tvProductName.setText(name);
                                 if (!img.isEmpty()) {
                                     ImageLoader loader = Coil.imageLoader(requireContext());
-                                    ImageRequest req = new ImageRequest.Builder(requireContext())
-                                            .data(img)
-                                            .crossfade(true)
-                                            .target(ivProductImg)
-                                            .build();
-                                    loader.enqueue(req);
+                                    com.bumptech.glide.Glide.with(ivProductImg.getContext()).load(img).into(ivProductImg);
                                 }
 
                                 productView.setOnClickListener(pv -> {
@@ -714,13 +698,13 @@ public class CommunityCreatePostFragment extends RootieFragment {
                 loggedDisplayName,
                 loggedAvatarUrl,
                 content,
-                urisBuilder.toString(),
                 sdf.format(new Date()),
                 0,
                 0,
                 0,
                 selectedSkinIssue,
                 selectedTopic,
+                urisBuilder.toString(),
                 selectedTopic,
                 productsBuilder.toString()
         );

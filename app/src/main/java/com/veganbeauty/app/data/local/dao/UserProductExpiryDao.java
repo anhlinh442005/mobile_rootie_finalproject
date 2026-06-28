@@ -18,11 +18,12 @@ public interface UserProductExpiryDao {
     @Query("SELECT * FROM user_product_expiry WHERE userId = :userId")
     List<UserProductExpiryEntity> getProductsByUserId(String userId);
 
+    @androidx.annotation.Nullable
     @Query("SELECT * FROM user_product_expiry WHERE userId = :userId AND productId = :productId LIMIT 1")
     UserProductExpiryEntity getProductById(String userId, String productId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    List<Long> insertUserProducts(List<UserProductExpiryEntity> products);
+    long[] insertUserProducts(List<UserProductExpiryEntity> products);
 
     @Query("SELECT COUNT(*) FROM user_product_expiry WHERE userId = :userId")
     int getProductCountByUserId(String userId);

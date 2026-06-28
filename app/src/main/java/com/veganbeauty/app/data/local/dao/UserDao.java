@@ -14,37 +14,33 @@ public interface UserDao {
     Flow<List<UserEntity>> getAllUsers();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertUser(UserEntity user, kotlin.coroutines.Continuation<? super Long> continuation);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertUserSync(UserEntity user);
 
+    @androidx.annotation.Nullable
     @Query("SELECT * FROM users WHERE user_id = :userId LIMIT 1")
     UserEntity getUserByIdSync(String userId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Object insertUsers(List<UserEntity> users, kotlin.coroutines.Continuation<? super List<Long>> continuation);
+    long[] insertUsersSync(List<UserEntity> users);
 
+    @androidx.annotation.Nullable
     @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
-    Object getUserByEmailAndPassword(String email, String password, kotlin.coroutines.Continuation<? super UserEntity> continuation);
+    UserEntity getUserByEmailAndPasswordSync(String email, String password);
 
+    @androidx.annotation.Nullable
     @Query("SELECT * FROM users WHERE phone = :phone AND password = :password LIMIT 1")
-    Object getUserByPhoneAndPassword(String phone, String password, kotlin.coroutines.Continuation<? super UserEntity> continuation);
+    UserEntity getUserByPhoneAndPasswordSync(String phone, String password);
 
-    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
-    Object getUserByEmail(String email, kotlin.coroutines.Continuation<? super UserEntity> continuation);
-
-    @Query("SELECT * FROM users WHERE phone = :phone LIMIT 1")
-    Object getUserByPhone(String phone, kotlin.coroutines.Continuation<? super UserEntity> continuation);
-
-    @Query("DELETE FROM users WHERE username = :username")
-    int deleteUserByUsernameSync(String username);
-
+    @androidx.annotation.Nullable
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     UserEntity getUserByEmailSync(String email);
 
+    @androidx.annotation.Nullable
     @Query("SELECT * FROM users WHERE phone = :phone LIMIT 1")
     UserEntity getUserByPhoneSync(String phone);
+
+    @Query("DELETE FROM users WHERE username = :username")
+    int deleteUserByUsernameSync(String username);
 
     @Query("UPDATE users SET password = :newPassword WHERE email = :email")
     int updatePasswordByEmailSync(String email, String newPassword);

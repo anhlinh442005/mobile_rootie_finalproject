@@ -33,7 +33,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.repository.ProductRepository;
 import com.veganbeauty.app.databinding.ShopBarcodeScanBinding;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -108,7 +108,7 @@ public class BarcodeScanFragment extends RootieFragment {
 
     @Override
     protected void observeViewModel() {
-        viewModel.getScanState().observe(getViewLifecycleOwner(), state -> {
+        viewModel.scanState.observe(getViewLifecycleOwner(), state -> {
             if (state instanceof BarcodeScanState.Idle) {
                 _binding.barcodeScanLoading.setVisibility(View.GONE);
                 _binding.barcodeScanStatus.setVisibility(View.GONE);
@@ -193,21 +193,12 @@ public class BarcodeScanFragment extends RootieFragment {
     }
 
     private void openProductDetail(com.veganbeauty.app.data.local.entities.ProductEntity product) {
-        ShopDetailFragment detailFragment = new ShopDetailFragment();
-        detailFragment.setProduct(product);
-
-        getParentFragmentManager().popBackStackImmediate();
-
-        getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out,
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out
-                )
-                .replace(R.id.main_container, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        if (product == null || product.getId() == null) return;
+        try {
+            getParentFragmentManager().popBackStackImmediate();
+        } catch (Exception ignored) {
+        }
+        ProductDetailLauncher.open(this, product);
     }
 
     @Override

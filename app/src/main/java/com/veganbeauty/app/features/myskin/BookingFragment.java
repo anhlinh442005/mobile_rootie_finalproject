@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -86,10 +84,11 @@ public class BookingFragment extends RootieFragment {
         storeName.setText(storeNameStr);
         storeAddress.setText(storeAddressStr);
         if (!storeImageUrlStr.isEmpty()) {
-            Coil.imageLoader(requireContext()).enqueue(
-                    new ImageRequest.Builder(requireContext()).data(storeImageUrlStr)
-                            .placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo)
-                            .crossfade(true).target(storeImage).build());
+            com.bumptech.glide.Glide.with(requireContext())
+                    .load(storeImageUrlStr)
+                    .placeholder(R.drawable.imv_logo)
+                    .error(R.drawable.imv_logo)
+                    .into(storeImage);
         } else {
             storeImage.setImageResource(R.drawable.imv_logo);
         }
@@ -227,14 +226,19 @@ public class BookingFragment extends RootieFragment {
                 ProfileSession.getEmail(requireContext()),
                 service,
                 selectedDate.getDate() + "/" + year,
-                monthDisplay,
                 selectedDate.getDayOfWeek(),
                 selectedTime.getTime(),
                 selectedService != null ? selectedService.getDuration() : "",
-                storeNameStr, storeAddressStr, "1900 1234", storeImageUrlStr,
-                "Chờ xác nhận", isoTime, specialist,
-                "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg", 5.0f
+                storeNameStr, storeAddressStr,
+                "Chờ xác nhận"
         );
+        booking.setMonthDisplay(monthDisplay);
+        booking.setStorePhone("1900 1234");
+        booking.setStoreImage(storeImageUrlStr);
+        booking.setCreatedAt(isoTime);
+        booking.setConsultantName(specialist);
+        booking.setConsultantAvatar("https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg");
+        booking.setConsultantRating(5.0f);
 
         executor.execute(() -> {
             new FirestoreService().addBooking(booking);

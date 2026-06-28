@@ -17,10 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwnerKt;
-
-import coil.Coil;
-import coil.request.ImageRequest;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.veganbeauty.app.R;
@@ -28,7 +24,7 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.local.entities.OrderItemEntity;
+import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderReviewFragmentBinding;
 
@@ -37,8 +33,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
+import kotlinx.coroutines.flow.FlowCollector;
 
 public class AccountOrderReviewFragment extends RootieFragment {
 
@@ -59,12 +54,7 @@ public class AccountOrderReviewFragment extends RootieFragment {
                 if (uri != null) {
                     selectedImageUrl = uri.toString();
                     _binding.cardImg1.setVisibility(View.VISIBLE);
-                    ImageRequest request = new ImageRequest.Builder(requireContext())
-                            .data(uri)
-                            .crossfade(true)
-                            .target(_binding.ivImg1)
-                            .build();
-                    Coil.imageLoader(requireContext()).enqueue(request);
+                    com.bumptech.glide.Glide.with(_binding.ivImg1.getContext()).load(uri).into(_binding.ivImg1);
                     Toast.makeText(getContext(), "Đã thêm ảnh từ thư viện!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -78,12 +68,7 @@ public class AccountOrderReviewFragment extends RootieFragment {
                     if (path != null) {
                         selectedImageUrl = path;
                         _binding.cardImg1.setVisibility(View.VISIBLE);
-                        ImageRequest request = new ImageRequest.Builder(requireContext())
-                                .data(new File(path))
-                                .crossfade(true)
-                                .target(_binding.ivImg1)
-                                .build();
-                        Coil.imageLoader(requireContext()).enqueue(request);
+                        com.bumptech.glide.Glide.with(_binding.ivImg1.getContext()).load(new File(path)).into(_binding.ivImg1);
                         Toast.makeText(getContext(), "Đã chụp ảnh thành công!", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -193,25 +178,40 @@ public class AccountOrderReviewFragment extends RootieFragment {
     }
 
     private void loadOrderData() {
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            repository.getOrderById(orderId).collect(new kotlinx.coroutines.flow.FlowCollector<OrderEntity>() {
-                @Nullable
-                @Override
-                public Object emit(OrderEntity ord, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                    if (ord != null) {
-                        order = ord;
-                        bindOrderDetails(ord);
+        new Thread(() -> {
+            try {
+                repository.getOrderById(orderId).collect(new FlowCollector<List<OrderEntity>>() {
+                    @Override
+                    public Object emit(List<OrderEntity> list, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+                        if (list != null && !list.isEmpty()) {
+                            OrderEntity ord = list.get(0);
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    order = ord;
+                                    bindOrderDetails(ord);
+                                });
+                            }
+                        }
+                        return kotlin.Unit.INSTANCE;
                     }
-                    return kotlin.Unit.INSTANCE;
-                }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
-        });
+                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
+                    @NonNull
+                    @Override
+                    public kotlin.coroutines.CoroutineContext getContext() {
+                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
+                    }
+                    @Override
+                    public void resumeWith(@NonNull Object o) {}
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void bindOrderDetails(OrderEntity ord) {
-        if (ord.getItems().isEmpty()) return;
-        OrderItemEntity firstItem = ord.getItems().get(0);
+        if (ord.getItems() == null || ord.getItems().isEmpty()) return;
+        OrderItem firstItem = ord.getItems().get(0);
         _binding.tvProductName.setText(firstItem.getProductName());
 
         String attribute;
@@ -228,16 +228,9 @@ public class AccountOrderReviewFragment extends RootieFragment {
         }
         _binding.tvProductVariant.setText(attribute);
 
-        ImageRequest request = new ImageRequest.Builder(requireContext())
-                .data(firstItem.getProductImage())
-                .crossfade(true)
-                .placeholder(android.R.color.darker_gray)
-                .error(android.R.color.darker_gray)
-                .target(_binding.ivProductImage)
-                .build();
-        Coil.imageLoader(requireContext()).enqueue(request);
+        com.bumptech.glide.Glide.with(_binding.ivProductImage.getContext()).load(firstItem.getProductImage()).placeholder(android.R.color.darker_gray).error(android.R.color.darker_gray).into(_binding.ivProductImage);
 
-        if (ord.getHasReview() && !isEditMode) {
+        if (ord.isHasReview() && !isEditMode) {
             enterSummaryMode(ord);
         } else if (!isEditMode) {
             enterCreateMode();
@@ -338,32 +331,37 @@ public class AccountOrderReviewFragment extends RootieFragment {
             return;
         }
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+        new Thread(() -> {
             try {
-                Object resultObj = repository.updateOrderReview(
+                boolean success = repository.updateOrderReview(
                         orderId,
                         selectedStars,
                         text,
                         selectedImageUrl,
                         _binding.cbAnonymous.isChecked(),
-                        _binding.cbRecommend.isChecked(),
-                        continuation
+                        _binding.cbRecommend.isChecked()
                 );
                 
-                // For simplicity, we just assume it's successful here if no exception
-                new MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Thành công!")
-                        .setMessage("Đánh giá của bạn đã được ghi nhận. Bạn nhận được +200 xu thưởng vào tài khoản!")
-                        .setPositiveButton("Tuyệt vời", (dialog, which) -> getParentFragmentManager().popBackStack())
-                        .setCancelable(false)
-                        .show();
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        new MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Thành công!")
+                                .setMessage("Đánh giá của bạn đã được ghi nhận. Bạn nhận được +200 xu thưởng vào tài khoản!")
+                                .setPositiveButton("Tuyệt vời", (dialog, which) -> getParentFragmentManager().popBackStack())
+                                .setCancelable(false)
+                                .show();
+                    });
+                }
                         
             } catch (Exception e) {
-                Toast.makeText(requireContext(), "Đã lưu đánh giá thành công!", Toast.LENGTH_SHORT).show();
-                getParentFragmentManager().popBackStack();
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        Toast.makeText(requireContext(), "Đã lưu đánh giá thành công!", Toast.LENGTH_SHORT).show();
+                        getParentFragmentManager().popBackStack();
+                    });
+                }
             }
-            return kotlin.Unit.INSTANCE;
-        });
+        }).start();
     }
 
     @Override

@@ -15,8 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.lifecycle.LifecycleOwnerKt;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.veganbeauty.app.MainActivity;
 import com.veganbeauty.app.R;
@@ -24,23 +24,26 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
-import com.veganbeauty.app.data.repository.OrderRepository;
+import com.veganbeauty.app.data.local.entities.OrderEntity;
+import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.databinding.AccountProfileBinding;
 import com.veganbeauty.app.features.account.checkin.AccountCheckinFragment;
 import com.veganbeauty.app.features.account.expiry.AccountProductExpiryFragment;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.account.order.AccountOrderListFragment;
 import com.veganbeauty.app.features.account.reward.AccountRewardFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.home.HomeHeaderHelper;
 import com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity;
 import com.veganbeauty.app.features.myskin.BookingHistoryFragment;
 import com.veganbeauty.app.features.quiz.QuizTestIntroFragment;
 import com.veganbeauty.app.features.routine.SkinReminderFragment;
 import com.veganbeauty.app.features.weather.SkinWeatherForecastFragment;
+import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.utils.AvatarLoader;
 import com.veganbeauty.app.utils.NavAppUtils;
-import com.veganbeauty.app.utils.SyncDataHelper;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
+import java.util.List;
 import java.util.Set;
 
 import kotlin.Unit;
@@ -50,6 +53,7 @@ import kotlinx.coroutines.Dispatchers;
 public class AccountProfileFragment extends RootieFragment {
 
     private AccountProfileBinding binding;
+    private OrderRepository orderRepository;
 
     @Nullable
     @Override
@@ -63,8 +67,13 @@ public class AccountProfileFragment extends RootieFragment {
         Context ctx = requireContext();
         boolean isLoggedIn = ProfileSession.INSTANCE.isLoggedIn(ctx);
 
-        String avatarUrl = ProfileSession.INSTANCE.getAvatar(ctx);
-        AvatarLoader.INSTANCE.loadAvatar(binding.ivAvatar, avatarUrl);
+        HomeHeaderHelper.setup(this, binding.getRoot());
+
+        if (isLoggedIn) {
+            loadUserProfileData(ctx);
+        } else {
+            AvatarLoader.loadAvatar(binding.ivAvatar, "");
+        }
 
         View.OnClickListener guestRedirectListener = v -> {
             Intent intent = new Intent(ctx, HomeWelcomeActivity.class);
@@ -95,14 +104,6 @@ public class AccountProfileFragment extends RootieFragment {
         } else {
             binding.tvProfileSkinType.setText("Chưa làm quiz");
         }
-
-        binding.llSearch.setOnClickListener(v -> Toast.makeText(getContext(), "Tính năng tìm kiếm đang phát triển", Toast.LENGTH_SHORT).show());
-        binding.btnQrScan.setOnClickListener(v -> Toast.makeText(getContext(), "Mở trình quét mã QR", Toast.LENGTH_SHORT).show());
-
-        binding.btnNotification.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new AccountNotificationFragment())
-                .addToBackStack(null)
-                .commit());
 
         binding.btnExpiryShelf.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new AccountProductExpiryFragment())
@@ -196,7 +197,7 @@ public class AccountProfileFragment extends RootieFragment {
             pinParent.setOnClickListener(v -> Toast.makeText(getContext(), "Chọn địa chỉ giao hàng", Toast.LENGTH_SHORT).show());
         }
 
-        NavAppUtils.INSTANCE.setupNavApp(this, view, R.id.nav_account);
+        NavAppUtils.setupNavApp(this, view, R.id.nav_account);
 
         binding.btnSkinWeather.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new SkinWeatherForecastFragment())
@@ -241,23 +242,14 @@ public class AccountProfileFragment extends RootieFragment {
         });
 
         if (isLoggedIn) {
-            RootieDatabase db = RootieDatabase.Companion.getDatabase(requireContext());
-            OrderRepository repository = new OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), new LocalJsonReader(requireContext()));
-            
+            RootieDatabase db = RootieDatabase.getDatabase(requireContext());
+            orderRepository = new OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), new LocalJsonReader(requireContext()));
+
             BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                repository.refreshOrders(continuation);
-                return Unit.INSTANCE;
-            });
-            
-            BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                kotlinx.coroutines.flow.FlowKt.collect(db.rewardPointDao().getTotalPointsFlow(), new kotlinx.coroutines.flow.FlowCollector<Integer>() {
-                    @Nullable
-                    @Override
-                    public Object emit(Integer points, @NonNull kotlin.coroutines.Continuation<? super Unit> continuation) {
-                        binding.tvCoins.setText(String.valueOf(points != null ? points : 0));
-                        return Unit.INSTANCE;
-                    }
-                }, continuation);
+                orderRepository.refreshOrders(
+                        ProfileSessionHelper.getEffectiveUserId(ctx),
+                        ProfileSession.getPhone(ctx)
+                );
                 return Unit.INSTANCE;
             });
         } else {
@@ -291,13 +283,12 @@ public class AccountProfileFragment extends RootieFragment {
             dialog.show();
         });
 
-        BottomNavHelper.INSTANCE.setup(
+        BottomNavHelper.setup(
                 this,
                 binding.getRoot(),
                 R.id.nav_account,
                 tabId -> {
-                    BottomNavHelper.INSTANCE.navigate(this, tabId);
-                    return Unit.INSTANCE;
+                    BottomNavHelper.navigate(this, tabId);
                 }
         );
     }
@@ -314,7 +305,130 @@ public class AccountProfileFragment extends RootieFragment {
 
     @Override
     public void observeViewModel() {
-        super.observeViewModel();
+        if (!ProfileSession.isLoggedIn(requireContext())) return;
+        Context ctx = requireContext();
+        RootieDatabase db = RootieDatabase.getDatabase(ctx);
+
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+                .observe(getViewLifecycleOwner(), points -> {
+                    if (binding == null || !isAdded()) return;
+                    int total = (points != null && !points.isEmpty()) ? points.get(0).total : 0;
+                    binding.tvCoins.setText(String.valueOf(total));
+                });
+
+        if (orderRepository == null) {
+            orderRepository = new OrderRepository(
+                    db.orderDao(),
+                    db.rewardPointDao(),
+                    db.userGiftDao(),
+                    new LocalJsonReader(ctx)
+            );
+        }
+
+        String userId = ProfileSessionHelper.getEffectiveUserId(ctx);
+        String phone = ProfileSession.getPhone(ctx);
+
+        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+            orderRepository.syncOrdersFromAssetsBlocking();
+            List<OrderEntity> orders = orderRepository.filterBuyerOrdersFromAssets(userId, phone);
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (binding == null || !isAdded()) return;
+                    updateOrderBadges(orders);
+                });
+            }
+            return Unit.INSTANCE;
+        });
+
+        FlowLiveDataConversions.asLiveData(orderRepository.getOrdersForBuyer(userId, phone))
+                .observe(getViewLifecycleOwner(), roomOrders -> {
+                    if (roomOrders != null && !roomOrders.isEmpty()) {
+                        updateOrderBadges(roomOrders);
+                    }
+                });
+    }
+
+    private void loadUserProfileData(Context ctx) {
+        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+            ProfileSessionHelper.ensureCurrentUserInDatabase(ctx);
+            if (orderRepository == null) {
+                RootieDatabase db = RootieDatabase.getDatabase(ctx);
+                orderRepository = new OrderRepository(
+                        db.orderDao(),
+                        db.rewardPointDao(),
+                        db.userGiftDao(),
+                        new LocalJsonReader(ctx)
+                );
+            }
+            orderRepository.syncOrdersFromAssetsBlocking();
+
+            UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
+            if (user != null) {
+                ProfileSessionHelper.syncSessionFromUser(ctx, user);
+            }
+            String avatarUrl = ProfileSessionHelper.getDisplayAvatarUrl(ctx);
+            String fallbackUrl = user != null && user.getPrimary_image() != null ? user.getPrimary_image().trim() : "";
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (binding == null || !isAdded()) return;
+                    AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl, fallbackUrl);
+                    binding.tvUsername.setText(ProfileSession.getFullName(ctx));
+                    binding.tvEmail.setText(ProfileSession.getEmail(ctx));
+                });
+            }
+            return Unit.INSTANCE;
+        });
+    }
+
+    private void updateOrderBadges(@Nullable List<OrderEntity> orders) {
+        if (binding == null || !isAdded()) return;
+
+        int pending = 0;
+        int processing = 0;
+        int delivering = 0;
+        int success = 0;
+        int cancelled = 0;
+
+        if (orders != null) {
+            for (OrderEntity order : orders) {
+                String status = order.getStatus();
+                if (status == null) continue;
+                switch (status) {
+                    case "Chờ xử lý":
+                        pending++;
+                        break;
+                    case "Đang xử lý":
+                        processing++;
+                        break;
+                    case "Đang giao":
+                        delivering++;
+                        break;
+                    case "Hoàn tất":
+                        success++;
+                        break;
+                    case "Đã hủy":
+                        cancelled++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        setOrderBadge(binding.tvOrderBadgePending, pending);
+        setOrderBadge(binding.tvOrderBadgeProcessing, processing);
+        setOrderBadge(binding.tvOrderBadgeDelivering, delivering);
+        setOrderBadge(binding.tvOrderBadgeSuccess, success);
+        setOrderBadge(binding.tvOrderBadgeCancelled, cancelled);
+    }
+
+    private void setOrderBadge(TextView badgeView, int count) {
+        if (count > 0) {
+            badgeView.setVisibility(View.VISIBLE);
+            badgeView.setText(count > 99 ? "99+" : String.valueOf(count));
+        } else {
+            badgeView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -329,25 +443,10 @@ public class AccountProfileFragment extends RootieFragment {
         if (binding != null) {
             Context ctx = requireContext();
             boolean isLoggedIn = ProfileSession.INSTANCE.isLoggedIn(ctx);
-            String avatarUrl = ProfileSession.INSTANCE.getAvatar(ctx);
-            AvatarLoader.INSTANCE.loadAvatar(binding.ivAvatar, avatarUrl);
             if (isLoggedIn) {
-                String fullName = ProfileSession.INSTANCE.getFullName(ctx);
-                String email = ProfileSession.INSTANCE.getEmail(ctx);
-                binding.tvUsername.setText(fullName);
-                binding.tvEmail.setText(email);
-
-                SyncDataHelper.INSTANCE.syncUserProfileFromFirestore(ctx, () -> {
-                    if (binding != null && getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            String updatedAvatarUrl = ProfileSession.INSTANCE.getAvatar(ctx);
-                            AvatarLoader.INSTANCE.loadAvatar(binding.ivAvatar, updatedAvatarUrl);
-                            binding.tvUsername.setText(ProfileSession.INSTANCE.getFullName(ctx));
-                            binding.tvEmail.setText(ProfileSession.INSTANCE.getEmail(ctx));
-                        });
-                    }
-                    return Unit.INSTANCE;
-                });
+                loadUserProfileData(ctx);
+            } else {
+                AvatarLoader.loadAvatar(binding.ivAvatar, "");
             }
         }
     }

@@ -46,6 +46,7 @@ import com.veganbeauty.app.features.home.adapter.HomeProductGridAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutItem;
 import com.veganbeauty.app.features.home.adapter.HomeTopSearchAdapter;
+import com.veganbeauty.app.features.home.HomeHeaderHelper;
 import com.veganbeauty.app.features.myskin.ChooseBranchFragment;
 import com.veganbeauty.app.features.myskin.MySkinFragment;
 import com.veganbeauty.app.features.myskin.SkinHistoryFragment;
@@ -55,7 +56,7 @@ import com.veganbeauty.app.features.routine.SkinReminderFragment;
 import com.veganbeauty.app.features.shop.ShopViewModel;
 import com.veganbeauty.app.features.shop.barcode.BarcodeScanFragment;
 import com.veganbeauty.app.features.shop.product.CartHelper;
-import com.veganbeauty.app.features.shop.product.detail.ShopDetailFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.features.shop.product.list.ShopListFragment;
 import com.veganbeauty.app.features.shop.store.ShopStoreSystemFragment;
 import com.veganbeauty.app.features.weather.SkinWeatherForecastFragment;
@@ -115,8 +116,8 @@ public class HomeFragment extends RootieFragment {
     @Override
     public void setupUI(View view) {
         buildShortcuts();
-        setupBanner();
         setupRecyclerViews();
+        setupBanner();
         setupShortcuts();
         setupHeaderActions();
         setupBottomNav();
@@ -161,7 +162,7 @@ public class HomeFragment extends RootieFragment {
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.main_container, fragment)
-                .addToBackStack(null).commit();
+                .addToBackStack(null).commitAllowingStateLoss();
     }
 
     private void navigateIfLoggedIn(Fragment fragment) {
@@ -330,10 +331,7 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void setupHeaderActions() {
-        View searchBar = binding.getRoot().findViewById(R.id.home_header_search_bar);
-        if (searchBar != null) searchBar.setOnClickListener(v -> Toast.makeText(getContext(), "Tính năng tìm kiếm đang phát triển", Toast.LENGTH_SHORT).show());
-        View qrBtn = binding.getRoot().findViewById(R.id.home_header_qr_btn);
-        if (qrBtn != null) qrBtn.setOnClickListener(v -> Toast.makeText(getContext(), "Mở trình quét mã QR", Toast.LENGTH_SHORT).show());
+        HomeHeaderHelper.setup(this, binding.getRoot());
         binding.tvRecentSeeAll.setOnClickListener(v -> openShop());
         binding.tvCategoriesSeeAll.setOnClickListener(v -> openShop());
     }
@@ -346,12 +344,13 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void setupBottomNav() {
-        BottomNavHelper.setup(this, binding.getRoot(), R.id.nav_home, BottomNavHelper::navigate);
+        BottomNavHelper.setup(this, binding.getRoot(), R.id.nav_home, tabId -> BottomNavHelper.navigate(this, tabId));
     }
 
     @Override
     public void observeViewModel() {
-        viewModel.getProducts().observe(getViewLifecycleOwner(), products -> {
+        viewModel.products.observe(getViewLifecycleOwner(), products -> {
+            if (products == null) return;
             allProducts = products;
             bindProductSections(products);
         });
@@ -410,9 +409,7 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void openProductDetail(ProductEntity product) {
-        ShopDetailFragment f = new ShopDetailFragment();
-        f.setProduct(product);
-        navigateTo(f);
+        ProductDetailLauncher.open(this, product);
     }
 
     private void addToCart(ProductEntity product) {
@@ -436,7 +433,7 @@ public class HomeFragment extends RootieFragment {
                         );
                         ArrayList<com.veganbeauty.app.data.local.entities.CartItemEntity> list = new ArrayList<>();
                         list.add(checkoutItem);
-                        com.veganbeauty.app.features.shop.product.ShopCheckoutFragment checkoutFragment = com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(list);
+                        com.veganbeauty.app.features.shop.product.ShopCheckoutFragment checkoutFragment = com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(list, "", 0L);
                         getParentFragmentManager().beginTransaction()
                                 .replace(R.id.main_container, checkoutFragment)
                                 .addToBackStack(null)

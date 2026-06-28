@@ -17,6 +17,7 @@ public interface CartDao {
     @Query("SELECT * FROM cart_items")
     Flow<List<CartItemEntity>> getAllCartItems();
 
+    @androidx.annotation.Nullable
     @Query("SELECT * FROM cart_items WHERE id = :itemId LIMIT 1")
     CartItemEntity getCartItemById(String itemId);
 

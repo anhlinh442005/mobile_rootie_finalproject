@@ -9,25 +9,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.CommunityProduct;
 import com.veganbeauty.app.data.local.RootieDatabase;
+import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.ComFragmentShowcaseBinding;
 import com.veganbeauty.app.databinding.ComItemShowcaseProductBinding;
+import com.veganbeauty.app.features.community.affiliate.AffiliateProductsHelper;
 import com.veganbeauty.app.features.shop.product.CartBottomSheetFragment;
 import com.veganbeauty.app.features.shop.product.CartHelper;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
+import org.json.JSONObject;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -36,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import kotlinx.coroutines.flow.FlowCollector;
 
 public class CommunityShowcaseFragment extends Fragment {
 
@@ -73,14 +72,7 @@ public class CommunityShowcaseFragment extends Fragment {
         String titleText = userName != null ? userName : "Na Na";
         _binding.tvShowcaseTitle.setText("Trang trưng bày của " + titleText);
 
-        ImageRequest avatarRequest = new ImageRequest.Builder(requireContext())
-                .data(avatarUrl != null ? avatarUrl : "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg")
-                .crossfade(true)
-                .transformations(new CircleCropTransformation())
-                .error(R.drawable.img_avatar)
-                .target(_binding.ivAvatar)
-                .build();
-        Coil.imageLoader(requireContext()).enqueue(avatarRequest);
+        com.bumptech.glide.Glide.with(_binding.ivAvatar.getContext()).load(avatarUrl != null ? avatarUrl : "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg").error(R.drawable.img_avatar).circleCrop().into(_binding.ivAvatar);
 
         _binding.ivFilterSort.setOnClickListener(v -> {
             CommunitySortBottomSheet bottomSheet = new CommunitySortBottomSheet(0, selectedSort -> {
@@ -88,13 +80,7 @@ public class CommunityShowcaseFragment extends Fragment {
             bottomSheet.show(getParentFragmentManager(), "CommunitySortBottomSheet");
         });
 
-        ImageRequest coverRequest = new ImageRequest.Builder(requireContext())
-                .data(coverUrl != null ? coverUrl : (avatarUrl != null ? avatarUrl : "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg"))
-                .crossfade(true)
-                .error(android.R.color.darker_gray)
-                .target(_binding.ivCover)
-                .build();
-        Coil.imageLoader(requireContext()).enqueue(coverRequest);
+        com.bumptech.glide.Glide.with(_binding.ivCover.getContext()).load(coverUrl != null ? coverUrl : (avatarUrl != null ? avatarUrl : "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg")).error(android.R.color.darker_gray).into(_binding.ivCover);
 
         android.content.Context ctx = requireContext();
         LocalJsonReader jsonReader = new LocalJsonReader(ctx);
@@ -104,7 +90,7 @@ public class CommunityShowcaseFragment extends Fragment {
         _binding.tvFollowers.setText(String.valueOf(followersCount));
 
         String currentUserId = userId != null ? userId : "test_001";
-        List<String> productIds = jsonReader.getShowcaseProductsForUser(currentUserId);
+        List<String> productIds = AffiliateProductsHelper.getShowcaseProductIds(ctx, currentUserId);
         List<CommunityProduct> allProducts = jsonReader.getProducts();
         List<CommunityProduct> finalProducts = new ArrayList<>();
         Set<String> addedProductIds = new HashSet<>();
@@ -127,50 +113,85 @@ public class CommunityShowcaseFragment extends Fragment {
 
         _binding.tvProductCount.setText(String.valueOf(finalProducts.size()));
 
-        _binding.rvProducts.setLayoutManager(new LinearLayoutManager(context));
-        _binding.rvProducts.setAdapter(new ShowcaseProductAdapter(finalProducts, (product, v) -> {
-            List<com.veganbeauty.app.data.local.entities.ProductEntity> allEntityProducts = jsonReader.getAllProducts();
-            com.veganbeauty.app.data.local.entities.ProductEntity entityProduct = null;
-            for (com.veganbeauty.app.data.local.entities.ProductEntity pe : allEntityProducts) {
+        _binding.rvProducts.setLayoutManager(new LinearLayoutManager(ctx));
+        _binding.rvProducts.setAdapter(new ShowcaseProductAdapter(finalProducts, currentUserId, (product, v) -> {
+            saveAffiliateTracking(ctx, currentUserId, product.getId());
+            List<ProductEntity> allEntityProducts = jsonReader.getAllProducts();
+            ProductEntity entityProduct = null;
+            for (ProductEntity pe : allEntityProducts) {
                 if (pe.getId().equals(product.getId())) {
                     entityProduct = pe;
                     break;
                 }
             }
             if (entityProduct != null) {
-                CartHelper.addToCart(ctx, LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), entityProduct, 1);
+                CartHelper.addToCart(ctx, null, entityProduct, 1);
                 animateAddToCart(v, _binding.ivCart);
             }
         }));
 
         RootieDatabase db = RootieDatabase.getDatabase(ctx);
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            db.cartDao().getAllCartItems().collect(new kotlinx.coroutines.flow.FlowCollector<List<com.veganbeauty.app.data.local.entities.CartItemEntity>>() {
-                @Nullable
-                @Override
-                public Object emit(List<com.veganbeauty.app.data.local.entities.CartItemEntity> items, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                    int count = 0;
-                    for (com.veganbeauty.app.data.local.entities.CartItemEntity item : items) {
-                        count += item.getQuantity();
-                    }
-                    if (_binding != null) {
-                        if (count > 0) {
-                            _binding.tvCartBadge.setVisibility(View.VISIBLE);
-                            _binding.tvCartBadge.setText(count > 99 ? "99+" : String.valueOf(count));
-                        } else {
-                            _binding.tvCartBadge.setVisibility(View.GONE);
+        new Thread(() -> {
+            try {
+                db.cartDao().getAllCartItems().collect(new FlowCollector<List<com.veganbeauty.app.data.local.entities.CartItemEntity>>() {
+                    @Override
+                    public Object emit(List<com.veganbeauty.app.data.local.entities.CartItemEntity> items, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+                        int count = 0;
+                        if (items != null) {
+                            for (com.veganbeauty.app.data.local.entities.CartItemEntity item : items) {
+                                count += item.getQuantity();
+                            }
                         }
+                        final int finalCount = count;
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                if (_binding != null) {
+                                    if (finalCount > 0) {
+                                        _binding.tvCartBadge.setVisibility(View.VISIBLE);
+                                        _binding.tvCartBadge.setText(finalCount > 99 ? "99+" : String.valueOf(finalCount));
+                                    } else {
+                                        _binding.tvCartBadge.setVisibility(View.GONE);
+                                    }
+                                }
+                            });
+                        }
+                        return kotlin.Unit.INSTANCE;
                     }
-                    return kotlin.Unit.INSTANCE;
-                }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
-        });
+                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
+                    @NonNull
+                    @Override
+                    public kotlin.coroutines.CoroutineContext getContext() {
+                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
+                    }
+                    @Override
+                    public void resumeWith(@NonNull Object o) {}
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
 
         _binding.ivCart.setOnClickListener(v -> {
             CartBottomSheetFragment bottomSheet = new CartBottomSheetFragment();
             bottomSheet.show(getParentFragmentManager(), "CartBottomSheet");
         });
+    }
+
+    private static void saveAffiliateTracking(android.content.Context context, String referrerUserId, String productId) {
+        try {
+            String affiliateCode = "AFF_" + referrerUserId.toUpperCase() + "_" + productId.toUpperCase();
+            JSONObject trackingJson = new JSONObject();
+            trackingJson.put("referrerUserId", referrerUserId);
+            trackingJson.put("sourcePostId", "showcase");
+            trackingJson.put("affiliateCode", affiliateCode);
+            trackingJson.put("timestamp", System.currentTimeMillis());
+
+            context.getSharedPreferences("affiliate_prefs", android.content.Context.MODE_PRIVATE)
+                    .edit()
+                    .putString(productId, trackingJson.toString())
+                    .apply();
+        } catch (Exception ignored) {
+        }
     }
 
     private void animateAddToCart(View startView, View targetView) {
@@ -218,14 +239,16 @@ public class CommunityShowcaseFragment extends Fragment {
     private static class ShowcaseProductAdapter extends RecyclerView.Adapter<ShowcaseProductAdapter.ProductViewHolder> {
 
         private final List<CommunityProduct> products;
+        private final String referrerUserId;
         private final OnAddToCartListener onAddToCart;
 
         interface OnAddToCartListener {
             void onAddToCart(CommunityProduct product, View view);
         }
 
-        public ShowcaseProductAdapter(List<CommunityProduct> products, OnAddToCartListener onAddToCart) {
+        public ShowcaseProductAdapter(List<CommunityProduct> products, String referrerUserId, OnAddToCartListener onAddToCart) {
             this.products = products;
+            this.referrerUserId = referrerUserId;
             this.onAddToCart = onAddToCart;
         }
 
@@ -267,13 +290,7 @@ public class CommunityShowcaseFragment extends Fragment {
             }
 
             if (product.getMainImage() != null && !product.getMainImage().isEmpty()) {
-                ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                        .data(product.getMainImage())
-                        .crossfade(true)
-                        .placeholder(android.R.color.darker_gray)
-                        .target(holder.binding.ivProductImage)
-                        .build();
-                Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
+                com.bumptech.glide.Glide.with(holder.binding.ivProductImage.getContext()).load(product.getMainImage()).placeholder(android.R.color.darker_gray).into(holder.binding.ivProductImage);
             }
 
             if (product.getOriginalPrice() != null && product.getOriginalPrice() > product.getPrice()) {
@@ -285,6 +302,17 @@ public class CommunityShowcaseFragment extends Fragment {
             }
 
             holder.binding.tvShopName.setText("Cocoon Vietnam >");
+
+            View.OnClickListener openProduct = v -> {
+                saveAffiliateTracking(holder.itemView.getContext(), referrerUserId, product.getId());
+                if (holder.itemView.getContext() instanceof androidx.fragment.app.FragmentActivity) {
+                    ProductDetailLauncher.open(
+                            (androidx.fragment.app.FragmentActivity) holder.itemView.getContext(),
+                            product.getId()
+                    );
+                }
+            };
+            holder.itemView.setOnClickListener(openProduct);
 
             holder.binding.tvBuy.setOnClickListener(v -> onAddToCart.onAddToCart(product, v));
             holder.binding.ivAddToCart.setOnClickListener(v -> onAddToCart.onAddToCart(product, v));

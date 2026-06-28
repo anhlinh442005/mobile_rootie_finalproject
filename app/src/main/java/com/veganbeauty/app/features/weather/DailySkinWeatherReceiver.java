@@ -30,7 +30,7 @@ import java.net.URL;
 
 import kotlinx.coroutines.CoroutineScopeKt;
 import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.launch;
+
 import kotlinx.coroutines.GlobalScope;
 
 public class DailySkinWeatherReceiver extends BroadcastReceiver {
@@ -45,7 +45,7 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
         boolean notiAllowed = ProfileSession.INSTANCE.isNotiEnabled(context);
         if (!enabled || !notiAllowed) {
             Log.d("DailySkinWeatherReceiver", "Daily skin weather notification is disabled or general notifications are disabled. Rescheduling and returning.");
-            DailySkinWeatherScheduler.INSTANCE.scheduleDailyNotification(context);
+            DailySkinWeatherScheduler.scheduleDailyNotification(context);
             pendingResult.finish();
             return;
         }
@@ -237,7 +237,7 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
             } catch (Exception e) {
                 Log.e("DailySkinWeatherReceiver", "Error processing daily notification", e);
             } finally {
-                DailySkinWeatherScheduler.INSTANCE.scheduleDailyNotification(context);
+                DailySkinWeatherScheduler.scheduleDailyNotification(context);
                 pendingResult.finish();
             }
             return kotlin.Unit.INSTANCE;

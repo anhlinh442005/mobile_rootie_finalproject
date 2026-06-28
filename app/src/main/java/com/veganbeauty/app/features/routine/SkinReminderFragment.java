@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.lifecycle.FlowLiveDataConversions;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -25,10 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.flow.FlowCollector;
 
 public class SkinReminderFragment extends RootieFragment {
 
@@ -104,21 +100,6 @@ public class SkinReminderFragment extends RootieFragment {
         else if (hour >= 14 && hour <= 17) greetingWord = "Chào buổi chiều";
         else greetingWord = "Chào buổi tối";
         binding.tvUserGreeting.setText(greetingWord + ", " + fullName);
-
-        RootieDatabase db = RootieDatabase.getDatabase(ctx);
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    db.rewardPointDao().getTotalPointsFlow().collect(new FlowCollector<Integer>() {
-                        @Nullable
-                        @Override
-                        public Object emit(Integer points, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            int totalPoints = points != null ? points : 0;
-                            binding.tvUserCoins.setText(totalPoints + " ROOTIE COINS");
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
 
         int currentStreak = ProfileSession.getSkinStreak(ctx);
         binding.tvStreakDays.setText(String.valueOf(currentStreak));
@@ -488,19 +469,23 @@ public class SkinReminderFragment extends RootieFragment {
         }
 
         RootieDatabase db = RootieDatabase.getDatabase(ctx);
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    try {
-                        db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                                0, "SOCIAL_TASK", 10, "Kết nối bạn bè (Social Task)", System.currentTimeMillis()
-                        ));
-                        com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx);
-                        ProfileSession.addSkinSocialCompletedDate(ctx, todayStr);
+        new Thread(() -> {
+            try {
+                db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
+                        0, "SOCIAL_TASK", 10, "Kết nối bạn bè (Social Task)", System.currentTimeMillis()
+                ));
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx);
+                ProfileSession.addSkinSocialCompletedDate(ctx, todayStr);
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
                         Toast.makeText(ctx, "Kết nối thành công! +10 xu", Toast.LENGTH_SHORT).show();
                         refreshUI();
-                    } catch (Exception e) { e.printStackTrace(); }
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     @Override
@@ -510,7 +495,15 @@ public class SkinReminderFragment extends RootieFragment {
     }
 
     @Override
-    public void observeViewModel() {}
+    public void observeViewModel() {
+        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+                .observe(getViewLifecycleOwner(), points -> {
+                    if (binding == null || !isAdded()) return;
+                    int totalPoints = (points != null && !points.isEmpty()) ? points.get(0).total : 0;
+                    binding.tvUserCoins.setText(totalPoints + " ROOTIE COINS");
+                });
+    }
 
     @Override
     public void onDestroyView() {

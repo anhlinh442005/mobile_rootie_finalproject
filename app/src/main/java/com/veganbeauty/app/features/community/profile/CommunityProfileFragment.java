@@ -29,6 +29,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
+import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentProfileBinding;
@@ -39,6 +40,8 @@ import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory
 import com.veganbeauty.app.features.community.message.ChatDetailFragment;
 import com.veganbeauty.app.features.community.message.MessageHelper;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.SideMenuHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,9 +56,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import coil.Coil;
-import coil.request.ImageRequest;
-import coil.transform.CircleCropTransformation;
 import kotlin.Unit;
 import kotlinx.coroutines.BuildersKt;
 import kotlinx.coroutines.Dispatchers;
@@ -125,6 +125,7 @@ public class CommunityProfileFragment extends RootieFragment {
             if (llLogout != null) {
                 llLogout.setOnClickListener(v -> showLogoutDialog());
             }
+            SideMenuHelper.bindCurrentUser(navView);
         }
 
         String passedUserId = null;
@@ -233,18 +234,34 @@ public class CommunityProfileFragment extends RootieFragment {
             binding.tvUsername.setText(jsonUsername);
         }
 
-        String effectiveAvatarUrl = isOwnProfile ? ProfileSession.INSTANCE.getAvatar(ctx) : finalAvatarUrl;
+        String effectiveAvatarUrl = isOwnProfile
+                ? ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx)
+                : finalAvatarUrl;
         if (effectiveAvatarUrl != null && !effectiveAvatarUrl.isEmpty()) {
-            ImageRequest req = new ImageRequest.Builder(ctx)
-                    .data(effectiveAvatarUrl)
-                    .crossfade(true)
-                    .transformations(new CircleCropTransformation())
-                    .error(R.drawable.img_avatar)
-                    .target(binding.ivAvatar)
-                    .build();
-            Coil.imageLoader(ctx).enqueue(req);
+            com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(effectiveAvatarUrl).error(R.drawable.img_avatar).circleCrop().into(binding.ivAvatar);
         } else {
             binding.ivAvatar.setImageResource(R.drawable.img_avatar);
+        }
+
+        if (isOwnProfile) {
+            new Thread(() -> {
+                UserEntity savedUser = ProfileSessionHelper.findCurrentUser(ctx);
+                String resolvedAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx, savedUser);
+                if (getActivity() == null) {
+                    return;
+                }
+                getActivity().runOnUiThread(() -> {
+                    if (!isAdded() || binding == null) {
+                        return;
+                    }
+                    ProfileSession.setAvatar(ctx, resolvedAvatar);
+                    com.bumptech.glide.Glide.with(binding.ivAvatar.getContext())
+                            .load(resolvedAvatar)
+                            .error(R.drawable.img_avatar)
+                            .circleCrop()
+                            .into(binding.ivAvatar);
+                });
+            }).start();
         }
 
         if (isOwnProfile) {
@@ -274,7 +291,7 @@ public class CommunityProfileFragment extends RootieFragment {
 
             binding.btnShareProfile.setOnClickListener(v -> {
                 String partnerName = !fallbackName.isEmpty() ? fallbackName : "Người dùng";
-                String convId = MessageHelper.INSTANCE.getOrCreateConversation(ctx, ownUserId, currentUserId, partnerName, finalAvatarUrl);
+                String convId = MessageHelper.getOrCreateConversation(ctx, ownUserId, currentUserId, partnerName, finalAvatarUrl);
                 getParentFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
                         .replace(R.id.main_container, ChatDetailFragment.newInstance(convId))
@@ -289,34 +306,27 @@ public class CommunityProfileFragment extends RootieFragment {
 
         String primaryImage = !jsonPrimaryImage.isEmpty() ? jsonPrimaryImage : (isOwnProfile ? ProfileSession.INSTANCE.getPrimaryImage(ctx) : "");
         if (primaryImage != null && !primaryImage.isEmpty()) {
-            ImageRequest req = new ImageRequest.Builder(ctx)
-                    .data(primaryImage)
-                    .crossfade(true)
-                    .target(binding.ivCover)
-                    .build();
-            Coil.imageLoader(ctx).enqueue(req);
+            com.bumptech.glide.Glide.with(binding.ivCover.getContext()).load(primaryImage).into(binding.ivCover);
         } else {
             binding.ivCover.setImageResource(R.color.primary);
         }
 
         if (effectiveAvatarUrl != null && !effectiveAvatarUrl.isEmpty()) {
-            ImageRequest req1 = new ImageRequest.Builder(ctx).data(effectiveAvatarUrl).crossfade(true).target(binding.ivHighlight1).build();
-            Coil.imageLoader(ctx).enqueue(req1);
-            ImageRequest req2 = new ImageRequest.Builder(ctx).data(effectiveAvatarUrl).crossfade(true).target(binding.ivHighlight2).build();
-            Coil.imageLoader(ctx).enqueue(req2);
+            com.bumptech.glide.Glide.with(binding.ivHighlight1.getContext()).load(effectiveAvatarUrl).into(binding.ivHighlight1);
+            com.bumptech.glide.Glide.with(binding.ivHighlight2.getContext()).load(effectiveAvatarUrl).into(binding.ivHighlight2);
         }
 
         SharedPreferences prefs = ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
         String savedSkinType = prefs.getString("SAVED_USER_SKIN_TYPE", "Sức khoẻ - Làm đẹp");
         binding.tvProfileSkinType.setText(savedSkinType);
 
-        binding.rvPosts.setLayoutManager(new GridLayoutManager(context, 3));
+        binding.rvPosts.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
         if (getArguments() != null) {
             currentTab = getArguments().getInt("SELECTED_TAB", 0);
         }
 
-        RootieDatabase db = RootieDatabase.Companion.getDatabase(requireContext());
+        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
         CommunityRepository repository = new CommunityRepository(db.communityDao(), jsonReader, new FirestoreService());
         CommunityViewModelFactory factory = new CommunityViewModelFactory(repository);
         viewModel = new ViewModelProvider(requireActivity(), factory).get(CommunityViewModel.class);
@@ -511,9 +521,9 @@ public class CommunityProfileFragment extends RootieFragment {
             } else if (currentTab == 1) {
                 include = currentUserId.equals(post.getAuthorId()); // Video filter logic if needed
             } else if (currentTab == 2) {
-                include = UserMemoryHelper.INSTANCE.isPostReposted(requireContext(), ownUserId, post.getPostId());
+                include = com.veganbeauty.app.features.community.UserMemoryHelper.isPostReposted(requireContext(), ownUserId, post.getPostId());
             } else if (currentTab == 3) {
-                include = UserMemoryHelper.INSTANCE.isPostSaved(requireContext(), ownUserId, post.getPostId());
+                include = com.veganbeauty.app.features.community.UserMemoryHelper.isPostSaved(requireContext(), ownUserId, post.getPostId());
             } else {
                 include = currentUserId.equals(post.getAuthorId());
             }
@@ -535,7 +545,7 @@ public class CommunityProfileFragment extends RootieFragment {
         }
 
         ProfileGridAdapter adapter = new ProfileGridAdapter(myPosts, position -> {
-            ProfilePostDetailFragment fragment = ProfilePostDetailFragment.newInstance(currentUserId, position, currentTab);
+            ProfilePostDetailFragment fragment = ProfilePostDetailFragment.newInstance(currentUserId, position, currentTab, "");
             getParentFragmentManager().beginTransaction()
                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.main_container, fragment)
@@ -547,26 +557,28 @@ public class CommunityProfileFragment extends RootieFragment {
 
     @Override
     public void observeViewModel() {
+        Context ctx = getContext();
+        if (ctx == null) return;
+        LocalJsonReader jsonReader = new LocalJsonReader(ctx);
         viewModel.getPosts().observe(getViewLifecycleOwner(), dbPosts -> {
-            BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                new Thread(() -> {
-                    try {
-                        List<CommunityPostEntity> newsList = new LocalJsonReader(requireContext()).getCommunityNews();
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                currentAllPosts = new ArrayList<>();
-                                if (dbPosts != null) currentAllPosts.addAll(dbPosts);
-                                if (newsList != null) currentAllPosts.addAll(newsList);
-                                loadPostsForCurrentTab(currentAllPosts);
-                            });
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-                return Unit.INSTANCE;
-            });
+            if (binding == null || !isAdded()) return;
+            List<CommunityPostEntity> newsList = jsonReader.getCommunityNews();
+            currentAllPosts = new ArrayList<>();
+            if (dbPosts != null) currentAllPosts.addAll(dbPosts);
+            if (newsList != null) currentAllPosts.addAll(newsList);
+            loadPostsForCurrentTab(currentAllPosts);
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (binding != null) {
+            NavigationView navView = binding.getRoot().findViewById(R.id.navView);
+            if (navView != null) {
+                SideMenuHelper.bindCurrentUser(navView);
+            }
+        }
     }
 
     @Override

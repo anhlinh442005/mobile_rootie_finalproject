@@ -17,13 +17,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import coil.Coil;
 import coil.ImageLoader;
-import coil.request.ImageRequest;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.veganbeauty.app.R;
@@ -39,8 +37,10 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,9 +50,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
 
 class CommentItem {
     final String userId;
@@ -199,8 +196,13 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
             try {
                 File localFile = new File(context.getFilesDir(), "local_comments.json");
                 if (localFile.exists()) {
-                    byte[] bytes = Files.readAllBytes(localFile.toPath());
-                    JSONArray localArray = new JSONArray(new String(bytes));
+                    FileInputStream fis = new FileInputStream(localFile);
+                    BufferedReader localReader = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
+                    StringBuilder localSb = new StringBuilder();
+                    while ((line = localReader.readLine()) != null) localSb.append(line);
+                    localReader.close();
+                    
+                    JSONArray localArray = new JSONArray(localSb.toString());
                     for (int i = 0; i < localArray.length(); i++) {
                         JSONObject obj = localArray.getJSONObject(i);
                         if (postId != null && postId.equals(obj.optString("post_id"))) {
@@ -253,7 +255,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                     }
 
                     String rawTime = obj.optString("created_at", "");
-                    String timeStr = !rawTime.isEmpty() ? TimeFormatter.INSTANCE.getTimeAgo(rawTime) : "";
+                    String timeStr = !rawTime.isEmpty() ? TimeFormatter.getTimeAgo(rawTime) : "";
 
                     commentsList.add(new CommentItem(
                             userId,
@@ -267,7 +269,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                             hasReply && repliesMap.containsKey(commentId) ? repliesMap.get(commentId).optString("user_id", "") : "",
                             replyUsername,
                             replyContent,
-                            !replyTime.isEmpty() ? TimeFormatter.INSTANCE.getTimeAgo(replyTime) : "",
+                            !replyTime.isEmpty() ? TimeFormatter.getTimeAgo(replyTime) : "",
                             replyLikes,
                             replyAvatar,
                             commentId,
@@ -382,22 +384,32 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                 commentMap.put("likes_count", 0);
                 commentMap.put("is_author", false);
 
-                try {
-                    File localFile = new File(requireContext().getFilesDir(), "local_comments.json");
-                    JSONArray localArray = localFile.exists() ? new JSONArray(new String(Files.readAllBytes(localFile.toPath()))) : new JSONArray();
-                    localArray.put(new JSONObject(commentMap));
-                    Files.write(localFile.toPath(), localArray.toString().getBytes());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                new Thread(() -> {
+                    try {
+                        File localFile = new File(requireContext().getFilesDir(), "local_comments.json");
+                        JSONArray localArray;
+                        if (localFile.exists()) {
+                            FileInputStream fis = new FileInputStream(localFile);
+                            BufferedReader localReader = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
+                            StringBuilder localSb = new StringBuilder();
+                            String l;
+                            while ((l = localReader.readLine()) != null) localSb.append(l);
+                            localReader.close();
+                            localArray = new JSONArray(localSb.toString());
+                        } else {
+                            localArray = new JSONArray();
+                        }
+                        localArray.put(new JSONObject(commentMap));
+                        FileOutputStream fos = new FileOutputStream(localFile);
+                        fos.write(localArray.toString().getBytes(StandardCharsets.UTF_8));
+                        fos.close();
 
-                LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, continuation) -> {
-                    return BuildersKt.withContext(Dispatchers.getIO(), (coroutineScope, continuation1) -> {
-                        RootieDatabase.Companion.getDatabase(requireContext()).communityDao().incrementCommentsCount(postId);
+                        RootieDatabase.getDatabase(requireContext()).communityDao().incrementCommentsCount(postId);
                         new FirestoreService().addCommentToPost(postId, commentMap);
-                        return kotlin.Unit.INSTANCE;
-                    }, continuation);
-                });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             }
         };
 
@@ -489,7 +501,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                         .setTitle("Xóa bình luận")
                         .setMessage("Bạn có chắc chắn muốn xóa bình luận này?")
                         .setPositiveButton("Xóa", (dialog, which) -> {
-                            int pos = holder.getBindingAdapterPosition();
+                            int pos = holder.getAbsoluteAdapterPosition();
                             if (pos != RecyclerView.NO_POSITION && pos < comments.size()) {
                                 comments.remove(pos);
                                 notifyItemRemoved(pos);
@@ -512,15 +524,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                 holder.tvAuthorTag.setVisibility(View.GONE);
             }
 
-            ImageLoader imageLoader = Coil.imageLoader(holder.itemView.getContext());
-            ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
-                    .data(item.avatarUrl)
-                    .crossfade(true)
-                    .placeholder(R.drawable.img_avatar)
-                    .error(R.drawable.img_avatar)
-                    .target(holder.ivAvatar)
-                    .build();
-            imageLoader.enqueue(request);
+            com.bumptech.glide.Glide.with(holder.ivAvatar.getContext()).load(item.avatarUrl).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).into(holder.ivAvatar);
 
             View.OnClickListener navigateToProfile = v -> {
                 Context context = holder.itemView.getContext();
@@ -552,14 +556,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                 holder.tvReplyContent.setText(item.replyContent);
                 holder.tvReplyLikesCount.setText(String.valueOf(item.replyLikesCount));
 
-                ImageRequest replyRequest = new ImageRequest.Builder(holder.itemView.getContext())
-                        .data(item.replyAvatarUrl)
-                        .crossfade(true)
-                        .placeholder(R.drawable.img_avatar)
-                        .error(R.drawable.img_avatar)
-                        .target(holder.ivReplyAvatar)
-                        .build();
-                imageLoader.enqueue(replyRequest);
+                com.bumptech.glide.Glide.with(holder.ivReplyAvatar.getContext()).load(item.replyAvatarUrl).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).into(holder.ivReplyAvatar);
 
                 View.OnClickListener navigateToReplyProfile = v -> {
                     Context context = holder.itemView.getContext();

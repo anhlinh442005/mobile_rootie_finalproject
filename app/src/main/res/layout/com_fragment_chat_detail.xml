@@ -31,7 +31,7 @@
             android:layout_marginStart="12dp">
 
             <ImageView
-                android:id="@+id/ivAvatar"
+                android:id="@+id/ivPartnerAvatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
@@ -62,7 +62,7 @@
                 android:gravity="center_vertical">
                 
                 <TextView
-                    android:id="@+id/tvName"
+                    android:id="@+id/tvPartnerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Name"
@@ -113,7 +113,7 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvChat"
+        android:id="@+id/rvMessages"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingTop="16dp"
@@ -205,7 +205,7 @@
 
         <!-- Send Button (Hidden by default) -->
         <ImageView
-            android:id="@+id/ivSend"
+            android:id="@+id/btnSend"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_plane"

@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 @Entity(tableName = "user_product_expiry")
 public class UserProductExpiryEntity {
     @PrimaryKey(autoGenerate = true)
@@ -25,8 +28,38 @@ public class UserProductExpiryEntity {
 
     public ProductEntity toProductEntity() {
         return new ProductEntity(
-            this.productId, this.name, this.sku, "", this.price, null, this.category, "", this.brand, this.stock, "", this.mainImage, "", "", this.expiryDate, false, java.util.Collections.emptyList(), "", "", java.util.Collections.emptyList(), java.util.Collections.emptyList(), "", "", java.util.Collections.emptyList(), java.util.Collections.emptyList(), "", "", "", "", 0f, 0
-        ); // Partial conversion as original data class allowed defaults
+            this.productId, // 1. id
+            this.name,      // 2. name
+            this.sku,       // 3. sku
+            "",             // 4. barcode
+            this.price,     // 5. price
+            null,           // 6. originalPrice
+            this.category,  // 7. category
+            this.brand,     // 8. brand
+            this.stock,     // 9. stock
+            "",             // 10. description
+            this.mainImage, // 11. mainImage
+            "",             // 12. suitableFor
+            "",             // 13. origin
+            this.expiryDate,// 14. expiryDate
+            false,          // 15. isNew
+            "",             // 16. categoryIds
+            Collections.emptyList(), // 17. album
+            "",             // 18. mainIngredientsSummary
+            "",             // 19. allergyInformation
+            Collections.emptyList(), // 20. keyIngredients
+            Collections.emptyList(), // 21. detailedIngredients
+            "",             // 22. storyDescription
+            "",             // 23. storyImage
+            Collections.emptyList(), // 24. idealFor
+            Collections.emptyList(), // 25. benefits
+            "",             // 26. usage
+            "",             // 27. usageAmount
+            "",             // 28. scent
+            "",             // 29. notes
+            0f,             // 30. rating
+            0               // 31. sold
+        );
     }
 
     public int getId() { return id; }

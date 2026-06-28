@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.utils.RootieBrandHelper;
 import com.veganbeauty.app.data.local.entities.ChatMessageEntity;
 import com.veganbeauty.app.data.local.entities.ConversationEntity;
 import com.veganbeauty.app.data.local.entities.MemberInfoEntity;
@@ -158,9 +159,7 @@ public class MessageHelper {
                         
                         if (conversations != null) {
                             for (ConversationEntity conv : conversations) {
-                                JsonElement jsonTree = new Gson().toJsonTree(conv);
-                                Map<String, Object> map = new Gson().fromJson(jsonTree, Map.class);
-                                db.collection("community_message").document(conv.getId()).set(map);
+                                pushToFirebase(conv);
                             }
                         }
                         
@@ -190,7 +189,11 @@ public class MessageHelper {
                 }
                 fos.write(sb.toString().getBytes());
             } catch (Exception e) {
-                e.printStackTrace();
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    fos.write("[]".getBytes());
+                } catch (Exception ignored) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -224,10 +227,17 @@ public class MessageHelper {
         }
     }
 
+    public static List<ConversationEntity> getConversations(Context context) {
+        String currentUserId = ProfileSession.getCurrentUserId(context);
+        return getConversations(context, currentUserId);
+    }
+
     public static List<ConversationEntity> getConversations(Context context, String currentUserId) {
+        syncConversationsFromAssets(context);
         List<ConversationEntity> all = readData(context);
         List<ConversationEntity> filtered = new ArrayList<>();
         for (ConversationEntity c : all) {
+            normalizeBrandAvatars(c);
             if (c.getMembers() != null && c.getMembers().contains(currentUserId)) {
                 filtered.add(c);
             }
@@ -240,7 +250,118 @@ public class MessageHelper {
         return filtered;
     }
 
-    public static ConversationEntity getConversation(Context context, String conversationId) {
+    public static void syncConversationsFromAssets(Context context) {
+        initDataIfNeed(context);
+        List<ConversationEntity> local = readData(context);
+        List<ConversationEntity> fromAssets = readAssetsData(context);
+        if (fromAssets.isEmpty()) {
+            return;
+        }
+
+        Map<String, ConversationEntity> merged = new HashMap<>();
+        for (ConversationEntity conversation : fromAssets) {
+            merged.put(conversation.getId(), conversation);
+        }
+        for (ConversationEntity conversation : local) {
+            ConversationEntity existing = merged.get(conversation.getId());
+            if (existing == null) {
+                merged.put(conversation.getId(), conversation);
+            } else {
+                merged.put(conversation.getId(), pickNewerConversation(existing, conversation));
+            }
+        }
+
+        List<ConversationEntity> result = new ArrayList<>(merged.values());
+        for (ConversationEntity conversation : result) {
+            normalizeBrandAvatars(conversation);
+        }
+        writeData(context, result);
+    }
+
+    public static void fetchAndMergeFirebaseConversations(Context context, String currentUserId, Runnable onComplete) {
+        if (currentUserId == null || currentUserId.trim().isEmpty()) {
+            if (onComplete != null) {
+                onComplete.run();
+            }
+            return;
+        }
+        FirebaseFirestore.getInstance().collection("community_message")
+                .whereArrayContains("members", currentUserId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    try {
+                        List<ConversationEntity> data = readData(context);
+                        Map<String, ConversationEntity> merged = new HashMap<>();
+                        for (ConversationEntity conversation : data) {
+                            merged.put(conversation.getId(), conversation);
+                        }
+                        for (com.google.firebase.firestore.DocumentSnapshot doc : snapshot.getDocuments()) {
+                            Map<String, Object> map = doc.getData();
+                            if (map == null) {
+                                continue;
+                            }
+                            JsonElement jsonTree = new Gson().toJsonTree(map);
+                            ConversationEntity conv = new Gson().fromJson(jsonTree, ConversationEntity.class);
+                            if (conv == null || conv.getId() == null) {
+                                continue;
+                            }
+                            ConversationEntity existing = merged.get(conv.getId());
+                            merged.put(conv.getId(), existing == null ? conv : pickNewerConversation(existing, conv));
+                        }
+                        List<ConversationEntity> result = new ArrayList<>(merged.values());
+                        for (ConversationEntity conversation : result) {
+                            normalizeBrandAvatars(conversation);
+                        }
+                        writeData(context, result);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (onComplete != null) {
+                            onComplete.run();
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    if (onComplete != null) {
+                        onComplete.run();
+                    }
+                });
+    }
+
+    private static List<ConversationEntity> readAssetsData(Context context) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(context.getAssets().open("community_message.json")))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            Type type = new TypeToken<List<ConversationEntity>>() {}.getType();
+            List<ConversationEntity> list = new Gson().fromJson(sb.toString(), type);
+            return list != null ? new ArrayList<>(list) : new ArrayList<>();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private static ConversationEntity pickNewerConversation(ConversationEntity first, ConversationEntity second) {
+        String firstUpdatedAt = first.getUpdatedAt() != null ? first.getUpdatedAt() : "";
+        String secondUpdatedAt = second.getUpdatedAt() != null ? second.getUpdatedAt() : "";
+        return secondUpdatedAt.compareTo(firstUpdatedAt) >= 0 ? second : first;
+    }
+
+    private static void normalizeBrandAvatars(ConversationEntity conversation) {
+        if (conversation == null || conversation.getMemberInfo() == null) {
+            return;
+        }
+        for (Map.Entry<String, MemberInfoEntity> entry : conversation.getMemberInfo().entrySet()) {
+            if (RootieBrandHelper.isRootieUser(entry.getKey()) && entry.getValue() != null) {
+                entry.getValue().setAvatar(RootieBrandHelper.AVATAR_URL);
+            }
+        }
+    }
+
+    public static ConversationEntity getConversationById(Context context, String conversationId) {
         List<ConversationEntity> all = readData(context);
         for (ConversationEntity c : all) {
             if (c.getId().equals(conversationId)) return c;
@@ -249,7 +370,7 @@ public class MessageHelper {
     }
 
     public static List<ChatMessageEntity> getMessages(Context context, String conversationId) {
-        ConversationEntity conv = getConversation(context, conversationId);
+        ConversationEntity conv = getConversationById(context, conversationId);
         if (conv == null || conv.getMessages() == null) return new ArrayList<>();
         List<ChatMessageEntity> messages = new ArrayList<>(conv.getMessages());
         messages.sort((a, b) -> {
@@ -356,6 +477,21 @@ public class MessageHelper {
         }
     }
 
+    public static void sendMessage(Context context, String conversationId, String senderId, String text) {
+        ConversationEntity conv = getConversationById(context, conversationId);
+        if (conv == null) return;
+        String receiverId = "";
+        if (conv.getMembers() != null) {
+            for (String m : conv.getMembers()) {
+                if (!m.equals(senderId)) {
+                    receiverId = m;
+                    break;
+                }
+            }
+        }
+        sendMessage(context, conversationId, senderId, receiverId, text);
+    }
+
     public static void sendMessage(Context context, String conversationId, String senderId, String receiverId, String text) {
         List<ConversationEntity> data = readData(context);
         int index = -1;
@@ -400,9 +536,20 @@ public class MessageHelper {
     }
 
     public static String getOrCreateConversation(Context context, String currentUserId, String partnerId, String partnerName, String partnerAvatar) {
+        if (RootieBrandHelper.isRootieUser(partnerId)) {
+            partnerAvatar = RootieBrandHelper.AVATAR_URL;
+        }
+
         List<ConversationEntity> data = readData(context);
         for (ConversationEntity c : data) {
             if (c.getMembers() != null && c.getMembers().contains(currentUserId) && c.getMembers().contains(partnerId)) {
+                if (RootieBrandHelper.isRootieUser(partnerId) && c.getMemberInfo() != null) {
+                    MemberInfoEntity info = c.getMemberInfo().get(partnerId);
+                    if (info == null || !RootieBrandHelper.AVATAR_URL.equals(info.getAvatar())) {
+                        c.getMemberInfo().put(partnerId, new MemberInfoEntity(partnerName, RootieBrandHelper.AVATAR_URL));
+                        writeData(context, data);
+                    }
+                }
                 return c.getId();
             }
         }
@@ -423,6 +570,7 @@ public class MessageHelper {
         
         ConversationEntity newConv = new ConversationEntity(
                 newConvId,
+                "private",
                 members,
                 memberInfo,
                 new ArrayList<>(),
@@ -432,7 +580,6 @@ public class MessageHelper {
                 timeStr,
                 "",
                 timeStr,
-                "private",
                 new ArrayList<>()
         );
         

@@ -15,8 +15,12 @@ public interface RewardPointDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertRewardPoints(RewardPointEntity reward);
 
-    @Query("SELECT SUM(points) FROM user_coin")
-    Flow<Integer> getTotalPointsFlow();
+    public static class TotalPoints {
+        public int total;
+    }
+
+    @Query("SELECT COALESCE(SUM(points), 0) as total FROM user_coin")
+    Flow<List<TotalPoints>> getTotalPointsFlow();
 
     @Query("SELECT * FROM user_coin ORDER BY timestamp DESC")
     Flow<List<RewardPointEntity>> getAllRewardHistory();

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.UserEntity;
+import com.veganbeauty.app.utils.RootieBrandHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -242,7 +243,7 @@ public class ComNotificationViewModel extends ViewModel {
                     } else {
                         finalName = "Hệ thống";
                     }
-                    finalAvatar = "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780560866/Rootie_logo.png";
+                    finalAvatar = RootieBrandHelper.AVATAR_URL;
                 } else if (finalAvatar.isEmpty()) {
                     switch (userId) {
                         case "75675216": finalAvatar = "https://i.pinimg.com/736x/b1/f4/f1/b1f4f17046008cee09ece025370ebae3.jpg"; break;

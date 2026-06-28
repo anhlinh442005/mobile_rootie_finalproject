@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +38,10 @@ public class ComLoadingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        TextView tvLoadingMessage = view.findViewById(R.id.tvLoadingMessage);
+        if (tvLoadingMessage != null) {
+            tvLoadingMessage.setText("Đang kết nối đến cộng đồng Rootie...");
+        }
         ImageView ivMascotLoading = view.findViewById(R.id.ivMascotLoading);
         ProgressBar progressBar = view.findViewById(R.id.progressBar);
 
@@ -62,13 +67,19 @@ public class ComLoadingFragment extends Fragment {
                 new FirestoreService()
         );
         CommunityViewModelFactory factory = new CommunityViewModelFactory(repository);
-        CommunityViewModel viewModel = new ViewModelProvider(requireActivity(), factory).get(CommunityViewModel.class);
+        androidx.fragment.app.FragmentActivity activity = getActivity();
+        if (activity == null) return;
+
+        CommunityViewModel viewModel = new ViewModelProvider(activity, factory).get(CommunityViewModel.class);
 
         viewModel.getPosts().observe(getViewLifecycleOwner(), posts -> {
             if (posts != null && !posts.isEmpty()) {
                 isDataLoaded = true;
             }
         });
+
+        repository.seedFromAssetsSync();
+        viewModel.refreshData();
 
         executor.execute(() -> {
             long startTime = System.currentTimeMillis();
@@ -103,14 +114,17 @@ public class ComLoadingFragment extends Fragment {
                 }
             }
             
-            requireActivity().runOnUiThread(() -> {
-                if (isAdded() && !isDetached()) {
-                    getParentFragmentManager().beginTransaction()
-                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                            .replace(R.id.main_container, new CommunityFeedFragment())
-                            .commitAllowingStateLoss();
-                }
-            });
+            androidx.fragment.app.FragmentActivity currentActivity = getActivity();
+            if (currentActivity != null) {
+                currentActivity.runOnUiThread(() -> {
+                    if (isAdded() && !isDetached()) {
+                        getParentFragmentManager().beginTransaction()
+                                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                                .replace(R.id.main_container, new CommunityFeedFragment())
+                                .commitAllowingStateLoss();
+                    }
+                });
+            }
         });
     }
 }

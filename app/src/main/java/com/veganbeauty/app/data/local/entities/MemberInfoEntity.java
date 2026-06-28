@@ -13,4 +13,5 @@ public class MemberInfoEntity {
 
     @NonNull public String getName() { return name; }
     @NonNull public String getAvatar() { return avatar; }
+    public void setAvatar(@NonNull String avatar) { this.avatar = avatar; }
 }

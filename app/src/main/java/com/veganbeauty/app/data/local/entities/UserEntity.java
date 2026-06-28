@@ -37,6 +37,12 @@ public class UserEntity {
     @Ignore
     @NonNull
     private List<String> mutualFriendAvatars = Collections.emptyList();
+    @Ignore
+    private String bio = "";
+    @Ignore
+    private String skinType = "";
+    @Ignore
+    private String concerns = "";
 
     public UserEntity(@NonNull String user_id, @NonNull String username, @NonNull String full_name, @NonNull String email, @NonNull String phone, @NonNull String password, @Nullable String avatar, @Nullable String primary_image) {
         this.user_id = user_id;
@@ -47,6 +53,25 @@ public class UserEntity {
         this.password = password;
         this.avatar = avatar;
         this.primary_image = primary_image;
+    }
+
+    @Ignore
+    public UserEntity(@NonNull String user_id, @NonNull String username, @NonNull String full_name, @NonNull String email, @NonNull String phone, @NonNull String password, @Nullable String avatar) {
+        this(user_id, username, full_name, email, phone, password, avatar, null);
+    }
+
+    @Ignore
+    public UserEntity(@NonNull String user_id, @NonNull String username, @NonNull String full_name, @NonNull String email, @NonNull String phone, @NonNull String password) {
+        this(user_id, username, full_name, email, phone, password, null, null);
+    }
+
+    public UserEntity() {
+        this.user_id = "";
+        this.username = "";
+        this.full_name = "";
+        this.email = "";
+        this.phone = "";
+        this.password = "";
     }
 
     @NonNull public String getUser_id() { return user_id; }
@@ -72,4 +97,11 @@ public class UserEntity {
     public void setFirstMutualFriendName(@Nullable String firstMutualFriendName) { this.firstMutualFriendName = firstMutualFriendName; }
     @NonNull public List<String> getMutualFriendAvatars() { return mutualFriendAvatars; }
     public void setMutualFriendAvatars(@NonNull List<String> mutualFriendAvatars) { this.mutualFriendAvatars = mutualFriendAvatars; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+    public String getSkinType() { return skinType; }
+    public void setSkinType(String skinType) { this.skinType = skinType; }
+    public String getConcerns() { return concerns; }
+    public void setConcerns(String concerns) { this.concerns = concerns; }
 }
