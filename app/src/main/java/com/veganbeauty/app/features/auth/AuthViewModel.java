@@ -46,9 +46,10 @@ public class AuthViewModel extends ViewModel {
         });
     }
 
-    public void register(String fullName, String emailOrPhone, String password) {
+    public void register(String fullName, String email, String phone, String password) {
         if (fullName == null || fullName.trim().isEmpty() ||
-            emailOrPhone == null || emailOrPhone.trim().isEmpty() ||
+            email == null || email.trim().isEmpty() ||
+            phone == null || phone.trim().isEmpty() ||
             password == null || password.trim().isEmpty()) {
             _registerState.setValue(new AuthState.Error("Vui lòng nhập đầy đủ thông tin."));
             return;
@@ -57,9 +58,7 @@ public class AuthViewModel extends ViewModel {
         _registerState.setValue(new AuthState.Loading());
         executor.execute(() -> {
             try {
-                Object resultObj = authRepository.register(fullName, emailOrPhone, password);
-                // The repository returns Result<UserEntity> which needs to be unwrapped in Kotlin but
-                // since we converted repository to Java it probably throws Exception or returns UserEntity
+                Object resultObj = authRepository.register(fullName, email, phone, password);
                 if (resultObj instanceof UserEntity) {
                     _registerState.postValue(new AuthState.Success((UserEntity) resultObj));
                 } else {

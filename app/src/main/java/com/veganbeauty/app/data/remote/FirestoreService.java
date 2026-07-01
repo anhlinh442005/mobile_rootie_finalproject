@@ -38,10 +38,55 @@ public class FirestoreService {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public org.json.JSONArray getSkinHistory(String userEmail) {
-        return new org.json.JSONArray();
+        try {
+            // Because the json data uses userId like 'xuannk_001' or userEmail, we query by userId/email.
+            // Here we check both or just 'userEmail' for simplicity.
+            Task<QuerySnapshot> task = db.collection("skin_history")
+                    .whereEqualTo("userId", userEmail)
+                    .get();
+            QuerySnapshot snapshot = Tasks.await(task);
+            
+            if (snapshot.isEmpty()) {
+                // Also try matching by email if userId wasn't used
+                task = db.collection("skin_history")
+                        .whereEqualTo("email", userEmail)
+                        .get();
+                snapshot = Tasks.await(task);
+            }
+
+            List<DocumentSnapshot> docs = snapshot.getDocuments();
+            // Sort by date/time descending manually
+            docs.sort((d1, d2) -> {
+                String dt1 = d1.getString("date") + " " + d1.getString("time");
+                String dt2 = d2.getString("date") + " " + d2.getString("time");
+                return dt2.compareTo(dt1);
+            });
+
+            org.json.JSONArray array = new org.json.JSONArray();
+            for (DocumentSnapshot doc : docs) {
+                array.put(new org.json.JSONObject(doc.getData()));
+            }
+            return array;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new org.json.JSONArray();
+        }
     }
 
     public void addSkinHistory(String email, org.json.JSONObject data) {
+        try {
+            String id = data.optString("id", UUID.randomUUID().toString());
+            data.put("userId", email); // use email as identifier
+            Map<String, Object> map = new HashMap<>();
+            Iterator<String> keys = data.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                map.put(key, data.get(key));
+            }
+            Tasks.await(db.collection("skin_history").document(id).set(map));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public List<ProductEntity> fetchAllProducts() {

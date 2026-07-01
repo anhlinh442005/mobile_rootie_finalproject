@@ -63,18 +63,17 @@ public class AuthRepository {
     }
 
     // Making this synchronous for Java compatibility, you should call this in a background thread
-    public Object register(String fullName, String emailOrPhone, String password) throws Exception {
-        boolean isEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(emailOrPhone).matches();
-        
-        UserEntity existingUser = isEmail ? userDao.getUserByEmailSync(emailOrPhone) : userDao.getUserByPhoneSync(emailOrPhone);
-
-        if (existingUser != null) {
-            throw new Exception("Tài khoản đã tồn tại.");
+    public Object register(String fullName, String email, String phone, String password) throws Exception {
+        UserEntity existingUserByEmail = !email.isEmpty() ? userDao.getUserByEmailSync(email) : null;
+        if (existingUserByEmail != null) {
+            throw new Exception("Email đã tồn tại.");
+        }
+        UserEntity existingUserByPhone = !phone.isEmpty() ? userDao.getUserByPhoneSync(phone) : null;
+        if (existingUserByPhone != null) {
+            throw new Exception("Số điện thoại đã tồn tại.");
         }
 
-        String userId = "test@example.com".equals(emailOrPhone) ? "test_001" : UUID.randomUUID().toString();
-        String email = isEmail ? emailOrPhone : "";
-        String phone = !isEmail ? emailOrPhone : "";
+        String userId = "test@example.com".equals(email) ? "test_001" : UUID.randomUUID().toString();
         String hashedPassword = hashPassword(password);
 
         UserEntity newUser = new UserEntity(userId, fullName, fullName, email, phone, hashedPassword);

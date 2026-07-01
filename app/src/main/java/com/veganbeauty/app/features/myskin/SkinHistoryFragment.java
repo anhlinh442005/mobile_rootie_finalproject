@@ -70,13 +70,18 @@ public class SkinHistoryFragment extends RootieFragment {
     }
 
     private void loadDataFromFirestore() {
-        String email = ProfileSession.getEmail(requireContext());
-        final String userEmail = (email != null && !email.trim().isEmpty()) ? email : "test@example.com";
-        
         new Thread(() -> {
             try {
-                allHistory = new FirestoreService().getSkinHistory(userEmail);
+                // Read from local assets
+                java.io.InputStream is = requireContext().getAssets().open("skin_history.json");
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
+                String jsonStr = new String(buffer, "UTF-8");
+                allHistory = new JSONArray(jsonStr);
                 currentHistory = allHistory;
+
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         updateChartAndList(currentHistory);

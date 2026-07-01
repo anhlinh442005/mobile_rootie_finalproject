@@ -376,15 +376,6 @@
                         android:text="TÌNH TRẠNG DA"
                         android:textColor="@color/secondary"
                         android:textSize="15sp" />
-                    <TextView
-                        android:id="@+id/skin_result_btn_view_details"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:fontFamily="@font/be_vietnam_pro"
-                        android:text="Xem chi tiết >"
-                        android:textColor="@color/content"
-                        android:textSize="13sp" />
                 </RelativeLayout>
 
                 <LinearLayout
@@ -435,53 +426,46 @@
                     <ImageView
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:src="@drawable/about_us_pd" /> <!-- Placeholder for illustration -->
+                        android:src="@drawable/rcm_product" /> <!-- Placeholder for illustration -->
                 </LinearLayout>
             </LinearLayout>
 
             <!-- GỢI Ý QUY TRÌNH CHĂM SÓC -->
             <LinearLayout
+                android:id="@+id/skin_result_btn_go_routine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/skin_bg_card_outline"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:background="@drawable/skin_bg_btn_solid_dark"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="14dp">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:fontFamily="@font/be_vietnam_pro_bold"
-                        android:text="GỢI Ý QUY TRÌNH CHĂM SÓC"
-                        android:textColor="@color/secondary"
-                        android:textSize="14sp" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_water_drop_outline"
+                    app:tint="@color/white" />
 
-                    
-                </RelativeLayout>
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:scrollbars="none">
+                    android:layout_weight="1"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Xem gợi ý chăm sóc da ngay"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
 
-                    <LinearLayout
-                        android:id="@+id/skin_result_routine_container"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="8dp">
-                        <!-- Routine items populated dynamically -->
-                        <include layout="@layout/item_skin_routine" />
-                        <include layout="@layout/item_skin_routine" />
-                        <include layout="@layout/item_skin_routine" />
-                    </LinearLayout>
-                </HorizontalScrollView>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="@color/white" />
             </LinearLayout>
 
         </LinearLayout>

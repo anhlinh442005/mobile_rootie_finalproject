@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingVertical="4dp">
+    android:paddingVertical="8dp">
 
     <TextView
         android:id="@+id/tvRank"
@@ -19,16 +19,16 @@
 
     <ImageView
         android:id="@+id/ivProduct"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="0dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="4dp"
         android:scaleType="centerCrop"
         android:src="@drawable/mascot_thank" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="12dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -40,7 +40,7 @@
             android:maxLines="2"
             android:textColor="#28362E"
             android:text="Sua rua mat"
-            android:textSize="8sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tvPrice"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textColor="#E53935"
-            android:textSize="8sp"
+            android:textSize="14sp"
             android:text="100.000 d"
             android:textStyle="bold" />
 
@@ -58,17 +58,17 @@
             android:layout_height="wrap_content"
             android:textColor="#9E9E9E"
             android:text="50.000 d"
-            android:textSize="6sp" />
+            android:textSize="12sp" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/btnAction"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_marginStart="4dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
         android:background="@drawable/bg_cart_button_green"
         android:contentDescription="@null"
-        android:padding="6dp"
+        android:padding="4dp"
         android:src="@drawable/ic_add_to_cart"
         app:tint="@color/neutral" />
 

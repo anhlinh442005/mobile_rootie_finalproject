@@ -81,6 +81,9 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     private android.os.CountDownTimer otpCountDownTimer;
     private String generatedOtp = "";
     @Nullable
+    private android.os.CountDownTimer regOtpCountDownTimer;
+    private String generatedRegOtp = "";
+    @Nullable
     private ViewPager2 welcomePager;
     @Nullable
     private HomeWelcomePagerAdapter pagerAdapter;
@@ -862,11 +865,47 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         registerBinding.homeCheckTerms.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
         registerBinding.homeCheckTerms.setHighlightColor(Color.TRANSPARENT);
 
+        registerBinding.homeBtnSendOtpReg.setOnClickListener(v -> {
+            String phone = registerBinding.homeInputPhoneReg.getText() != null
+                    ? registerBinding.homeInputPhoneReg.getText().toString().trim()
+                    : "";
+            if (phone.isEmpty()) {
+                android.widget.Toast.makeText(this, "Vui lòng nhập số điện thoại", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            generatedRegOtp = String.format(Locale.US, "%06d", new Random().nextInt(1000000));
+            sendSmsNotification(generatedRegOtp);
+            android.widget.Toast.makeText(this, "Đã gửi OTP qua tin nhắn SMS", android.widget.Toast.LENGTH_SHORT).show();
+            
+            registerBinding.homeInputOtpReg.setVisibility(View.VISIBLE);
+            
+            if (regOtpCountDownTimer != null) {
+                regOtpCountDownTimer.cancel();
+            }
+            regOtpCountDownTimer = new android.os.CountDownTimer(5 * 60 * 1000L, 1000L) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    if (registerBinding == null) return;
+                    long min = millisUntilFinished / 60000;
+                    long sec = (millisUntilFinished % 60000) / 1000;
+                    registerBinding.homeBtnSendOtpReg.setText(String.format(Locale.US, "%02d:%02d", min, sec));
+                    registerBinding.homeBtnSendOtpReg.setEnabled(false);
+                }
+                @Override
+                public void onFinish() {
+                    if (registerBinding == null) return;
+                    registerBinding.homeBtnSendOtpReg.setText("Gửi OTP");
+                    registerBinding.homeBtnSendOtpReg.setEnabled(true);
+                }
+            }.start();
+        });
+
         registerBinding.homeBtnRegister.setOnClickListener(v -> {
             String fullName = registerBinding.homeInputFullname.getText() != null
                     ? registerBinding.homeInputFullname.getText().toString().trim()
                     : "";
-            String emailOrPhone = registerBinding.homeInputEmailPhone.getText() != null
+            String email = registerBinding.homeInputEmailPhone.getText() != null
                     ? registerBinding.homeInputEmailPhone.getText().toString().trim()
                     : "";
             String password = registerBinding.homeInputPassword.getText() != null
@@ -875,19 +914,36 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             String confirmPassword = registerBinding.homeInputConfirmPassword.getText() != null
                     ? registerBinding.homeInputConfirmPassword.getText().toString().trim()
                     : "";
+            String phone = registerBinding.homeInputPhoneReg.getText() != null
+                    ? registerBinding.homeInputPhoneReg.getText().toString().trim()
+                    : "";
+            String enteredOtp = registerBinding.homeInputOtpReg.getText() != null
+                    ? registerBinding.homeInputOtpReg.getText().toString().trim()
+                    : "";
             boolean acceptedTerms = registerBinding.homeCheckTerms.isChecked();
 
+            if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || phone.isEmpty()) {
+                android.widget.Toast.makeText(this, "Vui lòng điền đủ thông tin", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (!password.equals(confirmPassword)) {
                 android.widget.Toast.makeText(this, "Mật khẩu không khớp", android.widget.Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!acceptedTerms) {
-                android.widget.Toast.makeText(this, "Bạn phải đồng ý với Điều khoản", android.widget.Toast.LENGTH_SHORT)
-                        .show();
+                android.widget.Toast.makeText(this, "Bạn phải đồng ý với Điều khoản", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (generatedRegOtp.isEmpty()) {
+                android.widget.Toast.makeText(this, "Vui lòng nhấn Gửi OTP và nhập mã xác nhận", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!enteredOtp.equals(generatedRegOtp)) {
+                android.widget.Toast.makeText(this, "Mã OTP không đúng", android.widget.Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            authViewModel.register(fullName, emailOrPhone, password);
+            authViewModel.register(fullName, email, phone, password);
         });
 
         registerBinding.homeRegisterGoogle.setOnClickListener(v -> {
