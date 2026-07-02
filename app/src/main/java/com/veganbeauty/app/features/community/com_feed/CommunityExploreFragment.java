@@ -22,6 +22,7 @@ import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentExploreBinding;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
+import com.veganbeauty.app.utils.ComBottomNavHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -146,53 +147,7 @@ public class CommunityExploreFragment extends RootieFragment {
                 .commit();
         });
 
-        _binding.comBottomNav.navComFeed.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, new CommunityFeedFragment())
-                .commit();
-        });
-
-        _binding.comBottomNav.navComProfile.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, new com.veganbeauty.app.features.community.profile.CommunityProfileFragment())
-                .commit();
-        });
-
-        _binding.comBottomNav.navComHub.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, new com.veganbeauty.app.features.community.beauty_hub.HandbookFragment())
-                .commit();
-        });
-
-        _binding.comBottomNav.navComChat.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.main_container, new com.veganbeauty.app.features.community.message.CommunityMessageFragment())
-                .commitAllowingStateLoss();
-        });
-
-        ImageView exploreIcon = (ImageView) _binding.comBottomNav.navComExplore.getChildAt(0);
-        if (exploreIcon != null) {
-            exploreIcon.setColorFilter(getResources().getColor(R.color.primary, null));
-        }
-        TextView exploreText = (TextView) _binding.comBottomNav.navComExplore.getChildAt(1);
-        if (exploreText != null) {
-            exploreText.setTextColor(getResources().getColor(R.color.primary, null));
-            exploreText.setTypeface(null, android.graphics.Typeface.BOLD);
-        }
-
-        ImageView feedIcon = (ImageView) _binding.comBottomNav.navComFeed.getChildAt(0);
-        if (feedIcon != null) {
-            feedIcon.setColorFilter(getResources().getColor(R.color.tertiary, null));
-        }
-        TextView feedText = (TextView) _binding.comBottomNav.navComFeed.getChildAt(1);
-        if (feedText != null) {
-            feedText.setTextColor(getResources().getColor(R.color.tertiary, null));
-            feedText.setTypeface(null, android.graphics.Typeface.NORMAL);
-        }
+        ComBottomNavHelper.setup(this, _binding.comBottomNav.getRoot(), ComBottomNavHelper.TAB_EXPLORE);
     }
 
     @Override

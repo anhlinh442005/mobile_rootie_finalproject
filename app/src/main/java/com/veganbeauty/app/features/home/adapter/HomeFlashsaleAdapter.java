@@ -2,6 +2,7 @@ package com.veganbeauty.app.features.home.adapter;
 
 import android.graphics.Paint;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -18,22 +19,16 @@ import java.util.Random;
 
 public class HomeFlashsaleAdapter extends ListAdapter<ProductEntity, HomeFlashsaleAdapter.ViewHolder> {
 
-    public interface OnItemClickListener {
-        void onItemClick(ProductEntity product);
-    }
-
-    public interface OnAddToCartClickListener {
-        void onAddToCart(ProductEntity product);
-    }
-
-    private final OnItemClickListener onItemClick;
-    private final OnAddToCartClickListener onAddToCart;
+    private final HomeProductCartListener listener;
     private final NumberFormat priceFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
-    public HomeFlashsaleAdapter(OnItemClickListener onItemClick, OnAddToCartClickListener onAddToCart) {
+    public HomeFlashsaleAdapter(HomeProductCartListener listener) {
         super(new DiffCallback());
-        this.onItemClick = onItemClick != null ? onItemClick : p -> {};
-        this.onAddToCart = onAddToCart != null ? onAddToCart : p -> {};
+        this.listener = listener != null ? listener : new HomeProductCartListener() {
+            @Override public void onProductClick(ProductEntity product) {}
+            @Override public void onQuickAddToCart(ProductEntity product, View cartButton, android.widget.ImageView productImage) {}
+            @Override public void onCartLongPress(ProductEntity product) {}
+        };
     }
 
     @NonNull
@@ -59,19 +54,29 @@ public class HomeFlashsaleAdapter extends ListAdapter<ProductEntity, HomeFlashsa
         }
 
         public void bind(ProductEntity product) {
-            binding.getRoot().setOnClickListener(v -> onItemClick.onItemClick(product));
-            binding.btnFlashBuy.setOnClickListener(v -> onAddToCart.onAddToCart(product));
+            View.OnClickListener openDetail = v -> listener.onProductClick(product);
+            binding.ivFlashProduct.setOnClickListener(openDetail);
+            binding.tvFlashProductName.setOnClickListener(openDetail);
+            binding.tvFlashPrice.setOnClickListener(openDetail);
+            binding.tvFlashOriginalPrice.setOnClickListener(openDetail);
+
+            binding.btnFlashBuy.setOnClickListener(v ->
+                    listener.onQuickAddToCart(product, binding.btnFlashBuy, binding.ivFlashProduct));
+            binding.btnFlashBuy.setOnLongClickListener(v -> {
+                listener.onCartLongPress(product);
+                return true;
+            });
+
             binding.tvFlashProductName.setText(product.getName());
 
             Random random = new Random((long) product.getId().hashCode());
-            int discount = random.nextInt(31) + 20; // 20% to 50%
+            int discount = random.nextInt(31) + 20;
             binding.tvFlashDiscountBadge.setText("-" + discount + "%");
 
             long originalPrice = product.getPrice();
             double salePrice = originalPrice * (100 - discount) / 100.0;
 
             binding.tvFlashPrice.setText(priceFormatter.format(salePrice));
-
             binding.tvFlashOriginalPrice.setText(priceFormatter.format(originalPrice));
             binding.tvFlashOriginalPrice.setPaintFlags(binding.tvFlashOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 

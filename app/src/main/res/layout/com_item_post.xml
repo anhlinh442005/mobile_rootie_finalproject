@@ -15,6 +15,17 @@
         android:paddingHorizontal="16dp"
         android:paddingBottom="8dp">
 
+        <LinearLayout
+            android:id="@+id/llAuthorInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
         <androidx.cardview.widget.CardView
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -46,7 +57,9 @@
                 android:text="nguyen_bao"
                 android:textColor="@color/primary"
                 android:textStyle="bold"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
                 android:id="@+id/tvSkinType"
@@ -58,6 +71,8 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginTop="2dp" />
+        </LinearLayout>
+
         </LinearLayout>
 
         <TextView

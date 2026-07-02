@@ -34,6 +34,7 @@ import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory
 import com.veganbeauty.app.features.community.message.CommunityMessageFragment;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
+import com.veganbeauty.app.utils.ComBottomNavHelper;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.home.HomeFragment;
 
@@ -134,14 +135,12 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
         View llShortcutHandbook = binding.getRoot().findViewById(R.id.llShortcutHandbook);
         if (llShortcutHandbook != null) {
-            llShortcutHandbook.setOnClickListener(v -> {
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in,
-                                android.R.anim.fade_out)
-                        .replace(R.id.main_container, new HandbookFragment())
-                        .addToBackStack(null)
-                        .commit();
-            });
+            llShortcutHandbook.setOnClickListener(v -> openHandbookFragment());
+        }
+
+        View tvNotebookMore = binding.getRoot().findViewById(R.id.tvNotebookMore);
+        if (tvNotebookMore != null) {
+            tvNotebookMore.setOnClickListener(v -> openHandbookFragment());
         }
 
         binding.btnExploreFeed.setOnClickListener(v -> {
@@ -234,69 +233,27 @@ public class CommunityBeautyHubFragment extends RootieFragment {
         });
     }
 
+    private void openHandbookFragment() {
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in,
+                        android.R.anim.fade_out)
+                .replace(R.id.main_container, new HandbookFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
     private void setupBottomNavigation() {
-        binding.comBottomNav.navComFeed.setOnClickListener(v -> {
-            if (ProfileSession.isLoggedIn(requireContext())) {
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_container, new CommunityFeedFragment())
-                        .commit();
-            } else {
-                BottomNavHelper.showLoginRequiredDialog(requireContext());
+        ComBottomNavHelper.setup(this, binding.comBottomNav.getRoot(), ComBottomNavHelper.TAB_HUB, tabId -> {
+            if (tabId == ComBottomNavHelper.TAB_HUB) {
+                binding.nsvHub.smoothScrollTo(0, 0);
+                return ComBottomNavHelper.INTERCEPT_CONSUME;
             }
-        });
-
-        binding.comBottomNav.navComProfile.setOnClickListener(v -> {
-            if (ProfileSession.isLoggedIn(requireContext())) {
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_container, new CommunityProfileFragment())
-                        .commit();
-            } else {
+            if (!ProfileSession.isLoggedIn(requireContext())) {
                 BottomNavHelper.showLoginRequiredDialog(requireContext());
+                return ComBottomNavHelper.INTERCEPT_CONSUME_NO_HIGHLIGHT;
             }
+            return ComBottomNavHelper.INTERCEPT_NOT_HANDLED;
         });
-
-        binding.comBottomNav.navComExplore.setOnClickListener(v -> {
-            if (ProfileSession.isLoggedIn(requireContext())) {
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_container, new CommunityExploreFragment())
-                        .commit();
-            } else {
-                BottomNavHelper.showLoginRequiredDialog(requireContext());
-            }
-        });
-
-        binding.comBottomNav.navComChat.setOnClickListener(v -> {
-            if (ProfileSession.isLoggedIn(requireContext())) {
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_container, new CommunityMessageFragment())
-                        .commitAllowingStateLoss();
-            } else {
-                BottomNavHelper.showLoginRequiredDialog(requireContext());
-            }
-        });
-
-        binding.comBottomNav.navComHub.setOnClickListener(v -> binding.nsvHub.smoothScrollTo(0, 0));
-
-        // Keep Beauty Hub active visually
-        if (binding.comBottomNav.navComHub.getChildCount() > 1) {
-            ImageView hubIcon = (ImageView) binding.comBottomNav.navComHub.getChildAt(0);
-            hubIcon.setColorFilter(getResources().getColor(R.color.primary, null));
-            TextView hubText = (TextView) binding.comBottomNav.navComHub.getChildAt(1);
-            hubText.setTextColor(getResources().getColor(R.color.primary, null));
-            hubText.setTypeface(null, Typeface.BOLD);
-        }
-
-        if (binding.comBottomNav.navComFeed.getChildCount() > 1) {
-            ImageView feedIcon = (ImageView) binding.comBottomNav.navComFeed.getChildAt(0);
-            feedIcon.setColorFilter(getResources().getColor(R.color.tertiary, null));
-            TextView feedText = (TextView) binding.comBottomNav.navComFeed.getChildAt(1);
-            feedText.setTextColor(getResources().getColor(R.color.tertiary, null));
-            feedText.setTypeface(null, Typeface.NORMAL);
-        }
     }
 
     private void hideBottomNavigation() {
@@ -330,15 +287,18 @@ public class CommunityBeautyHubFragment extends RootieFragment {
         });
 
         viewModel.getExploreVideos().observe(getViewLifecycleOwner(), videos -> {
+            List<com.veganbeauty.app.data.local.entities.YtVideoEntity> notebooks = new ArrayList<>();
             if (videos != null) {
-                List<com.veganbeauty.app.data.local.entities.YtVideoEntity> notebooks = new ArrayList<>();
                 for (com.veganbeauty.app.data.local.entities.YtVideoEntity v : videos) {
-                    if (v.getType() != null && v.getType().toLowerCase().contains("notebook")) {
+                    if (LocalJsonReader.isNotebookVideo(v)) {
                         notebooks.add(v);
                     }
                 }
-                notebookAdapter.updateData(notebooks);
             }
+            if (notebooks.isEmpty() && getContext() != null) {
+                notebooks.addAll(new LocalJsonReader(getContext().getApplicationContext()).getNotebookVideos());
+            }
+            notebookAdapter.updateData(notebooks);
         });
     }
 

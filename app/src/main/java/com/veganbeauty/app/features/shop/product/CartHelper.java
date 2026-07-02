@@ -9,6 +9,10 @@ import com.veganbeauty.app.data.local.entities.ProductEntity;
 
 public class CartHelper {
     public static boolean addToCart(Context context, Object coroutineScope, ProductEntity product, int quantity) {
+        return addToCart(context, coroutineScope, product, quantity, true);
+    }
+
+    public static boolean addToCart(Context context, Object coroutineScope, ProductEntity product, int quantity, boolean showToast) {
         if (product.getStock() <= 0) {
             Toast.makeText(context, "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
             return false;
@@ -38,9 +42,11 @@ public class CartHelper {
                             true
                     ));
                 }
-                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> 
-                    Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show()
-                );
+                if (showToast) {
+                    new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                            Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show()
+                    );
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

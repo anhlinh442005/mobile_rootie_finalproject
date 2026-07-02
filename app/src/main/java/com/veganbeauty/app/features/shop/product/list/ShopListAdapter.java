@@ -27,20 +27,43 @@ public class ShopListAdapter extends RecyclerView.Adapter<ShopListAdapter.ViewHo
         void onAddToCartClick(ProductEntity product);
     }
 
+    public interface OnQuickAddToCartClickListener {
+        void onQuickAddToCartClick(ProductEntity product);
+    }
+
     private final OnItemClickListener onItemClick;
     private final OnAddToCartClickListener onAddToCartClick;
+    private final OnQuickAddToCartClickListener onQuickAddToCartClick;
     private final boolean isInfinite;
     private final List<ProductEntity> originalItems = new ArrayList<>();
     private final List<ProductEntity> items = new ArrayList<>();
 
-    public ShopListAdapter(OnItemClickListener onItemClick, OnAddToCartClickListener onAddToCartClick, boolean isInfinite) {
+    public ShopListAdapter(
+            OnItemClickListener onItemClick,
+            OnAddToCartClickListener onAddToCartClick,
+            OnQuickAddToCartClickListener onQuickAddToCartClick,
+            boolean isInfinite
+    ) {
         this.onItemClick = onItemClick;
         this.onAddToCartClick = onAddToCartClick;
+        this.onQuickAddToCartClick = onQuickAddToCartClick;
         this.isInfinite = isInfinite;
     }
 
+    public ShopListAdapter(
+            OnItemClickListener onItemClick,
+            OnAddToCartClickListener onAddToCartClick,
+            OnQuickAddToCartClickListener onQuickAddToCartClick
+    ) {
+        this(onItemClick, onAddToCartClick, onQuickAddToCartClick, false);
+    }
+
+    public ShopListAdapter(OnItemClickListener onItemClick, OnAddToCartClickListener onAddToCartClick, boolean isInfinite) {
+        this(onItemClick, onAddToCartClick, null, isInfinite);
+    }
+
     public ShopListAdapter(OnItemClickListener onItemClick, OnAddToCartClickListener onAddToCartClick) {
-        this(onItemClick, onAddToCartClick, false);
+        this(onItemClick, onAddToCartClick, null, false);
     }
 
     public void submitList(List<ProductEntity> newItems) {
@@ -117,6 +140,14 @@ public class ShopListAdapter extends RecyclerView.Adapter<ShopListAdapter.ViewHo
 
             binding.getRoot().setOnClickListener(v -> onItemClick.onItemClick(product));
             binding.btnAddToCart.setOnClickListener(v -> onAddToCartClick.onAddToCartClick(product));
+
+            if (onQuickAddToCartClick != null) {
+                binding.ivCartIcon.setVisibility(View.VISIBLE);
+                binding.ivCartIcon.setOnClickListener(v -> onQuickAddToCartClick.onQuickAddToCartClick(product));
+            } else {
+                binding.ivCartIcon.setVisibility(View.GONE);
+                binding.ivCartIcon.setOnClickListener(null);
+            }
         }
     }
 }

@@ -18,22 +18,16 @@ import java.util.Locale;
 
 public class HomeProductCardAdapter extends ListAdapter<ProductEntity, HomeProductCardAdapter.ViewHolder> {
 
-    public interface OnItemClickListener {
-        void onItemClick(ProductEntity product);
-    }
-
-    public interface OnAddToCartClickListener {
-        void onAddToCart(ProductEntity product);
-    }
-
-    private final OnItemClickListener onItemClick;
-    private final OnAddToCartClickListener onAddToCart;
+    private final HomeProductCartListener listener;
     private final NumberFormat priceFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
-    public HomeProductCardAdapter(OnItemClickListener onItemClick, OnAddToCartClickListener onAddToCart) {
+    public HomeProductCardAdapter(HomeProductCartListener listener) {
         super(new DiffCallback());
-        this.onItemClick = onItemClick != null ? onItemClick : p -> {};
-        this.onAddToCart = onAddToCart != null ? onAddToCart : p -> {};
+        this.listener = listener != null ? listener : new HomeProductCartListener() {
+            @Override public void onProductClick(ProductEntity product) {}
+            @Override public void onQuickAddToCart(ProductEntity product, View cartButton, android.widget.ImageView productImage) {}
+            @Override public void onCartLongPress(ProductEntity product) {}
+        };
     }
 
     @NonNull
@@ -59,8 +53,19 @@ public class HomeProductCardAdapter extends ListAdapter<ProductEntity, HomeProdu
         }
 
         public void bind(ProductEntity product) {
-            binding.getRoot().setOnClickListener(v -> onItemClick.onItemClick(product));
-            binding.btnAddToCart.setOnClickListener(v -> onAddToCart.onAddToCart(product));
+            View.OnClickListener openDetail = v -> listener.onProductClick(product);
+            binding.ivProduct.setOnClickListener(openDetail);
+            binding.tvProductName.setOnClickListener(openDetail);
+            binding.tvPrice.setOnClickListener(openDetail);
+            binding.tvOriginalPrice.setOnClickListener(openDetail);
+
+            binding.btnAddToCart.setOnClickListener(v ->
+                    listener.onQuickAddToCart(product, binding.btnAddToCart, binding.ivProduct));
+            binding.btnAddToCart.setOnLongClickListener(v -> {
+                listener.onCartLongPress(product);
+                return true;
+            });
+
             binding.tvProductName.setText(product.getName());
             binding.tvPrice.setText(priceFormatter.format(product.getPrice()));
 

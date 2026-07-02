@@ -90,7 +90,7 @@ public class SkinScanResultFragment extends RootieFragment {
 
         binding.skinResultBtnSave.setOnClickListener(v -> {
             if (currentData != null) {
-                String userId = ProfileSession.INSTANCE.getUserId(requireContext());
+                String userId = ProfileSession.getUserId(requireContext());
                 saveToFirestore(userId, currentData);
             }
         });
@@ -384,8 +384,19 @@ public class SkinScanResultFragment extends RootieFragment {
 
     private void useFallbackMockData(String imageUri) {
         try {
-            String userId = ProfileSession.INSTANCE.getUserId(requireContext());
-            JSONArray arrayToUse = new LocalJsonReader(requireContext()).getSkinHistory(userId);
+            String userId = ProfileSession.getUserId(requireContext());
+            JSONArray allHistory = new LocalJsonReader(requireContext()).getSkinHistory();
+            JSONArray arrayToUse = new JSONArray();
+            for (int i = 0; i < allHistory.length(); i++) {
+                JSONObject item = allHistory.getJSONObject(i);
+                String ownerId = item.optString("userId", item.optString("user_id", ""));
+                if (ownerId.isEmpty() || userId.equals(ownerId)) {
+                    arrayToUse.put(item);
+                }
+            }
+            if (arrayToUse.length() == 0) {
+                arrayToUse = allHistory;
+            }
             if (arrayToUse.length() > 0) {
                 JSONObject data = new JSONObject(arrayToUse.getJSONObject(0).toString());
                 

@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.IngredientEntity;
+import com.veganbeauty.app.utils.BeVietnamProFontHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +53,8 @@ public class IngredientFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        BeVietnamProFontHelper.apply(view);
 
         rvIngredients = view.findViewById(R.id.rvIngredients);
         etSearch = view.findViewById(R.id.etSearch);
@@ -114,6 +117,7 @@ public class IngredientFragment extends Fragment {
 
             chip.setClickable(true);
             chip.setFocusable(true);
+            BeVietnamProFontHelper.applyToTextView(chip);
 
             chip.setOnClickListener(v -> {
                 selectedType = "Tất cả".equals(type) ? null : type;

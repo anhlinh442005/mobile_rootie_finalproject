@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAF4">
+    android:background="#FAFAF4"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <include
         android:id="@+id/home_header"
@@ -17,14 +20,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/home_header"
-        android:layout_above="@id/bottom_nav"
+        android:layout_alignParentBottom="true"
+        android:clipToPadding="false"
         android:fillViewport="true"
+        android:paddingBottom="56dp"
         android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="8dp">
 
             <!-- Hero Banner Carousel -->
             <FrameLayout
@@ -57,323 +63,409 @@
                     android:orientation="horizontal" />
             </FrameLayout>
 
-            <!-- Skincare Routine Banner Widget -->
+            <!-- Skincare streak + quiz reminder list -->
             <LinearLayout
-                android:id="@+id/cardHomeRoutineWidget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/bg_streak_card_gradient"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:clickable="true"
-                android:focusable="true">
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:id="@+id/cardHomeRoutineWidget"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:background="@drawable/bg_streak_card_gradient"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/tv_home_streak_count"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Chuỗi chăm da của bạn: 0 ngày 🔥"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tv_home_streak_desc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Sáng nay bạn chưa hoàn thành Routine, bấm để bắt đầu!"
-                        android:textColor="#DDDFC4"
-                        android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/tv_home_streak_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chuỗi chăm da của bạn: 0 ngày 🔥"
+                            android:textColor="#FFFFFF"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_home_streak_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Sáng nay bạn chưa hoàn thành Routine, bấm để bắt đầu!"
+                            android:textColor="#DDDFC4"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="@null"
+                        android:scaleX="-1"
+                        android:src="@drawable/ic_chevron_left"
+                        app:tint="#FFFFFF" />
                 </LinearLayout>
 
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_chevron_right"
-                    app:tint="#FFFFFF"
-                    android:layout_marginStart="8dp" />
+                <include
+                    android:id="@+id/quiz_test_weekly_reminder_layout"
+                    layout="@layout/quiz_test_weekly_reminder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp" />
             </LinearLayout>
-
-            <include
-                android:id="@+id/quiz_test_weekly_reminder_layout"
-                layout="@layout/quiz_test_weekly_reminder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
             <!-- Featured Sunscreen Promo -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="#EFEFE8">
+                android:background="#EFEFE8"
+                android:paddingBottom="24dp">
 
-                <!-- Left Text Section -->
-                <!-- Badge -->
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guidelinePromoSplit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.52" />
+
+                <!-- Badge (trái) -->
                 <LinearLayout
                     android:id="@+id/llPromoBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="20dp"
                     android:background="@drawable/bg_pill_dark_olive"
+                    android:gravity="center_vertical"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="6dp"
-                    android:gravity="center_vertical"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="14dp"
                         android:layout_height="14dp"
+                        android:contentDescription="@null"
                         android:src="@drawable/ic_shield_verified"
-                        app:tint="#FFFFFF"
-                        android:contentDescription="@null" />
+                        app:tint="#FFFFFF" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
+                        android:fontFamily="@font/be_vietnam_pro"
                         android:text="CHỐNG NẮNG PHỔ RỘNG"
                         android:textColor="#FFFFFF"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Titles -->
+                <!-- Tiêu đề (phải, trên video) -->
                 <TextView
                     android:id="@+id/tvPromoTitle1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginEnd="12dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:gravity="end"
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="1dp"
+                    android:maxLines="2"
                     android:text="Sữa chống nắng"
+                    android:textAlignment="viewEnd"
                     android:textColor="#1B3E2D"
-                    android:textSize="28sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/flVideoContainer"
-                    app:layout_constraintTop_toBottomOf="@id/llPromoBadge" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guidelinePromoSplit"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tvPromoTitle2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="bí đao"
-                    android:textColor="#3D684C"
-                    android:textSize="44sp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="-2dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="2dp"
                     android:fontFamily="@font/mightype"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/flVideoContainer"
-                    app:layout_constraintTop_toBottomOf="@id/tvPromoTitle1"
-                    android:layout_marginTop="-16dp" />
+                    android:gravity="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:text="bí đao"
+                    android:textAlignment="viewEnd"
+                    android:textColor="#3D684C"
+                    android:textSize="26sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guidelinePromoSplit"
+                    app:layout_constraintTop_toBottomOf="@id/tvPromoTitle1" />
 
-                <TextView
-                    android:id="@+id/tvPromoSubtitle"
+                <!-- Cột phải: video + nút, cao bằng 4 khung trái -->
+                <LinearLayout
+                    android:id="@+id/llPromoRightMedia"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="Bảo vệ da toàn diện – Thanh mát, nhẹ thoáng mỗi ngày"
-                    android:textColor="#28362E"
-                    android:textSize="11sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/flVideoContainer"
-                    app:layout_constraintTop_toBottomOf="@id/tvPromoTitle2"
-                    android:layout_marginTop="-4dp" />
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@id/llPromoFeatures"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guidelinePromoSplit"
+                    app:layout_constraintTop_toBottomOf="@id/tvPromoTitle2">
 
-                <!-- Features -->
+                    <FrameLayout
+                        android:id="@+id/flVideoContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                        <VideoView
+                            android:id="@+id/vvPromoSunscreen"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/btnPromoSunscreen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_pill_dark_olive"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="7dp"
+                        android:text="BẢO VỆ DA – TỰ TIN TỎA SÁNG"
+                        android:textColor="#FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 4 mục tính năng (trái) -->
                 <LinearLayout
                     android:id="@+id/llPromoFeatures"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="8dp"
                     android:orientation="vertical"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="16dp"
+                    app:layout_constraintEnd_toStartOf="@id/guidelinePromoSplit"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/flVideoContainer"
-                    app:layout_constraintTop_toBottomOf="@id/tvPromoSubtitle">
+                    app:layout_constraintTop_toTopOf="@id/llPromoRightMedia">
 
-                    <!-- Feature 1 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="7dp"
+                        android:background="@drawable/bg_promo_feature_card"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="9dp">
+
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:contentDescription="@null"
                             android:src="@drawable/ic_shield_verified"
-                            app:tint="#1B3E2D"
-                            android:contentDescription="@null" />
+                            app:tint="#1B3E2D" />
+
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="8dp">
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:includeFontPadding="false"
                                 android:text="Chống nắng phổ rộng"
                                 android:textColor="#1B3E2D"
-                                android:textSize="14sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold" />
+
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Bảo vệ da khỏi tia UVA/UVB &amp; ánh sáng xanh"
+                                android:layout_marginTop="2dp"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:includeFontPadding="false"
+                                android:lineSpacingExtra="2dp"
+                                android:text="Bảo vệ da khỏi UVA/UVB &amp; ánh sáng xanh"
                                 android:textColor="#4A564A"
-                                android:textSize="12sp" />
+                                android:textSize="11sp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Feature 2 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="7dp"
+                        android:background="@drawable/bg_promo_feature_card"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="9dp">
+
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:contentDescription="@null"
                             android:src="@drawable/ic_water_drop_outline"
                             app:tint="#1B3E2D" />
+
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="8dp">
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:includeFontPadding="false"
                                 android:text="Chiết xuất bí đao thiên nhiên"
                                 android:textColor="#1B3E2D"
-                                android:textSize="14sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold" />
+
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:includeFontPadding="false"
+                                android:lineSpacingExtra="2dp"
                                 android:text="Dịu mát, cấp ẩm &amp; hỗ trợ kiềm dầu"
                                 android:textColor="#4A564A"
-                                android:textSize="12sp" />
+                                android:textSize="11sp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Feature 3 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="7dp"
+                        android:background="@drawable/bg_promo_feature_card"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="9dp">
+
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/ic_leaf"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_check"
                             app:tint="#1B3E2D" />
+
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="8dp">
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:includeFontPadding="false"
                                 android:text="Kết cấu nhẹ tênh – Không bết dính"
                                 android:textColor="#1B3E2D"
-                                android:textSize="14sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold" />
+
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:includeFontPadding="false"
+                                android:lineSpacingExtra="2dp"
                                 android:text="Thấm nhanh, nâng tone tự nhiên"
                                 android:textColor="#4A564A"
-                                android:textSize="12sp" />
+                                android:textSize="11sp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Feature 4 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/bg_promo_feature_card"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="9dp">
+
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:contentDescription="@null"
                             android:src="@drawable/ic_weather_sparkles"
                             app:tint="#1B3E2D" />
+
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="8dp">
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:includeFontPadding="false"
                                 android:text="An toàn cho mọi loại da"
                                 android:textColor="#1B3E2D"
-                                android:textSize="14sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold" />
+
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:includeFontPadding="false"
+                                android:lineSpacingExtra="2dp"
                                 android:text="Kể cả da nhạy cảm"
                                 android:textColor="#4A564A"
-                                android:textSize="12sp" />
+                                android:textSize="11sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Button -->
-                <TextView
-                    android:id="@+id/btnPromoSunscreen"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@drawable/bg_pill_dark_olive"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="10dp"
-                    android:text="BẢO VỆ DA – TỰ TIN TỎA SÁNG ❯"
-                    android:textColor="#FFFFFF"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/llPromoFeatures"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <!-- Right Video Section -->
-                <FrameLayout
-                    android:id="@+id/flVideoContainer"
+                <Space
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:layout_constraintWidth_percent="0.45"
-                    app:layout_constraintDimensionRatio="H,9:16"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.5">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/llPromoFeatures" />
 
-                    <VideoView
-                        android:id="@+id/vvPromoSunscreen"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </FrameLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -439,8 +531,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/home_recent_activity"
-                        android:textColor="#28362E"
-                        android:textSize="15sp"
+                        android:textColor="#1B3E2D"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -561,7 +653,7 @@
                             android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text=":"
                             android:textColor="@color/white"
-                            android:textSize="11sp" />
+                            android:textSize="12sp" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -598,7 +690,7 @@
                             android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text=":"
                             android:textColor="@color/white"
-                            android:textSize="11sp" />
+                            android:textSize="12sp" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -792,9 +884,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/home_bestsellers"
-                            android:textColor="#4A564A"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/be_vietnam_pro_bolditalic" />
+                            android:textColor="#1B3E2D"
+                            android:textSize="17sp"
+                            android:fontFamily="@font/be_vietnam_pro_bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -985,6 +1077,9 @@
         layout="@layout/home_navapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="16dp" />
 
 </RelativeLayout>

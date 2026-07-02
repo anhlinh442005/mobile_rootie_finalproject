@@ -178,27 +178,16 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Skin type badge -->
-                    <LinearLayout
+                    <!-- Category badge -->
+                    <TextView
+                        android:fontFamily="@font/be_vietnam_pro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_leaf"
-                            app:tint="#6E846A" />
-                        <TextView android:fontFamily="@font/be_vietnam_pro"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="Sức khoẻ - Làm đẹp"
-                            android:textColor="#6E846A"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                        android:text="Sức khoẻ - Làm đẹp"
+                        android:textColor="#6E846A"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                     
                     <!-- Mutual tracking -->
                     <LinearLayout

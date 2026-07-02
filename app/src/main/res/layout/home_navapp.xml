@@ -5,145 +5,195 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
     android:clipChildren="false"
-    android:clipToPadding="false">
- 
+    android:clipToPadding="false"
+    tools:showIn="@layout/home_fragment">
+
     <com.veganbeauty.app.ui.widget.BottomNavBackground
         android:id="@+id/nav_background"
         android:layout_width="match_parent"
-        android:layout_height="76dp"
+        android:layout_height="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <View
-        android:id="@+id/view_ai_skin_glow"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:background="@drawable/bg_nav_ai_skin_glow"
-        android:alpha="0"
-        android:translationY="-2dp"
-        app:layout_constraintBottom_toTopOf="@id/nav_background"
-        app:layout_constraintTop_toTopOf="@id/nav_background"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal"
-        android:weightSum="5"
+        android:layout_height="56dp"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingTop="6dp"
+        android:weightSum="5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
- 
-        <!-- 1. Trang chủ -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
+
+        <LinearLayout
             android:id="@+id/nav_home"
-            android:clickable="true" android:focusable="true">
-            <ImageView android:id="@+id/iv_nav_home" android:layout_width="48dp" android:layout_height="48dp"
-                android:src="@drawable/ic_home" android:contentDescription="Trang chủ"
-                android:scaleType="centerInside" android:padding="12dp" />
-            <TextView android:id="@+id/tv_nav_home" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Trang chủ"
-                android:textColor="@color/nav_icon_color" android:textSize="10sp"
-                android:fontFamily="@font/be_vietnam_pro" />
-        </LinearLayout>
- 
-        <!-- 2. Mua sắm -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
-            android:id="@+id/nav_shop"
-            android:clickable="true" android:focusable="true">
-            <ImageView android:id="@+id/iv_nav_shop" android:layout_width="48dp" android:layout_height="48dp"
-                android:src="@drawable/ic_shop" android:contentDescription="Mua sắm"
-                android:scaleType="centerInside" android:padding="12dp" />
-            <TextView android:id="@+id/tv_nav_shop" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Mua sắm"
-                android:textColor="@color/nav_icon_color" android:textSize="10sp"
-                android:fontFamily="@font/be_vietnam_pro" />
-        </LinearLayout>
- 
-        <!-- 3. My Skin — icon lồi lên trên, căn giữa viền tròn bump -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/nav_myskin"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:clickable="true"
-            android:focusable="true">
-
-            <View
-                android:id="@+id/vMySkinShadow"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/shape_nav_active_bg"
-                android:translationY="2dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/ivMySkin"
-                app:layout_constraintBottom_toBottomOf="@id/ivMySkin"
-                app:layout_constraintStart_toStartOf="@id/ivMySkin"
-                app:layout_constraintEnd_toEndOf="@id/ivMySkin" />
+            android:focusable="true"
+            android:foreground="@drawable/bg_nav_tab_ripple"
+            android:gravity="center_horizontal|bottom"
+            android:orientation="vertical"
+            android:paddingBottom="6dp">
 
             <ImageView
-                android:id="@+id/ivMySkin"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:contentDescription="AI Skin"
-                android:src="@drawable/ic_skin_mainbar_nonactive"
-                android:translationY="2dp"
-                android:elevation="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:id="@+id/iv_nav_home"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Trang chủ"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_home" />
 
             <TextView
+                android:id="@+id/tv_nav_home"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:fontFamily="@font/be_vietnam_pro"
-                android:text="AI Skin"
-                android:textColor="@color/nav_icon_color"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginBottom="11.5dp" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
- 
-        <!-- 4. Cộng đồng -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
+                android:includeFontPadding="false"
+                android:text="Trang chủ"
+                android:textColor="@color/tertiary"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_shop"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/bg_nav_tab_ripple"
+            android:gravity="center_horizontal|bottom"
+            android:orientation="vertical"
+            android:paddingBottom="6dp">
+
+            <ImageView
+                android:id="@+id/iv_nav_shop"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Mua sắm"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_shop" />
+
+            <TextView
+                android:id="@+id/tv_nav_shop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:includeFontPadding="false"
+                android:text="Mua sắm"
+                android:textColor="@color/tertiary"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <LinearLayout
             android:id="@+id/nav_community"
-            android:clickable="true" android:focusable="true">
-            <ImageView android:id="@+id/iv_nav_community" android:layout_width="48dp" android:layout_height="48dp"
-                android:src="@drawable/ic_community" android:contentDescription="Cộng đồng"
-                android:scaleType="centerInside" android:padding="12dp" />
-            <TextView android:id="@+id/tv_nav_community" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/bg_nav_tab_ripple"
+            android:gravity="center_horizontal|bottom"
+            android:orientation="vertical"
+            android:paddingBottom="6dp">
+
+            <ImageView
+                android:id="@+id/iv_nav_community"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Cộng đồng"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_community" />
+
+            <TextView
+                android:id="@+id/tv_nav_community"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:includeFontPadding="false"
                 android:text="Cộng đồng"
-                android:textColor="@color/nav_icon_color" android:textSize="10sp"
-                android:fontFamily="@font/be_vietnam_pro" />
+                android:textColor="@color/tertiary"
+                android:textSize="10sp" />
         </LinearLayout>
- 
-        <!-- 5. Tài khoản -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:orientation="vertical"
+
+        <LinearLayout
             android:id="@+id/nav_account"
-            android:clickable="true" android:focusable="true">
-            <ImageView android:id="@+id/iv_nav_account" android:layout_width="48dp" android:layout_height="48dp"
-                android:src="@drawable/ic_account" android:contentDescription="Tài khoản"
-                android:scaleType="centerInside" android:padding="12dp" />
-            <TextView android:id="@+id/tv_nav_account" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Tài khoản"
-                android:textColor="@color/nav_icon_color" android:textSize="10sp"
-                android:fontFamily="@font/be_vietnam_pro" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/bg_nav_tab_ripple"
+            android:gravity="center_horizontal|bottom"
+            android:orientation="vertical"
+            android:paddingBottom="6dp">
+
+            <ImageView
+                android:id="@+id/iv_nav_account"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Cá nhân"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_account" />
+
+            <TextView
+                android:id="@+id/tv_nav_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:includeFontPadding="false"
+                android:text="Cá nhân"
+                android:textColor="@color/tertiary"
+                android:textSize="10sp" />
         </LinearLayout>
- 
     </LinearLayout>
- 
+
+    <FrameLayout
+        android:id="@+id/nav_myskin"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:clickable="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="14dp"
+        android:focusable="true"
+        android:translationZ="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:id="@+id/view_ai_skin_glow"
+            android:layout_width="106dp"
+            android:layout_height="106dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_nav_ai_skin_glow" />
+
+        <ImageView
+            android:id="@+id/ivMySkin"
+            android:layout_width="73dp"
+            android:layout_height="73dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="-10dp"
+            android:contentDescription="AI Skin"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_skin_mainbar" />
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

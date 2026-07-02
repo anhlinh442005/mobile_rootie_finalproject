@@ -2,6 +2,7 @@ package com.veganbeauty.app.features.home.adapter;
 
 import android.graphics.Paint;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -17,22 +18,16 @@ import java.util.Locale;
 
 public class HomeBestsellerAdapter extends ListAdapter<ProductEntity, HomeBestsellerAdapter.ViewHolder> {
 
-    public interface OnItemClickListener {
-        void onItemClick(ProductEntity product);
-    }
-
-    public interface OnAddToCartClickListener {
-        void onAddToCart(ProductEntity product);
-    }
-
-    private final OnItemClickListener onItemClick;
-    private final OnAddToCartClickListener onAddToCart;
+    private final HomeProductCartListener listener;
     private final NumberFormat priceFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
-    public HomeBestsellerAdapter(OnItemClickListener onItemClick, OnAddToCartClickListener onAddToCart) {
+    public HomeBestsellerAdapter(HomeProductCartListener listener) {
         super(new DiffCallback());
-        this.onItemClick = onItemClick != null ? onItemClick : p -> {};
-        this.onAddToCart = onAddToCart != null ? onAddToCart : p -> {};
+        this.listener = listener != null ? listener : new HomeProductCartListener() {
+            @Override public void onProductClick(ProductEntity product) {}
+            @Override public void onQuickAddToCart(ProductEntity product, View cartButton, android.widget.ImageView productImage) {}
+            @Override public void onCartLongPress(ProductEntity product) {}
+        };
     }
 
     @NonNull
@@ -58,13 +53,25 @@ public class HomeBestsellerAdapter extends ListAdapter<ProductEntity, HomeBestse
         }
 
         public void bind(ProductEntity product, int rank) {
-            binding.getRoot().setOnClickListener(v -> onItemClick.onItemClick(product));
-            binding.btnAction.setOnClickListener(v -> onAddToCart.onAddToCart(product));
+            View.OnClickListener openDetail = v -> listener.onProductClick(product);
+            binding.ivProduct.setOnClickListener(openDetail);
+            binding.tvProductName.setOnClickListener(openDetail);
+            binding.tvPrice.setOnClickListener(openDetail);
+            binding.tvOriginalPrice.setOnClickListener(openDetail);
+            binding.tvRank.setOnClickListener(openDetail);
+
+            binding.btnAction.setOnClickListener(v ->
+                    listener.onQuickAddToCart(product, binding.btnAction, binding.ivProduct));
+            binding.btnAction.setOnLongClickListener(v -> {
+                listener.onCartLongPress(product);
+                return true;
+            });
+
             binding.tvRank.setText(String.valueOf(rank));
             binding.tvProductName.setText(product.getName());
             binding.tvPrice.setText(priceFormatter.format(product.getPrice()));
 
-            double originalPrice = product.getPrice() / 0.75; // Assuming 25% discount to match design
+            double originalPrice = product.getPrice() / 0.75;
             binding.tvOriginalPrice.setText(priceFormatter.format(originalPrice));
             binding.tvOriginalPrice.setPaintFlags(binding.tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 

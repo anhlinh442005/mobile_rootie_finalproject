@@ -24,6 +24,7 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
+import com.veganbeauty.app.utils.ComBottomNavHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -186,37 +187,7 @@ public class ExploreSearchFragment extends RootieFragment {
     }
 
     private void setupBottomNav(View bottomNav) {
-        bottomNav.findViewById(R.id.nav_com_feed).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new CommunityFeedFragment())
-                    .commit();
-        });
-        bottomNav.findViewById(R.id.nav_com_profile).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new com.veganbeauty.app.features.community.profile.CommunityProfileFragment())
-                    .commit();
-        });
-        bottomNav.findViewById(R.id.nav_com_hub).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new com.veganbeauty.app.features.community.beauty_hub.CommunityBeautyHubFragment())
-                    .commit();
-        });
-        bottomNav.findViewById(R.id.nav_com_chat).setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new com.veganbeauty.app.features.community.message.CommunityMessageFragment())
-                    .commitAllowingStateLoss();
-        });
-
-        LinearLayout exploreNav = bottomNav.findViewById(R.id.nav_com_explore);
-        if (exploreNav != null) {
-            ImageView exploreIcon = (ImageView) exploreNav.getChildAt(0);
-            if (exploreIcon != null) exploreIcon.setColorFilter(getResources().getColor(R.color.primary, null));
-            TextView exploreText = (TextView) exploreNav.getChildAt(1);
-            if (exploreText != null) {
-                exploreText.setTextColor(getResources().getColor(R.color.primary, null));
-                exploreText.setTypeface(null, Typeface.BOLD);
-            }
-        }
+        ComBottomNavHelper.setup(this, bottomNav, ComBottomNavHelper.TAB_EXPLORE);
     }
 
     @Override

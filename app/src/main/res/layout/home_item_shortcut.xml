@@ -5,31 +5,35 @@
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingBottom="12dp">
+    android:paddingHorizontal="4dp"
+    android:paddingBottom="14dp">
 
     <FrameLayout
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:background="@drawable/com_bg_circle_white"
-        android:padding="12dp">
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="@drawable/bg_home_shortcut_circle"
+        android:padding="13dp">
 
         <ImageView
             android:id="@+id/ivShortcutIcon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/ic_grid"
-            app:tint="@color/secondary" />
+            app:tint="@color/primary" />
     </FrameLayout>
 
     <TextView
         android:id="@+id/tvShortcutName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:fontFamily="@font/be_vietnam_pro_medium"
+        android:lineSpacingExtra="1dp"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:text="@string/home_shortcut_label"
         android:textColor="#28362E"
-        android:textSize="10sp" />
+        android:textSize="12sp" />
 
 </LinearLayout>

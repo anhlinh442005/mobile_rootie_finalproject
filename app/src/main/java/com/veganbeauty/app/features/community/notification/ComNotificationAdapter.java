@@ -118,7 +118,7 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
                     badgeRes = R.drawable.ic_heart;
                     break;
                 case "SHARE":
-                    badgeRes = R.drawable.ic_share;
+                    badgeRes = R.drawable.ic_plane;
                     break;
                 case "ORDER_PLACED":
                     badgeRes = R.drawable.ic_truck;

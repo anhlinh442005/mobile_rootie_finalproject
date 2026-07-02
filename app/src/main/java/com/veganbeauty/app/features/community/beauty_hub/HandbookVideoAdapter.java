@@ -132,9 +132,22 @@ public class HandbookVideoAdapter extends RecyclerView.Adapter<HandbookVideoAdap
         holder.tvLikes.setText(String.format(Locale.US, "%.1fk", fakeLikes).replace(".", ","));
         
         String videoId = extractYouTubeVideoId(video.getUrl());
-        String thumbnailUrl = videoId != null ? "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg" : video.getUrl();
-        
-        com.bumptech.glide.Glide.with(holder.ivThumbnail.getContext()).load(thumbnailUrl).into(holder.ivThumbnail);
+        String thumbnailUrl = video.getUrl();
+        if (videoId != null) {
+            thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
+        } else if (video.getUrl() != null && video.getUrl().contains("cloudinary.com")
+                && video.getUrl().toLowerCase().endsWith(".mp4")) {
+            int lastDot = video.getUrl().lastIndexOf('.');
+            if (lastDot > 0) {
+                thumbnailUrl = video.getUrl().substring(0, lastDot) + ".jpg";
+            }
+        }
+
+        com.bumptech.glide.Glide.with(holder.ivThumbnail.getContext())
+                .load(thumbnailUrl)
+                .placeholder(android.R.color.darker_gray)
+                .error(android.R.color.darker_gray)
+                .into(holder.ivThumbnail);
         
         int min = random.nextInt(16) + 5;
         int sec = random.nextInt(50) + 10;
@@ -145,7 +158,7 @@ public class HandbookVideoAdapter extends RecyclerView.Adapter<HandbookVideoAdap
             holder.ivHeart.setImageResource(R.drawable.ic_heart_filled);
         } else {
             holder.ivHeart.clearColorFilter();
-            holder.ivHeart.setImageResource(R.drawable.ic_heart); // Optional, reset back to default empty heart
+            holder.ivHeart.setImageResource(R.drawable.ic_heart_outline);
         }
     }
 

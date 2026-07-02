@@ -230,7 +230,7 @@
                             <ImageView
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
-                                android:src="@drawable/ic_leaf"
+                                android:src="@drawable/ic_check"
                                 app:tint="@color/secondary" />
 
                             <TextView
@@ -458,7 +458,7 @@
                                 <ImageView
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
-                                    android:src="@drawable/ic_leaf"
+                                    android:src="@drawable/ic_check"
                                     app:tint="@color/primary" />
 
                                 <TextView

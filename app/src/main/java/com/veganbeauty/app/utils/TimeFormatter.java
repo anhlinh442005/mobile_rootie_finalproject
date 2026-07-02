@@ -6,33 +6,40 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class TimeFormatter {
-    public static String getTimeAgo(String dateString) {
-        if (dateString == null || dateString.trim().isEmpty()) return "";
+    public static long parseCreatedAtMillis(String dateString) {
+        if (dateString == null || dateString.trim().isEmpty()) return 0L;
         try {
-            long pastTimeMs = 0;
-            try {
-                long asLong = Long.parseLong(dateString);
-                pastTimeMs = (asLong < 10000000000L) ? asLong * 1000 : asLong;
-            } catch (NumberFormatException nfe) {
-                String[] formats = {
+            long asLong = Long.parseLong(dateString.trim());
+            return (asLong < 10000000000L) ? asLong * 1000 : asLong;
+        } catch (NumberFormatException ignored) {
+            String[] formats = {
                     "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'",
                     "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
                     "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                };
-                Date parsedDate = null;
-                for (String f : formats) {
-                    try {
-                        SimpleDateFormat sdf = new SimpleDateFormat(f, Locale.getDefault());
-                        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                        parsedDate = sdf.parse(dateString);
-                        if (parsedDate != null) break;
-                    } catch (Exception e) {
-                        // Continue to next format
-                    }
+            };
+            for (String f : formats) {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat(f, Locale.getDefault());
+                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    Date parsedDate = sdf.parse(dateString);
+                    if (parsedDate != null) return parsedDate.getTime();
+                } catch (Exception e) {
+                    // try next format
                 }
-                if (parsedDate == null) return dateString;
-                pastTimeMs = parsedDate.getTime();
             }
+        }
+        return 0L;
+    }
+
+    public static int compareCreatedAtDesc(String first, String second) {
+        return Long.compare(parseCreatedAtMillis(second), parseCreatedAtMillis(first));
+    }
+
+    public static String getTimeAgo(String dateString) {
+        if (dateString == null || dateString.trim().isEmpty()) return "";
+        try {
+            long pastTimeMs = parseCreatedAtMillis(dateString);
+            if (pastTimeMs <= 0L) return dateString;
             
             long now = new Date().getTime();
             long seconds = Math.abs(now - pastTimeMs) / 1000;

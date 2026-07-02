@@ -83,7 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/thanh_phan_1" />
+                    android:src="@drawable/img_ingredient1" />
             </androidx.cardview.widget.CardView>
 
             <!-- Title & Subtitle -->

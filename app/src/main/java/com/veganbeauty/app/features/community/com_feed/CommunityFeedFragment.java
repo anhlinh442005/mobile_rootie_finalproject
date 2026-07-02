@@ -42,6 +42,8 @@ import com.veganbeauty.app.features.community.message.CommunityMessageFragment;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.utils.ComBottomNavHelper;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.utils.SideMenuHelper;
 
 import java.util.ArrayList;
@@ -100,9 +102,21 @@ public class CommunityFeedFragment extends RootieFragment {
 
         binding.ivMenu.setOnClickListener(v -> {
             if (binding.drawerLayout != null) {
+                SideMenuHelper.bindCurrentUser(binding.navView);
                 binding.drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+
+        if (binding.drawerLayout != null) {
+            binding.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerOpened(@NonNull View drawerView) {
+                    if (binding != null && binding.navView != null) {
+                        SideMenuHelper.bindCurrentUser(binding.navView);
+                    }
+                }
+            });
+        }
 
         binding.ivNotification.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
@@ -160,40 +174,15 @@ public class CommunityFeedFragment extends RootieFragment {
                     .commit();
         });
 
-        binding.comBottomNav.navComFeed.setOnClickListener(v -> {
-            binding.nsvFeed.smoothScrollTo(0, 0);
-            mainHandler.postDelayed(() -> {
-                if (isAdded()) updateFeedData(true);
-            }, 800);
-        });
-
-        binding.comBottomNav.navComProfile.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.main_container, new CommunityProfileFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
-        binding.comBottomNav.navComHub.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.main_container, new CommunityBeautyHubFragment())
-                    .commit();
-        });
-
-        binding.comBottomNav.navComExplore.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.main_container, new CommunityExploreFragment())
-                    .commit();
-        });
-
-        binding.comBottomNav.navComChat.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.main_container, new CommunityMessageFragment())
-                    .commitAllowingStateLoss();
+        ComBottomNavHelper.setup(this, binding.comBottomNav.getRoot(), ComBottomNavHelper.TAB_FEED, tabId -> {
+            if (tabId == ComBottomNavHelper.TAB_FEED) {
+                binding.nsvFeed.smoothScrollTo(0, 0);
+                mainHandler.postDelayed(() -> {
+                    if (isAdded()) updateFeedData(true);
+                }, 800);
+                return ComBottomNavHelper.INTERCEPT_CONSUME;
+            }
+            return ComBottomNavHelper.INTERCEPT_NOT_HANDLED;
         });
 
         binding.nsvFeed.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
@@ -296,6 +285,13 @@ public class CommunityFeedFragment extends RootieFragment {
         }
     }
 
+    private boolean matchesCurrentFilter(CommunityPostEntity post) {
+        if ("Tất cả".equals(currentFilter)) return true;
+        return currentFilter.equalsIgnoreCase(post.getType())
+                || currentFilter.equalsIgnoreCase(post.getSkinType())
+                || currentFilter.equalsIgnoreCase(post.getConcern());
+    }
+
     private void updateFeedData(boolean resetData) {
         if (viewModel == null) return;
         List<CommunityPostEntity> postsList = viewModel.getPosts().getValue();
@@ -373,6 +369,15 @@ public class CommunityFeedFragment extends RootieFragment {
                             }
                             if (news != null) allFilteredPosts.add(0, news);
                         }
+
+                        List<CommunityPostEntity> pinnedPosts = FeedDataCache.getPinnedPosts();
+                        for (int i = pinnedPosts.size() - 1; i >= 0; i--) {
+                            CommunityPostEntity pinned = pinnedPosts.get(i);
+                            if (!matchesCurrentFilter(pinned)) continue;
+                            allFilteredPosts.removeIf(p -> pinned.getPostId().equals(p.getPostId()));
+                            allFilteredPosts.add(0, pinned);
+                        }
+
                         currentPage = 1;
                     }
 
@@ -448,32 +453,48 @@ public class CommunityFeedFragment extends RootieFragment {
             executor.execute(() -> {
                 Context ctx = getContext();
                 if (ctx == null) return;
-                List<String> myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser("test_001");
+                List<String> myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser(
+                        ProfileSessionHelper.getEffectiveUserId(ctx));
+                if (myFriendsIdsList.isEmpty()) {
+                    myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser("test_001");
+                }
                 Set<String> myFriendsIds = new HashSet<>(myFriendsIdsList);
+
+                String ownUserId = ProfileSessionHelper.getEffectiveUserId(ctx);
+                if (ownUserId == null || ownUserId.isEmpty()) {
+                    ownUserId = "test_001";
+                }
+                final String currentUserId = ownUserId;
+                final String avatarUrl = ProfileSessionHelper.getDisplayAvatarUrl(ctx);
 
                 mainHandler.post(() -> {
                     if (!isAdded()) return;
                     List<UserEntity> safeUsers = users != null ? users : Collections.emptyList();
                     List<UserEntity> allStories = new ArrayList<>(safeUsers);
+
                     Collections.sort(allStories, (o1, o2) -> {
                         boolean f1 = myFriendsIds.contains(o1.getUser_id());
                         boolean f2 = myFriendsIds.contains(o2.getUser_id());
                         return Boolean.compare(f2, f1);
                     });
 
-                    if (!allStories.isEmpty()) {
-                        String avatarUrl = allStories.get(0).getAvatar();
-                        if (avatarUrl == null || avatarUrl.isEmpty()) {
-                            avatarUrl = "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg";
+                    UserEntity currentUser = null;
+                    for (UserEntity user : safeUsers) {
+                        if (currentUserId.equals(user.getUser_id())) {
+                            currentUser = user;
+                            break;
                         }
-                        UserEntity myStory = new UserEntity(
-                                "test_001", "Tin của bạn", "Tin của bạn", "", "", "", avatarUrl, null
-                        );
-                        myStory.setBio(allStories.get(0).getBio());
-                        myStory.setSkinType(allStories.get(0).getSkinType());
-                        myStory.setConcerns(allStories.get(0).getConcerns());
-                        allStories.add(0, myStory);
                     }
+
+                    UserEntity myStory = new UserEntity(
+                            currentUserId, "Tin của bạn", "Tin của bạn", "", "", "", avatarUrl, null
+                    );
+                    if (currentUser != null) {
+                        myStory.setBio(currentUser.getBio());
+                        myStory.setSkinType(currentUser.getSkinType());
+                        myStory.setConcerns(currentUser.getConcerns());
+                    }
+                    allStories.add(0, myStory);
                     storyAdapter.updateData(allStories);
                     updateFeedData(true);
                 });

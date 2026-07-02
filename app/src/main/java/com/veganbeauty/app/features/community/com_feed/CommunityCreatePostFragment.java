@@ -18,7 +18,8 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
+import android.graphics.drawable.ColorDrawable;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +29,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.lifecycle.LifecycleOwnerKt;
-
-
+import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -49,6 +48,9 @@ import com.veganbeauty.app.data.local.dao.CommunityDao;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.databinding.ComFragmentCreatePostBinding;
+import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
+import com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,18 +60,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CommunityCreatePostFragment extends RootieFragment {
 
@@ -87,13 +86,19 @@ public class CommunityCreatePostFragment extends RootieFragment {
 
     private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.GetMultipleContents(),
-            uris -> LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, continuation) -> {
-                return BuildersKt.withContext(Dispatchers.getIO(), (coroutineScopeIO, continuationIO) -> {
+            uris -> {
+                if (uris == null || uris.isEmpty() || binding == null) return;
+                Context appContext = requireContext().getApplicationContext();
+                new Thread(() -> {
                     List<String[]> savedUris = new ArrayList<>();
                     for (Uri uri : uris) {
-                        savedUris.add(new String[]{uri.toString(), copyUriToInternalStorage(uri)});
+                        savedUris.add(new String[]{uri.toString(), copyUriToInternalStorage(appContext, uri)});
                     }
-                    BuildersKt.withContext(Dispatchers.getMain(), (coroutineScopeMain, continuationMain) -> {
+                    FragmentActivity activity = getActivity();
+                    if (activity == null) return;
+                    activity.runOnUiThread(() -> {
+                        if (!isAdded() || binding == null) return;
+                        float density = getResources().getDisplayMetrics().density;
                         for (String[] uriPair : savedUris) {
                             String originalUriStr = uriPair[0];
                             String savedUriStr = uriPair[1];
@@ -101,10 +106,10 @@ public class CommunityCreatePostFragment extends RootieFragment {
 
                             FrameLayout container = new FrameLayout(requireContext());
                             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                                    (int) (100 * getResources().getDisplayMetrics().density),
-                                    (int) (100 * getResources().getDisplayMetrics().density)
+                                    (int) (100 * density),
+                                    (int) (100 * density)
                             );
-                            lp.setMarginEnd((int) (12 * getResources().getDisplayMetrics().density));
+                            lp.setMarginEnd((int) (12 * density));
                             container.setLayoutParams(lp);
 
                             ShapeableImageView iv = new ShapeableImageView(requireContext());
@@ -114,19 +119,19 @@ public class CommunityCreatePostFragment extends RootieFragment {
                             ));
                             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             iv.setBackgroundColor(Color.LTGRAY);
-                            float radius = 12 * getResources().getDisplayMetrics().density;
+                            float radius = 12 * density;
                             ShapeAppearanceModel shapeModel = iv.getShapeAppearanceModel().toBuilder().setAllCornerSizes(radius).build();
                             iv.setShapeAppearanceModel(shapeModel);
                             iv.setImageURI(Uri.parse(originalUriStr));
 
                             ImageView ivClose = new ImageView(requireContext());
                             FrameLayout.LayoutParams closeLp = new FrameLayout.LayoutParams(
-                                    (int) (24 * getResources().getDisplayMetrics().density),
-                                    (int) (24 * getResources().getDisplayMetrics().density)
+                                    (int) (24 * density),
+                                    (int) (24 * density)
                             );
                             closeLp.gravity = Gravity.TOP | Gravity.END;
-                            closeLp.topMargin = (int) (4 * getResources().getDisplayMetrics().density);
-                            closeLp.setMarginEnd((int) (4 * getResources().getDisplayMetrics().density));
+                            closeLp.topMargin = (int) (4 * density);
+                            closeLp.setMarginEnd((int) (4 * density));
                             ivClose.setLayoutParams(closeLp);
                             ivClose.setImageResource(R.drawable.ic_close);
                             ivClose.setBackgroundResource(R.drawable.bg_circle_white);
@@ -144,11 +149,9 @@ public class CommunityCreatePostFragment extends RootieFragment {
                                 binding.llImagePreviewContainer.addView(container);
                             }
                         }
-                        return kotlin.Unit.INSTANCE;
-                    }, continuationIO);
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
-            })
+                    });
+                }).start();
+            }
     );
 
     @Nullable
@@ -181,12 +184,12 @@ public class CommunityCreatePostFragment extends RootieFragment {
         }
     }
 
-    private String copyUriToInternalStorage(Uri uri) {
+    private String copyUriToInternalStorage(Context context, Uri uri) {
         try {
-            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+            InputStream inputStream = context.getContentResolver().openInputStream(uri);
             if (inputStream == null) return uri.toString();
             String fileName = "post_img_" + System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 5) + ".jpg";
-            File file = new File(requireContext().getFilesDir(), fileName);
+            File file = new File(context.getFilesDir(), fileName);
             FileOutputStream outputStream = new FileOutputStream(file);
             byte[] buffer = new byte[1024];
             int length;
@@ -204,27 +207,44 @@ public class CommunityCreatePostFragment extends RootieFragment {
 
     private void loadCurrentUserInfo() {
         Context ctx = requireContext();
-        String loggedEmail = ProfileSession.getEmail(ctx);
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(ctx.getAssets().open("users.json")));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) sb.append(line);
-            String usersJson = sb.toString().replace("\uFEFF", "");
-            JSONArray usersArr = new JSONArray(usersJson);
-            for (int i = 0; i < usersArr.length(); i++) {
-                JSONObject u = usersArr.getJSONObject(i);
-                if (loggedEmail != null && loggedEmail.equals(u.optString("email"))) {
-                    loggedUserId = u.optString("user_id", "test_001");
-                    loggedUsername = u.optString("username", "");
-                    loggedDisplayName = u.optString("full_name", loggedUsername);
-                    loggedAvatarUrl = u.optString("avatar", "");
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        loggedUserId = ProfileSessionHelper.getEffectiveUserId(ctx);
+        if (loggedUserId == null || loggedUserId.isEmpty()) {
+            loggedUserId = "test_001";
         }
+        loggedDisplayName = ProfileSession.getFullName(ctx);
+        if (loggedDisplayName == null || loggedDisplayName.trim().isEmpty()) {
+            loggedDisplayName = "Người dùng";
+        }
+        String username = ProfileSession.getUsername(ctx);
+        loggedUsername = (username != null && !username.trim().isEmpty()) ? username : loggedDisplayName;
+        loggedAvatarUrl = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx);
+    }
+
+    private void showPrivacyMenu(View anchor) {
+        View popupView = LayoutInflater.from(requireContext()).inflate(R.layout.com_popup_privacy_menu, null);
+        PopupWindow popupWindow = new PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+        );
+        popupWindow.setElevation(12f);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.setOutsideTouchable(true);
+
+        View.OnClickListener itemClick = v -> {
+            TextView tvPrivacy = binding.getRoot().findViewById(R.id.tvPrivacy);
+            if (tvPrivacy != null && v instanceof TextView) {
+                tvPrivacy.setText(((TextView) v).getText());
+            }
+            popupWindow.dismiss();
+        };
+
+        popupView.findViewById(R.id.tvPublic).setOnClickListener(itemClick);
+        popupView.findViewById(R.id.tvFriends).setOnClickListener(itemClick);
+        popupView.findViewById(R.id.tvOnlyMe).setOnClickListener(itemClick);
+        popupView.findViewById(R.id.tvCustom).setOnClickListener(itemClick);
+        popupWindow.showAsDropDown(anchor, 0, (int) (4 * getResources().getDisplayMetrics().density));
     }
 
     private void setupHideKeyboard(View view) {
@@ -367,21 +387,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
 
         View llPrivacy = binding.getRoot().findViewById(R.id.llPrivacy);
         if (llPrivacy != null) {
-            llPrivacy.setOnClickListener(v -> {
-                PopupMenu popup = new PopupMenu(getContext(), v);
-                popup.getMenu().add("Công khai");
-                popup.getMenu().add("Bạn bè");
-                popup.getMenu().add("Chỉ mình tôi");
-                popup.getMenu().add("Tuỳ chọn");
-                popup.setOnMenuItemClickListener(item -> {
-                    TextView tvPrivacy = binding.getRoot().findViewById(R.id.tvPrivacy);
-                    if (tvPrivacy != null) {
-                        tvPrivacy.setText(item.getTitle());
-                    }
-                    return true;
-                });
-                popup.show();
-            });
+            llPrivacy.setOnClickListener(this::showPrivacyMenu);
         }
 
         if (binding.llAddMedia != null) binding.llAddMedia.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
@@ -460,7 +466,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
 
             Map<String, JSONObject> productsMap = new HashMap<>();
             try {
-                String currentUserId = "test_001";
+                String currentUserId = loggedUserId;
                 LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
                 List<String> eligibleProductIds = jsonReader.getShowcaseProductsForUser(currentUserId);
 
@@ -647,9 +653,6 @@ public class CommunityCreatePostFragment extends RootieFragment {
     }
 
     private void savePost(String content) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
         String selectedTopic = "";
         String selectedSkinIssue = "";
 
@@ -691,14 +694,18 @@ public class CommunityCreatePostFragment extends RootieFragment {
             if (i < selectedProductIds.size() - 1) productsBuilder.append(",");
         }
 
+        final String postId = UUID.randomUUID().toString();
+        SimpleDateFormat createdAtFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        createdAtFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        final String createdAt = createdAtFormat.format(new Date());
         CommunityPostEntity newPost = new CommunityPostEntity(
-                UUID.randomUUID().toString(),
+                postId,
                 loggedUserId,
                 loggedUsername,
                 loggedDisplayName,
                 loggedAvatarUrl,
-                content,
-                sdf.format(new Date()),
+                content.trim(),
+                createdAt,
                 0,
                 0,
                 0,
@@ -713,24 +720,44 @@ public class CommunityCreatePostFragment extends RootieFragment {
         if (flLoading != null) flLoading.setVisibility(View.VISIBLE);
         if (binding.btnPost != null) binding.btnPost.setEnabled(false);
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, continuation) -> {
-            return BuildersKt.withContext(Dispatchers.getIO(), (coroutineScopeIO, continuationIO) -> {
-                new LocalJsonReader(requireContext()).saveLocalPost(newPost);
-                List<CommunityPostEntity> list = new ArrayList<>();
-                list.add(newPost);
-                communityDao.insertPosts(list);
-                firestoreService.uploadCommunityPost(newPost);
+        new Thread(() -> {
+            communityDao.insertPosts(java.util.Collections.singletonList(newPost));
+            firestoreService.uploadCommunityPost(newPost);
 
-                BuildersKt.withContext(Dispatchers.getMain(), (coroutineScopeMain, continuationMain) -> {
-                    if (flLoading != null) flLoading.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Đã đăng bài viết!", Toast.LENGTH_SHORT).show();
-                    getParentFragmentManager().popBackStack();
-                    return kotlin.Unit.INSTANCE;
-                }, continuationIO);
+            FragmentActivity activity = getActivity();
+            if (activity == null) return;
+            activity.runOnUiThread(() -> {
+                if (!isAdded() || binding == null) return;
+                FeedDataCache.addPinnedPost(newPost);
 
-                return kotlin.Unit.INSTANCE;
-            }, continuation);
-        });
+                if (flLoading != null) flLoading.setVisibility(View.GONE);
+
+                Toast.makeText(requireContext(), "Đã đăng bài viết thành công", Toast.LENGTH_SHORT).show();
+
+                androidx.fragment.app.FragmentManager fm = getParentFragmentManager();
+                fm.popBackStackImmediate();
+
+                fm.beginTransaction()
+                        .replace(R.id.main_container, CommunityProfileFragment.newInstance(loggedUserId))
+                        .addToBackStack(null)
+                        .commit();
+                fm.executePendingTransactions();
+
+                fm.beginTransaction()
+                        .setCustomAnimations(
+                                android.R.anim.fade_in,
+                                android.R.anim.fade_out,
+                                android.R.anim.fade_in,
+                                android.R.anim.fade_out
+                        )
+                        .replace(
+                                R.id.main_container,
+                                ProfilePostDetailFragment.newInstance(loggedUserId, 0, 0, postId)
+                        )
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }).start();
     }
 
     @Override

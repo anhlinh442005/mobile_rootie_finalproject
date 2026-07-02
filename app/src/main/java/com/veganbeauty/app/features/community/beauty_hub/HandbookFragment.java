@@ -1,11 +1,14 @@
 package com.veganbeauty.app.features.community.beauty_hub;
 
+import android.content.Context;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -28,7 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,12 +46,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HandbookFragment extends Fragment {
 
     private HandbookVideoAdapter currentAdapter;
+    private List<YtVideoEntity> notebookVideos = new ArrayList<>();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Nullable
     @Override
@@ -66,6 +72,9 @@ public class HandbookFragment extends Fragment {
         }
 
         RecyclerView rvVideos = view.findViewById(R.id.rvVideos);
+        if (rvVideos != null) {
+            rvVideos.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        }
         LinearLayout llFilters = view.findViewById(R.id.llFilters);
         EditText etSearch = view.findViewById(R.id.etSearch);
         LinearLayout llEmptyState = view.findViewById(R.id.llEmptyState);
@@ -122,87 +131,79 @@ public class HandbookFragment extends Fragment {
             if (tvMyHandbookTitle != null) tvMyHandbookTitle.setVisibility(View.VISIBLE);
         }
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((coroutineScope, continuation) -> {
-            return BuildersKt.withContext(Dispatchers.getIO(), (cScope, cCont) -> {
-                LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
-                List<YtVideoEntity> allVideos = jsonReader.getExploreVideos();
-                
-                List<YtVideoEntity> notebookVideos = new ArrayList<>();
-                for (YtVideoEntity v : allVideos) {
-                    if (v.getType() != null && v.getType().toLowerCase().contains("notebook")) {
-                        notebookVideos.add(v);
-                    }
-                }
-
-                BuildersKt.withContext(Dispatchers.getMain(), (mScope, mCont) -> {
-                    currentAdapter = new HandbookVideoAdapter(
-                            notebookVideos,
-                            false,
-                            video -> {
-                                for (UserMemoryManager.HandbookCategory cat : memoryManager.getCategories()) {
-                                    for (YtVideoEntity cv : cat.getVideos()) {
-                                        if (cv.getUrl().equals(video.getUrl())) return true;
-                                    }
-                                }
-                                return false;
-                            },
-                            this::showVideoPlayerDialog,
-                            video -> showSaveVideoDialog(video, memoryManager),
-                            null
-                    );
-                    if (rvVideos != null) rvVideos.setAdapter(currentAdapter);
-
-                    if (etSearch != null) {
-                        etSearch.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                String query = s != null ? s.toString().toLowerCase() : "";
-                                List<YtVideoEntity> filtered = new ArrayList<>();
-                                if (query.isEmpty()) {
-                                    filtered.addAll(notebookVideos);
-                                } else {
-                                    for (YtVideoEntity v : notebookVideos) {
-                                        if ((v.getTitle() != null && v.getTitle().toLowerCase().contains(query)) ||
-                                                (v.getDescription() != null && v.getDescription().toLowerCase().contains(query))) {
-                                            filtered.add(v);
-                                        }
-                                    }
-                                }
-                                currentAdapter = new HandbookVideoAdapter(
-                                        filtered,
-                                        false,
-                                        video -> {
-                                            for (UserMemoryManager.HandbookCategory cat : memoryManager.getCategories()) {
-                                                for (YtVideoEntity cv : cat.getVideos()) {
-                                                    if (cv.getUrl().equals(video.getUrl())) return true;
-                                                }
-                                            }
-                                            return false;
-                                        },
-                                        HandbookFragment.this::showVideoPlayerDialog,
-                                        video -> showSaveVideoDialog(video, memoryManager),
-                                        null
-                                );
-                                if (rvVideos != null) rvVideos.setAdapter(currentAdapter);
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable s) {}
-                        });
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }, cCont);
-                return kotlin.Unit.INSTANCE;
-            }, continuation);
-        });
-
         View btnViewMyHandbook = view.findViewById(R.id.btnViewMyHandbook);
         if (btnViewMyHandbook != null) {
             btnViewMyHandbook.setOnClickListener(v -> showMyHandbookDialog(memoryManager));
         }
+
+        loadNotebookVideos(rvVideos, etSearch, memoryManager);
+    }
+
+    private void loadNotebookVideos(RecyclerView rvVideos, EditText etSearch, UserMemoryManager memoryManager) {
+        Context appContext = requireContext().getApplicationContext();
+        executor.execute(() -> {
+            List<YtVideoEntity> loaded = new LocalJsonReader(appContext).getNotebookVideos();
+            mainHandler.post(() -> {
+                if (!isAdded()) return;
+                notebookVideos = loaded;
+                bindNotebookAdapter(rvVideos, etSearch, memoryManager, notebookVideos);
+            });
+        });
+    }
+
+    private void bindNotebookAdapter(RecyclerView rvVideos, EditText etSearch,
+                                     UserMemoryManager memoryManager, List<YtVideoEntity> videos) {
+        currentAdapter = new HandbookVideoAdapter(
+                videos,
+                false,
+                video -> {
+                    for (UserMemoryManager.HandbookCategory cat : memoryManager.getCategories()) {
+                        for (YtVideoEntity cv : cat.getVideos()) {
+                            if (cv.getUrl().equals(video.getUrl())) return true;
+                        }
+                    }
+                    return false;
+                },
+                this::showVideoPlayerDialog,
+                video -> showSaveVideoDialog(video, memoryManager),
+                null
+        );
+        if (rvVideos != null) {
+            rvVideos.setAdapter(currentAdapter);
+        }
+
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    String query = s != null ? s.toString().toLowerCase() : "";
+                    List<YtVideoEntity> filtered = new ArrayList<>();
+                    if (query.isEmpty()) {
+                        filtered.addAll(notebookVideos);
+                    } else {
+                        for (YtVideoEntity v : notebookVideos) {
+                            if ((v.getTitle() != null && v.getTitle().toLowerCase().contains(query))
+                                    || (v.getDescription() != null && v.getDescription().toLowerCase().contains(query))) {
+                                filtered.add(v);
+                            }
+                        }
+                    }
+                    bindNotebookAdapter(rvVideos, null, memoryManager, filtered);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        executor.shutdownNow();
     }
 
     private void showSaveVideoDialog(YtVideoEntity video, UserMemoryManager memoryManager) {
@@ -333,12 +334,15 @@ public class HandbookFragment extends Fragment {
     }
 
     private void showMyHandbookDialog(UserMemoryManager memoryManager) {
-        Dialog dialog = new Dialog(requireContext());
+        Dialog dialog = new Dialog(requireContext(), R.style.CustomDialogTheme);
+        dialog.setContentView(R.layout.com_dialog_my_handbook);
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            int horizontalInset = (int) (10 * getResources().getDisplayMetrics().density);
+            dialog.getWindow().setLayout(screenWidth - horizontalInset * 2, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().getDecorView().setPadding(0, 0, 0, 0);
         }
-        dialog.setContentView(R.layout.com_dialog_my_handbook);
 
         ImageView ivClose = dialog.findViewById(R.id.ivClose);
         if (ivClose != null) ivClose.setOnClickListener(v -> dialog.dismiss());
@@ -574,33 +578,25 @@ public class HandbookFragment extends Fragment {
             }
         }
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((coroutineScope, continuation) -> {
-            return BuildersKt.withContext(Dispatchers.getIO(), (cScope, cCont) -> {
-                LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
-                List<YtVideoEntity> allVideos = jsonReader.getExploreVideos();
-                
-                List<YtVideoEntity> notebookList = new ArrayList<>();
-                for (YtVideoEntity v : allVideos) {
-                    if (!v.getId().equals(video.getId()) && v.getType() != null && v.getType().toLowerCase().contains("notebook")) {
-                        notebookList.add(v);
-                    }
+        Context appContext = requireContext().getApplicationContext();
+        executor.execute(() -> {
+            List<YtVideoEntity> notebookList = new ArrayList<>();
+            for (YtVideoEntity v : new LocalJsonReader(appContext).getNotebookVideos()) {
+                if (!v.getId().equals(video.getId())) {
+                    notebookList.add(v);
                 }
-                
-                java.util.Collections.shuffle(notebookList);
-                List<YtVideoEntity> related = notebookList.subList(0, Math.min(4, notebookList.size()));
-
-                BuildersKt.withContext(Dispatchers.getMain(), (mScope, mCont) -> {
-                    if (rvRelated != null) {
-                        rvRelated.setLayoutManager(new LinearLayoutManager(requireContext()));
-                        rvRelated.setAdapter(new RelatedVideoAdapter(related, clickedVideo -> {
-                            dialog.dismiss();
-                            showVideoPlayerDialog(clickedVideo);
-                        }));
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }, cCont);
-                return kotlin.Unit.INSTANCE;
-            }, continuation);
+            }
+            java.util.Collections.shuffle(notebookList);
+            List<YtVideoEntity> related = notebookList.subList(0, Math.min(4, notebookList.size()));
+            mainHandler.post(() -> {
+                if (rvRelated != null) {
+                    rvRelated.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    rvRelated.setAdapter(new RelatedVideoAdapter(related, clickedVideo -> {
+                        dialog.dismiss();
+                        showVideoPlayerDialog(clickedVideo);
+                    }));
+                }
+            });
         });
 
         dialog.show();

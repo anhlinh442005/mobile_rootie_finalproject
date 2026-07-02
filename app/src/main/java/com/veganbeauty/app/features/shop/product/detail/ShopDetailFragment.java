@@ -34,6 +34,7 @@ import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.ExploreVideoEntity;
 import com.veganbeauty.app.data.local.entities.IngredientEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
+import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import com.veganbeauty.app.databinding.ShopProductDetailBinding;
 import com.veganbeauty.app.features.community.beauty_hub.NotebookVideoAdapter;
 import com.veganbeauty.app.features.quiz.QuizTestIntroFragment;
@@ -659,6 +660,66 @@ public class ShopDetailFragment extends RootieFragment {
         }
 
         checkProductCompatibilitySafe(product);
+        loadRelatedHandbooks(product);
+    }
+
+    private void loadRelatedHandbooks(ProductEntity product) {
+        if (product == null || handbookAdapter == null) return;
+
+        new Thread(() -> {
+            List<YtVideoEntity> allVideos = new LocalJsonReader(requireContext().getApplicationContext()).getExploreVideos();
+            List<YtVideoEntity> filteredVideos = new ArrayList<>();
+            for (YtVideoEntity video : allVideos) {
+                if (LocalJsonReader.isNotebookVideo(video)) {
+                    filteredVideos.add(video);
+                }
+            }
+
+            List<String> ingredients = Arrays.asList(
+                    "bí đao", "nghệ", "cà phê", "bưởi", "hoa hồng", "dừa",
+                    "tràm trà", "sen", "rau má", "bồ kết"
+            );
+            String productNameLower = safeStr(product.getName()).toLowerCase();
+            String productCategoryLower = safeStr(product.getCategory()).toLowerCase();
+            String productCategoryIds = safeStr(product.getCategoryIds());
+
+            List<Pair<YtVideoEntity, Integer>> rankedVideos = new ArrayList<>();
+            for (YtVideoEntity video : filteredVideos) {
+                int score = 0;
+                String textToSearch = (safeStr(video.getTitle()) + " " + safeStr(video.getDescription())).toLowerCase();
+
+                for (String ing : ingredients) {
+                    if (productNameLower.contains(ing)) {
+                        if (textToSearch.contains(ing)) score += 10;
+                        if ("bí đao".equals(ing) && (textToSearch.contains("mụn") || textToSearch.contains("thâm"))) score += 5;
+                        if ("nghệ".equals(ing) && (textToSearch.contains("sáng da") || textToSearch.contains("thâm") || textToSearch.contains("curcumin"))) score += 5;
+                        if ("bưởi".equals(ing) && (textToSearch.contains("tóc") || textToSearch.contains("rụng") || textToSearch.contains("gội"))) score += 5;
+                        if ("cà phê".equals(ing) && (textToSearch.contains("tẩy tế bào chết") || textToSearch.contains("body") || textToSearch.contains("scrub"))) score += 5;
+                    }
+                }
+
+                if (productCategoryLower.contains("da") || productCategoryIds.contains("7176b5e7966be88daf95cfd4")) {
+                    if (textToSearch.contains("skincare") || textToSearch.contains("da") || textToSearch.contains("mặt")) {
+                        score += 2;
+                    }
+                }
+
+                rankedVideos.add(new Pair<>(video, score));
+            }
+
+            rankedVideos.sort((a, b) -> Integer.compare(b.second, a.second));
+            List<YtVideoEntity> finalVideos = new ArrayList<>();
+            for (Pair<YtVideoEntity, Integer> entry : rankedVideos) {
+                finalVideos.add(entry.first);
+                if (finalVideos.size() >= 4) break;
+            }
+
+            if (getActivity() == null) return;
+            getActivity().runOnUiThread(() -> {
+                if (!isAdded() || handbookAdapter == null) return;
+                handbookAdapter.updateData(finalVideos);
+            });
+        }).start();
     }
 
     private void updateRelatedProducts(List<ProductEntity> allProducts, ProductEntity product) {

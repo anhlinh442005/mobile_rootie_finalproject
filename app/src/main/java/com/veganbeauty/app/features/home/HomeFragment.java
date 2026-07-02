@@ -36,6 +36,7 @@ import com.veganbeauty.app.databinding.HomeFragmentBinding;
 import com.veganbeauty.app.features.account.reward.AccountRewardFragment;
 import com.veganbeauty.app.features.community.com_feed.ComLoadingFragment;
 import com.veganbeauty.app.features.home.adapter.HomeBannerAdapter;
+import com.veganbeauty.app.features.home.adapter.HomeProductCartListener;
 import com.veganbeauty.app.features.home.adapter.HomeBannerItem;
 import com.veganbeauty.app.features.home.adapter.HomeBestsellerAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeCategoryAdapter;
@@ -60,6 +61,9 @@ import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.features.shop.product.list.ShopListFragment;
 import com.veganbeauty.app.features.shop.store.ShopStoreSystemFragment;
 import com.veganbeauty.app.features.weather.SkinWeatherForecastFragment;
+import com.veganbeauty.app.utils.CartFlyAnimationHelper;
+
+import android.widget.ImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -90,6 +94,23 @@ public class HomeFragment extends RootieFragment {
     private int recommendationLimit = 6;
     private List<ProductEntity> allRecommendationProducts = new ArrayList<>();
     private List<HomeShortcutItem> allShortcuts;
+
+    private final HomeProductCartListener homeProductCartListener = new HomeProductCartListener() {
+        @Override
+        public void onProductClick(ProductEntity product) {
+            openProductDetail(product);
+        }
+
+        @Override
+        public void onQuickAddToCart(ProductEntity product, View cartButton, ImageView productImage) {
+            quickAddToCart(product, cartButton, productImage);
+        }
+
+        @Override
+        public void onCartLongPress(ProductEntity product) {
+            showChooseQuantitySheet(product);
+        }
+    };
 
     private static boolean hasShownQuizPopupThisSession = false;
 
@@ -192,7 +213,7 @@ public class HomeFragment extends RootieFragment {
             shortcutAdapter.submitList(allShortcuts);
             binding.ivExpandShortcuts.setImageResource(R.drawable.ic_double_chevron_up);
         } else {
-            shortcutAdapter.submitList(allShortcuts.subList(0, Math.min(8, allShortcuts.size())));
+            shortcutAdapter.submitList(allShortcuts.subList(0, Math.min(6, allShortcuts.size())));
             binding.ivExpandShortcuts.setImageResource(R.drawable.ic_double_chevron_down);
         }
     }
@@ -295,16 +316,16 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void setupRecyclerViews() {
-        recentAdapter = new HomeProductCardAdapter(this::openProductDetail, this::addToCart);
-        recommendationsAdapter = new HomeProductGridAdapter(this::openProductDetail, this::addToCart);
-        bestsellerAdapter = new HomeBestsellerAdapter(this::openProductDetail, this::addToCart);
+        recentAdapter = new HomeProductCardAdapter(homeProductCartListener);
+        recommendationsAdapter = new HomeProductGridAdapter(homeProductCartListener);
+        bestsellerAdapter = new HomeBestsellerAdapter(homeProductCartListener);
         topSearchAdapter = new HomeTopSearchAdapter(this::openProductDetail);
-        flashSaleAdapter = new HomeFlashsaleAdapter(this::openProductDetail, this::addToCart);
+        flashSaleAdapter = new HomeFlashsaleAdapter(homeProductCartListener);
         categoryAdapter = new HomeCategoryAdapter();
         bannerAdapter = new HomeBannerAdapter();
         shortcutAdapter = new HomeShortcutAdapter();
 
-        binding.rvShortcuts.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        binding.rvShortcuts.setLayoutManager(new GridLayoutManager(getContext(), 3));
         binding.rvShortcuts.setAdapter(shortcutAdapter);
         binding.rvShortcuts.setNestedScrollingEnabled(false);
 
@@ -412,7 +433,20 @@ public class HomeFragment extends RootieFragment {
         ProductDetailLauncher.open(this, product);
     }
 
-    private void addToCart(ProductEntity product) {
+    private void quickAddToCart(ProductEntity product, View cartButton, ImageView productImage) {
+        if (!CartHelper.addToCart(requireContext(), getViewLifecycleOwner(), product, 1, false)) {
+            return;
+        }
+        if (getActivity() == null) {
+            return;
+        }
+        View cartTarget = binding.homeHeader.getRoot().findViewById(R.id.home_header_cart_btn);
+        if (cartTarget != null) {
+            CartFlyAnimationHelper.flyToCart(getActivity(), cartButton, cartTarget, productImage);
+        }
+    }
+
+    private void showChooseQuantitySheet(ProductEntity product) {
         com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet bottomSheet = new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
                 product,
                 new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.OnQuantitySelectedListener() {

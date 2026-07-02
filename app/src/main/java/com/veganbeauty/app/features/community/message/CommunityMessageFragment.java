@@ -42,7 +42,7 @@ import com.veganbeauty.app.features.community.com_feed.CommunityExploreFragment;
 
 import com.veganbeauty.app.features.community.com_feed.CommunityFeedFragment;
 
-import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
+import com.veganbeauty.app.utils.ComBottomNavHelper;
 
 
 
@@ -172,53 +172,7 @@ public class CommunityMessageFragment extends RootieFragment {
 
         if (binding == null || binding.comBottomNav == null) return;
 
-
-
-        binding.comBottomNav.navComFeed.setOnClickListener(v ->
-
-                getParentFragmentManager().beginTransaction()
-
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-
-                        .replace(R.id.main_container, new CommunityFeedFragment())
-
-                        .commitAllowingStateLoss());
-
-
-
-        binding.comBottomNav.navComHub.setOnClickListener(v ->
-
-                getParentFragmentManager().beginTransaction()
-
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-
-                        .replace(R.id.main_container, new CommunityBeautyHubFragment())
-
-                        .commitAllowingStateLoss());
-
-
-
-        binding.comBottomNav.navComExplore.setOnClickListener(v ->
-
-                getParentFragmentManager().beginTransaction()
-
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-
-                        .replace(R.id.main_container, new CommunityExploreFragment())
-
-                        .commitAllowingStateLoss());
-
-
-
-        binding.comBottomNav.navComProfile.setOnClickListener(v ->
-
-                getParentFragmentManager().beginTransaction()
-
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-
-                        .replace(R.id.main_container, new CommunityProfileFragment())
-
-                        .commitAllowingStateLoss());
+        ComBottomNavHelper.setup(this, binding.comBottomNav.getRoot(), ComBottomNavHelper.TAB_CHAT);
 
     }
 

@@ -40,8 +40,8 @@ import com.veganbeauty.app.databinding.ComItemSuggestedReelsFeedBinding;
 import com.veganbeauty.app.databinding.ComItemSuggestedUsersFeedBinding;
 import com.veganbeauty.app.databinding.ComItemSuggestionBinding;
 import com.veganbeauty.app.features.community.UserMemoryHelper;
-import com.veganbeauty.app.features.community.beauty_hub.CommunityNewsFragment;
-import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
+import com.veganbeauty.app.utils.ComProfileNavigator;
+import com.veganbeauty.app.utils.RootieBrandHelper;
 import com.veganbeauty.app.utils.TimeFormatter;
 
 import org.json.JSONArray;
@@ -169,6 +169,22 @@ class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHolder> {
         } else {
             holder.binding.ivAvatar.setImageResource(android.R.color.darker_gray);
         }
+
+        if (position == 0) {
+            holder.binding.getRoot().setOnClickListener(null);
+            holder.binding.ivAvatar.setOnClickListener(null);
+            holder.binding.tvUsername.setOnClickListener(null);
+        } else {
+            View.OnClickListener onStoryProfileClick = v -> ComProfileNavigator.openProfile(
+                    v.getContext(),
+                    story.getUser_id(),
+                    story.getAvatar(),
+                    story.getUsername()
+            );
+            holder.binding.getRoot().setOnClickListener(onStoryProfileClick);
+            holder.binding.ivAvatar.setOnClickListener(onStoryProfileClick);
+            holder.binding.tvUsername.setOnClickListener(onStoryProfileClick);
+        }
     }
 
     @Override
@@ -185,6 +201,8 @@ class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHolder> {
 public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<CommunityFeedItem> items = new ArrayList<>();
     private List<CommunityProduct> globalProducts = new ArrayList<>();
+    private boolean fanpageFollowing = false;
+    private Runnable fanpageUnfollowAction;
 
     private static final int VIEW_TYPE_POST = 0;
     private static final int VIEW_TYPE_SUGGESTED_USERS = 1;
@@ -351,20 +369,26 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     sliderAdapter = (ImageSliderAdapter) postHolder.binding.vpPostImages.getAdapter();
                 }
 
+                detachTabMediator(postHolder);
+
                 if (sliderAdapter == null) {
                     sliderAdapter = new ImageSliderAdapter(urls);
                     postHolder.binding.vpPostImages.setAdapter(sliderAdapter);
-                    new TabLayoutMediator(postHolder.binding.tabIndicator, postHolder.binding.vpPostImages, (tab, position1) -> {}).attach();
-                } else {
-                    if (!sliderAdapter.imageUrls.equals(urls)) {
-                        sliderAdapter.updateData(urls);
-                    }
+                } else if (!sliderAdapter.imageUrls.equals(urls)) {
+                    sliderAdapter.updateData(urls);
                 }
 
                 if (urls.size() <= 1) {
                     postHolder.binding.tabIndicator.setVisibility(View.GONE);
                 } else {
                     postHolder.binding.tabIndicator.setVisibility(View.VISIBLE);
+                    TabLayoutMediator mediator = new TabLayoutMediator(
+                            postHolder.binding.tabIndicator,
+                            postHolder.binding.vpPostImages,
+                            (tab, position1) -> {}
+                    );
+                    mediator.attach();
+                    postHolder.binding.vpPostImages.setTag(R.id.post_tab_mediator_tag, mediator);
                 }
                 postHolder.binding.flPostImagesContainer.setVisibility(View.VISIBLE);
 
@@ -374,6 +398,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     rootLayout.addView(contentContainer);
                 }
             } else {
+                detachTabMediator(postHolder);
                 postHolder.binding.flPostImagesContainer.setVisibility(View.GONE);
                 postHolder.binding.tabIndicator.setVisibility(View.GONE);
                 if (currentIdx != 1) {
@@ -420,30 +445,12 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
 
-            View.OnClickListener onProfileClick = v -> {
-                if (context instanceof FragmentActivity) {
-                    if ("rootie_official".equals(post.getAuthorId()) || "rootie_vn".equals(post.getAuthorId()) || (post.getAuthorDisplayName() != null && post.getAuthorDisplayName().toLowerCase().contains("rootie"))) {
-                        CommunityNewsFragment newsFragment = new CommunityNewsFragment();
-                        ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
-                                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                                .replace(R.id.main_container, newsFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    } else {
-                        CommunityProfileFragment profileFragment = new CommunityProfileFragment();
-                        Bundle args = new Bundle();
-                        args.putString("USER_ID", post.getAuthorId());
-                        args.putString("AVATAR_URL", post.getAuthorAvatarUrl());
-                        args.putString("USER_NAME", post.getAuthorDisplayName());
-                        profileFragment.setArguments(args);
-                        ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
-                                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                                .replace(R.id.main_container, profileFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                }
-            };
+            View.OnClickListener onProfileClick = v -> ComProfileNavigator.openProfile(
+                    context,
+                    post.getAuthorId(),
+                    post.getAuthorAvatarUrl(),
+                    authorName
+            );
 
             String ownUserId = getOwnUserId(context);
 
@@ -462,6 +469,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
             } else {
                 postHolder.binding.tvFollow.setVisibility(View.VISIBLE);
+                applyFollowButtonState(postHolder, post, authorName, context);
                 postHolder.binding.ivMore.setOnClickListener(v -> {
                     View popupView = LayoutInflater.from(context).inflate(R.layout.com_popup_more_other, null);
                     PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
@@ -515,6 +523,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
 
+            postHolder.binding.llAuthorInfo.setOnClickListener(onProfileClick);
             postHolder.binding.tvAuthorName.setOnClickListener(onProfileClick);
             postHolder.binding.ivAuthorAvatar.setOnClickListener(onProfileClick);
 
@@ -540,6 +549,23 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    private void detachTabMediator(PostViewHolder holder) {
+        Object tag = holder.binding.vpPostImages.getTag(R.id.post_tab_mediator_tag);
+        if (tag instanceof TabLayoutMediator) {
+            ((TabLayoutMediator) tag).detach();
+            holder.binding.vpPostImages.setTag(R.id.post_tab_mediator_tag, null);
+        }
+        holder.binding.tabIndicator.removeAllTabs();
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        if (holder instanceof PostViewHolder) {
+            detachTabMediator((PostViewHolder) holder);
+        }
+        super.onViewRecycled(holder);
+    }
+
     private String getOwnUserId(Context context) {
         String ownId = "test_001";
         try {
@@ -563,6 +589,38 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void setFanpageFollowing(boolean following) {
+        if (this.fanpageFollowing != following) {
+            this.fanpageFollowing = following;
+            notifyDataSetChanged();
+        }
+    }
+
+    public void setOnFanpageUnfollowListener(Runnable action) {
+        this.fanpageUnfollowAction = action;
+    }
+
+    private void applyFollowButtonState(PostViewHolder postHolder, CommunityPostEntity post,
+                                        String authorName, Context context) {
+        if (RootieBrandHelper.isRootieUser(post.getAuthorId(), authorName) && fanpageFollowing) {
+            postHolder.binding.tvFollow.setText("Đã theo dõi");
+            postHolder.binding.tvFollow.setBackgroundResource(R.drawable.com_bg_btn_following);
+            postHolder.binding.tvFollow.setTextColor(Color.parseColor("#6E846A"));
+            postHolder.binding.tvFollow.setClickable(true);
+            postHolder.binding.tvFollow.setOnClickListener(v -> {
+                if (fanpageUnfollowAction != null) {
+                    fanpageUnfollowAction.run();
+                }
+            });
+        } else {
+            postHolder.binding.tvFollow.setText("Theo dõi");
+            postHolder.binding.tvFollow.setBackgroundResource(R.drawable.com_bg_btn_follow);
+            postHolder.binding.tvFollow.setTextColor(ContextCompat.getColor(context, R.color.primary));
+            postHolder.binding.tvFollow.setClickable(true);
+            postHolder.binding.tvFollow.setOnClickListener(null);
+        }
     }
 
     public void updateData(
@@ -673,31 +731,12 @@ class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Suggestio
             holder.binding.flMutualAvatars.setVisibility(View.GONE);
         }
 
-        holder.binding.getRoot().setOnClickListener(v -> {
-            Context context = v.getContext();
-            if (context instanceof FragmentActivity) {
-                if ("rootie_official".equals(user.getUser_id()) || "rootie_vn".equals(user.getUser_id()) || (user.getUsername() != null && user.getUsername().toLowerCase().contains("rootie"))) {
-                    CommunityNewsFragment newsFragment = new CommunityNewsFragment();
-                    ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
-                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                            .replace(R.id.main_container, newsFragment)
-                            .addToBackStack(null)
-                            .commit();
-                } else {
-                    CommunityProfileFragment profileFragment = new CommunityProfileFragment();
-                    Bundle args = new Bundle();
-                    args.putString("USER_ID", user.getUser_id());
-                    args.putString("AVATAR_URL", user.getAvatar());
-                    args.putString("USER_NAME", user.getUsername());
-                    profileFragment.setArguments(args);
-                    ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
-                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                            .replace(R.id.main_container, profileFragment)
-                            .addToBackStack(null)
-                            .commit();
-                }
-            }
-        });
+        holder.binding.getRoot().setOnClickListener(v -> ComProfileNavigator.openProfile(
+                v.getContext(),
+                user.getUser_id(),
+                user.getAvatar(),
+                user.getUsername()
+        ));
     }
 
     private void loadMutualAvatar(Context context, String url, ImageView target) {

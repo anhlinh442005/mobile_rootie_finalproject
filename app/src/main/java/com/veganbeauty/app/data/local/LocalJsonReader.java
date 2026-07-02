@@ -266,6 +266,9 @@ public class LocalJsonReader {
             if (authorObj != null) {
                 authorId = authorObj.optString("user_id", authorObj.optString("id", ""));
             }
+            if (authorId.isEmpty()) {
+                authorId = obj.optString("user_id", obj.optString("author_id", ""));
+            }
 
             UserEntity realUser = usersMap.get(authorId);
 
@@ -393,33 +396,86 @@ public class LocalJsonReader {
             List<YtVideoEntity> list = new ArrayList<>();
             for (int i = 0; i < jsonArray.length(); i++) {
                 org.json.JSONObject obj = jsonArray.getJSONObject(i);
-                String desc = obj.optString("short_description", "");
-                if (desc.isEmpty()) desc = obj.optString("long_description", "");
 
-                String username = obj.optString("username", "");
-                org.json.JSONObject authorObj = obj.optJSONObject("author");
-                if (authorObj != null) {
-                    username = authorObj.optString("username", "");
+                List<String> types = new ArrayList<>();
+                org.json.JSONArray typeArray = obj.optJSONArray("Type");
+                if (typeArray != null) {
+                    for (int j = 0; j < typeArray.length(); j++) {
+                        types.add(typeArray.optString(j, ""));
+                    }
+                }
+                if (types.isEmpty()) {
+                    String legacyType = obj.optString("type", "");
+                    if (!legacyType.isEmpty()) types.add(legacyType);
                 }
 
-                list.add(new YtVideoEntity(
+                String desc = obj.optString("long_description", "");
+                if (desc.isEmpty()) desc = obj.optString("short_description", "");
+                if (desc.isEmpty()) desc = obj.optString("title", "");
+
+                String username = obj.optString("username", "Unknown User");
+                org.json.JSONObject authorObj = obj.optJSONObject("author");
+                if (authorObj != null && !authorObj.optString("username", "").isEmpty()) {
+                    username = authorObj.optString("username", username);
+                }
+
+                String avatarUrl = obj.optString("avatar", "");
+                if (avatarUrl.isEmpty()) avatarUrl = obj.optString("avatarUrl", "");
+
+                YtVideoEntity entity = new YtVideoEntity(
                         obj.optString("_id", java.util.UUID.randomUUID().toString()),
                         obj.optString("title", ""),
                         obj.optString("url", ""),
                         desc,
                         username,
-                        obj.optString("avatarUrl", ""),
-                        obj.optString("type", "video"),
-                        (int) (Math.random() * 5000),
+                        avatarUrl.isEmpty() ? null : avatarUrl,
+                        String.join(",", types),
+                        obj.optInt("likes", 100 + (int) (Math.random() * 4900)),
                         (int) (Math.random() * 500),
                         (int) (Math.random() * 100)
-                ));
+                );
+
+                org.json.JSONArray hashArr = obj.optJSONArray("hashtags");
+                if (hashArr != null) {
+                    List<String> hashList = new ArrayList<>();
+                    for (int j = 0; j < hashArr.length(); j++) {
+                        hashList.add(hashArr.optString(j, ""));
+                    }
+                    entity.setHashtags(String.join(" ", hashList));
+                }
+
+                org.json.JSONArray kwArr = obj.optJSONArray("keywords");
+                if (kwArr != null) {
+                    List<String> kwList = new ArrayList<>();
+                    for (int j = 0; j < kwArr.length(); j++) {
+                        String kw = kwArr.optString(j, "").replace(" ", "");
+                        if (!kw.isEmpty()) kwList.add("#" + kw);
+                    }
+                    entity.setKeywords(String.join(" ", kwList));
+                }
+
+                list.add(entity);
             }
             return list;
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    public static boolean isNotebookVideo(YtVideoEntity video) {
+        if (video == null || video.getType() == null) return false;
+        return video.getType().toLowerCase().contains("notebook");
+    }
+
+    public List<YtVideoEntity> getNotebookVideos() {
+        List<YtVideoEntity> notebooks = new ArrayList<>();
+        for (YtVideoEntity video : getExploreVideos()) {
+            if (isNotebookVideo(video)) {
+                notebooks.add(video);
+            }
+        }
+        return notebooks;
     }
 
     public List<IngredientEntity> getIngredients() {

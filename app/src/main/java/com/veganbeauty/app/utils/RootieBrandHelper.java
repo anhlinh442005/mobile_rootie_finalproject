@@ -6,6 +6,10 @@ public final class RootieBrandHelper {
 
     public static final String AVATAR_URL =
             "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1781257994/favicon_r7kqwf.png";
+    public static final String COVER_URL =
+            "https://res.cloudinary.com/dpjkzxjl2/image/upload/v1780843940/bbc9ba9c-790c-481c-9600-ad6736337cba_mszen2.png";
+    public static final String FANPAGE_URL =
+            "https://www.facebook.com/RootieVietnamOfficial";
     public static final String USER_ID_VN = "rootie_vn";
     public static final String USER_ID_OFFICIAL = "rootie_official";
 

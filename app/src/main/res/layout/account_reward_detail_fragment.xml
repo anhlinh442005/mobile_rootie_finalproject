@@ -57,7 +57,7 @@
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Chia sẻ"
-                android:src="@drawable/ic_share"
+                android:src="@drawable/ic_plane"
                 app:tint="@color/primary" />
 
             <ImageButton

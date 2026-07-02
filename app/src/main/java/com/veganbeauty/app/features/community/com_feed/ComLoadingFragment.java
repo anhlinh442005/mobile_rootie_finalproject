@@ -100,6 +100,7 @@ public class ComLoadingFragment extends Fragment {
                     FeedDataCache.productsList = reader.getProducts();
                     FeedDataCache.newsList = reader.getCommunityNews();
                     FeedDataCache.mySocialData = reader.getSocialDataForUser("test_001");
+                    FeedDataCache.clearPinnedPosts();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

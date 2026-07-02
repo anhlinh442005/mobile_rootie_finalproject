@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sideMenuRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F9FAFB"
@@ -15,13 +16,15 @@
         <!-- Header -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:paddingHorizontal="16dp">
+            android:layout_height="40dp"
+            android:paddingHorizontal="12dp">
             
             <!-- Rootie Logo -->
             <ImageView
-                android:layout_width="90dp"
-                android:layout_height="32dp"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:adjustViewBounds="true"
+                android:maxWidth="100dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/logo_name"
                 app:tint="@color/primary"
@@ -32,8 +35,8 @@
             <!-- Hamburger Close -->
             <ImageView
                 android:id="@+id/ivCloseMenu"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_menu_sort"
                 app:tint="#6B7280"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -80,7 +83,7 @@
                     android:text="Người dùng"
                     android:fontFamily="@font/be_vietnam_pro"
                     android:textStyle="bold"
-                    android:textColor="#3E4D44"
+                    android:textColor="@android:color/white"
                     android:textSize="16sp" />
                 <TextView
                     android:id="@+id/tvSideMenuUsername"
@@ -88,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:text="&#64;user"
                     android:fontFamily="@font/be_vietnam_pro"
-                    android:textColor="#6B7280"
+                    android:textColor="#E6FFFFFF"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -96,7 +99,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_chevron_down"
-                app:tint="#6B7280"
+                app:tint="@android:color/white"
                 android:background="@drawable/com_bg_filter_normal"
                 android:padding="4dp" />
         </LinearLayout>
@@ -221,7 +224,7 @@
 
         <!-- Menu Items -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
-            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_friends_outline" app:tint="#4B5563" />
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_friend" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bạn bè" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textSize="14sp" />
         </LinearLayout>
         
@@ -246,14 +249,29 @@
         </LinearLayout>
 
         <!-- Settings Group -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+        <LinearLayout
+            android:id="@+id/llMenuSettingsHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
             <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_settings_outline" app:tint="#4B5563" />
             <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Cài đặt và quyền riêng tư" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textStyle="bold" android:textSize="14sp" />
-            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
+            <ImageView android:id="@+id/ivMenuSettingsChevron" android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
         </LinearLayout>
 
         <!-- Sub Items Settings -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="40dp">
+        <LinearLayout
+            android:id="@+id/llMenuSettingsChildren"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="40dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
                 <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_lock_outline" app:tint="#4B5563" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Quyền riêng tư" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
@@ -269,14 +287,29 @@
         </LinearLayout>
 
         <!-- Account Group -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+        <LinearLayout
+            android:id="@+id/llMenuAccountHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
             <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_user_outline" app:tint="#4B5563" />
             <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Tài khoản cá nhân" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textStyle="bold" android:textSize="14sp" />
-            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
+            <ImageView android:id="@+id/ivMenuAccountChevron" android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
         </LinearLayout>
 
         <!-- Sub Items Account -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="40dp">
+        <LinearLayout
+            android:id="@+id/llMenuAccountChildren"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="40dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
                 <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_user_card_outline" app:tint="#4B5563" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hồ sơ cá nhân" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />
@@ -294,14 +327,29 @@
         </LinearLayout>
 
         <!-- Store Group -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:gravity="center_vertical">
+        <LinearLayout
+            android:id="@+id/llMenuShowcaseHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
             <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_store_outline" app:tint="#4B5563" />
             <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Phần trưng bày" android:layout_marginStart="16dp" android:textColor="#374151" android:fontFamily="@font/be_vietnam_pro" android:textStyle="bold" android:textSize="14sp" />
-            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
+            <ImageView android:id="@+id/ivMenuShowcaseChevron" android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_chevron_down" app:tint="#9CA3AF" />
         </LinearLayout>
 
         <!-- Sub Items Store -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="40dp">
+        <LinearLayout
+            android:id="@+id/llMenuShowcaseChildren"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="40dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingEnd="16dp" android:paddingVertical="8dp" android:gravity="center_vertical">
                 <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_basket_outline" app:tint="#4B5563" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sản phẩm trưng bày" android:layout_marginStart="12dp" android:textColor="#4B5563" android:fontFamily="@font/be_vietnam_pro" android:textSize="13sp" />

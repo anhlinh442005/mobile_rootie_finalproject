@@ -28,42 +28,71 @@
                 android:paddingBottom="16dp">
 
                 <!-- Top Bar -->
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
                     android:paddingHorizontal="16dp"
                     android:background="@color/white">
 
-            <ImageView
-                android:id="@+id/ivBack"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_chevron_left"
-                app:tint="@color/black" />
-                        
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-                        
                     <ImageView
-                        android:id="@+id/ivNotification"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/home_ic_notification"
-                        app:tint="@color/black"
-                        android:layout_marginEnd="16dp" />
-                        
-                    <ImageView
-                        android:id="@+id/ivSettings"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_menu"
-                        app:tint="@color/black" />
-                </LinearLayout>
+                        android:id="@+id/ivBack"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_chevron_left"
+                        app:tint="#6E846A" />
+
+                    <LinearLayout
+                        android:id="@+id/llHeaderActions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/ivNotification"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="16dp"
+                            android:src="@drawable/home_ic_notification"
+                            app:tint="#6E846A" />
+
+                        <ImageView
+                            android:id="@+id/ivSettings"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_menu"
+                            app:tint="#6E846A" />
+
+                        <ImageView
+                            android:id="@+id/ivMore"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_more_horiz"
+                            android:visibility="gone"
+                            app:tint="#6E846A" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvHeaderName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_toStartOf="@id/llHeaderActions"
+                        android:layout_toEndOf="@id/ivBack"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:textColor="#6E846A"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+                </RelativeLayout>
 
                 <!-- Cover Image -->
                 <ImageView
@@ -276,7 +305,12 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
                         
-                        <View android:layout_width="1dp" android:layout_height="12dp" android:background="#E0E0E0" android:layout_marginHorizontal="12dp" />
+                        <View
+                            android:id="@+id/viewRevenueDivider"
+                            android:layout_width="1dp"
+                            android:layout_height="12dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginHorizontal="12dp" />
                         
                         <!-- Revenue (Doanh thu) -->
                         <LinearLayout
@@ -333,19 +367,21 @@
                     android:layout_marginTop="16dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
-                    
+
                     <RelativeLayout
                         android:id="@+id/rlTabGrid"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1">
+
                         <ImageView
                             android:id="@+id/ivTabGrid"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_centerInParent="true"
                             android:src="@drawable/ic_post"
-                            app:tint="#6E846A" />
+                            app:tint="#888888" />
+
                         <View
                             android:id="@+id/vTabGridIndicator"
                             android:layout_width="32dp"
@@ -353,32 +389,84 @@
                             android:layout_alignParentBottom="true"
                             android:layout_centerHorizontal="true"
                             android:layout_marginBottom="2dp"
-                            android:background="#6E846A" />
+                            android:background="@color/black"
+                            android:visibility="visible" />
                     </RelativeLayout>
-                        
-                    <ImageView
-                        android:id="@+id/ivTabVideo"
-                        android:layout_width="0dp"
-                        android:layout_height="24dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/ic_reels"
-                        app:tint="#888888" />
-                        
-                    <ImageView
-                        android:id="@+id/ivTabReup"
-                        android:layout_width="0dp"
-                        android:layout_height="24dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/ic_reup"
-                        app:tint="#888888" />
 
-                    <ImageView
-                        android:id="@+id/ivTabBookmark"
+                    <RelativeLayout
+                        android:id="@+id/rlTabVideo"
                         android:layout_width="0dp"
-                        android:layout_height="24dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/ic_bookmark_outline"
-                        app:tint="#888888" />
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/ivTabVideo"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_reels"
+                            app:tint="#888888" />
+
+                        <View
+                            android:id="@+id/vTabVideoIndicator"
+                            android:layout_width="32dp"
+                            android:layout_height="2dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="2dp"
+                            android:background="@color/black"
+                            android:visibility="invisible" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rlTabReup"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/ivTabReup"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_reup"
+                            app:tint="#888888" />
+
+                        <View
+                            android:id="@+id/vTabReupIndicator"
+                            android:layout_width="32dp"
+                            android:layout_height="2dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="2dp"
+                            android:background="@color/black"
+                            android:visibility="invisible" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rlTabBookmark"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/ivTabBookmark"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_bookmark_outline"
+                            app:tint="#888888" />
+
+                        <View
+                            android:id="@+id/vTabBookmarkIndicator"
+                            android:layout_width="32dp"
+                            android:layout_height="2dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="2dp"
+                            android:background="@color/black"
+                            android:visibility="invisible" />
+                    </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>

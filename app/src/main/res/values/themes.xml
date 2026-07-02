@@ -45,6 +45,11 @@
 
     <style name="Theme.Rootie" parent="Base.Theme.Rootie" />
 
+    <style name="IngredientPageTheme">
+        <item name="android:fontFamily">@font/be_vietnam_pro</item>
+        <item name="fontFamily">@font/be_vietnam_pro</item>
+    </style>
+
     <!-- Style for rounded shape overlay of product images -->
     <style name="RoundedSquareImageView" parent="">
         <item name="cornerSize">12dp</item>

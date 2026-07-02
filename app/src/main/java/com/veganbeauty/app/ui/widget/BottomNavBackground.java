@@ -42,9 +42,9 @@ public class BottomNavBackground extends View {
     private void init(Context context) {
         bgColor = context.getColor(R.color.neutral);
         cornerRadius = dp(20f);
-        shadowRadius = dp(12f);
-        shadowDy = dp(-2f);
-        shadowColor = Color.parseColor("#10000000");
+        shadowRadius = dp(8f);
+        shadowDy = dp(2f);
+        shadowColor = Color.parseColor("#0D000000");
 
         bgPaint.setColor(bgColor);
         bgPaint.setStyle(Paint.Style.FILL);

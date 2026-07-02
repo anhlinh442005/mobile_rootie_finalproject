@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="140dp"
+    android:layout_width="168dp"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="10dp"
+    android:layout_marginEnd="12dp"
     android:layout_marginBottom="8dp"
     android:layout_marginTop="4dp"
     android:elevation="4dp"
@@ -14,11 +14,11 @@
         android:layout_height="wrap_content"
         android:elevation="0dp"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="10dp">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp">
+            android:layout_height="136dp">
 
             <ImageView
                 android:id="@+id/ivProduct"
@@ -32,18 +32,19 @@
         android:id="@+id/tvProductName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:minLines="2"
         android:fontFamily="@font/be_vietnam_pro_medium"
+        android:lineSpacingExtra="1dp"
         android:textColor="#28362E"
-        android:textSize="10sp" />
+        android:textSize="12sp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp">
+        android:layout_marginTop="8dp">
 
         <LinearLayout
             android:id="@+id/llPriceContainer"
@@ -51,6 +52,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/btnAddToCart"
+            android:layout_marginEnd="8dp"
             android:orientation="vertical">
 
             <TextView
@@ -59,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro_bold"
                 android:textColor="#D32F2F"
-                android:textSize="11sp" />
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/tvOriginalPrice"
@@ -67,13 +70,13 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro_regular"
                 android:textColor="#888888"
-                android:textSize="8sp" />
+                android:textSize="10sp" />
         </LinearLayout>
 
         <ImageView
             android:id="@+id/btnAddToCart"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:layout_alignBottom="@+id/llPriceContainer"
             android:background="@drawable/bg_cart_button_green"
@@ -94,6 +97,6 @@
         android:paddingVertical="3dp"
         android:text="-35%"
         android:textColor="@android:color/white"
-        android:textSize="9sp"
+        android:textSize="10sp"
         android:fontFamily="@font/be_vietnam_pro_bold" />
 </FrameLayout>

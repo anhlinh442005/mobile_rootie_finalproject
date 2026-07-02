@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -29,6 +30,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
+import com.veganbeauty.app.data.local.entities.ReelEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
@@ -37,11 +39,13 @@ import com.veganbeauty.app.features.community.UserMemoryHelper;
 import com.veganbeauty.app.features.community.com_feed.CommunityFeedFragment;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory;
+import com.veganbeauty.app.features.community.com_feed.ReelPlayerDialog;
 import com.veganbeauty.app.features.community.message.ChatDetailFragment;
 import com.veganbeauty.app.features.community.message.MessageHelper;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.utils.SideMenuHelper;
+import com.veganbeauty.app.utils.TimeFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -55,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import kotlin.Unit;
 import kotlinx.coroutines.BuildersKt;
@@ -68,7 +73,9 @@ public class CommunityProfileFragment extends RootieFragment {
     private static final String ARG_USER_ID = "USER_ID";
     private int currentTab = 0;
     private List<CommunityPostEntity> currentAllPosts = new ArrayList<>();
+    private List<ReelEntity> currentAllReels = new ArrayList<>();
     private String currentUserId = "test_001";
+    private String profileUserId = "test_001";
     private String ownUserId = "test_001";
     private boolean isFollowing = false;
     private int currentFollowersCount = 0;
@@ -113,7 +120,32 @@ public class CommunityProfileFragment extends RootieFragment {
                     .commit();
         });
 
-        binding.ivSettings.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.END));
+        binding.ivSettings.setOnClickListener(v -> {
+            if (binding.drawerLayout != null) {
+                SideMenuHelper.bindCurrentUser(binding.navView);
+                binding.drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
+
+        binding.ivMore.setOnClickListener(v -> {
+            String displayName = binding.tvHeaderName.getText() != null
+                    ? binding.tvHeaderName.getText().toString()
+                    : "Người dùng";
+            CommunityProfileOptionsBottomSheet sheet =
+                    CommunityProfileOptionsBottomSheet.newInstance(displayName, profileUserId);
+            sheet.show(getParentFragmentManager(), CommunityProfileOptionsBottomSheet.TAG);
+        });
+
+        if (binding.drawerLayout != null) {
+            binding.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerOpened(@NonNull View drawerView) {
+                    if (binding != null && binding.navView != null) {
+                        SideMenuHelper.bindCurrentUser(binding.navView);
+                    }
+                }
+            });
+        }
 
         NavigationView navView = binding.getRoot().findViewById(R.id.navView);
         if (navView != null) {
@@ -152,7 +184,8 @@ public class CommunityProfileFragment extends RootieFragment {
         }
 
         currentUserId = (passedUserId != null) ? passedUserId : ownUserId;
-        boolean isOwnProfile = currentUserId.equals(ownUserId);
+        profileUserId = currentUserId;
+        boolean isOwnProfile = profileUserId.equals(ownUserId);
 
         String bioText = isOwnProfile ? ProfileSession.INSTANCE.getBio(ctx) : "Empowering confidence through beauty and self-care.";
         String jsonPrimaryImage = "";
@@ -229,9 +262,23 @@ public class CommunityProfileFragment extends RootieFragment {
             if (fullName != null) binding.tvName.setText(fullName);
             String uname = ProfileSession.INSTANCE.getUsername(ctx);
             if (uname != null) binding.tvUsername.setText(uname.startsWith("@") ? uname : "@" + uname);
+
+            binding.tvHeaderName.setVisibility(View.GONE);
+            binding.ivSettings.setVisibility(View.VISIBLE);
+            binding.ivMore.setVisibility(View.GONE);
         } else {
-            binding.tvName.setText(!fallbackName.isEmpty() ? fallbackName : "Người dùng");
+            String displayName = !fallbackName.isEmpty() ? fallbackName : "Người dùng";
+            binding.tvName.setText(displayName);
             binding.tvUsername.setText(jsonUsername);
+
+            binding.tvHeaderName.setText(displayName);
+            binding.tvHeaderName.setVisibility(View.VISIBLE);
+            binding.ivSettings.setVisibility(View.GONE);
+            binding.ivMore.setVisibility(View.VISIBLE);
+
+            if (binding.drawerLayout != null) {
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }
         }
 
         String effectiveAvatarUrl = isOwnProfile
@@ -331,26 +378,10 @@ public class CommunityProfileFragment extends RootieFragment {
         CommunityViewModelFactory factory = new CommunityViewModelFactory(repository);
         viewModel = new ViewModelProvider(requireActivity(), factory).get(CommunityViewModel.class);
 
-        binding.rlTabGrid.setOnClickListener(v -> {
-            currentTab = 0;
-            updateTabsUI();
-            loadPostsForCurrentTab(currentAllPosts);
-        });
-        binding.ivTabVideo.setOnClickListener(v -> {
-            currentTab = 1;
-            updateTabsUI();
-            loadPostsForCurrentTab(currentAllPosts);
-        });
-        binding.ivTabReup.setOnClickListener(v -> {
-            currentTab = 2;
-            updateTabsUI();
-            loadPostsForCurrentTab(currentAllPosts);
-        });
-        binding.ivTabBookmark.setOnClickListener(v -> {
-            currentTab = 3;
-            updateTabsUI();
-            loadPostsForCurrentTab(currentAllPosts);
-        });
+        binding.rlTabGrid.setOnClickListener(v -> selectTab(0));
+        binding.rlTabVideo.setOnClickListener(v -> selectTab(1));
+        binding.rlTabReup.setOnClickListener(v -> selectTab(2));
+        binding.rlTabBookmark.setOnClickListener(v -> selectTab(3));
 
         updateTabsUI();
 
@@ -370,13 +401,21 @@ public class CommunityProfileFragment extends RootieFragment {
                     .commit();
         });
 
-        binding.llRevenue.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.main_container, new CommunityRevenueFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        if (isOwnProfile) {
+            binding.llRevenue.setVisibility(View.VISIBLE);
+            binding.viewRevenueDivider.setVisibility(View.VISIBLE);
+            binding.llRevenue.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.main_container, new CommunityRevenueFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        } else {
+            binding.llRevenue.setVisibility(View.GONE);
+            binding.viewRevenueDivider.setVisibility(View.GONE);
+            binding.llRevenue.setOnClickListener(null);
+        }
     }
 
     private void showLogoutDialog() {
@@ -499,33 +538,74 @@ public class CommunityProfileFragment extends RootieFragment {
         }
     }
 
+    private void selectTab(int tab) {
+        currentTab = tab;
+        updateTabsUI();
+        loadContentForCurrentTab();
+    }
+
     private void updateTabsUI() {
-        binding.ivTabGrid.setColorFilter(currentTab == 0 ? Color.parseColor("#6E846A") : Color.parseColor("#888888"));
+        int activeColor = Color.parseColor("#6E846A");
+        int inactiveColor = Color.parseColor("#888888");
+
+        binding.ivTabGrid.setColorFilter(currentTab == 0 ? activeColor : inactiveColor);
         binding.vTabGridIndicator.setVisibility(currentTab == 0 ? View.VISIBLE : View.INVISIBLE);
 
-        binding.ivTabVideo.setColorFilter(currentTab == 1 ? Color.parseColor("#6E846A") : Color.parseColor("#888888"));
-        binding.ivTabReup.setColorFilter(currentTab == 2 ? Color.parseColor("#6E846A") : Color.parseColor("#888888"));
-        binding.ivTabBookmark.setColorFilter(currentTab == 3 ? Color.parseColor("#6E846A") : Color.parseColor("#888888"));
+        binding.ivTabVideo.setColorFilter(currentTab == 1 ? activeColor : inactiveColor);
+        binding.vTabVideoIndicator.setVisibility(currentTab == 1 ? View.VISIBLE : View.INVISIBLE);
+
+        binding.ivTabReup.setColorFilter(currentTab == 2 ? activeColor : inactiveColor);
+        binding.vTabReupIndicator.setVisibility(currentTab == 2 ? View.VISIBLE : View.INVISIBLE);
+
+        binding.ivTabBookmark.setColorFilter(currentTab == 3 ? activeColor : inactiveColor);
+        binding.vTabBookmarkIndicator.setVisibility(currentTab == 3 ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void loadContentForCurrentTab() {
+        if (currentTab == 1) {
+            loadReelsForCurrentTab();
+        } else {
+            loadPostsForCurrentTab(currentAllPosts);
+        }
+    }
+
+    private void loadReelsForCurrentTab() {
+        List<ReelEntity> userReels = new ArrayList<>();
+        for (ReelEntity reel : currentAllReels) {
+            if (profileUserId.equals(reel.getAuthorId())) {
+                userReels.add(reel);
+            }
+        }
+
+        ProfileReelGridAdapter adapter = new ProfileReelGridAdapter(userReels, position -> {
+            ReelPlayerDialog dialog = new ReelPlayerDialog(userReels, position);
+            dialog.show(getParentFragmentManager(), "ReelPlayerDialog");
+        });
+        binding.rvPosts.setAdapter(adapter);
     }
 
     private void loadPostsForCurrentTab(List<CommunityPostEntity> allPosts) {
         List<CommunityPostEntity> myPosts = new ArrayList<>();
         HashSet<String> seenIds = new HashSet<>();
-        
+        Context ctx = requireContext();
+
+        Set<String> repostedIds = currentTab == 2
+                ? UserMemoryHelper.getRepostedPostIds(ctx, profileUserId)
+                : Collections.emptySet();
+        Set<String> savedIds = currentTab == 3
+                ? UserMemoryHelper.getSavedPostIds(ctx, profileUserId)
+                : Collections.emptySet();
+
         for (CommunityPostEntity post : allPosts) {
             if (seenIds.contains(post.getPostId())) continue;
-            
+
             boolean include = false;
             if (currentTab == 0) {
-                include = currentUserId.equals(post.getAuthorId());
-            } else if (currentTab == 1) {
-                include = currentUserId.equals(post.getAuthorId()); // Video filter logic if needed
+                include = profileUserId.equals(post.getAuthorId());
             } else if (currentTab == 2) {
-                include = com.veganbeauty.app.features.community.UserMemoryHelper.isPostReposted(requireContext(), ownUserId, post.getPostId());
+                include = repostedIds.contains(post.getPostId());
             } else if (currentTab == 3) {
-                include = com.veganbeauty.app.features.community.UserMemoryHelper.isPostSaved(requireContext(), ownUserId, post.getPostId());
-            } else {
-                include = currentUserId.equals(post.getAuthorId());
+                include = savedIds.contains(post.getPostId());
             }
 
             if (include) {
@@ -534,18 +614,14 @@ public class CommunityProfileFragment extends RootieFragment {
             }
         }
 
-        Collections.sort(myPosts, (o1, o2) -> {
-            String t1 = o1.getCreatedAt() != null ? o1.getCreatedAt() : "";
-            String t2 = o2.getCreatedAt() != null ? o2.getCreatedAt() : "";
-            return t2.compareTo(t1);
-        });
+        Collections.sort(myPosts, (o1, o2) -> TimeFormatter.compareCreatedAtDesc(o1.getCreatedAt(), o2.getCreatedAt()));
 
         if (currentTab == 0) {
             binding.tvPostCount.setText(String.valueOf(myPosts.size()));
         }
 
         ProfileGridAdapter adapter = new ProfileGridAdapter(myPosts, position -> {
-            ProfilePostDetailFragment fragment = ProfilePostDetailFragment.newInstance(currentUserId, position, currentTab, "");
+            ProfilePostDetailFragment fragment = ProfilePostDetailFragment.newInstance(profileUserId, position, currentTab, "");
             getParentFragmentManager().beginTransaction()
                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
                     .replace(R.id.main_container, fragment)
@@ -566,7 +642,15 @@ public class CommunityProfileFragment extends RootieFragment {
             currentAllPosts = new ArrayList<>();
             if (dbPosts != null) currentAllPosts.addAll(dbPosts);
             if (newsList != null) currentAllPosts.addAll(newsList);
-            loadPostsForCurrentTab(currentAllPosts);
+            loadContentForCurrentTab();
+        });
+
+        viewModel.getReels().observe(getViewLifecycleOwner(), reels -> {
+            if (binding == null || !isAdded()) return;
+            currentAllReels = reels != null ? new ArrayList<>(reels) : new ArrayList<>();
+            if (currentTab == 1) {
+                loadReelsForCurrentTab();
+            }
         });
     }
 

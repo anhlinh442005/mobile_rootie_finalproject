@@ -12,15 +12,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.IngredientEntity;
 import com.veganbeauty.app.data.local.entities.KeyIngredient;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
+import com.veganbeauty.app.data.local.entities.CartItemEntity;
+import com.veganbeauty.app.features.shop.product.CartHelper;
+import com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet;
+import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
+import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.features.shop.product.list.ShopListAdapter;
+import com.veganbeauty.app.utils.BeVietnamProFontHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,6 +65,8 @@ public class IngredientDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        BeVietnamProFontHelper.apply(view);
 
         ImageView ivBack = view.findViewById(R.id.ivBack);
         if (ivBack != null) {
@@ -137,6 +145,9 @@ public class IngredientDetailFragment extends Fragment {
                 TextView tvName = view.findViewById(R.id.tvName);
                 if (tvName != null) tvName.setText(ingredient.getName());
 
+                TextView tvHeaderTitle = view.findViewById(R.id.tvHeaderTitle);
+                if (tvHeaderTitle != null) tvHeaderTitle.setText(ingredient.getName());
+
                 TextView tvScientificName = view.findViewById(R.id.tvScientificName);
                 if (tvScientificName != null) tvScientificName.setText(ingredient.getScientificName());
 
@@ -193,6 +204,7 @@ public class IngredientDetailFragment extends Fragment {
                             );
                             marginParams.setMarginEnd(8 * dp);
                             chip.setLayoutParams(marginParams);
+                            BeVietnamProFontHelper.applyToTextView(chip);
                             llTypes.addView(chip);
                         }
                     }
@@ -200,10 +212,57 @@ public class IngredientDetailFragment extends Fragment {
 
                 RecyclerView rvProducts = view.findViewById(R.id.rvProducts);
                 if (rvProducts != null) {
-                    ShopListAdapter adapter = new ShopListAdapter(p -> {}, p -> {});
+                    ShopListAdapter adapter = new ShopListAdapter(
+                            product -> ProductDetailLauncher.open(IngredientDetailFragment.this, product),
+                            product -> {
+                                ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(
+                                        product,
+                                        new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
+                                            @Override
+                                            public void onAddToCartClick(ProductEntity p, int quantity) {
+                                                CartHelper.addToCart(
+                                                        requireContext(),
+                                                        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()),
+                                                        p,
+                                                        quantity
+                                                );
+                                            }
+
+                                            @Override
+                                            public void onBuyNowClick(ProductEntity p, int quantity) {
+                                                CartItemEntity checkoutItem = new CartItemEntity(
+                                                        p.getId(),
+                                                        p.getName(),
+                                                        p.getMainImage(),
+                                                        p.getPrice(),
+                                                        quantity,
+                                                        true
+                                                );
+                                                ArrayList<CartItemEntity> checkoutItems = new ArrayList<>();
+                                                checkoutItems.add(checkoutItem);
+                                                getParentFragmentManager().beginTransaction()
+                                                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                                                        .replace(R.id.main_container, ShopCheckoutFragment.newInstance(checkoutItems, "", 0L))
+                                                        .addToBackStack(null)
+                                                        .commit();
+                                            }
+                                        }
+                                );
+                                bottomSheet.show(getParentFragmentManager(), ChooseQuantityBottomSheet.TAG);
+                            },
+                            product -> CartHelper.addToCart(
+                                    requireContext(),
+                                    LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()),
+                                    product,
+                                    1
+                            )
+                    );
                     adapter.submitList(finalProducts);
                     rvProducts.setAdapter(adapter);
+                    rvProducts.post(() -> BeVietnamProFontHelper.apply(rvProducts));
                 }
+
+                BeVietnamProFontHelper.apply(view);
             });
         });
     }

@@ -24,6 +24,7 @@ import com.veganbeauty.app.features.community.UserMemoryHelper;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory;
 import com.veganbeauty.app.features.community.com_feed.PostAdapter;
+import com.veganbeauty.app.utils.TimeFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -136,15 +137,22 @@ public class ProfilePostDetailFragment extends Fragment {
                         }
                     } catch (Exception e) {}
 
-                    String finalUserId = userId;
+                    String profileUserId = userId;
                     if (targetPostId != null && !targetPostId.isEmpty()) {
                         for (CommunityPostEntity p : allPostsCombined) {
                             if (targetPostId.equals(p.getPostId())) {
-                                finalUserId = p.getAuthorId();
+                                profileUserId = p.getAuthorId();
                                 break;
                             }
                         }
                     }
+
+                    Set<String> repostedIds = currentTab == 2
+                            ? UserMemoryHelper.getRepostedPostIds(requireContext(), profileUserId)
+                            : Collections.emptySet();
+                    Set<String> savedIds = currentTab == 3
+                            ? UserMemoryHelper.getSavedPostIds(requireContext(), profileUserId)
+                            : Collections.emptySet();
 
                     List<CommunityPostEntity> myPosts = new ArrayList<>();
                     Set<String> addedPostIds = new HashSet<>();
@@ -152,17 +160,19 @@ public class ProfilePostDetailFragment extends Fragment {
                         boolean shouldInclude = false;
                         switch (currentTab) {
                             case 0:
+                                shouldInclude = profileUserId.equals(post.getAuthorId());
+                                break;
                             case 1:
-                                shouldInclude = finalUserId.equals(post.getAuthorId());
+                                shouldInclude = false;
                                 break;
                             case 2:
-                                shouldInclude = UserMemoryHelper.isPostReposted(requireContext(), ownUserId, post.getPostId());
+                                shouldInclude = repostedIds.contains(post.getPostId());
                                 break;
                             case 3:
-                                shouldInclude = UserMemoryHelper.isPostSaved(requireContext(), ownUserId, post.getPostId());
+                                shouldInclude = savedIds.contains(post.getPostId());
                                 break;
                             default:
-                                shouldInclude = finalUserId.equals(post.getAuthorId());
+                                shouldInclude = profileUserId.equals(post.getAuthorId());
                                 break;
                         }
 
@@ -172,7 +182,7 @@ public class ProfilePostDetailFragment extends Fragment {
                         }
                     }
 
-                    Collections.sort(myPosts, (p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
+                    Collections.sort(myPosts, (p1, p2) -> TimeFormatter.compareCreatedAtDesc(p1.getCreatedAt(), p2.getCreatedAt()));
 
                     int scrollPos = initialPosition;
                     if (targetPostId != null && !targetPostId.isEmpty()) {

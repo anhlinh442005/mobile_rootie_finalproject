@@ -15,3 +15,6 @@ serviceAccountKey.json
 
 # 4. Tệp tin dữ liệu JSON (Tránh commit các file data lớn)
 app/src/main/assets/*.json
+
+# 5. Thư mục scratch/prototype (có file JSON >100MB, không đưa lên GitHub)
+scratch/

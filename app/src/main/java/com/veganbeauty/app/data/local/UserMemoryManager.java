@@ -41,7 +41,8 @@ public class UserMemoryManager {
     }
 
     private final Context context;
-    private final String fileName = "user_memory.json";
+    private final String fileName = "user_handbook_memory.json";
+    private static final String LEGACY_FILE_NAME = "user_memory.json";
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public UserMemoryManager(Context context) {
@@ -49,7 +50,7 @@ public class UserMemoryManager {
     }
 
     public List<HandbookCategory> getCategories() {
-        File file = new File(context.getFilesDir(), fileName);
+        File file = resolveHandbookFile();
         if (!file.exists()) return new ArrayList<>();
         List<HandbookCategory> list = new ArrayList<>();
         try (FileInputStream fis = new FileInputStream(file);
@@ -89,6 +90,18 @@ public class UserMemoryManager {
             e.printStackTrace();
         }
         return list;
+    }
+
+    private File resolveHandbookFile() {
+        File file = new File(context.getFilesDir(), fileName);
+        if (file.exists()) {
+            return file;
+        }
+        File legacy = new File(context.getFilesDir(), LEGACY_FILE_NAME);
+        if (legacy.exists()) {
+            return legacy;
+        }
+        return file;
     }
 
     public void saveCategories(List<HandbookCategory> categories) {

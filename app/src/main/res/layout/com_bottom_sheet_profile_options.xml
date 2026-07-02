@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:paddingHorizontal="12dp"
+    android:paddingBottom="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/com_bg_card_rounded"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvReport"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Báo cáo"
+            android:textColor="#EB5757"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E8E8E8" />
+
+        <TextView
+            android:id="@+id/tvRestrict"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Hạn chế"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E8E8E8" />
+
+        <TextView
+            android:id="@+id/tvBlock"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Chặn"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E8E8E8" />
+
+        <TextView
+            android:id="@+id/tvAboutAccount"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Giới thiệu về tài khoản này"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E8E8E8" />
+
+        <TextView
+            android:id="@+id/tvSharedActivity"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Xem hoạt động chung"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E8E8E8" />
+
+        <TextView
+            android:id="@+id/tvHideStory"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Ẩn tin của bạn"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E8E8E8" />
+
+        <TextView
+            android:id="@+id/tvCopyUrl"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Sao chép URL trang cá nhân"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E8E8E8" />
+
+        <TextView
+            android:id="@+id/tvShareProfile"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Chia sẻ trang cá nhân này"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E8E8E8" />
+
+        <TextView
+            android:id="@+id/tvQrCode"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Mã QR"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvCancel"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/com_bg_card_rounded"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:gravity="center"
+        android:text="Hủy"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

@@ -108,6 +108,7 @@ public class CommunityRepository {
 
             List<YtVideoEntity> videos = localJsonReader.getExploreVideos();
             if (videos != null && !videos.isEmpty()) {
+                communityDao.deleteAllExploreVideos();
                 communityDao.insertExploreVideos(videos);
             }
 

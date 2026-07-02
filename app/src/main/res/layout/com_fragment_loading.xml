@@ -16,12 +16,14 @@
 
         <!-- Rootie Logo Name -->
         <ImageView
-            android:layout_width="160dp"
+            android:layout_width="wrap_content"
             android:layout_height="60dp"
+            android:adjustViewBounds="true"
+            android:maxWidth="220dp"
             android:scaleType="fitCenter"
             android:src="@drawable/logo_name"
             app:tint="@color/primary"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="28dp" />
 
         <FrameLayout
             android:layout_width="match_parent"
