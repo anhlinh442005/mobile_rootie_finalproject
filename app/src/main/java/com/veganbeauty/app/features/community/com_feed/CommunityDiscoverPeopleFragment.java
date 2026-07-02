@@ -18,6 +18,7 @@ import com.veganbeauty.app.data.local.entities.UserMemoryEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentDiscoverPeopleBinding;
+import com.veganbeauty.app.features.community.CommunitySocialHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -92,7 +93,8 @@ public class CommunityDiscoverPeopleFragment extends RootieFragment {
                 executor.execute(() -> {
                     try {
                         LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
-                        Map<String, List<String>> mySocialData = jsonReader.getSocialDataForUser("test_001");
+                        String currentUserId = CommunitySocialHelper.resolveUserId(requireContext());
+                        Map<String, List<String>> mySocialData = jsonReader.getSocialDataForUser(currentUserId);
                         
                         Set<String> myFriends = new HashSet<>();
                         if (mySocialData.containsKey("friends")) myFriends.addAll(mySocialData.get("friends"));
@@ -115,7 +117,7 @@ public class CommunityDiscoverPeopleFragment extends RootieFragment {
                         List<UserEntity> followBacks = new ArrayList<>();
                         
                         for (UserEntity user : users) {
-                            if (!"test_001".equals(user.getUser_id())) {
+                            if (!currentUserId.equals(user.getUser_id())) {
                                 if (suggestIds.contains(user.getUser_id())) suggestions.add(user);
                                 if (requestIds.contains(user.getUser_id())) requests.add(user);
                                 if (followBackIds.contains(user.getUser_id())) followBacks.add(user);

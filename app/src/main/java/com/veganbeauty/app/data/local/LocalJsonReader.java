@@ -32,14 +32,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class LocalJsonReader {
     private static final String LOCAL_BOOKINGS_FILE = "local_bookings.json";
     private static final String SEED_BOOKINGS_ASSET = "skin_bookings.json";
+    private static final String SOCIAL_FILE_NAME = "User_com_friend.json";
 
     private final Context context;
 
@@ -399,7 +402,52 @@ public class LocalJsonReader {
 
     public Map<String, List<String>> getMutualFriendsForUsers(List<String> myFriends,
             List<String> allTargetIds) {
-        return new HashMap<>();
+        Map<String, List<String>> result = new HashMap<>();
+        if (myFriends == null || allTargetIds == null || allTargetIds.isEmpty()) {
+            return result;
+        }
+        try {
+            Set<String> myFriendSet = new HashSet<>(myFriends);
+            String json = readSocialJsonString();
+            if (json == null || json.trim().isEmpty()) {
+                return result;
+            }
+            JSONArray arr = new JSONArray(json);
+            Map<String, Set<String>> targetFriendsMap = new HashMap<>();
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject obj = arr.optJSONObject(i);
+                if (obj == null) {
+                    continue;
+                }
+                String uid = obj.optString("user_id", "");
+                if (!allTargetIds.contains(uid)) {
+                    continue;
+                }
+                Set<String> theirFriends = new HashSet<>();
+                JSONArray friendsArr = obj.optJSONArray("friends");
+                if (friendsArr != null) {
+                    for (int j = 0; j < friendsArr.length(); j++) {
+                        theirFriends.add(friendsArr.optString(j, ""));
+                    }
+                }
+                targetFriendsMap.put(uid, theirFriends);
+            }
+            for (String targetId : allTargetIds) {
+                Set<String> theirFriends = targetFriendsMap.get(targetId);
+                List<String> mutual = new ArrayList<>();
+                if (theirFriends != null) {
+                    for (String friendId : myFriendSet) {
+                        if (theirFriends.contains(friendId)) {
+                            mutual.add(friendId);
+                        }
+                    }
+                }
+                result.put(targetId, mutual);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public List<YtVideoEntity> getExploreVideos() {
@@ -1054,9 +1102,10 @@ public class LocalJsonReader {
         result.put("friends", new ArrayList<>());
         result.put("following", new ArrayList<>());
         result.put("followers", new ArrayList<>());
+        result.put("friend_requests", new ArrayList<>());
         result.put("suggested", new ArrayList<>());
         try {
-            String json = readAssetFile("User_com_friend.json");
+            String json = readSocialJsonString();
             if (json == null) return result;
             org.json.JSONArray arr = new org.json.JSONArray(json);
             for (int i = 0; i < arr.length(); i++) {
@@ -1065,6 +1114,7 @@ public class LocalJsonReader {
                 result.put("friends", jsonArrayToList(obj.optJSONArray("friends")));
                 result.put("following", jsonArrayToList(obj.optJSONArray("following")));
                 result.put("followers", jsonArrayToList(obj.optJSONArray("followers")));
+                result.put("friend_requests", jsonArrayToList(obj.optJSONArray("friend_requests")));
                 result.put("suggested", jsonArrayToList(obj.optJSONArray("suggested")));
                 break;
             }
@@ -1072,6 +1122,59 @@ public class LocalJsonReader {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public boolean syncSocialFromFirestore(com.veganbeauty.app.data.remote.FirestoreService firestoreService) {
+        if (firestoreService == null) {
+            return false;
+        }
+        try {
+            String remoteJson = firestoreService.fetchAllUserSocialAsJson();
+            if (remoteJson == null || remoteJson.trim().isEmpty() || "[]".equals(remoteJson.trim())) {
+                return false;
+            }
+            saveSocialJsonToLocal(remoteJson);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public synchronized void saveSocialJsonToLocal(String json) {
+        if (json == null || json.trim().isEmpty()) {
+            return;
+        }
+        try {
+            File file = new File(context.getFilesDir(), SOCIAL_FILE_NAME);
+            try (FileOutputStream fos = new FileOutputStream(file, false);
+                 OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+                writer.write(json);
+            }
+        } catch (Exception e) {
+            android.util.Log.e("LocalJsonReader", "saveSocialJsonToLocal failed", e);
+        }
+    }
+
+    public String readSocialJsonString() {
+        File file = new File(context.getFilesDir(), SOCIAL_FILE_NAME);
+        if (file.exists()) {
+            try (FileInputStream fis = new FileInputStream(file);
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                String local = sb.toString();
+                if (!local.trim().isEmpty()) {
+                    return local;
+                }
+            } catch (Exception e) {
+                android.util.Log.w("LocalJsonReader", "readSocialJsonString local failed", e);
+            }
+        }
+        return readAssetFile(SOCIAL_FILE_NAME);
     }
 
     private List<String> jsonArrayToList(org.json.JSONArray arr) {

@@ -1157,4 +1157,153 @@ public class FirestoreService {
     public boolean addBooking(BookingHistoryEntity booking) {
         return uploadBooking(booking);
     }
+
+    // --- User social (friends / following / followers) ---
+
+    public static final String COL_USER_SOCIAL = "user_social";
+
+    public boolean syncUserSocialFromJson(String jsonStr) {
+        return forceSyncCollection(COL_USER_SOCIAL, jsonStr, "user_id", null);
+    }
+
+    public String fetchAllUserSocialAsJson() {
+        try {
+            QuerySnapshot snapshot = Tasks.await(db.collection(COL_USER_SOCIAL).get());
+            JSONArray array = new JSONArray();
+            for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                JSONObject obj = documentToSocialJson(doc);
+                if (obj != null) {
+                    array.put(obj);
+                }
+            }
+            return array.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Map<String, List<String>> fetchUserSocial(String userId) {
+        Map<String, List<String>> result = newEmptySocialMap();
+        if (userId == null || userId.trim().isEmpty()) {
+            return result;
+        }
+        try {
+            DocumentSnapshot doc = Tasks.await(db.collection(COL_USER_SOCIAL).document(userId.trim()).get());
+            if (!doc.exists()) {
+                return result;
+            }
+            return mapSocialDocument(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return result;
+        }
+    }
+
+    public boolean saveUserSocial(String userId, Map<String, List<String>> socialData) {
+        if (userId == null || userId.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            Map<String, Object> map = new HashMap<>();
+            map.put("user_id", userId.trim());
+            map.put("friends", socialData.get("friends") != null ? socialData.get("friends") : new ArrayList<>());
+            map.put("following", socialData.get("following") != null ? socialData.get("following") : new ArrayList<>());
+            map.put("followers", socialData.get("followers") != null ? socialData.get("followers") : new ArrayList<>());
+            map.put("friend_requests", socialData.get("friend_requests") != null ? socialData.get("friend_requests") : new ArrayList<>());
+            map.put("suggested", socialData.get("suggested") != null ? socialData.get("suggested") : new ArrayList<>());
+            Tasks.await(db.collection(COL_USER_SOCIAL).document(userId.trim()).set(map));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean applyFollowChange(String actorUserId, String targetUserId, boolean follow) {
+        if (actorUserId == null || targetUserId == null
+                || actorUserId.trim().isEmpty() || targetUserId.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            String actorId = actorUserId.trim();
+            String targetId = targetUserId.trim();
+
+            Map<String, List<String>> actorSocial = fetchUserSocial(actorId);
+            Map<String, List<String>> targetSocial = fetchUserSocial(targetId);
+
+            List<String> actorFollowing = new ArrayList<>(actorSocial.get("following"));
+            List<String> targetFollowers = new ArrayList<>(targetSocial.get("followers"));
+
+            if (follow) {
+                if (!actorFollowing.contains(targetId)) {
+                    actorFollowing.add(targetId);
+                }
+                if (!targetFollowers.contains(actorId)) {
+                    targetFollowers.add(actorId);
+                }
+            } else {
+                actorFollowing.remove(targetId);
+                targetFollowers.remove(actorId);
+            }
+
+            actorSocial.put("following", actorFollowing);
+            targetSocial.put("followers", targetFollowers);
+
+            boolean actorSaved = saveUserSocial(actorId, actorSocial);
+            boolean targetSaved = saveUserSocial(targetId, targetSocial);
+            return actorSaved && targetSaved;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private Map<String, List<String>> newEmptySocialMap() {
+        Map<String, List<String>> result = new HashMap<>();
+        result.put("friends", new ArrayList<>());
+        result.put("following", new ArrayList<>());
+        result.put("followers", new ArrayList<>());
+        result.put("friend_requests", new ArrayList<>());
+        result.put("suggested", new ArrayList<>());
+        return result;
+    }
+
+    private Map<String, List<String>> mapSocialDocument(DocumentSnapshot doc) {
+        Map<String, List<String>> result = newEmptySocialMap();
+        result.put("friends", toStringList(doc.get("friends")));
+        result.put("following", toStringList(doc.get("following")));
+        result.put("followers", toStringList(doc.get("followers")));
+        result.put("friend_requests", toStringList(doc.get("friend_requests")));
+        result.put("suggested", toStringList(doc.get("suggested")));
+        return result;
+    }
+
+    private JSONObject documentToSocialJson(DocumentSnapshot doc) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("user_id", doc.getString("user_id") != null ? doc.getString("user_id") : doc.getId());
+            obj.put("friends", new JSONArray(toStringList(doc.get("friends"))));
+            obj.put("following", new JSONArray(toStringList(doc.get("following"))));
+            obj.put("followers", new JSONArray(toStringList(doc.get("followers"))));
+            obj.put("friend_requests", new JSONArray(toStringList(doc.get("friend_requests"))));
+            obj.put("suggested", new JSONArray(toStringList(doc.get("suggested"))));
+            return obj;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private List<String> toStringList(Object raw) {
+        List<String> list = new ArrayList<>();
+        if (raw instanceof List<?>) {
+            for (Object item : (List<?>) raw) {
+                if (item != null) {
+                    list.add(item.toString());
+                }
+            }
+        }
+        return list;
+    }
 }

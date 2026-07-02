@@ -533,6 +533,18 @@ public class CommunityProfileFragment extends RootieFragment {
             fw.write(friendJsonArray.toString(2));
             fw.close();
             binding.tvFollowersCount.setText(String.valueOf(currentFollowersCount));
+
+            final boolean followState = isFollowing;
+            final String actorId = ownUserId;
+            final String targetId = currentUserId;
+            new Thread(() -> {
+                try {
+                    new com.veganbeauty.app.data.remote.FirestoreService()
+                            .applyFollowChange(actorId, targetId, followState);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }).start();
         } catch (Exception e) {
             e.printStackTrace();
         }

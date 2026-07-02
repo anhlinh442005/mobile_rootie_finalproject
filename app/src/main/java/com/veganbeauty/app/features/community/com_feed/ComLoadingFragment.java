@@ -20,6 +20,8 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
+import com.veganbeauty.app.features.community.CommunitySocialHelper;
+import com.veganbeauty.app.features.community.UserSocialSeeder;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -96,10 +98,13 @@ public class ComLoadingFragment extends Fragment {
             Context ctx = getContext();
             if (ctx != null) {
                 try {
+                    UserSocialSeeder.seedIfNeeded(ctx);
                     LocalJsonReader reader = new LocalJsonReader(ctx);
+                    reader.syncSocialFromFirestore(new FirestoreService());
+                    String userId = CommunitySocialHelper.resolveUserId(ctx);
                     FeedDataCache.productsList = reader.getProducts();
                     FeedDataCache.newsList = reader.getCommunityNews();
-                    FeedDataCache.mySocialData = reader.getSocialDataForUser("test_001");
+                    FeedDataCache.mySocialData = reader.getSocialDataForUser(userId);
                     FeedDataCache.clearPinnedPosts();
                 } catch (Exception e) {
                     e.printStackTrace();

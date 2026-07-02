@@ -87,6 +87,11 @@ public class SyncDataHelper {
                     firestoreService.forceSyncCollection("stores", storesJson, "ma_cua_hang", null);
                 }
 
+                String socialJson = reader.readAsset("User_com_friend.json");
+                if (socialJson != null) {
+                    firestoreService.syncUserSocialFromJson(socialJson);
+                }
+
                 success = true;
             } catch (Exception e) {
                 e.printStackTrace();

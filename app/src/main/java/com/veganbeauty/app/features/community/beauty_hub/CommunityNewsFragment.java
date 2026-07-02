@@ -466,9 +466,22 @@ public class CommunityNewsFragment extends RootieFragment {
             writer.write(friendJsonArray.toString(2));
             writer.close();
             updateFollowButtonUI();
+            syncFollowToFirestore(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void syncFollowToFirestore(boolean follow) {
+        final String actorId = currentUserId;
+        new Thread(() -> {
+            try {
+                new com.veganbeauty.app.data.remote.FirestoreService()
+                        .applyFollowChange(actorId, "rootie_vn", follow);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }).start();
     }
 
     private void performUnfollowRootie() {
@@ -508,6 +521,7 @@ public class CommunityNewsFragment extends RootieFragment {
             writer.write(friendJsonArray.toString(2));
             writer.close();
             updateFollowButtonUI();
+            syncFollowToFirestore(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
