@@ -501,7 +501,11 @@ public class SkinAllergyProfileFragment extends RootieFragment {
             float temp = prefs.getFloat("SAVED_WEATHER_TEMP", -100f);
             int humidityVal = prefs.getInt("SAVED_WEATHER_HUMIDITY", -1);
             float uv = prefs.getFloat("SAVED_WEATHER_UV", -1f);
-            int pm25 = prefs.getInt("SAVED_WEATHER_PM25", -1);
+            float pm25 = prefs.getFloat("SAVED_WEATHER_PM25", -1f);
+            if (pm25 < 0f) {
+                int pm25Legacy = prefs.getInt("SAVED_WEATHER_PM25", -1);
+                if (pm25Legacy >= 0) pm25 = pm25Legacy;
+            }
             String city = prefs.getString("SAVED_WEATHER_CITY", "");
             String weatherCondition = prefs.getString("SAVED_WEATHER_CONDITION", "");
 
@@ -532,8 +536,10 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                     sb.append("- Trời nắng nóng gay gắt (").append(temp).append("°C), bã nhờn của bạn là ").append(currentSebum).append("%. Hãy ưu tiên Gel rửa mặt Bí Đao và Tinh chất Bí Đao dạng gel mỏng nhẹ để kiềm dầu thừa, tránh bít tắc lỗ chân lông.\n");
                 } else if (humidityVal < 50 && currentHydration < 50) {
                     sb.append("- Độ ẩm không khí ngoài trời thấp (").append(humidityVal).append("%), kết hợp với da bạn đang thiếu ẩm (").append(currentHydration).append("%). Hãy bổ sung ngay Hyaluronic Acid Serum và Thạch Hoa Hồng hữu cơ khóa ẩm để ngăn mất nước.\n");
-                } else if (pm25 >= 50) {
-                    sb.append("- Chỉ số bụi mịn PM2.5 ở mức kém (").append(pm25).append(" μg/m³). Hãy làm sạch da kỹ lưỡng với nước tẩy trang Hoa Hồng/Sen thuần chay ngay khi về nhà để tránh bít tắc sinh mụn.\n");
+                } else if (pm25 >= 50f) {
+                    sb.append("- Chỉ số bụi mịn PM2.5 ở mức kém (")
+                            .append(String.format(Locale.US, "%.1f", pm25))
+                            .append(" μg/m³). Hãy làm sạch da kỹ lưỡng với nước tẩy trang Hoa Hồng/Sen thuần chay ngay khi về nhà để tránh bít tắc sinh mụn.\n");
                 } else {
                     sb.append("- Thời tiết hôm nay mát mẻ, dễ chịu (").append(weatherCondition).append("). Hãy duy trì cấp ẩm dịu nhẹ bằng toner và serum phục hồi B5 để giữ vững hàng rào bảo vệ da khỏe mạnh.\n");
                 }

@@ -93,6 +93,8 @@ public class BookingHistoryEntity {
     public void setConsultantName(@NonNull String consultantName) { this.consultantName = consultantName; }
     public void setConsultantAvatar(@NonNull String consultantAvatar) { this.consultantAvatar = consultantAvatar; }
     public void setConsultantRating(float consultantRating) { this.consultantRating = consultantRating; }
+    public void setCancelReason(@NonNull String cancelReason) { this.cancelReason = cancelReason; }
+    public void setCancelledAt(@NonNull String cancelledAt) { this.cancelledAt = cancelledAt; }
     @NonNull public List<String> getFeedbackTags() { return Collections.emptyList(); }
     @NonNull public String getStoreId() { return ""; }
     @NonNull public String getServiceId() { return ""; }

@@ -28,31 +28,27 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import kotlinx.coroutines.CoroutineScopeKt;
-import kotlinx.coroutines.Dispatchers;
-
-import kotlinx.coroutines.GlobalScope;
-
 public class DailySkinWeatherReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
         final PendingResult pendingResult = goAsync();
+        final Context appContext = context.getApplicationContext();
 
         Log.d("DailySkinWeatherReceiver", "onReceive triggered for daily skin weather notification");
 
-        boolean enabled = ProfileSession.INSTANCE.isSkinWeatherNotiEnabled(context);
-        boolean notiAllowed = ProfileSession.INSTANCE.isNotiEnabled(context);
+        boolean enabled = ProfileSession.isSkinWeatherNotiEnabled(appContext);
+        boolean notiAllowed = ProfileSession.isNotiEnabled(appContext);
         if (!enabled || !notiAllowed) {
             Log.d("DailySkinWeatherReceiver", "Daily skin weather notification is disabled or general notifications are disabled. Rescheduling and returning.");
-            DailySkinWeatherScheduler.scheduleDailyNotification(context);
+            DailySkinWeatherScheduler.scheduleDailyNotification(appContext);
             pendingResult.finish();
             return;
         }
 
-        kotlinx.coroutines.BuildersKt.launch(GlobalScope.INSTANCE, Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (scope, cont) -> {
+        new Thread(() -> {
             try {
-                SharedPreferences prefs = context.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
+                SharedPreferences prefs = appContext.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
                 String skinType = prefs.getString("SAVED_USER_SKIN_TYPE", "Da dầu nhạy cảm");
                 if (skinType == null) skinType = "Da dầu nhạy cảm";
 
@@ -62,11 +58,21 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
                 double temp = 32.0;
                 int humidity = 68;
                 double uv = 9.2;
-                int pm25Val = 45;
+                double pm25 = -1.0;
+                int usAqi = -1;
+                int weatherCode = -1;
+                boolean hasPm25 = false;
                 boolean success = false;
+                String pm25Source = "";
+                String pm25Station = "";
+                String cityName = prefs.getString("SAVED_WEATHER_CITY", "Thành phố Hồ Chí Minh");
+                if (cityName == null || cityName.trim().isEmpty()) {
+                    cityName = "Thành phố Hồ Chí Minh";
+                }
 
                 try {
-                    String urlString = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng + "&current=temperature_2m,relative_humidity_2m&daily=uv_index_max&timezone=auto";
+                    String urlString = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng
+                            + "&current=temperature_2m,relative_humidity_2m,weather_code,uv_index&timezone=auto";
                     URL url = new URL(urlString);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setConnectTimeout(5000);
@@ -82,9 +88,10 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
                         JSONObject current = json.getJSONObject("current");
                         temp = current.getDouble("temperature_2m");
                         humidity = current.getInt("relative_humidity_2m");
-                        JSONObject daily = json.getJSONObject("daily");
-                        JSONArray uvArray = daily.getJSONArray("uv_index_max");
-                        uv = (uvArray.length() > 0) ? uvArray.getDouble(0) : 5.0;
+                        weatherCode = current.optInt("weather_code", -1);
+                        if (current.has("uv_index") && !current.isNull("uv_index")) {
+                            uv = current.getDouble("uv_index");
+                        }
                         success = true;
                     }
                 } catch (Exception e) {
@@ -92,30 +99,34 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
                 }
 
                 if (success) {
-                    try {
-                        String aqUrlString = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + lat + "&longitude=" + lng + "&current=pm2_5&timezone=auto";
-                        URL aqUrl = new URL(aqUrlString);
-                        HttpURLConnection aqConnection = (HttpURLConnection) aqUrl.openConnection();
-                        aqConnection.setConnectTimeout(3000);
-                        aqConnection.setReadTimeout(3000);
-                        if (aqConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(aqConnection.getInputStream()));
-                            StringBuilder aqResponseBuilder = new StringBuilder();
-                            String line;
-                            while ((line = reader.readLine()) != null) aqResponseBuilder.append(line);
-                            reader.close();
-
-                            JSONObject aqJson = new JSONObject(aqResponseBuilder.toString());
-                            JSONObject aqCurrent = aqJson.getJSONObject("current");
-                            pm25Val = (int) aqCurrent.getDouble("pm2_5");
-                        }
-                    } catch (Exception e) {
-                        pm25Val = (int) (15 + (temp * 0.4) + (humidity * 0.1));
+                    AirQualityFetcher.Reading aqReading = AirQualityFetcher.fetch(lat, lng, BuildConfig.WAQI_API_KEY);
+                    if (aqReading.hasData()) {
+                        pm25 = aqReading.pm25UgM3;
+                        hasPm25 = true;
+                        usAqi = aqReading.usAqi > 0
+                                ? aqReading.usAqi
+                                : WeatherDisplayHelper.computeUsAqiFromPm25(pm25);
+                        pm25Source = aqReading.source.name();
+                        pm25Station = aqReading.stationName != null ? aqReading.stationName : "";
                     }
+
+                    String condition = WeatherDisplayHelper.weatherCodeToDescription(weatherCode, temp);
+                    SkinWeatherSnapshotManager.saveAndSync(appContext, new SkinWeatherSnapshotManager.Snapshot(
+                            temp, humidity, uv, pm25, usAqi,
+                            lat, lng, weatherCode, true, hasPm25,
+                            cityName, condition, pm25Source, pm25Station,
+                            System.currentTimeMillis()
+                    ));
                 }
 
                 String apiKey = BuildConfig.GEMINI_API_KEY;
                 String advice = "";
+                String pm25Text = "không có dữ liệu";
+                if (hasPm25) {
+                    WeatherDisplayHelper.Pm25Display pm25Display =
+                            WeatherDisplayHelper.formatPm25(pm25, true, usAqi);
+                    pm25Text = pm25Display.valueText + " µg/m³ PM2.5 (" + pm25Display.aqiText + ")";
+                }
 
                 if (apiKey != null && !apiKey.trim().isEmpty() && !apiKey.equals("YOUR_GEMINI_API_KEY_HERE")) {
                     try {
@@ -130,7 +141,7 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
 
                         JSONObject requestJson = new JSONObject();
                         JSONArray partsArray = new JSONArray();
-                        String prompt = "Làn da: " + skinType + ". Thời tiết hôm nay: " + temp + "°C, độ ẩm " + humidity + "%, UV " + uv + ", PM2.5 " + pm25Val + ". Đưa ra 1 câu khuyên bảo vệ da theo cấu trúc mẫu: 'Nhiệt độ hôm nay khá cao (" + temp + "°C), UV đạt mức " + uv + ". Da " + skinType + " của bạn có nguy cơ [tình trạng], hãy nhớ [lời khuyên] nhé!'";
+                        String prompt = "Làn da: " + skinType + ". Thời tiết hôm nay: " + temp + "°C, độ ẩm " + humidity + "%, UV " + uv + ", PM2.5 " + pm25Text + ". Đưa ra 1 câu khuyên bảo vệ da theo cấu trúc mẫu: 'Nhiệt độ hôm nay khá cao (" + temp + "°C), UV đạt mức " + uv + ". Da " + skinType + " của bạn có nguy cơ [tình trạng], hãy nhớ [lời khuyên] nhé!'";
                         partsArray.put(new JSONObject().put("text", prompt));
 
                         JSONArray contentsArray = new JSONArray();
@@ -188,7 +199,7 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
 
                 String channelId = "skin_weather_daily_channel";
                 int notificationId = 2001;
-                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel channel = new NotificationChannel(
@@ -200,12 +211,12 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
                     if (notificationManager != null) notificationManager.createNotificationChannel(channel);
                 }
 
-                Intent mainIntent = new Intent(context, MainActivity.class);
+                Intent mainIntent = new Intent(appContext, MainActivity.class);
                 mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 mainIntent.putExtra("NAVIGATE_TO", "WEATHER_FORECAST");
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(
-                        context,
+                        appContext,
                         notificationId,
                         mainIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
@@ -213,12 +224,12 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
 
                 Bitmap appIconBitmap = null;
                 try {
-                    appIconBitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+                    appIconBitmap = BitmapFactory.decodeResource(appContext.getResources(), R.mipmap.ic_launcher);
                 } catch (Exception e) {
                     // Ignore
                 }
 
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, channelId)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("ROOTIE • Thời tiết & Da hôm nay ☀️")
                         .setContentText(advice)
@@ -237,10 +248,9 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
             } catch (Exception e) {
                 Log.e("DailySkinWeatherReceiver", "Error processing daily notification", e);
             } finally {
-                DailySkinWeatherScheduler.scheduleDailyNotification(context);
+                DailySkinWeatherScheduler.scheduleDailyNotification(appContext);
                 pendingResult.finish();
             }
-            return kotlin.Unit.INSTANCE;
-        });
+        }).start();
     }
 }

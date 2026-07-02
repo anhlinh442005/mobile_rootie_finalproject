@@ -99,7 +99,8 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 itemHolder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_completed);
                 itemHolder.tvStatusTag.setTextColor(Color.parseColor("#2E7D32"));
                 itemHolder.llActions.setVisibility(View.GONE);
-            } else if (status.equalsIgnoreCase("Đã huỷ")) {
+            } else if (status.equalsIgnoreCase("Đã huỷ") || status.equalsIgnoreCase("Đã hủy")) {
+                itemHolder.tvStatusTag.setText("Đã huỷ");
                 itemHolder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_cancelled);
                 itemHolder.tvStatusTag.setTextColor(Color.parseColor("#C62828"));
                 itemHolder.llActions.setVisibility(View.GONE);

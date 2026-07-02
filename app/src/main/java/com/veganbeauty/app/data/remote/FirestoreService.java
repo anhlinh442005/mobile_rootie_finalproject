@@ -916,6 +916,7 @@ public class FirestoreService {
         map.put("userName", booking.getUserName());
         map.put("userPhone", booking.getUserPhone());
         map.put("userEmail", booking.getUserEmail());
+        map.put("email", booking.getUserEmail());
         map.put("serviceName", booking.getServiceName());
         map.put("dateDisplay", booking.getDateDisplay());
         map.put("monthDisplay", booking.getMonthDisplay());
@@ -951,59 +952,49 @@ public class FirestoreService {
 
     public boolean uploadBooking(BookingHistoryEntity booking) {
         try {
-            String storeID = "";
-            String nameLower = booking.getStoreName() != null ? booking.getStoreName().toLowerCase() : "";
-            String addrLower = booking.getStoreAddress() != null ? booking.getStoreAddress().toLowerCase() : "";
-
-            if (nameLower.contains("cơ sở 1") || addrLower.contains("minh khai")) {
-                storeID = "CH001";
-            } else if (nameLower.contains("cơ sở 5") || addrLower.contains("hoàng văn thụ")) {
-                storeID = "CH005";
+            String docId = booking.getId();
+            if (docId == null || docId.isEmpty()) {
+                docId = UUID.randomUUID().toString();
             }
 
-            Map<String, Object> bookingMap = new HashMap<>();
-            bookingMap.put("userId", booking.getUserId());
-            bookingMap.put("userName", booking.getUserName());
-            bookingMap.put("userPhone", booking.getUserPhone());
-            bookingMap.put("userEmail", booking.getUserEmail());
-            bookingMap.put("serviceName", booking.getServiceName());
-            bookingMap.put("dateDisplay", booking.getDateDisplay());
-            bookingMap.put("monthDisplay", booking.getMonthDisplay());
-            bookingMap.put("dayOfWeek", booking.getDayOfWeek());
-            bookingMap.put("time", booking.getTime());
-            bookingMap.put("duration", booking.getDuration());
-            bookingMap.put("storeName", booking.getStoreName());
-            bookingMap.put("storeAddress", booking.getStoreAddress());
-            bookingMap.put("storePhone", booking.getStorePhone());
-            bookingMap.put("storeImage", booking.getStoreImage());
-            bookingMap.put("note", booking.getNote());
-            bookingMap.put("status", booking.getStatus());
-            bookingMap.put("policy", booking.getPolicy());
-            bookingMap.put("createdAt", booking.getCreatedAt());
-            bookingMap.put("completedAt", booking.getCompletedAt());
-            bookingMap.put("consultantName", booking.getConsultantName());
-            bookingMap.put("consultantAvatar", booking.getConsultantAvatar());
-            bookingMap.put("consultantRating", booking.getConsultantRating());
-            bookingMap.put("userRating", booking.getUserRating());
-            bookingMap.put("userReview", booking.getUserReview());
-            bookingMap.put("reviewDate", booking.getReviewDate());
-            bookingMap.put("beforeImage", booking.getBeforeImage());
-            bookingMap.put("afterImage", booking.getAfterImage());
-            bookingMap.put("earnedPoints", booking.getEarnedPoints());
-            bookingMap.put("totalPoints", booking.getTotalPoints());
-            bookingMap.put("nextAppointmentDate", booking.getNextAppointmentDate());
-            bookingMap.put("nextAppointmentText", booking.getNextAppointmentText());
-            bookingMap.put("cancelledAt", booking.getCancelledAt());
-            bookingMap.put("cancelReason", booking.getCancelReason());
+            Map<String, Object> bookingMap = bookingToMap(booking);
+            bookingMap.put("email", booking.getUserEmail());
+
+            String storeID = resolveStoreId(booking);
             bookingMap.put("storeID", storeID);
             bookingMap.put("storeId", storeID);
 
-            Tasks.await(db.collection("bookings").document(booking.getId()).set(bookingMap));
+            Tasks.await(db.collection("bookings").document(docId).set(bookingMap));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean uploadBookingMap(String docId, Map<String, Object> fields) {
+        try {
+            if (docId == null || docId.trim().isEmpty()) {
+                return false;
+            }
+            Tasks.await(db.collection("bookings").document(docId).set(fields));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private String resolveStoreId(BookingHistoryEntity booking) {
+        String nameLower = booking.getStoreName() != null ? booking.getStoreName().toLowerCase(Locale.ROOT) : "";
+        String addrLower = booking.getStoreAddress() != null ? booking.getStoreAddress().toLowerCase(Locale.ROOT) : "";
+        if (nameLower.contains("cơ sở 1") || addrLower.contains("minh khai")) {
+            return "CH001";
+        }
+        if (nameLower.contains("cơ sở 5") || addrLower.contains("hoàng văn thụ")) {
+            return "CH005";
+        }
+        return "";
     }
 
     public boolean updateBookingStatus(String bookingId, String newStatus, String cancelReason) {
@@ -1028,47 +1019,24 @@ public class FirestoreService {
     }
 
     public List<BookingHistoryEntity> fetchBookingsForUser(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
         try {
-            QuerySnapshot snapshot = Tasks.await(db.collection("bookings").whereEqualTo("userEmail", email).get());
+            String normalizedEmail = email.trim();
+            QuerySnapshot snapshot = Tasks.await(
+                    db.collection("bookings").whereEqualTo("userEmail", normalizedEmail).get());
+            if (snapshot.isEmpty()) {
+                snapshot = Tasks.await(
+                        db.collection("bookings").whereEqualTo("email", normalizedEmail).get());
+            }
+
             List<BookingHistoryEntity> bookings = new ArrayList<>();
             for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                bookings.add(new BookingHistoryEntity(
-                        doc.getId(),
-                        doc.getString("userId") != null ? doc.getString("userId") : "",
-                        doc.getString("userName") != null ? doc.getString("userName") : "",
-                        doc.getString("userPhone") != null ? doc.getString("userPhone") : "",
-                        doc.getString("userEmail") != null ? doc.getString("userEmail") : "",
-                        doc.getString("serviceName") != null ? doc.getString("serviceName") : "",
-                        doc.getString("dateDisplay") != null ? doc.getString("dateDisplay") : "",
-                        doc.getString("monthDisplay") != null ? doc.getString("monthDisplay") : "",
-                        doc.getString("dayOfWeek") != null ? doc.getString("dayOfWeek") : "",
-                        doc.getString("time") != null ? doc.getString("time") : "",
-                        doc.getString("duration") != null ? doc.getString("duration") : "",
-                        doc.getString("storeName") != null ? doc.getString("storeName") : "",
-                        doc.getString("storeAddress") != null ? doc.getString("storeAddress") : "",
-                        doc.getString("storePhone") != null ? doc.getString("storePhone") : "",
-                        doc.getString("storeImage") != null ? doc.getString("storeImage") : "",
-                        doc.getString("note") != null ? doc.getString("note") : "",
-                        doc.getString("status") != null ? doc.getString("status") : "",
-                        doc.getString("policy") != null ? doc.getString("policy") : "",
-                        doc.getString("createdAt") != null ? doc.getString("createdAt") : "",
-                        doc.getString("completedAt") != null ? doc.getString("completedAt") : "",
-                        new ArrayList<>(),
-                        doc.getString("consultantName") != null ? doc.getString("consultantName") : "",
-                        doc.getString("consultantAvatar") != null ? doc.getString("consultantAvatar") : "",
-                        doc.getDouble("consultantRating") != null ? doc.getDouble("consultantRating").floatValue() : 0f,
-                        doc.getDouble("userRating") != null ? doc.getDouble("userRating").floatValue() : 0f,
-                        doc.getString("userReview") != null ? doc.getString("userReview") : "",
-                        doc.getString("reviewDate") != null ? doc.getString("reviewDate") : "",
-                        doc.getString("beforeImage") != null ? doc.getString("beforeImage") : "",
-                        doc.getString("afterImage") != null ? doc.getString("afterImage") : "",
-                        doc.getLong("earnedPoints") != null ? doc.getLong("earnedPoints").intValue() : 0,
-                        doc.getLong("totalPoints") != null ? doc.getLong("totalPoints").intValue() : 0,
-                        doc.getString("nextAppointmentDate") != null ? doc.getString("nextAppointmentDate") : "",
-                        doc.getString("nextAppointmentText") != null ? doc.getString("nextAppointmentText") : "",
-                        doc.getString("cancelledAt") != null ? doc.getString("cancelledAt") : "",
-                        doc.getString("cancelReason") != null ? doc.getString("cancelReason") : ""
-                ));
+                BookingHistoryEntity entity = mapBookingDocument(doc);
+                if (entity != null) {
+                    bookings.add(entity);
+                }
             }
             return bookings;
         } catch (Exception e) {
@@ -1077,49 +1045,70 @@ public class FirestoreService {
         }
     }
 
-    public void addBooking(BookingHistoryEntity booking) {
+    private BookingHistoryEntity mapBookingDocument(DocumentSnapshot doc) {
         try {
-            String docId = booking.getId();
-            if (docId == null || docId.isEmpty()) docId = UUID.randomUUID().toString();
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", docId);
-            map.put("userId", booking.getUserId());
-            map.put("userName", booking.getUserName());
-            map.put("userPhone", booking.getUserPhone());
-            map.put("userEmail", booking.getUserEmail());
-            map.put("serviceName", booking.getServiceName());
-            map.put("dateDisplay", booking.getDateDisplay());
-            map.put("monthDisplay", booking.getMonthDisplay());
-            map.put("dayOfWeek", booking.getDayOfWeek());
-            map.put("time", booking.getTime());
-            map.put("duration", booking.getDuration());
-            map.put("storeName", booking.getStoreName());
-            map.put("storeAddress", booking.getStoreAddress());
-            map.put("storePhone", booking.getStorePhone());
-            map.put("storeImage", booking.getStoreImage());
-            map.put("note", booking.getNote());
-            map.put("status", booking.getStatus());
-            map.put("policy", booking.getPolicy());
-            map.put("createdAt", booking.getCreatedAt());
-            map.put("completedAt", booking.getCompletedAt());
-            map.put("skinResults", booking.getSkinResults());
-            map.put("consultantName", booking.getConsultantName());
-            map.put("consultantAvatar", booking.getConsultantAvatar());
-            map.put("consultantRating", booking.getConsultantRating());
-            map.put("userRating", booking.getUserRating());
-            map.put("userReview", booking.getUserReview());
-            map.put("reviewDate", booking.getReviewDate());
-            map.put("beforeImage", booking.getBeforeImage());
-            map.put("afterImage", booking.getAfterImage());
-            map.put("earnedPoints", booking.getEarnedPoints());
-            map.put("totalPoints", booking.getTotalPoints());
-            map.put("nextAppointmentDate", booking.getNextAppointmentDate());
-            map.put("nextAppointmentText", booking.getNextAppointmentText());
-            map.put("cancelledAt", booking.getCancelledAt());
-            map.put("cancelReason", booking.getCancelReason());
-            Tasks.await(db.collection("bookings").document(docId).set(map));
+            String userEmail = doc.getString("userEmail");
+            if (userEmail == null || userEmail.isEmpty()) {
+                userEmail = doc.getString("email") != null ? doc.getString("email") : "";
+            }
+
+            List<String> skinResults = new ArrayList<>();
+            List<?> rawSkinResults = (List<?>) doc.get("skinResults");
+            if (rawSkinResults != null) {
+                for (Object item : rawSkinResults) {
+                    if (item != null) skinResults.add(item.toString());
+                }
+            }
+
+            String docId = doc.getString("id");
+            if (docId == null || docId.isEmpty()) {
+                docId = doc.getId();
+            }
+
+            return new BookingHistoryEntity(
+                    docId,
+                    doc.getString("userId") != null ? doc.getString("userId") : "",
+                    doc.getString("userName") != null ? doc.getString("userName") : "",
+                    doc.getString("userPhone") != null ? doc.getString("userPhone") : "",
+                    userEmail,
+                    doc.getString("serviceName") != null ? doc.getString("serviceName") : "",
+                    doc.getString("dateDisplay") != null ? doc.getString("dateDisplay") : "",
+                    doc.getString("monthDisplay") != null ? doc.getString("monthDisplay") : "",
+                    doc.getString("dayOfWeek") != null ? doc.getString("dayOfWeek") : "",
+                    doc.getString("time") != null ? doc.getString("time") : "",
+                    doc.getString("duration") != null ? doc.getString("duration") : "",
+                    doc.getString("storeName") != null ? doc.getString("storeName") : "",
+                    doc.getString("storeAddress") != null ? doc.getString("storeAddress") : "",
+                    doc.getString("storePhone") != null ? doc.getString("storePhone") : "",
+                    doc.getString("storeImage") != null ? doc.getString("storeImage") : "",
+                    doc.getString("note") != null ? doc.getString("note") : "",
+                    doc.getString("status") != null ? doc.getString("status") : "",
+                    doc.getString("policy") != null ? doc.getString("policy") : "",
+                    doc.getString("createdAt") != null ? doc.getString("createdAt") : "",
+                    doc.getString("completedAt") != null ? doc.getString("completedAt") : "",
+                    skinResults,
+                    doc.getString("consultantName") != null ? doc.getString("consultantName") : "",
+                    doc.getString("consultantAvatar") != null ? doc.getString("consultantAvatar") : "",
+                    doc.getDouble("consultantRating") != null ? doc.getDouble("consultantRating").floatValue() : 0f,
+                    doc.getDouble("userRating") != null ? doc.getDouble("userRating").floatValue() : 0f,
+                    doc.getString("userReview") != null ? doc.getString("userReview") : "",
+                    doc.getString("reviewDate") != null ? doc.getString("reviewDate") : "",
+                    doc.getString("beforeImage") != null ? doc.getString("beforeImage") : "",
+                    doc.getString("afterImage") != null ? doc.getString("afterImage") : "",
+                    doc.getLong("earnedPoints") != null ? doc.getLong("earnedPoints").intValue() : 0,
+                    doc.getLong("totalPoints") != null ? doc.getLong("totalPoints").intValue() : 0,
+                    doc.getString("nextAppointmentDate") != null ? doc.getString("nextAppointmentDate") : "",
+                    doc.getString("nextAppointmentText") != null ? doc.getString("nextAppointmentText") : "",
+                    doc.getString("cancelledAt") != null ? doc.getString("cancelledAt") : "",
+                    doc.getString("cancelReason") != null ? doc.getString("cancelReason") : ""
+            );
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
+    }
+
+    public boolean addBooking(BookingHistoryEntity booking) {
+        return uploadBooking(booking);
     }
 }

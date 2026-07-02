@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        com.veganbeauty.app.features.myskin.BookingSampleSeeder.seedIfNeeded(this);
+
         // Preload product catalog + images from assets in background
         new Thread(() -> {
             try {

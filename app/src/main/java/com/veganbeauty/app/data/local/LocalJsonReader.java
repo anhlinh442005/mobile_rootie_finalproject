@@ -16,17 +16,31 @@ import com.veganbeauty.app.data.local.entities.StoreEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 public class LocalJsonReader {
+    private static final String LOCAL_BOOKINGS_FILE = "local_bookings.json";
+    private static final String SEED_BOOKINGS_ASSET = "skin_bookings.json";
+
     private final Context context;
 
     private static List<ProductEntity> cachedProducts;
@@ -516,7 +530,316 @@ public class LocalJsonReader {
     }
 
     public List<BookingHistoryEntity> getUserBookingHistory(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
+        List<BookingHistoryEntity> result = new ArrayList<>();
+        for (BookingHistoryEntity booking : loadAllBookingsInternal()) {
+            if (matchesUserEmail(booking, normalizedEmail)) {
+                result.add(booking);
+            }
+        }
+        sortBookingsByNewest(result);
+        return result;
+    }
+
+    public synchronized void addBooking(BookingHistoryEntity booking) {
+        if (booking == null || booking.getId() == null || booking.getId().trim().isEmpty()) {
+            return;
+        }
+        List<BookingHistoryEntity> all = loadAllBookingsInternal();
+        boolean replaced = false;
+        for (int i = 0; i < all.size(); i++) {
+            if (booking.getId().equals(all.get(i).getId())) {
+                all.set(i, booking);
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            all.add(0, booking);
+        }
+        saveAllBookingsInternal(all);
+    }
+
+    public synchronized void updateBookingStatus(String id, String status, String reason) {
+        if (id == null || id.trim().isEmpty()) {
+            return;
+        }
+        List<BookingHistoryEntity> all = loadAllBookingsInternal();
+        boolean updated = false;
+        for (BookingHistoryEntity booking : all) {
+            if (id.equals(booking.getId())) {
+                booking.setStatus(status != null ? status : booking.getStatus());
+                booking.setCancelReason(reason != null ? reason : "");
+                if ("Đã huỷ".equals(status) || "Đã hủy".equals(status)) {
+                    booking.setCancelledAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(new Date()));
+                }
+                updated = true;
+                break;
+            }
+        }
+        if (updated) {
+            saveAllBookingsInternal(all);
+        }
+    }
+
+    public synchronized void mergeBookingsFromRemote(List<BookingHistoryEntity> remoteBookings) {
+        if (remoteBookings == null || remoteBookings.isEmpty()) {
+            return;
+        }
+        List<BookingHistoryEntity> all = loadAllBookingsInternal();
+        Map<String, Integer> indexById = new HashMap<>();
+        for (int i = 0; i < all.size(); i++) {
+            indexById.put(all.get(i).getId(), i);
+        }
+
+        for (BookingHistoryEntity remote : remoteBookings) {
+            if (remote == null || remote.getId() == null || remote.getId().trim().isEmpty()) {
+                continue;
+            }
+            Integer idx = indexById.get(remote.getId());
+            if (idx == null) {
+                all.add(remote);
+                indexById.put(remote.getId(), all.size() - 1);
+            } else {
+                BookingHistoryEntity local = all.get(idx);
+                if (shouldPreferRemoteBooking(local, remote)) {
+                    all.set(idx, remote);
+                }
+            }
+        }
+        saveAllBookingsInternal(all);
+    }
+
+    private synchronized List<BookingHistoryEntity> loadAllBookingsInternal() {
+        List<BookingHistoryEntity> fromLocal = readBookingsFromLocalFile();
+        if (!fromLocal.isEmpty()) {
+            return fromLocal;
+        }
+
+        String seedJson = readAssetFile(SEED_BOOKINGS_ASSET);
+        if (seedJson != null && !seedJson.trim().isEmpty()) {
+            List<BookingHistoryEntity> seeded = parseBookingsJson(seedJson);
+            if (!seeded.isEmpty()) {
+                saveAllBookingsInternal(seeded);
+                return new ArrayList<>(seeded);
+            }
+        }
         return new ArrayList<>();
+    }
+
+    private List<BookingHistoryEntity> readBookingsFromLocalFile() {
+        File file = new File(context.getFilesDir(), LOCAL_BOOKINGS_FILE);
+        if (!file.exists()) {
+            return new ArrayList<>();
+        }
+        try (FileInputStream fis = new FileInputStream(file);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            return parseBookingsJson(sb.toString());
+        } catch (Exception e) {
+            android.util.Log.w("LocalJsonReader", "readBookingsFromLocalFile failed", e);
+            return new ArrayList<>();
+        }
+    }
+
+    private void saveAllBookingsInternal(List<BookingHistoryEntity> bookings) {
+        try {
+            JSONArray array = new JSONArray();
+            for (BookingHistoryEntity booking : bookings) {
+                array.put(bookingToJson(booking));
+            }
+            JSONObject root = new JSONObject();
+            root.put("bookings", array);
+
+            File file = new File(context.getFilesDir(), LOCAL_BOOKINGS_FILE);
+            try (FileOutputStream fos = new FileOutputStream(file, false);
+                 OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+                writer.write(root.toString());
+            }
+        } catch (Exception e) {
+            android.util.Log.e("LocalJsonReader", "saveAllBookingsInternal failed", e);
+        }
+    }
+
+    private List<BookingHistoryEntity> parseBookingsJson(String json) {
+        List<BookingHistoryEntity> list = new ArrayList<>();
+        if (json == null || json.trim().isEmpty()) {
+            return list;
+        }
+        try {
+            String trimmed = json.trim();
+            JSONArray array;
+            if (trimmed.startsWith("[")) {
+                array = new JSONArray(trimmed);
+            } else {
+                JSONObject root = new JSONObject(trimmed);
+                array = root.optJSONArray("bookings");
+                if (array == null) {
+                    array = root.optJSONArray("skin_bookings");
+                }
+            }
+            if (array == null) {
+                return list;
+            }
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.optJSONObject(i);
+                if (obj == null) continue;
+                BookingHistoryEntity entity = parseBookingObject(obj);
+                if (entity != null) {
+                    list.add(entity);
+                }
+            }
+        } catch (Exception e) {
+            android.util.Log.e("LocalJsonReader", "parseBookingsJson failed", e);
+        }
+        return list;
+    }
+
+    private BookingHistoryEntity parseBookingObject(JSONObject obj) {
+        try {
+            String id = obj.optString("id", "");
+            if (id.isEmpty()) {
+                id = obj.optString("bookingId", UUID.randomUUID().toString());
+            }
+
+            List<String> skinResults = new ArrayList<>();
+            JSONArray skinArr = obj.optJSONArray("skinResults");
+            if (skinArr != null) {
+                for (int j = 0; j < skinArr.length(); j++) {
+                    skinResults.add(skinArr.optString(j, ""));
+                }
+            }
+
+            String userEmail = obj.optString("userEmail", "");
+            if (userEmail.isEmpty()) {
+                userEmail = obj.optString("email", "");
+            }
+
+            return new BookingHistoryEntity(
+                    id,
+                    obj.optString("userId", ""),
+                    obj.optString("userName", ""),
+                    obj.optString("userPhone", ""),
+                    userEmail,
+                    obj.optString("serviceName", ""),
+                    obj.optString("dateDisplay", ""),
+                    obj.optString("monthDisplay", ""),
+                    obj.optString("dayOfWeek", ""),
+                    obj.optString("time", ""),
+                    obj.optString("duration", ""),
+                    obj.optString("storeName", ""),
+                    obj.optString("storeAddress", ""),
+                    obj.optString("storePhone", ""),
+                    obj.optString("storeImage", ""),
+                    obj.optString("note", ""),
+                    obj.optString("status", "Chờ xác nhận"),
+                    obj.optString("policy", ""),
+                    obj.optString("createdAt", ""),
+                    obj.optString("completedAt", ""),
+                    skinResults,
+                    obj.optString("consultantName", ""),
+                    obj.optString("consultantAvatar", ""),
+                    (float) obj.optDouble("consultantRating", 0),
+                    (float) obj.optDouble("userRating", 0),
+                    obj.optString("userReview", ""),
+                    obj.optString("reviewDate", ""),
+                    obj.optString("beforeImage", ""),
+                    obj.optString("afterImage", ""),
+                    obj.optInt("earnedPoints", 0),
+                    obj.optInt("totalPoints", 0),
+                    obj.optString("nextAppointmentDate", ""),
+                    obj.optString("nextAppointmentText", ""),
+                    obj.optString("cancelledAt", ""),
+                    obj.optString("cancelReason", "")
+            );
+        } catch (Exception e) {
+            android.util.Log.w("LocalJsonReader", "parseBookingObject failed", e);
+            return null;
+        }
+    }
+
+    private JSONObject bookingToJson(BookingHistoryEntity booking) throws Exception {
+        JSONObject obj = new JSONObject();
+        obj.put("id", booking.getId());
+        obj.put("userId", booking.getUserId());
+        obj.put("userName", booking.getUserName());
+        obj.put("userPhone", booking.getUserPhone());
+        obj.put("userEmail", booking.getUserEmail());
+        obj.put("email", booking.getUserEmail());
+        obj.put("serviceName", booking.getServiceName());
+        obj.put("dateDisplay", booking.getDateDisplay());
+        obj.put("monthDisplay", booking.getMonthDisplay());
+        obj.put("dayOfWeek", booking.getDayOfWeek());
+        obj.put("time", booking.getTime());
+        obj.put("duration", booking.getDuration());
+        obj.put("storeName", booking.getStoreName());
+        obj.put("storeAddress", booking.getStoreAddress());
+        obj.put("storePhone", booking.getStorePhone());
+        obj.put("storeImage", booking.getStoreImage());
+        obj.put("note", booking.getNote());
+        obj.put("status", booking.getStatus());
+        obj.put("policy", booking.getPolicy());
+        obj.put("createdAt", booking.getCreatedAt());
+        obj.put("completedAt", booking.getCompletedAt());
+        obj.put("skinResults", new JSONArray(booking.getSkinResults()));
+        obj.put("consultantName", booking.getConsultantName());
+        obj.put("consultantAvatar", booking.getConsultantAvatar());
+        obj.put("consultantRating", booking.getConsultantRating());
+        obj.put("userRating", booking.getUserRating());
+        obj.put("userReview", booking.getUserReview());
+        obj.put("reviewDate", booking.getReviewDate());
+        obj.put("beforeImage", booking.getBeforeImage());
+        obj.put("afterImage", booking.getAfterImage());
+        obj.put("earnedPoints", booking.getEarnedPoints());
+        obj.put("totalPoints", booking.getTotalPoints());
+        obj.put("nextAppointmentDate", booking.getNextAppointmentDate());
+        obj.put("nextAppointmentText", booking.getNextAppointmentText());
+        obj.put("cancelledAt", booking.getCancelledAt());
+        obj.put("cancelReason", booking.getCancelReason());
+        return obj;
+    }
+
+    private boolean matchesUserEmail(BookingHistoryEntity booking, String normalizedEmail) {
+        if (booking.getUserEmail() == null) {
+            return false;
+        }
+        return normalizedEmail.equals(booking.getUserEmail().trim().toLowerCase(Locale.ROOT));
+    }
+
+    private void sortBookingsByNewest(List<BookingHistoryEntity> bookings) {
+        Collections.sort(bookings, (a, b) -> {
+            int cmp = compareCreatedAt(b.getCreatedAt(), a.getCreatedAt());
+            if (cmp != 0) return cmp;
+            return b.getId().compareTo(a.getId());
+        });
+    }
+
+    private int compareCreatedAt(String a, String b) {
+        if (a == null || a.isEmpty()) return (b == null || b.isEmpty()) ? 0 : 1;
+        if (b == null || b.isEmpty()) return -1;
+        return b.compareTo(a);
+    }
+
+    private boolean shouldPreferRemoteBooking(BookingHistoryEntity local, BookingHistoryEntity remote) {
+        if (isTerminalStatus(remote.getStatus()) && !isTerminalStatus(local.getStatus())) {
+            return true;
+        }
+        if (isTerminalStatus(local.getStatus()) && !isTerminalStatus(remote.getStatus())) {
+            return false;
+        }
+        return compareCreatedAt(remote.getCreatedAt(), local.getCreatedAt()) < 0;
+    }
+
+    private boolean isTerminalStatus(String status) {
+        if (status == null) return false;
+        return "Đã huỷ".equals(status) || "Đã hủy".equals(status) || "Đã hoàn thành".equals(status);
     }
 
     public List<StoreEntity> getAllStores() {
@@ -904,9 +1227,4 @@ public class LocalJsonReader {
         return friends != null ? friends : new ArrayList<>();
     }
 
-    public void updateBookingStatus(String id, String status, String reason) {
-    }
-
-    public void addBooking(BookingHistoryEntity booking) {
-    }
 }

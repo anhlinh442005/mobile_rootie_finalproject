@@ -29,6 +29,8 @@ android {
         }
         val geminiApiKey = localProperties.getProperty("gemini.api.key") ?: "YOUR_GEMINI_API_KEY_HERE"
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
+        val waqiApiKey = localProperties.getProperty("waqi.api.key") ?: "YOUR_WAQI_API_KEY_HERE"
+        buildConfigField("String", "WAQI_API_KEY", "\"$waqiApiKey\"")
     }
 
     buildFeatures {

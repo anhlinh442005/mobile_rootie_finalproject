@@ -28,7 +28,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,9 +41,6 @@ import com.veganbeauty.app.databinding.SkinWeatherForecastBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.ai.SkinAiChatFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
-import com.veganbeauty.app.features.home.HomeFragment;
-import com.veganbeauty.app.features.profile.AccountProfileFragment;
-import com.veganbeauty.app.features.shop.home.ShopHomeFragment;
 import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.utils.AvatarLoader;
 
@@ -65,10 +61,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.flow.FlowKt;
-
 public class SkinWeatherForecastFragment extends RootieFragment {
 
     private SkinWeatherForecastBinding _binding;
@@ -77,9 +69,64 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     }
 
     private final String GEMINI_API_KEY = com.veganbeauty.app.BuildConfig.GEMINI_API_KEY;
+    private final String WAQI_API_KEY = com.veganbeauty.app.BuildConfig.WAQI_API_KEY;
     private final double defaultLat = 10.8231;
     private final double defaultLng = 106.6297;
     private boolean isViewingHistory = false;
+    private int weatherRequestId = 0;
+    private int geminiRequestId = 0;
+    private LocationManager activeLocationManager;
+    private LocationListener activeLocationListener;
+
+    private static final class WeatherSnapshot {
+        final double temp;
+        final int humidity;
+        final double uv;
+        final double pm25;
+        final int usAqi;
+        final boolean success;
+        final boolean hasPm25;
+        final int weatherCode;
+        final String pm25Source;
+        final String pm25Station;
+
+        WeatherSnapshot(double temp, int humidity, double uv, double pm25, int usAqi,
+                        boolean success, boolean hasPm25, int weatherCode,
+                        String pm25Source, String pm25Station) {
+            this.temp = temp;
+            this.humidity = humidity;
+            this.uv = uv;
+            this.pm25 = pm25;
+            this.usAqi = usAqi;
+            this.success = success;
+            this.hasPm25 = hasPm25;
+            this.weatherCode = weatherCode;
+            this.pm25Source = pm25Source;
+            this.pm25Station = pm25Station;
+        }
+
+        static WeatherSnapshot fromSaved(SkinWeatherSnapshotManager.Snapshot saved) {
+            return new WeatherSnapshot(
+                    saved.temp, saved.humidity, saved.uv, saved.pm25, saved.usAqi,
+                    saved.weatherSuccess, saved.hasPm25, saved.weatherCode,
+                    saved.pm25Source, saved.pm25Station
+            );
+        }
+    }
+
+    private void runOnUiThreadSafe(Runnable action) {
+        if (!isAdded() || _binding == null) return;
+        androidx.fragment.app.FragmentActivity activity = getActivity();
+        if (activity == null) return;
+        activity.runOnUiThread(() -> {
+            if (!isAdded() || _binding == null) return;
+            try {
+                action.run();
+            } catch (Exception e) {
+                android.util.Log.e("SkinWeatherForecast", "UI update failed", e);
+            }
+        });
+    }
 
     private final ActivityResultLauncher<String[]> requestLocationLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
@@ -109,6 +156,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         setupToolbar();
         setupBottomNavigation();
         loadUserProfileData();
+        loadCachedWeatherSnapshot();
         checkLocationPermissionsAndLoad();
         setupFeedbackButtons();
 
@@ -130,12 +178,12 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
     private void setupSkinWeatherNotificationSwitch() {
         Context context = requireContext();
-        boolean isEnabled = ProfileSession.INSTANCE.isSkinWeatherNotiEnabled(context);
+        boolean isEnabled = ProfileSession.isSkinWeatherNotiEnabled(context);
         updateSwitchUI(getBinding().switchSkinWeatherForecast, getBinding().switchSkinWeatherForecastThumb, isEnabled);
 
         getBinding().btnToggleSkinWeatherNoti.setOnClickListener(v -> {
-            boolean nextState = !ProfileSession.INSTANCE.isSkinWeatherNotiEnabled(context);
-            ProfileSession.INSTANCE.setSkinWeatherNotiEnabled(context, nextState);
+            boolean nextState = !ProfileSession.isSkinWeatherNotiEnabled(context);
+            ProfileSession.setSkinWeatherNotiEnabled(context, nextState);
             updateSwitchUI(getBinding().switchSkinWeatherForecast, getBinding().switchSkinWeatherForecastThumb, nextState);
             if (nextState) {
                 DailySkinWeatherScheduler.scheduleDailyNotification(context);
@@ -171,10 +219,24 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     public void onResume() {
         super.onResume();
         if (_binding != null) {
-            boolean isEnabled = ProfileSession.INSTANCE.isSkinWeatherNotiEnabled(requireContext());
+            boolean isEnabled = ProfileSession.isSkinWeatherNotiEnabled(requireContext());
             updateSwitchUI(getBinding().switchSkinWeatherForecast, getBinding().switchSkinWeatherForecastThumb, isEnabled);
             loadUserProfileData();
         }
+    }
+
+    private void loadCachedWeatherSnapshot() {
+        SkinWeatherSnapshotManager.loadFromFirestore(requireContext(), cached -> runOnUiThreadSafe(() -> {
+            if (!isAdded() || _binding == null || cached == null || isViewingHistory) return;
+            if (cached.isFresh(30L * 60L * 1000L)) {
+                updateWeatherUI(
+                        WeatherSnapshot.fromSaved(cached),
+                        cached.city,
+                        cached.lat,
+                        cached.lng
+                );
+            }
+        }));
     }
 
     private void setupToolbar() {
@@ -189,7 +251,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     }
 
     private void loadUserProfileData() {
-        String username = ProfileSession.INSTANCE.getFullName(requireContext());
+        String username = ProfileSession.getFullName(requireContext());
 
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         String greeting;
@@ -201,11 +263,13 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         getBinding().tvGreeting.setText(greeting);
         getBinding().tvUsername.setText(username);
 
-        String avatarUrl = ProfileSession.INSTANCE.getAvatar(requireContext());
+        String avatarUrl = ProfileSession.getAvatar(requireContext());
         AvatarLoader.loadAvatar(getBinding().ivAvatar, avatarUrl);
     }
 
     private void updateRoutineLabels(String skinType, double temp, int humidity, double uv, int pm25) {
+        if (!isAdded() || _binding == null) return;
+        try {
         String skinLower = skinType.toLowerCase();
         boolean isOily = skinLower.contains("dầu");
         boolean isSensitive = skinLower.contains("nhạy cảm") || skinLower.contains("kích ứng");
@@ -234,7 +298,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
              isAging ? "Sạch sâu nhẹ nhàng kèm tinh chất phục hồi" :
              isDehydrated ? "Không làm khô căng da sau khi rửa" : "Duy trì độ pH sinh lý lý tưởng cho da");
 
-        String finalCleanserSub = pm25 >= 50 ? cleanserSub + " & sạch sâu bụi mịn PM2.5" : cleanserSub;
+        String finalCleanserSub = pm25 >= 0 && pm25 > 55 ? cleanserSub + " & sạch sâu bụi mịn PM2.5" : cleanserSub;
 
         // 2. Serum
         SkinWeatherProductMatcher.ProductMatch matchedSerum = matchedProducts.get("Serum");
@@ -300,6 +364,9 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         setupRoutineCard(getBinding().layoutRoutineItem2, serumName, serumSub, matchedProducts.get("Serum"));
         setupRoutineCard(getBinding().layoutRoutineItem3, moisturizerName, finalMoisturizerSub, matchedProducts.get("Moisturizer"));
         setupRoutineCard(getBinding().layoutRoutineItem4, sunscreenName, finalSunscreenSub, matchedProducts.get("Sunscreen"));
+        } catch (Exception e) {
+            android.util.Log.w("SkinWeatherForecast", "Routine label update failed", e);
+        }
     }
 
     private void setupRoutineCard(View card, String name, String sub, SkinWeatherProductMatcher.ProductMatch product) {
@@ -319,28 +386,26 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     }
 
     private void navigateToProductDetail(String productId, String productName) {
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), null, (coroutineScope, continuation) -> {
-            RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-            ProductEntity[] productRef = new ProductEntity[1];
-            
-            BuildersKt.withContext(Dispatchers.getIO(), (coroutineScopeIO, contIO) -> {
-                try {
-                    if (productId != null && !productId.isEmpty()) {
-                        productRef[0] = db.productDao().getProductById(productId);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        final Context appContext = getContext();
+        if (appContext == null) return;
+        new Thread(() -> {
+            ProductEntity product = null;
+            try {
+                if (productId != null && !productId.isEmpty()) {
+                    product = RootieDatabase.getDatabase(appContext).productDao().getProductById(productId);
                 }
-                return kotlin.Unit.INSTANCE;
-            }, continuation);
-
-            if (productRef[0] != null) {
-                ProductDetailLauncher.open(this, productRef[0]);
-            } else {
-                Toast.makeText(getContext(), "Sản phẩm không có sẵn trên cửa hàng!", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            return kotlin.Unit.INSTANCE;
-        });
+            final ProductEntity resolved = product;
+            runOnUiThreadSafe(() -> {
+                if (resolved != null) {
+                    ProductDetailLauncher.open(this, resolved);
+                } else {
+                    Toast.makeText(getContext(), "Sản phẩm không có sẵn trên cửa hàng!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
     }
 
     private void checkLocationPermissionsAndLoad() {
@@ -355,6 +420,17 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                     Manifest.permission.ACCESS_COARSE_LOCATION
             });
         }
+    }
+
+    private void stopLocationUpdates() {
+        if (activeLocationManager != null && activeLocationListener != null) {
+            try {
+                activeLocationManager.removeUpdates(activeLocationListener);
+            } catch (Exception ignored) {
+            }
+        }
+        activeLocationManager = null;
+        activeLocationListener = null;
     }
 
     private void getCurrentLocationAndLoadWeather() {
@@ -376,11 +452,13 @@ public class SkinWeatherForecastFragment extends RootieFragment {
             } else {
                 loadWeatherForCoordinates(defaultLat, defaultLng);
 
-                LocationListener locationListener = new LocationListener() {
+                stopLocationUpdates();
+                activeLocationManager = locationManager;
+                activeLocationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(@NonNull Location loc) {
                         loadWeatherForCoordinates(loc.getLatitude(), loc.getLongitude());
-                        locationManager.removeUpdates(this);
+                        stopLocationUpdates();
                     }
                     @Override
                     public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -392,7 +470,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
                 List<String> providers = locationManager.getProviders(true);
                 for (String provider : providers) {
-                    locationManager.requestLocationUpdates(provider, 0L, 0f, locationListener, Looper.getMainLooper());
+                    locationManager.requestLocationUpdates(provider, 0L, 0f, activeLocationListener, Looper.getMainLooper());
                 }
             }
         } catch (SecurityException e) {
@@ -419,117 +497,123 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     private void loadWeatherForCoordinates(double lat, double lng) {
         final Context appContext = getContext();
         if (appContext == null) return;
+        final int requestId = ++weatherRequestId;
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), null, (coroutineScope, continuation) -> {
+        new Thread(() -> {
             String cityName = getCityName(appContext, lat, lng);
+            WeatherSnapshot snapshot;
             try {
-                String urlString = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng + "&current=temperature_2m,relative_humidity_2m&daily=uv_index_max&timezone=auto";
-                URL url = new URL(urlString);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setConnectTimeout(5000);
-                connection.setReadTimeout(5000);
-
-                double[] tempRef = {32.0};
-                int[] humidityRef = {68};
-                double[] uvRef = {9.2};
-                boolean[] successRef = {false};
-
-                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStream is = connection.getInputStream();
-                    Scanner scanner = new Scanner(is, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
-                    String response = scanner.hasNext() ? scanner.next() : "";
-                    is.close();
-
-                    JSONObject json = new JSONObject(response);
-                    JSONObject current = json.getJSONObject("current");
-                    tempRef[0] = current.getDouble("temperature_2m");
-                    humidityRef[0] = current.getInt("relative_humidity_2m");
-
-                    JSONObject daily = json.getJSONObject("daily");
-                    JSONArray uvArray = daily.getJSONArray("uv_index_max");
-                    uvRef[0] = uvArray.length() > 0 ? uvArray.getDouble(0) : 5.0;
-                    successRef[0] = true;
-                }
-
-                double[] realPm25Ref = {-1.0};
-                if (successRef[0]) {
-                    try {
-                        String aqUrlString = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + lat + "&longitude=" + lng + "&current=pm2_5&timezone=auto";
-                        URL aqUrl = new URL(aqUrlString);
-                        HttpURLConnection aqConnection = (HttpURLConnection) aqUrl.openConnection();
-                        aqConnection.setRequestMethod("GET");
-                        aqConnection.setConnectTimeout(5000);
-                        aqConnection.setReadTimeout(5000);
-                        if (aqConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                            InputStream aqIs = aqConnection.getInputStream();
-                            Scanner aqScanner = new Scanner(aqIs, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
-                            String aqResponse = aqScanner.hasNext() ? aqScanner.next() : "";
-                            aqIs.close();
-
-                            JSONObject aqJson = new JSONObject(aqResponse);
-                            JSONObject aqCurrent = aqJson.getJSONObject("current");
-                            realPm25Ref[0] = aqCurrent.getDouble("pm2_5");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                BuildersKt.withContext(Dispatchers.getMain(), (csMain, contMain) -> {
-                    if (successRef[0]) {
-                        updateWeatherUI(tempRef[0], humidityRef[0], uvRef[0], realPm25Ref[0], cityName, lat, lng);
-                    } else {
-                        useFallbackWeatherData(cityName, lat, lng);
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
-
+                snapshot = fetchWeatherSnapshot(lat, lng);
             } catch (Exception e) {
-                e.printStackTrace();
-                BuildersKt.withContext(Dispatchers.getMain(), (csMain, contMain) -> {
-                    useFallbackWeatherData(cityName, lat, lng);
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
+                android.util.Log.e("SkinWeatherForecast", "Weather fetch failed", e);
+                snapshot = new WeatherSnapshot(0, 0, 0, -1.0, -1, false, false, -1, "", "");
             }
-            return kotlin.Unit.INSTANCE;
-        });
+
+            final WeatherSnapshot result = snapshot;
+            final String resolvedCity = cityName;
+            runOnUiThreadSafe(() -> {
+                if (requestId != weatherRequestId) return;
+                if (result.success) {
+                    updateWeatherUI(result, resolvedCity, lat, lng, true);
+                } else {
+                    useFallbackWeatherData(resolvedCity, lat, lng);
+                }
+            });
+        }).start();
+    }
+
+    private WeatherSnapshot fetchWeatherSnapshot(double lat, double lng) throws Exception {
+        double temp = 0;
+        int humidity = 0;
+        double uv = 0;
+        double pm25 = -1.0;
+        int usAqi = -1;
+        int weatherCode = -1;
+        boolean success = false;
+        boolean hasPm25 = false;
+        String pm25Source = "";
+        String pm25Station = "";
+
+        String urlString = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng
+                + "&current=temperature_2m,relative_humidity_2m,weather_code,uv_index&timezone=auto";
+        HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(5000);
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            InputStream is = connection.getInputStream();
+            Scanner scanner = new Scanner(is, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
+            String response = scanner.hasNext() ? scanner.next() : "";
+            is.close();
+
+            JSONObject json = new JSONObject(response);
+            JSONObject current = json.getJSONObject("current");
+            temp = current.getDouble("temperature_2m");
+            humidity = current.getInt("relative_humidity_2m");
+            weatherCode = current.optInt("weather_code", -1);
+            if (current.has("uv_index") && !current.isNull("uv_index")) {
+                uv = current.getDouble("uv_index");
+            }
+            success = true;
+        }
+        connection.disconnect();
+
+        if (success) {
+            AirQualityFetcher.Reading aqReading = AirQualityFetcher.fetch(lat, lng, WAQI_API_KEY);
+            if (aqReading.hasData()) {
+                pm25 = aqReading.pm25UgM3;
+                hasPm25 = true;
+                usAqi = aqReading.usAqi > 0
+                        ? aqReading.usAqi
+                        : WeatherDisplayHelper.computeUsAqiFromPm25(pm25);
+                pm25Source = aqReading.source.name();
+                pm25Station = aqReading.stationName != null ? aqReading.stationName : "";
+            }
+        }
+
+        return new WeatherSnapshot(temp, humidity, uv, pm25, usAqi, success, hasPm25, weatherCode, pm25Source, pm25Station);
     }
 
     private void useFallbackWeatherData(String cityName, double lat, double lng) {
-        updateWeatherUI(32.0, 68, 9.2, -1.0, cityName, lat, lng);
+        updateWeatherUI(new WeatherSnapshot(0, 0, 0, -1.0, -1, false, false, -1, "", ""), cityName, lat, lng, true);
     }
 
-    private void updateWeatherUI(double temp, int humidity, double uv, double pm25, String cityName, double lat, double lng) {
-        if (_binding == null) return;
+    private void updateWeatherUI(WeatherSnapshot snapshot, String cityName, double lat, double lng) {
+        updateWeatherUI(snapshot, cityName, lat, lng, false);
+    }
 
-        String weatherCondition = temp >= 33 ? "NẮNG NÓNG GAY GẮT" :
-                                  temp >= 28 ? "NẮNG NHIỀU, OI NHẸ" : "MÁT MẺ, DỄ CHỊU";
-        
-        int pm25Val = pm25 >= 0 ? (int) pm25 : (int) (15 + (temp * 0.4) + (humidity * 0.1));
+    private void updateWeatherUI(WeatherSnapshot snapshot, String cityName, double lat, double lng, boolean shouldPersist) {
+        if (!isAdded() || _binding == null) return;
+
+        double temp = snapshot.temp;
+        int humidity = snapshot.humidity;
+        double uv = snapshot.uv;
+        boolean hasPm25 = snapshot.hasPm25;
+        WeatherDisplayHelper.Pm25Display pm25Display = WeatherDisplayHelper.formatPm25(snapshot.pm25, hasPm25, snapshot.usAqi);
+        int pm25Val = pm25Display.numericValue;
 
         try {
-            SharedPreferences prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
-            prefs.edit()
-                 .putFloat("SAVED_WEATHER_TEMP", (float) temp)
-                 .putInt("SAVED_WEATHER_HUMIDITY", humidity)
-                 .putFloat("SAVED_WEATHER_UV", (float) uv)
-                 .putInt("SAVED_WEATHER_PM25", pm25Val)
-                 .putString("SAVED_WEATHER_CITY", cityName)
-                 .putString("SAVED_WEATHER_CONDITION", weatherCondition)
-                 .putFloat("SAVED_WEATHER_LAT", (float) lat)
-                 .putFloat("SAVED_WEATHER_LNG", (float) lng)
-                 .apply();
-        } catch (Exception e) {
-            e.printStackTrace();
+        String weatherCondition = snapshot.success
+                ? WeatherDisplayHelper.weatherCodeToDescription(snapshot.weatherCode, temp)
+                : "KHÔNG CÓ DỮ LIỆU";
+
+        if (shouldPersist && !isViewingHistory) {
+            SkinWeatherSnapshotManager.saveAndSync(requireContext(), new SkinWeatherSnapshotManager.Snapshot(
+                    temp, humidity, uv, snapshot.pm25, snapshot.usAqi,
+                    lat, lng, snapshot.weatherCode, snapshot.success, hasPm25,
+                    cityName, weatherCondition, snapshot.pm25Source, snapshot.pm25Station,
+                    System.currentTimeMillis()
+            ));
         }
 
         getBinding().tvLocation.setText(cityName);
-        getBinding().tvTemperature.setText(String.valueOf((int) temp));
+        getBinding().tvTemperature.setText(snapshot.success ? String.valueOf((int) Math.round(temp)) : "--");
         getBinding().tvWeatherCondition.setText(weatherCondition);
-        getBinding().tvWeatherCondition.setTextColor(ContextCompat.getColor(requireContext(), 
-            temp >= 33 ? R.color.status_level_red :
-            temp >= 28 ? R.color.status_level_yellow : R.color.secondary));
+        getBinding().tvWeatherCondition.setTextColor(ContextCompat.getColor(requireContext(),
+            snapshot.success
+                ? WeatherDisplayHelper.weatherConditionColorRes(snapshot.weatherCode, temp)
+                : R.color.gray_dark));
 
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         boolean isNight = hour < 6 || hour >= 18;
@@ -541,49 +625,70 @@ public class SkinWeatherForecastFragment extends RootieFragment {
             getBinding().ivWeatherIcon.setColorFilter(Color.parseColor("#F0C43D"));
         }
 
-        getBinding().tvHumidity.setText(humidity + "%");
-        String humidityLevel = humidity < 40 ? "Thấp" : humidity <= 65 ? "Trung bình" : "Cao";
+        getBinding().tvHumidity.setText(snapshot.success ? humidity + "%" : "--");
+        String humidityLevel = !snapshot.success ? "Chưa có dữ liệu" :
+                humidity < 40 ? "Thấp" : humidity <= 65 ? "Trung bình" : "Cao";
         getBinding().tvHumidityLevel.setText(humidityLevel);
+        getBinding().tvHumidityCaption.setText(snapshot.success ? "không khí" : "");
 
-        int humidityColorRes = humidity < 40 ? R.color.status_level_orange : R.color.status_level_blue;
-        int humidityBgRes = humidity < 40 ? R.drawable.bg_card_status_orange : R.drawable.bg_card_status_blue;
+        int humidityColorRes = !snapshot.success ? R.color.gray_dark :
+                humidity < 40 ? R.color.status_level_orange : R.color.status_level_blue;
+        int humidityBgRes = !snapshot.success ? R.drawable.bg_card_status_blue :
+                humidity < 40 ? R.drawable.bg_card_status_orange : R.drawable.bg_card_status_blue;
         int humidityColorVal = ContextCompat.getColor(requireContext(), humidityColorRes);
+        int humidityCaptionColor = ContextCompat.getColor(requireContext(),
+                snapshot.success ? R.color.gray_dark : R.color.gray_dark);
         getBinding().tvHumidity.setTextColor(humidityColorVal);
         getBinding().tvHumidityLevel.setTextColor(humidityColorVal);
+        getBinding().tvHumidityCaption.setTextColor(humidityCaptionColor);
         getBinding().layoutHumidityBox.setBackgroundResource(humidityBgRes);
 
-        getBinding().tvUvIndex.setText(String.format(Locale.US, "%.1f", uv));
-        String uvLevel = uv < 3 ? "Thấp" : uv < 6 ? "Trung bình" : uv < 8 ? "Cao" : "Nguy hiểm";
-        getBinding().tvUvLevel.setText(uvLevel);
-
-        int uvColorRes = uv < 3 ? R.color.status_level_green : uv < 6 ? R.color.status_level_yellow : uv < 8 ? R.color.status_level_orange : R.color.status_level_red;
-        int uvBgRes = uv < 3 ? R.drawable.bg_card_status_green : uv < 6 ? R.drawable.bg_card_status_yellow : uv < 8 ? R.drawable.bg_card_status_orange : R.drawable.bg_card_status_red;
-        int uvColorVal = ContextCompat.getColor(requireContext(), uvColorRes);
+        WeatherDisplayHelper.UvDisplay uvDisplay = WeatherDisplayHelper.formatUv(uv);
+        getBinding().tvUvIndex.setText(snapshot.success ? uvDisplay.valueText : "--");
+        getBinding().tvUvLevel.setText(snapshot.success ? uvDisplay.levelText : "Chưa có dữ liệu");
+        getBinding().tvUvCaption.setText(snapshot.success ? "chỉ số UV" : "");
+        int uvColorVal = ContextCompat.getColor(requireContext(), snapshot.success ? uvDisplay.colorRes : R.color.gray_dark);
+        int uvBgRes = snapshot.success ? uvDisplay.bgRes : R.drawable.bg_card_status_blue;
         getBinding().tvUvIndex.setTextColor(uvColorVal);
         getBinding().tvUvLevel.setTextColor(uvColorVal);
+        getBinding().tvUvCaption.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
         getBinding().layoutUvBox.setBackgroundResource(uvBgRes);
 
-        getBinding().tvDustIndex.setText(String.valueOf(pm25Val));
-        String dustLevel = pm25Val < 25 ? "Tốt" : pm25Val < 50 ? "Trung bình" : "Kém";
-        getBinding().tvDustLevel.setText(dustLevel);
+        getBinding().tvDustIndex.setText(pm25Display.valueText);
+        getBinding().tvDustUnit.setText(hasPm25 ? "µg/m³ PM2.5" : "PM2.5");
+        getBinding().tvDustLevel.setText(hasPm25 ? pm25Display.levelText : "Chưa có dữ liệu");
+        getBinding().tvDustAqi.setText(hasPm25 ? buildPm25AqiText(pm25Display, snapshot.pm25Source) : "");
+        int dustColorVal = ContextCompat.getColor(requireContext(), pm25Display.colorRes);
+        int dustCaptionColor = ContextCompat.getColor(requireContext(),
+                hasPm25 ? R.color.gray_dark : R.color.gray_dark);
+        getBinding().tvDustIndex.setTextColor(hasPm25 ? dustColorVal : ContextCompat.getColor(requireContext(), R.color.gray_dark));
+        getBinding().tvDustLevel.setTextColor(hasPm25 ? dustColorVal : ContextCompat.getColor(requireContext(), R.color.gray_dark));
+        getBinding().tvDustUnit.setTextColor(dustCaptionColor);
+        getBinding().tvDustAqi.setTextColor(dustCaptionColor);
+        getBinding().layoutDustBox.setBackgroundResource(pm25Display.bgRes);
 
-        int dustColorRes = pm25Val < 25 ? R.color.status_level_green : pm25Val < 50 ? R.color.status_level_yellow : R.color.status_level_red;
-        int dustBgRes = pm25Val < 25 ? R.drawable.bg_card_status_green : pm25Val < 50 ? R.drawable.bg_card_status_yellow : R.drawable.bg_card_status_red;
-        int dustColorVal = ContextCompat.getColor(requireContext(), dustColorRes);
-        getBinding().tvDustIndex.setTextColor(dustColorVal);
-        getBinding().tvDustLevel.setTextColor(dustColorVal);
-        getBinding().layoutDustBox.setBackgroundResource(dustBgRes);
-
-        String warningMsg = uv >= 8 ? "Hôm nay chỉ số UV ở mức nguy hiểm (" + String.format(Locale.US, "%.1f", uv) + "). Bạn hãy bôi kem chống nắng kỹ và che chắn khi ra ngoài!" :
-                            humidity < 40 ? "Độ ẩm không khí hôm nay khá thấp (" + humidity + "%). Da bạn sẽ mất nước nhanh, hãy chú ý cấp khóa ẩm!" :
-                            "Hôm nay thời tiết khá nóng và độ ẩm trung bình. Hãy bảo vệ da khỏi tia UV hại và uống đủ nước!";
+        String warningMsg;
+        if (!snapshot.success) {
+            warningMsg = "Không tải được dữ liệu thời tiết. Vui lòng kiểm tra kết nối mạng và thử lại.";
+        } else if (uv >= 8) {
+            warningMsg = "Chỉ số UV hiện tại ở mức rất cao (" + String.format(Locale.US, "%.1f", uv) + "). Bạn hãy bôi kem chống nắng kỹ và che chắn khi ra ngoài!";
+        } else if (humidity < 40) {
+            warningMsg = "Độ ẩm không khí hôm nay khá thấp (" + humidity + "%). Da bạn sẽ mất nước nhanh, hãy chú ý cấp khóa ẩm!";
+        } else if (hasPm25 && pm25Val > 55) {
+            warningMsg = "Bụi mịn PM2.5: " + pm25Display.valueText + " µg/m³ (" + pm25Display.aqiText + "). Hạn chế tiếp xúc không khí ô nhiễm và làm sạch da khi về nhà.";
+        } else {
+            warningMsg = "Theo dõi thời tiết để điều chỉnh chu trình chăm da. Hãy bảo vệ da khỏi tia UV và uống đủ nước!";
+        }
         getBinding().tvWarningText.setText(warningMsg);
 
         int warningBgRes, warningTextColRes;
-        if (uv >= 8 || pm25Val >= 50) {
+        if (!snapshot.success) {
+            warningBgRes = R.drawable.bg_warning_orange;
+            warningTextColRes = R.color.warning_text_orange;
+        } else if (uv >= 8 || (hasPm25 && pm25Val > 55)) {
             warningBgRes = R.drawable.bg_warning_red;
             warningTextColRes = R.color.warning_text_red;
-        } else if (humidity < 40 || uv >= 5.0 || pm25Val >= 25) {
+        } else if (humidity < 40 || uv >= 5.0 || (hasPm25 && pm25Val > 35)) {
             warningBgRes = R.drawable.bg_warning_orange;
             warningTextColRes = R.color.warning_text_orange;
         } else {
@@ -596,38 +701,29 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         getBinding().tvWarningText.setTextColor(warningTextColorVal);
         getBinding().ivWarningIcon.setColorFilter(warningTextColorVal);
 
-        String alertText = uv >= 8 ? "Chỉ số UV hôm nay cực cao! Nhớ thoa lại kem chống nắng sau mỗi 2 giờ ra ngoài." :
-                           temp >= 33 ? "Nhiệt độ nóng gay gắt, hãy dùng gel dưỡng ẩm mỏng nhẹ để tránh bít tắc lỗ chân lông." :
-                           "Hôm nay da bạn cần chống nắng và cấp ẩm nhiều hơn. Đừng quên nhé!";
-        getBinding().tvAlertText.setText(alertText);
+        SkinWeatherProfileHelper.UserSkinProfile skinProfile = SkinWeatherProfileHelper.load(requireContext());
+        SkinWeatherProfileHelper.TodaySkinMetrics todayMetrics = SkinWeatherProfileHelper.computeTodayMetrics(
+                skinProfile, temp, humidity, uv, pm25Val, hasPm25);
 
-        SharedPreferences prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
-        String skinType = prefs.getString("SAVED_USER_SKIN_TYPE", "Da dầu nhạy cảm");
-        if (skinType == null) skinType = "Da dầu nhạy cảm";
+        getBinding().tvSkinStatusTitle.setText(SkinWeatherProfileHelper.buildSkinStatusSectionTitle(skinProfile));
+        getBinding().tvSkinStatusSubtitle.setText(SkinWeatherProfileHelper.buildSkinStatusSectionSubtitle(skinProfile));
+
+        SkinWeatherProfileHelper.PersonalizedAdvice initialAdvice = SkinWeatherProfileHelper.buildRuleBasedAdvice(
+                skinProfile, todayMetrics, temp, humidity, uv, pm25Val, hasPm25, cityName);
+        applyPersonalizedAdvice(initialAdvice);
+
+        String skinType = skinProfile.skinType;
+        int oilyPercent = todayMetrics.oilyPercent;
+        int hydrationPercent = todayMetrics.hydrationPercent;
+        int sensitivityPercent = todayMetrics.sensitivityPercent;
 
         String skinLower = skinType.toLowerCase();
         boolean isOily = skinLower.contains("dầu");
         boolean isSensitive = skinLower.contains("nhạy cảm") || skinLower.contains("kích ứng");
         boolean isDry = skinLower.contains("khô");
         boolean isCombination = skinLower.contains("hỗn hợp");
-        boolean isNormal = skinLower.contains("thường");
-        boolean isDehydrated = skinLower.contains("mất nước");
         boolean isAging = skinLower.contains("lão hóa");
-
-        int baseOily = isOily ? 70 : isCombination ? 55 : isDehydrated ? 50 : isNormal ? 40 : isDry ? 20 : 45;
-        baseOily += temp >= 33 ? 15 : temp >= 28 ? 8 : temp < 22 ? -5 : 0;
-        int oilyPercent = Math.max(10, Math.min(95, baseOily));
-
-        int baseHydration = isNormal ? 70 : isOily ? 60 : isCombination ? 55 : isSensitive ? 50 : isDry ? 35 : isDehydrated ? 25 : 50;
-        baseHydration += humidity < 40 ? -15 : humidity < 55 ? -5 : humidity > 75 ? 10 : 0;
-        if (uv >= 8.0) baseHydration -= 5;
-        int hydrationPercent = Math.max(10, Math.min(95, baseHydration));
-
-        int baseSensitivity = isSensitive ? 55 : isDehydrated ? 35 : isDry ? 30 : isCombination ? 20 : isOily ? 20 : 15;
-        baseSensitivity += uv >= 8.0 ? 20 : uv >= 5.0 ? 10 : 0;
-        if (temp >= 33) baseSensitivity += 10;
-        if (pm25Val >= 50) baseSensitivity += 15; else if (pm25Val >= 25) baseSensitivity += 5;
-        int sensitivityPercent = Math.max(5, Math.min(95, baseSensitivity));
+        boolean isDehydrated = skinLower.contains("mất nước");
 
         getBinding().tvOilyValue.setText(oilyPercent + "%");
         getBinding().progressOily.setProgress(oilyPercent);
@@ -648,34 +744,35 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         getBinding().progressSensitivity.setProgressTintList(android.content.res.ColorStateList.valueOf(sensitivityColor));
 
         String uvImpact, hydrationImpact, dustImpact;
+        boolean highPm25 = hasPm25 && pm25Val > 55;
         if (isOily) {
             uvImpact = uv >= 6.0 ? "Tăng bã nhờn & sạm da" : "Tăng tiết bã nhờn";
             hydrationImpact = humidity < 55 ? "Dầu nước mất cân bằng" : "Độ ẩm cân bằng";
-            dustImpact = pm25Val >= 50 ? "Nguy cơ tắc nghẽn mụn" : "Bám dính dầu nhờn";
+            dustImpact = highPm25 ? "Nguy cơ tắc nghẽn mụn" : hasPm25 ? "Bám dính dầu nhờn" : "Chưa có dữ liệu PM2.5";
         } else if (isDry) {
             uvImpact = uv >= 6.0 ? "Dễ rát & sạm da khô" : "Dễ mất ẩm bong tróc";
             hydrationImpact = humidity < 55 ? "Thiếu nước nghiêm trọng" : "Giảm khô căng nhẹ";
-            dustImpact = pm25Val >= 50 ? "Hàng rào bảo vệ yếu" : "Khô ngứa do khói bụi";
+            dustImpact = highPm25 ? "Hàng rào bảo vệ yếu" : hasPm25 ? "Khô ngứa do khói bụi" : "Chưa có dữ liệu PM2.5";
         } else if (isSensitive) {
             uvImpact = uv >= 5.0 ? "Nguy cơ đỏ rát cao" : "Dễ kích ứng nhẹ";
             hydrationImpact = humidity < 55 ? "Màng ẩm tổn thương" : "Đủ ẩm dễ chịu";
-            dustImpact = pm25Val >= 50 ? "Mẩn ngứa bít tắc" : "Bám dính bụi bẩn";
+            dustImpact = highPm25 ? "Mẩn ngứa bít tắc" : hasPm25 ? "Bám dính bụi bẩn" : "Chưa có dữ liệu PM2.5";
         } else if (isCombination) {
             uvImpact = uv >= 6.0 ? "Vùng chữ T nhờn rát" : "Vùng chữ T tiết dầu";
             hydrationImpact = humidity < 55 ? "Hai bên má khô rát" : "Cân bằng vùng má";
-            dustImpact = pm25Val >= 50 ? "Bít tắc vùng chữ T" : "Tích tụ bụi nhẹ";
+            dustImpact = highPm25 ? "Bít tắc vùng chữ T" : hasPm25 ? "Tích tụ bụi nhẹ" : "Chưa có dữ liệu PM2.5";
         } else if (isAging) {
             uvImpact = uv >= 6.0 ? "Tia UV gây sạm nám" : "Đẩy nhanh lão hóa";
             hydrationImpact = humidity < 55 ? "Mất nước nếp nhăn sâu" : "Giữ ẩm tế bào";
-            dustImpact = pm25Val >= 50 ? "Tổn thương gốc tự do" : "Tác nhân ô nhiễm";
+            dustImpact = highPm25 ? "Tổn thương gốc tự do" : hasPm25 ? "Tác nhân ô nhiễm" : "Chưa có dữ liệu PM2.5";
         } else if (isDehydrated) {
             uvImpact = uv >= 6.0 ? "Rát sạm khô căng" : "Nếp nhăn giả do UV";
             hydrationImpact = humidity < 45 ? "Mất nước tế bào sâu" : "Cải thiện tình trạng khô";
-            dustImpact = pm25Val >= 50 ? "Tắc tuyến bã nhờn" : "Bụi gây khô bề mặt";
+            dustImpact = highPm25 ? "Tắc tuyến bã nhờn" : hasPm25 ? "Bụi gây khô bề mặt" : "Chưa có dữ liệu PM2.5";
         } else {
             uvImpact = uv >= 6.0 ? "Chống nắng tối đa" : "Bảo vệ dịu nhẹ";
             hydrationImpact = humidity < 55 ? "Cần cấp ẩm nhẹ" : "Duy trì ẩm tốt";
-            dustImpact = pm25Val >= 50 ? "Làm sạch sâu bụi mịn" : "Làm sạch bình thường";
+            dustImpact = highPm25 ? "Làm sạch sâu bụi mịn" : hasPm25 ? "Làm sạch bình thường" : "Chưa có dữ liệu PM2.5";
         }
 
         getBinding().tvUvImpact.setText(uvImpact);
@@ -683,21 +780,48 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         getBinding().tvDustImpact.setText(dustImpact);
 
         updateRoutineLabels(skinType, temp, humidity, uv, pm25Val);
-        fetchGeminiInsight(temp, humidity, uv, pm25Val, cityName, skinType, oilyPercent, hydrationPercent, sensitivityPercent);
+        fetchGeminiAdvice(skinProfile, todayMetrics, temp, humidity, uv, pm25Val, hasPm25, cityName);
+        } catch (Exception e) {
+            android.util.Log.e("SkinWeatherForecast", "Failed to render weather UI", e);
+        }
     }
 
-    private void fetchGeminiInsight(double temp, int humidity, double uv, int pm25, String cityName, String skinType, int oily, int hydration, int sensitivity) {
-        SharedPreferences prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
+    private void applyPersonalizedAdvice(SkinWeatherProfileHelper.PersonalizedAdvice advice) {
+        if (!isAdded() || _binding == null || advice == null) return;
+        getBinding().tvAlertText.setText(advice.headline);
+        getBinding().tvAlertSubtext.setText(advice.subtext);
+        getBinding().tvAiInsightDesc.setText(advice.insight);
+    }
+
+    private void fetchGeminiAdvice(SkinWeatherProfileHelper.UserSkinProfile skinProfile,
+                                   SkinWeatherProfileHelper.TodaySkinMetrics todayMetrics,
+                                   double temp, int humidity, double uv, int pm25,
+                                   boolean hasPm25, String cityName) {
+        if (!isAdded() || _binding == null) return;
+
+        final int oily = todayMetrics.oilyPercent;
+        final int hydration = todayMetrics.hydrationPercent;
+        final int sensitivity = todayMetrics.sensitivityPercent;
+        final String skinType = skinProfile.skinType;
+
         if (GEMINI_API_KEY == null || GEMINI_API_KEY.trim().isEmpty() || GEMINI_API_KEY.equals("YOUR_GEMINI_API_KEY_HERE")) {
-            updateRuleBasedAiInsight(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity);
+            SkinWeatherProfileHelper.PersonalizedAdvice advice = SkinWeatherProfileHelper.buildRuleBasedAdvice(
+                    skinProfile, todayMetrics, temp, humidity, uv, pm25, hasPm25, cityName);
+            applyPersonalizedAdvice(advice);
+            saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, advice.insight);
             return;
         }
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), null, (coroutineScope, continuation) -> {
+        final int requestId = ++geminiRequestId;
+        final String prompt = SkinWeatherProfileHelper.buildGeminiPrompt(
+                skinProfile, todayMetrics, temp, humidity, uv, pm25, hasPm25, cityName);
+        final SharedPreferences prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
+
+        new Thread(() -> {
+            String textResult = null;
             try {
                 String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY;
-                URL url = new URL(urlString);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json");
                 connection.setConnectTimeout(8000);
@@ -707,7 +831,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                 JSONObject requestJson = new JSONObject();
                 JSONArray partsArray = new JSONArray();
                 JSONObject textPart = new JSONObject();
-                textPart.put("text", "Đưa ra lời khuyên da liễu cho người dùng có làn da: " + skinType + ". Thời tiết hiện tại: Nhiệt độ " + temp + "°C, Độ ẩm " + humidity + "%, Chỉ số UV " + String.format(Locale.US, "%.1f", uv) + ", Bụi mịn PM2.5 " + pm25 + ".");
+                textPart.put("text", prompt);
                 partsArray.put(textPart);
 
                 JSONArray contentsArray = new JSONArray();
@@ -719,14 +843,14 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                 JSONObject systemInstruction = new JSONObject();
                 JSONArray systemParts = new JSONArray();
                 JSONObject sysTextPart = new JSONObject();
-                sysTextPart.put("text", "Bạn là trợ lý bác sĩ da liễu thông minh của ứng dụng ROOTIE - ứng dụng tư vấn chăm sóc da hữu cơ và thuần chay (Vegan Skincare). Nhiệm vụ của bạn là đưa ra 1 lời khuyên ngắn gọn, thiết thực và khoa học (tối đa 2-3 câu ngắn) bằng tiếng Việt cho người dùng dựa trên loại da và thời tiết thực tế được gửi. Khuyên dùng các giải pháp lành tính, tự nhiên, thuần chay, bảo vệ màng ẩm của da và khuyên thoa kem chống nắng/che chắn nếu UV cao. Hãy bắt đầu câu trả lời bằng ký tự mở ngoặc kép kép và kết thúc bằng đóng ngoặc kép kép (ví dụ: “Lời khuyên...”).");
+                sysTextPart.put("text", "Bạn là trợ lý da liễu thông minh của ROOTIE (Vegan Skincare). Luôn dựa trên HỒ SƠ DA ĐÃ LƯU được gửi kèm, không đưa lời khuyên chung chung. Trả lời tiếng Việt, ngắn gọn, thực tế, thuần chay.");
                 systemParts.put(sysTextPart);
                 systemInstruction.put("parts", systemParts);
                 requestJson.put("systemInstruction", systemInstruction);
 
                 JSONObject generationConfig = new JSONObject();
                 generationConfig.put("temperature", 0.7);
-                generationConfig.put("maxOutputTokens", 250);
+                generationConfig.put("maxOutputTokens", 350);
                 requestJson.put("generationConfig", generationConfig);
 
                 java.io.OutputStream os = connection.getOutputStream();
@@ -745,83 +869,37 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                         JSONObject content = candidates.getJSONObject(0).getJSONObject("content");
                         JSONArray parts = content.getJSONArray("parts");
                         if (parts.length() > 0) {
-                            String textResult = parts.getJSONObject(0).getString("text").trim();
+                            textResult = parts.getJSONObject(0).getString("text").trim();
                             prefs.edit().putString("SAVED_CACHED_AI_INSIGHT", textResult).apply();
-
-                            BuildersKt.withContext(Dispatchers.getMain(), (csMain, contMain) -> {
-                                if (_binding != null) {
-                                    getBinding().tvAiInsightDesc.setText(textResult);
-                                    saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, textResult);
-                                }
-                                return kotlin.Unit.INSTANCE;
-                            }, continuation);
-                            return kotlin.Unit.INSTANCE;
                         }
                     }
                 }
-
-                BuildersKt.withContext(Dispatchers.getMain(), (csMain, contMain) -> {
-                    String cachedInsight = prefs.getString("SAVED_CACHED_AI_INSIGHT", null);
-                    if (cachedInsight != null && !cachedInsight.trim().isEmpty()) {
-                        getBinding().tvAiInsightDesc.setText(cachedInsight);
-                        saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, cachedInsight);
-                    } else {
-                        updateRuleBasedAiInsight(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity);
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
-
+                connection.disconnect();
             } catch (Exception e) {
-                e.printStackTrace();
-                BuildersKt.withContext(Dispatchers.getMain(), (csMain, contMain) -> {
-                    String cachedInsight = prefs.getString("SAVED_CACHED_AI_INSIGHT", null);
-                    if (cachedInsight != null && !cachedInsight.trim().isEmpty()) {
-                        getBinding().tvAiInsightDesc.setText(cachedInsight);
-                        saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, cachedInsight);
-                    } else {
-                        updateRuleBasedAiInsight(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity);
-                    }
-                    return kotlin.Unit.INSTANCE;
-                }, continuation);
+                android.util.Log.w("SkinWeatherForecast", "Gemini advice failed", e);
             }
-            return kotlin.Unit.INSTANCE;
-        });
-    }
 
-    private void updateRuleBasedAiInsight(double temp, int humidity, double uv, int pm25, String cityName, String skinType, int oily, int hydration, int sensitivity) {
-        String baseInsight;
-        String lowerSkin = skinType.toLowerCase();
-
-        if (lowerSkin.contains("dầu nhạy cảm")) {
-            if (uv >= 8) baseInsight = "Thời tiết nắng gắt với tia UV cực cao (" + String.format(Locale.US, "%.1f", uv) + "). Làn da dầu nhạy cảm rất dễ đỏ rát và kích ứng. Hãy ưu tiên bôi kem chống nắng vật lý mỏng nhẹ và che chắn kỹ.";
-            else if (temp >= 33) baseInsight = "Nhiệt độ cao (" + temp + "°C) làm tăng tiết bã nhờn trong khi hàng rào bảo vệ da nhạy cảm mỏng yếu. Nên dùng gel dưỡng ẩm phục hồi dịu nhẹ và tránh chà xát da.";
-            else if (pm25 >= 50) baseInsight = "Chỉ số bụi mịn cao (" + pm25 + ") có thể gây ngứa rát và bít tắc. Hãy chú ý làm sạch dịu nhẹ với sữa rửa mặt không bọt hoặc gel dịu nhẹ.";
-            else baseInsight = "Lượng dầu tiết ra ổn định nhưng da vẫn nhạy cảm. Hãy củng cố hàng rào da bằng serum B5 và kem dưỡng phục hồi Ceramide.";
-        } else if (lowerSkin.contains("dầu")) {
-            if (temp >= 33) baseInsight = "Nhiệt độ cao (" + temp + "°C) kích thích tuyến bã nhờn hoạt động cực mạnh. Hãy dùng sữa rửa mặt kiềm dầu dịu nhẹ và gel dưỡng ẩm mỏng nhẹ dạng nước để tránh bít tắc mụn.";
-            else if (humidity < 40) baseInsight = "Độ ẩm không khí thấp (" + humidity + "%) làm da mất nước bề mặt, dễ tiết dầu bù nhiều hơn. Hãy uống nhiều nước và cấp ẩm nhẹ nhàng bằng toner hyaluronic acid.";
-            else baseInsight = "Lượng bã nhờn có thể tăng nhẹ. Ưu tiên serum Niacinamide để điều tiết dầu thừa và se khít lỗ chân lông.";
-        } else if (lowerSkin.contains("khô")) {
-            if (humidity < 40) baseInsight = "Độ ẩm không khí rất thấp (" + humidity + "%), dễ gây khô căng, bong tróc rát da. Hãy dùng serum HA cấp nước đa tầng kết hợp kem dưỡng ẩm dạng đặc để khóa ẩm sâu.";
-            else if (temp >= 33) baseInsight = "Nhiệt độ cao (" + temp + "°C) làm tăng sự mất nước qua da. Đừng quên xịt khoáng làm dịu da và thoa kem chống nắng cấp ẩm để bảo vệ da.";
-            else baseInsight = "Da khô cần duy trì độ đàn hồi tốt. Hãy đắp mặt nạ dưỡng ẩm và dùng kem dưỡng khóa ẩm dày hơn vào buổi tối.";
-        } else if (lowerSkin.contains("nhạy cảm") || lowerSkin.contains("kích ứng")) {
-            if (uv >= 6) baseInsight = "Tia UV cao (" + String.format(Locale.US, "%.1f", uv) + ") rất dễ làm tổn hại hàng rào bảo vệ da mỏng yếu. Hãy luôn thoa kem chống nắng vật lý dành cho da nhạy cảm trước khi ra ngoài.";
-            else if (pm25 >= 50) baseInsight = "Không khí nhiều khói bụi (" + pm25 + ") dễ gây dị ứng mẩn đỏ. Nên làm sạch da nhẹ nhàng bằng nước tẩy trang micellar không chứa cồn ngay khi về nhà.";
-            else baseInsight = "Da nhạy cảm cần sự tối giản. Tránh dùng sản phẩm chứa cồn khô, hương liệu hay retinol nồng độ cao vào hôm nay.";
-        } else if (lowerSkin.contains("mụn")) {
-            if (temp >= 33 || pm25 >= 50) baseInsight = "Nắng nóng (" + temp + "°C) và bụi mịn (" + pm25 + ") là tác nhân hàng đầu gây tắc nghẽn và sưng mụn. Hãy làm sạch sâu bằng gel rửa mặt chứa BHA/Salicylic Acid dịu nhẹ.";
-            else baseInsight = "Tập trung kiểm soát dầu thừa và kháng viêm cho nốt mụn. Tránh sử dụng kem dưỡng ẩm quá dày gây bí bách da.";
-        } else if (lowerSkin.contains("hỗn hợp")) {
-            if (temp >= 33) baseInsight = "Vùng chữ T sẽ bóng nhờn nhiều do nhiệt độ cao (" + temp + "°C), trong khi hai bên má vẫn cần giữ ẩm. Hãy thoa lotion mỏng nhẹ toàn mặt và dùng giấy thấm dầu khi cần.";
-            else baseInsight = "Cân bằng ẩm cho da hỗn hợp. Dùng toner cấp nước nhẹ nhàng và kem dưỡng ẩm mỏng để vùng chữ T thoáng sạch còn vùng má đủ ẩm.";
-        } else {
-            baseInsight = "Làn da của bạn tương đối ổn định hôm nay. Hãy duy trì thói quen làm sạch dịu nhẹ, cấp ẩm vừa đủ và bôi kem chống nắng bảo vệ da khỏi tia UV.";
-        }
-
-        String finalInsight = "“" + baseInsight + "”";
-        getBinding().tvAiInsightDesc.setText(finalInsight);
-        saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, finalInsight);
+            final String resolved = textResult;
+            runOnUiThreadSafe(() -> {
+                if (requestId != geminiRequestId) return;
+                SkinWeatherProfileHelper.PersonalizedAdvice advice;
+                if (resolved != null && !resolved.trim().isEmpty()) {
+                    advice = SkinWeatherProfileHelper.parseGeminiAdvice(
+                            resolved, skinProfile, todayMetrics, temp, humidity, uv, pm25, hasPm25, cityName);
+                } else {
+                    String cached = prefs.getString("SAVED_CACHED_AI_INSIGHT", null);
+                    if (cached != null && !cached.trim().isEmpty()) {
+                        advice = SkinWeatherProfileHelper.parseGeminiAdvice(
+                                cached, skinProfile, todayMetrics, temp, humidity, uv, pm25, hasPm25, cityName);
+                    } else {
+                        advice = SkinWeatherProfileHelper.buildRuleBasedAdvice(
+                                skinProfile, todayMetrics, temp, humidity, uv, pm25, hasPm25, cityName);
+                    }
+                }
+                applyPersonalizedAdvice(advice);
+                saveDiagnosticRecord(temp, humidity, uv, pm25, cityName, skinType, oily, hydration, sensitivity, advice.insight);
+            });
+        }).start();
     }
 
     private void saveDiagnosticRecord(double temp, int humidity, double uv, int pm25, String cityName, String skinType, int oily, int hydration, int sensitivity, String insightText) {
@@ -878,6 +956,9 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     private void setupFeedbackButtons() {
         android.graphics.drawable.Drawable activeBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_btn_solid_feedback);
         android.graphics.drawable.Drawable inactiveBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_btn_outlined_feedback);
+        if (activeBg == null || inactiveBg == null) {
+            return;
+        }
 
         int colorAppropriate = Color.parseColor("#67814D");
         int colorLighter = Color.parseColor("#D88B2A");
@@ -951,34 +1032,19 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     }
 
     private void setupBottomNavigation() {
-        try {
-            View navRoot = getBinding().layoutBottomNav.getRoot();
-            BottomNavHelper.setup(this, navRoot, R.id.nav_myskin, tabId -> {
-                if (tabId == R.id.nav_home) {
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, new HomeFragment())
-                            .commitAllowingStateLoss();
-                } else if (tabId == R.id.nav_shop) {
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, new ShopHomeFragment())
-                            .commitAllowingStateLoss();
-                } else if (tabId == R.id.nav_account) {
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, new AccountProfileFragment())
-                            .commitAllowingStateLoss();
-                } else if (tabId == R.id.nav_myskin) {
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, new com.veganbeauty.app.features.myskin.MySkinFragment())
-                            .commitAllowingStateLoss();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        BottomNavHelper.setup(
+                this,
+                getBinding().getRoot(),
+                R.id.nav_myskin,
+                tabId -> BottomNavHelper.navigate(this, tabId)
+        );
     }
 
     @Override
     public void onDestroyView() {
+        weatherRequestId++;
+        geminiRequestId++;
+        stopLocationUpdates();
         super.onDestroyView();
         _binding = null;
     }
@@ -1043,37 +1109,43 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         getBinding().tvHumidity.setText(diagnostic.getHumidity() + "%");
         String humidityLevel = diagnostic.getHumidity() < 40 ? "Thấp" : diagnostic.getHumidity() <= 65 ? "Trung bình" : "Cao";
         getBinding().tvHumidityLevel.setText(humidityLevel);
+        getBinding().tvHumidityCaption.setText("không khí");
 
         int humidityColorRes = diagnostic.getHumidity() < 40 ? R.color.status_level_orange : R.color.status_level_blue;
         int humidityBgRes = diagnostic.getHumidity() < 40 ? R.drawable.bg_card_status_orange : R.drawable.bg_card_status_blue;
         int humidityColorVal = ContextCompat.getColor(requireContext(), humidityColorRes);
         getBinding().tvHumidity.setTextColor(humidityColorVal);
         getBinding().tvHumidityLevel.setTextColor(humidityColorVal);
+        getBinding().tvHumidityCaption.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
         getBinding().layoutHumidityBox.setBackgroundResource(humidityBgRes);
 
-        getBinding().tvUvIndex.setText(String.format(Locale.US, "%.1f", diagnostic.getUv()));
-        String uvLevel = diagnostic.getUv() < 3 ? "Thấp" : diagnostic.getUv() < 6 ? "Trung bình" : diagnostic.getUv() < 8 ? "Cao" : "Nguy hiểm";
-        getBinding().tvUvLevel.setText(uvLevel);
-
-        int uvColorRes = diagnostic.getUv() < 3 ? R.color.status_level_green : diagnostic.getUv() < 6 ? R.color.status_level_yellow : diagnostic.getUv() < 8 ? R.color.status_level_orange : R.color.status_level_red;
-        int uvBgRes = diagnostic.getUv() < 3 ? R.drawable.bg_card_status_green : diagnostic.getUv() < 6 ? R.drawable.bg_card_status_yellow : diagnostic.getUv() < 8 ? R.drawable.bg_card_status_orange : R.drawable.bg_card_status_red;
-        int uvColorVal = ContextCompat.getColor(requireContext(), uvColorRes);
+        WeatherDisplayHelper.UvDisplay uvDisplay = WeatherDisplayHelper.formatUv(diagnostic.getUv());
+        getBinding().tvUvIndex.setText(uvDisplay.valueText);
+        getBinding().tvUvLevel.setText(uvDisplay.levelText);
+        getBinding().tvUvCaption.setText("chỉ số UV");
+        int uvColorVal = ContextCompat.getColor(requireContext(), uvDisplay.colorRes);
         getBinding().tvUvIndex.setTextColor(uvColorVal);
         getBinding().tvUvLevel.setTextColor(uvColorVal);
-        getBinding().layoutUvBox.setBackgroundResource(uvBgRes);
+        getBinding().tvUvCaption.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
+        getBinding().layoutUvBox.setBackgroundResource(uvDisplay.bgRes);
 
-        getBinding().tvDustIndex.setText(String.valueOf(diagnostic.getPm25()));
-        String dustLevel = diagnostic.getPm25() < 25 ? "Tốt" : diagnostic.getPm25() < 50 ? "Trung bình" : "Kém";
-        getBinding().tvDustLevel.setText(dustLevel);
+        boolean diagnosticHasPm25 = diagnostic.getPm25() >= 0;
+        WeatherDisplayHelper.Pm25Display pm25Display = WeatherDisplayHelper.formatPm25(diagnostic.getPm25(), diagnosticHasPm25, -1);
+        getBinding().tvDustIndex.setText(pm25Display.valueText);
+        getBinding().tvDustUnit.setText(diagnosticHasPm25 ? "µg/m³ PM2.5" : "PM2.5");
+        getBinding().tvDustLevel.setText(diagnosticHasPm25 ? pm25Display.levelText : "Chưa có dữ liệu");
+        getBinding().tvDustAqi.setText(diagnosticHasPm25 ? pm25Display.aqiText : "");
+        int dustColorVal = ContextCompat.getColor(requireContext(), pm25Display.colorRes);
+        getBinding().tvDustIndex.setTextColor(diagnosticHasPm25 ? dustColorVal : ContextCompat.getColor(requireContext(), R.color.gray_dark));
+        getBinding().tvDustLevel.setTextColor(diagnosticHasPm25 ? dustColorVal : ContextCompat.getColor(requireContext(), R.color.gray_dark));
+        getBinding().tvDustUnit.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
+        getBinding().tvDustAqi.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
+        getBinding().layoutDustBox.setBackgroundResource(pm25Display.bgRes);
 
-        int dustColorRes = diagnostic.getPm25() < 25 ? R.color.status_level_green : diagnostic.getPm25() < 50 ? R.color.status_level_yellow : R.color.status_level_red;
-        int dustBgRes = diagnostic.getPm25() < 25 ? R.drawable.bg_card_status_green : diagnostic.getPm25() < 50 ? R.drawable.bg_card_status_yellow : R.drawable.bg_card_status_red;
-        int dustColorVal = ContextCompat.getColor(requireContext(), dustColorRes);
-        getBinding().tvDustIndex.setTextColor(dustColorVal);
-        getBinding().tvDustLevel.setTextColor(dustColorVal);
-        getBinding().layoutDustBox.setBackgroundResource(dustBgRes);
+        int pm25Val = pm25Display.numericValue;
+        boolean hasPm25 = pm25Display.hasData;
 
-        String warningMsg = diagnostic.getUv() >= 8 ? "Hôm nay chỉ số UV ở mức nguy hiểm (" + String.format(Locale.US, "%.1f", diagnostic.getUv()) + "). Bạn hãy bôi kem chống nắng kỹ và che chắn khi ra ngoài!" :
+        String warningMsg = diagnostic.getUv() >= 8 ? "Hôm nay chỉ số UV ở mức rất cao (" + String.format(Locale.US, "%.1f", diagnostic.getUv()) + "). Bạn hãy bôi kem chống nắng kỹ và che chắn khi ra ngoài!" :
                             diagnostic.getHumidity() < 40 ? "Độ ẩm không khí hôm nay khá thấp (" + diagnostic.getHumidity() + "%). Da bạn sẽ mất nước nhanh, hãy chú ý cấp khóa ẩm!" :
                             "Hôm nay thời tiết khá nóng và độ ẩm trung bình. Hãy bảo vệ da khỏi tia UV hại và uống đủ nước!";
         getBinding().tvWarningText.setText(warningMsg);
@@ -1096,8 +1168,16 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
         String alertText = diagnostic.getUv() >= 8 ? "Chỉ số UV hôm nay cực cao! Nhớ thoa lại kem chống nắng sau mỗi 2 giờ ra ngoài." :
                            diagnostic.getTemperature() >= 33 ? "Nhiệt độ nóng gay gắt, hãy dùng gel dưỡng ẩm mỏng nhẹ để tránh bít tắc lỗ chân lông." :
-                           "Hôm nay da bạn cần chống nắng và cấp ẩm nhiều hơn. Đừng quên nhé!";
+                           "Theo hồ sơ " + diagnostic.getSkinType() + " — duy trì routine phù hợp hôm nay.";
         getBinding().tvAlertText.setText(alertText);
+        String insight = diagnostic.getInsight();
+        if (insight != null && !insight.trim().isEmpty()) {
+            getBinding().tvAlertSubtext.setText("Lịch sử ngày " + diagnostic.getDate() + " · " + diagnostic.getSkinType());
+            getBinding().tvAiInsightDesc.setText(insight);
+        }
+
+        getBinding().tvSkinStatusTitle.setText("TÌNH TRẠNG DA HÔM NAY");
+        getBinding().tvSkinStatusSubtitle.setText("Theo hồ sơ: " + diagnostic.getSkinType());
 
         getBinding().tvOilyValue.setText(diagnostic.getOilyPercent() + "%");
         getBinding().progressOily.setProgress(diagnostic.getOilyPercent());
@@ -1183,6 +1263,15 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         }
 
         getBinding().tvAiInsightDesc.setText(diagnostic.getInsight());
+    }
+
+    private String buildPm25AqiText(WeatherDisplayHelper.Pm25Display pm25Display, String pm25Source) {
+        String text = pm25Display.aqiText;
+        String sourceLabel = SkinWeatherSnapshotManager.sourceLabel(pm25Source);
+        if (!sourceLabel.isEmpty()) {
+            text += " · " + sourceLabel;
+        }
+        return text;
     }
 
     private class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAdapter.ViewHolder> {

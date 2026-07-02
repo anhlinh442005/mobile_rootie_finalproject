@@ -240,10 +240,11 @@ public class BookingFragment extends RootieFragment {
         booking.setConsultantAvatar("https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg");
         booking.setConsultantRating(5.0f);
 
+        final android.content.Context appContext = requireContext().getApplicationContext();
+        final BookingHistoryEntity bookingFinal = booking;
         executor.execute(() -> {
-            new FirestoreService().addBooking(booking);
-            new LocalJsonReader(requireContext()).addBooking(booking);
-            new FirestoreService().uploadBooking(booking);
+            new LocalJsonReader(appContext).addBooking(bookingFinal);
+            new FirestoreService().uploadBooking(bookingFinal);
         });
 
         BookingSuccessFragment successFragment = BookingSuccessFragment.newInstance(storeNameStr, dateTime, specialist, service);

@@ -18,8 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwnerKt;
-
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -30,13 +28,13 @@ import com.veganbeauty.app.databinding.SkinFragmentBookingDetailUpcomingBinding;
 
 import java.util.Arrays;
 import java.util.List;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BookingDetailUpcomingFragment extends RootieFragment {
 
     private SkinFragmentBookingDetailUpcomingBinding _binding;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private static BookingHistoryEntity bookingData = null;
 
@@ -148,21 +146,20 @@ public class BookingDetailUpcomingFragment extends RootieFragment {
                     finalReason = selectedReason;
                 }
 
-                new LocalJsonReader(requireContext()).updateBookingStatus(data.getId(), "Đã huỷ", finalReason);
+                final String bookingId = data.getId();
+                final android.content.Context appContext = requireContext().getApplicationContext();
+                new LocalJsonReader(appContext).updateBookingStatus(bookingId, "Đã huỷ", finalReason);
 
                 data.setStatus("Đã huỷ");
-                // data.setCancelReason(finalReason); // if missing, skip or add it
-                BookingHistoryEntity updatedData = data;
-                bookingData = updatedData;
-                populateUI(updatedData);
+                data.setCancelReason(finalReason);
+                bookingData = data;
+                populateUI(data);
 
-                BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                    new FirestoreService().updateBookingStatus(data.getId(), "Đã huỷ", finalReason);
-                    return kotlin.Unit.INSTANCE;
-                });
+                executor.execute(() -> new FirestoreService().updateBookingStatus(bookingId, "Đã huỷ", finalReason));
 
                 Toast.makeText(requireContext(), "Hủy lịch thành công", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
+                getParentFragmentManager().popBackStack();
             });
         }
         dialog.show();
@@ -239,5 +236,11 @@ public class BookingDetailUpcomingFragment extends RootieFragment {
     public void onDestroyView() {
         super.onDestroyView();
         _binding = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        executor.shutdown();
     }
 }
