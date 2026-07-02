@@ -291,14 +291,7 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
     }
 
     private void highlightBottomTab(View view) {
-        ViewGroup navAccount = view.findViewById(R.id.nav_account);
-        if (navAccount != null && navAccount.getChildCount() >= 2) {
-            if (navAccount.getChildAt(0) instanceof ImageView) ((ImageView)navAccount.getChildAt(0)).setColorFilter(Color.parseColor("#677559"));
-            if (navAccount.getChildAt(1) instanceof TextView) {
-                TextView lbl = (TextView) navAccount.getChildAt(1);
-                lbl.setTextColor(Color.parseColor("#677559")); lbl.setTypeface(null, Typeface.BOLD);
-            }
-        }
+        com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
     }
 
     @Override

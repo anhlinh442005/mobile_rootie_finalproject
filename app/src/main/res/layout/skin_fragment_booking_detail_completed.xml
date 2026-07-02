@@ -552,6 +552,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/skin_detail_btn_edit_review"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -662,6 +663,7 @@
                     <Space android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
 
                     <LinearLayout
+                        android:id="@+id/skin_detail_btn_view_images"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"

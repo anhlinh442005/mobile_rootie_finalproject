@@ -64,9 +64,9 @@ public class SkinStoreAdapter extends RecyclerView.Adapter<SkinStoreAdapter.View
         
         String imageUrl = store.getImageUrl() != null ? store.getImageUrl() : "";
         if (!imageUrl.isEmpty()) {
-            com.bumptech.glide.Glide.with(holder.storeImage.getContext()).load(imageUrl).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(holder.storeImage);
+            com.bumptech.glide.Glide.with(holder.storeImage.getContext()).load(imageUrl).placeholder(R.drawable.skin_store).error(R.drawable.skin_store).into(holder.storeImage);
         } else {
-            holder.storeImage.setImageResource(R.drawable.imv_logo);
+            holder.storeImage.setImageResource(R.drawable.skin_store);
         }
 
         holder.btnBook.setOnClickListener(v -> onBookClick.onBookClick(store));

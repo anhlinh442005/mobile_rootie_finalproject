@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginEnd="10dp"
+    android:gravity="center_horizontal">
+
+    <FrameLayout
+        android:id="@+id/gallery_thumb_container"
+        android:layout_width="72dp"
+        android:layout_height="48dp"
+        android:background="@drawable/skin_bg_outline"
+        android:padding="2dp">
+
+        <ImageView
+            android:id="@+id/gallery_thumb_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/imv_logo" />
+
+        <TextView
+            android:id="@+id/gallery_thumb_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="4dp"
+            android:background="@drawable/skin_bg_outline"
+            android:backgroundTint="#6A000000"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:text="Trước"
+            android:textColor="@color/white"
+            android:textSize="9sp"
+            android:fontFamily="@font/be_vietnam_pro" />
+    </FrameLayout>
+
+</LinearLayout>

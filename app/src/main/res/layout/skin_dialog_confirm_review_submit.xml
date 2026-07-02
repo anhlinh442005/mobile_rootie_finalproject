@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/skin_bg_store_card"
+    android:padding="20dp"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_circle_outline"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Xác nhận gửi đánh giá"
+        android:textColor="@color/primary"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Bạn có chắc chắn muốn gửi thay đổi đánh giá này không?"
+        android:textColor="@color/content"
+        android:textSize="16sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialog_confirm_review_btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/skin_bg_btn_outline_dark"
+            android:gravity="center"
+            android:text="Hủy thay đổi"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:fontFamily="@font/be_vietnam_pro" />
+
+        <TextView
+            android:id="@+id/dialog_confirm_review_btn_ok"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/skin_bg_btn_solid_dark"
+            android:gravity="center"
+            android:text="Chắc chắn"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:fontFamily="@font/be_vietnam_pro" />
+    </LinearLayout>
+
+</LinearLayout>

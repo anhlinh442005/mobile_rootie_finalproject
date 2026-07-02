@@ -32,6 +32,7 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.SkinFragmentScanResultBinding;
+import com.veganbeauty.app.utils.SkinHistoryIdHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +50,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -127,7 +127,7 @@ public class SkinScanResultFragment extends RootieFragment {
 
     private void saveToFirestore(String userId, JSONObject historyObj) {
         try {
-            String id = historyObj.optString("id", UUID.randomUUID().toString());
+            String id = historyObj.optString("id", SkinHistoryIdHelper.generateId());
             historyObj.put("userId", userId);
             
             // Chuyển đổi JSONObject thành Map
@@ -246,7 +246,7 @@ public class SkinScanResultFragment extends RootieFragment {
                         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", new Locale("vi"));
                         resultJson.put("date", dateFormat.format(cal.getTime()));
                         resultJson.put("time", timeFormat.format(cal.getTime()));
-                        resultJson.put("id", "sh_" + System.currentTimeMillis());
+                        resultJson.put("id", SkinHistoryIdHelper.generateId());
                         resultJson.put("imageUrl", imageUri);
 
                         success = true;
@@ -405,7 +405,7 @@ public class SkinScanResultFragment extends RootieFragment {
                 SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", new Locale("vi"));
                 data.put("date", dateFormat.format(cal.getTime()));
                 data.put("time", timeFormat.format(cal.getTime()));
-                data.put("id", "sh_" + System.currentTimeMillis());
+                data.put("id", SkinHistoryIdHelper.generateId());
                 
                 if (imageUri != null) {
                     data.put("imageUrl", imageUri);

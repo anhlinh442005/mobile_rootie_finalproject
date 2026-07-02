@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="80dp"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -18,8 +19,7 @@
             app:cardCornerRadius="31dp"
             app:cardElevation="0dp"
             app:cardMaxElevation="0dp"
-            app:cardPreventCornerOverlap="false"
-            xmlns:app="http://schemas.android.com/apk/res-auto">
+            app:cardPreventCornerOverlap="false">
 
             <ImageView
                 android:id="@+id/ivAvatar"
@@ -37,8 +37,7 @@
             app:cardElevation="2dp"
             app:cardBackgroundColor="#FFFFFF"
             android:layout_gravity="bottom|end"
-            android:visibility="gone"
-            xmlns:app="http://schemas.android.com/apk/res-auto">
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="match_parent"

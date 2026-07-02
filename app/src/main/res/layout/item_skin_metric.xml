@@ -38,7 +38,7 @@
                 android:fontFamily="@font/be_vietnam_pro_bold"
                 android:text="Độ ẩm"
                 android:textColor="@color/primary"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
             <TextView
                 android:id="@+id/metric_badge"
                 android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
             android:fontFamily="@font/be_vietnam_pro"
             android:text="Da bạn cần bổ sung độ ẩm để mịn màng và căng mọng hơn."
             android:textColor="@color/content"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:lineSpacingExtra="2dp" />
     </LinearLayout>
 </LinearLayout>

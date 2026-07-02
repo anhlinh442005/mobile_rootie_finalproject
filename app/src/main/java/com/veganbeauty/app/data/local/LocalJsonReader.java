@@ -17,13 +17,19 @@ import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class LocalJsonReader {
@@ -31,6 +37,7 @@ public class LocalJsonReader {
 
     private static List<ProductEntity> cachedProducts;
     private static Map<String, ProductEntity> cachedProductsById;
+    private static List<BookingHistoryEntity> cachedBookings;
 
     public LocalJsonReader(Context context) {
         this.context = context.getApplicationContext();
@@ -515,8 +522,17 @@ public class LocalJsonReader {
         return new ArrayList<>();
     }
 
-    public List<BookingHistoryEntity> getUserBookingHistory(String email) {
-        return new ArrayList<>();
+    public synchronized List<BookingHistoryEntity> getUserBookingHistory(String emailOrUserId) {
+        ensureBookingCache();
+        List<BookingHistoryEntity> result = new ArrayList<>();
+        String key = emailOrUserId != null ? emailOrUserId.trim() : "";
+        if (key.isEmpty()) return result;
+        for (BookingHistoryEntity booking : cachedBookings) {
+            if (key.equalsIgnoreCase(booking.getUserEmail()) || key.equalsIgnoreCase(booking.getUserId())) {
+                result.add(booking);
+            }
+        }
+        return result;
     }
 
     public List<StoreEntity> getAllStores() {
@@ -904,9 +920,275 @@ public class LocalJsonReader {
         return friends != null ? friends : new ArrayList<>();
     }
 
-    public void updateBookingStatus(String id, String status, String reason) {
+    public synchronized void updateBookingStatus(String id, String status, String reason) {
+        ensureBookingCache();
+        List<BookingHistoryEntity> updated = new ArrayList<>();
+        for (BookingHistoryEntity booking : cachedBookings) {
+            if (booking.getId().equals(id)) {
+                String cancelledAt = booking.getCancelledAt();
+                if ("Đã huỷ".equals(status) || "Đã hủy".equals(status)) {
+                    cancelledAt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(new Date());
+                }
+                updated.add(new BookingHistoryEntity(
+                        booking.getId(),
+                        booking.getUserId(),
+                        booking.getUserName(),
+                        booking.getUserPhone(),
+                        booking.getUserEmail(),
+                        booking.getServiceName(),
+                        booking.getDateDisplay(),
+                        booking.getMonthDisplay(),
+                        booking.getDayOfWeek(),
+                        booking.getTime(),
+                        booking.getDuration(),
+                        booking.getStoreName(),
+                        booking.getStoreAddress(),
+                        booking.getStorePhone(),
+                        booking.getStoreImage(),
+                        booking.getNote(),
+                        status != null ? status : booking.getStatus(),
+                        booking.getPolicy(),
+                        booking.getCreatedAt(),
+                        booking.getCompletedAt(),
+                        booking.getSkinResults(),
+                        booking.getConsultantName(),
+                        booking.getConsultantAvatar(),
+                        booking.getConsultantRating(),
+                        booking.getUserRating(),
+                        booking.getUserReview(),
+                        booking.getReviewDate(),
+                        booking.getBeforeImage(),
+                        booking.getAfterImage(),
+                        booking.getEarnedPoints(),
+                        booking.getTotalPoints(),
+                        booking.getNextAppointmentDate(),
+                        booking.getNextAppointmentText(),
+                        cancelledAt,
+                        reason != null ? reason : booking.getCancelReason()
+                ));
+            } else {
+                updated.add(booking);
+            }
+        }
+        cachedBookings = updated;
+        saveBookingsToLocalFile(cachedBookings);
     }
 
-    public void addBooking(BookingHistoryEntity booking) {
+    public synchronized void updateBookingReview(String id, float rating, String reviewText, String reviewDate) {
+        ensureBookingCache();
+        List<BookingHistoryEntity> updated = new ArrayList<>();
+        for (BookingHistoryEntity booking : cachedBookings) {
+            if (booking.getId().equals(id)) {
+                updated.add(new BookingHistoryEntity(
+                        booking.getId(),
+                        booking.getUserId(),
+                        booking.getUserName(),
+                        booking.getUserPhone(),
+                        booking.getUserEmail(),
+                        booking.getServiceName(),
+                        booking.getDateDisplay(),
+                        booking.getMonthDisplay(),
+                        booking.getDayOfWeek(),
+                        booking.getTime(),
+                        booking.getDuration(),
+                        booking.getStoreName(),
+                        booking.getStoreAddress(),
+                        booking.getStorePhone(),
+                        booking.getStoreImage(),
+                        booking.getNote(),
+                        booking.getStatus(),
+                        booking.getPolicy(),
+                        booking.getCreatedAt(),
+                        booking.getCompletedAt(),
+                        booking.getSkinResults(),
+                        booking.getConsultantName(),
+                        booking.getConsultantAvatar(),
+                        booking.getConsultantRating(),
+                        rating,
+                        reviewText != null ? reviewText : booking.getUserReview(),
+                        reviewDate != null ? reviewDate : booking.getReviewDate(),
+                        booking.getBeforeImage(),
+                        booking.getAfterImage(),
+                        booking.getEarnedPoints(),
+                        booking.getTotalPoints(),
+                        booking.getNextAppointmentDate(),
+                        booking.getNextAppointmentText(),
+                        booking.getCancelledAt(),
+                        booking.getCancelReason()
+                ));
+            } else {
+                updated.add(booking);
+            }
+        }
+        cachedBookings = updated;
+        saveBookingsToLocalFile(cachedBookings);
+    }
+
+    public synchronized void addBooking(BookingHistoryEntity booking) {
+        if (booking == null) return;
+        ensureBookingCache();
+
+        int existingIndex = -1;
+        for (int i = 0; i < cachedBookings.size(); i++) {
+            if (booking.getId().equals(cachedBookings.get(i).getId())) {
+                existingIndex = i;
+                break;
+            }
+        }
+        if (existingIndex >= 0) {
+            cachedBookings.remove(existingIndex);
+        }
+        cachedBookings.add(0, booking);
+        saveBookingsToLocalFile(cachedBookings);
+    }
+
+    private void ensureBookingCache() {
+        if (cachedBookings != null) return;
+        cachedBookings = new ArrayList<>();
+        try {
+            File file = new File(context.getFilesDir(), "local_bookings.json");
+            String raw = null;
+            if (file.exists()) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8))) {
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    raw = sb.toString();
+                }
+            } else {
+                raw = getRawSkinBookingsJson();
+            }
+            if (raw == null || raw.trim().isEmpty()) return;
+
+            JSONArray bookingsArray;
+            String trimmed = raw.trim();
+            if (trimmed.startsWith("{")) {
+                JSONObject root = new JSONObject(trimmed);
+                bookingsArray = root.optJSONArray("bookings");
+                if (bookingsArray == null) bookingsArray = new JSONArray();
+            } else {
+                bookingsArray = new JSONArray(trimmed);
+            }
+
+            for (int i = 0; i < bookingsArray.length(); i++) {
+                JSONObject o = bookingsArray.optJSONObject(i);
+                if (o == null) continue;
+                cachedBookings.add(parseBooking(o));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            cachedBookings = new ArrayList<>();
+        }
+    }
+
+    private BookingHistoryEntity parseBooking(JSONObject o) {
+        List<String> skinResults = new ArrayList<>();
+        JSONArray skinArr = o.optJSONArray("skinResults");
+        if (skinArr != null) {
+            for (int j = 0; j < skinArr.length(); j++) {
+                skinResults.add(skinArr.optString(j, ""));
+            }
+        }
+
+        return new BookingHistoryEntity(
+                o.optString("id", ""),
+                o.optString("userId", ""),
+                o.optString("userName", ""),
+                o.optString("userPhone", ""),
+                o.optString("userEmail", ""),
+                o.optString("serviceName", ""),
+                o.optString("dateDisplay", ""),
+                o.optString("monthDisplay", ""),
+                o.optString("dayOfWeek", ""),
+                o.optString("time", ""),
+                o.optString("duration", ""),
+                o.optString("storeName", ""),
+                o.optString("storeAddress", ""),
+                o.optString("storePhone", ""),
+                o.optString("storeImage", ""),
+                o.optString("note", ""),
+                o.optString("status", ""),
+                o.optString("policy", ""),
+                o.optString("createdAt", ""),
+                o.optString("completedAt", ""),
+                skinResults,
+                o.optString("consultantName", ""),
+                o.optString("consultantAvatar", ""),
+                (float) o.optDouble("consultantRating", 0.0),
+                (float) o.optDouble("userRating", 0.0),
+                o.optString("userReview", ""),
+                o.optString("reviewDate", ""),
+                o.optString("beforeImage", ""),
+                o.optString("afterImage", ""),
+                o.optInt("earnedPoints", 0),
+                o.optInt("totalPoints", 0),
+                o.optString("nextAppointmentDate", ""),
+                o.optString("nextAppointmentText", ""),
+                o.optString("cancelledAt", ""),
+                o.optString("cancelReason", "")
+        );
+    }
+
+    private void saveBookingsToLocalFile(List<BookingHistoryEntity> bookings) {
+        try {
+            JSONObject root = new JSONObject();
+            JSONArray array = new JSONArray();
+            for (BookingHistoryEntity booking : bookings) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", booking.getId());
+                obj.put("userId", booking.getUserId());
+                obj.put("userName", booking.getUserName());
+                obj.put("userPhone", booking.getUserPhone());
+                obj.put("userEmail", booking.getUserEmail());
+                obj.put("serviceName", booking.getServiceName());
+                obj.put("dateDisplay", booking.getDateDisplay());
+                obj.put("monthDisplay", booking.getMonthDisplay());
+                obj.put("dayOfWeek", booking.getDayOfWeek());
+                obj.put("time", booking.getTime());
+                obj.put("duration", booking.getDuration());
+                obj.put("storeName", booking.getStoreName());
+                obj.put("storeAddress", booking.getStoreAddress());
+                obj.put("storePhone", booking.getStorePhone());
+                obj.put("storeImage", booking.getStoreImage());
+                obj.put("note", booking.getNote());
+                obj.put("status", booking.getStatus());
+                obj.put("policy", booking.getPolicy());
+                obj.put("createdAt", booking.getCreatedAt());
+                obj.put("completedAt", booking.getCompletedAt());
+
+                JSONArray skinArray = new JSONArray();
+                List<String> skinResults = booking.getSkinResults() != null ? booking.getSkinResults() : Collections.emptyList();
+                for (String result : skinResults) {
+                    skinArray.put(result);
+                }
+                obj.put("skinResults", skinArray);
+
+                obj.put("consultantName", booking.getConsultantName());
+                obj.put("consultantAvatar", booking.getConsultantAvatar());
+                obj.put("consultantRating", booking.getConsultantRating());
+                obj.put("userRating", booking.getUserRating());
+                obj.put("userReview", booking.getUserReview());
+                obj.put("reviewDate", booking.getReviewDate());
+                obj.put("beforeImage", booking.getBeforeImage());
+                obj.put("afterImage", booking.getAfterImage());
+                obj.put("earnedPoints", booking.getEarnedPoints());
+                obj.put("totalPoints", booking.getTotalPoints());
+                obj.put("nextAppointmentDate", booking.getNextAppointmentDate());
+                obj.put("nextAppointmentText", booking.getNextAppointmentText());
+                obj.put("cancelledAt", booking.getCancelledAt());
+                obj.put("cancelReason", booking.getCancelReason());
+                array.put(obj);
+            }
+            root.put("bookings", array);
+
+            File file = new File(context.getFilesDir(), "local_bookings.json");
+            try (java.io.OutputStreamWriter writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), StandardCharsets.UTF_8)) {
+                writer.write(root.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

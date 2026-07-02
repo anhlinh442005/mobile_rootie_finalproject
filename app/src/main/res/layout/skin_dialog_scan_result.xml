@@ -42,12 +42,6 @@
                             android:scaleType="centerCrop"
                             android:src="@drawable/about_us_pd" />
 
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="8dp"
-                            android:src="@drawable/ic_qrscan"
-                            app:tint="#80FFFFFF" />
                     </androidx.cardview.widget.CardView>
 
                     <!-- Right: Score Info -->
@@ -69,7 +63,7 @@
                                 android:fontFamily="@font/be_vietnam_pro_bold"
                                 android:text="25/05/2026"
                                 android:textColor="@color/secondary"
-                                android:textSize="14sp" />
+                                android:textSize="16sp" />
                             <TextView
                                 android:id="@+id/dialog_skin_time"
                                 android:layout_width="wrap_content"
@@ -78,7 +72,7 @@
                                 android:fontFamily="@font/be_vietnam_pro"
                                 android:text="10:00"
                                 android:textColor="@color/secondary"
-                                android:textSize="12sp" />
+                                android:textSize="13sp" />
                         </LinearLayout>
                         
                         <TextView
@@ -88,7 +82,7 @@
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="Quét AI"
                             android:textColor="@color/secondary"
-                            android:textSize="12sp"
+                            android:textSize="13sp"
                             android:layout_marginBottom="8dp"/>
 
                         <TextView
@@ -97,7 +91,7 @@
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="Điểm da của bạn"
                             android:textColor="@color/content"
-                            android:textSize="12sp" />
+                            android:textSize="16sp" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -113,7 +107,7 @@
                                 android:includeFontPadding="false"
                                 android:text="78"
                                 android:textColor="@color/primary"
-                                android:textSize="40sp" />
+                                android:textSize="48sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -122,7 +116,7 @@
                                 android:fontFamily="@font/be_vietnam_pro"
                                 android:text="/100"
                                 android:textColor="@color/primary"
-                                android:textSize="16sp" />
+                                android:textSize="22sp" />
                         </LinearLayout>
 
                         <TextView
@@ -132,7 +126,7 @@
                             android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="Da tốt"
                             android:textColor="@color/secondary"
-                            android:textSize="13sp" />
+                            android:textSize="18sp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -181,19 +175,18 @@
                 android:lineSpacingExtra="2dp"
                 android:text="Làn da của bạn đang ở trạng thái tốt..."
                 android:textColor="@color/content"
-                android:textSize="11sp" />
+                android:textSize="14sp" />
 
             <!-- MIDDLE SECTION: Radar Chart & Metrics List -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/skin_bg_card_outline"
                     android:orientation="vertical"
                     android:padding="8dp">
@@ -207,7 +200,7 @@
                             android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="ĐÁNH GIÁ CHI TIẾT"
                             android:textColor="@color/primary"
-                            android:textSize="9sp" />
+                            android:textSize="16sp" />
                         <ImageView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
@@ -218,7 +211,7 @@
 
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="140dp"
+                        android:layout_height="160dp"
                         android:layout_marginTop="4dp">
                         <com.github.mikephil.charting.charts.RadarChart
                             android:id="@+id/dialog_skin_radar_chart"
@@ -243,7 +236,7 @@
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="Kết quả của bạn"
                             android:textColor="@color/content"
-                            android:textSize="7sp" />
+                            android:textSize="11sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -252,18 +245,17 @@
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="- - Trung bình"
                             android:textColor="@color/content"
-                            android:textSize="7sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View
-                    android:layout_width="8dp"
-                    android:layout_height="match_parent" />
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp" />
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1.3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/skin_bg_card_outline"
                     android:backgroundTint="#FAFAF4"
                     android:orientation="vertical"
@@ -275,7 +267,7 @@
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="GIẢI THÍCH KẾT QUẢ"
                         android:textColor="@color/primary"
-                        android:textSize="9sp"
+                        android:textSize="16sp"
                         android:layout_marginBottom="8dp"/>
 
                     <LinearLayout
@@ -302,7 +294,7 @@
                     android:fontFamily="@font/be_vietnam_pro_bold"
                     android:text="GỢI Ý CHO BẠN"
                     android:textColor="@color/secondary"
-                    android:textSize="11sp" />
+                    android:textSize="16sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

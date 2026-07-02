@@ -359,17 +359,7 @@ public class AccountVoucherFragment extends RootieFragment {
     }
 
     private void highlightBottomTab(View view) {
-        ViewGroup navAccount = view.findViewById(R.id.nav_account);
-        if (navAccount != null) {
-            if (navAccount.getChildAt(0) instanceof ImageView) {
-                ((ImageView) navAccount.getChildAt(0)).setColorFilter(Color.parseColor("#677559"));
-            }
-            if (navAccount.getChildAt(1) instanceof TextView) {
-                TextView label = (TextView) navAccount.getChildAt(1);
-                label.setTextColor(Color.parseColor("#677559"));
-                label.setTypeface(null, Typeface.BOLD);
-            }
-        }
+        com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
     }
 
     @Override

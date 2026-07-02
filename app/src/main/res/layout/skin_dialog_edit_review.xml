@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/skin_bg_store_card"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Chỉnh sửa đánh giá"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:fontFamily="@font/be_vietnam_pro" />
+
+        <ImageView
+            android:id="@+id/dialog_review_btn_close"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_close"
+            android:padding="4dp"
+            android:contentDescription="Đóng"
+            android:tint="@color/content" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Đánh giá của bạn"
+        android:textColor="@color/content"
+        android:textSize="14sp"
+        android:fontFamily="@font/be_vietnam_pro" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:id="@+id/dialog_review_star_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/dialog_review_star_1"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_star" />
+
+            <ImageView
+                android:id="@+id/dialog_review_star_2"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_star" />
+
+            <ImageView
+                android:id="@+id/dialog_review_star_3"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_star" />
+
+            <ImageView
+                android:id="@+id/dialog_review_star_4"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_star" />
+
+            <ImageView
+                android:id="@+id/dialog_review_star_5"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_star" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/dialog_review_rating_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5,0"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:textSize="40sp"
+                android:fontFamily="@font/be_vietnam_pro" />
+
+            <TextView
+                android:id="@+id/dialog_review_rating_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tuyệt vời!"
+                android:textColor="@color/content"
+                android:textSize="20sp"
+                android:fontFamily="@font/be_vietnam_pro" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/dialog_review_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:max="4"
+        android:progress="4" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="Nhận xét của bạn"
+        android:textColor="@color/content"
+        android:textSize="14sp"
+        android:fontFamily="@font/be_vietnam_pro" />
+
+    <EditText
+        android:id="@+id/dialog_review_comment"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/skin_bg_outline"
+        android:gravity="top|start"
+        android:padding="12dp"
+        android:textColor="@color/primary"
+        android:textSize="16sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:maxLength="500"
+        android:inputType="textMultiLine|textCapSentences"
+        android:scrollbars="vertical" />
+
+    <TextView
+        android:id="@+id/dialog_review_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="end"
+        android:text="0/500"
+        android:textColor="@color/content"
+        android:textSize="12sp"
+        android:fontFamily="@font/be_vietnam_pro" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Đánh giá ngày"
+        android:textColor="@color/content"
+        android:textSize="14sp"
+        android:fontFamily="@font/be_vietnam_pro" />
+
+    <TextView
+        android:id="@+id/dialog_review_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="20/05/2024"
+        android:textColor="@color/primary"
+        android:textSize="16sp"
+        android:fontFamily="@font/be_vietnam_pro_bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal"
+        android:background="@drawable/skin_bg_btn_book_light"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_circle_outline"
+            android:tint="@color/content" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Đánh giá của bạn sẽ giúp chúng tôi cải thiện chất lượng dịch vụ tốt hơn."
+            android:textColor="@color/content"
+            android:textSize="12sp"
+            android:fontFamily="@font/be_vietnam_pro" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dialog_review_btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/skin_bg_btn_solid_dark"
+        android:gravity="center"
+        android:text="Gửi"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/be_vietnam_pro" />
+
+</LinearLayout>

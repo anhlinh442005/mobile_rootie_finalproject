@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import com.veganbeauty.app.utils.SkinHistoryIdHelper;
+
 import java.util.UUID;
 
 public class FirestoreService {
@@ -56,10 +58,34 @@ public class FirestoreService {
 
             List<DocumentSnapshot> docs = snapshot.getDocuments();
             // Sort by date/time descending manually
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.US);
             docs.sort((d1, d2) -> {
-                String dt1 = d1.getString("date") + " " + d1.getString("time");
-                String dt2 = d2.getString("date") + " " + d2.getString("time");
-                return dt2.compareTo(dt1);
+                try {
+                    String dt1 = d1.getString("date") + " " + (d1.getString("time") != null ? d1.getString("time") : "00:00");
+                    String dt2 = d2.getString("date") + " " + (d2.getString("time") != null ? d2.getString("time") : "00:00");
+                    java.util.Date date1 = null;
+                    java.util.Date date2 = null;
+                    try {
+                        date1 = sdf.parse(dt1);
+                    } catch (Exception e) {
+                        try {
+                            date1 = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.US).parse(d1.getString("date"));
+                        } catch (Exception ex) {}
+                    }
+                    try {
+                        date2 = sdf.parse(dt2);
+                    } catch (Exception e) {
+                        try {
+                            date2 = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.US).parse(d2.getString("date"));
+                        } catch (Exception ex) {}
+                    }
+                    if (date1 != null && date2 != null) {
+                        return date2.compareTo(date1); // Descending (newest first)
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return 0;
             });
 
             org.json.JSONArray array = new org.json.JSONArray();
@@ -75,7 +101,7 @@ public class FirestoreService {
 
     public void addSkinHistory(String email, org.json.JSONObject data) {
         try {
-            String id = data.optString("id", UUID.randomUUID().toString());
+            String id = data.optString("id", SkinHistoryIdHelper.generateId());
             data.put("userId", email); // use email as identifier
             Map<String, Object> map = new HashMap<>();
             Iterator<String> keys = data.keys();
@@ -1023,13 +1049,86 @@ public class FirestoreService {
         }
     }
 
-    public List<BookingHistoryEntity> getUserBookingHistory(String email) {
-        return fetchBookingsForUser(email);
+    public boolean updateBookingReview(String bookingId, float rating, String reviewText, String reviewDate) {
+        try {
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("userRating", rating);
+            updates.put("userReview", reviewText);
+            updates.put("reviewDate", reviewDate);
+            Tasks.await(db.collection("bookings").document(bookingId).update(updates));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public List<BookingHistoryEntity> fetchBookingsForUser(String email) {
+    public List<BookingHistoryEntity> getUserBookingHistory(String userIdOrEmail) {
+        if (userIdOrEmail == null || userIdOrEmail.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        String key = userIdOrEmail.trim();
+        if (key.contains("@")) {
+            return fetchBookingsForUserByEmail(key);
+        }
+        List<BookingHistoryEntity> byUserId = fetchBookingsForUserByUserId(key);
+        if (!byUserId.isEmpty()) return byUserId;
+        return fetchBookingsForUserByEmail(key);
+    }
+
+    public List<BookingHistoryEntity> fetchBookingsForUserByEmail(String email) {
         try {
             QuerySnapshot snapshot = Tasks.await(db.collection("bookings").whereEqualTo("userEmail", email).get());
+            List<BookingHistoryEntity> bookings = new ArrayList<>();
+            for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                bookings.add(new BookingHistoryEntity(
+                        doc.getId(),
+                        doc.getString("userId") != null ? doc.getString("userId") : "",
+                        doc.getString("userName") != null ? doc.getString("userName") : "",
+                        doc.getString("userPhone") != null ? doc.getString("userPhone") : "",
+                        doc.getString("userEmail") != null ? doc.getString("userEmail") : "",
+                        doc.getString("serviceName") != null ? doc.getString("serviceName") : "",
+                        doc.getString("dateDisplay") != null ? doc.getString("dateDisplay") : "",
+                        doc.getString("monthDisplay") != null ? doc.getString("monthDisplay") : "",
+                        doc.getString("dayOfWeek") != null ? doc.getString("dayOfWeek") : "",
+                        doc.getString("time") != null ? doc.getString("time") : "",
+                        doc.getString("duration") != null ? doc.getString("duration") : "",
+                        doc.getString("storeName") != null ? doc.getString("storeName") : "",
+                        doc.getString("storeAddress") != null ? doc.getString("storeAddress") : "",
+                        doc.getString("storePhone") != null ? doc.getString("storePhone") : "",
+                        doc.getString("storeImage") != null ? doc.getString("storeImage") : "",
+                        doc.getString("note") != null ? doc.getString("note") : "",
+                        doc.getString("status") != null ? doc.getString("status") : "",
+                        doc.getString("policy") != null ? doc.getString("policy") : "",
+                        doc.getString("createdAt") != null ? doc.getString("createdAt") : "",
+                        doc.getString("completedAt") != null ? doc.getString("completedAt") : "",
+                        new ArrayList<>(),
+                        doc.getString("consultantName") != null ? doc.getString("consultantName") : "",
+                        doc.getString("consultantAvatar") != null ? doc.getString("consultantAvatar") : "",
+                        doc.getDouble("consultantRating") != null ? doc.getDouble("consultantRating").floatValue() : 0f,
+                        doc.getDouble("userRating") != null ? doc.getDouble("userRating").floatValue() : 0f,
+                        doc.getString("userReview") != null ? doc.getString("userReview") : "",
+                        doc.getString("reviewDate") != null ? doc.getString("reviewDate") : "",
+                        doc.getString("beforeImage") != null ? doc.getString("beforeImage") : "",
+                        doc.getString("afterImage") != null ? doc.getString("afterImage") : "",
+                        doc.getLong("earnedPoints") != null ? doc.getLong("earnedPoints").intValue() : 0,
+                        doc.getLong("totalPoints") != null ? doc.getLong("totalPoints").intValue() : 0,
+                        doc.getString("nextAppointmentDate") != null ? doc.getString("nextAppointmentDate") : "",
+                        doc.getString("nextAppointmentText") != null ? doc.getString("nextAppointmentText") : "",
+                        doc.getString("cancelledAt") != null ? doc.getString("cancelledAt") : "",
+                        doc.getString("cancelReason") != null ? doc.getString("cancelReason") : ""
+                ));
+            }
+            return bookings;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<BookingHistoryEntity> fetchBookingsForUserByUserId(String userId) {
+        try {
+            QuerySnapshot snapshot = Tasks.await(db.collection("bookings").whereEqualTo("userId", userId).get());
             List<BookingHistoryEntity> bookings = new ArrayList<>();
             for (DocumentSnapshot doc : snapshot.getDocuments()) {
                 bookings.add(new BookingHistoryEntity(
