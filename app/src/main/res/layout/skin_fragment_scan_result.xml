@@ -113,7 +113,7 @@
                         android:fontFamily="@font/be_vietnam_pro"
                         android:text="Điểm da của bạn"
                         android:textColor="@color/content"
-                        android:textSize="15sp" />
+                        android:textSize="16sp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -149,7 +149,7 @@
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="Da tốt"
                         android:textColor="@color/secondary"
-                        android:textSize="16sp" />
+                        android:textSize="18sp" />
 
                     <!-- Progress Bar -->
                     <LinearLayout
@@ -184,7 +184,7 @@
                         android:lineSpacingExtra="2dp"
                         android:text="Làn da của bạn đang ở trạng thái tốt. Hãy duy trì chăm sóc da đều đặn để đạt kết quả tốt hơn!"
                         android:textColor="@color/content"
-                        android:textSize="13sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <!-- Right: Image -->
@@ -205,13 +205,6 @@
                             android:scaleType="centerCrop"
                             android:src="@drawable/about_us_pd" />
 
-                        <!-- Focus brackets overlay -->
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="10dp"
-                            android:src="@drawable/ic_qrscan"
-                            app:tint="#80FFFFFF" />
                     </androidx.cardview.widget.CardView>
 
                     <!-- Date Tag -->
@@ -253,14 +246,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:paddingHorizontal="16dp">
 
-                <!-- Left Card: ĐÁNH GIÁ CHI TIẾT -->
+                <!-- Top Card: ĐÁNH GIÁ CHI TIẾT -->
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/skin_bg_card_outline"
                     android:orientation="vertical"
                     android:padding="12dp">
@@ -274,7 +266,7 @@
                             android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="ĐÁNH GIÁ CHI TIẾT"
                             android:textColor="@color/primary"
-                            android:textSize="12sp" />
+                            android:textSize="16sp" />
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
@@ -324,14 +316,13 @@
                 </LinearLayout>
 
                 <View
-                    android:layout_width="12dp"
-                    android:layout_height="match_parent" />
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp" />
 
-                <!-- Right Card: GIẢI THÍCH KẾT QUẢ -->
+                <!-- Bottom Card: GIẢI THÍCH KẾT QUẢ -->
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/skin_bg_card_outline"
                     android:backgroundTint="#FAFAF4"
                     android:orientation="vertical"
@@ -343,7 +334,7 @@
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="GIẢI THÍCH KẾT QUẢ"
                         android:textColor="@color/primary"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
                         android:layout_marginBottom="12dp"/>
 
                     <LinearLayout
@@ -375,7 +366,7 @@
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="TÌNH TRẠNG DA"
                         android:textColor="@color/secondary"
-                        android:textSize="15sp" />
+                        android:textSize="16sp" />
                 </RelativeLayout>
 
                 <LinearLayout
@@ -405,7 +396,7 @@
                     android:fontFamily="@font/be_vietnam_pro_bold"
                     android:text="GỢI Ý CHO BẠN"
                     android:textColor="@color/secondary"
-                    android:textSize="15sp" />
+                    android:textSize="16sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

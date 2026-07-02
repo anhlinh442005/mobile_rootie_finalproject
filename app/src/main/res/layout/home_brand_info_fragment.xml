@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/neutral">
+    android:background="@color/neutral"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <!-- Header -->
     <RelativeLayout
@@ -38,9 +40,11 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_nav"
+        android:layout_alignParentBottom="true"
         android:layout_below="@id/header"
+        android:clipToPadding="false"
         android:fillViewport="true"
+        android:paddingBottom="56dp"
         android:scrollbars="none">
 
         <LinearLayout
@@ -1037,6 +1041,9 @@
         layout="@layout/home_navapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="16dp" />
 
 </RelativeLayout>

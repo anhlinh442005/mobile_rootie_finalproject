@@ -102,7 +102,7 @@
             <!-- CHART CONTAINER -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="244dp"
                 android:background="@drawable/skin_bg_card_outline"
                 android:backgroundTint="#FDFDF9"
                 android:padding="16dp">

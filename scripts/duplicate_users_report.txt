@@ -1,0 +1,72 @@
+﻿=== TONG QUAN ===
+Tong so user: 293
+So email unique: 286
+So phone unique: 293
+Email trung (>=2 userId): 7
+Phone trung (>=2 userId): 0
+
+=== EMAIL TRUNG ===
+Email: hng@gmail.com
+  userIds (2): ['04085909', '68957465']
+    - 04085909 | H├á Ng├┤ | phone=0906866446 | username=H├á Ng├┤
+    - 68957465 | H├╣ng ─Éß╗ù | phone=0905737480 | username=H├╣ng ─Éß╗ù
+
+Email: hngng@gmail.com
+  userIds (2): ['00281910', '17264345']
+    - 00281910 | H├╣ng ─Éß║╖ng | phone=0904693058 | username=H├╣ng ─Éß║╖ng
+    - 17264345 | H╞░╞íng ─Éß║╖ng | phone=0901372435 | username=H╞░╞íng ─Éß║╖ng
+
+Email: hngphm@gmail.com
+  userIds (2): ['04112607', '17390683']
+    - 04112607 | H╞░╞íng Phß║ím | phone=0906085988 | username=H╞░╞íng Phß║ím
+    - 17390683 | H╞░╞íng Phß║ím | phone=0907192045 | username=H╞░╞íng Phß║ím
+
+Email: linhnguyn@gmail.com
+  userIds (2): ['85989595', '87978918']
+    - 85989595 | Linh Nguyß╗àn | phone=0907264890 | username=Linh Nguyß╗àn
+    - 87978918 | Linh Nguyß╗àn | phone=0903477939 | username=Linh Nguyß╗àn
+
+Email: mail@gmail.com
+  userIds (2): ['34502511', '42365054']
+    - 34502511 | Mai L├¬ | phone=0903217786 | username=Mai L├¬
+    - 42365054 | Mai L├¬ | phone=0906064876 | username=Mai L├¬
+
+Email: vnng@gmail.com
+  userIds (2): ['81826403', '95147630']
+    - 81826403 | V├ón ─Éß║╖ng | phone=0902560756 | username=V├ón ─Éß║╖ng
+    - 95147630 | V├ón ─Éß║╖ng | phone=0907550137 | username=V├ón ─Éß║╖ng
+
+Email: xuannk23411@st.uel.edu.vn
+  userIds (2): ['68751659', 'xuannk_001']
+    - 68751659 | Nguyß╗àn Kh├ính Xu├ón | phone=0387253686 | username=Nguyß╗àn Kh├ính Xu├ón
+    - xuannk_001 | Nguyß╗àn Kh├ính Xu├ón | phone=0123456789 | username=Xu├ón NK
+
+=== DANH SACH USER BI TRUNG ===
+00281910 | H├╣ng ─Éß║╖ng | email=hngng@gmail.com | phone=0904693058
+  Trung email voi: ['17264345']
+04085909 | H├á Ng├┤ | email=hng@gmail.com | phone=0906866446
+  Trung email voi: ['68957465']
+04112607 | H╞░╞íng Phß║ím | email=hngphm@gmail.com | phone=0906085988
+  Trung email voi: ['17390683']
+17264345 | H╞░╞íng ─Éß║╖ng | email=hngng@gmail.com | phone=0901372435
+  Trung email voi: ['00281910']
+17390683 | H╞░╞íng Phß║ím | email=hngphm@gmail.com | phone=0907192045
+  Trung email voi: ['04112607']
+34502511 | Mai L├¬ | email=mail@gmail.com | phone=0903217786
+  Trung email voi: ['42365054']
+42365054 | Mai L├¬ | email=mail@gmail.com | phone=0906064876
+  Trung email voi: ['34502511']
+68751659 | Nguyß╗àn Kh├ính Xu├ón | email=xuannk23411@st.uel.edu.vn | phone=0387253686
+  Trung email voi: ['xuannk_001']
+68957465 | H├╣ng ─Éß╗ù | email=hng@gmail.com | phone=0905737480
+  Trung email voi: ['04085909']
+81826403 | V├ón ─Éß║╖ng | email=vnng@gmail.com | phone=0902560756
+  Trung email voi: ['95147630']
+85989595 | Linh Nguyß╗àn | email=linhnguyn@gmail.com | phone=0907264890
+  Trung email voi: ['87978918']
+87978918 | Linh Nguyß╗àn | email=linhnguyn@gmail.com | phone=0903477939
+  Trung email voi: ['85989595']
+95147630 | V├ón ─Éß║╖ng | email=vnng@gmail.com | phone=0907550137
+  Trung email voi: ['81826403']
+xuannk_001 | Nguyß╗àn Kh├ính Xu├ón | email=xuannk23411@st.uel.edu.vn | phone=0123456789
+  Trung email voi: ['68751659']

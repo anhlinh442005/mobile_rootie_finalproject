@@ -71,11 +71,11 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder
         double mockDistance = 1.0 + (Math.abs(randomSeed) % 140) / 10.0;
         holder.distance.setText(String.format(java.util.Locale.US, "%.1fkm", mockDistance));
         
-        String imageUrl = "";
+        String imageUrl = store.getImageUrl() != null ? store.getImageUrl() : "";
         if (!imageUrl.isEmpty()) {
-            com.bumptech.glide.Glide.with(holder.image.getContext()).load(imageUrl).placeholder(R.drawable.imv_logo).into(holder.image);
+            com.bumptech.glide.Glide.with(holder.image.getContext()).load(imageUrl).placeholder(R.drawable.skin_store).error(R.drawable.skin_store).into(holder.image);
         } else {
-            holder.image.setImageResource(R.drawable.imv_logo);
+            holder.image.setImageResource(R.drawable.skin_store);
         }
 
         boolean isSelected = store.getId().equals(selectedStoreId);

@@ -177,6 +177,23 @@ public class MySkinFragment extends RootieFragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+        binding.skinShortcutHistory.setOnClickListener(v -> {
+            if (!ProfileSession.isLoggedIn(requireContext())) {
+                BottomNavHelper.showLoginRequiredDialog(requireContext());
+                return;
+            }
+            getParentFragmentManager().beginTransaction()
+                    .setCustomAnimations(
+                            android.R.anim.slide_in_left,
+                            android.R.anim.fade_out,
+                            android.R.anim.fade_in,
+                            android.R.anim.slide_out_right
+                    )
+                    .replace(R.id.main_container, new SkinHistoryFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     @Override

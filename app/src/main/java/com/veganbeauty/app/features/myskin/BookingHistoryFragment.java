@@ -5,25 +5,23 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
-import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.databinding.SkinFragmentBookingHistoryBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class BookingHistoryFragment extends RootieFragment {
 
@@ -31,9 +29,7 @@ public class BookingHistoryFragment extends RootieFragment {
     private BookingHistoryAdapter adapter;
     private final List<BookingHistoryEntity> allBookings = new ArrayList<>();
     private final List<BookingHistoryEntity> filteredBookings = new ArrayList<>();
-    private final List<Object> displayItems = new ArrayList<>();
     private String currentStatusFilter = "ALL";
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Nullable
     @Override
@@ -46,7 +42,27 @@ public class BookingHistoryFragment extends RootieFragment {
     protected void setupUI(@NonNull View view) {
         _binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        adapter = new BookingHistoryAdapter(displayItems, this::openBookingDetail, this::openBookingDetailForCancel);
+        adapter = new BookingHistoryAdapter(filteredBookings, booking -> {
+            if ("Sắp diễn ra".equals(booking.getStatus()) || "Chờ xác nhận".equals(booking.getStatus())) {
+                BookingDetailUpcomingFragment fragment = BookingDetailUpcomingFragment.newInstance(booking);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            } else if ("Đã hoàn thành".equals(booking.getStatus())) {
+                BookingDetailCompletedFragment fragment = BookingDetailCompletedFragment.newInstance(booking);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                BookingDetailCancelledFragment fragment = BookingDetailCancelledFragment.newInstance(booking);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         _binding.rvHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
         _binding.rvHistory.setAdapter(adapter);
 
@@ -56,14 +72,6 @@ public class BookingHistoryFragment extends RootieFragment {
         _binding.filterCancelled.setOnClickListener(v -> setFilter("CANCELLED"));
 
         loadBookings();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (_binding != null) {
-            loadBookings();
-        }
     }
 
     private void setFilter(String filter) {
@@ -88,45 +96,10 @@ public class BookingHistoryFragment extends RootieFragment {
 
     private void loadBookings() {
         String userEmail = ProfileSession.getEmail(requireContext());
-        if (userEmail == null || userEmail.trim().isEmpty()) {
-            allBookings.clear();
-            filteredBookings.clear();
-            displayItems.clear();
-            adapter.updateData(displayItems);
-            Toast.makeText(requireContext(), "Vui lòng đăng nhập để xem lịch sử đặt hẹn", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        reloadLocalBookings(userEmail.trim());
-        syncBookingsFromFirestore(userEmail.trim());
-    }
-
-    private void reloadLocalBookings(String userEmail) {
         List<BookingHistoryEntity> list = new LocalJsonReader(requireContext()).getUserBookingHistory(userEmail);
         allBookings.clear();
-        if (list != null) {
-            allBookings.addAll(list);
-        }
+        if (list != null) allBookings.addAll(list);
         filterBookings();
-    }
-
-    private void syncBookingsFromFirestore(String userEmail) {
-        final android.content.Context appContext = requireContext().getApplicationContext();
-        executor.execute(() -> {
-            List<BookingHistoryEntity> remote = new FirestoreService().fetchBookingsForUser(userEmail);
-            if (remote != null && !remote.isEmpty()) {
-                new LocalJsonReader(appContext).mergeBookingsFromRemote(remote);
-            }
-            if (!isAdded()) {
-                return;
-            }
-            requireActivity().runOnUiThread(() -> {
-                if (!isAdded() || _binding == null) {
-                    return;
-                }
-                reloadLocalBookings(userEmail);
-            });
-        });
     }
 
     private void filterBookings() {
@@ -135,7 +108,7 @@ public class BookingHistoryFragment extends RootieFragment {
             filteredBookings.addAll(allBookings);
         } else if ("UPCOMING".equals(currentStatusFilter)) {
             for (BookingHistoryEntity b : allBookings) {
-                if (isUpcomingStatus(b.getStatus())) {
+                if ("Sắp diễn ra".equals(b.getStatus()) || "Chờ xác nhận".equals(b.getStatus())) {
                     filteredBookings.add(b);
                 }
             }
@@ -147,80 +120,13 @@ public class BookingHistoryFragment extends RootieFragment {
             }
         } else if ("CANCELLED".equals(currentStatusFilter)) {
             for (BookingHistoryEntity b : allBookings) {
-                if (isCancelledStatus(b.getStatus())) {
+                if ("Đã huỷ".equals(b.getStatus()) || "Đã hủy".equals(b.getStatus())) {
                     filteredBookings.add(b);
                 }
             }
         }
-        rebuildDisplayItems();
-    }
 
-    private void rebuildDisplayItems() {
-        displayItems.clear();
-        if ("ALL".equals(currentStatusFilter)) {
-            appendGroup("Sắp diễn ra", booking -> isUpcomingStatus(booking.getStatus()));
-            appendGroup("Đã hoàn thành", booking -> "Đã hoàn thành".equals(booking.getStatus()));
-            appendGroup("Đã huỷ", booking -> isCancelledStatus(booking.getStatus()));
-        } else {
-            for (BookingHistoryEntity booking : filteredBookings) {
-                displayItems.add(booking);
-            }
-        }
-        adapter.updateData(displayItems);
-    }
-
-    private void appendGroup(String title, BookingFilter filter) {
-        List<BookingHistoryEntity> group = new ArrayList<>();
-        for (BookingHistoryEntity booking : filteredBookings) {
-            if (filter.matches(booking)) {
-                group.add(booking);
-            }
-        }
-        if (!group.isEmpty()) {
-            displayItems.add(title);
-            displayItems.addAll(group);
-        }
-    }
-
-    private void openBookingDetail(BookingHistoryEntity booking) {
-        if (isUpcomingStatus(booking.getStatus())) {
-            navigateTo(BookingDetailUpcomingFragment.newInstance(booking));
-        } else if ("Đã hoàn thành".equals(booking.getStatus())) {
-            navigateTo(BookingDetailCompletedFragment.newInstance(booking));
-        } else {
-            navigateTo(BookingDetailCancelledFragment.newInstance(booking));
-        }
-    }
-
-    private void openBookingDetailForCancel(BookingHistoryEntity booking) {
-        if (isUpcomingStatus(booking.getStatus())) {
-            navigateTo(BookingDetailUpcomingFragment.newInstance(booking));
-        } else {
-            openBookingDetail(booking);
-        }
-    }
-
-    private void navigateTo(RootieFragment fragment) {
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_container, fragment)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private static boolean isUpcomingStatus(String status) {
-        if (status == null) return false;
-        return "Sắp diễn ra".equals(status)
-                || "Chờ xác nhận".equals(status)
-                || "pending".equalsIgnoreCase(status);
-    }
-
-    private static boolean isCancelledStatus(String status) {
-        if (status == null) return false;
-        return "Đã huỷ".equals(status) || "Đã hủy".equals(status);
-    }
-
-    private interface BookingFilter {
-        boolean matches(BookingHistoryEntity booking);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -229,9 +135,79 @@ public class BookingHistoryFragment extends RootieFragment {
         _binding = null;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        executor.shutdown();
+    static class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAdapter.ViewHolder> {
+        private final List<BookingHistoryEntity> list;
+        private final OnBookingClickListener listener;
+
+        BookingHistoryAdapter(List<BookingHistoryEntity> list, OnBookingClickListener listener) {
+            this.list = list;
+            this.listener = listener;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.skin_item_booking_history, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            BookingHistoryEntity booking = list.get(position);
+
+            holder.tvServiceName.setText(booking.getServiceName());
+            holder.tvTime.setText(booking.getTime());
+            holder.tvStore.setText(booking.getStoreName() + "\n" + booking.getStoreAddress());
+
+            String dayNum = "01";
+            if (booking.getDateDisplay() != null && booking.getDateDisplay().contains(" ")) {
+                dayNum = booking.getDateDisplay().split(" ")[0];
+            }
+            holder.tvDateNum.setText(dayNum);
+            holder.tvMonthDay.setText(booking.getMonthDisplay() + "\n" + booking.getDayOfWeek());
+
+            holder.tvStatusTag.setText(booking.getStatus());
+            
+            if ("Sắp diễn ra".equals(booking.getStatus()) || "Chờ xác nhận".equals(booking.getStatus())) {
+                holder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_upcoming);
+                holder.tvStatusTag.setTextColor(Color.parseColor("#1976D2"));
+            } else if ("Đã hoàn thành".equals(booking.getStatus())) {
+                holder.tvStatusTag.setBackgroundResource(R.drawable.bg_card_status_green);
+                holder.tvStatusTag.setTextColor(Color.parseColor("#388E3C"));
+            } else {
+                holder.tvStatusTag.setBackgroundResource(R.drawable.bg_card_status_red);
+                holder.tvStatusTag.setTextColor(Color.parseColor("#D32F2F"));
+            }
+
+            holder.itemView.setOnClickListener(v -> listener.onClick(booking));
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            TextView tvServiceName;
+            TextView tvStatusTag;
+            TextView tvDateNum;
+            TextView tvMonthDay;
+            TextView tvTime;
+            TextView tvStore;
+
+            ViewHolder(View view) {
+                super(view);
+                tvServiceName = view.findViewById(R.id.tv_history_service_name);
+                tvStatusTag = view.findViewById(R.id.tv_history_status_tag);
+                tvDateNum = view.findViewById(R.id.tv_history_date_num);
+                tvMonthDay = view.findViewById(R.id.tv_history_month_day);
+                tvTime = view.findViewById(R.id.tv_history_time);
+                tvStore = view.findViewById(R.id.tv_history_store);
+            }
+        }
+    }
+
+    interface OnBookingClickListener {
+        void onClick(BookingHistoryEntity booking);
     }
 }

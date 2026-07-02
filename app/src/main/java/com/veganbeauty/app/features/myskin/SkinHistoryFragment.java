@@ -72,14 +72,9 @@ public class SkinHistoryFragment extends RootieFragment {
     private void loadDataFromFirestore() {
         new Thread(() -> {
             try {
-                // Read from local assets
-                java.io.InputStream is = requireContext().getAssets().open("skin_history.json");
-                int size = is.available();
-                byte[] buffer = new byte[size];
-                is.read(buffer);
-                is.close();
-                String jsonStr = new String(buffer, "UTF-8");
-                allHistory = new JSONArray(jsonStr);
+                String currentUserId = ProfileSession.getUserId(requireContext());
+                FirestoreService firestoreService = new FirestoreService();
+                allHistory = firestoreService.getSkinHistory(currentUserId);
                 currentHistory = allHistory;
 
                 if (getActivity() != null) {
@@ -168,16 +163,66 @@ public class SkinHistoryFragment extends RootieFragment {
         _binding.skinHistoryFilterOffline.setOnClickListener(listener);
     }
 
+    private List<JSONObject> sortJsonArray(JSONArray array, boolean descending) {
+        List<JSONObject> list = new ArrayList<>();
+        if (array != null) {
+            for (int i = 0; i < array.length(); i++) {
+                try {
+                    list.add(array.getJSONObject(i));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.US);
+        list.sort((o1, o2) -> {
+            try {
+                String d1 = o1.optString("date", "") + " " + o1.optString("time", "00:00");
+                String d2 = o2.optString("date", "") + " " + o2.optString("time", "00:00");
+                java.util.Date date1 = null;
+                java.util.Date date2 = null;
+                try {
+                    date1 = sdf.parse(d1);
+                } catch (Exception e) {
+                    try {
+                        date1 = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.US).parse(o1.optString("date", ""));
+                    } catch (Exception ex) {}
+                }
+                try {
+                    date2 = sdf.parse(d2);
+                } catch (Exception e) {
+                    try {
+                        date2 = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.US).parse(o2.optString("date", ""));
+                    } catch (Exception ex) {}
+                }
+                if (date1 != null && date2 != null) {
+                    return descending ? date2.compareTo(date1) : date1.compareTo(date2);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return 0;
+        });
+        return list;
+    }
+
     private void updateChartAndList(JSONArray data) {
-        adapter.updateData(data);
+        List<JSONObject> listSorted = sortJsonArray(data, true);
+        JSONArray listData = new JSONArray();
+        for (JSONObject item : listSorted) {
+            listData.put(item);
+        }
+        adapter.updateData(listData);
 
         ArrayList<Entry> entries = new ArrayList<>();
         ArrayList<String> labels = new ArrayList<>();
 
-        int len = data.length();
+        List<JSONObject> chartSorted = sortJsonArray(data, false);
+        int len = chartSorted.size();
         for (int i = 0; i < len; i++) {
             try {
-                JSONObject item = data.getJSONObject(len - 1 - i); // Reverse order
+                JSONObject item = chartSorted.get(i);
                 float score = (float) item.optInt("score", 0);
                 String dateStr = item.optString("date", "");
 
@@ -228,7 +273,7 @@ public class SkinHistoryFragment extends RootieFragment {
         xAxis.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro_bold));
         xAxis.setGranularity(1f);
         xAxis.setAxisLineColor(Color.TRANSPARENT);
-        xAxis.setYOffset(8f);
+        xAxis.setYOffset(10f);
 
         YAxis axisLeft = _binding.skinHistoryLineChart.getAxisLeft();
         axisLeft.setAxisMinimum(0f);
@@ -245,7 +290,7 @@ public class SkinHistoryFragment extends RootieFragment {
         _binding.skinHistoryLineChart.getAxisRight().setEnabled(false);
         _binding.skinHistoryLineChart.setDrawBorders(false);
 
-        _binding.skinHistoryLineChart.setExtraOffsets(0f, 20f, 16f, 0f);
+        _binding.skinHistoryLineChart.setExtraOffsets(0f, 20f, 16f, 12f);
 
         _binding.skinHistoryLineChart.animateX(500);
         _binding.skinHistoryLineChart.invalidate();

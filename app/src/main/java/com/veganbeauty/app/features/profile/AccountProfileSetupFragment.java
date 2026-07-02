@@ -45,20 +45,7 @@ public class AccountProfileSetupFragment extends RootieFragment {
 
         _binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        ViewGroup navAccount = view.findViewById(R.id.nav_account);
-        if (navAccount != null) {
-            ImageView icon = (ImageView) navAccount.getChildAt(0);
-            TextView label = (TextView) navAccount.getChildAt(1);
-
-            if (icon != null) {
-                icon.setColorFilter(Color.parseColor("#677559"));
-            }
-
-            if (label != null) {
-                label.setTextColor(Color.parseColor("#677559"));
-                label.setTypeface(null, Typeface.BOLD);
-            }
-        }
+        com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
 
         _binding.btnNotification.setOnClickListener(v -> Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show());
 

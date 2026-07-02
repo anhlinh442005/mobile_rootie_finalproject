@@ -140,19 +140,7 @@ public class AccountProfileSecurityFragment extends RootieFragment {
 
         _binding.btnManageDevices.setOnClickListener(v -> Toast.makeText(context, "Quản lý thiết bị đăng nhập (Đang phát triển)", Toast.LENGTH_SHORT).show());
 
-        ViewGroup navAccount = view.findViewById(R.id.nav_account);
-        if (navAccount != null) {
-            ImageView icon = (ImageView) navAccount.getChildAt(0);
-            TextView label = (TextView) navAccount.getChildAt(1);
-
-            if (icon != null) {
-                icon.setColorFilter(Color.parseColor("#677559"));
-            }
-            if (label != null) {
-                label.setTextColor(Color.parseColor("#677559"));
-                label.setTypeface(null, Typeface.BOLD);
-            }
-        }
+        com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
     }
 
     private void updateSwitchUI(boolean enabled) {

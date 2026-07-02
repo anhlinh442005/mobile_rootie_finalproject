@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/neutral">
+    android:background="@color/neutral"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <!-- HEADER BAR -->
     <RelativeLayout
@@ -56,9 +58,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/btn_add_address_container"
+        android:layout_alignParentBottom="true"
         android:layout_below="@id/header_bar"
+        android:clipToPadding="false"
         android:orientation="vertical"
+        android:paddingBottom="120dp"
         android:paddingHorizontal="20dp">
 
         <!-- Subtitle -->
@@ -484,8 +488,10 @@
         android:id="@+id/btn_add_address_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_nav"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="56dp"
         android:background="@color/neutral"
+        android:elevation="8dp"
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp">
 
@@ -530,5 +536,8 @@
         layout="@layout/home_navapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="16dp" />
 </RelativeLayout>

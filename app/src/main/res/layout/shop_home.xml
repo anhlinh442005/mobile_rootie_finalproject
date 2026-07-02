@@ -153,7 +153,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="72dp"
         android:src="@drawable/ic_double_chevron_up"
         app:tint="@color/primary"
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -161,7 +161,7 @@
         android:focusable="true"
         android:padding="8dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="Cuộn lên đầu" />
 

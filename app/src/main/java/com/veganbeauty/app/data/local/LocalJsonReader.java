@@ -529,14 +529,25 @@ public class LocalJsonReader {
         return new ArrayList<>();
     }
 
-    public List<BookingHistoryEntity> getUserBookingHistory(String email) {
-        if (email == null || email.trim().isEmpty()) {
+    public List<BookingHistoryEntity> getUserBookingHistory(String emailOrUserId) {
+        if (emailOrUserId == null || emailOrUserId.trim().isEmpty()) {
             return new ArrayList<>();
         }
-        String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
+        String key = emailOrUserId.trim();
+        if (key.contains("@")) {
+            String normalizedEmail = key.toLowerCase(Locale.ROOT);
+            List<BookingHistoryEntity> result = new ArrayList<>();
+            for (BookingHistoryEntity booking : loadAllBookingsInternal()) {
+                if (matchesUserEmail(booking, normalizedEmail)) {
+                    result.add(booking);
+                }
+            }
+            sortBookingsByNewest(result);
+            return result;
+        }
         List<BookingHistoryEntity> result = new ArrayList<>();
         for (BookingHistoryEntity booking : loadAllBookingsInternal()) {
-            if (matchesUserEmail(booking, normalizedEmail)) {
+            if (key.equalsIgnoreCase(booking.getUserId())) {
                 result.add(booking);
             }
         }
@@ -1225,6 +1236,62 @@ public class LocalJsonReader {
         Map<String, List<String>> social = getSocialDataForUser(userId);
         List<String> friends = social.get("friends");
         return friends != null ? friends : new ArrayList<>();
+    }
+
+    public synchronized void updateBookingReview(String id, float rating, String reviewText, String reviewDate) {
+        if (id == null || id.trim().isEmpty()) {
+            return;
+        }
+        List<BookingHistoryEntity> all = loadAllBookingsInternal();
+        boolean updated = false;
+        for (int i = 0; i < all.size(); i++) {
+            BookingHistoryEntity booking = all.get(i);
+            if (!id.equals(booking.getId())) {
+                continue;
+            }
+            all.set(i, new BookingHistoryEntity(
+                    booking.getId(),
+                    booking.getUserId(),
+                    booking.getUserName(),
+                    booking.getUserPhone(),
+                    booking.getUserEmail(),
+                    booking.getServiceName(),
+                    booking.getDateDisplay(),
+                    booking.getMonthDisplay(),
+                    booking.getDayOfWeek(),
+                    booking.getTime(),
+                    booking.getDuration(),
+                    booking.getStoreName(),
+                    booking.getStoreAddress(),
+                    booking.getStorePhone(),
+                    booking.getStoreImage(),
+                    booking.getNote(),
+                    booking.getStatus(),
+                    booking.getPolicy(),
+                    booking.getCreatedAt(),
+                    booking.getCompletedAt(),
+                    booking.getSkinResults(),
+                    booking.getConsultantName(),
+                    booking.getConsultantAvatar(),
+                    booking.getConsultantRating(),
+                    rating,
+                    reviewText != null ? reviewText : booking.getUserReview(),
+                    reviewDate != null ? reviewDate : booking.getReviewDate(),
+                    booking.getBeforeImage(),
+                    booking.getAfterImage(),
+                    booking.getEarnedPoints(),
+                    booking.getTotalPoints(),
+                    booking.getNextAppointmentDate(),
+                    booking.getNextAppointmentText(),
+                    booking.getCancelledAt(),
+                    booking.getCancelReason()
+            ));
+            updated = true;
+            break;
+        }
+        if (updated) {
+            saveAllBookingsInternal(all);
+        }
     }
 
 }

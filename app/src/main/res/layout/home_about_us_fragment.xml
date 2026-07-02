@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/neutral">
+    android:background="@color/neutral"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
-    <!-- Header -->
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -38,9 +39,11 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_nav"
+        android:layout_alignParentBottom="true"
         android:layout_below="@id/header"
+        android:clipToPadding="false"
         android:fillViewport="true"
+        android:paddingBottom="56dp"
         android:scrollbars="none">
 
         <LinearLayout
@@ -158,206 +161,284 @@
                     android:layout_marginHorizontal="20dp"
                     android:background="@drawable/bg_card_white"
                     android:elevation="2dp"
+                    android:gravity="center_horizontal"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:paddingHorizontal="24dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="24dp">
+
+                    <ImageView
+                        android:layout_width="180dp"
+                        android:layout_height="180dp"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="Rootie mascot"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/about_mascot_chill" />
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="top"
-                        android:orientation="horizontal">
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_about_rootie_pill"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="6dp">
 
-                        <ImageView
-                            android:layout_width="160dp"
-                            android:layout_height="200dp"
-                            android:scaleType="fitCenter"
-                            android:src="@drawable/mascot_leaf" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/be_vietnam_pro"
-                                android:text="🌿 Về Rootie"
-                                android:textColor="@color/content"
-                                android:textSize="16sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/be_vietnam_pro"
-                                android:text="Lành tính từ thiên nhiên,
-dịu dàng cho làn da"
-                                android:textColor="@color/primary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:fontFamily="@font/be_vietnam_pro"
-                                android:lineSpacingExtra="3dp"
-                                android:text="Rootie được hình thành từ niềm yêu thiên nhiên và sự thấu hiểu làn da người Việt. Chúng tôi chọn lọc những nguyên liệu thuần khiết, lành tính nhất từ thiên nhiên, kết hợp cùng công thức tối giản để tạo nên những sản phẩm hiệu quả và an toàn cho mọi làn da, kể cả làn da nhạy cảm nhất."
-                                android:textColor="@color/content"
-                                android:textSize="14sp" />
-                        </LinearLayout>
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:text="🌿 Về Rootie"
+                            android:textColor="@color/secondary"
+                            android:textSize="13sp" />
                     </LinearLayout>
 
-                    <!-- 4 items Grid -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:text="Lành tính từ thiên nhiên,\ndịu dàng cho làn da"
+                        android:textColor="@color/primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="56dp"
+                        android:layout_height="3dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_pill_green" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:gravity="center"
+                        android:lineSpacingExtra="4dp"
+                        android:text="Rootie được hình thành từ niềm yêu thiên nhiên và sự thấu hiểu làn da người Việt. Chúng tôi chọn lọc những nguyên liệu thuần khiết, lành tính nhất từ thiên nhiên, kết hợp cùng công thức tối giản để tạo nên những sản phẩm hiệu quả và an toàn cho mọi làn da, kể cả làn da nhạy cảm nhất."
+                        android:textColor="@color/content"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <!-- Section Giá trị cốt lõi -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:text="🌿 Giá trị cốt lõi của Rootie 🌿"
+                        android:textColor="@color/primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
                         android:baselineAligned="false"
                         android:orientation="horizontal"
-                        android:paddingTop="30dp"
                         android:weightSum="4">
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
                             android:layout_weight="1"
+                            android:background="@drawable/bg_about_value_card"
                             android:gravity="center_horizontal"
                             android:orientation="vertical"
-                            android:paddingHorizontal="4dp">
+                            android:paddingHorizontal="6dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="10dp">
 
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/ic_check"
-                                app:tint="@color/secondary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:background="@drawable/bg_about_icon_circle">
+
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/about_us_leaf"
+                                    app:tint="@color/secondary" />
+                            </FrameLayout>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:fontFamily="@font/be_vietnam_pro_bold"
                                 android:gravity="center"
-                                android:text="Thiên nhiên
-nguyên bản"
-                                android:textColor="@color/secondary"
-                                android:textSize="14sp"
+                                android:text="Thiên nhiên\nnguyên bản"
+                                android:textColor="@color/primary"
+                                android:textSize="11sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/be_vietnam_pro"
                                 android:gravity="center"
+                                android:lineSpacingExtra="2dp"
                                 android:text="Ưu tiên nguyên liệu thuần khiết, an toàn và lành tính."
                                 android:textColor="@color/content"
-                                android:textSize="12sp" />
+                                android:textSize="9sp" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="2dp"
                             android:layout_weight="1"
+                            android:background="@drawable/bg_about_value_card"
                             android:gravity="center_horizontal"
                             android:orientation="vertical"
-                            android:paddingHorizontal="4dp">
+                            android:paddingHorizontal="6dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="10dp">
 
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/quiz_ic_chemistry_flask"
-                                app:tint="@color/secondary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:background="@drawable/bg_about_icon_circle">
+
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/quiz_ic_chemistry_flask"
+                                    app:tint="@color/secondary" />
+                            </FrameLayout>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:fontFamily="@font/be_vietnam_pro_bold"
                                 android:gravity="center"
-                                android:text="Công thức
-tối giản"
-                                android:textColor="@color/secondary"
-                                android:textSize="14sp"
+                                android:text="Công thức\ntối giản"
+                                android:textColor="@color/primary"
+                                android:textSize="11sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/be_vietnam_pro"
                                 android:gravity="center"
+                                android:lineSpacingExtra="2dp"
                                 android:text="Loại bỏ những thành phần không cần thiết, tập trung vào hiệu quả."
                                 android:textColor="@color/content"
-                                android:textSize="12sp" />
+                                android:textSize="9sp" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="2dp"
                             android:layout_weight="1"
+                            android:background="@drawable/bg_about_value_card"
                             android:gravity="center_horizontal"
                             android:orientation="vertical"
-                            android:paddingHorizontal="4dp">
+                            android:paddingHorizontal="6dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="10dp">
 
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/ic_heart_outline"
-                                app:tint="@color/secondary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:background="@drawable/bg_about_icon_circle">
+
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_heart_outline"
+                                    app:tint="@color/secondary" />
+                            </FrameLayout>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:fontFamily="@font/be_vietnam_pro_bold"
                                 android:gravity="center"
-                                android:text="Lành tính
-&amp; An toàn"
-                                android:textColor="@color/secondary"
-                                android:textSize="14sp"
+                                android:text="Lành tính\n&amp; An toàn"
+                                android:textColor="@color/primary"
+                                android:textSize="11sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/be_vietnam_pro"
                                 android:gravity="center"
+                                android:lineSpacingExtra="2dp"
                                 android:text="Phù hợp với mọi làn da, kể cả da nhạy cảm."
                                 android:textColor="@color/content"
-                                android:textSize="12sp" />
+                                android:textSize="9sp" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
                             android:layout_weight="1"
+                            android:background="@drawable/bg_about_value_card"
                             android:gravity="center_horizontal"
                             android:orientation="vertical"
-                            android:paddingHorizontal="4dp">
+                            android:paddingHorizontal="6dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="10dp">
 
-                            <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@drawable/ic_globe_outline"
-                                app:tint="@color/secondary" />
+                            <FrameLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:background="@drawable/bg_about_icon_circle">
+
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_globe_outline"
+                                    app:tint="@color/secondary" />
+                            </FrameLayout>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:fontFamily="@font/be_vietnam_pro_bold"
                                 android:gravity="center"
-                                android:text="Thân thiện
-môi trường"
-                                android:textColor="@color/secondary"
-                                android:textSize="14sp"
+                                android:text="Thân thiện\nmôi trường"
+                                android:textColor="@color/primary"
+                                android:textSize="11sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/be_vietnam_pro"
                                 android:gravity="center"
+                                android:lineSpacingExtra="2dp"
                                 android:text="Bao bì tái chế, hướng tới phát triển bền vững."
                                 android:textColor="@color/content"
-                                android:textSize="12sp" />
+                                android:textSize="9sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -1047,6 +1128,9 @@ bền vững"
         layout="@layout/home_navapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="16dp" />
 
 </RelativeLayout>

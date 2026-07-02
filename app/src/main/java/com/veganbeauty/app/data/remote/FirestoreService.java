@@ -1014,8 +1014,33 @@ public class FirestoreService {
         }
     }
 
-    public List<BookingHistoryEntity> getUserBookingHistory(String email) {
-        return fetchBookingsForUser(email);
+    public boolean updateBookingReview(String bookingId, float rating, String reviewText, String reviewDate) {
+        try {
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("userRating", rating);
+            updates.put("userReview", reviewText);
+            updates.put("reviewDate", reviewDate);
+            Tasks.await(db.collection("bookings").document(bookingId).update(updates));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<BookingHistoryEntity> getUserBookingHistory(String userIdOrEmail) {
+        if (userIdOrEmail == null || userIdOrEmail.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        String key = userIdOrEmail.trim();
+        if (key.contains("@")) {
+            return fetchBookingsForUser(key);
+        }
+        List<BookingHistoryEntity> byUserId = fetchBookingsForUserByUserId(key);
+        if (!byUserId.isEmpty()) {
+            return byUserId;
+        }
+        return fetchBookingsForUser(key);
     }
 
     public List<BookingHistoryEntity> fetchBookingsForUser(String email) {
@@ -1031,6 +1056,27 @@ public class FirestoreService {
                         db.collection("bookings").whereEqualTo("email", normalizedEmail).get());
             }
 
+            List<BookingHistoryEntity> bookings = new ArrayList<>();
+            for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                BookingHistoryEntity entity = mapBookingDocument(doc);
+                if (entity != null) {
+                    bookings.add(entity);
+                }
+            }
+            return bookings;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<BookingHistoryEntity> fetchBookingsForUserByUserId(String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        try {
+            QuerySnapshot snapshot = Tasks.await(
+                    db.collection("bookings").whereEqualTo("userId", userId.trim()).get());
             List<BookingHistoryEntity> bookings = new ArrayList<>();
             for (DocumentSnapshot doc : snapshot.getDocuments()) {
                 BookingHistoryEntity entity = mapBookingDocument(doc);
