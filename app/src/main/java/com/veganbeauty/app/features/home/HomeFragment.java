@@ -94,6 +94,7 @@ public class HomeFragment extends RootieFragment {
     private int recommendationLimit = 6;
     private List<ProductEntity> allRecommendationProducts = new ArrayList<>();
     private List<HomeShortcutItem> allShortcuts;
+    private HomeHeaderScrollHelper headerScrollHelper;
 
     private final HomeProductCartListener homeProductCartListener = new HomeProductCartListener() {
         @Override
@@ -264,7 +265,19 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void setupParallaxScroll() {
+        int bottomPad = (int) getResources().getDimension(R.dimen.home_nav_bar_height);
+        headerScrollHelper = new HomeHeaderScrollHelper(
+                binding.homeHeader.getRoot(),
+                binding.homeScrollView,
+                bottomPad
+        );
+        headerScrollHelper.install();
+
         binding.homeScrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (headerScrollHelper != null) {
+                headerScrollHelper.onScroll(scrollY, oldScrollY);
+            }
+
             float screenCenterY = scrollY + v.getHeight() / 2f;
             float cardCenterY = binding.cvPromoLotus.getTop() + binding.cvPromoLotus.getHeight() / 2f;
             float dist = cardCenterY - screenCenterY;
@@ -354,7 +367,6 @@ public class HomeFragment extends RootieFragment {
     private void setupHeaderActions() {
         HomeHeaderHelper.setup(this, binding.getRoot());
         binding.tvRecentSeeAll.setOnClickListener(v -> openShop());
-        binding.tvCategoriesSeeAll.setOnClickListener(v -> openShop());
     }
 
     private void setupPromoClicks() {

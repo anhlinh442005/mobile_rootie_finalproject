@@ -40,6 +40,7 @@ import com.veganbeauty.app.databinding.ComItemSuggestedReelsFeedBinding;
 import com.veganbeauty.app.databinding.ComItemSuggestedUsersFeedBinding;
 import com.veganbeauty.app.databinding.ComItemSuggestionBinding;
 import com.veganbeauty.app.features.community.UserMemoryHelper;
+import com.veganbeauty.app.features.community.CommunitySocialHelper;
 import com.veganbeauty.app.utils.ComProfileNavigator;
 import com.veganbeauty.app.utils.RootieBrandHelper;
 import com.veganbeauty.app.utils.TimeFormatter;
@@ -52,8 +53,10 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 abstract class CommunityFeedItem {
     static class Post extends CommunityFeedItem {
@@ -201,8 +204,8 @@ class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHolder> {
 public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<CommunityFeedItem> items = new ArrayList<>();
     private List<CommunityProduct> globalProducts = new ArrayList<>();
-    private boolean fanpageFollowing = false;
-    private Runnable fanpageUnfollowAction;
+    private final Set<String> followingUserIds = new HashSet<>();
+    private OnFollowStateChangedListener followStateChangedListener;
 
     private static final int VIEW_TYPE_POST = 0;
     private static final int VIEW_TYPE_SUGGESTED_USERS = 1;
@@ -230,6 +233,32 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+
+    public interface OnFollowStateChangedListener {
+        void onFollowStateChanged(String targetUserId, boolean isFollowing);
+    }
+
+    public void setOnFollowStateChangedListener(OnFollowStateChangedListener listener) {
+        this.followStateChangedListener = listener;
+    }
+
+    public void setFollowingUserIds(Set<String> userIds) {
+        followingUserIds.clear();
+        if (userIds != null) {
+            followingUserIds.addAll(userIds);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void updateFollowingState(String targetUserId, boolean isFollowing) {
+        if (targetUserId == null || targetUserId.isEmpty()) return;
+        if (isFollowing) {
+            followingUserIds.add(targetUserId);
+        } else {
+            followingUserIds.remove(targetUserId);
+        }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -505,22 +534,20 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             final boolean[] isBookmarked = {UserMemoryHelper.isPostSaved(context, ownUserId, post.getPostId())};
             if (isBookmarked[0]) {
-                postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark);
-                postHolder.binding.ivBookmark.setColorFilter(Color.parseColor("#FFC107"));
+                postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_save_full);
             } else {
-                postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark_outline);
-                postHolder.binding.ivBookmark.clearColorFilter();
+                postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_save);
             }
+            postHolder.binding.ivBookmark.clearColorFilter();
 
             postHolder.binding.ivBookmark.setOnClickListener(v -> {
                 isBookmarked[0] = UserMemoryHelper.toggleSave(context, ownUserId, post.getPostId());
                 if (isBookmarked[0]) {
-                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark);
-                    postHolder.binding.ivBookmark.setColorFilter(Color.parseColor("#FFC107"));
+                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_save_full);
                 } else {
-                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark_outline);
-                    postHolder.binding.ivBookmark.clearColorFilter();
+                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_save);
                 }
+                postHolder.binding.ivBookmark.clearColorFilter();
             });
 
             postHolder.binding.llAuthorInfo.setOnClickListener(onProfileClick);
@@ -529,7 +556,11 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         } else if (item instanceof CommunityFeedItem.SuggestedUsers) {
             SuggestedUsersViewHolder usersHolder = (SuggestedUsersViewHolder) holder;
-            SuggestionAdapter suggestionAdapter = new SuggestionAdapter(((CommunityFeedItem.SuggestedUsers) item).users);
+            SuggestionAdapter suggestionAdapter = new SuggestionAdapter(
+                    ((CommunityFeedItem.SuggestedUsers) item).users,
+                    followingUserIds,
+                    this::handleUserFollowToggle
+            );
             usersHolder.binding.rvSuggestions.setAdapter(suggestionAdapter);
 
             usersHolder.binding.tvSeeAllSuggestions.setOnClickListener(v -> {
@@ -592,35 +623,54 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setFanpageFollowing(boolean following) {
-        if (this.fanpageFollowing != following) {
-            this.fanpageFollowing = following;
-            notifyDataSetChanged();
-        }
+        updateFollowingState(RootieBrandHelper.USER_ID_VN, following);
     }
 
     public void setOnFanpageUnfollowListener(Runnable action) {
-        this.fanpageUnfollowAction = action;
+        // Kept for compatibility with news page; feed uses unified follow state.
+    }
+
+    private void handleUserFollowToggle(Context context, String authorId, String authorName, boolean follow) {
+        String ownUserId = getOwnUserId(context);
+        String targetId = CommunitySocialHelper.resolveFollowTargetId(authorId, authorName);
+        if (targetId.isEmpty() || ownUserId.equals(targetId)) {
+            return;
+        }
+
+        CommunitySocialHelper.applyFollowChange(context, ownUserId, targetId, follow);
+        updateFollowingState(targetId, follow);
+        if (followStateChangedListener != null) {
+            followStateChangedListener.onFollowStateChanged(targetId, follow);
+        }
     }
 
     private void applyFollowButtonState(PostViewHolder postHolder, CommunityPostEntity post,
                                         String authorName, Context context) {
-        if (RootieBrandHelper.isRootieUser(post.getAuthorId(), authorName) && fanpageFollowing) {
-            postHolder.binding.tvFollow.setText("Đã theo dõi");
-            postHolder.binding.tvFollow.setBackgroundResource(R.drawable.com_bg_btn_following);
-            postHolder.binding.tvFollow.setTextColor(Color.parseColor("#6E846A"));
-            postHolder.binding.tvFollow.setClickable(true);
-            postHolder.binding.tvFollow.setOnClickListener(v -> {
-                if (fanpageUnfollowAction != null) {
-                    fanpageUnfollowAction.run();
-                }
-            });
+        boolean isFollowing = CommunitySocialHelper.isFollowingUser(followingUserIds, post.getAuthorId(), authorName);
+
+        if (isFollowing) {
+            bindFollowingButton(postHolder.binding.tvFollow);
+            postHolder.binding.tvFollow.setOnClickListener(v ->
+                    handleUserFollowToggle(context, post.getAuthorId(), authorName, false));
         } else {
-            postHolder.binding.tvFollow.setText("Theo dõi");
-            postHolder.binding.tvFollow.setBackgroundResource(R.drawable.com_bg_btn_follow);
-            postHolder.binding.tvFollow.setTextColor(ContextCompat.getColor(context, R.color.primary));
-            postHolder.binding.tvFollow.setClickable(true);
-            postHolder.binding.tvFollow.setOnClickListener(null);
+            bindFollowButton(postHolder.binding.tvFollow, context);
+            postHolder.binding.tvFollow.setOnClickListener(v ->
+                    handleUserFollowToggle(context, post.getAuthorId(), authorName, true));
         }
+    }
+
+    private void bindFollowingButton(TextView button) {
+        button.setText("Đã theo dõi");
+        button.setBackgroundResource(R.drawable.com_bg_btn_following);
+        button.setTextColor(Color.parseColor("#6E846A"));
+        button.setClickable(true);
+    }
+
+    private void bindFollowButton(TextView button, Context context) {
+        button.setText("Theo dõi");
+        button.setBackgroundResource(R.drawable.com_bg_btn_follow);
+        button.setTextColor(ContextCompat.getColor(context, R.color.primary));
+        button.setClickable(true);
     }
 
     public void updateData(
@@ -660,9 +710,17 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.SuggestionViewHolder> {
     private List<UserEntity> users;
+    private final Set<String> followingUserIds;
+    private final FollowToggleListener followToggleListener;
 
-    public SuggestionAdapter(List<UserEntity> users) {
+    interface FollowToggleListener {
+        void onToggle(Context context, String userId, String username, boolean follow);
+    }
+
+    public SuggestionAdapter(List<UserEntity> users, Set<String> followingUserIds, FollowToggleListener followToggleListener) {
         this.users = users;
+        this.followingUserIds = followingUserIds != null ? followingUserIds : new HashSet<>();
+        this.followToggleListener = followToggleListener;
     }
 
     static class SuggestionViewHolder extends RecyclerView.ViewHolder {
@@ -737,6 +795,28 @@ class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Suggestio
                 user.getAvatar(),
                 user.getUsername()
         ));
+
+        boolean isFollowing = followingUserIds.contains(user.getUser_id());
+        if (isFollowing) {
+            holder.binding.tvFollow.setText("Đã theo dõi");
+            holder.binding.tvFollow.setBackgroundResource(R.drawable.com_bg_btn_following);
+            holder.binding.tvFollow.setTextColor(Color.parseColor("#6E846A"));
+        } else {
+            holder.binding.tvFollow.setText("Theo dõi");
+            holder.binding.tvFollow.setBackgroundResource(R.drawable.com_bg_btn_follow);
+            holder.binding.tvFollow.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary));
+        }
+
+        holder.binding.tvFollow.setOnClickListener(v -> {
+            if (followToggleListener == null) return;
+            boolean currentlyFollowing = followingUserIds.contains(user.getUser_id());
+            followToggleListener.onToggle(
+                    v.getContext(),
+                    user.getUser_id(),
+                    user.getUsername(),
+                    !currentlyFollowing
+            );
+        });
     }
 
     private void loadMutualAvatar(Context context, String url, ImageView target) {

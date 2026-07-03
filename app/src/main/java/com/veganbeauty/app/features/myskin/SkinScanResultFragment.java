@@ -1,5 +1,6 @@
 package com.veganbeauty.app.features.myskin;
 
+import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -7,12 +8,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.speech.tts.TextToSpeech;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,10 +57,19 @@ import java.util.concurrent.Executors;
 public class SkinScanResultFragment extends RootieFragment {
 
     private static final String ARG_IMAGE_URI = "arg_image_uri";
+    private static final long MIN_LOADING_MS = 3000L;
+
     private SkinFragmentScanResultBinding binding;
     private JSONObject currentData = null;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    private long loadingStartMs = 0L;
+    private boolean analysisDone = false;
+    private JSONObject pendingData = null;
+    private TextToSpeech tts;
+    private boolean ttsReady = false;
+    private ValueAnimator loadingAnimator;
     
     // API key for Google Gemini (Free tier). Replace with your own key in local.properties.
     private final String GEMINI_API_KEY = BuildConfig.GEMINI_API_KEY;
@@ -81,19 +91,52 @@ public class SkinScanResultFragment extends RootieFragment {
 
     @Override
     public void setupUI(@NonNull View view) {
+        loadingStartMs = System.currentTimeMillis();
+        showLoadingOverlay(true);
+        initTextToSpeech();
+        binding.skinResultBtnSave.setEnabled(false);
         setupListeners();
         loadData();
     }
 
-    private void setupListeners() {
-        binding.skinScanResultBtnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-
-        binding.skinResultBtnSave.setOnClickListener(v -> {
-            if (currentData != null) {
-                String userId = ProfileSession.getUserId(requireContext());
-                saveToFirestore(userId, currentData);
+    private void initTextToSpeech() {
+        tts = new TextToSpeech(requireContext(), status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                int langResult = tts.setLanguage(new Locale("vi", "VN"));
+                if (langResult == TextToSpeech.LANG_MISSING_DATA
+                        || langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    tts.setLanguage(Locale.getDefault());
+                }
+                ttsReady = true;
             }
         });
+    }
+
+    private void adjustPhotoSpacer() {
+        if (binding == null) return;
+        binding.skinResultBottomSheet.post(() -> {
+            if (binding == null) return;
+            int screenH = getResources().getDisplayMetrics().heightPixels;
+            int bottomBarH = binding.skinScanResultBottomBar.getHeight();
+            if (bottomBarH <= 0) {
+                bottomBarH = (int) (80 * getResources().getDisplayMetrics().density);
+            }
+            int peekH = binding.skinResultBottomSheet.getHeight();
+            int spacerH = screenH - bottomBarH - peekH;
+            int minPhotoRatio = (int) (screenH * 0.62f);
+            if (spacerH < minPhotoRatio) {
+                spacerH = minPhotoRatio;
+            }
+            ViewGroup.LayoutParams lp = binding.skinResultPhotoSpacer.getLayoutParams();
+            lp.height = spacerH;
+            binding.skinResultPhotoSpacer.setLayoutParams(lp);
+        });
+    }
+
+    private void setupListeners() {
+        binding.skinResultBtnClose.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
+        binding.skinResultBtnSave.setOnClickListener(v -> handleSaveClick());
 
         binding.skinScanBtnTopHistory.setOnClickListener(v -> openHistory());
         binding.skinResultBtnHistoryBottom.setOnClickListener(v -> openHistory());
@@ -125,29 +168,53 @@ public class SkinScanResultFragment extends RootieFragment {
                 .commit();
     }
 
+    private void handleSaveClick() {
+        JSONObject data = currentData != null ? currentData : pendingData;
+        if (data == null) {
+            Toast.makeText(requireContext(), "Chưa có kết quả để lưu", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        binding.skinResultBtnSave.setEnabled(false);
+        String userId = ProfileSession.getUserId(requireContext());
+        JSONObject snapshot;
+        try {
+            snapshot = new JSONObject(data.toString());
+        } catch (Exception e) {
+            binding.skinResultBtnSave.setEnabled(true);
+            Toast.makeText(requireContext(), "Lỗi khi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        executorService.execute(() -> saveToFirestore(userId, snapshot));
+    }
+
     private void saveToFirestore(String userId, JSONObject historyObj) {
         try {
             String id = historyObj.optString("id", SkinHistoryIdHelper.generateId());
+            historyObj.put("id", id);
             historyObj.put("userId", userId);
-            
-            // Chuyển đổi JSONObject thành Map
-            Map<String, Object> map = new HashMap<>();
-            java.util.Iterator<String> keys = historyObj.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                map.put(key, historyObj.get(key)); // Note: This might need deep conversion if Firebase doesn't accept nested JSONObjects
+            if (!historyObj.has("scanType")) {
+                historyObj.put("scanType", "Quét AI");
             }
 
             FirebaseFirestore.getInstance().collection("skin_history").document(id)
                     .set(toMapDeep(historyObj))
-                    .addOnSuccessListener(aVoid -> 
-                        Toast.makeText(requireContext(), "Đã lưu kết quả phân tích vào Lịch sử!", Toast.LENGTH_SHORT).show()
-                    )
-                    .addOnFailureListener(e -> 
-                        Toast.makeText(requireContext(), "Lỗi khi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                    );
+                    .addOnSuccessListener(aVoid -> mainHandler.post(() -> {
+                        if (binding == null) return;
+                        binding.skinResultBtnSave.setEnabled(true);
+                        Toast.makeText(requireContext(), "Đã lưu kết quả phân tích vào Lịch sử!", Toast.LENGTH_SHORT).show();
+                    }))
+                    .addOnFailureListener(e -> mainHandler.post(() -> {
+                        if (binding == null) return;
+                        binding.skinResultBtnSave.setEnabled(true);
+                        Toast.makeText(requireContext(), "Lỗi khi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }));
         } catch (Exception e) {
             e.printStackTrace();
+            mainHandler.post(() -> {
+                if (binding == null) return;
+                binding.skinResultBtnSave.setEnabled(true);
+                Toast.makeText(requireContext(), "Lỗi khi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
         }
     }
 
@@ -184,17 +251,99 @@ public class SkinScanResultFragment extends RootieFragment {
     private void loadData() {
         String imageUri = getArguments() != null ? getArguments().getString(ARG_IMAGE_URI) : null;
         if (imageUri != null && !imageUri.isEmpty()) {
-            // New scan: Analyze image with Gemini AI
+            setHeroImage(imageUri);
             analyzeImageWithGemini(imageUri);
         } else {
-            // No image provided, maybe history view -> Fallback to mock/history
             useFallbackMockData(null);
         }
     }
 
-    private void analyzeImageWithGemini(String imageUri) {
-        showLoadingState(true);
+    private void setHeroImage(String imageUrl) {
+        if (binding == null) return;
+        try {
+            if (imageUrl.startsWith("/")) {
+                binding.skinResultHeroImage.setImageURI(Uri.fromFile(new File(imageUrl)));
+            } else {
+                binding.skinResultHeroImage.setImageURI(Uri.parse(imageUrl));
+            }
+        } catch (Exception e) {
+            binding.skinResultHeroImage.setImageResource(R.drawable.about_us_pd);
+        }
+    }
 
+    private void showLoadingOverlay(boolean show) {
+        if (binding == null) return;
+        binding.skinResultLoadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+        binding.skinResultScrollContent.setVisibility(show ? View.GONE : View.VISIBLE);
+        binding.skinScanResultBottomBar.setVisibility(show ? View.GONE : View.VISIBLE);
+        if (!show) {
+            binding.skinScanResultBottomBar.bringToFront();
+            binding.skinResultBtnClose.bringToFront();
+            binding.skinScanBtnTopHistory.bringToFront();
+        }
+        if (show) {
+            startLoadingAnimation();
+        } else {
+            stopLoadingAnimation();
+        }
+    }
+
+    private void startLoadingAnimation() {
+        if (binding == null) return;
+        stopLoadingAnimation();
+        binding.skinResultLoadingOverlay.post(() -> {
+            if (binding == null || binding.skinResultLoadingOverlay.getVisibility() != View.VISIBLE) return;
+            loadingAnimator = ValueAnimator.ofInt(0, 100);
+            loadingAnimator.setDuration(MIN_LOADING_MS);
+            loadingAnimator.setRepeatCount(ValueAnimator.INFINITE);
+            loadingAnimator.setRepeatMode(ValueAnimator.RESTART);
+            loadingAnimator.addUpdateListener(animation -> {
+                if (binding == null) return;
+                int progress = (int) animation.getAnimatedValue();
+                binding.skinLoadingProgressBar.setProgress(progress);
+                int trackWidth = binding.skinLoadingProgressBar.getWidth()
+                        - binding.ivSkinMascotLoading.getWidth();
+                if (trackWidth > 0) {
+                    binding.ivSkinMascotLoading.setTranslationX(trackWidth * progress / 100f);
+                }
+            });
+            loadingAnimator.start();
+        });
+    }
+
+    private void stopLoadingAnimation() {
+        if (loadingAnimator != null) {
+            loadingAnimator.cancel();
+            loadingAnimator = null;
+        }
+        if (binding != null) {
+            binding.skinLoadingProgressBar.setProgress(0);
+            binding.ivSkinMascotLoading.setTranslationX(0f);
+        }
+    }
+
+    private void finishLoadingWithData(JSONObject data) {
+        pendingData = data;
+        analysisDone = true;
+        tryFinishLoading();
+    }
+
+    private void tryFinishLoading() {
+        if (binding == null || !analysisDone) return;
+        long elapsed = System.currentTimeMillis() - loadingStartMs;
+        long remaining = MIN_LOADING_MS - elapsed;
+        if (remaining <= 0) {
+            showLoadingOverlay(false);
+            if (pendingData != null) {
+                currentData = pendingData;
+                bindData(pendingData);
+            }
+        } else {
+            mainHandler.postDelayed(this::tryFinishLoading, remaining);
+        }
+    }
+
+    private void analyzeImageWithGemini(String imageUri) {
         executorService.execute(() -> {
             boolean success = false;
             try {
@@ -251,9 +400,7 @@ public class SkinScanResultFragment extends RootieFragment {
 
                         success = true;
                         mainHandler.post(() -> {
-                            showLoadingState(false);
-                            currentData = resultJson;
-                            bindData(resultJson);
+                            finishLoadingWithData(resultJson);
                             Toast.makeText(requireContext(), "Phân tích AI thành công!", Toast.LENGTH_SHORT).show();
                         });
                     }
@@ -263,10 +410,7 @@ public class SkinScanResultFragment extends RootieFragment {
             }
 
             if (!success) {
-                mainHandler.post(() -> {
-                    showLoadingState(false);
-                    useFallbackMockData(imageUri);
-                });
+                mainHandler.post(() -> useFallbackMockData(imageUri));
             }
         });
     }
@@ -372,14 +516,7 @@ public class SkinScanResultFragment extends RootieFragment {
     }
 
     private void showLoadingState(boolean isLoading) {
-        if (binding == null) return;
-        // Hiện tại không có id loading indicator cụ thể trong layout,
-        // Ta có thể làm mờ container và đổi text nút save tạm thời
-        binding.skinResultMetricsContainer.setAlpha(isLoading ? 0.3f : 1.0f);
-        binding.skinResultRadarChart.setAlpha(isLoading ? 0.3f : 1.0f);
-        if (isLoading) {
-            binding.skinResultSummaryText.setText("AI đang xử lý hình ảnh khuôn mặt của bạn...");
-        }
+        // no-op
     }
 
     private void useFallbackMockData(String imageUri) {
@@ -399,74 +536,154 @@ public class SkinScanResultFragment extends RootieFragment {
             }
             if (arrayToUse.length() > 0) {
                 JSONObject data = new JSONObject(arrayToUse.getJSONObject(0).toString());
-                
+
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("vi"));
                 SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", new Locale("vi"));
                 data.put("date", dateFormat.format(cal.getTime()));
                 data.put("time", timeFormat.format(cal.getTime()));
                 data.put("id", SkinHistoryIdHelper.generateId());
-                
+
                 if (imageUri != null) {
                     data.put("imageUrl", imageUri);
                 }
 
                 currentData = data;
-                bindData(data);
+                finishLoadingWithData(data);
+            } else {
+                mainHandler.post(() -> showLoadingOverlay(false));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(requireContext(), "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
+            mainHandler.post(() -> {
+                Toast.makeText(requireContext(), "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
+                showLoadingOverlay(false);
+            });
         }
     }
 
     private void bindData(JSONObject data) {
         if (binding == null) return;
+        currentData = data;
         try {
             int score = data.getInt("score");
             binding.skinResultScoreVal.setText(String.valueOf(score));
             binding.skinResultScoreLabel.setText(data.getString("overallCondition"));
             binding.skinResultSummaryText.setText(data.getString("summaryText"));
-            
-            String datetime = data.getString("date") + " - " + data.getString("time");
-            binding.skinResultDateTime.setText(datetime);
 
             String imageUrl = data.optString("imageUrl", "");
             if (!imageUrl.isEmpty()) {
                 try {
                     if (imageUrl.startsWith("/")) {
-                        binding.skinResultImage.setImageURI(Uri.fromFile(new File(imageUrl)));
+                        binding.skinResultHeroImage.setImageURI(Uri.fromFile(new File(imageUrl)));
                     } else {
-                        binding.skinResultImage.setImageURI(Uri.parse(imageUrl));
+                        binding.skinResultHeroImage.setImageURI(Uri.parse(imageUrl));
                     }
                 } catch (Exception e) {
-                    binding.skinResultImage.setImageResource(R.drawable.about_us_pd);
+                    binding.skinResultHeroImage.setImageResource(R.drawable.about_us_pd);
                 }
             } else {
-                binding.skinResultImage.setImageResource(R.drawable.about_us_pd);
+                binding.skinResultHeroImage.setImageResource(R.drawable.about_us_pd);
             }
 
-            // Progress bar
-            LinearLayout.LayoutParams fillParams = (LinearLayout.LayoutParams) binding.skinResultProgressFill.getLayoutParams();
-            fillParams.weight = score / 100f;
-            binding.skinResultProgressFill.setLayoutParams(fillParams);
-            
-            LinearLayout.LayoutParams emptyParams = (LinearLayout.LayoutParams) binding.skinResultProgressEmpty.getLayoutParams();
-            emptyParams.weight = 1f - (score / 100f);
-            binding.skinResultProgressEmpty.setLayoutParams(emptyParams);
-
             JSONObject detailedEval = data.getJSONObject("detailedEvaluation");
+            populateHeroGrid(detailedEval);
             setupRadarChart(detailedEval);
             populateMetrics(detailedEval);
-            
+
             JSONObject skinCondition = data.getJSONObject("skinCondition");
             populateSkinCondition(skinCondition);
 
             JSONArray suggestions = data.getJSONArray("suggestions");
             populateSuggestions(suggestions);
 
+            adjustPhotoSpacer();
+            speakResults(data);
+            binding.skinResultBtnSave.setEnabled(true);
+
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void populateHeroGrid(JSONObject eval) throws Exception {
+        LinearLayout container = binding.skinResultGridContainer;
+        container.removeAllViews();
+
+        String[][] gridDef = {
+                {"sensitivity", "Mụn viêm", "#677559"},
+                {"oil", "Mụn không viêm", "#F1C40F"},
+                {"oil", "Sợi bã nhờn", "#97A49C"},
+                {"pigmentation", "Sẹo", "#E74C3C"},
+                {"pigmentation", "Sắc tố da", "#E67E22"},
+                {"pores", "Lỗ chân lông", "#27AE60"}
+        };
+
+        int lowestIdx = 0;
+        int lowestScore = 101;
+        List<Integer> scores = new ArrayList<>();
+
+        for (int i = 0; i < gridDef.length; i++) {
+            int raw = eval.getJSONObject(gridDef[i][0]).getInt("score");
+            int outOf10 = Math.max(1, Math.round(raw / 10f));
+            scores.add(outOf10);
+            if (outOf10 < lowestScore) {
+                lowestScore = outOf10;
+                lowestIdx = i;
+            }
+        }
+
+        LinearLayout issuesContainer = binding.skinResultIssuesContainer;
+        issuesContainer.removeAllViews();
+        List<Integer> sorted = new ArrayList<>();
+        for (int i = 0; i < gridDef.length; i++) sorted.add(i);
+        sorted.sort((a, b) -> Integer.compare(scores.get(a), scores.get(b)));
+        for (int i = 0; i < Math.min(2, sorted.size()); i++) {
+            TextView issueTv = new TextView(requireContext());
+            issueTv.setText("- " + gridDef[sorted.get(i)][1]);
+            issueTv.setTextSize(14f);
+            issueTv.setMaxLines(1);
+            issueTv.setEllipsize(TextUtils.TruncateAt.END);
+            issueTv.setTextColor(requireContext().getColor(R.color.primary));
+            try {
+                issueTv.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro));
+            } catch (Exception ignored) {
+            }
+            issuesContainer.addView(issueTv);
+        }
+
+        for (int row = 0; row < 3; row++) {
+            LinearLayout rowLayout = new LinearLayout(requireContext());
+            rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+            rowLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            for (int col = 0; col < 2; col++) {
+                int idx = row * 2 + col;
+                View card = getLayoutInflater().inflate(R.layout.item_skin_score_grid, rowLayout, false);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                lp.setMargins(col == 0 ? 0 : 4, 0, col == 1 ? 0 : 4, 8);
+                card.setLayoutParams(lp);
+
+                TextView label = card.findViewById(R.id.grid_label);
+                TextView scoreTv = card.findViewById(R.id.grid_score);
+                View dot = card.findViewById(R.id.grid_dot);
+
+                label.setText(gridDef[idx][1]);
+                scoreTv.setText(scores.get(idx) + "/10");
+
+                android.graphics.drawable.GradientDrawable dotBg = new android.graphics.drawable.GradientDrawable();
+                dotBg.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                dotBg.setColor(Color.parseColor(gridDef[idx][2]));
+                dot.setBackground(dotBg);
+
+                if (idx == lowestIdx) {
+                    card.setBackgroundColor(requireContext().getColor(R.color.primary_light));
+                }
+
+                rowLayout.addView(card);
+            }
+            container.addView(rowLayout);
         }
     }
 
@@ -513,7 +730,7 @@ public class SkinScanResultFragment extends RootieFragment {
 
         chart.getXAxis().setDrawLabels(false);
         chart.getYAxis().setLabelCount(5, false);
-        chart.getYAxis().setTextSize(9f);
+        chart.getYAxis().setTextSize(11f);
         chart.getYAxis().setAxisMinimum(0f);
         chart.getYAxis().setAxisMaximum(100f);
         chart.getYAxis().setDrawLabels(false);
@@ -529,15 +746,13 @@ public class SkinScanResultFragment extends RootieFragment {
 
         String[] keys = {"moisture", "oil", "pores", "pigmentation", "sensitivity"};
         String[] titles = {"Độ ẩm", "Lượng dầu", "Lỗ chân lông", "Sắc tố", "Độ nhạy cảm"};
-        int[] icons = {R.drawable.ic_skin_moisture, R.drawable.ic_skin_moisture, R.drawable.ic_skin_pores, R.drawable.ic_skin_pigmentation, R.drawable.ic_skin_sensitivity};
         String[] colors = {"#1D82CD", "#3CA754", "#D88B2A", "#8D62A6", "#E35B5B"};
 
         for (int i = 0; i < keys.length; i++) {
             JSONObject obj = eval.getJSONObject(keys[i]);
             View view = getLayoutInflater().inflate(R.layout.item_skin_metric, container, false);
-            
-            FrameLayout iconContainer = view.findViewById(R.id.metric_icon_container);
-            ImageView icon = view.findViewById(R.id.metric_icon);
+
+            View dot = view.findViewById(R.id.metric_dot);
             TextView title = view.findViewById(R.id.metric_title);
             TextView badge = view.findViewById(R.id.metric_badge);
             TextView desc = view.findViewById(R.id.metric_desc);
@@ -545,9 +760,8 @@ public class SkinScanResultFragment extends RootieFragment {
             android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
             gd.setShape(android.graphics.drawable.GradientDrawable.OVAL);
             gd.setColor(Color.parseColor(colors[i]));
-            iconContainer.setBackground(gd);
+            dot.setBackground(gd);
 
-            icon.setImageResource(icons[i]);
             title.setText(titles[i]);
             badge.setText(obj.getString("level"));
             desc.setText(obj.getString("description"));
@@ -559,31 +773,39 @@ public class SkinScanResultFragment extends RootieFragment {
     private void populateSkinCondition(JSONObject cond) throws Exception {
         LinearLayout container = binding.skinResultAttributesContainer;
         container.removeAllViews();
+        container.setOrientation(LinearLayout.VERTICAL);
 
         String[] keys = {"skinType", "acne", "pigmentationStatus", "wrinkles", "evenness"};
         String[] titles = {"Loại da", "Mụn", "Thâm nám", "Nếp nhăn", "Độ đều màu"};
-        int[] icons = {R.drawable.ic_skin_type_outline, R.drawable.ic_skin_acne_outline, R.drawable.ic_skin_spot_outline, R.drawable.ic_skin_wrinkle_outline, R.drawable.ic_skin_evenness_outline};
 
-        for (int i = 0; i < keys.length; i++) {
-            View view = getLayoutInflater().inflate(R.layout.item_skin_attribute, container, false);
-            ImageView icon = view.findViewById(R.id.attr_icon);
-            TextView title = view.findViewById(R.id.attr_title);
-            TextView value = view.findViewById(R.id.attr_value);
+        for (int row = 0; row < 3; row++) {
+            LinearLayout rowLayout = new LinearLayout(requireContext());
+            rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+            rowLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-            icon.setImageResource(icons[i]);
-            title.setText(titles[i]);
-            value.setText(cond.getString(keys[i]));
+            boolean isLastRow = row == 2;
+            int colCount = isLastRow ? 1 : 2;
 
-            container.addView(view);
-            
-            if (i < keys.length - 1) {
-                View divider = new View(requireContext());
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(1, ViewGroup.LayoutParams.MATCH_PARENT);
-                params.setMargins(4, 12, 4, 12);
-                divider.setLayoutParams(params);
-                divider.setBackgroundColor(Color.parseColor("#E6EBE6"));
-                container.addView(divider);
+            for (int col = 0; col < colCount; col++) {
+                int idx = row * 2 + col;
+                View card = getLayoutInflater().inflate(R.layout.item_skin_condition_grid, rowLayout, false);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        0, ViewGroup.LayoutParams.WRAP_CONTENT, isLastRow ? 1f : 1f);
+                if (!isLastRow) {
+                    lp.setMargins(col == 0 ? 0 : 4, 0, col == 1 ? 0 : 4, 8);
+                } else {
+                    lp.setMargins(0, 0, 0, 8);
+                }
+                card.setLayoutParams(lp);
+
+                TextView title = card.findViewById(R.id.attr_title);
+                TextView value = card.findViewById(R.id.attr_value);
+                title.setText(titles[idx]);
+                value.setText(cond.getString(keys[idx]));
+                rowLayout.addView(card);
             }
+            container.addView(rowLayout);
         }
     }
 
@@ -591,14 +813,19 @@ public class SkinScanResultFragment extends RootieFragment {
         LinearLayout container = binding.skinResultSuggestionsContainer;
         container.removeAllViews();
 
+        float density = getResources().getDisplayMetrics().density;
+        int itemGap = (int) (10 * density);
+
         for (int i = 0; i < sugg.length(); i++) {
             String text = sugg.getString(i);
             TextView tv = new TextView(requireContext());
             tv.setText("• " + text);
-            tv.setTextSize(11f);
-            tv.setTextColor(Color.parseColor("#555555"));
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0, 0, 0, 8);
+            tv.setTextSize(16f);
+            tv.setLineSpacing(4f * density, 1f);
+            tv.setTextColor(requireContext().getColor(R.color.content));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, 0, 0, itemGap);
             tv.setLayoutParams(params);
             try {
                 tv.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro));
@@ -609,8 +836,62 @@ public class SkinScanResultFragment extends RootieFragment {
         }
     }
 
+    private void speakResults(JSONObject data) {
+        if (!ttsReady || tts == null) return;
+        try {
+            String speech = buildSpeechText(data);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null, "skin_result_tts");
+            } else {
+                tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String buildSpeechText(JSONObject data) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Kết quả phân tích da. ");
+        sb.append("Điểm da của bạn là ").append(data.getInt("score")).append(" trên 100. ");
+        sb.append(data.getString("overallCondition")).append(". ");
+        sb.append(data.getString("summaryText")).append(" ");
+
+        JSONObject eval = data.getJSONObject("detailedEvaluation");
+        String[] keys = {"moisture", "oil", "pores", "pigmentation", "sensitivity"};
+        String[] titles = {"Độ ẩm", "Lượng dầu", "Lỗ chân lông", "Sắc tố", "Độ nhạy cảm"};
+        sb.append("Giải thích chi tiết. ");
+        for (int i = 0; i < keys.length; i++) {
+            JSONObject obj = eval.getJSONObject(keys[i]);
+            sb.append(titles[i]).append(": ").append(obj.getString("level")).append(". ");
+            sb.append(obj.getString("description")).append(" ");
+        }
+
+        JSONObject cond = data.getJSONObject("skinCondition");
+        sb.append("Tình trạng da. ");
+        sb.append("Loại da: ").append(cond.getString("skinType")).append(". ");
+        sb.append("Mụn: ").append(cond.getString("acne")).append(". ");
+        sb.append("Thâm nám: ").append(cond.getString("pigmentationStatus")).append(". ");
+        sb.append("Nếp nhăn: ").append(cond.getString("wrinkles")).append(". ");
+        sb.append("Độ đều màu: ").append(cond.getString("evenness")).append(". ");
+
+        JSONArray suggestions = data.getJSONArray("suggestions");
+        sb.append("Gợi ý cho bạn. ");
+        for (int i = 0; i < suggestions.length(); i++) {
+            sb.append(suggestions.getString(i)).append(" ");
+        }
+        return sb.toString();
+    }
+
     @Override
     public void onDestroyView() {
+        stopLoadingAnimation();
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+            tts = null;
+            ttsReady = false;
+        }
         super.onDestroyView();
         binding = null;
         executorService.shutdown();

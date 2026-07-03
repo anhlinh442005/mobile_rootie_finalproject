@@ -1156,6 +1156,58 @@ public class LocalJsonReader {
         }
     }
 
+    public synchronized boolean applyFollowChange(String actorUserId, String targetUserId, boolean follow) {
+        if (actorUserId == null || targetUserId == null
+                || actorUserId.trim().isEmpty() || targetUserId.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            String json = readSocialJsonString();
+            if (json == null || json.trim().isEmpty()) {
+                return false;
+            }
+            JSONArray friendJsonArray = new JSONArray(json);
+            String actorId = actorUserId.trim();
+            String targetId = targetUserId.trim();
+
+            for (int i = 0; i < friendJsonArray.length(); i++) {
+                JSONObject obj = friendJsonArray.getJSONObject(i);
+                if (actorId.equals(obj.optString("user_id"))) {
+                    JSONArray followingArr = obj.optJSONArray("following");
+                    if (followingArr == null) followingArr = new JSONArray();
+                    List<String> following = jsonArrayToList(followingArr);
+                    if (follow) {
+                        if (!following.contains(targetId)) {
+                            following.add(targetId);
+                        }
+                    } else {
+                        following.remove(targetId);
+                    }
+                    obj.put("following", new JSONArray(following));
+                }
+                if (targetId.equals(obj.optString("user_id"))) {
+                    JSONArray followersArr = obj.optJSONArray("followers");
+                    if (followersArr == null) followersArr = new JSONArray();
+                    List<String> followers = jsonArrayToList(followersArr);
+                    if (follow) {
+                        if (!followers.contains(actorId)) {
+                            followers.add(actorId);
+                        }
+                    } else {
+                        followers.remove(actorId);
+                    }
+                    obj.put("followers", new JSONArray(followers));
+                }
+            }
+
+            saveSocialJsonToLocal(friendJsonArray.toString(2));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public String readSocialJsonString() {
         File file = new File(context.getFilesDir(), SOCIAL_FILE_NAME);
         if (file.exists()) {

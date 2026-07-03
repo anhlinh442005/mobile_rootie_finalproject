@@ -36,7 +36,6 @@ import com.veganbeauty.app.features.community.notification.CommunityNotification
 import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
 import com.veganbeauty.app.utils.ComBottomNavHelper;
 import com.veganbeauty.app.features.home.BottomNavHelper;
-import com.veganbeauty.app.features.home.HomeFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,12 +89,7 @@ public class CommunityBeautyHubFragment extends RootieFragment {
         binding.rvBlogs.setAdapter(blogAdapter);
         binding.rvNotebooks.setAdapter(notebookAdapter);
 
-        binding.btnHome.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.main_container, new HomeFragment())
-                    .commit();
-        });
+        binding.btnHome.setOnClickListener(v -> ComBottomNavHelper.navigateToAppHome(this));
 
         binding.ivNotification.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()

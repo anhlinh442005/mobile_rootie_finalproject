@@ -1,5 +1,6 @@
 package com.veganbeauty.app.features.community.com_feed;
 
+import android.animation.ValueAnimator;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -7,7 +8,9 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -17,13 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
+import com.veganbeauty.app.utils.ExploreVideoCache;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapter.VideoViewHolder> {
 
@@ -33,11 +35,32 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
     private final Set<String> savedVideoIds = new HashSet<>();
     private final Set<String> expandedDescIds = new HashSet<>();
 
+    private int currentPosition = 0;
+    private int navVisibleBottomMarginPx;
+    private int navHiddenBottomMarginPx;
+    private boolean isNavBarVisible = true;
+
     public ExploreVideoAdapter(List<YtVideoEntity> initialVideos, OnVideoInteractionListener listener) {
         if (initialVideos != null) {
             this.videos.addAll(initialVideos);
         }
         this.listener = listener;
+    }
+
+    public void setBottomMargins(int navVisibleMarginPx, int navHiddenMarginPx) {
+        this.navVisibleBottomMarginPx = navVisibleMarginPx;
+        this.navHiddenBottomMarginPx = navHiddenMarginPx;
+    }
+
+    public void setNavBarVisible(boolean visible, boolean animate) {
+        if (isNavBarVisible == visible) return;
+        isNavBarVisible = visible;
+        int targetMargin = visible ? navVisibleBottomMarginPx : navHiddenBottomMarginPx;
+        applyBottomMarginToVisibleHolders(targetMargin, animate);
+    }
+
+    public void setCurrentPosition(int position) {
+        currentPosition = position;
     }
 
     public void updateData(List<YtVideoEntity> newVideos) {
@@ -57,7 +80,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        holder.bind(videos.get(position));
+        holder.bind(videos.get(position), position == currentPosition);
+        holder.applyBottomMargin(isNavBarVisible ? navVisibleBottomMarginPx : navHiddenBottomMarginPx, false);
     }
 
     @Override
@@ -66,9 +90,50 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
     }
 
     @Override
+    public void onViewAttachedToWindow(@NonNull VideoViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if (holder.getBindingAdapterPosition() == currentPosition) {
+            holder.playVideo();
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull VideoViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.pauseVideo();
+    }
+
+    @Override
     public void onViewRecycled(@NonNull VideoViewHolder holder) {
         super.onViewRecycled(holder);
-        holder.pauseVideo();
+        holder.releaseVideo();
+    }
+
+    private void applyBottomMarginToVisibleHolders(int targetMarginPx, boolean animate) {
+        RecyclerView recyclerView = attachedRecyclerView;
+        if (recyclerView == null) return;
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
+            if (holder instanceof VideoViewHolder) {
+                ((VideoViewHolder) holder).applyBottomMargin(targetMarginPx, animate);
+            }
+        }
+    }
+
+    private RecyclerView attachedRecyclerView;
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        attachedRecyclerView = recyclerView;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        if (attachedRecyclerView == recyclerView) {
+            attachedRecyclerView = null;
+        }
     }
 
     public interface OnVideoInteractionListener {
@@ -84,7 +149,10 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
         private final VideoView videoView;
         private final ProgressBar progressBar;
+        private final TextView tvOfflineHint;
         private final View clickZone;
+        private final LinearLayout llLeftContent;
+        private final LinearLayout llRightIcons;
         private final TextView tvUsername;
         private final TextView tvDescription;
         private final ImageView ivAvatar;
@@ -97,12 +165,18 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
         private final Handler doubleTapHandler = new Handler(Looper.getMainLooper());
         private boolean isDoubleTapping = false;
+        private boolean shouldAutoPlay = false;
+        private boolean isPrepared = false;
+        private ValueAnimator marginAnimator;
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             videoView = itemView.findViewById(R.id.videoView);
             progressBar = itemView.findViewById(R.id.pbLoading);
+            tvOfflineHint = itemView.findViewById(R.id.tvOfflineHint);
             clickZone = itemView.findViewById(R.id.viewClickZone);
+            llLeftContent = itemView.findViewById(R.id.llLeftContent);
+            llRightIcons = itemView.findViewById(R.id.llRightIcons);
             tvUsername = itemView.findViewById(R.id.tvAuthorName);
             tvDescription = itemView.findViewById(R.id.tvCaption);
             ivAvatar = itemView.findViewById(R.id.ivAuthorAvatarRight);
@@ -114,7 +188,9 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             ivBigHeart = itemView.findViewById(R.id.ivBigHeart);
         }
 
-        public void bind(YtVideoEntity video) {
+        public void bind(YtVideoEntity video, boolean autoPlay) {
+            shouldAutoPlay = autoPlay;
+            isPrepared = false;
             setupVideoSource(video);
             setupUserInfo(video);
             setupEngagementStats(video);
@@ -122,43 +198,111 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             setupDescription(video);
         }
 
+        void applyBottomMargin(int targetMarginPx, boolean animate) {
+            if (llLeftContent == null || llRightIcons == null) return;
+
+            ViewGroup.MarginLayoutParams leftParams = (ViewGroup.MarginLayoutParams) llLeftContent.getLayoutParams();
+            ViewGroup.MarginLayoutParams rightParams = (ViewGroup.MarginLayoutParams) llRightIcons.getLayoutParams();
+            int currentMargin = leftParams.bottomMargin;
+
+            if (!animate || currentMargin == targetMarginPx) {
+                if (marginAnimator != null) {
+                    marginAnimator.cancel();
+                    marginAnimator = null;
+                }
+                leftParams.bottomMargin = targetMarginPx;
+                rightParams.bottomMargin = targetMarginPx;
+                llLeftContent.setLayoutParams(leftParams);
+                llRightIcons.setLayoutParams(rightParams);
+                return;
+            }
+
+            if (marginAnimator != null) {
+                marginAnimator.cancel();
+            }
+
+            marginAnimator = ValueAnimator.ofInt(currentMargin, targetMarginPx);
+            marginAnimator.setDuration(250);
+            marginAnimator.setInterpolator(new DecelerateInterpolator());
+            marginAnimator.addUpdateListener(animation -> {
+                int value = (int) animation.getAnimatedValue();
+                leftParams.bottomMargin = value;
+                rightParams.bottomMargin = value;
+                llLeftContent.setLayoutParams(leftParams);
+                llRightIcons.setLayoutParams(rightParams);
+            });
+            marginAnimator.start();
+        }
+
         private void setupVideoSource(YtVideoEntity video) {
             String url = video.getUrl() != null ? video.getUrl() : "";
             progressBar.setVisibility(View.VISIBLE);
+            tvOfflineHint.setVisibility(View.GONE);
             videoView.setVisibility(View.VISIBLE);
+            releaseVideo();
 
-            if (url.toLowerCase().contains("cloudinary") && url.toLowerCase().endsWith(".mp4")) {
-                videoView.setVideoURI(Uri.parse(url));
-                videoView.setOnPreparedListener(mp -> {
-                    mp.setLooping(true);
-                    progressBar.setVisibility(View.GONE);
-                    if (videoView.getWidth() > 0 && videoView.getHeight() > 0) {
-                        float videoRatio = mp.getVideoWidth() / (float) mp.getVideoHeight();
-                        float screenRatio = videoView.getWidth() / (float) videoView.getHeight();
-                        float scaleX = videoRatio / screenRatio;
-                        if (scaleX >= 1f) {
-                            videoView.setScaleX(scaleX);
-                        } else {
-                            videoView.setScaleY(1f / scaleX);
-                        }
-                    }
-                });
-
-                videoView.setOnInfoListener((mp, what, extra) -> {
-                    if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                        progressBar.setVisibility(View.GONE);
-                        return true;
-                    }
-                    return false;
-                });
-
-                videoView.setOnErrorListener((mp, what, extra) -> {
-                    progressBar.setVisibility(View.GONE);
-                    return true;
-                });
-            } else {
+            if (!url.toLowerCase().contains("cloudinary") || !url.toLowerCase().endsWith(".mp4")) {
                 progressBar.setVisibility(View.GONE);
                 videoView.setVisibility(View.GONE);
+                tvOfflineHint.setVisibility(View.VISIBLE);
+                tvOfflineHint.setText("Video không khả dụng.");
+                return;
+            }
+
+            boolean hasNetwork = ExploreVideoCache.isNetworkAvailable(itemView.getContext());
+            boolean hasCache = ExploreVideoCache.isCached(itemView.getContext(), url);
+            if (!hasNetwork && !hasCache) {
+                progressBar.setVisibility(View.GONE);
+                videoView.setVisibility(View.GONE);
+                tvOfflineHint.setVisibility(View.VISIBLE);
+                return;
+            }
+
+            Uri playableUri = ExploreVideoCache.getPlayableUri(itemView.getContext(), url);
+            if (hasNetwork) {
+                ExploreVideoCache.prefetch(itemView.getContext(), url);
+            }
+
+            videoView.setVideoURI(playableUri);
+            videoView.setOnPreparedListener(mp -> {
+                isPrepared = true;
+                mp.setLooping(true);
+                progressBar.setVisibility(View.GONE);
+                fitVideoToScreen(mp);
+                if (shouldAutoPlay && getBindingAdapterPosition() == currentPosition) {
+                    videoView.start();
+                }
+            });
+
+            videoView.setOnInfoListener((mp, what, extra) -> {
+                if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                    progressBar.setVisibility(View.GONE);
+                    return true;
+                }
+                return false;
+            });
+
+            videoView.setOnErrorListener((mp, what, extra) -> {
+                progressBar.setVisibility(View.GONE);
+                if (!ExploreVideoCache.isCached(itemView.getContext(), url) && !ExploreVideoCache.isNetworkAvailable(itemView.getContext())) {
+                    videoView.setVisibility(View.GONE);
+                    tvOfflineHint.setVisibility(View.VISIBLE);
+                }
+                return true;
+            });
+        }
+
+        private void fitVideoToScreen(MediaPlayer mp) {
+            if (videoView.getWidth() <= 0 || videoView.getHeight() <= 0) return;
+            float videoRatio = mp.getVideoWidth() / (float) mp.getVideoHeight();
+            float screenRatio = videoView.getWidth() / (float) videoView.getHeight();
+            float scaleX = videoRatio / screenRatio;
+            if (scaleX >= 1f) {
+                videoView.setScaleX(scaleX);
+                videoView.setScaleY(1f);
+            } else {
+                videoView.setScaleX(1f);
+                videoView.setScaleY(1f / scaleX);
             }
         }
 
@@ -269,15 +413,31 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
         }
 
         public void playVideo() {
-            if (videoView.getVisibility() == View.VISIBLE && !videoView.isPlaying()) {
+            shouldAutoPlay = true;
+            if (videoView.getVisibility() != View.VISIBLE) return;
+            if (isPrepared && !videoView.isPlaying()) {
                 videoView.start();
+            } else if (!isPrepared) {
+                progressBar.setVisibility(View.VISIBLE);
             }
         }
 
         public void pauseVideo() {
+            shouldAutoPlay = false;
             if (videoView.isPlaying()) {
                 videoView.pause();
             }
+        }
+
+        public void releaseVideo() {
+            try {
+                videoView.stopPlayback();
+            } catch (Exception ignored) {
+            }
+            isPrepared = false;
+            videoView.setOnPreparedListener(null);
+            videoView.setOnErrorListener(null);
+            videoView.setOnInfoListener(null);
         }
     }
 }

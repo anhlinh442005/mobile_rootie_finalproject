@@ -72,7 +72,9 @@ public class ActiveUserAdapter extends RecyclerView.Adapter<ActiveUserAdapter.Vi
         }
 
         if (holder.tvName != null) {
-            holder.tvName.setText(partnerInfo != null ? partnerInfo.getName() : "Người dùng");
+            String displayName = partnerInfo != null ? partnerInfo.getName() : "Người dùng";
+            holder.tvName.setText(displayName);
+            RootieBrandHelper.applyVerifiedBadge(holder.tvName, partnerId, displayName);
         }
 
         if (partnerInfo != null && holder.ivAvatar != null) {

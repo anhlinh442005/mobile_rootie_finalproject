@@ -192,7 +192,6 @@ public class SkinScanResultDialogFragment extends DialogFragment {
 
         String[] keys = {"moisture", "oil", "pores", "pigmentation", "sensitivity"};
         String[] titles = {"Độ ẩm", "Lượng dầu", "Lỗ chân lông", "Sắc tố", "Độ nhạy cảm"};
-        int[] icons = {R.drawable.ic_skin_moisture, R.drawable.ic_skin_moisture, R.drawable.ic_skin_pores, R.drawable.ic_skin_pigmentation, R.drawable.ic_skin_sensitivity};
         String[] colors = {"#1D82CD", "#3CA754", "#D88B2A", "#8D62A6", "#E35B5B"};
 
         LayoutInflater inflater = getLayoutInflater();
@@ -201,8 +200,7 @@ public class SkinScanResultDialogFragment extends DialogFragment {
             JSONObject obj = eval.getJSONObject(keys[i]);
             View view = inflater.inflate(R.layout.item_skin_metric, container, false);
 
-            FrameLayout iconContainer = view.findViewById(R.id.metric_icon_container);
-            ImageView icon = view.findViewById(R.id.metric_icon);
+            View dot = view.findViewById(R.id.metric_dot);
             TextView title = view.findViewById(R.id.metric_title);
             TextView badge = view.findViewById(R.id.metric_badge);
             TextView desc = view.findViewById(R.id.metric_desc);
@@ -210,9 +208,8 @@ public class SkinScanResultDialogFragment extends DialogFragment {
             android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
             gd.setShape(android.graphics.drawable.GradientDrawable.OVAL);
             gd.setColor(Color.parseColor(colors[i]));
-            iconContainer.setBackground(gd);
+            dot.setBackground(gd);
 
-            icon.setImageResource(icons[i]);
             title.setText(titles[i]);
 
             title.setTextSize(10f);

@@ -70,8 +70,8 @@
                     android:id="@+id/ivCart"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_cart"
-                    app:tint="@color/primary" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_cart" />
 
                 <TextView
                     android:id="@+id/tvCartBadge"

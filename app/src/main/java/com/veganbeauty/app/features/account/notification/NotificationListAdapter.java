@@ -107,7 +107,7 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
 
             binding.viewUnreadDot.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
 
-            int resId = context.getResources().getIdentifier(item.getIconResName(), "drawable", context.getPackageName());
+            int resId = resolveNotificationIconRes(context, item.getIconResName());
             if (resId != 0) {
                 binding.ivIcon.setImageResource(resId);
             } else {
@@ -159,6 +159,16 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
                 if (onItemClick != null) onItemClick.onClick(item);
             });
         }
+    }
+
+    private static int resolveNotificationIconRes(Context context, String iconResName) {
+        if (iconResName == null || iconResName.isEmpty()
+                || "ic_notification".equals(iconResName)
+                || "home_ic_notification".equals(iconResName)) {
+            return R.drawable.ic_bell;
+        }
+        int resId = context.getResources().getIdentifier(iconResName, "drawable", context.getPackageName());
+        return resId != 0 ? resId : R.drawable.ic_bell;
     }
 
     private static class DiffCallback extends DiffUtil.ItemCallback<NotificationListItem> {

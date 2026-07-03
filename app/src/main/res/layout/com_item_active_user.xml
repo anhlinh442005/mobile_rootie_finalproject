@@ -20,14 +20,15 @@
 
         <ImageView
             android:id="@+id/ivAddStory"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="bottom|end"
-            android:src="@drawable/ic_plus"
-            android:background="@drawable/com_bg_circle_white"
-            android:padding="2dp"
-            android:visibility="gone"
-            app:tint="@color/primary" />
+            android:background="@drawable/com_bg_add_circle"
+            android:padding="3dp"
+            android:src="@drawable/ic_add"
+            android:scaleType="fitCenter"
+            app:tint="@android:color/white"
+            android:visibility="gone" />
             
         <View
             android:id="@+id/vActiveDot"

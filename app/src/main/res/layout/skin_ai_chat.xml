@@ -221,7 +221,7 @@
                 android:layout_height="40dp"
                 android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_plus_dark"
+                android:src="@drawable/ic_add"
                 android:contentDescription="Thêm tệp đính kèm"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

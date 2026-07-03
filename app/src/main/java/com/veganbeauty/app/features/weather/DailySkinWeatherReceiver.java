@@ -230,7 +230,7 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
                 }
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, channelId)
-                        .setSmallIcon(R.drawable.ic_notification)
+                        .setSmallIcon(R.drawable.ic_bell)
                         .setContentTitle("ROOTIE • Thời tiết & Da hôm nay ☀️")
                         .setContentText(advice)
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(advice))

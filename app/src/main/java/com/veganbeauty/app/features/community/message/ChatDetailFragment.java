@@ -19,6 +19,7 @@ import com.veganbeauty.app.data.local.entities.ChatMessageEntity;
 import com.veganbeauty.app.data.local.entities.ConversationEntity;
 import com.veganbeauty.app.data.local.entities.MemberInfoEntity;
 import com.veganbeauty.app.databinding.ComFragmentChatDetailBinding;
+import com.veganbeauty.app.utils.RootieBrandHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,10 @@ public class ChatDetailFragment extends RootieFragment {
 
     @Override
     protected void setupUI(@NonNull View view) {
-        currentUserId = ProfileSession.getUserId(requireContext());
+        currentUserId = ProfileSession.getCurrentUserId(requireContext());
+        if (currentUserId == null || currentUserId.isEmpty()) {
+            currentUserId = ProfileSession.getUserId(requireContext());
+        }
         
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
@@ -79,7 +83,21 @@ public class ChatDetailFragment extends RootieFragment {
             }
         });
 
+        binding.ivLike.setOnClickListener(v -> sendMessage(MessageHelper.MESSAGE_LIKE));
+
         loadConversation();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        markConversationRead();
+    }
+
+    private void markConversationRead() {
+        final Context context = getContext();
+        if (context == null || conversationId == null || currentUserId == null) return;
+        new Thread(() -> MessageHelper.markAsRead(context.getApplicationContext(), conversationId, currentUserId)).start();
     }
 
     private void loadConversation() {
@@ -88,11 +106,14 @@ public class ChatDetailFragment extends RootieFragment {
 
         new Thread(() -> {
             try {
+                MessageHelper.syncConversationsFromAssets(context, currentUserId);
+                MessageHelper.markAsRead(context, conversationId, currentUserId);
                 ConversationEntity conv = MessageHelper.getConversationById(context, conversationId);
                 if (conv != null && isAdded() && getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         if (!isAdded() || binding == null) return;
-                        bindHeader(conv);
+                        String partnerAvatarUrl = bindHeader(conv);
+                        adapter.setPartnerAvatarUrl(partnerAvatarUrl);
                         if (conv.getMessages() != null && !conv.getMessages().isEmpty()) {
                             adapter.submitList(conv.getMessages());
                             binding.rvMessages.scrollToPosition(conv.getMessages().size() - 1);
@@ -107,7 +128,8 @@ public class ChatDetailFragment extends RootieFragment {
         }).start();
     }
 
-    private void bindHeader(ConversationEntity conv) {
+    private String bindHeader(ConversationEntity conv) {
+        partnerId = "";
         if (conv.getMembers() != null) {
             for (String m : conv.getMembers()) {
                 if (!m.equals(currentUserId)) {
@@ -121,9 +143,20 @@ public class ChatDetailFragment extends RootieFragment {
         MemberInfoEntity partnerInfo = memberInfo != null ? memberInfo.get(partnerId) : null;
 
         if (partnerInfo != null) {
-            binding.tvPartnerName.setText(partnerInfo.getName());
+            String displayName = partnerInfo.getName();
+            binding.tvPartnerName.setText(displayName);
+            if (RootieBrandHelper.isRootieUser(partnerId, displayName)) {
+                binding.ivVerified.setVisibility(View.VISIBLE);
+            } else {
+                binding.ivVerified.setVisibility(View.GONE);
+            }
+            String avatarUrl = RootieBrandHelper.resolveAvatar(partnerId, partnerInfo.getAvatar());
+            if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
+                binding.ivPartnerAvatar.setImageResource(R.drawable.img_avatar);
+                return "";
+            }
             ImageRequest request = new ImageRequest.Builder(requireContext())
-                    .data(partnerInfo.getAvatar())
+                    .data(avatarUrl)
                     .crossfade(true)
                     .transformations(new CircleCropTransformation())
                     .placeholder(R.drawable.img_avatar)
@@ -131,7 +164,11 @@ public class ChatDetailFragment extends RootieFragment {
                     .target(binding.ivPartnerAvatar)
                     .build();
             Coil.imageLoader(requireContext()).enqueue(request);
+            return avatarUrl;
         }
+
+        binding.ivPartnerAvatar.setImageResource(R.drawable.img_avatar);
+        return "";
     }
 
     private void sendMessage(String text) {

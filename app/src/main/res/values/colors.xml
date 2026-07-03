@@ -14,6 +14,11 @@
     <color name="gray_light">#E0E4E2</color>
     <color name="gray_dark">#7E8A83</color>
 
+    <!-- Basic blue for action icons (chat, links, etc.) -->
+    <color name="basic_blue">#007AFF</color>
+    <!-- Basic green for chat action icons -->
+    <color name="basic_green">#758864</color>
+
 
 
     <!-- Status Pending (Chờ xác nhận) -->

@@ -75,7 +75,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         if (holder.tvName != null) {
-            holder.tvName.setText(partnerInfo != null ? partnerInfo.getName() : "Người dùng");
+            String displayName = partnerInfo != null ? partnerInfo.getName() : "Người dùng";
+            holder.tvName.setText(displayName);
+        }
+        if (holder.ivVerified != null) {
+            boolean isVerified = RootieBrandHelper.isRootieUser(partnerId, partnerInfo != null ? partnerInfo.getName() : null);
+            holder.ivVerified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
         }
 
         if (partnerInfo != null && holder.ivAvatar != null) {
@@ -94,7 +99,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         if (holder.tvLastMessage != null) {
-            holder.tvLastMessage.setText(item.getLastMessage() != null ? item.getLastMessage() : "");
+            holder.tvLastMessage.setText(MessageHelper.formatPreviewText(item.getLastMessage()));
         }
         if (holder.tvTime != null) {
             String timeRaw = item.getLastMessageAt();
@@ -105,6 +110,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         boolean isUnread = item.getUnreadBy() != null && item.getUnreadBy().contains(currentUserId);
+        if (holder.tvName != null) {
+            holder.tvName.setTypeface(null, isUnread ? Typeface.BOLD : Typeface.NORMAL);
+        }
         if (holder.tvLastMessage != null) {
             if (isUnread) {
                 holder.tvLastMessage.setTypeface(null, Typeface.BOLD);
@@ -129,6 +137,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivAvatar;
         TextView tvName;
+        ImageView ivVerified;
         TextView tvLastMessage;
         TextView tvTime;
         View viewUnread;
@@ -137,6 +146,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             super(itemView);
             ivAvatar = itemView.findViewById(R.id.ivAvatar);
             tvName = itemView.findViewById(R.id.tvName);
+            ivVerified = itemView.findViewById(R.id.ivVerified);
             tvLastMessage = itemView.findViewById(R.id.tvLastMessage);
             tvTime = itemView.findViewById(R.id.tvTime);
             viewUnread = itemView.findViewById(R.id.vUnreadDot);

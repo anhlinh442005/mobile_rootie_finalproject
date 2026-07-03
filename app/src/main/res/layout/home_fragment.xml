@@ -13,17 +13,18 @@
         layout="@layout/home_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:elevation="10dp" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/homeScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/home_header"
+        android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="56dp"
+        android:paddingBottom="@dimen/home_nav_bar_height"
         android:scrollbars="none">
 
         <LinearLayout
@@ -103,7 +104,7 @@
                             android:layout_marginTop="4dp"
                             android:text="Sáng nay bạn chưa hoàn thành Routine, bấm để bắt đầu!"
                             android:textColor="#DDDFC4"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/home_section_see_all_size" />
                     </LinearLayout>
 
                     <ImageView
@@ -532,7 +533,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/home_recent_activity"
                         android:textColor="#1B3E2D"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/home_section_title_size"
                         android:textStyle="bold" />
 
                     <TextView
@@ -543,7 +544,7 @@
                         android:layout_centerVertical="true"
                         android:text="Xem tất cả ❯"
                         android:textColor="#4A5D4E"
-                        android:textSize="12sp" />
+                        android:textSize="@dimen/home_section_see_all_size" />
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -823,30 +824,15 @@
             </androidx.cardview.widget.CardView>
 
             <!-- Categories -->
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:paddingHorizontal="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:text="@string/home_categories"
-                    android:textColor="#28362E"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvCategoriesSeeAll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/home_see_all"
-                    android:textColor="@color/secondary"
-                    android:textSize="12sp" />
-            </RelativeLayout>
+                android:paddingHorizontal="16dp"
+                android:text="@string/home_categories"
+                android:textColor="#28362E"
+                android:textSize="@dimen/home_section_title_size"
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCategories"
@@ -885,7 +871,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/home_bestsellers"
                             android:textColor="#1B3E2D"
-                            android:textSize="17sp"
+                            android:textSize="@dimen/home_section_title_size"
                             android:fontFamily="@font/be_vietnam_pro_bold" />
 
                         <TextView
@@ -895,7 +881,7 @@
                             android:layout_centerVertical="true"
                             android:text="Xem tất cả >"
                             android:textColor="#7A8B7B"
-                            android:textSize="12sp"
+                            android:textSize="@dimen/home_section_see_all_size"
                             android:fontFamily="@font/be_vietnam_pro_regular" />
                     </RelativeLayout>
 
@@ -931,7 +917,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/home_top_search"
                             android:textColor="#4A564A"
-                            android:textSize="14sp"
+                            android:textSize="@dimen/home_section_title_size"
                             android:fontFamily="@font/be_vietnam_pro_bolditalic" />
 
                         <TextView
@@ -941,7 +927,7 @@
                             android:layout_centerVertical="true"
                             android:text="Xem tất cả >"
                             android:textColor="#7A8B7B"
-                            android:textSize="12sp"
+                            android:textSize="@dimen/home_section_see_all_size"
                             android:fontFamily="@font/be_vietnam_pro_regular" />
                     </RelativeLayout>
 
@@ -1027,7 +1013,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/home_recommendations"
                     android:textColor="#28362E"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/home_section_title_size"
                     android:textStyle="bold" />
             </RelativeLayout>
 
@@ -1079,7 +1065,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:clipChildren="false"
-        android:clipToPadding="false"
-        android:elevation="16dp" />
+        android:clipToPadding="false" />
 
 </RelativeLayout>

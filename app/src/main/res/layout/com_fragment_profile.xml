@@ -30,18 +30,19 @@
                 <!-- Top Bar -->
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="@dimen/com_header_height"
                     android:paddingHorizontal="16dp"
                     android:background="@color/white">
 
                     <ImageView
-                        android:id="@+id/ivBack"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:id="@+id/ivHome"
+                        android:layout_width="@dimen/com_header_icon_size"
+                        android:layout_height="@dimen/com_header_icon_size"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_left"
-                        app:tint="#6E846A" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_home"
+                        app:tint="@color/primary" />
 
                     <LinearLayout
                         android:id="@+id/llHeaderActions"
@@ -54,16 +55,16 @@
 
                         <ImageView
                             android:id="@+id/ivNotification"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/com_header_png_icon_size"
+                            android:layout_height="@dimen/com_header_png_icon_size"
                             android:layout_marginEnd="16dp"
-                            android:src="@drawable/home_ic_notification"
+                            android:src="@drawable/ic_bell"
                             app:tint="#6E846A" />
 
                         <ImageView
                             android:id="@+id/ivSettings"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/com_header_action_icon_size"
+                            android:layout_height="@dimen/com_header_action_icon_size"
                             android:src="@drawable/ic_menu"
                             app:tint="#6E846A" />
 
@@ -83,7 +84,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginHorizontal="8dp"
                         android:layout_toStartOf="@id/llHeaderActions"
-                        android:layout_toEndOf="@id/ivBack"
+                        android:layout_toEndOf="@id/ivHome"
                         android:ellipsize="end"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:gravity="center"
@@ -454,7 +455,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_centerInParent="true"
-                            android:src="@drawable/ic_bookmark_outline"
+                            android:src="@drawable/ic_save"
                             app:tint="#888888" />
 
                         <View

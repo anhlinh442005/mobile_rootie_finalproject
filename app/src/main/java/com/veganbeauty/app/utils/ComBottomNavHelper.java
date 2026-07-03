@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.ProfileSession;
@@ -156,5 +157,10 @@ public final class ComBottomNavHelper {
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.main_container, target)
                 .commitAllowingStateLoss();
+    }
+
+    public static void navigateToAppHome(@NonNull Fragment fragment) {
+        fragment.getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        BottomNavHelper.navigate(fragment, R.id.nav_home);
     }
 }

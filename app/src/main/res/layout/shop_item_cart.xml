@@ -125,7 +125,7 @@
                 android:layout_width="32dp"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_plus"
+                android:src="@drawable/ic_add"
                 android:padding="6dp"
                 app:tint="@color/primary" />
         </LinearLayout>

@@ -22,7 +22,7 @@
         android:layout_below="@id/home_header"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="56dp"
+        android:paddingBottom="@dimen/home_nav_bar_height"
         android:scrollbars="none">
 
         <LinearLayout

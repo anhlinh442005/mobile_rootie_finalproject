@@ -133,7 +133,7 @@
                 android:layout_height="38dp"
                 android:background="@drawable/skin_bg_circle_completed"
                 android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/ic_plus_dark"
+                android:src="@drawable/ic_add"
                 android:padding="8dp"
                 android:contentDescription="Thêm đính kèm"
                 app:tint="@color/primary"

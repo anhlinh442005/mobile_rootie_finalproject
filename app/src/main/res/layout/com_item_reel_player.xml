@@ -65,7 +65,7 @@
                     android:layout_height="16dp"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginBottom="-2dp"
-                    android:src="@drawable/ic_plus"
+                    android:src="@drawable/ic_add"
                     android:background="@drawable/com_bg_dot_selector"
                     android:backgroundTint="#E53935"
                     android:padding="2dp"

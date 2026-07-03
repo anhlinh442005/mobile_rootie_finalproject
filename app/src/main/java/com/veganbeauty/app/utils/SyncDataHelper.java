@@ -5,6 +5,7 @@ import android.content.Context;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.remote.FirestoreService;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -90,6 +91,20 @@ public class SyncDataHelper {
                 String socialJson = reader.readAsset("User_com_friend.json");
                 if (socialJson != null) {
                     firestoreService.syncUserSocialFromJson(socialJson);
+                }
+
+                String messageTemplateJson = reader.readAsset("community_message.json");
+                String usersJson = reader.readAsset("users.json");
+                if (messageTemplateJson != null && usersJson != null) {
+                    List<com.veganbeauty.app.data.local.entities.ConversationEntity> allMessages =
+                            com.veganbeauty.app.features.community.CommunityMessageSeeder
+                                    .buildAllPersonalizedConversations(messageTemplateJson, usersJson);
+                    if (!allMessages.isEmpty()) {
+                        firestoreService.syncCommunityMessagesFromJson(
+                                new com.google.gson.Gson().toJson(allMessages),
+                                true
+                        );
+                    }
                 }
 
                 success = true;

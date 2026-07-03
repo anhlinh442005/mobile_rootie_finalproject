@@ -158,8 +158,8 @@
                 android:layout_height="32dp"
                 android:background="@drawable/bg_btn_cart_showcase"
                 android:padding="8dp"
-                android:src="@drawable/ic_cart"
-                app:tint="@color/primary" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_cart" />
                 
             <TextView android:fontFamily="@font/be_vietnam_pro"
                 android:id="@+id/tvBuy"

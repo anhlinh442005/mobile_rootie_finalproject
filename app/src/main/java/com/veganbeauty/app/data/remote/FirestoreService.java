@@ -9,7 +9,11 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
+import com.veganbeauty.app.data.local.entities.ConversationEntity;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.local.entities.IngredientEntity;
 import com.veganbeauty.app.data.local.entities.KeyIngredient;
@@ -24,6 +28,7 @@ import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +41,7 @@ import java.util.UUID;
 
 public class FirestoreService {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final Gson gson = new Gson();
 
     public org.json.JSONArray getSkinHistory(String userEmail) {
         try {
@@ -481,39 +487,31 @@ public class FirestoreService {
     }
 
     public boolean uploadAllCommunityMessages(String messagesJson) {
+        return syncCommunityMessagesFromJson(messagesJson, true);
+    }
+
+    public boolean syncCommunityMessagesFromJson(String messagesJson, boolean wipeFirst) {
         try {
-            QuerySnapshot snapshot = Tasks.await(db.collection("community_message").get());
-            for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                Tasks.await(db.collection("community_message").document(doc.getId()).delete());
+            if (wipeFirst) {
+                QuerySnapshot snapshot = Tasks.await(db.collection("community_message").get());
+                for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                    Tasks.await(db.collection("community_message").document(doc.getId()).delete());
+                }
             }
 
-            JSONArray jsonArray = new JSONArray(messagesJson);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject obj = jsonArray.getJSONObject(i);
-                Map<String, Object> map = new HashMap<>();
-                Iterator<String> keys = obj.keys();
-                while (keys.hasNext()) {
-                    String key = keys.next();
-                    Object value = obj.get(key);
-                    if (value instanceof JSONArray) {
-                        List<Map<String, Object>> list = new ArrayList<>();
-                        JSONArray valArr = (JSONArray) value;
-                        for (int j = 0; j < valArr.length(); j++) {
-                            JSONObject childObj = valArr.getJSONObject(j);
-                            Map<String, Object> childMap = new HashMap<>();
-                            Iterator<String> childKeys = childObj.keys();
-                            while (childKeys.hasNext()) {
-                                String childKey = childKeys.next();
-                                childMap.put(childKey, childObj.get(childKey));
-                            }
-                            list.add(childMap);
-                        }
-                        map.put(key, list);
-                    } else {
-                        map.put(key, value);
-                    }
+            Type type = new TypeToken<List<ConversationEntity>>() {}.getType();
+            List<ConversationEntity> conversations = gson.fromJson(messagesJson, type);
+            if (conversations == null || conversations.isEmpty()) {
+                return false;
+            }
+
+            for (ConversationEntity conversation : conversations) {
+                if (conversation == null || conversation.getId() == null || conversation.getId().isEmpty()) {
+                    continue;
                 }
-                Tasks.await(db.collection("community_message").document(obj.optString("id")).set(map));
+                JsonElement jsonTree = gson.toJsonTree(conversation);
+                Map<String, Object> map = gson.fromJson(jsonTree, Map.class);
+                Tasks.await(db.collection("community_message").document(conversation.getId()).set(map));
             }
             return true;
         } catch (Exception e) {

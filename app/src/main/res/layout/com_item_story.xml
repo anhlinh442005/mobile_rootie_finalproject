@@ -29,23 +29,17 @@
                 android:background="#DDDDDD" />
         </androidx.cardview.widget.CardView>
             
-        <androidx.cardview.widget.CardView
+        <ImageView
             android:id="@+id/ivAdd"
             android:layout_width="22dp"
             android:layout_height="22dp"
-            app:cardCornerRadius="11dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="#FFFFFF"
             android:layout_gravity="bottom|end"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_plus"
-                android:padding="4dp"
-                app:tint="@color/primary" />
-        </androidx.cardview.widget.CardView>
+            android:background="@drawable/com_bg_add_circle"
+            android:padding="4dp"
+            android:src="@drawable/ic_add"
+            android:scaleType="fitCenter"
+            app:tint="@android:color/white"
+            android:visibility="gone" />
     </FrameLayout>
 
     <TextView

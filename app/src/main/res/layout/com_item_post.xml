@@ -231,7 +231,7 @@
             android:id="@+id/ivBookmark"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_bookmark_outline" />
+            android:src="@drawable/ic_save" />
     </LinearLayout>
 
     <!-- Post Content Container -->

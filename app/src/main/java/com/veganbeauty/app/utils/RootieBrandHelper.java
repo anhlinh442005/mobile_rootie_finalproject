@@ -37,4 +37,25 @@ public final class RootieBrandHelper {
         }
         return avatarUrl != null ? avatarUrl : "";
     }
+
+    public static void applyVerifiedBadge(android.widget.TextView textView, String userId, String name) {
+        if (textView == null) {
+            return;
+        }
+        if (isRootieUser(userId, name)) {
+            android.graphics.drawable.Drawable verifiedIcon = androidx.core.content.ContextCompat.getDrawable(
+                    textView.getContext(),
+                    com.veganbeauty.app.R.drawable.ic_verified
+            );
+            if (verifiedIcon != null) {
+                int size = (int) (14 * textView.getResources().getDisplayMetrics().density);
+                verifiedIcon.setBounds(0, 0, size, size);
+                textView.setCompoundDrawables(null, null, verifiedIcon, null);
+                textView.setCompoundDrawablePadding((int) (4 * textView.getResources().getDisplayMetrics().density));
+            }
+        } else {
+            textView.setCompoundDrawables(null, null, null, null);
+            textView.setCompoundDrawablePadding(0);
+        }
+    }
 }

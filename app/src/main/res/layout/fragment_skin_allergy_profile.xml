@@ -55,7 +55,7 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_notification" />
+                android:src="@drawable/ic_bell" />
         </FrameLayout>
     </RelativeLayout>
 
@@ -67,7 +67,7 @@
         android:layout_below="@id/rl_header"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="56dp"
+        android:paddingBottom="@dimen/home_nav_bar_height"
         android:clipChildren="false">
 
         <LinearLayout

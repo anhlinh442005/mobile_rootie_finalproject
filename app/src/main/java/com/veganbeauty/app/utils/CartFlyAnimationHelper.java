@@ -1,9 +1,12 @@
 package com.veganbeauty.app.utils;
 
 import android.app.Activity;
+import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -49,13 +52,27 @@ public final class CartFlyAnimationHelper {
         ImageView flying = new ImageView(activity);
         flying.setScaleType(ImageView.ScaleType.CENTER_CROP);
         flying.setElevation(dp(activity, 12));
-        flying.setBackgroundResource(R.drawable.bg_home_product_card);
+
+        int strokeWidth = dp(activity, 2);
+        GradientDrawable circleBg = new GradientDrawable();
+        circleBg.setShape(GradientDrawable.OVAL);
+        circleBg.setColor(ContextCompat.getColor(activity, R.color.white));
+        circleBg.setStroke(strokeWidth, ContextCompat.getColor(activity, R.color.secondary));
+        flying.setBackground(circleBg);
+        flying.setPadding(strokeWidth, strokeWidth, strokeWidth, strokeWidth);
+        flying.setClipToOutline(true);
+        flying.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setOval(0, 0, view.getWidth(), view.getHeight());
+            }
+        });
 
         Drawable drawable = productImageSource != null ? productImageSource.getDrawable() : null;
         if (drawable != null) {
             flying.setImageDrawable(drawable.mutate());
         } else {
-            flying.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_cart));
+            flying.setImageResource(R.drawable.ic_cart);
         }
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(flySize, flySize);

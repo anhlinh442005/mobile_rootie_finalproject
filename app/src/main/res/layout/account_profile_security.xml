@@ -12,7 +12,7 @@
         android:layout_alignParentBottom="true"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="56dp"
+        android:paddingBottom="@dimen/home_nav_bar_height"
         android:scrollbars="none">
 
         <LinearLayout
@@ -54,7 +54,7 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <!-- Notification Bell (Updated to ic_notification with the new vector badge) -->
+                <!-- Notification Bell -->
                 <ImageView
                     android:id="@+id/btn_notification"
                     android:layout_width="36dp"
@@ -62,7 +62,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:padding="6dp"
-                    android:src="@drawable/ic_notification"
+                    android:src="@drawable/ic_bell"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true" />

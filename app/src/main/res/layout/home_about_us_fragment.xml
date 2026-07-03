@@ -43,7 +43,7 @@
         android:layout_below="@id/header"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="56dp"
+        android:paddingBottom="@dimen/home_nav_bar_height"
         android:scrollbars="none">
 
         <LinearLayout
@@ -478,7 +478,7 @@
                                 <ImageView
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
-                                    android:src="@drawable/ic_vision"
+                                    android:src="@drawable/ic_eye"
                                     app:tint="@color/primary" />
 
                                 <TextView

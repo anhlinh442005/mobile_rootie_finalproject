@@ -86,8 +86,8 @@
                             android:id="@+id/ivCart"
                             android:layout_width="28dp"
                             android:layout_height="28dp"
-                            android:src="@drawable/ic_cart"
-                            app:tint="@color/white" />
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_cart_on_green" />
                         <TextView android:fontFamily="@font/be_vietnam_pro"
                             android:id="@+id/tvCartBadge"
                             android:layout_width="16dp"

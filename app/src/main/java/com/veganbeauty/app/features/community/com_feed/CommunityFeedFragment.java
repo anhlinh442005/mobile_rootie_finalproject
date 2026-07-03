@@ -38,6 +38,7 @@ import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentFeedBinding;
 import com.veganbeauty.app.features.community.beauty_hub.CommunityBeautyHubFragment;
+import com.veganbeauty.app.features.community.CommunitySocialHelper;
 import com.veganbeauty.app.features.community.message.CommunityMessageFragment;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
@@ -94,11 +95,10 @@ public class CommunityFeedFragment extends RootieFragment {
     public void setupUI(@NonNull View view) {
         binding.rvStories.setAdapter(storyAdapter);
         binding.rvPosts.setAdapter(postAdapter);
+        refreshFollowingState();
+        postAdapter.setOnFollowStateChangedListener(this::onFollowStateChanged);
 
-        binding.ivHome.setOnClickListener(v -> {
-            getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            BottomNavHelper.navigate(this, R.id.nav_home);
-        });
+        binding.ivHome.setOnClickListener(v -> ComBottomNavHelper.navigateToAppHome(this));
 
         binding.ivMenu.setOnClickListener(v -> {
             if (binding.drawerLayout != null) {
@@ -285,6 +285,38 @@ public class CommunityFeedFragment extends RootieFragment {
         }
     }
 
+    private void refreshFollowingState() {
+        Context ctx = getContext();
+        if (ctx == null) return;
+        String userId = ProfileSessionHelper.getEffectiveUserId(ctx);
+        if (userId == null || userId.isEmpty()) {
+            userId = CommunitySocialHelper.resolveUserId(ctx);
+        }
+        LocalJsonReader reader = new LocalJsonReader(ctx);
+        Map<String, List<String>> socialData = reader.getSocialDataForUser(userId);
+        FeedDataCache.mySocialData = socialData;
+        List<String> following = socialData.get("following");
+        postAdapter.setFollowingUserIds(following != null ? new HashSet<>(following) : new HashSet<>());
+    }
+
+    private void onFollowStateChanged(String targetUserId, boolean isFollowing) {
+        if (FeedDataCache.mySocialData == null) {
+            FeedDataCache.mySocialData = new java.util.HashMap<>();
+        }
+        List<String> following = FeedDataCache.mySocialData.get("following");
+        if (following == null) {
+            following = new ArrayList<>();
+            FeedDataCache.mySocialData.put("following", following);
+        }
+        if (isFollowing) {
+            if (!following.contains(targetUserId)) {
+                following.add(targetUserId);
+            }
+        } else {
+            following.remove(targetUserId);
+        }
+    }
+
     private boolean matchesCurrentFilter(CommunityPostEntity post) {
         if ("Tất cả".equals(currentFilter)) return true;
         return currentFilter.equalsIgnoreCase(post.getType())
@@ -326,7 +358,13 @@ public class CommunityFeedFragment extends RootieFragment {
                 LocalJsonReader reader = new LocalJsonReader(ctx);
                 if (FeedDataCache.productsList == null) FeedDataCache.productsList = reader.getProducts();
                 if (FeedDataCache.newsList == null) FeedDataCache.newsList = reader.getCommunityNews();
-                if (FeedDataCache.mySocialData == null) FeedDataCache.mySocialData = reader.getSocialDataForUser("test_001");
+                if (FeedDataCache.mySocialData == null) {
+                    String userId = ProfileSessionHelper.getEffectiveUserId(ctx);
+                    if (userId == null || userId.isEmpty()) {
+                        userId = CommunitySocialHelper.resolveUserId(ctx);
+                    }
+                    FeedDataCache.mySocialData = reader.getSocialDataForUser(userId);
+                }
 
                 mainHandler.post(() -> {
                     if (!isAdded()) return;
@@ -438,6 +476,13 @@ public class CommunityFeedFragment extends RootieFragment {
                                 }
                             }
                             postAdapter.updateData(pagedPostsList, suggestedUsers, finalReelsList, FeedDataCache.productsList);
+                            if (postAdapter != null) {
+                                List<String> following = FeedDataCache.mySocialData != null
+                                        ? FeedDataCache.mySocialData.get("following") : null;
+                                if (following != null) {
+                                    postAdapter.setFollowingUserIds(new HashSet<>(following));
+                                }
+                            }
                             isLoadingMore = false;
                         });
                     });

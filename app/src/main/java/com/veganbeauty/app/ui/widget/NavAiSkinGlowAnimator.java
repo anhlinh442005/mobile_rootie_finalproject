@@ -10,10 +10,10 @@ import com.veganbeauty.app.R;
 
 public final class NavAiSkinGlowAnimator {
 
-    private static final float ALPHA_MIN = 0.42f;
-    private static final float ALPHA_MAX = 0.78f;
-    private static final float SCALE_MIN = 0.86f;
-    private static final float SCALE_MAX = 1.10f;
+    private static final float ALPHA_MIN = 0.32f;
+    private static final float ALPHA_MAX = 0.62f;
+    private static final float SCALE_MIN = 0.92f;
+    private static final float SCALE_MAX = 1.14f;
 
     private NavAiSkinGlowAnimator() {
     }

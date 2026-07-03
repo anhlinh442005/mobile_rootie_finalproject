@@ -15,6 +15,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <TextView
+        android:id="@+id/tvOfflineHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:gravity="center"
+        android:text="Không có mạng.\nHãy kết nối mạng để xem video."
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <ProgressBar
         android:id="@+id/pbLoading"
         android:layout_width="wrap_content"
@@ -67,7 +83,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/llRightIcons"
-        android:layout_marginBottom="76dp"> <!-- Leave space for bottom nav -->
+        android:layout_marginBottom="@dimen/com_content_padding_bottom">
 
         <TextView
             android:id="@+id/tvAuthorName"
@@ -147,7 +163,7 @@
                 android:layout_gravity="start|bottom"
                 android:layout_marginStart="10dp"
                 android:layout_marginBottom="9dp"
-                android:src="@drawable/ic_plus"
+                android:src="@drawable/ic_add"
                 app:tint="@android:color/white"
                 android:background="@drawable/com_bg_add_circle"
                 android:padding="3dp" />
@@ -190,7 +206,7 @@
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_bookmark"
+            android:src="@drawable/ic_save"
             app:tint="@android:color/white" />
         <TextView
             android:id="@+id/tvBookmarkCount"

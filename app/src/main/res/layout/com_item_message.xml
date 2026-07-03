@@ -40,34 +40,51 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/tvName"
+    <LinearLayout
+        android:id="@+id/llNameRow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/be_vietnam_pro"
-        android:maxLines="1"
-        android:text="Name"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        android:textStyle="bold"
+        android:layout_marginEnd="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toStartOf="@+id/tvTime"
         app:layout_constraintStart_toEndOf="@id/flAvatar"
-        app:layout_constraintTop_toTopOf="@id/flAvatar" />
+        app:layout_constraintTop_toTopOf="@id/flAvatar">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:maxLines="1"
+            android:text="Name"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/ivVerified"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="4dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_verified"
+            android:visibility="gone"
+            app:tint="#0095F6" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:fontFamily="@font/be_vietnam_pro"
         android:text="Time"
         android:textColor="@color/gray_dark"
         android:textSize="12sp"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvName"
+        app:layout_constraintBottom_toBottomOf="@id/llNameRow"
         app:layout_constraintEnd_toStartOf="@+id/vUnreadDot"
-        app:layout_constraintStart_toEndOf="@id/tvName" />
+        app:layout_constraintTop_toTopOf="@id/llNameRow" />
 
     <TextView
         android:id="@+id/tvLastMessage"
@@ -82,8 +99,8 @@
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/flAvatar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/tvName"
-        app:layout_constraintTop_toBottomOf="@id/tvName" />
+        app:layout_constraintStart_toStartOf="@id/llNameRow"
+        app:layout_constraintTop_toBottomOf="@id/llNameRow" />
 
     <View
         android:id="@+id/vUnreadDot"

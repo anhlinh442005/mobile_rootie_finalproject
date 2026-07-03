@@ -32,10 +32,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageHelper {
     private static final String FILE_NAME = "community_message.json";
+    public static final String MESSAGE_LIKE = "__like__";
     
     private static final Map<String, ListenerRegistration> conversationListeners = new ConcurrentHashMap<>();
     private static final Map<String, ListenerRegistration> allConversationsListeners = new ConcurrentHashMap<>();
     
+    public static boolean isLikeMessage(String text) {
+        return MESSAGE_LIKE.equals(text);
+    }
+
+    public static String formatPreviewText(String text) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        return isLikeMessage(text) ? "👍" : text;
+    }
+
     private static void pushToFirebase(ConversationEntity conv) {
         try {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -233,7 +245,7 @@ public class MessageHelper {
     }
 
     public static List<ConversationEntity> getConversations(Context context, String currentUserId) {
-        syncConversationsFromAssets(context);
+        syncConversationsFromAssets(context, currentUserId);
         List<ConversationEntity> all = readData(context);
         List<ConversationEntity> filtered = new ArrayList<>();
         for (ConversationEntity c : all) {
@@ -251,9 +263,13 @@ public class MessageHelper {
     }
 
     public static void syncConversationsFromAssets(Context context) {
+        syncConversationsFromAssets(context, ProfileSession.getCurrentUserId(context));
+    }
+
+    public static void syncConversationsFromAssets(Context context, String currentUserId) {
         initDataIfNeed(context);
         List<ConversationEntity> local = readData(context);
-        List<ConversationEntity> fromAssets = readAssetsData(context);
+        List<ConversationEntity> fromAssets = readAssetsData(context, currentUserId);
         if (fromAssets.isEmpty()) {
             return;
         }
@@ -329,19 +345,42 @@ public class MessageHelper {
                 });
     }
 
-    private static List<ConversationEntity> readAssetsData(Context context) {
+    private static List<ConversationEntity> readAssetsData(Context context, String currentUserId) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(context.getAssets().open("community_message.json")))) {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
-            Type type = new TypeToken<List<ConversationEntity>>() {}.getType();
-            List<ConversationEntity> list = new Gson().fromJson(sb.toString(), type);
-            return list != null ? new ArrayList<>(list) : new ArrayList<>();
+            return parsePersonalizedTemplates(
+                    sb.toString(),
+                    currentUserId != null ? currentUserId : "",
+                    ProfileSession.getFullName(context) != null ? ProfileSession.getFullName(context) : "Bạn",
+                    ProfileSession.getAvatar(context) != null ? ProfileSession.getAvatar(context) : ""
+            );
         } catch (Exception e) {
             return new ArrayList<>();
         }
+    }
+
+    public static List<ConversationEntity> parsePersonalizedTemplates(
+            String templateJson,
+            String userId,
+            String userName,
+            String userAvatar
+    ) {
+        if (templateJson == null || templateJson.trim().isEmpty() || userId == null || userId.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String safeName = userName != null ? userName.replace("\"", "\\\"") : "Bạn";
+        String safeAvatar = userAvatar != null ? userAvatar.replace("\"", "\\\"") : "";
+        String personalizedJson = templateJson
+                .replace("{{USER_ID}}", userId)
+                .replace("{{USER_NAME}}", safeName)
+                .replace("{{USER_AVATAR}}", safeAvatar);
+        Type type = new TypeToken<List<ConversationEntity>>() {}.getType();
+        List<ConversationEntity> list = new Gson().fromJson(personalizedJson, type);
+        return list != null ? new ArrayList<>(list) : new ArrayList<>();
     }
 
     private static ConversationEntity pickNewerConversation(ConversationEntity first, ConversationEntity second) {

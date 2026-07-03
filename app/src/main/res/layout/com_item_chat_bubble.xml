@@ -62,6 +62,16 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:fontFamily="@font/be_vietnam_pro" />
+
+            <ImageView
+                android:id="@+id/ivLikeMessage"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_like"
+                android:visibility="gone"
+                app:tint="@color/basic_green" />
         </LinearLayout>
 
         <!-- Spacer for right side of partner messages -->

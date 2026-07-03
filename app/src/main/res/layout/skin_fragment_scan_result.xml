@@ -3,323 +3,231 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/neutral">
+    android:background="@color/black">
 
-    <!-- ===== HEADER ===== -->
-    <LinearLayout
-        android:id="@+id/skin_scan_result_header"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="4dp"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/skin_scan_result_btn_back"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:contentDescription="Quay lại"
-            android:focusable="true"
-            android:padding="10dp"
-            android:src="@drawable/ic_arrow_back_thin"
-            app:tint="@color/primary" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/be_vietnam_pro_bold"
-                android:text="Kết quả phân tích da"
-                android:textColor="@color/primary"
-                android:textSize="17sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/be_vietnam_pro"
-                android:text="AI soi da"
-                android:textColor="@color/content"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/skin_scan_btn_top_history"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/skin_bg_card_outline"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingHorizontal="12dp">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_skin_history"
-                app:tint="@color/primary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:fontFamily="@font/be_vietnam_pro"
-                android:text="Lịch sử"
-                android:textColor="@color/primary"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
+    <!-- Ảnh full màn hình (cố định phía sau) -->
+    <ImageView
+        android:id="@+id/skin_result_hero_image"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/about_us_pd"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Nút đóng + lịch sử nổi trên ảnh -->
+    <TextView
+        android:id="@+id/skin_result_btn_close"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:gravity="center"
+        android:text="✕"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/skin_scan_btn_top_history"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/skin_bg_card_outline"
+        android:backgroundTint="#CCFFFFFF"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:gravity="center"
+        android:paddingHorizontal="12dp"
+        android:text="Lịch sử"
+        android:textColor="@color/primary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Scroll: spacer trong suốt + bottom sheet + chi tiết -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/skin_result_scroll_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:clipToPadding="false"
         android:fillViewport="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/skin_scan_result_bottom_bar"
-        app:layout_constraintTop_toBottomOf="@id/skin_scan_result_header">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="32dp">
+            android:orientation="vertical">
 
-            <!-- TOP SECTION: Score and Image -->
+            <!-- Khoảng trống để lộ ảnh; chiều cao set trong Java -->
+            <View
+                android:id="@+id/skin_result_photo_spacer"
+                android:layout_width="match_parent"
+                android:layout_height="520dp" />
+
+            <!-- Bottom sheet peek: chỉ điểm số + vấn đề da -->
             <LinearLayout
+                android:id="@+id/skin_result_bottom_sheet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="16dp">
-
-                <!-- Left: Score Info -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingEnd="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/be_vietnam_pro"
-                        android:text="Điểm da của bạn"
-                        android:textColor="@color/content"
-                        android:textSize="16sp" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:gravity="bottom"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/skin_result_score_val"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/be_vietnam_pro_bold"
-                            android:includeFontPadding="false"
-                            android:text="78"
-                            android:textColor="@color/primary"
-                            android:textSize="48sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:fontFamily="@font/be_vietnam_pro"
-                            android:text="/100"
-                            android:textColor="@color/primary"
-                            android:textSize="22sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/skin_result_score_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/be_vietnam_pro_bold"
-                        android:text="Da tốt"
-                        android:textColor="@color/secondary"
-                        android:textSize="18sp" />
-
-                    <!-- Progress Bar -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/skin_bg_badge_grey"
-                        android:clipToOutline="true"
-                        android:orientation="horizontal">
-
-                        <View
-                            android:id="@+id/skin_result_progress_fill"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.78"
-                            android:background="#677559" />
-
-                        <View
-                            android:id="@+id/skin_result_progress_empty"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.22"
-                            android:background="#E6EBE6" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/skin_result_summary_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:fontFamily="@font/be_vietnam_pro"
-                        android:lineSpacingExtra="2dp"
-                        android:text="Làn da của bạn đang ở trạng thái tốt. Hãy duy trì chăm sóc da đều đặn để đạt kết quả tốt hơn!"
-                        android:textColor="@color/content"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- Right: Image -->
-                <RelativeLayout
-                    android:layout_width="160dp"
-                    android:layout_height="180dp">
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp">
-
-                        <ImageView
-                            android:id="@+id/skin_result_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/about_us_pd" />
-
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Date Tag -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginBottom="-12dp"
-                        android:background="@drawable/skin_bg_card_outline"
-                        android:backgroundTint="@color/white"
-                        android:elevation="2dp"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp">
-
-                        <ImageView
-                            android:layout_width="14dp"
-                            android:layout_height="14dp"
-                            android:src="@drawable/ic_calendar"
-                            app:tint="@color/primary" />
-
-                        <TextView
-                            android:id="@+id/skin_result_date_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
-                            android:fontFamily="@font/be_vietnam_pro"
-                            android:text="24/05/2024 - 09:30"
-                            android:textColor="@color/content"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </RelativeLayout>
-            </LinearLayout>
-
-            <!-- MIDDLE SECTION: Radar Chart & Metrics List -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:background="@drawable/skin_bg_bottom_sheet"
                 android:orientation="vertical"
-                android:paddingHorizontal="16dp">
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="12dp">
 
-                <!-- Top Card: ĐÁNH GIÁ CHI TIẾT -->
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/skin_bg_card_outline"
-                    android:orientation="vertical"
+                    android:background="@color/primary_light"
                     android:padding="12dp">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/be_vietnam_pro_bold"
-                            android:text="ĐÁNH GIÁ CHI TIẾT"
-                            android:textColor="@color/primary"
-                            android:textSize="16sp" />
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_alignParentEnd="true"
-                            android:src="@drawable/ic_article_outline"
-                            app:tint="@color/content" />
-                    </RelativeLayout>
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="220dp"
-                        android:layout_marginTop="8dp">
-                        <com.github.mikephil.charting.charts.RadarChart
-                            android:id="@+id/skin_result_radar_chart"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-                    </FrameLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|end"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="AI phát hiện"
+                        android:textColor="@color/secondary"
+                        android:textSize="13sp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="16dp">
-                        <View
-                            android:layout_width="16dp"
-                            android:layout_height="2dp"
-                            android:background="@color/primary" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:fontFamily="@font/be_vietnam_pro"
-                            android:text="Kết quả của bạn"
-                            android:textColor="@color/content"
-                            android:textSize="11sp" />
+                        android:layout_marginEnd="72dp"
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:fontFamily="@font/be_vietnam_pro"
-                            android:text="- - Trung bình"
-                            android:textColor="@color/content"
-                            android:textSize="11sp" />
+                            android:layout_weight="0.9"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="bottom"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/skin_result_score_val"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/be_vietnam_pro_bold"
+                                    android:includeFontPadding="false"
+                                    android:text="78"
+                                    android:textColor="@color/primary"
+                                    android:textSize="30sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:fontFamily="@font/be_vietnam_pro"
+                                    android:text="/100"
+                                    android:textColor="@color/primary"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/skin_result_score_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro_bold"
+                                android:text="Da tốt"
+                                android:textColor="@color/secondary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.4"
+                            android:orientation="vertical"
+                            android:paddingStart="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:text="Vấn đề da"
+                                android:textColor="@color/content"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:id="@+id/skin_result_issues_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:orientation="vertical" />
+                        </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
+                </FrameLayout>
 
-                <View
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="16dp" />
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="4dp"
+                    android:text="Lướt lên để xem chi tiết ↑"
+                    android:textColor="@color/tertiary"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
-                <!-- Bottom Card: GIẢI THÍCH KẾT QUẢ -->
+            <!-- Nội dung cuộn lên từ peek -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="8dp">
+
+                <LinearLayout
+                    android:id="@+id/skin_result_grid_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/skin_result_summary_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:lineSpacingExtra="3dp"
+                    android:text="Làn da của bạn đang ở trạng thái tốt."
+                    android:textColor="@color/content"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Chi tiết bên dưới -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/neutral"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -331,149 +239,236 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="GIẢI THÍCH KẾT QUẢ"
                         android:textColor="@color/primary"
-                        android:textSize="16sp"
-                        android:layout_marginBottom="12dp"/>
+                        android:textSize="18sp" />
 
                     <LinearLayout
                         android:id="@+id/skin_result_metrics_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <!-- Metrics items populated dynamically -->
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/skin_bg_card_outline"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="ĐÁNH GIÁ CHI TIẾT"
+                        android:textColor="@color/primary"
+                        android:textSize="18sp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:layout_marginTop="8dp">
+
+                        <com.github.mikephil.charting.charts.RadarChart
+                            android:id="@+id/skin_result_radar_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="16dp"
+                            android:layout_height="2dp"
+                            android:background="@color/primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:text="Kết quả của bạn"
+                            android:textColor="@color/content"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:text="- - Trung bình"
+                            android:textColor="@color/content"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- TÌNH TRẠNG DA SECTION -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:background="@drawable/skin_bg_card_outline"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/skin_bg_card_outline"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="TÌNH TRẠNG DA"
                         android:textColor="@color/secondary"
-                        android:textSize="16sp" />
-                </RelativeLayout>
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/skin_result_attributes_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical" />
+                </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/skin_result_attributes_container"
+                    android:id="@+id/skin_result_suggestions_section"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:orientation="horizontal"
-                    android:baselineAligned="false">
-                    <!-- Attributes populated dynamically -->
-                </LinearLayout>
-            </LinearLayout>
+                    android:background="@drawable/skin_bg_card_outline"
+                    android:backgroundTint="#FFF6E5"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <!-- GỢI Ý CHO BẠN SECTION -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/skin_bg_card_outline"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/be_vietnam_pro_bold"
-                    android:text="GỢI Ý CHO BẠN"
-                    android:textColor="@color/secondary"
-                    android:textSize="16sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="GỢI Ý CHO BẠN"
+                        android:textColor="@color/secondary"
+                        android:textSize="18sp" />
 
                     <LinearLayout
                         android:id="@+id/skin_result_suggestions_container"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:paddingEnd="12dp">
-                        <!-- Bullets populated dynamically -->
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/rcm_product" /> <!-- Placeholder for illustration -->
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical" />
                 </LinearLayout>
-            </LinearLayout>
-
-            <!-- GỢI Ý QUY TRÌNH CHĂM SÓC -->
-            <LinearLayout
-                android:id="@+id/skin_result_btn_go_routine"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/skin_bg_btn_solid_dark"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="14dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/ic_water_drop_outline"
-                    app:tint="@color/white" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:id="@+id/skin_result_btn_go_routine"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/skin_bg_btn_solid_dark"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:fontFamily="@font/be_vietnam_pro_bold"
-                    android:text="Xem gợi ý chăm sóc da ngay"
+                    android:gravity="center"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="14dp"
+                    android:text="Xem gợi ý chăm sóc da ngay  ›"
                     android:textColor="@color/white"
-                    android:textSize="15sp" />
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_chevron_right"
-                    app:tint="@color/white" />
+                    android:textSize="17sp" />
             </LinearLayout>
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- ===== BOTTOM BAR ===== -->
+    <!-- Loading -->
+    <FrameLayout
+        android:id="@+id/skin_result_loading_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/neutral"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp">
+
+            <ImageView
+                android:id="@+id/iv_skin_mascot_success"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/mascot_success" />
+
+            <TextView
+                android:id="@+id/tv_skin_loading_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:gravity="center"
+                android:text="AI đang làm việc,\nbạn chờ chút nhé"
+                android:textColor="@color/primary"
+                android:textSize="20sp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginHorizontal="16dp">
+
+                <ImageView
+                    android:id="@+id/iv_skin_mascot_loading"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginBottom="12dp"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/mascot_loading" />
+
+                <ProgressBar
+                    android:id="@+id/skin_loading_progress_bar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_gravity="bottom"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/com_bg_progress_bar" />
+            </FrameLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Bottom bar -->
     <LinearLayout
         android:id="@+id/skin_scan_result_bottom_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:elevation="16dp"
+        android:elevation="24dp"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
         android:paddingVertical="16dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:translationZ="24dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/skin_result_btn_save"
@@ -485,10 +480,11 @@
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="@font/be_vietnam_pro_bold"
+            android:foreground="?attr/selectableItemBackground"
             android:gravity="center"
             android:text="Lưu kết quả"
             android:textColor="@color/primary"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/skin_result_btn_history_bottom"
@@ -500,10 +496,11 @@
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="@font/be_vietnam_pro_bold"
+            android:foreground="?attr/selectableItemBackground"
             android:gravity="center"
             android:text="Xem lịch sử"
             android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

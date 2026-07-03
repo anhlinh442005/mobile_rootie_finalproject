@@ -128,7 +128,7 @@ public abstract class RootieFragment extends Fragment {
         );
         bellLp.gravity = Gravity.CENTER;
         bellIcon.setLayoutParams(bellLp);
-        bellIcon.setImageResource(R.drawable.home_ic_notification);
+        bellIcon.setImageResource(R.drawable.ic_bell);
         int tintColor = Color.parseColor("#3E4D44");
         bellIcon.setColorFilter(tintColor);
         notificationContainer.addView(bellIcon);

@@ -61,7 +61,7 @@
         android:layout_below="@id/layout_header"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="56dp"
+        android:paddingBottom="@dimen/home_nav_bar_height"
         android:overScrollMode="never"
         android:scrollbars="none">
 

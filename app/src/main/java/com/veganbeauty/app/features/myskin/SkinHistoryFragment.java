@@ -241,7 +241,7 @@ public class SkinHistoryFragment extends RootieFragment {
         dataSet.setLineWidth(2f);
         dataSet.setCircleRadius(5f);
         dataSet.setDrawCircleHole(false);
-        dataSet.setValueTextSize(11f);
+        dataSet.setValueTextSize(13f);
         dataSet.setValueTextColor(Color.parseColor("#333333"));
         dataSet.setValueTypeface(ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro_bold));
         dataSet.setDrawFilled(true);
@@ -269,7 +269,7 @@ public class SkinHistoryFragment extends RootieFragment {
         xAxis.setDrawGridLines(true);
         xAxis.setGridColor(Color.parseColor("#EAEAEA"));
         xAxis.setTextColor(Color.parseColor("#555555"));
-        xAxis.setTextSize(10f);
+        xAxis.setTextSize(12f);
         xAxis.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro_bold));
         xAxis.setGranularity(1f);
         xAxis.setAxisLineColor(Color.TRANSPARENT);
@@ -280,7 +280,7 @@ public class SkinHistoryFragment extends RootieFragment {
         axisLeft.setAxisMaximum(100f);
         axisLeft.setLabelCount(5, true);
         axisLeft.setTextColor(Color.parseColor("#555555"));
-        axisLeft.setTextSize(10f);
+        axisLeft.setTextSize(12f);
         axisLeft.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro_bold));
         axisLeft.setDrawGridLines(true);
         axisLeft.setGridColor(Color.parseColor("#EAEAEA"));

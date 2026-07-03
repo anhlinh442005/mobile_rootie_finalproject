@@ -68,8 +68,8 @@
         android:layout_marginStart="8dp"
         android:background="@drawable/bg_cart_button_green"
         android:contentDescription="@null"
-        android:padding="7dp"
-        android:src="@drawable/ic_add_to_cart"
-        app:tint="@color/neutral" />
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cart_on_green" />
 
 </LinearLayout>

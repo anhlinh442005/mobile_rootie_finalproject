@@ -282,7 +282,7 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
             nm.createNotificationChannel(ch);
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, channelId)
-                .setSmallIcon(R.drawable.ic_notification).setContentTitle(title).setContentText(content).setAutoCancel(true);
+                .setSmallIcon(R.drawable.ic_bell).setContentTitle(title).setContentText(content).setAutoCancel(true);
         if (!sound) { builder.setSound(null); builder.setPriority(NotificationCompat.PRIORITY_LOW); }
         else { builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)); builder.setPriority(NotificationCompat.PRIORITY_DEFAULT); }
         if (!vibrate) builder.setVibrate(new long[]{0L});

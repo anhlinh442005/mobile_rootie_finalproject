@@ -51,7 +51,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="6dp"
-            android:src="@drawable/ic_notification" />
+            android:src="@drawable/ic_bell" />
     </RelativeLayout>
 
     <!-- CONTENT BODY -->

@@ -62,7 +62,7 @@ public class SearchContentSuggestionAdapter extends RecyclerView.Adapter<SearchC
             if (item.getType() != null) {
                 switch (item.getType()) {
                     case CATEGORY: iconRes = R.drawable.ic_tag; break;
-                    case VIDEO: iconRes = R.drawable.ic_chat_video; break;
+                    case VIDEO: iconRes = R.drawable.ic_video_call; break;
                     case BLOG: iconRes = R.drawable.ic_article_outline; break;
                     case POST: iconRes = R.drawable.ic_community; break;
                 }

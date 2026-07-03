@@ -35,7 +35,7 @@
         android:layout_weight="1"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="56dp">
+        android:paddingBottom="@dimen/home_nav_bar_height">
 
         <LinearLayout
             android:layout_width="match_parent"

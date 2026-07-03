@@ -189,7 +189,7 @@
                     android:layout_height="32dp"
                     android:layout_gravity="center"
                     android:contentDescription="Chụp ảnh"
-                    android:src="@drawable/ic_chat_camera"
+                    android:src="@drawable/ic_camera"
                     android:tint="@color/neutral" />
 
             </FrameLayout>
@@ -216,7 +216,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:contentDescription="Album"
-                    android:src="@drawable/ic_chat_gallery"
+                    android:src="@drawable/ic_gallery"
                     android:tint="@color/primary" />
 
             </FrameLayout>

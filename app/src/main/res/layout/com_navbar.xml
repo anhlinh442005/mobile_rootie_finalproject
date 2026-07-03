@@ -5,13 +5,13 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:weightSum="5"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp"
+    android:paddingTop="@dimen/com_navbar_padding_vertical"
+    android:paddingBottom="@dimen/com_navbar_padding_vertical"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:background="@drawable/com_bg_navbar"
     android:elevation="8dp"
-    android:minHeight="52dp">
+    android:minHeight="@dimen/com_navbar_min_height">
 
     <LinearLayout
         android:id="@+id/nav_com_feed"
@@ -20,28 +20,28 @@
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingVertical="2dp"
+        android:paddingVertical="4dp"
         android:clickable="true"
         android:focusable="true"
         android:clipChildren="false">
 
         <FrameLayout
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:clipChildren="false">
 
             <View
                 android:id="@+id/view_glow_com_feed"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_com_nav_tab_glow"
                 android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_nav_com_feed"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_nav_com_feed"
                 app:tint="@color/primary" />
@@ -68,28 +68,28 @@
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingVertical="2dp"
+        android:paddingVertical="4dp"
         android:clickable="true"
         android:focusable="true"
         android:clipChildren="false">
 
         <FrameLayout
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:clipChildren="false">
 
             <View
                 android:id="@+id/view_glow_com_hub"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_com_nav_tab_glow"
                 android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_nav_com_hub"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_nav_com_hub"
                 app:tint="@color/tertiary" />
@@ -116,28 +116,28 @@
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingVertical="2dp"
+        android:paddingVertical="4dp"
         android:clickable="true"
         android:focusable="true"
         android:clipChildren="false">
 
         <FrameLayout
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:clipChildren="false">
 
             <View
                 android:id="@+id/view_glow_com_explore"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_com_nav_tab_glow"
                 android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_nav_com_explore"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_nav_com_explore"
                 app:tint="@color/tertiary" />
@@ -164,28 +164,28 @@
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingVertical="2dp"
+        android:paddingVertical="4dp"
         android:clickable="true"
         android:focusable="true"
         android:clipChildren="false">
 
         <FrameLayout
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:clipChildren="false">
 
             <View
                 android:id="@+id/view_glow_com_chat"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_com_nav_tab_glow"
                 android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_nav_com_chat"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_nav_com_chat"
                 app:tint="@color/tertiary" />
@@ -212,28 +212,28 @@
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingVertical="2dp"
+        android:paddingVertical="4dp"
         android:clickable="true"
         android:focusable="true"
         android:clipChildren="false">
 
         <FrameLayout
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:clipChildren="false">
 
             <View
                 android:id="@+id/view_glow_com_profile"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_com_nav_tab_glow"
                 android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_nav_com_profile"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_nav_com_profile"
                 app:tint="@color/tertiary" />

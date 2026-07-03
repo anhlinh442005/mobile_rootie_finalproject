@@ -99,7 +99,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String notificationType = data.get("notificationType") != null ? data.get("notificationType") : "general";
         String orderId = data.get("orderId");
         String scheduleId = data.get("scheduleId");
-        String iconResName = data.get("iconResName") != null ? data.get("iconResName") : "ic_notification";
+        String iconResName = data.get("iconResName") != null ? data.get("iconResName") : "ic_bell";
 
         String currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
@@ -148,7 +148,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 null,
                 false,
                 "Hôm nay",
-                "ic_notification",
+                "ic_bell",
                 "general",
                 null,
                 null

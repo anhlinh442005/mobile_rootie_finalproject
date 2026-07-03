@@ -36,13 +36,13 @@ import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentProfileBinding;
 import com.veganbeauty.app.features.community.UserMemoryHelper;
-import com.veganbeauty.app.features.community.com_feed.CommunityFeedFragment;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory;
 import com.veganbeauty.app.features.community.com_feed.ReelPlayerDialog;
 import com.veganbeauty.app.features.community.message.ChatDetailFragment;
 import com.veganbeauty.app.features.community.message.MessageHelper;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
+import com.veganbeauty.app.utils.ComBottomNavHelper;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.utils.SideMenuHelper;
 import com.veganbeauty.app.utils.TimeFormatter;
@@ -101,16 +101,7 @@ public class CommunityProfileFragment extends RootieFragment {
         Context ctx = requireContext();
         LocalJsonReader jsonReader = new LocalJsonReader(ctx);
 
-        binding.ivBack.setOnClickListener(v -> {
-            if (getParentFragmentManager().getBackStackEntryCount() > 0) {
-                getParentFragmentManager().popBackStack();
-            } else {
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_container, new CommunityFeedFragment())
-                        .commit();
-            }
-        });
+        binding.ivHome.setOnClickListener(v -> ComBottomNavHelper.navigateToAppHome(this));
 
         binding.ivNotification.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()

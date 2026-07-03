@@ -106,7 +106,7 @@ public class RoutineAlarmReceiver extends BroadcastReceiver {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.ic_bell)
                 .setContentTitle(titleText)
                 .setContentText(messageText)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(messageText))

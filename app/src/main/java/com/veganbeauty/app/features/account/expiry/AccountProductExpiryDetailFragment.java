@@ -253,7 +253,7 @@ public class AccountProductExpiryDetailFragment extends RootieFragment {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.ic_bell)
                 .setContentTitle(titleText)
                 .setContentText(messageText)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
