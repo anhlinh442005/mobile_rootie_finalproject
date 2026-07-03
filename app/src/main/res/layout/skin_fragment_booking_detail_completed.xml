@@ -484,88 +484,184 @@
                         android:layout_marginStart="8dp"/>
                 </LinearLayout>
 
+                <!-- Chưa có đánh giá: mời khách đánh giá -->
                 <LinearLayout
+                    android:id="@+id/skin_detail_review_prompt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_marginTop="12dp"
-                    android:gravity="center_vertical">
+                    android:background="@drawable/skin_bg_btn_book_light"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/mascot_coin" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
+                            android:text="Bạn chưa đánh giá dịch vụ"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:lineSpacingExtra="2dp"
+                            android:text="Chia sẻ trải nghiệm của bạn để nhận ngay +50 Rootie Points!"
+                            android:textColor="@color/content"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/skin_detail_btn_add_review"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/skin_bg_btn_solid_dark"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="10dp"
+                        android:text="Đánh giá ngay"
+                        android:textColor="@color/white"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Đã có đánh giá -->
+                <LinearLayout
+                    android:id="@+id/skin_detail_review_submitted"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center_horizontal">
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
                         <TextView
                             android:id="@+id/skin_detail_user_rating_num"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/be_vietnam_pro"
                             android:text="5.0"
                             android:textColor="@color/primary"
-                            android:textStyle="bold"
                             android:textSize="24sp"
-                            android:fontFamily="@font/be_vietnam_pro"/>
+                            android:textStyle="bold" />
+
                         <LinearLayout
+                            android:id="@+id/skin_detail_review_stars"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
-                            <!-- Just mock stars for now -->
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
-                            <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_star" app:tint="#FFC107"/>
+
+                            <ImageView
+                                android:id="@+id/skin_detail_star_1"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:src="@drawable/ic_star"
+                                app:tint="#FFC107" />
+
+                            <ImageView
+                                android:id="@+id/skin_detail_star_2"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:src="@drawable/ic_star"
+                                app:tint="#FFC107" />
+
+                            <ImageView
+                                android:id="@+id/skin_detail_star_3"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:src="@drawable/ic_star"
+                                app:tint="#FFC107" />
+
+                            <ImageView
+                                android:id="@+id/skin_detail_star_4"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:src="@drawable/ic_star"
+                                app:tint="#FFC107" />
+
+                            <ImageView
+                                android:id="@+id/skin_detail_star_5"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:src="@drawable/ic_star"
+                                app:tint="#FFC107" />
                         </LinearLayout>
+
                         <TextView
+                            android:id="@+id/skin_detail_rating_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/be_vietnam_pro"
                             android:text="Tuyệt vời!"
                             android:textColor="@color/content"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/be_vietnam_pro"/>
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
                         android:layout_marginStart="16dp"
-                        android:layout_marginEnd="8dp">
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
                         <TextView
                             android:id="@+id/skin_detail_user_review_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/be_vietnam_pro"
                             android:text="“Nhân viên tư vấn nhiệt tình, soi da kỹ và giải thích dễ hiểu.”"
                             android:textColor="@color/primary"
                             android:textSize="13sp"
-                            android:textStyle="italic"
-                            android:fontFamily="@font/be_vietnam_pro"/>
+                            android:textStyle="italic" />
+
                         <TextView
                             android:id="@+id/skin_detail_review_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/be_vietnam_pro"
                             android:text="Đánh giá ngày 20/05/2024"
                             android:textColor="@color/content"
-                            android:textSize="11sp"
-                            android:fontFamily="@font/be_vietnam_pro"
-                            android:layout_marginTop="4dp"/>
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/skin_detail_btn_edit_review"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:background="@drawable/skin_bg_btn_book_light"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:paddingHorizontal="12dp"
-                        android:paddingVertical="8dp"
-                        android:gravity="center_vertical">
+                        android:paddingVertical="8dp">
+
                         <ImageView
                             android:layout_width="14dp"
                             android:layout_height="14dp"
                             android:src="@drawable/ic_edit"
-                            app:tint="@color/primary"/>
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -578,7 +674,6 @@
                             android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
-
                 </LinearLayout>
             </LinearLayout>
 

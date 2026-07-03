@@ -43,6 +43,8 @@ import java.util.concurrent.Executors;
 
 public class BookingDetailCompletedFragment extends RootieFragment {
 
+    private static final int REVIEW_BONUS_POINTS = 50;
+
     private SkinFragmentBookingDetailCompletedBinding binding;
     private static BookingHistoryEntity bookingData = null;
     private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
@@ -104,6 +106,8 @@ public class BookingDetailCompletedFragment extends RootieFragment {
         });
 
         binding.skinDetailBtnEditReview.setOnClickListener(v -> showEditReviewDialog());
+        binding.skinDetailBtnAddReview.setOnClickListener(v -> showEditReviewDialog());
+        binding.skinDetailReviewPrompt.setOnClickListener(v -> showEditReviewDialog());
         binding.skinDetailBtnViewImages.setOnClickListener(v -> openBeforeAfterGallery());
     }
 
@@ -162,9 +166,7 @@ public class BookingDetailCompletedFragment extends RootieFragment {
             com.bumptech.glide.Glide.with(binding.skinDetailConsultantAvatar.getContext()).load(data.getConsultantAvatar()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(binding.skinDetailConsultantAvatar);
         }
 
-        binding.skinDetailUserRatingNum.setText(String.format(Locale.US, "%.1f", data.getUserRating()));
-        binding.skinDetailUserReviewText.setText("“" + data.getUserReview() + "”");
-        binding.skinDetailReviewDate.setText(data.getReviewDate());
+        updateReviewSection(data);
 
         if (data.getBeforeImage() != null && !data.getBeforeImage().isEmpty()) {
             com.bumptech.glide.Glide.with(binding.skinDetailBeforeImg.getContext()).load(data.getBeforeImage()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(binding.skinDetailBeforeImg);
@@ -181,6 +183,43 @@ public class BookingDetailCompletedFragment extends RootieFragment {
         binding.skinDetailNextApptDate.setText(data.getNextAppointmentDate());
     }
 
+    private boolean hasUserReview(BookingHistoryEntity data) {
+        return data != null
+                && data.getUserRating() > 0f
+                && !TextUtils.isEmpty(data.getUserReview().trim());
+    }
+
+    private void updateReviewSection(BookingHistoryEntity data) {
+        if (hasUserReview(data)) {
+            binding.skinDetailReviewPrompt.setVisibility(View.GONE);
+            binding.skinDetailReviewSubmitted.setVisibility(View.VISIBLE);
+
+            int starCount = Math.max(1, Math.min(5, Math.round(data.getUserRating())));
+            binding.skinDetailUserRatingNum.setText(String.format(Locale.US, "%.1f", data.getUserRating()));
+            binding.skinDetailUserReviewText.setText("“" + data.getUserReview() + "”");
+            String reviewDate = data.getReviewDate();
+            binding.skinDetailReviewDate.setText(
+                    reviewDate != null && !reviewDate.isEmpty()
+                            ? "Đánh giá ngày " + reviewDate
+                            : "");
+            binding.skinDetailRatingLabel.setText(getRatingLabel(starCount));
+
+            ImageView[] stars = new ImageView[] {
+                    binding.skinDetailStar1,
+                    binding.skinDetailStar2,
+                    binding.skinDetailStar3,
+                    binding.skinDetailStar4,
+                    binding.skinDetailStar5
+            };
+            for (int i = 0; i < stars.length; i++) {
+                stars[i].setColorFilter(i < starCount ? Color.parseColor("#FFC107") : Color.parseColor("#D8D8D8"));
+            }
+        } else {
+            binding.skinDetailReviewPrompt.setVisibility(View.VISIBLE);
+            binding.skinDetailReviewSubmitted.setVisibility(View.GONE);
+        }
+    }
+
     private void showEditReviewDialog() {
         if (bookingData == null) return;
 
@@ -193,6 +232,7 @@ public class BookingDetailCompletedFragment extends RootieFragment {
         }
 
         ImageView btnClose = dialogView.findViewById(R.id.dialog_review_btn_close);
+        TextView tvTitle = dialogView.findViewById(R.id.dialog_review_title);
         SeekBar seekBar = dialogView.findViewById(R.id.dialog_review_seekbar);
         EditText etComment = dialogView.findViewById(R.id.dialog_review_comment);
         TextView tvCount = dialogView.findViewById(R.id.dialog_review_count);
@@ -208,6 +248,10 @@ public class BookingDetailCompletedFragment extends RootieFragment {
                 dialogView.findViewById(R.id.dialog_review_star_4),
                 dialogView.findViewById(R.id.dialog_review_star_5)
         };
+
+        boolean isFirstReview = !hasUserReview(bookingData);
+        tvTitle.setText(isFirstReview ? "Đánh giá dịch vụ" : "Chỉnh sửa đánh giá");
+        btnSubmit.setText(isFirstReview ? "Gửi đánh giá" : "Cập nhật đánh giá");
 
         float initialRating = bookingData.getUserRating() > 0f ? bookingData.getUserRating() : 5f;
         int initialStars = Math.max(1, Math.min(5, Math.round(initialRating)));
@@ -301,9 +345,14 @@ public class BookingDetailCompletedFragment extends RootieFragment {
 
     private void saveReviewChanges(float rating, String review, String reviewDate) {
         if (bookingData == null) return;
-        binding.skinDetailUserRatingNum.setText(String.format(Locale.US, "%.1f", rating));
-        binding.skinDetailUserReviewText.setText("“" + review + "”");
-        binding.skinDetailReviewDate.setText(reviewDate);
+
+        boolean isFirstReview = !hasUserReview(bookingData);
+        int earnedPoints = bookingData.getEarnedPoints();
+        int totalPoints = bookingData.getTotalPoints();
+        if (isFirstReview) {
+            earnedPoints += REVIEW_BONUS_POINTS;
+            totalPoints += REVIEW_BONUS_POINTS;
+        }
 
         BookingHistoryEntity updated = new BookingHistoryEntity(
                 bookingData.getId(),
@@ -335,8 +384,8 @@ public class BookingDetailCompletedFragment extends RootieFragment {
                 reviewDate,
                 bookingData.getBeforeImage(),
                 bookingData.getAfterImage(),
-                bookingData.getEarnedPoints(),
-                bookingData.getTotalPoints(),
+                earnedPoints,
+                totalPoints,
                 bookingData.getNextAppointmentDate(),
                 bookingData.getNextAppointmentText(),
                 bookingData.getCancelledAt(),
@@ -344,12 +393,27 @@ public class BookingDetailCompletedFragment extends RootieFragment {
         );
         bookingData = updated;
 
+        updateReviewSection(updated);
+        binding.skinDetailEarnedPoints.setText("+" + earnedPoints);
+        binding.skinDetailTotalPoints.setText("Tổng điểm hiện tại: " + totalPoints + " điểm");
+
+        final int finalEarnedPoints = earnedPoints;
+        final int finalTotalPoints = totalPoints;
         ioExecutor.execute(() -> {
             LocalJsonReader localJsonReader = new LocalJsonReader(requireContext());
-            localJsonReader.updateBookingReview(updated.getId(), rating, review, reviewDate);
-            new FirestoreService().updateBookingReview(updated.getId(), rating, review, reviewDate);
+            localJsonReader.updateBookingReview(
+                    updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
+            new FirestoreService().updateBookingReview(
+                    updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
         });
-        Toast.makeText(requireContext(), "Đã cập nhật đánh giá", Toast.LENGTH_SHORT).show();
+
+        if (isFirstReview) {
+            Toast.makeText(requireContext(),
+                    "Cảm ơn bạn! Bạn nhận được +" + REVIEW_BONUS_POINTS + " Rootie Points.",
+                    Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(requireContext(), "Đã cập nhật đánh giá", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openBeforeAfterGallery() {

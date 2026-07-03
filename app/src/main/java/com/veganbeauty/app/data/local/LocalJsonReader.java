@@ -1447,7 +1447,8 @@ public class LocalJsonReader {
         return friends != null ? friends : new ArrayList<>();
     }
 
-    public synchronized void updateBookingReview(String id, float rating, String reviewText, String reviewDate) {
+    public synchronized void updateBookingReview(String id, float rating, String reviewText, String reviewDate,
+                                                 int earnedPoints, int totalPoints) {
         if (id == null || id.trim().isEmpty()) {
             return;
         }
@@ -1488,8 +1489,8 @@ public class LocalJsonReader {
                     reviewDate != null ? reviewDate : booking.getReviewDate(),
                     booking.getBeforeImage(),
                     booking.getAfterImage(),
-                    booking.getEarnedPoints(),
-                    booking.getTotalPoints(),
+                    earnedPoints,
+                    totalPoints,
                     booking.getNextAppointmentDate(),
                     booking.getNextAppointmentText(),
                     booking.getCancelledAt(),
