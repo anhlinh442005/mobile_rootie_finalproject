@@ -151,7 +151,7 @@
                     android:layout_height="24dp"
                     android:contentDescription="Cá nhân"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_account" />
+                    android:src="@drawable/ic_nav_com_profile" />
 
                 <TextView
                     android:id="@+id/tv_nav_account"

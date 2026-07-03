@@ -182,10 +182,27 @@ public class BookingFragment extends RootieFragment {
             boolean isToday = now.get(Calendar.YEAR) == selectedCal.get(Calendar.YEAR)
                     && now.get(Calendar.DAY_OF_YEAR) == selectedCal.get(Calendar.DAY_OF_YEAR);
             int curH = now.get(Calendar.HOUR_OF_DAY);
+            
+            String userEmail = ProfileSession.getEmail(requireContext());
+            List<BookingHistoryEntity> userBookings = new LocalJsonReader(requireContext()).getUserBookingHistory(userEmail);
+            String selectedDateStr = new SimpleDateFormat("dd/MM", Locale.getDefault()).format(selectedCal.getTime()) + "/" + selectedCal.get(Calendar.YEAR);
+
             for (int i = 0; i < baseTimes.size(); i++) {
-                int slotHour = Integer.parseInt(baseTimes.get(i).split(":")[0]);
+                String timeSlot = baseTimes.get(i);
+                int slotHour = Integer.parseInt(timeSlot.split(":")[0]);
                 boolean locked = isToday && slotHour <= curH;
-                times.add(new BookingTime(String.valueOf(i + 1), baseTimes.get(i), locked));
+                
+                if (!locked && userBookings != null) {
+                    for (BookingHistoryEntity b : userBookings) {
+                        if (("Sắp diễn ra".equals(b.getStatus()) || "Chờ xác nhận".equals(b.getStatus())) 
+                            && selectedDateStr.equals(b.getDateDisplay()) 
+                            && b.getTime() != null && b.getTime().startsWith(timeSlot)) {
+                            locked = true;
+                            break;
+                        }
+                    }
+                }
+                times.add(new BookingTime(String.valueOf(i + 1), timeSlot, locked));
             }
         }
         timeAdapter.updateData(times);

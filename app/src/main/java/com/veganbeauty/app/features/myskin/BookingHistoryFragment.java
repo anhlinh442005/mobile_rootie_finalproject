@@ -114,8 +114,82 @@ public class BookingHistoryFragment extends RootieFragment {
         String userEmail = ProfileSession.getEmail(requireContext());
         List<BookingHistoryEntity> list = new LocalJsonReader(requireContext()).getUserBookingHistory(userEmail);
         allBookings.clear();
-        if (list != null) allBookings.addAll(list);
+        if (list != null) {
+            java.util.Calendar now = java.util.Calendar.getInstance();
+            for (BookingHistoryEntity b : list) {
+                if ("Sắp diễn ra".equals(b.getStatus()) || "Chờ xác nhận".equals(b.getStatus())) {
+                    java.util.Calendar bookingTime = parseBookingTime(b);
+                    if (bookingTime != null && bookingTime.before(now)) {
+                        String oldStatus = b.getStatus();
+                        b.setStatus("Đã huỷ");
+                        if ("Chờ xác nhận".equals(oldStatus)) {
+                            b.setCancelReason("Hệ thống tự động huỷ do quá thời gian hẹn nhưng chưa được Admin xác nhận lịch.");
+                        } else {
+                            b.setCancelReason("Hệ thống tự động huỷ do đã quá thời gian hẹn mà khách không đến Spa.");
+                        }
+                        
+                        final String finalId = b.getId();
+                        final String finalReason = b.getCancelReason();
+                        final android.content.Context ctx = requireContext().getApplicationContext();
+                        new Thread(() -> {
+                            new LocalJsonReader(ctx).updateBookingStatus(finalId, "Đã huỷ", finalReason);
+                            new com.veganbeauty.app.data.remote.FirestoreService().updateBookingStatus(finalId, "Đã huỷ", finalReason);
+                        }).start();
+                    }
+                }
+            }
+            allBookings.addAll(list);
+        }
         filterBookings();
+    }
+
+    private java.util.Calendar parseBookingTime(BookingHistoryEntity b) {
+        try {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            int currentYear = cal.get(java.util.Calendar.YEAR);
+            
+            String dateDisplay = b.getDateDisplay();
+            String time = b.getTime();
+            
+            int day = 1;
+            int month = cal.get(java.util.Calendar.MONTH);
+            int year = currentYear;
+            
+            if (dateDisplay != null && !dateDisplay.isEmpty()) {
+                if (dateDisplay.contains("/")) {
+                    String[] parts = dateDisplay.split("/");
+                    if (parts.length >= 1) day = Integer.parseInt(parts[0].trim());
+                    if (parts.length >= 2) month = Integer.parseInt(parts[1].trim()) - 1;
+                    if (parts.length >= 3) year = Integer.parseInt(parts[2].trim());
+                } else {
+                    day = Integer.parseInt(dateDisplay.trim().split(" ")[0]);
+                    String monthDisplay = b.getMonthDisplay();
+                    if (monthDisplay != null && monthDisplay.contains("Tháng")) {
+                        String firstLine = monthDisplay.split("\n")[0];
+                        String mStr = firstLine.replaceAll("[^0-9]", "");
+                        if (!mStr.isEmpty()) {
+                            month = Integer.parseInt(mStr) - 1;
+                        }
+                    }
+                }
+            }
+            
+            int hour = 0;
+            int min = 0;
+            if (time != null && !time.isEmpty()) {
+                String startTime = time.split("-")[0].trim();
+                String[] tParts = startTime.split(":");
+                if (tParts.length >= 2) {
+                    hour = Integer.parseInt(tParts[0].trim());
+                    min = Integer.parseInt(tParts[1].trim());
+                }
+            }
+            
+            cal.set(year, month, day, hour, min, 0);
+            return cal;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private void filterBookings() {
@@ -175,12 +249,9 @@ public class BookingHistoryFragment extends RootieFragment {
             holder.tvTime.setText(booking.getTime());
             holder.tvStore.setText(booking.getStoreName() + "\n" + booking.getStoreAddress());
 
-            String dayNum = "01";
-            if (booking.getDateDisplay() != null && booking.getDateDisplay().contains(" ")) {
-                dayNum = booking.getDateDisplay().split(" ")[0];
-            }
-            holder.tvDateNum.setText(dayNum);
-            holder.tvMonthDay.setText(booking.getMonthDisplay() + "\n" + booking.getDayOfWeek());
+            kotlin.Pair<String, String> parsedDate = BookingDateParser.parseDateDisplay(booking.getDateDisplay(), booking.getMonthDisplay(), booking.getDayOfWeek());
+            holder.tvDateNum.setText(parsedDate.getFirst());
+            holder.tvMonthDay.setText(parsedDate.getSecond());
 
             holder.tvStatusTag.setText(booking.getStatus());
             

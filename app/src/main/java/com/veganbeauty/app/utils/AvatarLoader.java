@@ -26,7 +26,17 @@ public class AvatarLoader {
             String path = avatarUrl.substring(7);
             File file = new File(path);
             if (file.exists()) {
-                finalUrl = "file://" + file.getAbsolutePath() + "?t=" + file.lastModified();
+                finalUrl = avatarUrl;
+                
+                // Use ObjectKey signature to bust cache for local files instead of appending ?t=
+                com.bumptech.glide.Glide.with(imageView.getContext())
+                        .load(finalUrl)
+                        .signature(new com.bumptech.glide.signature.ObjectKey(file.lastModified()))
+                        .placeholder(android.R.color.darker_gray)
+                        .error(com.veganbeauty.app.R.drawable.img_avatar)
+                        .circleCrop()
+                        .into(imageView);
+                return;
             } else {
                 finalUrl = avatarUrl;
             }

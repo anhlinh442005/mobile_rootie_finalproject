@@ -26,6 +26,8 @@ public class BookingDateParser {
 
             if (clean.contains(" ")) {
                 dayNum = clean.split(" ")[0];
+            } else {
+                dayNum = clean;
             }
         } catch (Exception e) {
             // Keep safe fallback values.

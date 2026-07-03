@@ -220,7 +220,7 @@
                             <ImageView
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
-                                android:src="@drawable/ic_address_user"
+                                android:src="@drawable/ic_nav_com_profile"
                                 app:tint="@color/secondary" />
 
                             <TextView
@@ -418,7 +418,7 @@
                             <ImageView
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
-                                android:src="@drawable/ic_address_user"
+                                android:src="@drawable/ic_nav_com_profile"
                                 app:tint="@color/secondary" />
 
                             <TextView

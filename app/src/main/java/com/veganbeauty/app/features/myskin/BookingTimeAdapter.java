@@ -75,7 +75,10 @@ public class BookingTimeAdapter extends RecyclerView.Adapter<BookingTimeAdapter.
         }
 
         holder.container.setOnClickListener(v -> {
-            if (item.isLocked()) return;
+            if (item.isLocked()) {
+                android.widget.Toast.makeText(holder.itemView.getContext(), "Giờ này đã được bạn đặt hoặc đã qua, vui lòng chọn giờ khác.", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
             int oldIndex = selectedIndex;
             selectedIndex = holder.getBindingAdapterPosition();
             if (oldIndex >= 0) notifyItemChanged(oldIndex);

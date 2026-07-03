@@ -48,7 +48,7 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_menu"
+            android:src="@drawable/ic_menu_sort"
             app:tint="#555555" />
     </RelativeLayout>
 
