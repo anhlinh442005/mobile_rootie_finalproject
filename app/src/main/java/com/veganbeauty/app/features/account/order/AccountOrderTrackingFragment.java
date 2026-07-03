@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderTrackingFragmentBinding;
 import com.veganbeauty.app.databinding.AccountOrderTrackingStepItemBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.home.NotificationBadgeHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -82,8 +84,7 @@ public class AccountOrderTrackingFragment extends RootieFragment {
                     .addToBackStack(null)
                     .commit();
         };
-        getBinding().layoutNotification.setOnClickListener(navigateToNotification);
-        getBinding().btnNotification.setOnClickListener(navigateToNotification);
+        getBinding().layoutNotification.getRoot().setOnClickListener(navigateToNotification);
 
         getBinding().btnCallShipper.setOnClickListener(v ->
                 Toast.makeText(getContext(), "Đang kết nối cuộc gọi đến shipper...", Toast.LENGTH_SHORT).show()
@@ -102,7 +103,10 @@ public class AccountOrderTrackingFragment extends RootieFragment {
                 NotificationRepository.getInstance(requireContext()).getUnreadCount()
         ).observe(getViewLifecycleOwner(), count -> {
             if (_binding == null) return;
-            _binding.viewNotificationBadge.setVisibility(count != null && count > 0 ? View.VISIBLE : View.GONE);
+            TextView badge = NotificationBadgeHelper.findBadgeView(_binding.getRoot());
+            if (badge != null) {
+                NotificationBadgeHelper.updateBadgeCount(badge, count);
+            }
         });
     }
 

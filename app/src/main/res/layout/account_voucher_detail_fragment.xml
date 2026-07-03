@@ -67,7 +67,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Xoá voucher"
-                android:src="@drawable/ic_address_trash"
+                android:src="@drawable/ic_bin"
                 app:tint="#02542D" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,7 +12,7 @@
         android:layout_alignParentBottom="true"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="@dimen/home_nav_bar_height"
+        android:paddingBottom="56dp"
         android:scrollbars="none">
 
         <LinearLayout
@@ -60,8 +60,9 @@
                     android:layout_height="36dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:padding="6dp"
-                    android:src="@drawable/ic_bell"
+                    android:padding="7dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_notification"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true" />

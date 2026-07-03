@@ -33,6 +33,7 @@ import com.veganbeauty.app.databinding.AccountNotificationFragmentBinding;
 import com.veganbeauty.app.features.account.checkin.AccountCheckinFragment;
 import com.veganbeauty.app.features.account.expiry.AccountProductExpiryFragment;
 import com.veganbeauty.app.features.account.order.AccountOrderDetailFragment;
+import com.veganbeauty.app.features.myskin.AccountSyncHelper;
 import com.veganbeauty.app.features.myskin.BookingDetailCancelledFragment;
 import com.veganbeauty.app.features.myskin.BookingDetailCompletedFragment;
 import com.veganbeauty.app.features.myskin.BookingDetailUpcomingFragment;
@@ -52,6 +53,11 @@ public class AccountNotificationFragment extends RootieFragment {
     private AccountNotificationFragmentBinding _binding;
     private NotificationViewModel viewModel;
     private NotificationListAdapter listAdapter;
+
+    @Override
+    protected boolean shouldSetupNotificationBell() {
+        return false;
+    }
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(),
@@ -332,5 +338,17 @@ public class AccountNotificationFragment extends RootieFragment {
     public void onDestroyView() {
         super.onDestroyView();
         _binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        AccountSyncHelper.sync(requireContext(), () -> {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() ->
+                        NotificationRepository.getInstance(requireContext()).refreshNotifications()
+                );
+            }
+        });
     }
 }

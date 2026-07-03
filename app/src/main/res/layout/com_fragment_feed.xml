@@ -14,16 +14,16 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clHeader"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/com_header_height"
-        android:paddingHorizontal="14dp"
+        android:layout_height="44dp"
+        android:paddingHorizontal="12dp"
         android:background="@color/neutral"
         app:layout_constraintTop_toTopOf="parent"
         android:elevation="2dp">
 
         <ImageView
             android:id="@+id/ivHome"
-            android:layout_width="@dimen/com_header_icon_size"
-            android:layout_height="@dimen/com_header_icon_size"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_home"
             app:tint="@color/primary"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,8 +32,8 @@
 
         <ImageView
             android:id="@+id/ivMenu"
-            android:layout_width="@dimen/com_header_action_icon_size"
-            android:layout_height="@dimen/com_header_action_icon_size"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_menu_sort"
             app:tint="@color/primary"
             app:layout_constraintStart_toEndOf="@id/ivHome"
@@ -56,7 +56,7 @@
             <ImageView
                 android:id="@+id/ivLogoName"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/com_header_logo_height"
+                android:layout_height="26dp"
                 android:adjustViewBounds="true"
                 android:maxWidth="120dp"
                 android:scaleType="fitCenter"
@@ -64,8 +64,8 @@
                 app:tint="@color/primary" />
 
             <ImageView
-                android:layout_width="@dimen/com_header_chevron_size"
-                android:layout_height="@dimen/com_header_chevron_size"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
                 android:layout_marginStart="4dp"
                 android:src="@drawable/ic_chevron_down"
                 app:tint="@color/primary" />
@@ -82,27 +82,25 @@
 
             <ImageView
                 android:id="@+id/ivPlus"
-                android:layout_width="@dimen/com_header_action_icon_size"
-                android:layout_height="@dimen/com_header_action_icon_size"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/ic_add"
-                android:scaleType="fitCenter"
+                android:src="@drawable/ic_plus"
                 app:tint="@color/primary" />
 
             <ImageView
                 android:id="@+id/ivSearch"
-                android:layout_width="@dimen/com_header_png_icon_size"
-                android:layout_height="@dimen/com_header_png_icon_size"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_marginEnd="12dp"
                 android:src="@drawable/ic_search"
                 app:tint="@color/primary" />
 
             <ImageView
                 android:id="@+id/ivNotification"
-                android:layout_width="@dimen/com_header_png_icon_size"
-                android:layout_height="@dimen/com_header_png_icon_size"
-                android:src="@drawable/ic_bell"
-                app:tint="@color/primary" />
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_notification" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -121,8 +119,8 @@
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:clipToPadding="false"
-            android:paddingTop="@dimen/com_header_height"
-            android:paddingBottom="@dimen/com_content_padding_bottom">
+            android:paddingTop="44dp"
+            android:paddingBottom="72dp">
 
         <LinearLayout
             android:layout_width="match_parent"

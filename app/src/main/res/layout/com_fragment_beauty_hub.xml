@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:clipToPadding="false"
-            android:paddingBottom="@dimen/com_content_padding_bottom">
+            android:paddingBottom="72dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -31,7 +31,7 @@
                 <!-- Header -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/com_header_height"
+                    android:layout_height="?attr/actionBarSize"
                     android:paddingHorizontal="16dp">
 
                     <LinearLayout
@@ -45,10 +45,11 @@
 
                         <ImageView
                             android:id="@+id/btnHome"
-                            android:layout_width="@dimen/com_header_icon_size"
-                            android:layout_height="@dimen/com_header_icon_size"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:src="@drawable/ic_home"
                             app:tint="@color/primary"
+                            android:padding="6dp"
                             android:layout_marginEnd="8dp" />
 
                         <ImageView
@@ -69,10 +70,9 @@
 
                     <ImageView
                         android:id="@+id/ivNotification"
-                        android:layout_width="@dimen/com_header_png_icon_size"
-                        android:layout_height="@dimen/com_header_png_icon_size"
-                        android:src="@drawable/ic_bell"
-                        app:tint="@color/primary"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_notification"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />

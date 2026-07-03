@@ -247,7 +247,8 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/skin_ai_sparkles" />
+                    android:src="@drawable/ic_ai_outline"
+                    app:tint="@color/primary" />
             </RelativeLayout>
 
             <TextView

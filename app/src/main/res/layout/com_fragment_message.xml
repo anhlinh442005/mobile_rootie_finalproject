@@ -58,8 +58,7 @@
             android:id="@+id/ivNotification"
             android:layout_width="@dimen/com_header_png_icon_size"
             android:layout_height="@dimen/com_header_png_icon_size"
-            android:src="@drawable/ic_bell"
-            app:tint="@color/gray_dark" />
+            android:src="@drawable/ic_notification" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView

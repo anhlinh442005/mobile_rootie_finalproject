@@ -27,6 +27,7 @@ import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderListFragmentBinding;
 import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.home.NotificationBadgeHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -146,8 +147,7 @@ public class AccountOrderListFragment extends RootieFragment {
                 .addToBackStack(null)
                 .commit();
         };
-        _binding.layoutNotification.setOnClickListener(navigateToNotification);
-        _binding.btnNotification.setOnClickListener(navigateToNotification);
+        _binding.layoutNotification.getRoot().setOnClickListener(navigateToNotification);
 
         _binding.rvOrders.setAdapter(orderAdapter);
 
@@ -175,7 +175,10 @@ public class AccountOrderListFragment extends RootieFragment {
                 NotificationRepository.getInstance(requireContext()).getUnreadCount()
         ).observe(getViewLifecycleOwner(), count -> {
             if (_binding == null) return;
-            _binding.viewNotificationBadge.setVisibility(count != null && count > 0 ? View.VISIBLE : View.GONE);
+            TextView badge = NotificationBadgeHelper.findBadgeView(_binding.getRoot());
+            if (badge != null) {
+                NotificationBadgeHelper.updateBadgeCount(badge, count);
+            }
         });
     }
 

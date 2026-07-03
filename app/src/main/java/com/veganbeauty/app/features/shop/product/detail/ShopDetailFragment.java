@@ -839,7 +839,7 @@ public class ShopDetailFragment extends RootieFragment {
             binding.cvSkinCompatibility.setVisibility(View.VISIBLE);
             binding.cvSkinCompatibility.setCardBackgroundColor(Color.parseColor("#FEFBF4"));
             binding.cvSkinCompatibility.setStrokeColor(Color.parseColor("#DDDFC4"));
-            binding.ivCompatibilityIcon.setImageResource(R.drawable.quiz_ic_sparkles);
+            binding.ivCompatibilityIcon.setImageResource(R.drawable.ic_ai_outline);
             binding.ivCompatibilityIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#677559")));
             binding.tvCompatibilityTitle.setText("Kiểm tra độ phù hợp làn da");
             binding.tvCompatibilityTitle.setTextColor(Color.parseColor("#677559"));

@@ -102,8 +102,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_phone"
-            app:tint="@color/basic_green"
             android:scaleType="fitCenter"
+            app:tint="@color/basic_green"
             android:layout_marginEnd="16dp" />
 
         <ImageView

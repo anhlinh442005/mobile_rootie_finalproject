@@ -24,6 +24,7 @@ import androidx.lifecycle.LifecycleOwnerKt;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.home.NotificationBadgeHelper;
 
 import kotlinx.coroutines.BuildersKt;
 import kotlinx.coroutines.Dispatchers;
@@ -35,16 +36,29 @@ public abstract class RootieFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setupUI(view);
 
-        if (!shouldSkipNotificationSync()) {
-            try {
+        try {
+            if (!shouldSkipNotificationSync()) {
                 injectNotificationButtonIfNeeded(view);
-                setupNotificationBellAndBadge(view);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            if (shouldSetupNotificationBell()) {
+                setupNotificationBellAndBadge(view);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         observeViewModel();
+    }
+
+    private FrameLayout.LayoutParams createBadgeLayoutParams(
+            @Nullable ViewGroup.LayoutParams source,
+            float density
+    ) {
+        return NotificationBadgeHelper.createBadgeLayoutParams(source, density);
+    }
+
+    private void styleBadge(TextView badge, Context context) {
+        NotificationBadgeHelper.styleBadge(badge, context);
     }
 
     protected abstract void setupUI(@NonNull View view);
@@ -56,6 +70,10 @@ public abstract class RootieFragment extends Fragment {
     private boolean shouldSkipNotificationSync() {
         // Auto-inject/manipulation of the view tree is fragile and crashes on inner navigation.
         // Screens that need notification wire btn_notification in their own setupUI.
+        return true;
+    }
+
+    protected boolean shouldSetupNotificationBell() {
         return true;
     }
 
@@ -123,14 +141,12 @@ public abstract class RootieFragment extends Fragment {
 
         ImageView bellIcon = new ImageView(ctx);
         FrameLayout.LayoutParams bellLp = new FrameLayout.LayoutParams(
-                (int) (26 * density),
-                (int) (26 * density)
+                (int) (22 * density),
+                (int) (22 * density)
         );
         bellLp.gravity = Gravity.CENTER;
         bellIcon.setLayoutParams(bellLp);
-        bellIcon.setImageResource(R.drawable.ic_bell);
-        int tintColor = Color.parseColor("#3E4D44");
-        bellIcon.setColorFilter(tintColor);
+        bellIcon.setImageResource(R.drawable.ic_notification);
         notificationContainer.addView(bellIcon);
 
         int size = (int) (14 * density);
@@ -227,28 +243,37 @@ public abstract class RootieFragment extends Fragment {
     }
 
     private void setupNotificationBellAndBadge(View view) {
-        // Find existing notification button in the view tree
-        String[] notificationButtonIds = {
-                "home_header_notification_btn",
-                "btnNotification",
-                "btn_notification",
-                "ivNotification",
-                "iv_notification"
-        };
+        View notificationBtn = NotificationBadgeHelper.findBellContainer(view);
 
-        View notificationBtn = null;
-        for (String idStr : notificationButtonIds) {
-            int resId = getResources().getIdentifier(idStr, "id", requireContext().getPackageName());
-            if (resId != 0) {
-                View found = view.findViewById(resId);
-                if (found != null) {
-                    notificationBtn = found;
-                    break;
+        if (notificationBtn == null) {
+            String[] notificationButtonIds = {
+                    "btn_notification",
+                    "ivNotification",
+                    "iv_notification"
+            };
+
+            for (String idStr : notificationButtonIds) {
+                int resId = getResources().getIdentifier(idStr, "id", requireContext().getPackageName());
+                if (resId != 0) {
+                    View found = view.findViewById(resId);
+                    if (found != null) {
+                        notificationBtn = found;
+                        break;
+                    }
                 }
             }
         }
 
         if (notificationBtn == null) return;
+
+        Context ctx = requireContext();
+        float density = ctx.getResources().getDisplayMetrics().density;
+
+        if (notificationBtn instanceof FrameLayout) {
+            NotificationBadgeHelper.ensureBellContainer((FrameLayout) notificationBtn, ctx);
+        } else if (notificationBtn.getParent() instanceof FrameLayout) {
+            NotificationBadgeHelper.ensureBellContainer((FrameLayout) notificationBtn.getParent(), ctx);
+        }
 
         // Find pre-existing notification badge in the view tree
         String[] badgeIds = {
@@ -275,21 +300,16 @@ public abstract class RootieFragment extends Fragment {
 
         if (badgeView instanceof TextView) {
             badgeTextView = (TextView) badgeView;
+            styleBadge(badgeTextView, ctx);
         } else if (badgeView != null) {
-            // Found a badge view but it's a plain View/dot. Let's replace it with a TextView badge.
+            // Found a badge view but it's a plain View/dot. Replace with numbered badge on the bell corner.
             if (badgeView.getParent() instanceof ViewGroup) {
                 ViewGroup parent = (ViewGroup) badgeView.getParent();
                 int index = parent.indexOfChild(badgeView);
-                ViewGroup.LayoutParams layoutParams = badgeView.getLayoutParams();
 
                 TextView newBadge = new TextView(requireContext());
                 newBadge.setId(badgeView.getId());
-                newBadge.setLayoutParams(layoutParams);
-                newBadge.setGravity(Gravity.CENTER);
-                newBadge.setTextColor(Color.WHITE);
-                newBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f);
-                newBadge.setTypeface(null, Typeface.BOLD);
-                newBadge.setBackgroundResource(R.drawable.home_bg_notification_badge);
+                styleBadge(newBadge, ctx);
 
                 parent.removeViewAt(index);
                 parent.addView(newBadge, index);
@@ -304,29 +324,24 @@ public abstract class RootieFragment extends Fragment {
                     int index = parent.indexOfChild(notificationBtn);
                     ViewGroup.LayoutParams originalParams = notificationBtn.getLayoutParams();
 
-                    Context ctx = requireContext();
-                    float density = ctx.getResources().getDisplayMetrics().density;
-
-                    int originalWidth = originalParams.width;
-                    int originalHeight = originalParams.height;
-
-                    int containerWidth = (originalWidth <= 0 || originalWidth < (40 * density)) ? (int) (40 * density) : originalWidth;
-                    int containerHeight = (originalHeight <= 0 || originalHeight < (40 * density)) ? (int) (40 * density) : originalHeight;
+                    int containerSize = (int) (NotificationBadgeHelper.CONTAINER_DP * density);
+                    int bellSize = (int) (NotificationBadgeHelper.BELL_DP * density);
 
                     FrameLayout container = new FrameLayout(ctx);
                     container.setId(View.generateViewId());
-                    originalParams.width = containerWidth;
-                    originalParams.height = containerHeight;
+                    originalParams.width = containerSize;
+                    originalParams.height = containerSize;
                     container.setLayoutParams(originalParams);
                     container.setClipChildren(false);
                     container.setClipToPadding(false);
 
-                    FrameLayout.LayoutParams btnLp = new FrameLayout.LayoutParams(
-                            (originalWidth > 0) ? originalWidth : (int) (24 * density),
-                            (originalHeight > 0) ? originalHeight : (int) (24 * density)
-                    );
+                    FrameLayout.LayoutParams btnLp = new FrameLayout.LayoutParams(bellSize, bellSize);
                     btnLp.gravity = Gravity.CENTER;
                     notificationBtn.setLayoutParams(btnLp);
+                    notificationBtn.setPadding(0, 0, 0, 0);
+                    if (notificationBtn instanceof ImageView) {
+                        ((ImageView) notificationBtn).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    }
 
                     parent.removeViewAt(index);
                     container.addView(notificationBtn);
@@ -335,48 +350,35 @@ public abstract class RootieFragment extends Fragment {
                 }
             }
 
-            // Now that notificationBtn is a ViewGroup (either original or wrapped FrameLayout), let's add the badge
+            // Now that notificationBtn is a ViewGroup (either original or wrapped FrameLayout), add the badge
             if (notificationBtn instanceof ViewGroup) {
                 ViewGroup btnGroup = (ViewGroup) notificationBtn;
-                Context ctx = requireContext();
-                float density = ctx.getResources().getDisplayMetrics().density;
 
-                // If it is a FrameLayout, let's make sure it is at least 40dp x 40dp and center its child to prevent badge clipping.
                 if (btnGroup instanceof FrameLayout) {
-                    ViewGroup.LayoutParams lp = btnGroup.getLayoutParams();
-                    if (lp.width == ViewGroup.LayoutParams.WRAP_CONTENT || lp.width < (int) (40 * density)) {
-                        lp.width = (int) (40 * density);
-                    }
-                    if (lp.height == ViewGroup.LayoutParams.WRAP_CONTENT || lp.height < (int) (40 * density)) {
-                        lp.height = (int) (40 * density);
-                    }
-                    btnGroup.setLayoutParams(lp);
+                    NotificationBadgeHelper.ensureBellContainer(btnGroup, ctx);
 
                     if (btnGroup.getChildCount() > 0) {
                         View child = btnGroup.getChildAt(0);
-                        ViewGroup.LayoutParams childLp = child.getLayoutParams();
-                        if (childLp instanceof FrameLayout.LayoutParams) {
-                            ((FrameLayout.LayoutParams) childLp).gravity = Gravity.CENTER;
-                            child.setLayoutParams(childLp);
+                        if (!(child instanceof TextView) || child.getId() != R.id.viewNotificationBadge) {
+                            int bellSize = (int) (NotificationBadgeHelper.BELL_DP * density);
+                            ViewGroup.LayoutParams childLp = child.getLayoutParams();
+                            if (childLp instanceof FrameLayout.LayoutParams) {
+                                childLp.width = bellSize;
+                                childLp.height = bellSize;
+                                ((FrameLayout.LayoutParams) childLp).gravity = Gravity.CENTER;
+                                child.setLayoutParams(childLp);
+                                child.setPadding(0, 0, 0, 0);
+                                if (child instanceof ImageView) {
+                                    ((ImageView) child).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                                }
+                            }
                         }
                     }
                 }
 
-                int size = (int) (14 * density);
                 TextView newBadge = new TextView(ctx);
                 newBadge.setId(R.id.viewNotificationBadge);
-                FrameLayout.LayoutParams badgeLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, size);
-                badgeLp.gravity = Gravity.TOP | Gravity.END;
-                badgeLp.topMargin = (int) (2 * density);
-                badgeLp.rightMargin = (int) (2 * density);
-                newBadge.setLayoutParams(badgeLp);
-                newBadge.setMinWidth(size);
-                newBadge.setPadding((int) (4 * density), 0, (int) (4 * density), 0);
-                newBadge.setGravity(Gravity.CENTER);
-                newBadge.setTextColor(Color.WHITE);
-                newBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f);
-                newBadge.setTypeface(null, Typeface.BOLD);
-                newBadge.setBackgroundResource(R.drawable.home_bg_notification_badge);
+                styleBadge(newBadge, ctx);
                 btnGroup.addView(newBadge);
                 badgeTextView = newBadge;
             }
@@ -394,13 +396,15 @@ public abstract class RootieFragment extends Fragment {
             p = p.getParent();
         }
 
-        // Bind click listener to navigate to AccountNotificationFragment
-        notificationBtn.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new AccountNotificationFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        // Only wire default navigation when the screen did not set its own handler in setupUI().
+        if (!notificationBtn.hasOnClickListeners()) {
+            notificationBtn.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, new AccountNotificationFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
 
         if (badgeTextView != null) {
             TextView finalBadge = badgeTextView;
@@ -408,24 +412,19 @@ public abstract class RootieFragment extends Fragment {
                 try {
                     // Chờ một chút để Fragment ổn định
                     Thread.sleep(500);
-                    Context ctx = getContext();
-                    if (ctx == null) return;
+                    Context badgeContext = getContext();
+                    if (badgeContext == null) return;
 
-                    NotificationRepository.getInstance(ctx)
+                    NotificationRepository.getInstance(badgeContext)
                             .getUnreadCount()
                             .collect(new kotlinx.coroutines.flow.FlowCollector<Integer>() {
                                 @Override
                                 public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
                                     androidx.fragment.app.FragmentActivity activity = getActivity();
                                     if (activity != null) {
-                                        activity.runOnUiThread(() -> {
-                                            if (count > 0) {
-                                                finalBadge.setText(String.valueOf(count));
-                                                finalBadge.setVisibility(View.VISIBLE);
-                                            } else {
-                                                finalBadge.setVisibility(View.GONE);
-                                            }
-                                        });
+                                        activity.runOnUiThread(() ->
+                                                NotificationBadgeHelper.updateBadgeCount(finalBadge, count)
+                                        );
                                     }
                                     return kotlin.Unit.INSTANCE;
                                 }

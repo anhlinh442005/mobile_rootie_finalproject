@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -30,6 +31,7 @@ import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderDetailFragmentBinding;
 import com.veganbeauty.app.databinding.AccountOrderDetailProductItemBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.home.NotificationBadgeHelper;
 import com.veganbeauty.app.features.ai.SkinAiChatFragment;
 import com.veganbeauty.app.features.shop.home.ShopHomeFragment;
 import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
@@ -118,8 +120,7 @@ public class AccountOrderDetailFragment extends RootieFragment {
                 .addToBackStack(null)
                 .commit();
 
-        binding.layoutNotification.setOnClickListener(navigateToNotification);
-        binding.btnNotification.setOnClickListener(navigateToNotification);
+        binding.layoutNotification.getRoot().setOnClickListener(navigateToNotification);
     }
 
     private void navigateToShopHome() {
@@ -147,7 +148,10 @@ public class AccountOrderDetailFragment extends RootieFragment {
                 NotificationRepository.getInstance(requireContext()).getUnreadCount()
         ).observe(getViewLifecycleOwner(), count -> {
             if (binding == null) return;
-            binding.viewNotificationBadge.setVisibility(count != null && count > 0 ? View.VISIBLE : View.GONE);
+            TextView badge = NotificationBadgeHelper.findBadgeView(binding.getRoot());
+            if (badge != null) {
+                NotificationBadgeHelper.updateBadgeCount(badge, count);
+            }
         });
     }
 

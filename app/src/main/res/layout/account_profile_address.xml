@@ -50,8 +50,9 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:padding="6dp"
-            android:src="@drawable/ic_bell" />
+            android:padding="7dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_notification" />
     </RelativeLayout>
 
     <!-- CONTENT BODY -->
@@ -119,7 +120,8 @@
                                 android:layout_width="16dp"
                                 android:layout_height="17dp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_address_home" />
+                                android:src="@drawable/ic_home"
+                                app:tint="#02542D" />
                         </FrameLayout>
 
                         <!-- Title -->
@@ -175,7 +177,8 @@
                                     android:layout_width="14dp"
                                     android:layout_height="14dp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/ic_address_edit" />
+                                    android:src="@drawable/ic_edit"
+                                    app:tint="#02542D" />
                             </FrameLayout>
 
                             <!-- Delete Button -->
@@ -192,7 +195,8 @@
                                     android:layout_width="14dp"
                                     android:layout_height="14dp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/ic_address_trash" />
+                                    android:src="@drawable/ic_bin"
+                                    app:tint="@color/white" />
                             </FrameLayout>
                         </LinearLayout>
                     </RelativeLayout>
@@ -242,7 +246,7 @@
                             <ImageView
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
-                                android:src="@drawable/ic_address_phone"
+                                android:src="@drawable/ic_phone"
                                 app:tint="@color/secondary" />
 
                             <TextView
@@ -371,7 +375,8 @@
                                     android:layout_width="14dp"
                                     android:layout_height="14dp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/ic_address_edit" />
+                                    android:src="@drawable/ic_edit"
+                                    app:tint="#02542D" />
                             </FrameLayout>
 
                             <!-- Delete Button -->
@@ -388,7 +393,8 @@
                                     android:layout_width="14dp"
                                     android:layout_height="14dp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/ic_address_trash" />
+                                    android:src="@drawable/ic_bin"
+                                    app:tint="@color/white" />
                             </FrameLayout>
                         </LinearLayout>
                     </RelativeLayout>
@@ -438,7 +444,7 @@
                             <ImageView
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
-                                android:src="@drawable/ic_address_phone"
+                                android:src="@drawable/ic_phone"
                                 app:tint="@color/secondary" />
 
                             <TextView
