@@ -149,7 +149,7 @@
                 android:id="@+id/ivLike"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_heart_outline" />
+                android:src="@drawable/ic_heart" />
             <TextView
                 android:id="@+id/tvLikes"
                 android:layout_width="wrap_content"

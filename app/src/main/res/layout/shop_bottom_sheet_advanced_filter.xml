@@ -80,7 +80,7 @@
                     android:id="@+id/ivChevronSkinType"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_chevron_right"
+                    android:src="@drawable/ic_arrow_next"
                     android:rotation="90"
                     app:tint="@color/primary" />
             </LinearLayout>
@@ -181,7 +181,7 @@
                     android:id="@+id/ivChevronPrice"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_chevron_right"
+                    android:src="@drawable/ic_arrow_next"
                     android:rotation="90"
                     app:tint="@color/primary" />
             </LinearLayout>
@@ -308,7 +308,7 @@
                     android:id="@+id/ivChevronUsage"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_chevron_right"
+                    android:src="@drawable/ic_arrow_next"
                     android:rotation="0"
                     app:tint="@color/primary" />
             </LinearLayout>
@@ -374,7 +374,7 @@
                     android:id="@+id/ivChevronIngredients"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_chevron_right"
+                    android:src="@drawable/ic_arrow_next"
                     android:rotation="0"
                     app:tint="@color/primary" />
             </LinearLayout>

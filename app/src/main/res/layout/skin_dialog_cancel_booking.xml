@@ -12,7 +12,7 @@
         android:id="@+id/btn_close"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_close"
+        android:src="@drawable/ic_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/black" />
@@ -233,7 +233,7 @@
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/ic_info_olive"
+            android:src="@drawable/ic_warning_outline"
             app:tint="@color/gray_dark" />
 
         <TextView

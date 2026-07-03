@@ -153,7 +153,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_chevron_right"
+            android:src="@drawable/ic_arrow_next"
             android:padding="6dp"
             app:tint="@color/primary" />
     </androidx.cardview.widget.CardView>

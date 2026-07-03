@@ -108,7 +108,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_marginStart="4dp"
-                        android:src="@drawable/ic_chevron_up_thin"
+                        android:src="@drawable/ic_arrow_up"
                         app:tint="@color/gray_dark" />
                 </LinearLayout>
             </RelativeLayout>

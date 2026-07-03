@@ -25,7 +25,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:src="@drawable/ic_chevron_left"
+            android:src="@drawable/ic_arrow_back"
             app:tint="#02542D" />
 
         <!-- Title -->
@@ -220,7 +220,7 @@
                             <ImageView
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
-                                android:src="@drawable/ic_nav_com_profile"
+                                android:src="@drawable/ic_account_outline"
                                 app:tint="@color/secondary" />
 
                             <TextView
@@ -418,7 +418,7 @@
                             <ImageView
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
-                                android:src="@drawable/ic_nav_com_profile"
+                                android:src="@drawable/ic_account_outline"
                                 app:tint="@color/secondary" />
 
                             <TextView
@@ -521,7 +521,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_address_add_location" />
+                    android:src="@drawable/ic_address_location_add" />
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -151,7 +151,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="12dp"
-            android:src="@drawable/ic_close"
+            android:src="@drawable/ic_cancel"
             app:tint="@color/primary"/>
     </LinearLayout>
 </LinearLayout>

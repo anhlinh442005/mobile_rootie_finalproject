@@ -37,7 +37,7 @@
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_close"
+                android:src="@drawable/ic_cancel"
                 app:tint="@android:color/white" />
         </RelativeLayout>
 

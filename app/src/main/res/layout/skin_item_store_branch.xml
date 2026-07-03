@@ -76,7 +76,7 @@
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:src="@drawable/ic_check_circle"
+            android:src="@drawable/ic_circle_checked"
             android:visibility="gone"
             app:tint="@color/primary" />
 

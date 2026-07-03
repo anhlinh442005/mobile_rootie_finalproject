@@ -602,11 +602,17 @@ public class QuizTestResultFragment extends RootieFragment {
             tvProduct.setText(step.getRecommendedProduct());
             tvReason.setText(step.getDescription());
 
-            ivCheckbox.setImageResource(step.isChecked() ? R.drawable.skin_ic_checkbox_checked : R.drawable.skin_ic_checkbox_unchecked);
+            ivCheckbox.setImageResource(step.isChecked() ? R.drawable.ic_checkbox_checked : R.drawable.ic_checkbox_unchecked);
+            ivCheckbox.setImageTintList(step.isChecked()
+                    ? ColorStateList.valueOf(Color.parseColor("#3E4D44"))
+                    : ColorStateList.valueOf(Color.parseColor("#D9D9D9")));
 
             View.OnClickListener clickListener = v -> {
                 step.setChecked(!step.isChecked());
-                ivCheckbox.setImageResource(step.isChecked() ? R.drawable.skin_ic_checkbox_checked : R.drawable.skin_ic_checkbox_unchecked);
+                ivCheckbox.setImageResource(step.isChecked() ? R.drawable.ic_checkbox_checked : R.drawable.ic_checkbox_unchecked);
+                ivCheckbox.setImageTintList(step.isChecked()
+                        ? ColorStateList.valueOf(Color.parseColor("#3E4D44"))
+                        : ColorStateList.valueOf(Color.parseColor("#D9D9D9")));
             };
 
             ivCheckbox.setOnClickListener(clickListener);

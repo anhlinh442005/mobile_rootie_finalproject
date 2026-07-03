@@ -192,7 +192,7 @@ public class ReelPlayerDialog extends DialogFragment {
                     itemBinding.ivLike.setColorFilter(Color.parseColor("#E53935"));
                     itemBinding.tvLikesCount.setText(formatCount(reel.getLikesCount() + 1));
                 } else {
-                    itemBinding.ivLike.setImageResource(R.drawable.ic_heart_outline);
+                    itemBinding.ivLike.setImageResource(R.drawable.ic_heart);
                     itemBinding.ivLike.setColorFilter(Color.WHITE);
                     itemBinding.tvLikesCount.setText(formatCount(reel.getLikesCount()));
                 }

@@ -3,12 +3,10 @@ package com.veganbeauty.app.features.account.checkin;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -141,7 +139,7 @@ public class AccountCheckinFragment extends RootieFragment {
             binding.btnBottomCheckin.setBackgroundResource(R.drawable.bg_pill_grey);
             binding.btnBottomCheckin.setTextColor(Color.parseColor("#888888"));
         } else {
-            binding.ivBannerIcon.setImageResource(R.drawable.ic_info_olive);
+            binding.ivBannerIcon.setImageResource(R.drawable.ic_warning_outline);
             binding.ivBannerIcon.setColorFilter(Color.parseColor("#8A9A3D"));
             binding.tvBannerText.setText("Chưa check-in hôm nay");
             binding.tvBannerText.setTextColor(Color.parseColor("#8A9A3D"));

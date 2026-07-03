@@ -22,7 +22,7 @@
             android:id="@+id/ivBack"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_chevron_left"
+            android:src="@drawable/ic_arrow_back"
             app:tint="#3E4D44" />
 
         <EditText

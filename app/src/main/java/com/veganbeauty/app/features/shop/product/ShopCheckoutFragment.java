@@ -503,14 +503,14 @@ public class ShopCheckoutFragment extends RootieFragment {
         View clOptionStore = sheetView.findViewById(R.id.clOptionStore);
 
         if ("Giao hàng tận nơi".equals(deliveryType)) {
-            ivRadioDelivery.setImageResource(R.drawable.ic_cart_checked);
+            ivRadioDelivery.setImageResource(R.drawable.ic_circle_checked);
             ivRadioDelivery.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#3E4D44")));
-            ivRadioStore.setImageResource(R.drawable.ic_cart_unchecked);
+            ivRadioStore.setImageResource(R.drawable.ic_circle);
             ivRadioStore.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#807F7F")));
         } else {
-            ivRadioDelivery.setImageResource(R.drawable.ic_cart_unchecked);
+            ivRadioDelivery.setImageResource(R.drawable.ic_circle);
             ivRadioDelivery.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#807F7F")));
-            ivRadioStore.setImageResource(R.drawable.ic_cart_checked);
+            ivRadioStore.setImageResource(R.drawable.ic_circle_checked);
             ivRadioStore.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#3E4D44")));
         }
 
@@ -561,10 +561,10 @@ public class ShopCheckoutFragment extends RootieFragment {
                     tvTagDefault.setVisibility(addr.isDefault ? View.VISIBLE : View.GONE);
 
                     if (index == tempSelectedIndex) {
-                        ivRadioAddress.setImageResource(R.drawable.ic_cart_checked);
+                        ivRadioAddress.setImageResource(R.drawable.ic_circle_checked);
                         ivRadioAddress.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#3E4D44")));
                     } else {
-                        ivRadioAddress.setImageResource(R.drawable.ic_cart_unchecked);
+                        ivRadioAddress.setImageResource(R.drawable.ic_circle);
                         ivRadioAddress.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#807F7F")));
                     }
 
@@ -739,17 +739,17 @@ public class ShopCheckoutFragment extends RootieFragment {
             boolean momo = "Thanh toán trực tuyến MoMo".equals(paymentMethod);
             boolean vnpay = "Thanh toán trực tuyến VNPay".equals(paymentMethod);
 
-            ivRadioCash.setImageResource(cash ? R.drawable.ic_check_circle : R.drawable.ic_circle_outline);
-            ivRadioCash.setImageTintList(cash ? null : android.content.res.ColorStateList.valueOf(Color.parseColor("#BDBDBD")));
+            ivRadioCash.setImageResource(cash ? R.drawable.ic_circle_checked : R.drawable.ic_circle);
+            ivRadioCash.setImageTintList(cash ? android.content.res.ColorStateList.valueOf(Color.parseColor("#3E4D44")) : android.content.res.ColorStateList.valueOf(Color.parseColor("#BDBDBD")));
 
-            ivRadioATM.setImageResource(atm ? R.drawable.ic_check_circle : R.drawable.ic_circle_outline);
-            ivRadioATM.setImageTintList(atm ? null : android.content.res.ColorStateList.valueOf(Color.parseColor("#BDBDBD")));
+            ivRadioATM.setImageResource(atm ? R.drawable.ic_circle_checked : R.drawable.ic_circle);
+            ivRadioATM.setImageTintList(atm ? android.content.res.ColorStateList.valueOf(Color.parseColor("#3E4D44")) : android.content.res.ColorStateList.valueOf(Color.parseColor("#BDBDBD")));
 
-            ivRadioMoMo.setImageResource(momo ? R.drawable.ic_check_circle : R.drawable.ic_circle_outline);
-            ivRadioMoMo.setImageTintList(momo ? null : android.content.res.ColorStateList.valueOf(Color.parseColor("#BDBDBD")));
+            ivRadioMoMo.setImageResource(momo ? R.drawable.ic_circle_checked : R.drawable.ic_circle);
+            ivRadioMoMo.setImageTintList(momo ? android.content.res.ColorStateList.valueOf(Color.parseColor("#3E4D44")) : android.content.res.ColorStateList.valueOf(Color.parseColor("#BDBDBD")));
 
-            ivRadioVNPay.setImageResource(vnpay ? R.drawable.ic_check_circle : R.drawable.ic_circle_outline);
-            ivRadioVNPay.setImageTintList(vnpay ? null : android.content.res.ColorStateList.valueOf(Color.parseColor("#BDBDBD")));
+            ivRadioVNPay.setImageResource(vnpay ? R.drawable.ic_circle_checked : R.drawable.ic_circle);
+            ivRadioVNPay.setImageTintList(vnpay ? android.content.res.ColorStateList.valueOf(Color.parseColor("#3E4D44")) : android.content.res.ColorStateList.valueOf(Color.parseColor("#BDBDBD")));
         };
 
         updateRadios.run();

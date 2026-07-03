@@ -659,7 +659,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                     holder.ivLike.setImageResource(R.drawable.ic_heart_filled);
                     holder.tvLikesCount.setText(String.valueOf(item.likesCount + 1));
                 } else {
-                    holder.ivLike.setImageResource(R.drawable.ic_heart_outline);
+                    holder.ivLike.setImageResource(R.drawable.ic_heart);
                     holder.tvLikesCount.setText(String.valueOf(item.likesCount));
                 }
             });
@@ -726,7 +726,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                         ivReplyLike.setImageResource(R.drawable.ic_heart_filled);
                         tvReplyLikesCount.setText(String.valueOf(reply.likesCount + 1));
                     } else {
-                        ivReplyLike.setImageResource(R.drawable.ic_heart_outline);
+                        ivReplyLike.setImageResource(R.drawable.ic_heart);
                         tvReplyLikesCount.setText(String.valueOf(reply.likesCount));
                     }
                 });

@@ -133,7 +133,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
                             closeLp.topMargin = (int) (4 * density);
                             closeLp.setMarginEnd((int) (4 * density));
                             ivClose.setLayoutParams(closeLp);
-                            ivClose.setImageResource(R.drawable.ic_close);
+                            ivClose.setImageResource(R.drawable.ic_cancel);
                             ivClose.setBackgroundResource(R.drawable.bg_circle_white);
                             ivClose.setPadding(12, 12, 12, 12);
                             ivClose.setOnClickListener(v -> {

@@ -21,7 +21,7 @@
             android:layout_marginStart="16dp"
             android:padding="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_chevron_left"
+            android:src="@drawable/ic_arrow_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -111,7 +111,7 @@
                     <ImageView
                         android:layout_width="14dp"
                         android:layout_height="14dp"
-                        android:src="@drawable/ic_close_circle"
+                        android:src="@drawable/ic_circle_unchecked"
                         app:tint="@color/white"/>
                     <TextView
                         android:id="@+id/skin_detail_status_tag"
@@ -204,7 +204,7 @@
                     android:id="@+id/skin_detail_ic_cancel"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:src="@drawable/ic_close_circle"
+                    android:src="@drawable/ic_circle_unchecked"
                     app:tint="@color/white"
                     android:layout_marginTop="12dp"
                     app:layout_constraintTop_toBottomOf="@id/skin_detail_time"

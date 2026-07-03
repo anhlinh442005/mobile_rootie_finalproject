@@ -114,7 +114,7 @@ public class ShopHomeViewModel extends RootieViewModel {
         categoryList.add(new CategoryUiModel("c1", "Chăm sóc da", R.drawable.ic_skincare, skincareCount));
         categoryList.add(new CategoryUiModel("c2", "Tắm & Dưỡng thể", R.drawable.ic_shower, bodyCount));
         categoryList.add(new CategoryUiModel("c4", "Dưỡng môi", R.drawable.ic_lips, lipsCount));
-        categoryList.add(new CategoryUiModel("c5", "Combo/Giftbox", R.drawable.ic_combo, comboCount));
+        categoryList.add(new CategoryUiModel("c5", "Combo/Giftbox", R.drawable.ic_gift, comboCount));
         return categoryList;
     }
 

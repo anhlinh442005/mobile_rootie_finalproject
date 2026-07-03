@@ -81,7 +81,7 @@
                     android:contentDescription="@null"
                     android:padding="8dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_cart_on_green" />
+                    android:src="@drawable/ic_cart" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddToCart"

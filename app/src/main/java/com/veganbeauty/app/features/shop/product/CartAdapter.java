@@ -1,5 +1,7 @@
 package com.veganbeauty.app.features.shop.product;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -69,9 +71,11 @@ public class CartAdapter extends ListAdapter<CartItemEntity, CartAdapter.CartVie
             com.bumptech.glide.Glide.with(binding.ivProduct.getContext()).load(item.getImage()).into(binding.ivProduct);
 
             if (item.isSelected()) {
-                binding.ivSelect.setImageResource(R.drawable.ic_cart_checked);
+                binding.ivSelect.setImageResource(R.drawable.ic_circle_checked);
+                binding.ivSelect.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
             } else {
-                binding.ivSelect.setImageResource(R.drawable.ic_cart_unchecked);
+                binding.ivSelect.setImageResource(R.drawable.ic_circle);
+                binding.ivSelect.setImageTintList(null);
             }
 
             binding.ivSelect.setOnClickListener(v -> onSelectionToggled.onSelectionToggled(item, !item.isSelected()));

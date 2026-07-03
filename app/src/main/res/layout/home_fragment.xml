@@ -24,7 +24,7 @@
         android:layout_alignParentBottom="true"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="@dimen/home_nav_bar_height"
+        android:paddingBottom="@dimen/home_nav_content_height"
         android:scrollbars="none">
 
         <LinearLayout
@@ -114,7 +114,7 @@
                         android:layout_marginStart="8dp"
                         android:contentDescription="@null"
                         android:scaleX="-1"
-                        android:src="@drawable/ic_chevron_left"
+                        android:src="@drawable/ic_arrow_back"
                         app:tint="#FFFFFF" />
                 </LinearLayout>
 
@@ -508,7 +508,7 @@
                     android:layout_height="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_double_chevron_down"
+                    android:src="@drawable/ic_arrow_doubledown"
                     android:scaleType="fitCenter" />
             </LinearLayout>
 
@@ -996,7 +996,7 @@
                         android:textStyle="bold"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:gravity="center"
-                        app:drawableEndCompat="@drawable/ic_chevron_right"
+                        app:drawableEndCompat="@drawable/ic_arrow_next"
                         app:drawableTint="@color/white" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -1051,7 +1051,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginStart="4dp"
-                    android:src="@drawable/ic_chevron_down"
+                    android:src="@drawable/ic_arrow_down"
                     app:tint="#02542D" />
             </LinearLayout>
 

@@ -21,7 +21,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:padding="8dp"
-        android:src="@drawable/ic_chevron_left"
+        android:src="@drawable/ic_arrow_back"
         android:background="@drawable/com_bg_dot_selector"
         android:backgroundTint="#44000000"
         app:tint="@android:color/white" />

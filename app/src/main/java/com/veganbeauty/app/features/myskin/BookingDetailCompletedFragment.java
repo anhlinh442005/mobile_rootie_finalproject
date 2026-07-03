@@ -135,7 +135,7 @@ public class BookingDetailCompletedFragment extends RootieFragment {
                 row.setPadding(0, 0, 0, 8);
 
                 ImageView icon = new ImageView(requireContext());
-                icon.setImageResource(R.drawable.ic_check_circle);
+                icon.setImageResource(R.drawable.ic_circle_checked);
                 icon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary));
                 icon.setLayoutParams(new LinearLayout.LayoutParams(40, 40));
 

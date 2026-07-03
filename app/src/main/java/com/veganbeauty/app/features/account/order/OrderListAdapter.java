@@ -198,10 +198,10 @@ public class OrderListAdapter extends ListAdapter<OrderEntity, OrderListAdapter.
                 binding.llToggleProducts.setVisibility(View.VISIBLE);
                 if (isExpanded) {
                     binding.tvToggleText.setText("Thu gọn");
-                    binding.ivToggleIcon.setImageResource(R.drawable.ic_chevron_up_thin);
+                    binding.ivToggleIcon.setImageResource(R.drawable.ic_arrow_up);
                 } else {
                     binding.tvToggleText.setText("Xem thêm");
-                    binding.ivToggleIcon.setImageResource(R.drawable.ic_chevron_down_thin);
+                    binding.ivToggleIcon.setImageResource(R.drawable.ic_arrow_down);
                 }
             } else {
                 binding.llToggleProducts.setVisibility(View.GONE);

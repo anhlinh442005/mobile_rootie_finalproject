@@ -44,8 +44,8 @@
             android:id="@+id/ivRadioCash"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_circle_outline"
-            />
+            android:src="@drawable/ic_circle"
+            app:tint="#BDBDBD" />
 
         <ImageView
             android:layout_width="28dp"
@@ -81,8 +81,8 @@
             android:id="@+id/ivRadioATM"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_circle_outline"
-            />
+            android:src="@drawable/ic_circle"
+            app:tint="#BDBDBD" />
 
         <ImageView
             android:layout_width="28dp"
@@ -118,8 +118,8 @@
             android:id="@+id/ivRadioMoMo"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_circle_outline"
-            />
+            android:src="@drawable/ic_circle"
+            app:tint="#BDBDBD" />
 
         <ImageView
             android:layout_width="28dp"
@@ -154,8 +154,8 @@
             android:id="@+id/ivRadioVNPay"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_circle_outline"
-            />
+            android:src="@drawable/ic_circle"
+            app:tint="#BDBDBD" />
 
         <ImageView
             android:layout_width="28dp"

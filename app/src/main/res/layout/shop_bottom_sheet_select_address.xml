@@ -57,7 +57,7 @@
                 android:id="@+id/ivRadioAddress1"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/ic_cart_checked"
+                android:src="@drawable/ic_circle_checked"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -148,7 +148,7 @@
                 android:id="@+id/ivRadioAddress2"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/ic_cart_unchecked"
+                android:src="@drawable/ic_circle"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

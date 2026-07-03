@@ -213,10 +213,10 @@ public class HomeFragment extends RootieFragment {
     private void updateShortcutsList() {
         if (isShortcutsExpanded) {
             shortcutAdapter.submitList(allShortcuts);
-            binding.ivExpandShortcuts.setImageResource(R.drawable.ic_double_chevron_up);
+            binding.ivExpandShortcuts.setImageResource(R.drawable.ic_arrow_doubleup);
         } else {
             shortcutAdapter.submitList(allShortcuts.subList(0, Math.min(6, allShortcuts.size())));
-            binding.ivExpandShortcuts.setImageResource(R.drawable.ic_double_chevron_down);
+            binding.ivExpandShortcuts.setImageResource(R.drawable.ic_arrow_doubledown);
         }
     }
 
@@ -266,7 +266,7 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void setupParallaxScroll() {
-        int bottomPad = (int) getResources().getDimension(R.dimen.home_nav_bar_height);
+        int bottomPad = (int) getResources().getDimension(R.dimen.home_nav_content_height);
         headerScrollHelper = new HomeHeaderScrollHelper(
                 binding.homeHeader.getRoot(),
                 binding.homeScrollView,
@@ -414,7 +414,7 @@ public class HomeFragment extends RootieFragment {
                 catNames.add(cat);
                 int icon;
                 switch (cat) {
-                    case "Combo & Bộ Sản Phẩm": icon = R.drawable.ic_combo; break;
+                    case "Combo & Bộ Sản Phẩm": icon = R.drawable.ic_gift; break;
                     case "Chăm sóc da": case "Chăm Sóc Da Mặt": icon = R.drawable.ic_skincare; break;
                     case "Tắm & Dưỡng Thể": case "Chăm Sóc Cơ Thể": icon = R.drawable.ic_shower; break;
                     case "Dưỡng Môi": case "Chăm Sóc Môi": icon = R.drawable.ic_lips; break;

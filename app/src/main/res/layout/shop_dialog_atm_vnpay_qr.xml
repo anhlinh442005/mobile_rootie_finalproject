@@ -201,7 +201,7 @@
             android:contentDescription="Sao chép"
             android:focusable="true"
             android:padding="6dp"
-            android:src="@drawable/ic_content_copy" />
+            android:src="@drawable/ic_copy" />
     </LinearLayout>
 
     <!-- Info chip -->

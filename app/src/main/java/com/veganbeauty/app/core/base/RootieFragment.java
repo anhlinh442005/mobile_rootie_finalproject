@@ -19,15 +19,12 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.lifecycle.FlowLiveDataConversions;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.home.NotificationBadgeHelper;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
 
 public abstract class RootieFragment extends Fragment {
 
@@ -408,39 +405,10 @@ public abstract class RootieFragment extends Fragment {
 
         if (badgeTextView != null) {
             TextView finalBadge = badgeTextView;
-            new Thread(() -> {
-                try {
-                    // Chờ một chút để Fragment ổn định
-                    Thread.sleep(500);
-                    Context badgeContext = getContext();
-                    if (badgeContext == null) return;
-
-                    NotificationRepository.getInstance(badgeContext)
-                            .getUnreadCount()
-                            .collect(new kotlinx.coroutines.flow.FlowCollector<Integer>() {
-                                @Override
-                                public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                                    androidx.fragment.app.FragmentActivity activity = getActivity();
-                                    if (activity != null) {
-                                        activity.runOnUiThread(() ->
-                                                NotificationBadgeHelper.updateBadgeCount(finalBadge, count)
-                                        );
-                                    }
-                                    return kotlin.Unit.INSTANCE;
-                                }
-                            }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
-                                @NonNull
-                                @Override
-                                public kotlin.coroutines.CoroutineContext getContext() {
-                                    return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
-                                }
-                                @Override
-                                public void resumeWith(@NonNull Object o) {}
-                            });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
+            FlowLiveDataConversions.asLiveData(
+                    NotificationRepository.getInstance(requireContext()).getUnreadCount()
+            ).observe(getViewLifecycleOwner(), count ->
+                    NotificationBadgeHelper.updateBadgeCount(finalBadge, count));
         }
     }
 }

@@ -444,7 +444,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (isLiked[0]) {
                 postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_filled);
             } else {
-                postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_outline);
+                postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart);
             }
 
             postHolder.binding.ivLike.setOnClickListener(v -> {
@@ -456,7 +456,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     sharedPrefs.edit().putBoolean("liked_" + post.getPostId(), true).apply();
                     new Thread(() -> RootieDatabase.getDatabase(context).communityDao().incrementLikesCount(post.getPostId())).start();
                 } else {
-                    postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_outline);
+                    postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart);
                     currentLikesCount[0] = Math.max(0, currentLikesCount[0] - 1);
                     postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
                     sharedPrefs.edit().putBoolean("liked_" + post.getPostId(), false).apply();

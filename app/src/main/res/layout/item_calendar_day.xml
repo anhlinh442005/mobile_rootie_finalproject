@@ -43,7 +43,8 @@
             android:id="@+id/ivTickBadge"
             android:layout_width="12dp"
             android:layout_height="12dp"
-            android:src="@drawable/ic_check_circle"
+            android:src="@drawable/ic_circle_checked"
+            app:tint="@color/primary"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

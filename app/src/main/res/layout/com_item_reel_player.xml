@@ -79,7 +79,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:padding="6dp"
-            android:src="@drawable/ic_heart_outline"
+            android:src="@drawable/ic_heart"
             app:tint="@android:color/white" />
 
         <TextView
@@ -202,7 +202,7 @@
             android:id="@+id/ivMute"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_chevron_down"
+            android:src="@drawable/ic_arrow_down"
             app:tint="@android:color/white"
             android:visibility="gone" />
 

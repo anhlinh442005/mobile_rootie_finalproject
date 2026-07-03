@@ -74,7 +74,7 @@
                     <ImageView
                         android:layout_width="14dp"
                         android:layout_height="14dp"
-                        android:src="@drawable/ic_eye"
+                        android:src="@drawable/ic_eyes"
                         app:tint="@color/gray_dark" />
 
                     <TextView

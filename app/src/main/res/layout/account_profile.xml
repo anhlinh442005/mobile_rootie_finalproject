@@ -277,7 +277,8 @@
                         android:layout_height="20dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right" />
+                        android:src="@drawable/ic_arrow_next"
+                        app:tint="@color/primary" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
@@ -920,7 +921,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_eye" />
+                            android:src="@drawable/ic_eyes" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1126,7 +1127,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_briefcase" />
+                            android:src="@drawable/ic_recuitment"
+                            app:tint="#879578" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1188,7 +1190,8 @@
                     <ImageView
                         android:layout_width="18dp"
                         android:layout_height="18dp"
-                        android:src="@drawable/ic_clock" />
+                        android:src="@drawable/ic_clock"
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="wrap_content"

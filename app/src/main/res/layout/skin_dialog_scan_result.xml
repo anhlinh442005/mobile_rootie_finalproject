@@ -162,7 +162,7 @@
                     android:layout_alignParentTop="true"
                     android:background="@drawable/skin_bg_btn_circle_outline"
                     android:padding="8dp"
-                    android:src="@drawable/ic_close"
+                    android:src="@drawable/ic_cancel"
                     app:tint="@color/secondary" />
             </RelativeLayout>
 

@@ -140,7 +140,7 @@
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_add"
+            android:src="@drawable/ic_plus"
             app:tint="@color/primary" />
     </LinearLayout>
 

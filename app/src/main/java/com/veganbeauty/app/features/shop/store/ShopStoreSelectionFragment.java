@@ -457,10 +457,10 @@ public class ShopStoreSelectionFragment extends RootieFragment {
             holder.binding.ivRadio.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
             if (isSelectionMode) {
                 if (store.getId().equals(selectedStoreId)) {
-                    holder.binding.ivRadio.setImageResource(R.drawable.ic_cart_checked);
+                    holder.binding.ivRadio.setImageResource(R.drawable.ic_circle_checked);
                     holder.binding.ivRadio.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
                 } else {
-                    holder.binding.ivRadio.setImageResource(R.drawable.ic_cart_unchecked);
+                    holder.binding.ivRadio.setImageResource(R.drawable.ic_circle);
                     holder.binding.ivRadio.setImageTintList(ColorStateList.valueOf(Color.parseColor("#807F7F")));
                 }
 
