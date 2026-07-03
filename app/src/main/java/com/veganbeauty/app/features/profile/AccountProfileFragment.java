@@ -42,6 +42,7 @@ import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.utils.AvatarLoader;
 import com.veganbeauty.app.utils.NavAppUtils;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.util.List;
 import java.util.Set;
@@ -356,6 +357,7 @@ public class AccountProfileFragment extends RootieFragment {
 
     private void loadUserProfileData(Context ctx) {
         BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+            SyncDataHelper.pullUserProfileFromFirestoreSync(ctx);
             ProfileSessionHelper.ensureCurrentUserInDatabase(ctx);
             if (orderRepository == null) {
                 RootieDatabase db = RootieDatabase.getDatabase(ctx);

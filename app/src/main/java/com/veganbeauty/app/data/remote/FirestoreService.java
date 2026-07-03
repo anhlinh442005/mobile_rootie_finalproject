@@ -301,6 +301,22 @@ public class FirestoreService {
         }
     }
 
+    /** Chỉ cập nhật field avatar (merge), dùng sau khi upload Cloudinary thành công. */
+    public boolean updateUserAvatar(String userId, String avatarUrl) {
+        if (userId == null || userId.trim().isEmpty() || avatarUrl == null || avatarUrl.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("avatar", avatarUrl.trim());
+            Tasks.await(db.collection("users").document(userId.trim()).set(userMap, com.google.firebase.firestore.SetOptions.merge()));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public List<CommunityPostEntity> fetchAllCommunityPosts() {
         try {
             QuerySnapshot snapshot = Tasks.await(db.collection("community_posts").get());
