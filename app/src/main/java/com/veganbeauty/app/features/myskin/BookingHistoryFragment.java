@@ -74,6 +74,22 @@ public class BookingHistoryFragment extends RootieFragment {
         loadBookings();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        syncBookingsFromRemote();
+    }
+
+    private void syncBookingsFromRemote() {
+        String userEmail = ProfileSession.getEmail(requireContext());
+        BookingSyncHelper.syncUserBookings(requireContext(), userEmail, () -> {
+            if (!isAdded()) {
+                return;
+            }
+            requireActivity().runOnUiThread(this::loadBookings);
+        });
+    }
+
     private void setFilter(String filter) {
         currentStatusFilter = filter;
         updateFilterUI();

@@ -68,7 +68,7 @@
                 android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Xoá tất cả"
-                android:src="@drawable/ic_address_trash"
+                android:src="@drawable/ic_bin"
                 app:tint="#D73B35" />
         </LinearLayout>
 

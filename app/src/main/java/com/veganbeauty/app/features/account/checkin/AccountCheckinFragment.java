@@ -56,7 +56,7 @@ public class AccountCheckinFragment extends RootieFragment {
     protected void setupUI(@NonNull View view) {
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        binding.btnNotification.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+        binding.layoutNotification.getRoot().setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new AccountNotificationFragment())
                 .addToBackStack(null)
                 .commit());

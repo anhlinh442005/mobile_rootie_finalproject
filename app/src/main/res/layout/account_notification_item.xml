@@ -132,7 +132,7 @@
                 android:layout_height="36dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                android:src="@drawable/ic_address_trash"
+                android:src="@drawable/ic_bin"
                 app:tint="#D73B35"
                 android:contentDescription="Xoá thông báo" />
         </LinearLayout>

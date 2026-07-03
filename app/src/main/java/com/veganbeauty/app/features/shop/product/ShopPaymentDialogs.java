@@ -72,7 +72,7 @@ public class ShopPaymentDialogs {
                 orderCode,
                 "qr_only"
         );
-        com.bumptech.glide.Glide.with(ivQrCode.getContext()).load(qrUrl).placeholder(R.drawable.ic_qr_placeholder).error(R.drawable.ic_qr_placeholder).into(ivQrCode);
+        com.bumptech.glide.Glide.with(ivQrCode.getContext()).load(qrUrl).placeholder(R.drawable.ic_qrscan).error(R.drawable.ic_qrscan).into(ivQrCode);
 
         btnCopy.setOnClickListener(v -> {
             ClipboardManager clipboard = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);

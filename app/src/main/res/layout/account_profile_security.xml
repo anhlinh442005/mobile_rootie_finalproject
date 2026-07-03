@@ -54,14 +54,15 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <!-- Notification Bell (Updated to ic_notification with the new vector badge) -->
+                <!-- Notification Bell -->
                 <ImageView
                     android:id="@+id/btn_notification"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:padding="6dp"
+                    android:padding="7dp"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_notification"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"

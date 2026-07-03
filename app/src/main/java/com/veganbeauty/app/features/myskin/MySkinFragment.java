@@ -201,6 +201,13 @@ public class MySkinFragment extends RootieFragment {
         // Not used yet
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        String userEmail = ProfileSession.getEmail(requireContext());
+        BookingSyncHelper.syncUserBookings(requireContext(), userEmail, null);
+    }
+
     private void openScanFragment() {
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(

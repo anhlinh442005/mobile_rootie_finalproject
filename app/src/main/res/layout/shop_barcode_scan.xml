@@ -27,7 +27,7 @@
             android:contentDescription="Quay lại"
             android:focusable="true"
             android:padding="10dp"
-            android:src="@drawable/ic_arrow_back"
+            android:src="@drawable/ic_arrow_back_thin"
             app:tint="@color/primary" />
 
         <TextView

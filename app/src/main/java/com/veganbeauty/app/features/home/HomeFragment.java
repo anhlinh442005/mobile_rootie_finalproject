@@ -48,6 +48,7 @@ import com.veganbeauty.app.features.home.adapter.HomeShortcutAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutItem;
 import com.veganbeauty.app.features.home.adapter.HomeTopSearchAdapter;
 import com.veganbeauty.app.features.home.HomeHeaderHelper;
+import com.veganbeauty.app.features.myskin.AccountSyncHelper;
 import com.veganbeauty.app.features.myskin.ChooseBranchFragment;
 import com.veganbeauty.app.features.myskin.MySkinFragment;
 import com.veganbeauty.app.features.myskin.SkinHistoryFragment;
@@ -562,6 +563,7 @@ public class HomeFragment extends RootieFragment {
         super.onResume();
         setupStreakWidget();
         setupQuizReminder();
+        AccountSyncHelper.sync(requireContext(), null);
     }
 
     @Override

@@ -118,7 +118,7 @@ public class AccountOrderReviewFragment extends RootieFragment {
     protected void setupUI(@NonNull View view) {
         _binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        _binding.btnNotification.setOnClickListener(v -> {
+        _binding.layoutNotification.getRoot().setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                     .addToBackStack(null)

@@ -70,10 +70,9 @@
 
                     <ImageView
                         android:id="@+id/ivNotification"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/home_ic_notification"
-                        app:tint="@color/primary"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_notification"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />

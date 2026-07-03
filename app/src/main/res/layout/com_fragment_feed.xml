@@ -100,8 +100,7 @@
                 android:id="@+id/ivNotification"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/home_ic_notification"
-                app:tint="@color/primary" />
+                android:src="@drawable/ic_notification" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -9,6 +9,7 @@ import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.local.entities.CommunityProduct;
 import com.veganbeauty.app.data.local.entities.IngredientEntity;
 import com.veganbeauty.app.data.local.entities.NotificationItem;
+import com.veganbeauty.app.data.repository.BookingStatusNotifier;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.ReelEntity;
@@ -574,7 +575,41 @@ public class LocalJsonReader {
     }
 
     public List<NotificationItem> getAllNotifications() {
-        return new ArrayList<>();
+        try {
+            String jsonString = readAssetFile("notification_account.json");
+            if (jsonString == null || jsonString.trim().isEmpty()) {
+                return new ArrayList<>();
+            }
+            JSONArray jsonArray = new JSONArray(jsonString);
+            List<NotificationItem> list = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = jsonArray.getJSONObject(i);
+                list.add(new NotificationItem(
+                        obj.getString("id"),
+                        obj.getString("title"),
+                        obj.getString("content"),
+                        obj.getString("time"),
+                        obj.getString("category"),
+                        obj.optString("tag", "").isEmpty() ? null : obj.optString("tag"),
+                        obj.optString("voucherCode", "").isEmpty() ? null : obj.optString("voucherCode"),
+                        obj.optString("actionText", "").isEmpty() ? null : obj.optString("actionText"),
+                        obj.optBoolean("isRead", false),
+                        obj.optString("section", "Hôm nay"),
+                        obj.getString("iconResName"),
+                        obj.optString("notificationType", "").isEmpty() ? null : obj.optString("notificationType"),
+                        obj.optString("orderId", "").isEmpty() ? null : obj.optString("orderId"),
+                        obj.optString("scheduleId", "").isEmpty() ? null : obj.optString("scheduleId")
+                ));
+            }
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public Context getAppContext() {
+        return context.getApplicationContext();
     }
 
     public List<BookingHistoryEntity> getUserBookingHistory(String emailOrUserId) {
@@ -609,8 +644,10 @@ public class LocalJsonReader {
         }
         List<BookingHistoryEntity> all = loadAllBookingsInternal();
         boolean replaced = false;
+        String previousStatus = null;
         for (int i = 0; i < all.size(); i++) {
             if (booking.getId().equals(all.get(i).getId())) {
+                previousStatus = all.get(i).getStatus();
                 all.set(i, booking);
                 replaced = true;
                 break;
@@ -620,6 +657,7 @@ public class LocalJsonReader {
             all.add(0, booking);
         }
         saveAllBookingsInternal(all);
+        BookingStatusNotifier.notifyIfStatusChanged(context, booking, previousStatus, booking.getStatus());
     }
 
     public synchronized void updateBookingStatus(String id, String status, String reason) {
@@ -628,19 +666,26 @@ public class LocalJsonReader {
         }
         List<BookingHistoryEntity> all = loadAllBookingsInternal();
         boolean updated = false;
+        BookingHistoryEntity updatedBooking = null;
+        String previousStatus = null;
         for (BookingHistoryEntity booking : all) {
             if (id.equals(booking.getId())) {
+                previousStatus = booking.getStatus();
                 booking.setStatus(status != null ? status : booking.getStatus());
                 booking.setCancelReason(reason != null ? reason : "");
                 if ("Đã huỷ".equals(status) || "Đã hủy".equals(status)) {
                     booking.setCancelledAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(new Date()));
                 }
+                updatedBooking = booking;
                 updated = true;
                 break;
             }
         }
         if (updated) {
             saveAllBookingsInternal(all);
+            if (updatedBooking != null) {
+                BookingStatusNotifier.notifyIfStatusChanged(context, updatedBooking, previousStatus, updatedBooking.getStatus());
+            }
         }
     }
 
@@ -662,10 +707,13 @@ public class LocalJsonReader {
             if (idx == null) {
                 all.add(remote);
                 indexById.put(remote.getId(), all.size() - 1);
+                BookingStatusNotifier.notifyIfStatusChanged(context, remote, null, remote.getStatus());
             } else {
                 BookingHistoryEntity local = all.get(idx);
+                String previousStatus = local.getStatus();
                 if (shouldPreferRemoteBooking(local, remote)) {
                     all.set(idx, remote);
+                    BookingStatusNotifier.notifyIfStatusChanged(context, remote, previousStatus, remote.getStatus());
                 }
             }
         }
@@ -887,13 +935,19 @@ public class LocalJsonReader {
     }
 
     private boolean shouldPreferRemoteBooking(BookingHistoryEntity local, BookingHistoryEntity remote) {
+        if (local == null || remote == null) {
+            return remote != null;
+        }
+        if (remote.getStatus() != null && !remote.getStatus().equals(local.getStatus())) {
+            return true;
+        }
         if (isTerminalStatus(remote.getStatus()) && !isTerminalStatus(local.getStatus())) {
             return true;
         }
         if (isTerminalStatus(local.getStatus()) && !isTerminalStatus(remote.getStatus())) {
             return false;
         }
-        return compareCreatedAt(remote.getCreatedAt(), local.getCreatedAt()) < 0;
+        return compareCreatedAt(remote.getCreatedAt(), local.getCreatedAt()) >= 0;
     }
 
     private boolean isTerminalStatus(String status) {

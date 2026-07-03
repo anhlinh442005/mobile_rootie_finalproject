@@ -64,7 +64,8 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:padding="6dp"
+                    android:padding="7dp"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_notification" />
             </RelativeLayout>
 
@@ -628,11 +629,10 @@
                         android:background="@drawable/bg_icon_rounded_green">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_notification"
-                            app:tint="#02542D" />
+                            android:src="@drawable/ic_notification" />
                     </FrameLayout>
 
                     <!-- Text labels -->

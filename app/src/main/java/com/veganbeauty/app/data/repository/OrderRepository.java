@@ -89,13 +89,30 @@ public class OrderRepository {
                 if (snapshot != null) {
                     List<OrderEntity> orders = new ArrayList<>();
                     Gson gson = new Gson();
+                    android.content.Context appContext = localJsonReader.getAppContext();
                     for (DocumentSnapshot doc : snapshot.getDocuments()) {
                         try {
                             java.util.Map<String, Object> map = doc.getData();
                             if (map == null) continue;
                             JsonElement jsonTree = gson.toJsonTree(map);
                             OrderEntity order = gson.fromJson(jsonTree, OrderEntity.class);
+                            if (order == null || order.getId() == null) continue;
+
+                            OrderEntity existing = orderDao.getOrderByIdSync(order.getId());
+                            String previousStatus = existing != null ? existing.getStatus() : null;
+                            String newStatus = order.getStatus();
                             orders.add(order);
+
+                            if (existing != null
+                                    && newStatus != null
+                                    && !newStatus.equals(previousStatus)) {
+                                OrderStatusNotifier.notifyIfStatusChanged(
+                                        appContext,
+                                        order,
+                                        previousStatus,
+                                        newStatus
+                                );
+                            }
                         } catch (Exception ex) {
                             Log.e("OrderRepository", "Error parsing order", ex);
                         }
@@ -254,10 +271,16 @@ public class OrderRepository {
     }
 
     public void cancelOrder(String orderId) {
+        android.content.Context appContext = localJsonReader.getAppContext();
         new Thread(() -> {
             try {
+                OrderEntity existing = orderDao.getOrderByIdSync(orderId);
+                String previousStatus = existing != null ? existing.getStatus() : null;
                 orderDao.updateOrderStatus(orderId, "Đã hủy");
-                OrderStatusNotifier.simulateOnly(orderDao, orderId, "Đã hủy");
+                if (existing != null) {
+                    existing.setStatus("Đã hủy");
+                    OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, "Đã hủy");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -350,10 +373,16 @@ public class OrderRepository {
     }
 
     public void updateOrderStatus(String orderId, String status) {
+        android.content.Context appContext = localJsonReader.getAppContext();
         new Thread(() -> {
             try {
+                OrderEntity existing = orderDao.getOrderByIdSync(orderId);
+                String previousStatus = existing != null ? existing.getStatus() : null;
                 orderDao.updateOrderStatus(orderId, status);
-                OrderStatusNotifier.simulateOnly(orderDao, orderId, status);
+                if (existing != null) {
+                    existing.setStatus(status);
+                    OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, status);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

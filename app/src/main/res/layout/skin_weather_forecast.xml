@@ -83,8 +83,8 @@
                         android:focusable="true">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_notification" />
                     </FrameLayout>
@@ -684,7 +684,7 @@
                         <ImageView
                             android:layout_width="14dp"
                             android:layout_height="14dp"
-                            android:src="@drawable/skin_ai_sparkles"
+                            android:src="@drawable/ic_ai_outline"
                             app:tint="@color/primary_light" />
 
                         <TextView

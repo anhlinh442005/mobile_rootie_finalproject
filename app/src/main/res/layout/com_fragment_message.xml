@@ -57,11 +57,9 @@
 
         <ImageView
             android:id="@+id/ivNotification"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:src="@drawable/home_ic_notification"
-            app:tint="@color/gray_dark"
-            android:padding="2dp" />
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_notification" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView

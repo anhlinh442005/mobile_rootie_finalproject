@@ -52,7 +52,7 @@ public final class HomeHeaderHelper {
             bindCartBadge(fragment, cartBadge);
         }
 
-        View notificationBtn = root.findViewById(R.id.home_header_notification_btn);
+        View notificationBtn = NotificationBadgeHelper.findBellContainer(root);
         if (notificationBtn != null) {
             notificationBtn.setOnClickListener(v -> {
                 fragment.getParentFragmentManager().beginTransaction()
@@ -62,8 +62,9 @@ public final class HomeHeaderHelper {
             });
         }
 
-        TextView badge = root.findViewById(R.id.home_header_notification_badge);
+        TextView badge = NotificationBadgeHelper.findBadgeView(root);
         if (badge != null) {
+            NotificationBadgeHelper.styleBadge(badge, fragment.requireContext());
             bindNotificationBadge(fragment, badge);
         }
     }
@@ -121,14 +122,9 @@ public final class HomeHeaderHelper {
                             @Override
                             public Object emit(Integer count, Continuation<? super kotlin.Unit> continuation) {
                                 if (fragment.getActivity() != null) {
-                                    fragment.getActivity().runOnUiThread(() -> {
-                                        if (count != null && count > 0) {
-                                            badge.setText(String.valueOf(count));
-                                            badge.setVisibility(View.VISIBLE);
-                                        } else {
-                                            badge.setVisibility(View.GONE);
-                                        }
-                                    });
+                                    fragment.getActivity().runOnUiThread(() ->
+                                            NotificationBadgeHelper.updateBadgeCount(badge, count)
+                                    );
                                 }
                                 return kotlin.Unit.INSTANCE;
                             }

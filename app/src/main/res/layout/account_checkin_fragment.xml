@@ -43,14 +43,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/btnNotification"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+        <include
+            android:id="@+id/layoutNotification"
+            layout="@layout/include_notification_bell"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Thông báo"
-            android:src="@drawable/home_ic_notification"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
