@@ -51,25 +51,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btnShare"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Chia sẻ"
                 android:src="@drawable/ic_plane"
                 app:tint="@color/primary" />
-
-            <ImageButton
-                android:id="@+id/btnDelete"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Xoá khỏi danh sách"
-                android:src="@drawable/ic_cancel"
-                app:tint="@color/primary"
-                android:visibility="gone" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -713,6 +706,10 @@
             android:text="Xoá khỏi danh sách"
             android:textColor="#2D3A34"
             android:textSize="14sp"
+            app:icon="@drawable/ic_bin"
+            app:iconTint="#2D3A34"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
             app:cornerRadius="12dp"
             app:strokeColor="#2D3A34"
             android:visibility="gone" />

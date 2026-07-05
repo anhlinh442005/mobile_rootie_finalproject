@@ -208,16 +208,11 @@ public class AccountRewardDetailFragment extends RootieFragment {
             getBinding().btnRedeemNow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.gray_light));
             getBinding().btnRedeemNow.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
             
-            View.OnClickListener removeAction = v -> showRemoveConfirmationDialog();
-            getBinding().btnRemove.setOnClickListener(removeAction);
-            getBinding().btnDelete.setOnClickListener(removeAction);
-            
+            getBinding().btnRemove.setOnClickListener(v -> showRemoveConfirmationDialog());
             getBinding().btnRemove.setVisibility(View.VISIBLE);
-            getBinding().btnDelete.setVisibility(View.VISIBLE);
         } else {
             getBinding().btnRemove.setVisibility(View.GONE);
-            getBinding().btnDelete.setVisibility(View.GONE);
-            
+
             getBinding().btnRedeemNow.setOnClickListener(v -> handleRedeemAction());
         }
     }
