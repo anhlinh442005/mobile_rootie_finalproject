@@ -244,6 +244,8 @@ public class ComNotificationViewModel extends ViewModel {
                         finalName = "Hệ thống";
                     }
                     finalAvatar = RootieBrandHelper.AVATAR_URL;
+                } else if (finalName.equals("Hệ thống") || finalName.equals("Hệ thống Rootie")) {
+                    finalAvatar = RootieBrandHelper.AVATAR_URL;
                 } else if (finalAvatar.isEmpty()) {
                     switch (userId) {
                         case "75675216": finalAvatar = "https://i.pinimg.com/736x/b1/f4/f1/b1f4f17046008cee09ece025370ebae3.jpg"; break;
