@@ -29,9 +29,12 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
+import com.veganbeauty.app.data.local.entities.VoucherEntity;
+import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.ProductRepository;
 import com.veganbeauty.app.databinding.HomeFragmentBinding;
 import com.veganbeauty.app.features.account.reward.AccountRewardFragment;
+import com.veganbeauty.app.features.profile.AccountVoucherFragment;
 import com.veganbeauty.app.features.community.com_feed.ComLoadingFragment;
 import com.veganbeauty.app.features.home.adapter.HomeBannerAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeProductCartListener;
@@ -45,6 +48,9 @@ import com.veganbeauty.app.features.home.adapter.HomeProductGridAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutItem;
 import com.veganbeauty.app.features.home.adapter.HomeTopSearchAdapter;
+import com.veganbeauty.app.features.home.adapter.HomeVoucherCardAdapter;
+import com.veganbeauty.app.features.home.adapter.HomeVoucherCategoryAdapter;
+import com.veganbeauty.app.features.home.HomeHeaderHelper;
 import com.veganbeauty.app.features.myskin.AccountSyncHelper;
 import com.veganbeauty.app.features.myskin.ChooseBranchFragment;
 import com.veganbeauty.app.features.myskin.MySkinFragment;
@@ -69,8 +75,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class HomeFragment extends RootieFragment {
 
@@ -85,6 +93,11 @@ public class HomeFragment extends RootieFragment {
     private HomeCategoryAdapter categoryAdapter;
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
+    private HomeVoucherCategoryAdapter voucherCategoryAdapter;
+    private HomeVoucherCardAdapter voucherCardAdapter;
+
+    private List<VoucherEntity> allVouchers = new ArrayList<>();
+    private String selectedVoucherCategory = "Tất cả";
 
     private boolean isShortcutsExpanded = false;
     private CountDownTimer flashSaleTimer;
@@ -159,6 +172,7 @@ public class HomeFragment extends RootieFragment {
 
         setupStreakWidget();
         setupQuizReminder();
+        setupVouchers();
     }
 
     private void buildShortcuts() {
@@ -360,6 +374,65 @@ public class HomeFragment extends RootieFragment {
 
         binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.rvCategories.setAdapter(categoryAdapter);
+
+        voucherCategoryAdapter = new HomeVoucherCategoryAdapter(this::filterVouchersByCategory);
+        voucherCardAdapter = new HomeVoucherCardAdapter();
+        binding.rvVoucherCategories.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.rvVoucherCategories.setAdapter(voucherCategoryAdapter);
+        binding.rvVouchers.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.rvVouchers.setAdapter(voucherCardAdapter);
+    }
+
+    private void setupVouchers() {
+        binding.tvVoucherSeeAll.setOnClickListener(v -> navigateTo(new AccountVoucherFragment()));
+        loadVouchersFromFirebase();
+    }
+
+    private void loadVouchersFromFirebase() {
+        new Thread(() -> {
+            List<VoucherEntity> vouchers = new FirestoreService().fetchAllVouchers();
+            if (!isAdded()) return;
+            requireActivity().runOnUiThread(() -> bindVouchers(vouchers));
+        }).start();
+    }
+
+    private void bindVouchers(List<VoucherEntity> vouchers) {
+        allVouchers = vouchers != null ? vouchers : new ArrayList<>();
+        if (allVouchers.isEmpty()) {
+            binding.sectionVouchers.setVisibility(View.GONE);
+            return;
+        }
+        binding.sectionVouchers.setVisibility(View.VISIBLE);
+        voucherCategoryAdapter.submitCategories(buildVoucherCategories(allVouchers));
+        selectedVoucherCategory = "Tất cả";
+        filterVouchersByCategory("Tất cả");
+    }
+
+    private List<String> buildVoucherCategories(List<VoucherEntity> vouchers) {
+        Set<String> categories = new LinkedHashSet<>();
+        categories.add("Tất cả");
+        for (VoucherEntity voucher : vouchers) {
+            String category = voucher.getCategory();
+            if (category != null && !category.trim().isEmpty()) {
+                categories.add(category.trim());
+            }
+        }
+        return new ArrayList<>(categories);
+    }
+
+    private void filterVouchersByCategory(String category) {
+        selectedVoucherCategory = category;
+        if ("Tất cả".equals(category)) {
+            voucherCardAdapter.submitList(new ArrayList<>(allVouchers));
+            return;
+        }
+        List<VoucherEntity> filtered = new ArrayList<>();
+        for (VoucherEntity voucher : allVouchers) {
+            if (category.equalsIgnoreCase(voucher.getCategory())) {
+                filtered.add(voucher);
+            }
+        }
+        voucherCardAdapter.submitList(filtered);
     }
 
     private void setupHeaderActions() {

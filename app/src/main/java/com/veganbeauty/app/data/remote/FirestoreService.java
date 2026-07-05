@@ -23,6 +23,7 @@ import com.veganbeauty.app.data.local.entities.ReelEntity;
 import com.veganbeauty.app.data.local.entities.StoreEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.entities.UserMemoryEntity;
+import com.veganbeauty.app.data.local.entities.VoucherEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 
 import org.json.JSONArray;
@@ -111,6 +112,116 @@ public class FirestoreService {
         } catch (Exception e) {
             return new ArrayList<>();
         }
+    }
+
+    public List<VoucherEntity> fetchAllVouchers() {
+        try {
+            QuerySnapshot snapshot = Tasks.await(db.collection("vouchers").get());
+            List<VoucherEntity> vouchers = new ArrayList<>();
+            for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                VoucherEntity voucher = mapVoucherDocument(doc);
+                if (voucher != null && voucher.isActive()) {
+                    vouchers.add(voucher);
+                }
+            }
+            vouchers.sort((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()));
+            return vouchers;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    private VoucherEntity mapVoucherDocument(DocumentSnapshot doc) {
+        Boolean active = doc.getBoolean("isActive");
+        if (active == null) active = doc.getBoolean("is_active");
+        if (active == null) active = true;
+        if (!active) return null;
+
+        String title = firstNonEmpty(doc.getString("title"), "");
+        String code = firstNonEmpty(doc.getString("code"), "");
+        if (title.isEmpty() || code.isEmpty()) return null;
+
+        String description = firstNonEmpty(doc.getString("description"), "");
+        String type = firstNonEmpty(doc.getString("type"), "discount");
+        String category = firstNonEmpty(doc.getString("category"), "");
+        if (category.isEmpty()) {
+            category = mapVoucherTypeToCategory(type);
+        }
+
+        String expiryDate = firstNonEmpty(doc.getString("hsd"), "");
+        if (expiryDate.isEmpty()) {
+            expiryDate = firstNonEmpty(doc.getString("expiryDate"), "");
+        }
+
+        String offerType = firstNonEmpty(doc.getString("offerType"), "fixed_amount");
+        long discountValue = numberAsLong(doc.get("discountValue"));
+        long minOrderValue = numberAsLong(doc.get("minOrderValue"));
+
+        String badge = doc.getString("badge");
+        if (badge == null || badge.trim().isEmpty()) {
+            Long qty = doc.getLong("quantity");
+            if (qty != null && qty > 0 && qty <= 50) {
+                badge = "Sắp hết mã";
+            }
+        }
+
+        Integer quantity = null;
+        if (doc.get("quantity") instanceof Number) {
+            quantity = ((Number) doc.get("quantity")).intValue();
+        }
+
+        int sortOrder = 0;
+        if (doc.get("sortOrder") instanceof Number) {
+            sortOrder = ((Number) doc.get("sortOrder")).intValue();
+        }
+
+        return new VoucherEntity(
+                doc.getId(),
+                title,
+                description,
+                code,
+                category,
+                type,
+                badge,
+                expiryDate,
+                offerType,
+                discountValue,
+                minOrderValue,
+                true,
+                sortOrder,
+                quantity
+        );
+    }
+
+    private static String mapVoucherTypeToCategory(String type) {
+        if (type == null) return "Khác";
+        switch (type.toLowerCase(Locale.ROOT)) {
+            case "flash_sale":
+            case "flash sale":
+                return "Flash Sale";
+            case "free ship":
+            case "freeship":
+            case "voucher_freeship":
+                return "Freeship";
+            case "combo":
+                return "Combo & Quà";
+            case "skincare":
+            case "chăm sóc da":
+                return "Chăm sóc da";
+            default:
+                return "Giảm giá";
+        }
+    }
+
+    private static long numberAsLong(Object value) {
+        if (value instanceof Number) return ((Number) value).longValue();
+        return 0L;
+    }
+
+    private static String firstNonEmpty(String value, String fallback) {
+        if (value != null && !value.trim().isEmpty()) return value.trim();
+        return fallback;
     }
 
     public ProductEntity fetchProductByBarcode(String barcode) {

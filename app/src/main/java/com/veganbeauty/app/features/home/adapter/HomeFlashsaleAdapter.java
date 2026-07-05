@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -72,6 +73,16 @@ public class HomeFlashsaleAdapter extends ListAdapter<ProductEntity, HomeFlashsa
             Random random = new Random((long) product.getId().hashCode());
             int discount = random.nextInt(31) + 20;
             binding.tvFlashDiscountBadge.setText("-" + discount + "%");
+
+            int urgencyProgress = random.nextInt(36) + 55;
+            LinearLayout.LayoutParams fillParams =
+                    (LinearLayout.LayoutParams) binding.vFlashUrgencyFill.getLayoutParams();
+            LinearLayout.LayoutParams spacerParams =
+                    (LinearLayout.LayoutParams) binding.vFlashUrgencySpacer.getLayoutParams();
+            fillParams.weight = urgencyProgress;
+            spacerParams.weight = 100 - urgencyProgress;
+            binding.vFlashUrgencyFill.setLayoutParams(fillParams);
+            binding.vFlashUrgencySpacer.setLayoutParams(spacerParams);
 
             long originalPrice = product.getPrice();
             double salePrice = originalPrice * (100 - discount) / 100.0;
