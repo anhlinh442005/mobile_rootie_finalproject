@@ -403,10 +403,8 @@ public class AccountProfileEditFragment extends RootieFragment {
         String path = saveAvatarToInternalStorage(uri);
         if (path != null) {
             String fileUri = "file://" + path;
-            ProfileSession.INSTANCE.setAvatar(requireContext(), fileUri);
             loadAvatarImage(fileUri);
-            Toast.makeText(getContext(), "Đã cập nhật ảnh đại diện cục bộ", Toast.LENGTH_SHORT).show();
-            uploadAvatarToFirebase(Uri.parse(fileUri));
+            uploadAvatarToCloudinary(Uri.parse(fileUri));
         } else {
             Toast.makeText(getContext(), "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show();
         }
@@ -416,36 +414,46 @@ public class AccountProfileEditFragment extends RootieFragment {
         String path = saveAvatarBitmapToInternalStorage(bitmap);
         if (path != null) {
             String fileUri = "file://" + path;
-            ProfileSession.INSTANCE.setAvatar(requireContext(), fileUri);
             loadAvatarImage(fileUri);
-            Toast.makeText(getContext(), "Đã cập nhật ảnh đại diện cục bộ", Toast.LENGTH_SHORT).show();
-            uploadAvatarToFirebase(Uri.parse(fileUri));
+            uploadAvatarToCloudinary(Uri.parse(fileUri));
         } else {
             Toast.makeText(getContext(), "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void uploadAvatarToFirebase(Uri fileUri) {
+    private void uploadAvatarToCloudinary(Uri fileUri) {
         Context context = requireContext();
-        Toast progressToast = Toast.makeText(context, "Đang tải ảnh đại diện lên Firebase...", Toast.LENGTH_LONG);
-        progressToast.show();
+        if (!com.veganbeauty.app.utils.CloudinaryConfig.isConfigured()) {
+            Toast.makeText(
+                            context,
+                            "Chưa cấu hình Cloudinary. Sửa CloudinaryConfig.java.",
+                            Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
 
-        SyncDataHelper.uploadAvatarToFirebase(context, fileUri, downloadUrl -> {
-            if (downloadUrl != null) {
-                // Flush the new URL to Firestore and Room database automatically
-                SyncDataHelper.syncUserProfileToFirebaseAndLocal(context);
-            }
-            if (getActivity() != null && isAdded()) {
-                getActivity().runOnUiThread(() -> {
-                    if (downloadUrl != null) {
-                        loadAvatarImage(downloadUrl);
-                        Toast.makeText(context, "Đồng bộ ảnh đại diện lên Firebase thành công!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Đang tải ảnh đại diện lên Cloudinary...", Toast.LENGTH_LONG).show();
+
+        SyncDataHelper.uploadAndSyncAvatar(
+                context,
+                fileUri,
+                (success, secureUrl, errorMessage) -> {
+                    if (!isAdded() || getActivity() == null) {
+                        return;
+                    }
+                    if (success && secureUrl != null) {
+                        loadAvatarImage(secureUrl);
+                        Toast.makeText(context, "Cập nhật avatar thành công!", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(context, "Không thể đồng bộ ảnh đại diện lên Firebase. Đã lưu cục bộ.", Toast.LENGTH_LONG).show();
+                        String message =
+                                errorMessage != null
+                                        ? errorMessage
+                                        : "Không thể cập nhật avatar. Vui lòng thử lại.";
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                        String currentAvatar = ProfileSession.INSTANCE.getAvatar(context);
+                        loadAvatarImage(currentAvatar);
                     }
                 });
-            }
-        });
     }
 
     @Override

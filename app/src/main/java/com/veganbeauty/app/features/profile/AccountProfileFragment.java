@@ -42,6 +42,7 @@ import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.utils.AvatarLoader;
 import com.veganbeauty.app.utils.NavAppUtils;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.util.List;
 import java.util.Set;
@@ -334,7 +335,7 @@ public class AccountProfileFragment extends RootieFragment {
         String userId = ProfileSessionHelper.getEffectiveUserId(ctx);
         String phone = ProfileSession.getPhone(ctx);
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+        new Thread(() -> {
             orderRepository.syncOrdersFromAssetsBlocking();
             List<OrderEntity> orders = orderRepository.filterBuyerOrdersFromAssets(userId, phone);
             if (getActivity() != null) {
@@ -343,8 +344,7 @@ public class AccountProfileFragment extends RootieFragment {
                     updateOrderBadges(orders);
                 });
             }
-            return Unit.INSTANCE;
-        });
+        }).start();
 
         FlowLiveDataConversions.asLiveData(orderRepository.getOrdersForBuyer(userId, phone))
                 .observe(getViewLifecycleOwner(), roomOrders -> {
@@ -355,7 +355,8 @@ public class AccountProfileFragment extends RootieFragment {
     }
 
     private void loadUserProfileData(Context ctx) {
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+        new Thread(() -> {
+            SyncDataHelper.pullUserProfileFromFirestoreSync(ctx);
             ProfileSessionHelper.ensureCurrentUserInDatabase(ctx);
             if (orderRepository == null) {
                 RootieDatabase db = RootieDatabase.getDatabase(ctx);
@@ -382,8 +383,7 @@ public class AccountProfileFragment extends RootieFragment {
                     binding.tvEmail.setText(ProfileSession.getEmail(ctx));
                 });
             }
-            return Unit.INSTANCE;
-        });
+        }).start();
     }
 
     private void updateOrderBadges(@Nullable List<OrderEntity> orders) {

@@ -175,9 +175,14 @@ public class SkinTimeRoutineFragment extends RootieFragment {
     }
 
     private void checkStreakAndUpdateAsync(String type) {
+        android.content.Context ctx = getContext();
+        if (ctx == null) return;
         LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
                 BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    try { checkStreakAndUpdate(type); } catch (Exception e) { e.printStackTrace(); }
+                    try {
+                        checkStreakAndUpdate(type);
+                        com.veganbeauty.app.utils.SyncDataHelper.pushSkincareHistoryToFirestore(ctx, getRoutineDate(type));
+                    } catch (Exception e) { e.printStackTrace(); }
                     getParentFragmentManager().popBackStack();
                     return kotlin.Unit.INSTANCE;
                 }, cont));
@@ -222,7 +227,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
             stepBinding.ivStepIcon.setImageResource(getStepIconRes(step.getName()));
 
             String stepId = routineType + "_" + step.getIndex();
-            boolean isStepCompleted = completedSteps.contains(stepId) || isSubmitted;
+            boolean isStepCompleted = completedSteps.contains(stepId);
 
             if (isStepCompleted) {
                 stepBinding.ivCheckbox.setImageResource(R.drawable.ic_circle_checked);
@@ -316,7 +321,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         for (SkincareStep s : activeSteps) {
             int mins = getStepTimeVal(getStepTime(s.getName()));
             totalMinutes += mins;
-            if (completedSteps.contains(routineType + "_" + s.getIndex()) || isSubmitted) completedMinutes += mins;
+            if (completedSteps.contains(routineType + "_" + s.getIndex())) completedMinutes += mins;
         }
         binding.tvDurationMins.setText(completedMinutes + "/" + totalMinutes + " Phút");
 

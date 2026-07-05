@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
@@ -30,7 +29,9 @@ import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
+import com.veganbeauty.app.utils.CloudinaryConfig;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.SyncDataHelper;
 import com.yalantis.ucrop.UCrop;
 
 import org.json.JSONArray;
@@ -45,6 +46,7 @@ public class CommunityEditProfileFragment extends Fragment {
 
     private ComFragmentEditProfileBinding binding;
     private Uri selectedAvatarUri = null;
+    private boolean isSaving = false;
 
     private final ActivityResultLauncher<Intent> cropImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -106,32 +108,7 @@ public class CommunityEditProfileFragment extends Fragment {
         binding.etUsername.setText(uname.startsWith("@") ? uname : "@" + uname);
         binding.etBio.setText(ProfileSession.getBio(ctx));
 
-        bindAvatarImage(ctx, ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx));
-
-        new Thread(() -> {
-            UserEntity savedUser = ProfileSessionHelper.findCurrentUser(ctx);
-            if (savedUser == null || getActivity() == null) {
-                return;
-            }
-            String resolvedAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx, savedUser);
-            getActivity().runOnUiThread(() -> {
-                if (!isAdded() || binding == null) {
-                    return;
-                }
-                if (savedUser.getFull_name() != null && !savedUser.getFull_name().trim().isEmpty()) {
-                    binding.etDisplayName.setText(savedUser.getFull_name().trim());
-                }
-                if (savedUser.getUsername() != null && !savedUser.getUsername().trim().isEmpty()) {
-                    String savedUname = savedUser.getUsername().trim();
-                    binding.etUsername.setText(savedUname.startsWith("@") ? savedUname : "@" + savedUname);
-                }
-                if (savedUser.getBio() != null && !savedUser.getBio().trim().isEmpty()) {
-                    binding.etBio.setText(savedUser.getBio().trim());
-                }
-                ProfileSession.setAvatar(ctx, resolvedAvatar);
-                bindAvatarImage(ctx, resolvedAvatar);
-            });
-        }).start();
+        SyncDataHelper.syncUserProfileFromFirestore(ctx, () -> loadProfileFields(ctx));
 
         String coverUrl = ProfileSession.getPrimaryImage(ctx);
         if (!coverUrl.isEmpty()) {
@@ -187,39 +164,7 @@ public class CommunityEditProfileFragment extends Fragment {
 
         binding.ivBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        View.OnClickListener saveAction = v -> {
-            String newName = binding.etDisplayName.getText().toString().trim();
-            String newUname = binding.etUsername.getText().toString().trim();
-            String newBio = binding.etBio.getText().toString().trim();
-
-            if (newName.isEmpty()) {
-                Toast.makeText(ctx, "Tên hiển thị không được để trống", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (newUname.isEmpty()) {
-                Toast.makeText(ctx, "Tên người dùng không được để trống", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (!newUname.startsWith("@")) {
-                newUname = "@" + newUname;
-            }
-
-            ProfileSession.setFullName(ctx, newName);
-            ProfileSession.setUsername(ctx, newUname);
-            ProfileSession.setBio(ctx, newBio);
-
-            String avatarToSave = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx);
-            if (selectedAvatarUri != null) {
-                avatarToSave = selectedAvatarUri.toString();
-            }
-            ProfileSession.setAvatar(ctx, avatarToSave);
-
-            persistProfileChanges(ctx, finalOwnUserId, newName, newUname, newBio, avatarToSave);
-
-            Toast.makeText(ctx, "Lưu thông tin thành công", Toast.LENGTH_SHORT).show();
-            getParentFragmentManager().popBackStack();
-        };
+        View.OnClickListener saveAction = v -> performSave(ctx, finalOwnUserId);
 
         binding.tvSaveTop.setOnClickListener(saveAction);
         binding.btnSaveBottom.setOnClickListener(saveAction);
@@ -238,6 +183,123 @@ public class CommunityEditProfileFragment extends Fragment {
         });
     }
 
+    private void loadProfileFields(Context ctx) {
+        if (!isAdded() || binding == null) {
+            return;
+        }
+
+        bindAvatarImage(ctx, ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx));
+
+        new Thread(() -> {
+            UserEntity savedUser = ProfileSessionHelper.findCurrentUser(ctx);
+            if (savedUser == null || getActivity() == null) {
+                return;
+            }
+            String resolvedAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx, savedUser);
+            getActivity().runOnUiThread(() -> {
+                if (!isAdded() || binding == null) {
+                    return;
+                }
+                if (savedUser.getFull_name() != null && !savedUser.getFull_name().trim().isEmpty()) {
+                    binding.etDisplayName.setText(savedUser.getFull_name().trim());
+                }
+                if (savedUser.getUsername() != null && !savedUser.getUsername().trim().isEmpty()) {
+                    String savedUname = savedUser.getUsername().trim();
+                    binding.etUsername.setText(savedUname.startsWith("@") ? savedUname : "@" + savedUname);
+                }
+                if (savedUser.getBio() != null && !savedUser.getBio().trim().isEmpty()) {
+                    binding.etBio.setText(savedUser.getBio().trim());
+                }
+                bindAvatarImage(ctx, resolvedAvatar);
+            });
+        }).start();
+    }
+
+    private void performSave(Context ctx, String userId) {
+        if (isSaving) {
+            return;
+        }
+
+        String newName = binding.etDisplayName.getText().toString().trim();
+        String newUname = binding.etUsername.getText().toString().trim();
+        String newBio = binding.etBio.getText().toString().trim();
+
+        if (newName.isEmpty()) {
+            Toast.makeText(ctx, "Tên hiển thị không được để trống", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (newUname.isEmpty()) {
+            Toast.makeText(ctx, "Tên người dùng không được để trống", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!newUname.startsWith("@")) {
+            newUname = "@" + newUname;
+        }
+
+        ProfileSession.setFullName(ctx, newName);
+        ProfileSession.setUsername(ctx, newUname);
+        ProfileSession.setBio(ctx, newBio);
+
+        if (selectedAvatarUri != null) {
+            if (!CloudinaryConfig.isConfigured()) {
+                Toast.makeText(ctx, "Chưa cấu hình Cloudinary. Sửa CloudinaryConfig.java.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            isSaving = true;
+            setSaveEnabled(false);
+            Toast.makeText(ctx, "Đang tải ảnh đại diện lên Cloudinary...", Toast.LENGTH_LONG).show();
+
+            final String finalUname = newUname;
+            SyncDataHelper.uploadAndSyncAvatar(ctx, selectedAvatarUri, (success, secureUrl, errorMessage) -> {
+                if (!isAdded()) {
+                    return;
+                }
+                isSaving = false;
+                setSaveEnabled(true);
+
+                if (success && secureUrl != null) {
+                    persistProfileChanges(ctx, userId, newName, finalUname, newBio, secureUrl);
+                    Toast.makeText(ctx, "Cập nhật avatar thành công!", Toast.LENGTH_SHORT).show();
+                    getParentFragmentManager().popBackStack();
+                } else {
+                    String message = errorMessage != null ? errorMessage : "Không thể cập nhật avatar. Vui lòng thử lại.";
+                    Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+                }
+            });
+            return;
+        }
+
+        String avatarToSave = resolveRemoteAvatarForSave(ctx);
+        finishSave(ctx, userId, newName, newUname, newBio, avatarToSave);
+    }
+
+    private void finishSave(Context ctx, String userId, String fullName, String username, String bio, String avatar) {
+        persistProfileChanges(ctx, userId, fullName, username, bio, avatar);
+        Toast.makeText(ctx, "Lưu thông tin thành công", Toast.LENGTH_SHORT).show();
+        getParentFragmentManager().popBackStack();
+    }
+
+    private String resolveRemoteAvatarForSave(Context ctx) {
+        String avatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx);
+        if (SyncDataHelper.isRemoteAvatarUrl(avatar)) {
+            return avatar.trim();
+        }
+        UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
+        if (user != null && SyncDataHelper.isRemoteAvatarUrl(user.getAvatar())) {
+            return user.getAvatar().trim();
+        }
+        return "";
+    }
+
+    private void setSaveEnabled(boolean enabled) {
+        if (binding == null) {
+            return;
+        }
+        binding.tvSaveTop.setEnabled(enabled);
+        binding.btnSaveBottom.setEnabled(enabled);
+    }
+
     private void bindAvatarImage(Context ctx, String avatarUrl) {
         if (binding == null || binding.ivAvatar == null) {
             return;
@@ -251,6 +313,11 @@ public class CommunityEditProfileFragment extends Fragment {
     }
 
     private void persistProfileChanges(Context ctx, String userId, String fullName, String username, String bio, String avatar) {
+        if (!SyncDataHelper.isRemoteAvatarUrl(avatar)) {
+            avatar = resolveRemoteAvatarForSave(ctx);
+        }
+
+        final String avatarToPersist = avatar;
         new Thread(() -> {
             try {
                 UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
@@ -262,14 +329,16 @@ public class CommunityEditProfileFragment extends Fragment {
                             ProfileSession.getEmail(ctx) != null ? ProfileSession.getEmail(ctx) : "",
                             ProfileSession.getPhone(ctx) != null ? ProfileSession.getPhone(ctx) : "",
                             "",
-                            avatar,
+                            avatarToPersist,
                             ProfileSession.getPrimaryImage(ctx)
                     );
                     user.setBio(bio);
                 } else {
                     user.setFull_name(fullName);
                     user.setUsername(username.replace("@", "").trim());
-                    user.setAvatar(avatar);
+                    if (SyncDataHelper.isRemoteAvatarUrl(avatarToPersist)) {
+                        user.setAvatar(avatarToPersist);
+                    }
                     user.setBio(bio);
                     String primaryImage = ProfileSession.getPrimaryImage(ctx);
                     if (primaryImage != null && !primaryImage.trim().isEmpty()) {
