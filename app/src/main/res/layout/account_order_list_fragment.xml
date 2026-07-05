@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@color/neutral"
+        android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <!-- Back Button -->
@@ -55,28 +56,37 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Header Stats -->
-    <TextView
-        android:id="@+id/tvOrderStats"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="sans-serif"
-        android:textColor="@color/secondary"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar"
-        tools:text="8 đơn• 2 chờ xác nhận" />
-
-    <!-- Filter Tabs Scroll -->
-    <HorizontalScrollView
-        android:id="@+id/tabScrollView"
+    <!-- Header Stats + Filter Tabs, grouped so they stay pinned above the list -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutListHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/tvOrderStats">
+        android:background="@color/neutral"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <TextView
+            android:id="@+id/tvOrderStats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/secondary"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="8 đơn• 2 chờ xác nhận" />
+
+        <!-- Filter Tabs Scroll -->
+        <HorizontalScrollView
+            android:id="@+id/tabScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderStats"
+            app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -90,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_btn_buy"
+                android:background="@drawable/tab_active_bg"
                 android:clickable="true"
                 android:focusable="true"
                 android:fontFamily="sans-serif-medium"
@@ -181,7 +191,9 @@
                 android:textSize="14sp" />
 
         </LinearLayout>
-    </HorizontalScrollView>
+        </HorizontalScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Orders RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -192,7 +204,7 @@
         android:paddingBottom="24dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabScrollView"
+        app:layout_constraintTop_toBottomOf="@id/layoutListHeader"
         tools:listitem="@layout/account_order_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

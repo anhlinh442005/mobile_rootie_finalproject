@@ -1,16 +1,12 @@
 package com.veganbeauty.app.features.profile;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,6 +21,7 @@ import com.veganbeauty.app.utils.SyncDataHelper;
 public class AccountProfilePersonalInfoFragment extends RootieFragment {
 
     private AccountProfilePersonalInfoBinding binding;
+    private boolean isSaving;
 
     @Nullable
     @Override
@@ -36,44 +33,7 @@ public class AccountProfilePersonalInfoFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         Context context = requireContext();
-        String fullName = ProfileSession.getFullName(context);
-        String cccd = ProfileSession.getCCCD(context);
-        String address = ProfileSession.getAddress(context);
-
-        binding.etFullname.setText(maskFullName(fullName));
-        binding.etCccd.setText(maskCCCD(cccd));
-        binding.etAddress.setText(maskAddress(address));
-        binding.tvAddressCount.setText(address.length() + "/200");
-
-        binding.etFullname.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                String current = binding.etFullname.getText().toString();
-                if (current.contains("*")) {
-                    binding.etFullname.setText(ProfileSession.getFullName(context));
-                }
-            } else {
-                String entered = binding.etFullname.getText().toString();
-                if (!entered.contains("*") && !entered.trim().isEmpty()) {
-                    ProfileSession.setFullName(context, entered);
-                }
-                binding.etFullname.setText(maskFullName(ProfileSession.getFullName(context)));
-            }
-        });
-
-        binding.etCccd.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                String current = binding.etCccd.getText().toString();
-                if (current.contains("*")) {
-                    binding.etCccd.setText(ProfileSession.getCCCD(context));
-                }
-            } else {
-                String entered = binding.etCccd.getText().toString();
-                if (!entered.contains("*") && !entered.trim().isEmpty()) {
-                    ProfileSession.setCCCD(context, entered);
-                }
-                binding.etCccd.setText(maskCCCD(ProfileSession.getCCCD(context)));
-            }
-        });
+        loadFieldsFromSession(context);
 
         binding.etAddress.addTextChangedListener(new TextWatcher() {
             @Override
@@ -84,68 +44,103 @@ public class AccountProfilePersonalInfoFragment extends RootieFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String currentText = s != null ? s.toString() : "";
-                if (binding.etAddress.hasFocus() && !currentText.contains("*")) {
-                    binding.tvAddressCount.setText(currentText.length() + "/200");
-                } else {
-                    String realAddr = ProfileSession.getAddress(context);
-                    binding.tvAddressCount.setText(realAddr.length() + "/200");
-                }
-            }
-        });
-
-        binding.etAddress.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                String current = binding.etAddress.getText().toString();
-                if (current.contains("*")) {
-                    binding.etAddress.setText(ProfileSession.getAddress(context));
-                }
-            } else {
-                String entered = binding.etAddress.getText().toString();
-                if (!entered.contains("*") && !entered.trim().isEmpty()) {
-                    ProfileSession.setAddress(context, entered);
-                }
-                binding.etAddress.setText(maskAddress(ProfileSession.getAddress(context)));
-                binding.tvAddressCount.setText(ProfileSession.getAddress(context).length() + "/200");
+                int length = s != null ? s.length() : 0;
+                binding.tvAddressCount.setText(length + "/200");
             }
         });
 
         binding.btnBack.setOnClickListener(v -> {
-            binding.etFullname.clearFocus();
-            binding.etCccd.clearFocus();
-            binding.etAddress.clearFocus();
-            SyncDataHelper.syncUserProfileToFirebaseAndLocal(requireContext());
-            getParentFragmentManager().popBackStack();
+            if (!isSaving) {
+                getParentFragmentManager().popBackStack();
+            }
         });
+
+        binding.btnSave.setOnClickListener(v -> savePersonalInfo(false));
 
         com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
 
-        binding.btnNotification.setOnClickListener(v -> 
-            Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show()
-        );
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                        .addToBackStack(null)
+                        .commit());
+
+        SyncDataHelper.syncUserProfileFromFirestore(context, () -> {
+            if (binding != null && isAdded()) {
+                loadFieldsFromSession(requireContext());
+            }
+        });
+    }
+
+    private void loadFieldsFromSession(Context context) {
+        String fullName = ProfileSession.getFullName(context);
+        String cccd = ProfileSession.getCCCD(context);
+        String address = ProfileSession.getAddress(context);
+
+        binding.etFullname.setText(fullName != null ? fullName : "");
+        binding.etCccd.setText(cccd != null ? cccd : "");
+        binding.etAddress.setText(address != null ? address : "");
+        binding.tvAddressCount.setText((address != null ? address.length() : 0) + "/200");
+    }
+
+    private void savePersonalInfo(boolean exitAfterSave) {
+        if (isSaving || binding == null) {
+            return;
+        }
+
+        Context context = requireContext();
+        String fullName = binding.etFullname.getText().toString().trim();
+        String cccd = binding.etCccd.getText().toString().trim();
+        String address = binding.etAddress.getText().toString().trim();
+
+        if (fullName.isEmpty()) {
+            Toast.makeText(context, "Họ và tên không được để trống", Toast.LENGTH_SHORT).show();
+            binding.etFullname.requestFocus();
+            return;
+        }
+        if (cccd.isEmpty()) {
+            Toast.makeText(context, "Vui lòng nhập số CCCD", Toast.LENGTH_SHORT).show();
+            binding.etCccd.requestFocus();
+            return;
+        }
+        if (address.isEmpty()) {
+            Toast.makeText(context, "Vui lòng nhập địa chỉ", Toast.LENGTH_SHORT).show();
+            binding.etAddress.requestFocus();
+            return;
+        }
+
+        ProfileSession.setFullName(context, fullName);
+        ProfileSession.setCCCD(context, cccd);
+        ProfileSession.setAddress(context, address);
+        ProfileSession.markLocalProfileEdited(context);
+
+        isSaving = true;
+        binding.btnSave.setEnabled(false);
+        Toast.makeText(context, "Đang lưu thông tin...", Toast.LENGTH_SHORT).show();
+
+        SyncDataHelper.syncUserProfileToFirebaseAndLocal(context, (localSuccess, cloudSynced) -> {
+            isSaving = false;
+            if (binding == null || !isAdded()) {
+                return;
+            }
+            binding.btnSave.setEnabled(true);
+            if (!localSuccess) {
+                Toast.makeText(context, "Không thể lưu thông tin. Vui lòng thử lại.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (!cloudSynced) {
+                Toast.makeText(context, "Đã lưu trên máy. Đồng bộ cloud sẽ thử lại khi có mạng.", Toast.LENGTH_SHORT).show();
+            }
+            Toast.makeText(context, "Đã lưu thông tin cá nhân", Toast.LENGTH_SHORT).show();
+            if (exitAfterSave) {
+                getParentFragmentManager().popBackStack();
+            }
+        });
     }
 
     @Override
     protected void observeViewModel() {
         // Not used
-    }
-
-    private String maskFullName(String fullName) {
-        if (fullName == null || fullName.trim().isEmpty()) return "";
-        char firstChar = Character.toUpperCase(fullName.charAt(0));
-        char lastChar = Character.toUpperCase(fullName.charAt(fullName.length() - 1));
-        return firstChar + "*** **** ***" + lastChar;
-    }
-
-    private String maskCCCD(String cccd) {
-        if (cccd == null) return "";
-        if (cccd.length() < 4) return cccd;
-        return "*********" + cccd.substring(cccd.length() - 4);
-    }
-
-    private String maskAddress(String address) {
-        if (address == null || address.trim().isEmpty()) return "";
-        return "********";
     }
 
     @Override

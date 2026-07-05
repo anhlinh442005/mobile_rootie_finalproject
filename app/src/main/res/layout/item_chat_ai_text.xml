@@ -76,6 +76,15 @@
             android:textSize="14sp"
             android:lineSpacingMultiplier="1.2"
             android:text="Chào bạn, mình là trợ lý Rootie..." />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivAiMessageImage"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/RoundedImageView4dp" />
     </LinearLayout>
 
     <!-- Time text -->

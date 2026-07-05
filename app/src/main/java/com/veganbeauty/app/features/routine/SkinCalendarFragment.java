@@ -21,6 +21,8 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.SkinCalendarBinding;
+import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ import java.util.Set;
 public class SkinCalendarFragment extends RootieFragment {
 
     private SkinCalendarBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private final Calendar calendar = Calendar.getInstance();
     private final SimpleDateFormat sdfYearMonth = new SimpleDateFormat("'Tháng' MM, yyyy", new Locale("vi", "VN"));
     private final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -53,12 +56,13 @@ public class SkinCalendarFragment extends RootieFragment {
         Context ctx = requireContext();
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.btnNotification.setOnClickListener(v ->
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                         .addToBackStack(null).commit());
 
         com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, ProfileSession.getAvatar(ctx));
+        binding.ivAvatar.setOnClickListener(v -> BottomNavHelper.navigate(this, R.id.nav_account));
 
         Set<String> morningDates = ProfileSession.getCompletedMorningDates(ctx);
         Set<String> eveningDates = ProfileSession.getCompletedEveningDates(ctx);
@@ -100,6 +104,16 @@ public class SkinCalendarFragment extends RootieFragment {
 
         SimpleDateFormat currentMonthFormat = new SimpleDateFormat("'Nhật ký chi tiết tháng' M", new Locale("vi", "VN"));
         binding.btnDetailedHistory.setText(currentMonthFormat.format(new Date()));
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.layoutHeader,
+                binding.calendarScroll,
+                0
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.calendarScroll);
     }
 
     private int calculateMaxStreak(Set<String> morningDates, Set<String> eveningDates) {
@@ -293,8 +307,8 @@ public class SkinCalendarFragment extends RootieFragment {
         Context ctx = getContext();
         if (ctx == null) return;
 
-        Drawable activeBg = ContextCompat.getDrawable(ctx, R.drawable.bg_btn_buy);
-        Drawable inactiveBg = ContextCompat.getDrawable(ctx, R.drawable.bg_pill_grey_translucent);
+        Drawable activeBg = ContextCompat.getDrawable(ctx, R.drawable.skin_bg_calendar_tab_active);
+        Drawable inactiveBg = ContextCompat.getDrawable(ctx, R.drawable.skin_bg_calendar_tab_inactive);
 
         binding.btnTabMonth.setBackground(index == 0 ? activeBg : inactiveBg);
         binding.btnTabMonth.setTextColor(index == 0 ? Color.WHITE : Color.parseColor("#3E4D44"));

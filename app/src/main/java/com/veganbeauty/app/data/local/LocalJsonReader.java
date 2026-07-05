@@ -862,7 +862,8 @@ public class LocalJsonReader {
                     obj.optString("nextAppointmentDate", ""),
                     obj.optString("nextAppointmentText", ""),
                     obj.optString("cancelledAt", ""),
-                    obj.optString("cancelReason", "")
+                    obj.optString("cancelReason", ""),
+                    parseFeedbackImageUrls(obj.optJSONArray("feedbackImageUrls"))
             );
         } catch (Exception e) {
             android.util.Log.w("LocalJsonReader", "parseBookingObject failed", e);
@@ -908,7 +909,22 @@ public class LocalJsonReader {
         obj.put("nextAppointmentText", booking.getNextAppointmentText());
         obj.put("cancelledAt", booking.getCancelledAt());
         obj.put("cancelReason", booking.getCancelReason());
+        obj.put("feedbackImageUrls", new JSONArray(booking.getUserFeedbackImages()));
         return obj;
+    }
+
+    private static List<String> parseFeedbackImageUrls(JSONArray array) {
+        List<String> urls = new ArrayList<>();
+        if (array == null) {
+            return urls;
+        }
+        for (int i = 0; i < array.length(); i++) {
+            String url = array.optString(i, "").trim();
+            if (!url.isEmpty()) {
+                urls.add(url);
+            }
+        }
+        return urls;
     }
 
     private boolean matchesUserEmail(BookingHistoryEntity booking, String normalizedEmail) {
@@ -1505,7 +1521,66 @@ public class LocalJsonReader {
                     booking.getNextAppointmentDate(),
                     booking.getNextAppointmentText(),
                     booking.getCancelledAt(),
-                    booking.getCancelReason()
+                    booking.getCancelReason(),
+                    booking.getUserFeedbackImages()
+            ));
+            updated = true;
+            break;
+        }
+        if (updated) {
+            saveAllBookingsInternal(all);
+        }
+    }
+
+    public synchronized void updateBookingFeedbackImages(String id, List<String> imageUrls) {
+        if (id == null || id.trim().isEmpty()) {
+            return;
+        }
+        List<BookingHistoryEntity> all = loadAllBookingsInternal();
+        List<String> safeUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
+        boolean updated = false;
+        for (int i = 0; i < all.size(); i++) {
+            BookingHistoryEntity booking = all.get(i);
+            if (!id.equals(booking.getId())) {
+                continue;
+            }
+            all.set(i, new BookingHistoryEntity(
+                    booking.getId(),
+                    booking.getUserId(),
+                    booking.getUserName(),
+                    booking.getUserPhone(),
+                    booking.getUserEmail(),
+                    booking.getServiceName(),
+                    booking.getDateDisplay(),
+                    booking.getMonthDisplay(),
+                    booking.getDayOfWeek(),
+                    booking.getTime(),
+                    booking.getDuration(),
+                    booking.getStoreName(),
+                    booking.getStoreAddress(),
+                    booking.getStorePhone(),
+                    booking.getStoreImage(),
+                    booking.getNote(),
+                    booking.getStatus(),
+                    booking.getPolicy(),
+                    booking.getCreatedAt(),
+                    booking.getCompletedAt(),
+                    booking.getSkinResults(),
+                    booking.getConsultantName(),
+                    booking.getConsultantAvatar(),
+                    booking.getConsultantRating(),
+                    booking.getUserRating(),
+                    booking.getUserReview(),
+                    booking.getReviewDate(),
+                    booking.getBeforeImage(),
+                    booking.getAfterImage(),
+                    booking.getEarnedPoints(),
+                    booking.getTotalPoints(),
+                    booking.getNextAppointmentDate(),
+                    booking.getNextAppointmentText(),
+                    booking.getCancelledAt(),
+                    booking.getCancelReason(),
+                    safeUrls
             ));
             updated = true;
             break;

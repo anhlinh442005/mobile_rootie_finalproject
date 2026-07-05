@@ -30,6 +30,7 @@ public class ProfileSession {
     private static final String KEY_LAST_LOGIN = "last_login";
     private static final String KEY_AVATAR = "avatar";
     private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_PROFILE_HAS_LOCAL_EDITS = "profile_has_local_edits";
 
     // Notification setting keys
     private static final String KEY_NOTI_ENABLED = "noti_enabled";
@@ -161,12 +162,18 @@ public class ProfileSession {
     }
 
     public static String getAvatar(Context context) {
-        String avatar = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_AVATAR, "");
-        if (avatar == null || avatar.trim().isEmpty()) {
+        String avatar = getAvatarStored(context);
+        if (avatar.isEmpty()) {
             return "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg";
         }
-        return avatar.trim();
+        return avatar;
+    }
+
+    /** Giá trị avatar thực trong prefs, không fallback mặc định. */
+    public static String getAvatarStored(Context context) {
+        String avatar = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(KEY_AVATAR, "");
+        return avatar != null ? avatar.trim() : "";
     }
 
     public static void setAvatar(Context context, String avatarUrl) {
@@ -228,6 +235,48 @@ public class ProfileSession {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()
                 .putString(KEY_GENDER, gender)
+                .apply();
+    }
+
+    /**
+     * Persists profile edits synchronously so background sync reads the latest values.
+     */
+    public static boolean saveProfileEdits(Context context,
+                                           String fullName,
+                                           String username,
+                                           String email,
+                                           String phone,
+                                           String dob,
+                                           String gender) {
+        boolean committed = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_FULLNAME, fullName)
+                .putString(KEY_USERNAME, username)
+                .putString(KEY_EMAIL, email)
+                .putString(KEY_PHONE, phone)
+                .putString(KEY_DOB, dob)
+                .putString(KEY_GENDER, gender)
+                .putBoolean(KEY_PROFILE_HAS_LOCAL_EDITS, true)
+                .commit();
+        return committed;
+    }
+
+    public static boolean hasLocalProfileEdits(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getBoolean(KEY_PROFILE_HAS_LOCAL_EDITS, false);
+    }
+
+    public static void clearLocalProfileEdits(Context context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(KEY_PROFILE_HAS_LOCAL_EDITS, false)
+                .apply();
+    }
+
+    public static void markLocalProfileEdited(Context context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(KEY_PROFILE_HAS_LOCAL_EDITS, true)
                 .apply();
     }
 
@@ -572,6 +621,27 @@ public class ProfileSession {
     public static long getLastSkinTestTime(Context context) {
         return context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
                 .getLong(KEY_LAST_SKIN_TEST_TIME, 0L);
+    }
+
+    public static final long QUIZ_REWARD_COOLDOWN_MS = 7L * 24 * 60 * 60 * 1000;
+
+    /** Lần đầu (chưa test) hoặc đã qua 7 ngày kể từ lần test trước. */
+    public static boolean isQuizRewardEligible(Context context) {
+        long lastTestTime = getLastSkinTestTime(context);
+        return lastTestTime == 0L
+                || (System.currentTimeMillis() - lastTestTime >= QUIZ_REWARD_COOLDOWN_MS);
+    }
+
+    public static int getDaysUntilQuizReward(Context context) {
+        long lastTestTime = getLastSkinTestTime(context);
+        if (lastTestTime == 0L) {
+            return 0;
+        }
+        long remainingMs = QUIZ_REWARD_COOLDOWN_MS - (System.currentTimeMillis() - lastTestTime);
+        if (remainingMs <= 0L) {
+            return 0;
+        }
+        return (int) Math.ceil(remainingMs / (24.0 * 60 * 60 * 1000));
     }
 
     public static void setLastSkinTestTime(Context context, long time) {

@@ -64,5 +64,13 @@
     <color name="warning_text_yellow">#8A6D00</color>
     <color name="warning_text_orange">#D35400</color>
     <color name="warning_text_red">#C62828</color>
+
+    <!-- Skincare reminder reward cards -->
+    <color name="reward_card_completed_bg">#E8F0E0</color>
+    <color name="reward_card_pending_bg">#FEFBF4</color>
+    <color name="reward_card_border_soft">#C5D0BC</color>
+    <color name="reward_icon_pending_bg">#F4F7ED</color>
+    <color name="reward_gold">#C4A035</color>
+    <color name="reward_gold_weekly">#B8972E</color>
 </resources>
 

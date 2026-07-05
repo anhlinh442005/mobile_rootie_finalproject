@@ -6,10 +6,11 @@
     android:background="@color/neutral">
 
     <!-- Scrollable Main Content -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:clipChildren="false"
         android:clipToPadding="false"
@@ -21,92 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="24dp"
+            android:paddingBottom="16dp"
             android:clipChildren="false"
             android:clipToPadding="false">
-
-            <!-- 1. Header Bar -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="66dp"
-                android:background="@drawable/bg_points_card_gradient"
-                android:paddingHorizontal="16dp">
-
-                <ImageView
-                    android:id="@+id/btn_back"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_arrow_back"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:tint="@color/primary"
-                    android:padding="6dp" />
-
-                <!-- Action Buttons Container -->
-                <LinearLayout
-                    android:id="@+id/layout_header_actions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <!-- History Button -->
-                    <FrameLayout
-                        android:id="@+id/btn_history"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="4dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_clipboard_outline"
-                            app:tint="@color/primary" />
-                    </FrameLayout>
-
-                    <!-- Notification Bell Button -->
-                    <FrameLayout
-                        android:id="@+id/btn_notification"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_bell" />
-                    </FrameLayout>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tv_header_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_toEndOf="@id/btn_back"
-                    android:layout_toStartOf="@id/layout_header_actions"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="8dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:fontFamily="@font/lexend"
-                    android:text="Dự báo theo thời tiết"
-                    android:textColor="@color/primary"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </RelativeLayout>
 
             <!-- History Warning Banner -->
             <LinearLayout
@@ -156,7 +74,7 @@
             <!-- 2. Welcome Row -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="69dp"
+                android:layout_height="56dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
@@ -212,7 +130,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="17dp">
 
                 <TextView
@@ -242,7 +160,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="17dp"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="4dp"
@@ -331,7 +249,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="8dp"
                         android:baselineAligned="false"
                         android:clipChildren="false"
                         android:clipToPadding="false"
@@ -622,14 +540,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="14dp"
                 android:layout_marginHorizontal="17dp">
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_ai_outline"
-                    app:tint="#3E4D44" />
+                    app:tint="@color/secondary" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -637,7 +555,7 @@
                     android:layout_marginStart="10dp"
                     android:fontFamily="@font/lexend"
                     android:text="Rootie AI Insight"
-                    android:textColor="#3E4D44"
+                    android:textColor="@color/secondary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -646,11 +564,11 @@
                 android:id="@+id/card_ai_insight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="17dp"
                 app:cardCornerRadius="15dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/primary"
+                app:cardElevation="3dp"
+                app:cardBackgroundColor="@color/about_us_bg"
                 app:cardUseCompatPadding="true"
                 android:foreground="?attr/selectableItemBackground"
                 android:clickable="true"
@@ -668,7 +586,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:text="“Da dầu nhạy nhạy cảm hôm nay có nguy cơ kích ứng cao hơn do nhiệt độ và UV tăng. Bạn chú ý khi ra ngoài nhé”"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/content"
                         android:textSize="14sp"
                         android:textStyle="italic"
                         android:lineSpacingExtra="4dp" />
@@ -685,7 +603,7 @@
                             android:layout_width="14dp"
                             android:layout_height="14dp"
                             android:src="@drawable/ic_ai_outline"
-                            app:tint="@color/primary_light" />
+                            app:tint="@color/secondary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -693,7 +611,7 @@
                             android:layout_marginStart="6dp"
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="Hỏi Rootie AI để chẩn đoán chuyên sâu →"
-                            android:textColor="@color/primary_light"
+                            android:textColor="@color/secondary"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -703,7 +621,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="49dp"
                         android:layout_marginTop="15dp"
-                        android:background="@drawable/bg_ai_metric"
+                        android:background="@drawable/skin_bg_btn_book_light"
                         android:paddingHorizontal="15dp">
 
                         <View
@@ -723,7 +641,7 @@
                             android:layout_marginStart="12dp"
                             android:fontFamily="@font/lexend"
                             android:text="UV Impact"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
@@ -735,7 +653,7 @@
                             android:layout_centerVertical="true"
                             android:fontFamily="@font/lexend"
                             android:text="Rủi ro đỏ da"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/status_level_red"
                             android:textSize="13sp" />
                     </RelativeLayout>
 
@@ -743,8 +661,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="49dp"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_ai_metric"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/skin_bg_btn_book_light"
                         android:paddingHorizontal="15dp">
 
                         <View
@@ -764,7 +682,7 @@
                             android:layout_marginStart="12dp"
                             android:fontFamily="@font/lexend"
                             android:text="Hydration"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
@@ -776,7 +694,7 @@
                             android:layout_centerVertical="true"
                             android:fontFamily="@font/lexend"
                             android:text="Hàng rào yếu"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/status_level_blue"
                             android:textSize="13sp" />
                     </RelativeLayout>
 
@@ -784,8 +702,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="49dp"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_ai_metric"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/skin_bg_btn_book_light"
                         android:paddingHorizontal="15dp">
 
                         <View
@@ -795,7 +713,7 @@
                             android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
                             android:background="@drawable/bg_dialog_btn_confirm"
-                            android:backgroundTint="#F9FAEE" />
+                            android:backgroundTint="@color/status_level_orange" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -805,7 +723,7 @@
                             android:layout_marginStart="12dp"
                             android:fontFamily="@font/lexend"
                             android:text="Poullution"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
@@ -817,7 +735,7 @@
                             android:layout_centerVertical="true"
                             android:fontFamily="@font/lexend"
                             android:text="Tắc lỗ chân lông"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/status_level_orange"
                             android:textSize="13sp" />
                     </RelativeLayout>
                 </LinearLayout>
@@ -827,10 +745,10 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginHorizontal="17dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="3dp"
+                app:cardElevation="2dp"
                 app:cardBackgroundColor="@color/white"
                 app:cardUseCompatPadding="true">
 
@@ -908,7 +826,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="14dp"
                 android:layout_marginHorizontal="17dp">
 
                 <LinearLayout
@@ -951,14 +869,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="17dp">
 
                 <!-- Card 1: Cleanser -->
                 <LinearLayout
                     android:id="@+id/layout_routine_item1"
                     android:layout_width="match_parent"
-                    android:layout_height="71dp"
+                    android:layout_height="64dp"
                     android:background="@drawable/bg_card_white"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
@@ -1012,15 +930,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
                     android:src="@drawable/ic_arrow_dashed_down" />
 
                 <!-- Card 2: Vitamin C Serum -->
                 <LinearLayout
                     android:id="@+id/layout_routine_item2"
                     android:layout_width="match_parent"
-                    android:layout_height="71dp"
+                    android:layout_height="64dp"
                     android:background="@drawable/bg_card_white"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
@@ -1074,15 +992,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
                     android:src="@drawable/ic_arrow_down" />
 
                 <!-- Card 3: Moisturizer Gel -->
                 <LinearLayout
                     android:id="@+id/layout_routine_item3"
                     android:layout_width="match_parent"
-                    android:layout_height="71dp"
+                    android:layout_height="64dp"
                     android:background="@drawable/bg_card_white"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
@@ -1136,15 +1054,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
                     android:src="@drawable/ic_arrow_dashed_down" />
 
                 <!-- Card 4: SPF 50+ -->
                 <LinearLayout
                     android:id="@+id/layout_routine_item4"
                     android:layout_width="match_parent"
-                    android:layout_height="71dp"
+                    android:layout_height="64dp"
                     android:background="@drawable/bg_card_white"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
@@ -1207,7 +1125,8 @@
                     android:id="@+id/btn_suit_appropriate"
                     android:layout_width="108dp"
                     android:layout_height="39dp"
-                    android:background="@drawable/com_bg_tab_active"
+                    android:background="@drawable/quiz_bg_pill_suitable"
+                    android:backgroundTint="#EAF3E8"
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:clickable="true"
@@ -1217,7 +1136,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_like"
-                        app:tint="#FFFFFF" />
+                        app:tint="#67814D" />
 
                     <TextView
                         android:id="@+id/tv_suit_appropriate"
@@ -1226,7 +1145,7 @@
                         android:layout_marginStart="6dp"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:text="Phù hợp"
-                        android:textColor="#FFFFFF"
+                        android:textColor="#67814D"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -1242,6 +1161,7 @@
                     android:layout_width="85dp"
                     android:layout_height="39dp"
                     android:background="@drawable/quiz_bg_pill_suitable"
+                    android:backgroundTint="#FDF7ED"
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:clickable="true"
@@ -1251,7 +1171,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_wand"
-                        app:tint="#67814D" />
+                        app:tint="#D88B2A" />
 
                     <TextView
                         android:id="@+id/tv_suit_lighter"
@@ -1260,7 +1180,7 @@
                         android:layout_marginStart="6dp"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:text="Nhẹ hơn"
-                        android:textColor="#67814D"
+                        android:textColor="#D88B2A"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -1276,6 +1196,7 @@
                     android:layout_width="108dp"
                     android:layout_height="39dp"
                     android:background="@drawable/quiz_bg_pill_suitable"
+                    android:backgroundTint="#FEEFEE"
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:clickable="true"
@@ -1285,7 +1206,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_dislike"
-                        app:tint="#67814D" />
+                        app:tint="#E35B5B" />
 
                     <TextView
                         android:id="@+id/tv_suit_unsuitable"
@@ -1294,7 +1215,7 @@
                         android:layout_marginStart="6dp"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:text="Không hợp"
-                        android:textColor="#67814D"
+                        android:textColor="#E35B5B"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -1305,7 +1226,7 @@
                 android:id="@+id/tv_skin_status_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="14dp"
                 android:layout_marginHorizontal="17dp"
                 android:fontFamily="@font/lexend"
                 android:text="TÌNH TRẠNG DA HÔM NAY"
@@ -1327,7 +1248,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="17dp"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="6dp"
@@ -1458,7 +1379,90 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Header nổi trên cùng — ẩn khi cuộn xuống -->
+    <RelativeLayout
+        android:id="@+id/layout_weather_header"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bg_header_gradient"
+        android:elevation="8dp"
+        android:paddingHorizontal="16dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="@color/primary"
+            android:padding="6dp" />
+
+        <LinearLayout
+            android:id="@+id/layout_header_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <FrameLayout
+                android:id="@+id/btn_history"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_clipboard_outline"
+                    app:tint="@color/secondary" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/btn_notification"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_bell" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toEndOf="@id/btn_back"
+            android:layout_toStartOf="@id/layout_header_actions"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:fontFamily="@font/lexend"
+            android:text="Dự báo theo thời tiết"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
     <!-- Bottom Navigation Bar Include -->
     <include

@@ -83,7 +83,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_points_card_gradient"
+                    android:background="@drawable/bg_reward_points_card_gradient"
                     android:padding="20dp">
 
                     <TextView
@@ -114,7 +114,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:fontFamily="sans-serif-medium"
-                        android:textColor="#FFFFFF"
+                        android:textColor="#E2B93B"
                         android:textSize="32sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
@@ -342,7 +342,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/bg_btn_buy"
+                            android:background="@drawable/tab_active_bg"
                             android:clickable="true"
                             android:focusable="true"
                             android:fontFamily="sans-serif"
@@ -466,7 +466,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_btn_buy"
+                        android:background="@drawable/tab_active_bg"
                         android:clickable="true"
                         android:focusable="true"
                         android:fontFamily="sans-serif"

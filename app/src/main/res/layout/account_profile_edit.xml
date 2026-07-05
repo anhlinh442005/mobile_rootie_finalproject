@@ -9,20 +9,22 @@
     <RelativeLayout
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
-        android:layout_height="66dp"
-        android:background="@drawable/bg_points_card_gradient"
+        android:layout_height="56dp"
+        android:background="@drawable/bg_gradient_header"
+        android:elevation="4dp"
         android:paddingHorizontal="16dp"
         android:gravity="center_vertical">
 
         <!-- Back button -->
         <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:padding="8dp"
+            android:padding="12dp"
             android:src="@drawable/ic_arrow_back"
+            app:tint="@color/primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"/>
@@ -33,21 +35,21 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Chỉnh sửa hồ sơ"
-            android:textColor="#28362E"
-            android:textSize="18sp"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:fontFamily="@font/lexend" />
+            android:fontFamily="@font/be_vietnam_pro" />
 
         <!-- Save button -->
         <ImageView
             android:id="@+id/btn_save"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:padding="8dp"
+            android:padding="12dp"
             android:src="@drawable/ic_check"
-            app:tint="#28362E"
+            app:tint="@color/primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true" />
@@ -60,7 +62,10 @@
         android:layout_alignParentBottom="true"
         android:layout_below="@id/layout_header"
         android:clipToPadding="false"
+        android:descendantFocusability="beforeDescendants"
         android:fillViewport="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:paddingBottom="@dimen/home_nav_bar_height"
         android:overScrollMode="never"
         android:scrollbars="none">
@@ -140,13 +145,14 @@
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_camera" />
+                            android:src="@drawable/ic_camera"
+                            app:tint="#FFFFFF" />
                     </FrameLayout>
                 </RelativeLayout>
 
-                <!-- Profile Name -->
+                <!-- Profile display name -->
                 <TextView
-                    android:id="@+id/tv_username"
+                    android:id="@+id/tv_display_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -212,6 +218,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
+                        android:enabled="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:inputType="textEmailAddress"
                         android:paddingVertical="8dp"
                         android:hint="Nhập địa chỉ email của bạn"
@@ -227,7 +236,47 @@
                         android:background="#E2E4E1" />
                 </LinearLayout>
 
-                <!-- Field 2: Full Name -->
+                <!-- Field 2: Username -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tên người dùng"
+                        android:textColor="#7E8A83"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/lexend"
+                        android:layout_marginBottom="2dp" />
+
+                    <EditText
+                        android:id="@+id/et_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:enabled="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:inputType="textNoSuggestions"
+                        android:paddingVertical="8dp"
+                        android:hint="Tên người dùng"
+                        android:textColorHint="#97A49C"
+                        android:textColor="#28362E"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/lexend"
+                        android:maxLength="30" />
+
+                    <View
+                        android:id="@+id/view_username_line"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E4E1" />
+                </LinearLayout>
+
+                <!-- Field 3: Full Name -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -248,6 +297,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
+                        android:enabled="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:inputType="textPersonName"
                         android:paddingVertical="8dp"
                         android:hint="Nhập họ và tên đầy đủ"
@@ -263,7 +315,7 @@
                         android:background="#E2E4E1" />
                 </LinearLayout>
 
-                <!-- Field 3: Phone Number -->
+                <!-- Field 4: Phone Number -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -284,6 +336,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
+                        android:enabled="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:inputType="phone"
                         android:paddingVertical="8dp"
                         android:hint="Nhập số điện thoại"
@@ -299,7 +354,7 @@
                         android:background="#E2E4E1" />
                 </LinearLayout>
 
-                <!-- Field 4: Date of Birth with Dropdown Chevron -->
+                <!-- Field 5: Date of Birth with Dropdown Chevron -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -351,7 +406,7 @@
                         android:background="#E2E4E1" />
                 </LinearLayout>
 
-                <!-- Field 5: Gender Selection Radio Buttons -->
+                <!-- Field 6: Gender Selection Radio Buttons -->
                 <RadioGroup
                     android:id="@+id/rg_gender"
                     android:layout_width="match_parent"

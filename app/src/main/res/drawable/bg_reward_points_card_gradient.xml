@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base: deep emerald-to-charcoal diagonal gradient, richer/darker than the generic card bg -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <gradient
+                android:angle="135"
+                android:startColor="#3F6153"
+                android:centerColor="#2A3D34"
+                android:endColor="#182420"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Warm gold glow behind the big points figure (top-start) -->
+    <item
+        android:width="260dp"
+        android:height="260dp"
+        android:gravity="top|start"
+        android:top="-110dp"
+        android:start="-90dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="130dp"
+                android:startColor="#4DE2B93B"
+                android:centerColor="#1AE2B93B"
+                android:endColor="#00E2B93B" />
+        </shape>
+    </item>
+
+    <!-- Secondary soft glow near the rank/progress area (bottom-end) for balance -->
+    <item
+        android:width="220dp"
+        android:height="220dp"
+        android:gravity="bottom|end"
+        android:bottom="-100dp"
+        android:end="-80dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="110dp"
+                android:startColor="#22FFFFFF"
+                android:endColor="#00FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Hairline gold-tinted border, echoes the reward/gold theme of this card only -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#40E2B93B" />
+        </shape>
+    </item>
+
+</layer-list>

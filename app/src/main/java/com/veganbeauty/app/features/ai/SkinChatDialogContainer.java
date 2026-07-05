@@ -61,13 +61,7 @@ public class SkinChatDialogContainer extends DialogFragment {
             });
         }
 
-        // Consume click on layoutChatTabs to prevent close
-        View tabsLayout = view.findViewById(R.id.layoutChatTabs);
-        if (tabsLayout != null) {
-            tabsLayout.setOnClickListener(v -> {
-                // Consume touch
-            });
-        }
+
 
         setupTabs();
         showActiveChat(false);
@@ -78,8 +72,8 @@ public class SkinChatDialogContainer extends DialogFragment {
         super.onStart();
         if (getDialog() != null && getDialog().getWindow() != null) {
             android.view.Window window = getDialog().getWindow();
-            int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.90);
-            int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.85);
+            int width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
             window.setLayout(width, height);
             window.setBackgroundDrawableResource(android.R.color.transparent);
         }

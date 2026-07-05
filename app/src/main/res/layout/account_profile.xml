@@ -179,7 +179,8 @@
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
-                                android:src="@drawable/ic_water_drop" />
+                                android:src="@drawable/ic_water_drop"
+                                app:tint="@color/primary" />
 
                             <TextView
                                 android:id="@+id/tv_profile_skin_type"
@@ -921,7 +922,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_eyes" />
+                            android:src="@drawable/ic_eyes"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -929,7 +931,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Đã xem"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -944,7 +946,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_heart" />
+                            android:src="@drawable/ic_heart"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -952,7 +955,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Yêu thích"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -971,7 +974,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_star" />
+                            android:src="@drawable/ic_star"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -979,7 +983,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Đánh giá"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -998,7 +1002,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_gift" />
+                            android:src="@drawable/ic_gift"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1006,7 +1011,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Đổi quà"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -1021,7 +1026,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_help" />
+                            android:src="@drawable/ic_help"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1029,7 +1035,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Hỏi đáp"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -1053,7 +1059,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_grid" />
+                            android:src="@drawable/ic_grid"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1061,7 +1068,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Sản phẩm\nmới"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="9sp" />
                     </LinearLayout>
 
@@ -1077,7 +1084,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_bag"
-                            app:tint="#879578" />
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1085,7 +1092,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Sản phẩm\nbán chạy"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="9sp" />
                     </LinearLayout>
 
@@ -1104,7 +1111,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_tag" />
+                            android:src="@drawable/ic_tag"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1112,7 +1120,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Rootie deal"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -1128,7 +1136,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_recuitment"
-                            app:tint="#879578" />
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1136,7 +1144,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Tuyển dụng"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>
 
@@ -1155,7 +1163,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_settings" />
+                            android:src="@drawable/ic_settings"
+                            app:tint="@color/primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1163,7 +1172,7 @@
                             android:layout_marginTop="6dp"
                             android:gravity="center"
                             android:text="Thiết lập\ntài khoản"
-                            android:textColor="#000000"
+                            android:textColor="@color/primary"
                             android:textSize="9sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -1215,7 +1224,8 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_phone" />
+                        android:src="@drawable/ic_phone"
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="wrap_content"

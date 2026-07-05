@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 public class BookingDetailUpcomingFragment extends RootieFragment {
 
     private SkinFragmentBookingDetailUpcomingBinding _binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private static BookingHistoryEntity bookingData = null;
@@ -80,6 +81,16 @@ public class BookingDetailUpcomingFragment extends RootieFragment {
         });
 
         _binding.skinDetailBtnCancel.setOnClickListener(v -> showCancelDialog(bookingData));
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                _binding.skinDetailHeader,
+                _binding.skinDetailScroll,
+                0
+        );
+        headerScrollHelper.attachToNestedScrollView(_binding.skinDetailScroll);
     }
 
     private void showCancelDialog(BookingHistoryEntity data) {
@@ -203,11 +214,7 @@ public class BookingDetailUpcomingFragment extends RootieFragment {
                 break;
         }
 
-        if (data.getStoreImage() != null && !data.getStoreImage().isEmpty()) {
-            com.bumptech.glide.Glide.with(_binding.skinDetailStoreImage.getContext()).load(data.getStoreImage()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(_binding.skinDetailStoreImage);
-        } else {
-            _binding.skinDetailStoreImage.setImageResource(R.drawable.imv_logo);
-        }
+        _binding.skinDetailStoreImage.setImageResource(R.drawable.mascot_success);
 
         _binding.skinDetailStoreName.setText(data.getStoreName());
         _binding.skinDetailStoreAddress.setText(data.getStoreAddress());

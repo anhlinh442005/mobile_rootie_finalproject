@@ -5,80 +5,17 @@
     android:layout_height="match_parent"
     android:background="#FEFBF4">
 
-    <!-- Top Header -->
-    <RelativeLayout
-        android:id="@+id/rl_header"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@drawable/bg_points_card_gradient"
-        android:elevation="2dp">
-
-        <!-- Back Button -->
-        <ImageView
-            android:id="@+id/btn_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#02542D" />
-
-        <!-- Title / Progress text -->
-        <TextView
-            android:id="@+id/tv_progress_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:fontFamily="@font/lexend"
-            android:text="Câu 1 / 40"
-            android:textColor="#3E4D44"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <!-- Notification Button -->
-        <FrameLayout
-            android:id="@+id/btn_notification"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_bell" />
-        </FrameLayout>
-    </RelativeLayout>
-
-    <!-- Sleek Progress Bar -->
-    <ProgressBar
-        android:id="@+id/pb_quiz"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:layout_below="@id/rl_header"
-        android:max="40"
-        android:progress="1"
-        android:progressTint="#677559"
-        android:progressBackgroundTint="#E0E6DA" />
-
     <!-- Content Card -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/quiz_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/ll_bottom_bar"
-        android:layout_below="@id/pb_quiz"
-        android:fillViewport="true">
+        android:layout_alignParentTop="true"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingTop="62dp"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -134,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Bottom Navigation Bar (Back/Skip) -->
     <LinearLayout
@@ -166,5 +103,64 @@
                 android:textStyle="bold" />
         </FrameLayout>
     </LinearLayout>
+
+    <!-- Sleek Progress Bar -->
+    <ProgressBar
+        android:id="@+id/pb_quiz"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="56dp"
+        android:elevation="5dp"
+        android:max="40"
+        android:progress="1"
+        android:progressTint="#677559"
+        android:progressBackgroundTint="#E0E6DA" />
+
+    <!-- Top Header (overlay) -->
+    <RelativeLayout
+        android:id="@+id/rl_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bg_gradient_header"
+        android:elevation="6dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Quay lại"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:id="@+id/tv_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Câu 1 / 40"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <include
+            android:id="@+id/layoutNotification"
+            layout="@layout/include_notification_bell"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp" />
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -84,4 +84,10 @@ public interface CommunityDao {
 
     @Query("UPDATE community_posts SET likesCount = MAX(0, likesCount - 1) WHERE postId = :postId")
     int decrementLikesCount(String postId);
+
+    @Query("SELECT * FROM community_posts WHERE authorId = :authorId")
+    List<CommunityPostEntity> getPostsByAuthorSync(String authorId);
+
+    @Query("SELECT * FROM reels WHERE authorId = :authorId")
+    List<ReelEntity> getReelsByAuthorSync(String authorId);
 }

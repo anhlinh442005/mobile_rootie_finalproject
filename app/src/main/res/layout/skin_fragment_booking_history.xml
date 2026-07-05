@@ -71,7 +71,8 @@
         android:elevation="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="16dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         app:layout_constraintTop_toBottomOf="@id/header">
@@ -112,8 +113,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingStart="8dp"
-            android:paddingEnd="16dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="4dp"
             android:scrollbars="none">
 
             <LinearLayout
@@ -127,13 +128,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/bg_btn_buy"
-                    android:fontFamily="@font/be_vietnam_pro"
+                    android:background="@drawable/skin_bg_filter_chip_active"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="6dp"
                     android:text="Tất Cả"
-                    android:textColor="@color/neutral"
-                    android:textSize="13sp" />
+                    android:textColor="@color/primary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/filter_pending"
@@ -194,7 +196,7 @@
         android:id="@+id/tv_result_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
         android:fontFamily="@font/be_vietnam_pro"
         android:textColor="@color/tertiary"
@@ -210,11 +212,10 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="8dp"
+        android:paddingHorizontal="16dp"
         android:paddingBottom="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_result_count" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Empty State -->
     <LinearLayout
@@ -227,7 +228,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_result_count">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"

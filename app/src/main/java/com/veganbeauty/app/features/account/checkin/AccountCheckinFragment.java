@@ -3,16 +3,26 @@ package com.veganbeauty.app.features.account.checkin;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.veganbeauty.app.R;
@@ -22,6 +32,8 @@ import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.AccountCheckinFragmentBinding;
 import com.veganbeauty.app.databinding.ItemCalendarDayBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.utils.CoinRewardDialogHelper;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.text.SimpleDateFormat;
@@ -38,6 +50,10 @@ import androidx.lifecycle.FlowLiveDataConversions;
 public class AccountCheckinFragment extends RootieFragment {
 
     private AccountCheckinFragmentBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
+    private int bottomNavInsetPx;
+    private static final int BOTTOM_NAV_BAR_DP = 56;
+    private static final int BOTTOM_BUTTON_AREA_DP = 68;
     private RootieDatabase db;
     private Calendar calendarInstance = Calendar.getInstance();
     private Set<String> checkedInDates = new HashSet<>();
@@ -73,7 +89,60 @@ public class AccountCheckinFragment extends RootieFragment {
         binding.btnBannerCheckin.setOnClickListener(onCheckInClick);
         binding.btnBottomCheckin.setOnClickListener(onCheckInClick);
 
+        setupScrollHideHeader();
+        setupBottomInsets();
         refreshUI();
+    }
+
+    private void setupBottomInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (view, insets) -> {
+            Insets navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+            bottomNavInsetPx = navBars.bottom;
+            applyBottomSpacing();
+            return insets;
+        });
+        ViewCompat.requestApplyInsets(binding.getRoot());
+    }
+
+    private void applyBottomSpacing() {
+        if (binding == null) {
+            return;
+        }
+        float density = getResources().getDisplayMetrics().density;
+        int navBarPx = (int) (BOTTOM_NAV_BAR_DP * density);
+        int buttonAreaPx = (int) (BOTTOM_BUTTON_AREA_DP * density);
+
+        ViewGroup.MarginLayoutParams buttonParams =
+                (ViewGroup.MarginLayoutParams) binding.layoutBottomButton.getLayoutParams();
+        buttonParams.bottomMargin = navBarPx + bottomNavInsetPx;
+        binding.layoutBottomButton.setLayoutParams(buttonParams);
+
+        updateScrollBottomPadding(navBarPx, buttonAreaPx);
+    }
+
+    private void updateScrollBottomPadding(int navBarPx, int buttonAreaPx) {
+        int bottomPadding = navBarPx + bottomNavInsetPx + (int) (16 * getResources().getDisplayMetrics().density);
+        if (binding.layoutBottomButton.getVisibility() == View.VISIBLE) {
+            bottomPadding += buttonAreaPx;
+        }
+        binding.checkinScroll.setPadding(
+                binding.checkinScroll.getPaddingLeft(),
+                binding.checkinScroll.getPaddingTop(),
+                binding.checkinScroll.getPaddingRight(),
+                bottomPadding
+        );
+        if (headerScrollHelper != null) {
+            headerScrollHelper.setBottomPaddingPx(bottomPadding);
+        }
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.topBar,
+                binding.checkinScroll,
+                0
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.checkinScroll);
     }
 
     @Override
@@ -134,10 +203,8 @@ public class AccountCheckinFragment extends RootieFragment {
             binding.btnBannerCheckin.setVisibility(View.GONE);
             binding.tvBannerCompletedText.setVisibility(View.VISIBLE);
 
-            binding.btnBottomCheckin.setEnabled(false);
-            binding.btnBottomCheckin.setText("Đã điểm danh hôm nay");
-            binding.btnBottomCheckin.setBackgroundResource(R.drawable.bg_pill_grey);
-            binding.btnBottomCheckin.setTextColor(Color.parseColor("#888888"));
+            binding.layoutBottomButton.setVisibility(View.GONE);
+            applyBottomSpacing();
         } else {
             binding.ivBannerIcon.setImageResource(R.drawable.ic_warning_outline);
             binding.ivBannerIcon.setColorFilter(Color.parseColor("#8A9A3D"));
@@ -146,10 +213,51 @@ public class AccountCheckinFragment extends RootieFragment {
             binding.btnBannerCheckin.setVisibility(View.VISIBLE);
             binding.tvBannerCompletedText.setVisibility(View.GONE);
 
+            binding.layoutBottomButton.setVisibility(View.VISIBLE);
             binding.btnBottomCheckin.setEnabled(true);
-            binding.btnBottomCheckin.setText("Check-in ngay");
-            binding.btnBottomCheckin.setBackgroundResource(R.drawable.bg_btn_checkin_bottom);
-            binding.btnBottomCheckin.setTextColor(Color.parseColor("#FFFFFF"));
+            binding.btnBottomCheckin.setText("Điểm danh ngay");
+            binding.btnBottomCheckin.setBackgroundResource(R.drawable.skin_bg_btn_green);
+            binding.btnBottomCheckin.setTextColor(Color.WHITE);
+            applyCheckinButtonIcon(binding.btnBottomCheckin, R.drawable.ic_hand_tap);
+            applyBottomSpacing();
+        }
+    }
+
+    private void applyCheckinButtonIcon(AppCompatButton button, @DrawableRes int iconRes) {
+        Drawable icon = ContextCompat.getDrawable(requireContext(), iconRes);
+        if (icon == null) {
+            button.setCompoundDrawables(null, null, null, null);
+            return;
+        }
+        icon = icon.mutate();
+        int sizePx = (int) (20 * getResources().getDisplayMetrics().density);
+        icon.setBounds(0, 0, sizePx, sizePx);
+        icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        button.setCompoundDrawables(icon, null, null, null);
+        button.setCompoundDrawablePadding((int) (8 * getResources().getDisplayMetrics().density));
+    }
+
+    private void setRewardIconStyle(FrameLayout container, ImageView icon, boolean active, boolean isCoinIcon) {
+        if (active) {
+            container.setBackgroundResource(R.drawable.skin_bg_reward_icon_completed);
+            if (isCoinIcon) {
+                icon.clearColorFilter();
+            } else {
+                icon.setColorFilter(
+                        ContextCompat.getColor(requireContext(), R.color.white),
+                        PorterDuff.Mode.SRC_IN
+                );
+            }
+        } else {
+            container.setBackgroundResource(R.drawable.skin_bg_reward_icon_pending);
+            if (isCoinIcon) {
+                icon.clearColorFilter();
+            } else {
+                icon.setColorFilter(
+                        ContextCompat.getColor(requireContext(), R.color.primary),
+                        PorterDuff.Mode.SRC_IN
+                );
+            }
         }
     }
 
@@ -246,12 +354,19 @@ public class AccountCheckinFragment extends RootieFragment {
         binding.cardReward2.setBackgroundResource(R.drawable.bg_dialog_qr);
         binding.cardReward3.setBackgroundResource(R.drawable.bg_dialog_qr);
 
+        setRewardIconStyle(binding.flRewardIcon1, binding.ivRewardIcon1, false, true);
+        setRewardIconStyle(binding.flRewardIcon2, binding.ivRewardIcon2, false, false);
+        setRewardIconStyle(binding.flRewardIcon3, binding.ivRewardIcon3, false, false);
+
         if (currentMod == 7) {
             binding.cardReward3.setBackgroundResource(R.drawable.bg_reward_card_selected);
+            setRewardIconStyle(binding.flRewardIcon3, binding.ivRewardIcon3, true, false);
         } else if (currentMod >= 3) {
             binding.cardReward2.setBackgroundResource(R.drawable.bg_reward_card_selected);
+            setRewardIconStyle(binding.flRewardIcon2, binding.ivRewardIcon2, true, false);
         } else {
             binding.cardReward1.setBackgroundResource(R.drawable.bg_reward_card_selected);
+            setRewardIconStyle(binding.flRewardIcon1, binding.ivRewardIcon1, true, true);
         }
     }
 
@@ -312,19 +427,7 @@ public class AccountCheckinFragment extends RootieFragment {
     }
 
     private void showSuccessDialog(int points) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_checkin_success, null);
-        builder.setView(dialogView);
-        builder.setCancelable(false);
-
-        AlertDialog dialog = builder.create();
-        TextView tvDialogPoints = dialogView.findViewById(R.id.tvDialogPoints);
-        if (tvDialogPoints != null) tvDialogPoints.setText("+" + points + " xu");
-
-        View btnDialogDismiss = dialogView.findViewById(R.id.btnDialogDismiss);
-        if (btnDialogDismiss != null) btnDialogDismiss.setOnClickListener(v -> dialog.dismiss());
-
-        dialog.show();
+        CoinRewardDialogHelper.show(this, points, "từ điểm danh hàng ngày");
     }
 
     @Override
