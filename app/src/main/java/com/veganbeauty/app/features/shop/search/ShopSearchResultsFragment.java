@@ -28,6 +28,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
+import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import com.veganbeauty.app.data.repository.ProductRepository;
 import com.veganbeauty.app.databinding.ShopSearchResultsBinding;
 import com.veganbeauty.app.features.shop.ShopViewModel;
@@ -109,6 +110,10 @@ public class ShopSearchResultsFragment extends RootieFragment {
         productAdapter = new ShopListAdapter(
                 this::navigateToDetail,
                 product -> {
+                    if (product.getStock() <= 0) {
+                        android.widget.Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", android.widget.Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(
                             product,
                             new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
@@ -173,6 +178,10 @@ public class ShopSearchResultsFragment extends RootieFragment {
         previewProductsAdapter = new HotDealsAdapter(
             this::navigateToDetail,
             product -> {
+                if (product.getStock() <= 0) {
+                    android.widget.Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(product, new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
                     @Override
                     public void onAddToCartClick(ProductEntity p, int quantity) {
@@ -180,6 +189,14 @@ public class ShopSearchResultsFragment extends RootieFragment {
                     }
                     @Override
                     public void onBuyNowClick(ProductEntity p, int quantity) {
+                        CartItemEntity checkoutItem = new CartItemEntity(p.getId(), p.getName(), p.getMainImage(), p.getPrice(), quantity, true);
+                        ArrayList<CartItemEntity> list = new ArrayList<>();
+                        list.add(checkoutItem);
+                        ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.newInstance(list, null, 0L);
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.main_container, checkoutFragment)
+                                .addToBackStack(null)
+                                .commit();
                     }
                 });
                 bottomSheet.show(getParentFragmentManager(), "ChooseQuantity");
@@ -365,9 +382,9 @@ public class ShopSearchResultsFragment extends RootieFragment {
 
     private void refreshVideos() {
         if (showingProducts || keyword.trim().isEmpty()) return;
-        // List<SearchVideoModel> videos = new ArrayList<>();
-        // videoAdapter.submitList(videos);
-        binding.tvEmpty.setVisibility(View.GONE);
+        List<YtVideoEntity> videos = searchViewModel.searchVideos(keyword);
+        videoAdapter.submitList(videos);
+        binding.tvEmpty.setVisibility(videos.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void navigateToDetail(ProductEntity product) {

@@ -125,15 +125,21 @@
             android:src="@drawable/ic_minus"
             app:tint="@color/primary" />
 
-        <TextView
+        <EditText
             android:id="@+id/tvQuantityValue"
-            android:layout_width="40dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/be_vietnam_pro_medium"
             android:gravity="center"
             android:text="1"
             android:textColor="@color/primary"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:inputType="number"
+            android:maxLength="4"
+            android:background="@null"
+            android:selectAllOnFocus="true"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no" />
 
         <ImageButton
             android:id="@+id/btnPlus"

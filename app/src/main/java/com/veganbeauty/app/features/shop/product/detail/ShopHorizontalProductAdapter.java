@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.ShopProductCardBinding;
 
@@ -97,6 +98,25 @@ public class ShopHorizontalProductAdapter extends RecyclerView.Adapter<ShopHoriz
 
             binding.getRoot().setOnClickListener(v -> onItemClick.onItemClick(product));
             binding.btnAddToCart.setOnClickListener(v -> onAddToCartClick.onAddToCartClick(product));
+
+            if (product.getStock() <= 0) {
+                binding.btnAddToCart.setText("Hết hàng");
+                binding.btnAddToCart.setEnabled(false);
+                binding.btnAddToCart.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                        binding.getRoot().getContext().getResources().getColor(R.color.gray_dark)));
+                binding.layoutStockWarning.setVisibility(View.GONE);
+            } else {
+                binding.btnAddToCart.setText("Chọn mua");
+                binding.btnAddToCart.setEnabled(true);
+                binding.btnAddToCart.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                        binding.getRoot().getContext().getResources().getColor(R.color.primary)));
+                if (product.getStock() < 20) {
+                    binding.layoutStockWarning.setVisibility(View.VISIBLE);
+                    binding.tvStockWarning.setText("Chỉ còn " + product.getStock());
+                } else {
+                    binding.layoutStockWarning.setVisibility(View.GONE);
+                }
+            }
         }
     }
 }

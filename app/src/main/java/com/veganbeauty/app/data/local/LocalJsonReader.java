@@ -104,6 +104,7 @@ public class LocalJsonReader {
                 order.setVoucherDiscount(obj.optLong("voucherDiscount", 0L));
                 order.setHasReview(obj.optBoolean("hasReview", false));
                 order.setAffiliate(obj.optBoolean("isAffiliate", false));
+                order.setOrderNote(obj.optString("orderNote", ""));
 
                 org.json.JSONArray itemsArray = obj.getJSONArray("items");
                 List<OrderEntity.OrderItem> items = new ArrayList<>();

@@ -1,11 +1,13 @@
 package com.veganbeauty.app.data.remote;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,6 +44,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class FirestoreService {
+    private static final String TAG = "FirestoreService";
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final Gson gson = new Gson();
 
@@ -121,9 +124,27 @@ public class FirestoreService {
         }
     }
 
+    private List<KeyIngredient> toKeyIngredientsList(Object value) {
+        List<KeyIngredient> result = new ArrayList<>();
+        if (value instanceof List) {
+            List<?> rawList = (List<?>) value;
+            for (Object item : rawList) {
+                if (item instanceof Map) {
+                    Map<?, ?> map = (Map<?, ?>) item;
+                    Object nameObj = map.get("name");
+                    Object descObj = map.get("description");
+                    String name = nameObj != null ? nameObj.toString() : "";
+                    String desc = descObj != null ? descObj.toString() : "";
+                    result.add(new KeyIngredient(name, desc));
+                }
+            }
+        }
+        return result;
+    }
+
     public List<ProductEntity> fetchAllProducts() {
         try {
-            Task<QuerySnapshot> task = db.collection("products").get();
+            Task<QuerySnapshot> task = db.collection("products").get(com.google.firebase.firestore.Source.SERVER);
             QuerySnapshot snapshot = Tasks.await(task);
             List<ProductEntity> products = new ArrayList<>();
             for (DocumentSnapshot doc : snapshot.getDocuments()) {
@@ -136,12 +157,127 @@ public class FirestoreService {
         }
     }
 
+    public ProductEntity fetchProductById(String id) {
+        if (id == null || id.trim().isEmpty()) return null;
+        String productId = id.trim();
+        try {
+            DocumentSnapshot doc = Tasks.await(db.collection("products").document(productId).get(com.google.firebase.firestore.Source.SERVER));
+            if (doc.exists()) {
+                return mapProductDocument(doc);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Direct document lookup failed for " + productId + ", trying fallback query", e);
+        }
+
+        // Fallback: query by "id" field (handles case where Firestore doc ID != product's id field)
+        ProductEntity found = fetchProductByField("id", productId);
+        if (found != null) return found;
+
+        // Last resort: try barcode lookup
+        return fetchProductByBarcode(productId);
+    }
+
+    private ProductEntity fetchProductByField(String fieldName, String fieldValue) {
+        try {
+            QuerySnapshot snapshot = Tasks.await(
+                db.collection("products")
+                    .whereEqualTo(fieldName, fieldValue)
+                    .limit(1)
+                    .get(com.google.firebase.firestore.Source.SERVER)
+            );
+            if (snapshot != null && !snapshot.isEmpty()) {
+                DocumentSnapshot doc = snapshot.getDocuments().get(0);
+                return mapProductDocument(doc);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Fallback query by field '" + fieldName + "' failed for " + fieldValue, e);
+        }
+        return null;
+    }
+
+    public boolean updateProductStock(String productId, int newStock) {
+        if (productId == null || productId.trim().isEmpty()) return false;
+        String trimmedId = productId.trim();
+        try {
+            // Try direct document update synchronously first
+            Tasks.await(db.collection("products").document(trimmedId).update("stock", newStock));
+            Log.d(TAG, "Stock updated via doc ID: " + trimmedId + " -> " + newStock);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Direct doc update failed for " + trimmedId + ", trying field query fallback: " + e.getMessage());
+            return updateProductStockByFieldQuery(trimmedId, newStock);
+        }
+    }
+
+    /**
+     * Atomic stock decrement - uses Firestore transaction to avoid race conditions.
+     * This is the preferred method for order checkout as it guarantees accurate stock updates.
+     */
+    public boolean decrementProductStock(String productId, int quantityToDecrement) {
+        if (productId == null || productId.trim().isEmpty()) return false;
+        if (quantityToDecrement <= 0) return false;
+        String trimmedId = productId.trim();
+        try {
+            // First try to decrement using the document ID
+            Tasks.await(db.collection("products").document(trimmedId)
+                    .update("stock", FieldValue.increment(-quantityToDecrement)));
+            Log.d(TAG, "Stock decremented atomically via doc ID: " + trimmedId + " by " + quantityToDecrement);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Atomic decrement failed for " + trimmedId + " via doc ID, trying field query: " + e.getMessage());
+            // Fallback: find by "id" field and decrement
+            return decrementProductStockByFieldQuery(trimmedId, quantityToDecrement);
+        }
+    }
+
+    private boolean decrementProductStockByFieldQuery(String productId, int quantity) {
+        try {
+            Task<QuerySnapshot> task = db.collection("products")
+                .whereEqualTo("id", productId.trim())
+                .limit(1)
+                .get();
+            QuerySnapshot snapshot = Tasks.await(task);
+            if (snapshot != null && !snapshot.isEmpty()) {
+                DocumentReference docRef = snapshot.getDocuments().get(0).getReference();
+                Tasks.await(docRef.update("stock", FieldValue.increment(-quantity)));
+                Log.d(TAG, "Stock decremented atomically via field query: " + productId + " by " + quantity);
+                return true;
+            } else {
+                Log.w(TAG, "Product not found in Firestore for atomic stock decrement: " + productId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Atomic decrement field query failed for " + productId, e);
+        }
+        return false;
+    }
+
+    private boolean updateProductStockByFieldQuery(String productId, int newStock) {
+        try {
+            Task<QuerySnapshot> task = db.collection("products")
+                .whereEqualTo("id", productId.trim())
+                .limit(1)
+                .get();
+            QuerySnapshot snapshot = Tasks.await(task);
+            if (snapshot != null && !snapshot.isEmpty()) {
+                DocumentReference docRef = snapshot.getDocuments().get(0).getReference();
+                Tasks.await(docRef.update("stock", newStock));
+                Log.d(TAG, "Stock updated via field query: " + productId + " -> " + newStock);
+                return true;
+            } else {
+                Log.w(TAG, "Product not found in Firestore for stock update: " + productId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Field query stock update failed for " + productId, e);
+        }
+        return false;
+    }
+
     public ProductEntity fetchProductByBarcode(String barcode) {
         try {
             Task<QuerySnapshot> task = db.collection("products")
                     .whereEqualTo("barcode", barcode.trim())
                     .limit(1)
-                    .get();
+                    .get(com.google.firebase.firestore.Source.SERVER);
             QuerySnapshot snapshot = Tasks.await(task);
             if (!snapshot.isEmpty()) {
                 return mapProductDocument(snapshot.getDocuments().get(0));
@@ -154,27 +290,11 @@ public class FirestoreService {
 
     @SuppressWarnings("unchecked")
     private ProductEntity mapProductDocument(DocumentSnapshot doc) {
-        List<String> albumList = (List<String>) doc.get("album");
-        if (albumList == null) albumList = new ArrayList<>();
-
-        List<Map<String, Object>> keyIngredientsRaw = (List<Map<String, Object>>) doc.get("keyIngredients");
-        List<KeyIngredient> keyIngredientsList = new ArrayList<>();
-        if (keyIngredientsRaw != null) {
-            for (Map<String, Object> map : keyIngredientsRaw) {
-                String name = map.containsKey("name") && map.get("name") instanceof String ? (String) map.get("name") : "";
-                String desc = map.containsKey("description") && map.get("description") instanceof String ? (String) map.get("description") : "";
-                keyIngredientsList.add(new KeyIngredient(name, desc));
-            }
-        }
-
-        List<String> detailedList = (List<String>) doc.get("detailedIngredients");
-        if (detailedList == null) detailedList = new ArrayList<>();
-
-        List<String> idealList = (List<String>) doc.get("idealFor");
-        if (idealList == null) idealList = new ArrayList<>();
-
-        List<String> benefitsList = (List<String>) doc.get("benefits");
-        if (benefitsList == null) benefitsList = new ArrayList<>();
+        List<String> albumList = toStringList(doc.get("album"));
+        List<KeyIngredient> keyIngredientsList = toKeyIngredientsList(doc.get("keyIngredients"));
+        List<String> detailedList = toStringList(doc.get("detailedIngredients"));
+        List<String> idealList = toStringList(doc.get("idealFor"));
+        List<String> benefitsList = toStringList(doc.get("benefits"));
 
         Object categoryIdRaw = doc.get("categoryId");
         String categoryIdsStr = "";
@@ -833,6 +953,28 @@ public class FirestoreService {
 
     public boolean forceSyncProductsFromJson(String jsonStr) {
         try {
+            // First, get current stock values from Firestore to preserve them
+            Map<String, Integer> existingStocks = new HashMap<>();
+            try {
+                QuerySnapshot existingSnapshot = Tasks.await(db.collection("products").get());
+                for (DocumentSnapshot doc : existingSnapshot.getDocuments()) {
+                    if (doc.contains("id") && doc.get("id") != null) {
+                        String productId = doc.getString("id");
+                        Long stock = doc.getLong("stock");
+                        if (stock != null) {
+                            existingStocks.put(productId, stock.intValue());
+                        }
+                    }
+                    // Also map by document ID
+                    Long stock = doc.getLong("stock");
+                    if (stock != null) {
+                        existingStocks.put(doc.getId(), stock.intValue());
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Could not fetch existing stocks, proceeding with JSON values", e);
+            }
+
             wipeCollection("products");
             JSONObject root = new JSONObject(jsonStr);
             JSONArray arr = root.getJSONArray("products");
@@ -842,6 +984,14 @@ public class FirestoreService {
                 JSONObject obj = arr.getJSONObject(i);
                 String id = obj.optString("id", "");
                 if (id.isEmpty()) continue;
+                
+                // Preserve existing stock value from Firestore
+                int preservedStock = obj.optInt("stock", 50);
+                if (existingStocks.containsKey(id)) {
+                    preservedStock = existingStocks.get(id);
+                    obj.put("stock", preservedStock);
+                }
+                
                 batch.set(db.collection("products").document(id), jsonObjectToMap(obj));
                 count++;
                 if (count >= 400) {

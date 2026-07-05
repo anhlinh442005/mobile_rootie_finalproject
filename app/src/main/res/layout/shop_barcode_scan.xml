@@ -10,7 +10,7 @@
         android:id="@+id/barcode_scan_header"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:background="@drawable/bg_points_card_gradient"
+        android:background="@drawable/bg_gradient_header"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="4dp"

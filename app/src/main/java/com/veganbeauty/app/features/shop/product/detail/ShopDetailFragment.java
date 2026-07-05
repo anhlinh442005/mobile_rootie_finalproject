@@ -76,7 +76,10 @@ public class ShopDetailFragment extends RootieFragment {
     private ShopReviewAdapter reviewAdapter;
     private ShopHorizontalProductAdapter relatedAdapter;
     private ShopHorizontalProductAdapter recentlyViewedAdapter;
+    private ShopProductDetailVoucherAdapter voucherAdapter;
     private ViewPager2.OnPageChangeCallback pageChangeCallback;
+
+    private boolean isHeaderVisible = true;
 
     public static ShopDetailFragment newInstance(String productId) {
         ShopDetailFragment fragment = new ShopDetailFragment();
@@ -93,6 +96,42 @@ public class ShopDetailFragment extends RootieFragment {
         if (args != null) {
             pendingProductId = args.getString(ARG_PRODUCT_ID);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh product stock from Firestore whenever fragment resumes (e.g., after checkout)
+        if (pendingProductId != null && !pendingProductId.isEmpty()) {
+            refreshProductStockFromFirestore(pendingProductId);
+        }
+    }
+
+    private void refreshProductStockFromFirestore(String productId) {
+        new Thread(() -> {
+            ProductEntity refreshed = null;
+            try {
+                refreshed = new com.veganbeauty.app.data.remote.FirestoreService().fetchProductById(productId);
+                android.content.Context ctx = getContext();
+                if (refreshed != null && ctx != null) {
+                    RootieDatabase.getDatabase(ctx.getApplicationContext()).productDao().insertProducts(
+                        java.util.Collections.singletonList(refreshed)
+                    );
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            final ProductEntity finalRefreshed = refreshed;
+            if (getActivity() == null) return;
+            getActivity().runOnUiThread(() -> {
+                if (!isAdded() || binding == null) return;
+                if (finalRefreshed != null) {
+                    product = finalRefreshed;
+                    bindProductSafely(finalRefreshed);
+                }
+            });
+        }).start();
     }
 
     @Nullable
@@ -132,6 +171,9 @@ public class ShopDetailFragment extends RootieFragment {
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
+        voucherAdapter = new ShopProductDetailVoucherAdapter(new ArrayList<>());
+        binding.rvVouchersProductDetail.setAdapter(voucherAdapter);
+
         handbookAdapter = new NotebookVideoAdapter(new ArrayList<>());
         binding.rvHandbook.setAdapter(handbookAdapter);
 
@@ -144,7 +186,7 @@ public class ShopDetailFragment extends RootieFragment {
                     navigateToProduct(prod);
                 },
                 prod -> {
-                    addToCart(prod);
+                    showChooseQuantityBottomSheet(prod);
                 }
         );
         binding.rvRelatedProducts.setAdapter(relatedAdapter);
@@ -155,7 +197,7 @@ public class ShopDetailFragment extends RootieFragment {
                     navigateToProduct(prod);
                 },
                 prod -> {
-                    addToCart(prod);
+                    showChooseQuantityBottomSheet(prod);
                 }
         );
         binding.rvRecentlyViewed.setAdapter(recentlyViewedAdapter);
@@ -194,28 +236,7 @@ public class ShopDetailFragment extends RootieFragment {
 
         binding.btnBuyOnline.setOnClickListener(v -> {
             if (product != null) {
-                if (product.getStock() <= 0) {
-                    Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(product, new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
-                    @Override
-                    public void onAddToCartClick(ProductEntity prod, int quantity) {
-                        CartHelper.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), prod, quantity);
-                    }
-                    @Override
-                    public void onBuyNowClick(ProductEntity prod, int quantity) {
-                        CartItemEntity checkoutItem = new CartItemEntity(prod.getId(), prod.getName(), prod.getMainImage(), prod.getPrice(), quantity, true);
-                        ArrayList<CartItemEntity> list = new ArrayList<>();
-                        list.add(checkoutItem);
-                        ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.newInstance(list, cartVoucherCode, cartVoucherDiscount);
-                        getParentFragmentManager().beginTransaction()
-                                .replace(R.id.main_container, checkoutFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                });
-                bottomSheet.show(getParentFragmentManager(), ChooseQuantityBottomSheet.TAG);
+                showChooseQuantityBottomSheet(product);
             }
         });
 
@@ -254,16 +275,60 @@ public class ShopDetailFragment extends RootieFragment {
             @Override public void onTabReselected(TabLayout.Tab tab) {}
         });
 
+        binding.nsvDetail.setOnScrollChangeListener(new androidx.core.widget.NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(androidx.core.widget.NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                int dy = scrollY - oldScrollY;
+
+                if (scrollY <= 0) {
+                    showHeader();
+                } else if (dy > 10 && isHeaderVisible) {
+                    hideHeader();
+                } else if (dy < -10 && !isHeaderVisible) {
+                    showHeader();
+                }
+            }
+        });
+
         loadProductAsync();
+    }
+
+    private void hideHeader() {
+        if (binding == null || !isHeaderVisible) return;
+        isHeaderVisible = false;
+        float translationY = -binding.clHeader.getHeight();
+        if (translationY == 0) {
+            float density = getResources().getDisplayMetrics().density;
+            translationY = -52 * density;
+        }
+        binding.clHeader.animate()
+                .translationY(translationY)
+                .setDuration(200)
+                .start();
+    }
+
+    private void showHeader() {
+        if (binding == null || isHeaderVisible) return;
+        isHeaderVisible = true;
+        binding.clHeader.animate()
+                .translationY(0)
+                .setDuration(200)
+                .start();
     }
 
     private void loadProductAsync() {
         if (product != null) {
-            bindProductSafely(product);
-            return;
+            // Even if product is not null, let's refresh it from DB to get the latest stock in case it changed
+            if (product.getId() != null) {
+                pendingProductId = product.getId();
+            }
         }
         if (pendingProductId == null || pendingProductId.isEmpty()) {
-            showProductNotFound();
+            if (product != null) {
+                bindProductSafely(product);
+            } else {
+                showProductNotFound();
+            }
             return;
         }
 
@@ -275,7 +340,12 @@ public class ShopDetailFragment extends RootieFragment {
                 Context ctx = getContext();
                 if (ctx != null) {
                     ProductImageCache.preload(ctx.getApplicationContext());
-                    resolved = new LocalJsonReader(ctx.getApplicationContext()).getProductById(pendingProductId);
+                    resolved = new com.veganbeauty.app.data.remote.FirestoreService().fetchProductById(pendingProductId);
+                    if (resolved != null) {
+                        RootieDatabase.getDatabase(ctx.getApplicationContext()).productDao().insertProducts(java.util.Collections.singletonList(resolved));
+                    } else {
+                        resolved = RootieDatabase.getDatabase(ctx.getApplicationContext()).productDao().getProductById(pendingProductId);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -363,6 +433,49 @@ public class ShopDetailFragment extends RootieFragment {
                     e.printStackTrace();
                 }
             });
+
+            FlowLiveDataConversions.asLiveData(
+                    RootieDatabase.getDatabase(ctx).userGiftDao().getAllUserGiftsFlow()
+            ).observe(getViewLifecycleOwner(), dbGifts -> {
+                try {
+                    List<com.veganbeauty.app.data.local.entities.UserGiftEntity> activeVouchers = new ArrayList<>();
+                    if (dbGifts != null) {
+                        for (com.veganbeauty.app.data.local.entities.UserGiftEntity gift : dbGifts) {
+                            if ("voucher_discount".equals(gift.getGiftType()) || "voucher_freeship".equals(gift.getGiftType())) {
+                                String status = gift.getStatus();
+                                if ("Còn hạn".equalsIgnoreCase(status) || "Hôm nay".equalsIgnoreCase(status) ||
+                                        "valid".equalsIgnoreCase(status) || "expiring".equalsIgnoreCase(status)) {
+                                    activeVouchers.add(gift);
+                                }
+                            }
+                        }
+                    }
+                    if (activeVouchers.isEmpty()) {
+                        activeVouchers.add(new com.veganbeauty.app.data.local.entities.UserGiftEntity(
+                                0, "voucher_50k", "Voucher Giảm 50K", "Áp dụng cho đơn hàng từ 300K, sản phẩm nguyên giá.",
+                                500, "2026-12-30 23:59:59", "Còn hạn", "voucher_discount", "SAVE50K",
+                                300000, "Chăm Sóc Da Mặt", "fixed_amount", null, 50000, 1775831400000L
+                        ));
+                        activeVouchers.add(new com.veganbeauty.app.data.local.entities.UserGiftEntity(
+                                0, "gift_freeship", "Freeship Đơn 150K", "Miễn phí vận chuyển toàn quốc cho đơn hàng từ 150K.",
+                                200, "2026-12-31 23:59:59", "Còn hạn", "voucher_freeship", "FREESHIP",
+                                150000, "Tất cả sản phẩm", "percentage", null, 100, 1772698500000L
+                        ));
+                        activeVouchers.add(new com.veganbeauty.app.data.local.entities.UserGiftEntity(
+                                0, "voucher_10_percent", "Giảm 10% Cho Bạn Mới", "Áp dụng cho tất cả các sản phẩm trên Rootie.",
+                                300, "2026-12-31 23:59:59", "Còn hạn", "voucher_discount", "ROOTIE10",
+                                0, "Tất cả sản phẩm", "percentage", null, 10, 1767261600000L
+                        ));
+                    }
+                    if (binding != null) {
+                        binding.rlVoucherHeader.setVisibility(View.VISIBLE);
+                        binding.rvVouchersProductDetail.setVisibility(View.VISIBLE);
+                        voucherAdapter.updateList(activeVouchers);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -417,7 +530,7 @@ public class ShopDetailFragment extends RootieFragment {
             binding.tvStockStatus.setTextColor(Color.parseColor("#888888"));
             binding.viewStockIndicator.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#888888")));
         } else {
-            binding.tvStockStatus.setText("Còn hàng");
+            binding.tvStockStatus.setText("Còn hàng (Tồn kho: " + product.getStock() + ")");
             binding.tvStockStatus.setTextColor(ContextCompat.getColor(ctx, R.color.content));
             binding.viewStockIndicator.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
         }
@@ -620,16 +733,8 @@ public class ShopDetailFragment extends RootieFragment {
         binding.tvRatingValue.setText(String.format(Locale.US, "%.1f", averageRating));
         binding.tvReviewsCount.setText("(" + totalReviews + " reviews)");
 
-        List<ProductReviewHelper.ProductReview> helperReviews = ProductReviewHelper.getReviews(
+        List<ProductReview> reviewItems = ProductReviewHelper.getReviews(
                 safeStr(product.getId()), safeStr(product.getName()), safeStr(product.getCategory()));
-        List<ProductReview> reviewItems = new ArrayList<>();
-        for (ProductReviewHelper.ProductReview review : helperReviews) {
-            reviewItems.add(new ProductReview(
-                    review.getReviewerName(),
-                    review.getRating(),
-                    review.getComment()
-            ));
-        }
         if (!reviewItems.isEmpty()) {
             reviewAdapter.updateData(new ArrayList<>(reviewItems.subList(0, Math.min(3, reviewItems.size()))));
         } else {
@@ -1093,5 +1198,31 @@ public class ShopDetailFragment extends RootieFragment {
 
     private void addToCart(ProductEntity prod) {
         CartHelper.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), prod, 1);
+    }
+
+    private void showChooseQuantityBottomSheet(ProductEntity prod) {
+        if (prod == null) return;
+        if (prod.getStock() <= 0) {
+            Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(prod, new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
+            @Override
+            public void onAddToCartClick(ProductEntity p, int quantity) {
+                CartHelper.addToCart(requireContext(), LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), p, quantity);
+            }
+            @Override
+            public void onBuyNowClick(ProductEntity p, int quantity) {
+                CartItemEntity checkoutItem = new CartItemEntity(p.getId(), p.getName(), p.getMainImage(), p.getPrice(), quantity, true);
+                ArrayList<CartItemEntity> list = new ArrayList<>();
+                list.add(checkoutItem);
+                ShopCheckoutFragment checkoutFragment = ShopCheckoutFragment.newInstance(list, cartVoucherCode, cartVoucherDiscount);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, checkoutFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        bottomSheet.show(getParentFragmentManager(), ChooseQuantityBottomSheet.TAG);
     }
 }

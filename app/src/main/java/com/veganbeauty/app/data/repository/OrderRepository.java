@@ -69,7 +69,9 @@ public class OrderRepository {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         com.google.firebase.firestore.Query query = null;
 
-        if (!safeUserId.isEmpty()) {
+        if (com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
+            query = db.collection("orders");
+        } else if (!safeUserId.isEmpty()) {
             query = db.collection("orders").whereEqualTo("userId", safeUserId);
         } else if (!safePhone.isEmpty()) {
             query = db.collection("orders").whereEqualTo("billingPhone", safePhone);
@@ -141,6 +143,9 @@ public class OrderRepository {
     public Flow<List<OrderEntity>> observeOrdersForBuyer(String userId, String phone) {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
+        if (com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
+            return orderDao.getAllOrders();
+        }
         if (!safeUserId.isEmpty()) {
             if (!safePhone.isEmpty()) {
                 return orderDao.getOrdersForBuyerIdentity(safeUserId, safePhone);
@@ -281,6 +286,8 @@ public class OrderRepository {
                     existing.setStatus("Đã hủy");
                     OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, "Đã hủy");
                 }
+                FirebaseFirestore.getInstance().collection("orders").document(orderId)
+                        .update("status", "Đã hủy");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -383,6 +390,8 @@ public class OrderRepository {
                     existing.setStatus(status);
                     OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, status);
                 }
+                FirebaseFirestore.getInstance().collection("orders").document(orderId)
+                        .update("status", status);
             } catch (Exception e) {
                 e.printStackTrace();
             }

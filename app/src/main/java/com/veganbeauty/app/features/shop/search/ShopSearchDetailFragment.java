@@ -89,13 +89,28 @@ public class ShopSearchDetailFragment extends RootieFragment {
         previewProductsAdapter = new HotDealsAdapter(
                 this::navigateToDetail,
                 product -> {
+                    if (product.getStock() <= 0) {
+                        android.widget.Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", android.widget.Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet bottomSheet = new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(product, new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
                         @Override
                         public void onAddToCartClick(com.veganbeauty.app.data.local.entities.ProductEntity p, int quantity) {
                             com.veganbeauty.app.features.shop.product.CartHelper.addToCart(requireContext(), androidx.lifecycle.LifecycleOwnerKt.getLifecycleScope(ShopSearchDetailFragment.this), p, quantity);
                         }
                         @Override
-                        public void onBuyNowClick(com.veganbeauty.app.data.local.entities.ProductEntity p, int quantity) {}
+                        public void onBuyNowClick(com.veganbeauty.app.data.local.entities.ProductEntity p, int quantity) {
+                            com.veganbeauty.app.data.local.entities.CartItemEntity checkoutItem = new com.veganbeauty.app.data.local.entities.CartItemEntity(
+                                    p.getId(), p.getName(), p.getMainImage(), p.getPrice(), quantity, true
+                            );
+                            java.util.ArrayList<com.veganbeauty.app.data.local.entities.CartItemEntity> list = new java.util.ArrayList<>();
+                            list.add(checkoutItem);
+                            com.veganbeauty.app.features.shop.product.ShopCheckoutFragment checkoutFragment = com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(list, "", 0L);
+                            getParentFragmentManager().beginTransaction()
+                                    .replace(R.id.main_container, checkoutFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
                     });
                     bottomSheet.show(getParentFragmentManager(), "ChooseQuantity");
                 }

@@ -457,6 +457,10 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void showChooseQuantitySheet(ProductEntity product) {
+        if (product.getStock() <= 0) {
+            Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
         com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet bottomSheet = new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
                 product,
                 new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.OnQuantitySelectedListener() {

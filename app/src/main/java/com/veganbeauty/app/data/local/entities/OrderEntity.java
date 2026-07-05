@@ -57,6 +57,7 @@ public class OrderEntity {
     private String billingName;
     private String billingPhone;
     private String billingEmail;
+    private String orderNote;
 
     public OrderEntity(@NonNull String id) {
         this.id = id;
@@ -178,6 +179,9 @@ public class OrderEntity {
 
     public String getBillingEmail() { return billingEmail; }
     public void setBillingEmail(String billingEmail) { this.billingEmail = billingEmail; }
+
+    public String getOrderNote() { return orderNote; }
+    public void setOrderNote(String orderNote) { this.orderNote = orderNote; }
 
     @Override
     public boolean equals(Object o) {
