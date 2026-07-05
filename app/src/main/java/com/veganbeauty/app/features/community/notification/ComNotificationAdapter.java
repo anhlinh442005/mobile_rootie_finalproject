@@ -84,13 +84,19 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
         private final ComItemNotificationBinding binding;
+        private ComNotificationItem currentItem;
 
         public NotificationViewHolder(ComItemNotificationBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
+        public ComNotificationItem getBoundItem() {
+            return currentItem;
+        }
+
         public void bind(ComNotificationItem item) {
+            this.currentItem = item;
             Context context = binding.getRoot().getContext();
 
             String htmlContent = "<b>" + item.getUserName() + "</b> " + item.getContent();
@@ -98,6 +104,12 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
             binding.tvTime.setText(item.getTime() + " • " + item.getDate());
 
             binding.viewUnreadDot.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
+            
+            if (item.isRead()) {
+                binding.cardNotification.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white));
+            } else {
+                binding.cardNotification.setCardBackgroundColor(android.graphics.Color.parseColor("#E8F5E9"));
+            }
 
             String avatarUrl = item.getUserAvatar();
             if (avatarUrl != null && !avatarUrl.isEmpty()) {
@@ -173,10 +185,6 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
 
             binding.cardNotification.setOnClickListener(v -> {
                 if (onItemClick != null) onItemClick.onClick(item);
-            });
-
-            binding.btnDeleteNotification.setOnClickListener(v -> {
-                if (onDeleteClick != null) onDeleteClick.onClick(item);
             });
         }
     }

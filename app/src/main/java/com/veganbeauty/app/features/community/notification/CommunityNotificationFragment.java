@@ -143,15 +143,79 @@ public class CommunityNotificationFragment extends RootieFragment {
         _binding.tabInteractions.setOnClickListener(v -> viewModel.selectTab("INTERACTION"));
         _binding.tabOrders.setOnClickListener(v -> viewModel.selectTab("ORDER"));
 
-        _binding.btnMarkRead.setOnClickListener(v -> {
-            viewModel.markAllRead(requireContext());
-            Toast.makeText(requireContext(), "Đã đánh dấu đọc tất cả thông báo!", Toast.LENGTH_SHORT).show();
+        String userAvatar = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getAvatar(requireContext());
+        if (userAvatar != null && !userAvatar.isEmpty()) {
+            com.bumptech.glide.Glide.with(this).load(userAvatar).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(_binding.ivUserAvatar);
+        } else {
+            com.bumptech.glide.Glide.with(this).load(R.drawable.img_avatar).circleCrop().into(_binding.ivUserAvatar);
+        }
+
+        _binding.ivUserAvatar.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(requireContext(), com.veganbeauty.app.MainActivity.class);
+            intent.putExtra("navigateToTab", "profile");
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         });
 
-        _binding.btnDeleteAll.setOnClickListener(v -> {
-            viewModel.deleteAllNotifications(requireContext());
-            Toast.makeText(requireContext(), "Đã xóa tất cả thông báo trong mục này!", Toast.LENGTH_SHORT).show();
-        });
+        androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull androidx.recyclerview.widget.RecyclerView recyclerView, @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder, @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                if (viewHolder instanceof ComNotificationAdapter.NotificationViewHolder) {
+                    ComNotificationItem item = ((ComNotificationAdapter.NotificationViewHolder) viewHolder).getBoundItem();
+                    if (item != null) {
+                        new android.app.AlertDialog.Builder(requireContext())
+                            .setTitle("Xóa thông báo")
+                            .setMessage("Bạn có chắc chắn muốn xóa thông báo này?")
+                            .setPositiveButton("Xóa", (dialog, which) -> {
+                                viewModel.deleteNotification(requireContext(), item.getId());
+                                Toast.makeText(requireContext(), "Đã xóa thông báo", Toast.LENGTH_SHORT).show();
+                            })
+                            .setNegativeButton("Hủy", (dialog, which) -> {
+                                adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                            })
+                            .setOnCancelListener(dialog -> {
+                                adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                            })
+                            .show();
+                    }
+                } else {
+                    adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                }
+            }
+
+            @Override
+            public void onChildDraw(@NonNull android.graphics.Canvas c, @NonNull androidx.recyclerview.widget.RecyclerView recyclerView, @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                if (viewHolder instanceof ComNotificationAdapter.NotificationViewHolder) {
+                    View itemView = viewHolder.itemView;
+                    android.graphics.drawable.ColorDrawable background = new android.graphics.drawable.ColorDrawable(android.graphics.Color.parseColor("#FFCDD2"));
+                    background.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + (int) dX, itemView.getBottom());
+                    background.draw(c);
+
+                    android.graphics.drawable.Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_bin);
+                    if (deleteIcon != null) {
+                        deleteIcon.setTint(android.graphics.Color.parseColor("#B71C1C"));
+                        int iconMargin = (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
+                        int iconTop = itemView.getTop() + iconMargin;
+                        int iconBottom = iconTop + deleteIcon.getIntrinsicHeight();
+                        int iconLeft = itemView.getLeft() + iconMargin;
+                        int iconRight = iconLeft + deleteIcon.getIntrinsicWidth();
+                        if (dX > iconRight) {
+                            deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                            deleteIcon.draw(c);
+                        }
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+
+        androidx.recyclerview.widget.ItemTouchHelper itemTouchHelper = new androidx.recyclerview.widget.ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(_binding.rvNotifications);
 
         _binding.etSearch.addTextChangedListener(new TextWatcher() {
             @Override
