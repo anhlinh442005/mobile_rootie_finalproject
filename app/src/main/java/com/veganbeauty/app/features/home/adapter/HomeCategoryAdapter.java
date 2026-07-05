@@ -29,7 +29,7 @@ public class HomeCategoryAdapter extends ListAdapter<HomeCategoryItem, HomeCateg
         HomeItemCategoryBinding binding = HomeItemCategoryBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false
         );
-        return new ViewHolder(binding);
+        return new ViewHolder(binding, listener);
     }
 
     @Override
@@ -39,10 +39,12 @@ public class HomeCategoryAdapter extends ListAdapter<HomeCategoryItem, HomeCateg
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final HomeItemCategoryBinding binding;
+        private final OnCategoryClickListener listener;
 
-        public ViewHolder(@NonNull HomeItemCategoryBinding binding) {
+        public ViewHolder(@NonNull HomeItemCategoryBinding binding, OnCategoryClickListener listener) {
             super(binding.getRoot());
             this.binding = binding;
+            this.listener = listener;
         }
 
         public void bind(HomeCategoryItem item) {
