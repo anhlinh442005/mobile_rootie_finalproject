@@ -36,7 +36,7 @@ public class ComNotificationViewModel extends ViewModel {
 
     private final MutableLiveData<List<ComNotificationItem>> notifications = new MutableLiveData<>();
     private final MutableLiveData<List<ComNotificationListItem>> filteredNotifications = new MutableLiveData<>();
-    private final MutableLiveData<String> activeTab = new MutableLiveData<>("POST");
+    private final MutableLiveData<String> activeTab = new MutableLiveData<>("ALL");
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -57,33 +57,87 @@ public class ComNotificationViewModel extends ViewModel {
             return;
         }
         executor.execute(() -> {
-            List<ComNotificationItem> loadedList = loadNotificationsFromLocal(context);
-            boolean needsRegen = loadedList != null && !loadedList.isEmpty();
-            if (needsRegen) {
-                for (ComNotificationItem item : loadedList) {
-                    if ((item.getType().equals("POST") || item.getType().equals("INTERACTION"))
-                            && (item.getPostId() == null || item.getPostId().isEmpty())) {
-                        needsRegen = false;
-                        break;
+            LocalJsonReader jsonReader = new LocalJsonReader(context);
+            List<UserEntity> users = jsonReader.getUsers();
+            Map<String, UserEntity> usersMap = new HashMap<>();
+            for (UserEntity u : users) {
+                usersMap.put(u.getUser_id(), u);
+            }
+
+            String currentUserId = CommunityNotificationRepository.resolveUserId(context);
+            new com.veganbeauty.app.data.remote.FirestoreService().listenCommunityNotifications(currentUserId, (snapshot, e) -> {
+                if (e != null) return;
+                if (snapshot != null && !snapshot.isEmpty()) {
+                    List<ComNotificationItem> loadedList = new ArrayList<>();
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : snapshot.getDocuments()) {
+                        String itemUserId = doc.getString("userId");
+                        String currentName = doc.getString("userName");
+                        String currentAvatar = doc.getString("userAvatar");
+                        UserEntity u = itemUserId != null ? usersMap.get(itemUserId) : null;
+                        if (u != null) {
+                            currentName = u.getFull_name() != null ? u.getFull_name() : (u.getUsername() != null ? u.getUsername() : currentName);
+                            currentAvatar = u.getAvatar() != null ? u.getAvatar() : currentAvatar;
+                        }
+
+                        loadedList.add(new ComNotificationItem(
+                                doc.getString("id"),
+                                itemUserId,
+                                currentName,
+                                currentAvatar,
+                                doc.getString("type"),
+                                doc.getString("actionType"),
+                                doc.getString("content"),
+                                doc.getString("time"),
+                                doc.getString("date"),
+                                doc.getBoolean("isRead") != null ? doc.getBoolean("isRead") : false,
+                                doc.getString("postId"),
+                                doc.getString("commentId"),
+                                getSectionName(doc.getString("date"))
+                        ));
                     }
-                }
-            }
+                    
+                    java.util.Collections.sort(loadedList, (o1, o2) -> {
+                        try {
+                            SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+                            Date d1 = f.parse(o1.getDate() + " " + o1.getTime());
+                            Date d2 = f.parse(o2.getDate() + " " + o2.getTime());
+                            if (d1 != null && d2 != null) return d2.compareTo(d1);
+                        } catch (Exception ex) {}
+                        return 0;
+                    });
+                    
+                    notifications.postValue(loadedList);
+                    saveNotificationsToLocal(context, loadedList);
+                    applyFilter(loadedList);
+                    CommunityNotificationRepository.getInstance(context).refresh();
+                } else if (snapshot != null && snapshot.isEmpty()) {
+                    executor.execute(() -> {
+                        List<ComNotificationItem> generatedList = generateNotifications(context, usersMap);
+                        
+                        notifications.postValue(generatedList);
+                        saveNotificationsToLocal(context, generatedList);
+                        applyFilter(generatedList);
+                        CommunityNotificationRepository.getInstance(context).refresh();
 
-            if (loadedList == null || loadedList.isEmpty() || !needsRegen) {
-                LocalJsonReader jsonReader = new LocalJsonReader(context);
-                List<UserEntity> users = jsonReader.getUsers();
-                Map<String, UserEntity> usersMap = new HashMap<>();
-                for (UserEntity u : users) {
-                    usersMap.put(u.getUser_id(), u);
+                        for (ComNotificationItem item : generatedList) {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("id", item.getId());
+                            map.put("userId", item.getUserId());
+                            map.put("userName", item.getUserName());
+                            map.put("userAvatar", item.getUserAvatar());
+                            map.put("type", item.getType());
+                            map.put("actionType", item.getActionType());
+                            map.put("content", item.getContent());
+                            map.put("time", item.getTime());
+                            map.put("date", item.getDate());
+                            map.put("isRead", item.isRead());
+                            map.put("postId", item.getPostId());
+                            map.put("commentId", item.getCommentId());
+                            new com.veganbeauty.app.data.remote.FirestoreService().addCommunityNotification(currentUserId, map);
+                        }
+                    });
                 }
-                loadedList = generateNotifications(context, usersMap);
-                saveNotificationsToLocal(context, loadedList);
-            }
-
-            final List<ComNotificationItem> finalList = loadedList;
-            notifications.postValue(finalList);
-            applyFilter(finalList);
-            CommunityNotificationRepository.getInstance(context).refresh();
+            });
         });
     }
 
@@ -158,7 +212,7 @@ public class ComNotificationViewModel extends ViewModel {
         }
     }
 
-    private List<ComNotificationItem> loadNotificationsFromLocal(Context context) {
+    private List<ComNotificationItem> loadNotificationsFromLocal(Context context, Map<String, UserEntity> usersMap) {
         if (CommunityNotificationRepository.isGuest(context)) return null;
         try {
             File file = CommunityNotificationRepository.getNotificationsFile(context);
@@ -183,11 +237,19 @@ public class ComNotificationViewModel extends ViewModel {
                 String commentId = (!cIdRaw.isEmpty() && !cIdRaw.equals("null")) ? cIdRaw : null;
                 String itemDate = obj.getString("date");
 
+                UserEntity u = userId != null ? usersMap.get(userId) : null;
+                String currentName = obj.getString("userName");
+                String currentAvatar = avatar;
+                if (u != null) {
+                    currentName = u.getFull_name() != null ? u.getFull_name() : (u.getUsername() != null ? u.getUsername() : currentName);
+                    currentAvatar = u.getAvatar() != null ? u.getAvatar() : currentAvatar;
+                }
+
                 ComNotificationItem item = new ComNotificationItem(
                         obj.getString("id"),
                         userId,
-                        obj.getString("userName"),
-                        avatar,
+                        currentName,
+                        currentAvatar,
                         obj.getString("type"),
                         obj.getString("actionType"),
                         obj.getString("content"),
@@ -217,8 +279,18 @@ public class ComNotificationViewModel extends ViewModel {
             br.close();
 
             JSONArray jsonArray = new JSONArray(sb.toString());
+            String currentUserId = CommunityNotificationRepository.resolveUserId(context);
+
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = jsonArray.getJSONObject(i);
+                
+                String targetUserId = obj.optString("targetUserId", null);
+                if (targetUserId != null && !targetUserId.equals("null") && !targetUserId.isEmpty()) {
+                    if (!targetUserId.equals(currentUserId)) {
+                        continue;
+                    }
+                }
+                
                 String userIdRaw = obj.optString("userId");
                 String userId = (!userIdRaw.isEmpty() && !userIdRaw.equals("null")) ? userIdRaw : null;
                 String type = obj.getString("type");
@@ -314,7 +386,12 @@ public class ComNotificationViewModel extends ViewModel {
         }
         notifications.setValue(current);
         saveNotificationsToLocal(context, current);
+        applyFilter();
         CommunityNotificationRepository.getInstance(context).refresh();
+        
+        executor.execute(() -> {
+            new com.veganbeauty.app.data.remote.FirestoreService().markCommunityNotificationAsRead(id);
+        });
     }
 
     public void deleteNotification(Context context, String id) {
@@ -328,20 +405,35 @@ public class ComNotificationViewModel extends ViewModel {
         saveNotificationsToLocal(context, updated);
         applyFilter();
         CommunityNotificationRepository.getInstance(context).refresh();
+        
+        executor.execute(() -> {
+            new com.veganbeauty.app.data.remote.FirestoreService().deleteCommunityNotification(id);
+        });
     }
 
     public void deleteAllNotifications(Context context) {
         List<ComNotificationItem> current = notifications.getValue();
         if (current == null) return;
-        String active = activeTab.getValue() != null ? activeTab.getValue() : "POST";
+        String active = activeTab.getValue() != null ? activeTab.getValue() : "ALL";
         List<ComNotificationItem> updated = new ArrayList<>();
+        List<String> idsToDelete = new ArrayList<>();
         for (ComNotificationItem item : current) {
-            if (!item.getType().equals(active)) updated.add(item);
+            if (!item.getType().equals(active) && !active.equals("ALL")) {
+                updated.add(item);
+            } else {
+                idsToDelete.add(item.getId());
+            }
         }
         notifications.setValue(updated);
         saveNotificationsToLocal(context, updated);
         applyFilter();
         CommunityNotificationRepository.getInstance(context).refresh();
+        
+        executor.execute(() -> {
+            for (String id : idsToDelete) {
+                new com.veganbeauty.app.data.remote.FirestoreService().deleteCommunityNotification(id);
+            }
+        });
     }
 
     private void applyFilter() {
@@ -353,12 +445,23 @@ public class ComNotificationViewModel extends ViewModel {
             allNotis = notifications.getValue();
         }
         if (allNotis == null) allNotis = new ArrayList<>();
-        String tab = activeTab.getValue() != null ? activeTab.getValue() : "POST";
+        String tab = activeTab.getValue() != null ? activeTab.getValue() : "ALL";
         String query = searchQuery.getValue() != null ? searchQuery.getValue() : "";
 
         List<ComNotificationItem> tabFiltered = new ArrayList<>();
+        List<String> validTypes = Arrays.asList("POST", "INTERACTION", "AFFILIATE", "NEWS");
+        
         for (ComNotificationItem item : allNotis) {
-            if (item.getType().equals(tab)) tabFiltered.add(item);
+            boolean isCommunityType = validTypes.contains(item.getType());
+            if (!isCommunityType) continue;
+
+            if (tab.equals("ALL")) {
+                tabFiltered.add(item);
+            } else if (tab.equals("UNREAD")) {
+                if (!item.isRead()) tabFiltered.add(item);
+            } else {
+                if (item.getType().equals(tab)) tabFiltered.add(item);
+            }
         }
 
         List<ComNotificationItem> searchFiltered;

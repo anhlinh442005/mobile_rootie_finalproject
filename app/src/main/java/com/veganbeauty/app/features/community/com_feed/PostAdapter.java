@@ -437,8 +437,9 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
             Context context = postHolder.itemView.getContext();
+            String currentUserIdForLike = getOwnUserId(context);
             android.content.SharedPreferences sharedPrefs = context.getSharedPreferences("rootie_prefs", Context.MODE_PRIVATE);
-            final boolean[] isLiked = {sharedPrefs.getBoolean("liked_" + post.getPostId(), false)};
+            final boolean[] isLiked = {sharedPrefs.getBoolean("liked_" + currentUserIdForLike + "_" + post.getPostId(), false)};
             final int[] currentLikesCount = {post.getLikesCount()};
 
             if (isLiked[0]) {
@@ -453,13 +454,33 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_filled);
                     currentLikesCount[0]++;
                     postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
-                    sharedPrefs.edit().putBoolean("liked_" + post.getPostId(), true).apply();
+                    sharedPrefs.edit().putBoolean("liked_" + currentUserIdForLike + "_" + post.getPostId(), true).apply();
                     new Thread(() -> RootieDatabase.getDatabase(context).communityDao().incrementLikesCount(post.getPostId())).start();
+                    String currentUserId = getOwnUserId(context);
+                    String currentUserName = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getFullName(context);
+                    if (currentUserName == null || currentUserName.isEmpty()) currentUserName = "Người dùng";
+                    String currentUserAvatar = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getAvatar(context);
+
+                    if (!currentUserId.equals(post.getAuthorId())) {
+                        com.veganbeauty.app.features.community.notification.CommunityNotificationHelper.addCommunityNotificationForUser(
+                                context,
+                                post.getAuthorId(),
+                                "like_" + System.currentTimeMillis(),
+                                currentUserId,
+                                currentUserName,
+                                currentUserAvatar != null ? currentUserAvatar : "",
+                                "INTERACTION",
+                                "LIKE",
+                                "đã thích bài viết của bạn.",
+                                post.getPostId(),
+                                null
+                        );
+                    }
                 } else {
                     postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart);
                     currentLikesCount[0] = Math.max(0, currentLikesCount[0] - 1);
                     postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
-                    sharedPrefs.edit().putBoolean("liked_" + post.getPostId(), false).apply();
+                    sharedPrefs.edit().putBoolean("liked_" + currentUserIdForLike + "_" + post.getPostId(), false).apply();
                     new Thread(() -> RootieDatabase.getDatabase(context).communityDao().decrementLikesCount(post.getPostId())).start();
                 }
             });
@@ -525,6 +546,22 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (isReuped[0]) {
                     postHolder.binding.ivReup.setColorFilter(Color.parseColor("#4CAF50"));
                     currentReupsCount[0]++;
+                    
+                    if (!ownUserId.equals(post.getAuthorId())) {
+                        com.veganbeauty.app.features.community.notification.CommunityNotificationHelper.addCommunityNotificationForUser(
+                                context,
+                                post.getAuthorId(),
+                                "repost_" + System.currentTimeMillis(),
+                                ownUserId,
+                                "Người dùng",
+                                "",
+                                "INTERACTION",
+                                "REPOST",
+                                "đã đăng lại bài viết của bạn.",
+                                post.getPostId(),
+                                null
+                        );
+                    }
                 } else {
                     postHolder.binding.ivReup.clearColorFilter();
                     currentReupsCount[0] = Math.max(0, currentReupsCount[0] - 1);
@@ -598,22 +635,10 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private String getOwnUserId(Context context) {
-        String ownId = "test_001";
-        try {
-            String loggedInEmail = ProfileSession.getEmail(context);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(context.getAssets().open("users.json")));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) sb.append(line);
-            JSONArray usersJsonArray = new JSONArray(sb.toString().replace("\uFEFF", ""));
-            for (int i = 0; i < usersJsonArray.length(); i++) {
-                JSONObject obj = usersJsonArray.getJSONObject(i);
-                if (loggedInEmail != null && loggedInEmail.equals(obj.optString("email"))) {
-                    ownId = obj.optString("user_id", "test_001");
-                    break;
-                }
-            }
-        } catch (Exception ignored) {}
+        String ownId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+        if (ownId == null || ownId.trim().isEmpty()) {
+            ownId = "test_001";
+        }
         return ownId;
     }
 

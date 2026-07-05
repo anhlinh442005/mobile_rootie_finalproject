@@ -58,14 +58,15 @@
                             android:layout_width="@dimen/com_header_png_icon_size"
                             android:layout_height="@dimen/com_header_png_icon_size"
                             android:layout_marginEnd="16dp"
-                            android:src="@drawable/ic_bell" />
+                            android:src="@drawable/ic_bell"
+                            app:tint="@color/primary" />
 
                         <ImageView
                             android:id="@+id/ivSettings"
                             android:layout_width="@dimen/com_header_action_icon_size"
                             android:layout_height="@dimen/com_header_action_icon_size"
                             android:src="@drawable/ic_settings"
-                            app:tint="#6E846A" />
+                            app:tint="@color/primary" />
 
                         <ImageView
                             android:id="@+id/ivMore"
@@ -73,25 +74,25 @@
                             android:layout_height="24dp"
                             android:src="@drawable/ic_dots"
                             android:visibility="gone"
-                            app:tint="#6E846A" />
+                            app:tint="@color/primary" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tvHeaderName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginHorizontal="8dp"
-                        android:layout_toStartOf="@id/llHeaderActions"
-                        android:layout_toEndOf="@id/ivHome"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/be_vietnam_pro"
-                        android:gravity="center"
-                        android:maxLines="1"
-                        android:textColor="#6E846A"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
+                        <TextView
+                            android:id="@+id/tvHeaderName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginHorizontal="8dp"
+                            android:layout_toStartOf="@id/llHeaderActions"
+                            android:layout_toEndOf="@id/ivHome"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:textColor="@color/primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
                 </RelativeLayout>
 
                 <!-- Cover Image -->
@@ -478,8 +479,17 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:clipToPadding="false"
-        android:paddingTop="0dp" />
+        android:paddingTop="0dp"
+        android:paddingBottom="80dp" />
         
+    <!-- Bottom Navigation Component -->
+    <include
+        android:id="@+id/comBottomNav"
+        layout="@layout/com_navbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView

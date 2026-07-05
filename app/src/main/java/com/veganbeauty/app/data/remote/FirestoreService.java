@@ -646,6 +646,50 @@ public class FirestoreService {
         }
     }
 
+    public boolean addCommunityNotification(String targetUserId, Map<String, Object> notificationMap) {
+        if (targetUserId == null || targetUserId.trim().isEmpty()) return false;
+        try {
+            String notifId = (String) notificationMap.get("id");
+            if (notifId == null || notifId.isEmpty()) {
+                notifId = UUID.randomUUID().toString();
+                notificationMap.put("id", notifId);
+            }
+            notificationMap.put("targetUserId", targetUserId);
+            Tasks.await(db.collection("community_notifications").document(notifId).set(notificationMap));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public com.google.firebase.firestore.ListenerRegistration listenCommunityNotifications(String targetUserId, com.google.firebase.firestore.EventListener<com.google.firebase.firestore.QuerySnapshot> listener) {
+        if (targetUserId == null || targetUserId.trim().isEmpty()) return null;
+        return db.collection("community_notifications")
+                .whereEqualTo("targetUserId", targetUserId)
+                .addSnapshotListener(listener);
+    }
+
+    public boolean markCommunityNotificationAsRead(String notifId) {
+        try {
+            Tasks.await(db.collection("community_notifications").document(notifId).update("isRead", true));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteCommunityNotification(String notifId) {
+        try {
+            Tasks.await(db.collection("community_notifications").document(notifId).delete());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean addCommentToPost(String postId, Map<String, Object> commentMap) {
         try {
             Tasks.await(db.collection("community_posts").document(postId)
@@ -1368,8 +1412,8 @@ public class FirestoreService {
                             if (content == null) content = "";
 
                             // Add to local database/file
-                            com.veganbeauty.app.features.community.notification.CommunityNotificationHelper.addCommunityNotification(
-                                    context, id, actorId, userName, userAvatar, type, actionType, content, postId, commentId
+                            com.veganbeauty.app.features.community.notification.CommunityNotificationHelper.addCommunityNotificationLocalOnly(
+                                    context, userId, id, actorId, userName, userAvatar, type, actionType, content, postId, commentId
                             );
 
                             // Send Push Notification
@@ -1458,7 +1502,7 @@ public class FirestoreService {
                                     if (orderId == null || orderId.trim().isEmpty()) {
                                         orderId = doc.getString("orderId");
                                     }
-                                    iconResName = "ic_notification";
+                                    iconResName = "ic_bell";
                                 } else if ("PROMOTION".equalsIgnoreCase(type) || "VOUCHER".equalsIgnoreCase(type)) {
                                     if (title == null || title.trim().isEmpty()) title = "Ưu đãi mới cực hot! \uD83C\uDF81";
                                     category = "Khác";

@@ -133,7 +133,17 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
             binding.cardNotification.setTranslationX(0f);
             Context context = binding.getRoot().getContext();
 
-            String htmlContent = "<b>" + item.getUserName() + "</b> " + item.getContent();
+            String displayUserName = item.getUserName();
+            String displayUserAvatar = item.getUserAvatar();
+            String currentUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+            if (item.getUserId() != null && item.getUserId().equals(currentUserId)) {
+                String sessionName = com.veganbeauty.app.data.local.ProfileSession.getFullName(context);
+                if (sessionName != null && !sessionName.isEmpty()) displayUserName = sessionName;
+                String sessionAvatar = com.veganbeauty.app.data.local.ProfileSession.getAvatar(context);
+                if (sessionAvatar != null && !sessionAvatar.isEmpty()) displayUserAvatar = sessionAvatar;
+            }
+
+            String htmlContent = "<b>" + displayUserName + "</b> " + item.getContent();
             binding.tvContent.setText(HtmlCompat.fromHtml(htmlContent, HtmlCompat.FROM_HTML_MODE_LEGACY));
             binding.tvTime.setText(item.getTime() + " • " + item.getDate());
 
@@ -145,13 +155,15 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
                             : android.graphics.Color.parseColor("#E8F5E9")
             );
 
-            String avatarUrl = item.getUserAvatar();
-            if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(avatarUrl)
+            if (displayUserAvatar != null && !displayUserAvatar.isEmpty()) {
+                com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(displayUserAvatar)
                         .placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar)
                         .circleCrop().into(binding.ivAvatar);
             } else {
-                binding.ivAvatar.setImageResource(R.drawable.img_avatar);
+                com.bumptech.glide.Glide.with(binding.ivAvatar.getContext())
+                        .load(R.drawable.img_avatar)
+                        .circleCrop()
+                        .into(binding.ivAvatar);
             }
 
             int badgeRes;

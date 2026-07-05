@@ -88,7 +88,7 @@ public final class BookingStatusNotifier {
                 "XEM LỊCH HẸN",
                 false,
                 "Hôm nay",
-                "ic_notification",
+                "ic_bell",
                 "schedule date",
                 null,
                 bookingId

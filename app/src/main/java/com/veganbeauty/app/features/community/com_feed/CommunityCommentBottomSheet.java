@@ -334,8 +334,9 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
 
                     if (savedParentCommentId != null && notifyParentUserId != null
                             && !notifyParentUserId.isEmpty() && !notifyParentUserId.equals(myUserId)) {
-                        CommunityNotificationHelper.addCommunityNotification(
+                        CommunityNotificationHelper.addCommunityNotificationForUser(
                                 context,
+                                notifyParentUserId,
                                 UUID.randomUUID().toString(),
                                 myUserId,
                                 myUsername,
@@ -475,6 +476,14 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                     String rawAvatar = (authorObj != null && !authorObj.optString("avatar").isEmpty()) ? authorObj.optString("avatar") : (!obj.optString("avatar_url", "").isEmpty() ? obj.optString("avatar_url", "") : (userEntity != null ? userEntity.getAvatar() : ""));
                     String avatarUrl = UserAvatarHelper.resolve(context, userId, rawAvatar, userEntity);
                     String commentId = obj.optString("comment_id", "");
+                    
+                    String currentUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+                    if (userId != null && userId.equals(currentUserId)) {
+                        String sessionName = com.veganbeauty.app.data.local.ProfileSession.getFullName(context);
+                        if (sessionName != null && !sessionName.isEmpty()) username = sessionName;
+                        String sessionAvatar = com.veganbeauty.app.data.local.ProfileSession.getAvatar(context);
+                        if (sessionAvatar != null && !sessionAvatar.isEmpty()) avatarUrl = sessionAvatar;
+                    }
 
                     List<JSONObject> replyList = repliesMap.get(commentId);
                     List<ReplyItem> replies = new ArrayList<>();
@@ -525,6 +534,15 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                 ? replyObj.optString("avatar_url", "")
                 : (replyUser != null ? replyUser.getAvatar() : ""));
         String replyAvatar = UserAvatarHelper.resolve(context, replyUserId, rawReplyAvatar, replyUser);
+        
+        String currentUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+        if (replyUserId != null && replyUserId.equals(currentUserId)) {
+            String sessionName = com.veganbeauty.app.data.local.ProfileSession.getFullName(context);
+            if (sessionName != null && !sessionName.isEmpty()) replyUsername = sessionName;
+            String sessionAvatar = com.veganbeauty.app.data.local.ProfileSession.getAvatar(context);
+            if (sessionAvatar != null && !sessionAvatar.isEmpty()) replyAvatar = sessionAvatar;
+        }
+
         String replyTime = replyObj.optString("created_at", "");
         return new ReplyItem(
                 replyUserId,

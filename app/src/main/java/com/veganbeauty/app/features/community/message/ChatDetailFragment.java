@@ -132,9 +132,12 @@ public class ChatDetailFragment extends RootieFragment {
         if (binding == null) {
             return;
         }
-        boolean expanded = binding.etMessage.hasFocus()
-                || !binding.etMessage.getText().toString().trim().isEmpty();
+        boolean hasText = !binding.etMessage.getText().toString().trim().isEmpty();
+        boolean expanded = binding.etMessage.hasFocus() || hasText;
+        
         binding.llInputActions.setVisibility(expanded ? View.GONE : View.VISIBLE);
+        binding.ivLike.setVisibility(hasText ? View.GONE : View.VISIBLE);
+        binding.btnSend.setVisibility(hasText ? View.VISIBLE : View.GONE);
 
         ViewGroup.LayoutParams inputLp = binding.llMessageInput.getLayoutParams();
         if (inputLp instanceof ViewGroup.MarginLayoutParams) {
@@ -208,7 +211,12 @@ public class ChatDetailFragment extends RootieFragment {
             }
             String avatarUrl = RootieBrandHelper.resolveAvatar(partnerId, partnerInfo.getAvatar());
             if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
-                binding.ivPartnerAvatar.setImageResource(R.drawable.img_avatar);
+                ImageRequest fallbackReq = new ImageRequest.Builder(requireContext())
+                        .data(R.drawable.img_avatar)
+                        .transformations(new CircleCropTransformation())
+                        .target(binding.ivPartnerAvatar)
+                        .build();
+                Coil.imageLoader(requireContext()).enqueue(fallbackReq);
                 return "";
             }
             ImageRequest request = new ImageRequest.Builder(requireContext())
@@ -223,7 +231,12 @@ public class ChatDetailFragment extends RootieFragment {
             return avatarUrl;
         }
 
-        binding.ivPartnerAvatar.setImageResource(R.drawable.img_avatar);
+        ImageRequest fallbackReq2 = new ImageRequest.Builder(requireContext())
+                .data(R.drawable.img_avatar)
+                .transformations(new CircleCropTransformation())
+                .target(binding.ivPartnerAvatar)
+                .build();
+        Coil.imageLoader(requireContext()).enqueue(fallbackReq2);
         return "";
     }
 
