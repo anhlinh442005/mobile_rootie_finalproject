@@ -215,6 +215,10 @@ public class IngredientDetailFragment extends Fragment {
                     ShopListAdapter adapter = new ShopListAdapter(
                             product -> ProductDetailLauncher.open(IngredientDetailFragment.this, product),
                             product -> {
+                                if (product.getStock() <= 0) {
+                                    android.widget.Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", android.widget.Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
                                 ChooseQuantityBottomSheet bottomSheet = new ChooseQuantityBottomSheet(
                                         product,
                                         new ChooseQuantityBottomSheet.OnQuantitySelectedListener() {

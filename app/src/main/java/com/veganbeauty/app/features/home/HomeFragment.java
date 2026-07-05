@@ -188,7 +188,7 @@ public class HomeFragment extends RootieFragment {
                 new HomeShortcutItem("Đặt lịch soi da", R.drawable.ic_calendar_outline, () -> navigateTo(new ChooseBranchFragment())),
                 new HomeShortcutItem("Routine của tôi", R.drawable.ic_flower, () -> navigateTo(new MySkinFragment())),
                 new HomeShortcutItem("Dự báo da hôm nay", R.drawable.ic_water_drop_outline, () -> navigateIfLoggedIn(new SkinWeatherForecastFragment())),
-                new HomeShortcutItem("Kiểm tra dị ứng", R.drawable.ic_shield_outline, () -> navigateTo(new QuizTestIntroFragment())),
+                new HomeShortcutItem("Kiểm tra dị ứng", R.drawable.ic_shield_outline, this::navigateToQuizIntro),
                 new HomeShortcutItem("Hồ sơ làn da", R.drawable.ic_clipboard_outline, () -> navigateIfLoggedIn(new SkinHistoryFragment())),
                 new HomeShortcutItem("Nhắc chăm da", R.drawable.ic_bell, () -> navigateIfLoggedIn(new SkinReminderFragment())),
                 new HomeShortcutItem("Đổi quà Rootie Xu", R.drawable.ic_gift, () -> navigateTo(new AccountRewardFragment())),
@@ -594,6 +594,10 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void showChooseQuantitySheet(ProductEntity product) {
+        if (product.getStock() <= 0) {
+            Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
         com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet bottomSheet = new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
                 product,
                 new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet.OnQuantitySelectedListener() {
@@ -646,26 +650,45 @@ public class HomeFragment extends RootieFragment {
     private void setupQuizReminder() {
         if (getContext() == null) return;
         long lastTestTime = ProfileSession.getLastSkinTestTime(requireContext());
-        long sevenDaysMs = 7L * 24 * 60 * 60 * 1000;
-        boolean needsTest = true; // Ép hiển thị mặc định theo yêu cầu
+        boolean needsWeeklyTest = ProfileSession.isQuizRewardEligible(requireContext());
+        boolean dismissed = ProfileSession.isQuizReminderDismissedWeekly(requireContext());
 
-        if (needsTest) {
-            // Bỏ qua check đã dismiss để luôn hiện khi load lại app
+        if (needsWeeklyTest && !dismissed) {
             binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.VISIBLE);
             binding.quizTestWeeklyReminderLayout.getRoot().setOnClickListener(v -> navigateToQuizIntro());
 
             if (!hasShownQuizPopupThisSession) {
                 hasShownQuizPopupThisSession = true;
-                View dv = LayoutInflater.from(getContext()).inflate(R.layout.dialog_quiz_test_weekly_reminder, null);
-                android.app.Dialog dialog = new MaterialAlertDialogBuilder(requireContext()).setView(dv).create();
-                if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                dv.findViewById(R.id.btn_dialog_confirm).setOnClickListener(v -> { dialog.dismiss(); navigateToQuizIntro(); });
-                dv.findViewById(R.id.btn_dialog_cancel).setOnClickListener(v -> dialog.dismiss());
-                dialog.show();
+                binding.getRoot().postDelayed(() -> {
+                    if (!isAdded() || getContext() == null) return;
+                    View dv = LayoutInflater.from(getContext()).inflate(R.layout.dialog_quiz_test_weekly_reminder, null);
+                    android.app.Dialog dialog = new MaterialAlertDialogBuilder(requireContext()).setView(dv).create();
+                    dialog.setCancelable(true);
+                    dialog.setCanceledOnTouchOutside(true);
+                    if (dialog.getWindow() != null) {
+                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        dialog.getWindow().setDimAmount(0.65f);
+                    }
+                    dv.findViewById(R.id.btn_dialog_confirm).setOnClickListener(v -> { dialog.dismiss(); navigateToQuizIntro(); });
+                    dv.findViewById(R.id.btn_dialog_cancel).setOnClickListener(v -> dialog.dismiss());
+                    dialog.show();
+
+                    ObjectAnimator sx = ObjectAnimator.ofFloat(dv, "scaleX", 0.7f, 1.05f, 1f);
+                    ObjectAnimator sy = ObjectAnimator.ofFloat(dv, "scaleY", 0.7f, 1.05f, 1f);
+                    AnimatorSet anim = new AnimatorSet(); anim.playTogether(sx, sy); anim.setDuration(500);
+                    anim.setInterpolator(new OvershootInterpolator(1.5f)); anim.start();
+
+                    View badge = dv.findViewById(R.id.layout_badge);
+                    if (badge != null) {
+                        ObjectAnimator bounce = ObjectAnimator.ofFloat(badge, "translationY", 0f, -15f, 0f);
+                        bounce.setDuration(1200); bounce.setRepeatCount(ObjectAnimator.INFINITE);
+                        bounce.setInterpolator(new AccelerateDecelerateInterpolator()); bounce.start();
+                    }
+                }, 3000);
             }
         } else {
             binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.GONE);
-            if (lastTestTime == 0L && !hasShownQuizPopupThisSession) {
+            if (lastTestTime == 0L && !hasShownQuizPopupThisSession && !dismissed) {
                 hasShownQuizPopupThisSession = true;
                 binding.getRoot().postDelayed(() -> {
                     if (!isAdded()) return;
@@ -691,6 +714,15 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void navigateToQuizIntro() {
+        if (!ProfileSession.isQuizRewardEligible(requireContext())) {
+            int daysLeft = ProfileSession.getDaysUntilQuizReward(requireContext());
+            Toast.makeText(
+                    requireContext(),
+                    "Bạn đã kiểm tra da gần đây. Vui lòng quay lại sau " + daysLeft + " ngày để nhận thưởng 100 xu.",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new QuizTestIntroFragment()).addToBackStack(null).commit();
     }

@@ -1,5 +1,7 @@
 package com.veganbeauty.app.features.account.notification;
 
+import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
@@ -26,22 +28,54 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
         void onClick(NotificationItem item);
     }
 
+    private static final int MAX_CONTENT_WORDS = 200;
+
     private final OnNotificationClickListener onItemClick;
-    private final OnNotificationClickListener onActionClick;
     private final OnNotificationClickListener onMarkReadClick;
     private final OnNotificationClickListener onDeleteClick;
 
+    // Track currently open swipe item
+    private NotificationViewHolder currentOpenHolder = null;
+
     public NotificationListAdapter(
             OnNotificationClickListener onItemClick,
-            OnNotificationClickListener onActionClick,
             OnNotificationClickListener onMarkReadClick,
             OnNotificationClickListener onDeleteClick
     ) {
         super(new DiffCallback());
         this.onItemClick = onItemClick;
-        this.onActionClick = onActionClick;
         this.onMarkReadClick = onMarkReadClick;
         this.onDeleteClick = onDeleteClick;
+    }
+
+    private static String truncateWords(String text, int maxWords) {
+        if (text == null) return "";
+        String[] words = text.trim().split("\\s+");
+        if (words.length <= maxWords) return text;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < maxWords; i++) {
+            if (i > 0) sb.append(' ');
+            sb.append(words[i]);
+        }
+        sb.append("...");
+        return sb.toString();
+    }
+
+    /** Snap the currently-open item back to closed position */
+    public void closeOpenedItem() {
+        if (currentOpenHolder != null) {
+            currentOpenHolder.animateForeground(0f);
+            currentOpenHolder = null;
+        }
+    }
+
+    /** Called by the Fragment's touch listener to open/close the swiped item */
+    public void openItem(NotificationViewHolder holder, float actionWidthPx) {
+        if (currentOpenHolder != null && currentOpenHolder != holder) {
+            currentOpenHolder.animateForeground(0f);
+        }
+        holder.animateForeground(-actionWidthPx);
+        currentOpenHolder = holder;
     }
 
     @Override
@@ -98,14 +132,31 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
             this.binding = binding;
         }
 
+        public View getForeground() { return binding.cardNotification; }
+
+        /** Animate the foreground card to a target X translation */
+        public void animateForeground(float targetX) {
+            ObjectAnimator anim = ObjectAnimator.ofFloat(binding.cardNotification, "translationX", binding.cardNotification.getTranslationX(), targetX);
+            anim.setDuration(180);
+            anim.start();
+        }
+
         public void bind(NotificationItem item) {
             Context context = binding.getRoot().getContext();
 
+            // Reset swipe state on re-bind
+            binding.cardNotification.setTranslationX(0f);
+
             binding.tvTitle.setText(item.getTitle());
-            binding.tvContent.setText(item.getContent());
+            binding.tvContent.setText(truncateWords(item.getContent(), MAX_CONTENT_WORDS));
             binding.tvTime.setText(item.getTime());
 
             binding.viewUnreadDot.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
+            binding.cardNotification.setCardBackgroundColor(
+                    item.isRead()
+                            ? ContextCompat.getColor(context, R.color.white)
+                            : android.graphics.Color.parseColor("#E8F5E9")
+            );
 
             int resId = resolveNotificationIconRes(context, item.getIconResName());
             if (resId != 0) {
@@ -134,37 +185,31 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
             binding.ivIcon.setColorFilter(iconTint);
             binding.ivIcon.setBackgroundTintList(ColorStateList.valueOf(bgTint));
 
-            if (item.getActionText() != null && !item.getActionText().isEmpty() &&
-                !item.getActionText().equalsIgnoreCase("CHI TIẾT") &&
-                !item.getActionText().equalsIgnoreCase("CHI TIẾT ĐƠN")) {
-                binding.btnAction.setVisibility(View.VISIBLE);
-                binding.btnAction.setText(item.getActionText());
-                binding.btnAction.setOnClickListener(v -> {
-                    if (onActionClick != null) onActionClick.onClick(item);
-                });
-            } else {
-                binding.btnAction.setVisibility(View.GONE);
-            }
+            // Foreground tap → open notification
+            binding.cardNotification.setOnClickListener(v -> {
+                if (binding.cardNotification.getTranslationX() != 0) {
+                    closeOpenedItem();
+                    return;
+                }
+                if (onItemClick != null) onItemClick.onClick(item);
+            });
 
-            binding.btnMarkRead.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
-            binding.btnMarkRead.setOnClickListener(v -> {
+            // Action button clicks (revealed on swipe left)
+            binding.btnMarkReadAction.setOnClickListener(v -> {
+                closeOpenedItem();
                 if (onMarkReadClick != null) onMarkReadClick.onClick(item);
             });
-
-            binding.btnDelete.setOnClickListener(v -> {
+            binding.btnDeleteAction.setOnClickListener(v -> {
+                closeOpenedItem();
                 if (onDeleteClick != null) onDeleteClick.onClick(item);
-            });
-
-            binding.cardNotification.setOnClickListener(v -> {
-                if (onItemClick != null) onItemClick.onClick(item);
             });
         }
     }
 
     private static int resolveNotificationIconRes(Context context, String iconResName) {
         if (iconResName == null || iconResName.isEmpty()
-                || "ic_notification".equals(iconResName)
-                || "home_ic_notification".equals(iconResName)) {
+                || "ic_bell".equals(iconResName)
+                || "home_ic_bell".equals(iconResName)) {
             return R.drawable.ic_bell;
         }
         int resId = context.getResources().getIdentifier(iconResName, "drawable", context.getPackageName());
@@ -182,6 +227,7 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
             return false;
         }
 
+        @SuppressLint("DiffUtilEquals")
         @Override
         public boolean areContentsTheSame(@NonNull NotificationListItem oldItem, @NonNull NotificationListItem newItem) {
             return oldItem.equals(newItem);

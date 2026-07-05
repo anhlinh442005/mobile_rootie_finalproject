@@ -1,5 +1,6 @@
 package com.veganbeauty.app.features.community.notification;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
@@ -12,7 +13,6 @@ import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.databinding.ComItemNotificationBinding;
@@ -29,11 +29,36 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
 
     private final OnNotificationClickListener onItemClick;
     private final OnNotificationClickListener onDeleteClick;
+    private final OnNotificationClickListener onMarkReadClick;
 
-    public ComNotificationAdapter(OnNotificationClickListener onItemClick, OnNotificationClickListener onDeleteClick) {
+    // Track currently open swipe item
+    private NotificationViewHolder currentOpenHolder = null;
+    private static final int ACTION_WIDTH_DP = 128; // 2 buttons × 64dp each
+
+    public ComNotificationAdapter(OnNotificationClickListener onItemClick,
+                                  OnNotificationClickListener onDeleteClick,
+                                  OnNotificationClickListener onMarkReadClick) {
         super(new DiffCallback());
         this.onItemClick = onItemClick;
         this.onDeleteClick = onDeleteClick;
+        this.onMarkReadClick = onMarkReadClick;
+    }
+
+    /** Snap the currently-open item back to closed position */
+    public void closeOpenedItem() {
+        if (currentOpenHolder != null) {
+            currentOpenHolder.animateForeground(0f);
+            currentOpenHolder = null;
+        }
+    }
+
+    /** Called by the Fragment's touch listener to open/close the swiped item */
+    public void openItem(NotificationViewHolder holder, float actionWidthPx) {
+        if (currentOpenHolder != null && currentOpenHolder != holder) {
+            currentOpenHolder.animateForeground(0f);
+        }
+        holder.animateForeground(-actionWidthPx);
+        currentOpenHolder = holder;
     }
 
     @Override
@@ -84,98 +109,114 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
         private final ComItemNotificationBinding binding;
+        private ComNotificationItem currentItem;
 
         public NotificationViewHolder(ComItemNotificationBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
+        public ComNotificationItem getBoundItem() { return currentItem; }
+
+        public View getForeground() { return binding.cardNotification; }
+
+        /** Animate the foreground card to a target X translation */
+        public void animateForeground(float targetX) {
+            ObjectAnimator anim = ObjectAnimator.ofFloat(binding.cardNotification, "translationX", binding.cardNotification.getTranslationX(), targetX);
+            anim.setDuration(180);
+            anim.start();
+        }
+
         public void bind(ComNotificationItem item) {
+            this.currentItem = item;
+            // Reset swipe state on re-bind
+            binding.cardNotification.setTranslationX(0f);
             Context context = binding.getRoot().getContext();
 
-            String htmlContent = "<b>" + item.getUserName() + "</b> " + item.getContent();
+            String displayUserName = item.getUserName();
+            String displayUserAvatar = item.getUserAvatar();
+            String currentUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+            if (item.getUserId() != null && item.getUserId().equals(currentUserId)) {
+                String sessionName = com.veganbeauty.app.data.local.ProfileSession.getFullName(context);
+                if (sessionName != null && !sessionName.isEmpty()) displayUserName = sessionName;
+                String sessionAvatar = com.veganbeauty.app.data.local.ProfileSession.getAvatar(context);
+                if (sessionAvatar != null && !sessionAvatar.isEmpty()) displayUserAvatar = sessionAvatar;
+            }
+
+            String htmlContent = "<b>" + displayUserName + "</b> " + item.getContent();
             binding.tvContent.setText(HtmlCompat.fromHtml(htmlContent, HtmlCompat.FROM_HTML_MODE_LEGACY));
             binding.tvTime.setText(item.getTime() + " • " + item.getDate());
 
             binding.viewUnreadDot.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
 
-            String avatarUrl = item.getUserAvatar();
-            if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(avatarUrl).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(binding.ivAvatar);
+            binding.cardNotification.setCardBackgroundColor(
+                    item.isRead()
+                            ? ContextCompat.getColor(context, R.color.white)
+                            : android.graphics.Color.parseColor("#E8F5E9")
+            );
+
+            if (displayUserAvatar != null && !displayUserAvatar.isEmpty()) {
+                com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(displayUserAvatar)
+                        .placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar)
+                        .circleCrop().into(binding.ivAvatar);
             } else {
-                binding.ivAvatar.setImageResource(R.drawable.img_avatar);
+                com.bumptech.glide.Glide.with(binding.ivAvatar.getContext())
+                        .load(R.drawable.img_avatar)
+                        .circleCrop()
+                        .into(binding.ivAvatar);
             }
 
             int badgeRes;
             String type = item.getActionType() != null ? item.getActionType() : "";
             switch (type) {
-                case "COMMENT":
-                case "REPLY":
-                case "REPOST":
-                    badgeRes = R.drawable.ic_chat;
-                    break;
-                case "LIKE":
-                    badgeRes = R.drawable.ic_heart;
-                    break;
-                case "SHARE":
-                    badgeRes = R.drawable.ic_plane;
-                    break;
-                case "ORDER_PLACED":
-                    badgeRes = R.drawable.ic_shipping;
-                    break;
-                case "ORDER_COMPLETED":
-                    badgeRes = R.drawable.ic_circle_checked;
-                    break;
-                case "WITHDRAW":
-                    badgeRes = R.drawable.ic_cash;
-                    break;
-                default:
-                    badgeRes = R.drawable.ic_bell;
-                    break;
+                case "COMMENT": case "REPLY": case "REPOST": badgeRes = R.drawable.ic_chat; break;
+                case "LIKE":    badgeRes = R.drawable.ic_heart; break;
+                case "SHARE":   badgeRes = R.drawable.ic_plane; break;
+                case "ORDER_PLACED":   badgeRes = R.drawable.ic_shipping; break;
+                case "ORDER_COMPLETED": badgeRes = R.drawable.ic_circle_checked; break;
+                case "WITHDRAW":        badgeRes = R.drawable.ic_cash; break;
+                default:                badgeRes = R.drawable.ic_bell; break;
             }
 
-            int badgeColor;
-            int badgeBgColor;
-
+            int badgeColor, badgeBgColor;
             switch (type) {
-                case "COMMENT":
-                case "REPLY":
-                    badgeColor = ContextCompat.getColor(context, R.color.status_processing_text);
-                    badgeBgColor = ContextCompat.getColor(context, R.color.status_processing_bg);
-                    break;
+                case "COMMENT": case "REPLY":
+                    badgeColor   = ContextCompat.getColor(context, R.color.status_processing_text);
+                    badgeBgColor = ContextCompat.getColor(context, R.color.status_processing_bg); break;
                 case "LIKE":
-                    badgeColor = ContextCompat.getColor(context, R.color.status_pending_text);
-                    badgeBgColor = ContextCompat.getColor(context, R.color.status_pending_bg);
-                    break;
-                case "SHARE":
-                case "REPOST":
-                    badgeColor = ContextCompat.getColor(context, R.color.primary);
-                    badgeBgColor = ContextCompat.getColor(context, R.color.gray_light);
-                    break;
+                    badgeColor   = ContextCompat.getColor(context, R.color.status_pending_text);
+                    badgeBgColor = ContextCompat.getColor(context, R.color.status_pending_bg); break;
                 case "ORDER_PLACED":
-                    badgeColor = ContextCompat.getColor(context, R.color.status_delivering_text);
-                    badgeBgColor = ContextCompat.getColor(context, R.color.status_delivering_bg);
-                    break;
-                case "ORDER_COMPLETED":
-                case "WITHDRAW":
-                    badgeColor = ContextCompat.getColor(context, R.color.status_success_text);
-                    badgeBgColor = ContextCompat.getColor(context, R.color.status_success_bg);
-                    break;
+                    badgeColor   = ContextCompat.getColor(context, R.color.status_delivering_text);
+                    badgeBgColor = ContextCompat.getColor(context, R.color.status_delivering_bg); break;
+                case "ORDER_COMPLETED": case "WITHDRAW":
+                    badgeColor   = ContextCompat.getColor(context, R.color.status_success_text);
+                    badgeBgColor = ContextCompat.getColor(context, R.color.status_success_bg); break;
                 default:
-                    badgeColor = ContextCompat.getColor(context, R.color.primary);
-                    badgeBgColor = ContextCompat.getColor(context, R.color.gray_light);
-                    break;
+                    badgeColor   = ContextCompat.getColor(context, R.color.primary);
+                    badgeBgColor = ContextCompat.getColor(context, R.color.gray_light); break;
             }
 
             binding.ivTypeBadge.setImageResource(badgeRes);
             binding.ivTypeBadge.setColorFilter(badgeColor);
             binding.ivTypeBadge.setBackgroundTintList(ColorStateList.valueOf(badgeBgColor));
 
+            // Foreground tap → open notification
             binding.cardNotification.setOnClickListener(v -> {
+                if (binding.cardNotification.getTranslationX() != 0) {
+                    closeOpenedItem();
+                    return;
+                }
                 if (onItemClick != null) onItemClick.onClick(item);
             });
 
-            binding.btnDeleteNotification.setOnClickListener(v -> {
+            // Action button clicks
+            binding.btnMarkReadAction.setOnClickListener(v -> {
+                closeOpenedItem();
+                if (onMarkReadClick != null) onMarkReadClick.onClick(item);
+            });
+            binding.btnDeleteAction.setOnClickListener(v -> {
+                closeOpenedItem();
                 if (onDeleteClick != null) onDeleteClick.onClick(item);
             });
         }

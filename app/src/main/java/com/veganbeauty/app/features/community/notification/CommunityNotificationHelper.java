@@ -2,6 +2,7 @@ package com.veganbeauty.app.features.community.notification;
 
 import android.content.Context;
 
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 import com.veganbeauty.app.utils.RootieBrandHelper;
 
 import org.json.JSONArray;
@@ -20,8 +21,9 @@ import java.util.Locale;
 
 public class CommunityNotificationHelper {
 
-    public static void addCommunityNotification(
+    public static void addCommunityNotificationForUser(
             Context context,
+            String targetUserId,
             String id,
             String userId,
             String userName,
@@ -32,109 +34,96 @@ public class CommunityNotificationHelper {
             String postId,
             String commentId
     ) {
-        File file = new File(context.getFilesDir(), "local_notifications.json");
-        List<ComNotificationItem> list = new ArrayList<>();
+        if (CommunityNotificationRepository.isGuest(context)) return;
 
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8))) {
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                JSONArray jsonArray = new JSONArray(sb.toString());
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject obj = jsonArray.getJSONObject(i);
-                    String itemUserId = obj.optString("userId");
-                    String itemUserAvatar = obj.optString("userAvatar");
-                    String itemPostId = obj.optString("postId");
-                    String itemCommentId = obj.optString("commentId");
-
-                    list.add(new ComNotificationItem(
-                            obj.getString("id"),
-                            (itemUserId.isEmpty() || itemUserId.equals("null")) ? null : itemUserId,
-                            obj.getString("userName"),
-                            (itemUserAvatar.isEmpty() || itemUserAvatar.equals("null")) ? null : itemUserAvatar,
-                            obj.getString("type"),
-                            obj.getString("actionType"),
-                            obj.getString("content"),
-                            obj.getString("time"),
-                            obj.getString("date"),
-                            obj.optBoolean("isRead", false),
-                            (itemPostId.isEmpty() || itemPostId.equals("null")) ? null : itemPostId,
-                            (itemCommentId.isEmpty() || itemCommentId.equals("null")) ? null : itemCommentId,
-                            ""
-                    ));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(context.getAssets().open("notification_com.json"), StandardCharsets.UTF_8))) {
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                JSONArray jsonArray = new JSONArray(sb.toString());
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject obj = jsonArray.getJSONObject(i);
-                    String itemUserId = obj.optString("userId");
-                    String itemPostId = obj.optString("postId");
-                    String itemCommentId = obj.optString("commentId");
-
-                    list.add(new ComNotificationItem(
-                            obj.getString("id"),
-                            (itemUserId.isEmpty() || itemUserId.equals("null")) ? null : itemUserId,
-                            obj.optString("userName", "Hệ thống"),
-                            obj.optString("userAvatar", ""),
-                            obj.getString("type"),
-                            obj.getString("actionType"),
-                            obj.getString("content"),
-                            obj.getString("time"),
-                            obj.getString("date"),
-                            obj.optBoolean("isRead", false),
-                            (itemPostId.isEmpty() || itemPostId.equals("null")) ? null : itemPostId,
-                            (itemCommentId.isEmpty() || itemCommentId.equals("null")) ? null : itemCommentId,
-                            ""
-                    ));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        if (targetUserId == null || targetUserId.isEmpty()) return;
 
         String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
+        java.util.Map<String, Object> notificationMap = new java.util.HashMap<>();
+        notificationMap.put("id", id);
+        notificationMap.put("userId", userId != null ? userId : "");
+        notificationMap.put("userName", userName);
+        notificationMap.put("userAvatar", userAvatar != null ? userAvatar : RootieBrandHelper.AVATAR_URL);
+        notificationMap.put("type", type);
+        notificationMap.put("actionType", actionType);
+        notificationMap.put("content", content);
+        notificationMap.put("time", currentTime);
+        notificationMap.put("date", currentDate);
+        notificationMap.put("isRead", false);
+        notificationMap.put("postId", postId != null ? postId : "");
+        notificationMap.put("commentId", commentId != null ? commentId : "");
+        
+        // Asynchronously add to firestore so it doesn't block UI thread
+        new Thread(() -> {
+            new com.veganbeauty.app.data.remote.FirestoreService().addCommunityNotification(targetUserId, notificationMap);
+        }).start();
+    }
+
+    public static void addCommunityNotificationLocalOnly(
+            Context context,
+            String targetUserId,
+            String id,
+            String userId,
+            String userName,
+            String userAvatar,
+            String type,
+            String actionType,
+            String content,
+            String postId,
+            String commentId
+    ) {
+        if (CommunityNotificationRepository.isGuest(context)) return;
+        if (targetUserId == null || targetUserId.isEmpty()) return;
+
+        File file = new File(context.getFilesDir(), "local_notifications_" + targetUserId + ".json");
+        List<ComNotificationItem> list = new ArrayList<>();
+
+        if (file.exists()) {
+            try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), java.nio.charset.StandardCharsets.UTF_8))) {
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                org.json.JSONArray jsonArray = new org.json.JSONArray(sb.toString());
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    org.json.JSONObject obj = jsonArray.getJSONObject(i);
+                    list.add(new ComNotificationItem(
+                            obj.getString("id"),
+                            obj.optString("userId"),
+                            obj.getString("userName"),
+                            obj.optString("userAvatar"),
+                            obj.getString("type"),
+                            obj.getString("actionType"),
+                            obj.getString("content"),
+                            obj.getString("time"),
+                            obj.getString("date"),
+                            obj.optBoolean("isRead", false),
+                            obj.optString("postId"),
+                            obj.optString("commentId"),
+                            ""
+                    ));
+                }
+            } catch (Exception e) {}
+        }
+
+        String currentDate = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date());
+        String currentTime = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(new java.util.Date());
+
         ComNotificationItem newItem = new ComNotificationItem(
-                id,
-                userId,
-                userName,
-                userAvatar != null ? userAvatar : RootieBrandHelper.AVATAR_URL,
-                type,
-                actionType,
-                content,
-                currentTime,
-                currentDate,
-                false,
-                postId,
-                commentId,
-                ""
+                id, userId, userName, userAvatar, type, actionType, content,
+                currentTime, currentDate, false, postId, commentId, ""
         );
 
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getId().equals(id)) {
-                list.remove(i);
-                break;
-            }
-        }
+        list.removeIf(it -> it.getId().equals(id));
         list.add(0, newItem);
 
         try {
-            JSONArray newArray = new JSONArray();
+            org.json.JSONArray newArray = new org.json.JSONArray();
             for (ComNotificationItem item : list) {
-                JSONObject obj = new JSONObject();
+                org.json.JSONObject obj = new org.json.JSONObject();
                 obj.put("id", item.getId());
                 obj.put("userId", item.getUserId() != null ? item.getUserId() : "");
                 obj.put("userName", item.getUserName());
@@ -149,11 +138,10 @@ public class CommunityNotificationHelper {
                 obj.put("commentId", item.getCommentId() != null ? item.getCommentId() : "");
                 newArray.put(obj);
             }
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(newArray.toString().getBytes(StandardCharsets.UTF_8));
+            try (java.io.FileOutputStream fos = new java.io.FileOutputStream(file)) {
+                fos.write(newArray.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            CommunityNotificationRepository.getInstance(context).refresh();
+        } catch (Exception e) {}
     }
 }

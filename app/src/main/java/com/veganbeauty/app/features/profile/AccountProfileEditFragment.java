@@ -8,7 +8,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.Typeface;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,7 +35,11 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.AccountProfileEditBinding;
+import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.utils.AvatarLoader;
+import com.veganbeauty.app.utils.NavAppUtils;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.ProfileUpdateNotifier;
 import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.io.File;
@@ -47,6 +52,14 @@ import java.util.Locale;
 public class AccountProfileEditFragment extends RootieFragment {
 
     private AccountProfileEditBinding binding;
+    private boolean isSavingProfile;
+    private boolean hasUnsavedChanges;
+
+    private final ProfileUpdateNotifier.Listener profileUpdateListener = () -> {
+        if (binding != null && isAdded() && !hasUnsavedChanges) {
+            reloadProfileFields(requireContext());
+        }
+    };
 
     private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(), uri -> {
@@ -86,32 +99,48 @@ public class AccountProfileEditFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         Context ctx = requireContext();
-        String avatarUrl = ProfileSession.INSTANCE.getAvatar(ctx);
-        loadAvatarImage(avatarUrl);
+        ProfileSessionHelper.restoreLocalAvatarIfPresent(ctx);
+        loadAvatarImage(ProfileSessionHelper.getAccountProfileAvatarUrl(ctx));
 
-        String fullName = ProfileSession.INSTANCE.getFullName(ctx);
-        String email = ProfileSession.INSTANCE.getEmail(ctx);
-        String phone = ProfileSession.INSTANCE.getPhone(ctx);
-        String dob = ProfileSession.INSTANCE.getDob(ctx);
-        String gender = ProfileSession.INSTANCE.getGender(ctx);
+        reloadProfileFields(ctx);
 
-        binding.tvUsername.setText(fullName);
-        binding.etEmail.setText(email);
-        binding.etFullname.setText(fullName);
-        binding.etPhone.setText(phone);
-        binding.tvDob.setText(dob);
+        TextWatcher unsavedWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        if ("Nam".equals(gender)) {
-            binding.rbMale.setChecked(true);
-        } else if ("Khác".equals(gender)) {
-            binding.rbOther.setChecked(true);
-        } else {
-            binding.rbFemale.setChecked(true);
-        }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                hasUnsavedChanges = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
+
+        binding.etFullname.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                hasUnsavedChanges = true;
+                binding.tvDisplayName.setText(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        binding.etEmail.addTextChangedListener(unsavedWatcher);
+        binding.etUsername.addTextChangedListener(unsavedWatcher);
+        binding.etPhone.addTextChangedListener(unsavedWatcher);
+
+        binding.rgGender.setOnCheckedChangeListener((group, checkedId) -> hasUnsavedChanges = true);
 
         View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
             View lineView = null;
             if (v.getId() == R.id.et_email) lineView = binding.viewEmailLine;
+            else if (v.getId() == R.id.et_username) lineView = binding.viewUsernameLine;
             else if (v.getId() == R.id.et_fullname) lineView = binding.viewFullnameLine;
             else if (v.getId() == R.id.et_phone) lineView = binding.viewPhoneLine;
 
@@ -128,6 +157,7 @@ public class AccountProfileEditFragment extends RootieFragment {
         };
 
         binding.etEmail.setOnFocusChangeListener(focusListener);
+        binding.etUsername.setOnFocusChangeListener(focusListener);
         binding.etFullname.setOnFocusChangeListener(focusListener);
         binding.etPhone.setOnFocusChangeListener(focusListener);
 
@@ -148,46 +178,12 @@ public class AccountProfileEditFragment extends RootieFragment {
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        binding.btnSave.setOnClickListener(v -> {
-            Context saveCtx = requireContext();
-            String newFullName = binding.etFullname.getText().toString();
-            String newEmail = binding.etEmail.getText().toString();
-            String newPhone = binding.etPhone.getText().toString();
-            String newDob = binding.tvDob.getText().toString();
-            String newGender = "Nữ";
-            if (binding.rbMale.isChecked()) newGender = "Nam";
-            else if (binding.rbOther.isChecked()) newGender = "Khác";
+        binding.btnSave.setOnClickListener(v -> saveProfile());
 
-            ProfileSession.INSTANCE.setFullName(saveCtx, newFullName);
-            ProfileSession.INSTANCE.setEmail(saveCtx, newEmail);
-            ProfileSession.INSTANCE.setPhone(saveCtx, newPhone);
-            ProfileSession.INSTANCE.setDob(saveCtx, newDob);
-            ProfileSession.INSTANCE.setGender(saveCtx, newGender);
+        NavAppUtils.setupNavApp(this, view, R.id.nav_account);
+        BottomNavHelper.highlightTab(view, R.id.nav_account);
 
-            SyncDataHelper.syncUserProfileToFirebaseAndLocal(saveCtx);
-
-            View dialogView = getLayoutInflater().inflate(R.layout.dialog_save_profile_success, null);
-            AlertDialog dialog = new AlertDialog.Builder(saveCtx)
-                    .setView(dialogView)
-                    .setCancelable(true)
-                    .create();
-
-            if (dialog.getWindow() != null) {
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            }
-
-            View btnDismiss = dialogView.findViewById(R.id.btnDialogDismiss);
-            if (btnDismiss != null) {
-                btnDismiss.setOnClickListener(v1 -> {
-                    dialog.dismiss();
-                    getParentFragmentManager().popBackStack();
-                });
-            }
-            dialog.setOnDismissListener(d -> getParentFragmentManager().popBackStack());
-            dialog.show();
-        });
-
-        com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
+        ProfileUpdateNotifier.addListener(profileUpdateListener);
 
         binding.btnChangeAvatar.setOnClickListener(v -> showAvatarSourcePicker());
 
@@ -227,6 +223,7 @@ public class AccountProfileEditFragment extends RootieFragment {
                 String formattedDay = String.format(Locale.getDefault(), "%02d", selectedDay);
                 String formattedMonth = String.format(Locale.getDefault(), "%02d", selectedMonth);
                 binding.tvDob.setText(formattedDay + "/" + formattedMonth + "/" + selectedYear);
+                hasUnsavedChanges = true;
             });
             picker.show(getParentFragmentManager(), "DATE_PICKER");
         });
@@ -247,6 +244,126 @@ public class AccountProfileEditFragment extends RootieFragment {
             AccountChangePasswordSheet sheet = new AccountChangePasswordSheet();
             sheet.show(getParentFragmentManager(), "AccountChangePasswordSheet");
         });
+    }
+
+    private void reloadProfileFields(Context ctx) {
+        if (binding == null) {
+            return;
+        }
+        String fullName = ProfileSession.getFullName(ctx);
+        String username = ProfileSession.getUsername(ctx);
+        String email = ProfileSession.getEmail(ctx);
+        String phone = ProfileSession.getPhone(ctx);
+        String dob = ProfileSession.getDob(ctx);
+        String gender = ProfileSession.getGender(ctx);
+
+        binding.tvDisplayName.setText(fullName);
+        binding.etEmail.setText(email);
+        if (username != null) {
+            binding.etUsername.setText(username.startsWith("@") ? username.substring(1) : username);
+        }
+        binding.etFullname.setText(fullName);
+        binding.etPhone.setText(phone);
+        binding.tvDob.setText(dob);
+
+        if ("Nam".equals(gender)) {
+            binding.rbMale.setChecked(true);
+        } else if ("Khác".equals(gender)) {
+            binding.rbOther.setChecked(true);
+        } else {
+            binding.rbFemale.setChecked(true);
+        }
+    }
+
+    private void saveProfile() {
+        if (isSavingProfile || binding == null) {
+            return;
+        }
+
+        Context saveCtx = requireContext();
+        String newFullName = binding.etFullname.getText().toString().trim();
+        String newUsernameRaw = binding.etUsername.getText().toString().trim().replace("@", "");
+        String newEmail = binding.etEmail.getText().toString().trim();
+        String newPhone = binding.etPhone.getText().toString().trim();
+        String newDob = binding.tvDob.getText().toString().trim();
+        String newGender = "Nữ";
+        if (binding.rbMale.isChecked()) {
+            newGender = "Nam";
+        } else if (binding.rbOther.isChecked()) {
+            newGender = "Khác";
+        }
+
+        if (newFullName.isEmpty()) {
+            Toast.makeText(saveCtx, "Họ và tên không được để trống", Toast.LENGTH_SHORT).show();
+            binding.etFullname.requestFocus();
+            return;
+        }
+        if (newUsernameRaw.isEmpty()) {
+            Toast.makeText(saveCtx, "Tên người dùng không được để trống", Toast.LENGTH_SHORT).show();
+            binding.etUsername.requestFocus();
+            return;
+        }
+
+        String newUsername = "@" + newUsernameRaw;
+        boolean savedLocally = ProfileSession.saveProfileEdits(
+                saveCtx,
+                newFullName,
+                newUsername,
+                newEmail,
+                newPhone,
+                newDob,
+                newGender
+        );
+        if (!savedLocally) {
+            Toast.makeText(saveCtx, "Không thể lưu hồ sơ trên thiết bị", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        binding.tvDisplayName.setText(newFullName);
+        hasUnsavedChanges = false;
+        isSavingProfile = true;
+        binding.btnSave.setEnabled(false);
+        Toast.makeText(saveCtx, "Đang lưu hồ sơ...", Toast.LENGTH_SHORT).show();
+
+        SyncDataHelper.syncUserProfileToFirebaseAndLocal(saveCtx, (localSuccess, cloudSynced) -> {
+            isSavingProfile = false;
+            if (binding == null || !isAdded()) {
+                return;
+            }
+            binding.btnSave.setEnabled(true);
+            if (!localSuccess) {
+                Toast.makeText(saveCtx, "Không thể lưu hồ sơ. Vui lòng thử lại.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (!cloudSynced) {
+                Toast.makeText(saveCtx, "Đã lưu hồ sơ. Đồng bộ cloud sẽ thử lại khi có mạng.", Toast.LENGTH_SHORT).show();
+            }
+            showSaveSuccessDialog(saveCtx);
+        });
+    }
+
+    private void showSaveSuccessDialog(Context saveCtx) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_save_profile_success, null);
+        AlertDialog dialog = new AlertDialog.Builder(saveCtx)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        View btnDismiss = dialogView.findViewById(R.id.btnDialogDismiss);
+        if (btnDismiss != null) {
+            btnDismiss.setOnClickListener(v1 -> {
+                dialog.dismiss();
+                getParentFragmentManager().popBackStack();
+            });
+        }
+        dialog.setOnDismissListener(d -> {
+            // btnDismiss already handles navigation when tapped.
+        });
+        dialog.show();
     }
 
     private void loadAvatarImage(String uri) {
@@ -406,6 +523,7 @@ public class AccountProfileEditFragment extends RootieFragment {
         String path = saveAvatarToInternalStorage(uri);
         if (path != null) {
             String fileUri = "file://" + path;
+            ProfileSession.setAvatar(requireContext(), fileUri);
             loadAvatarImage(fileUri);
             uploadAvatarToCloudinary(Uri.parse(fileUri));
         } else {
@@ -417,6 +535,7 @@ public class AccountProfileEditFragment extends RootieFragment {
         String path = saveAvatarBitmapToInternalStorage(bitmap);
         if (path != null) {
             String fileUri = "file://" + path;
+            ProfileSession.setAvatar(requireContext(), fileUri);
             loadAvatarImage(fileUri);
             uploadAvatarToCloudinary(Uri.parse(fileUri));
         } else {
@@ -451,10 +570,9 @@ public class AccountProfileEditFragment extends RootieFragment {
                         String message =
                                 errorMessage != null
                                         ? errorMessage
-                                        : "Không thể cập nhật avatar. Vui lòng thử lại.";
+                                        : "Không thể tải avatar lên cloud. Ảnh vẫn được lưu trên máy.";
                         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-                        String currentAvatar = ProfileSession.INSTANCE.getAvatar(context);
-                        loadAvatarImage(currentAvatar);
+                        loadAvatarImage(ProfileSessionHelper.getAccountProfileAvatarUrl(context));
                     }
                 });
     }
@@ -462,10 +580,18 @@ public class AccountProfileEditFragment extends RootieFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (binding != null) {
-            String avatarUrl = ProfileSession.INSTANCE.getAvatar(requireContext());
+        if (binding != null && !isSavingProfile) {
+            Context ctx = requireContext();
+            String avatarUrl = ProfileSessionHelper.getAccountProfileAvatarUrl(ctx);
             loadAvatarImage(avatarUrl);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        ProfileUpdateNotifier.removeListener(profileUpdateListener);
+        super.onDestroyView();
+        binding = null;
     }
 
     private String saveAvatarToInternalStorage(Uri uri) {
@@ -507,11 +633,5 @@ public class AccountProfileEditFragment extends RootieFragment {
     @Override
     public void observeViewModel() {
         // Not used
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 }

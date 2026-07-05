@@ -64,6 +64,9 @@ import java.util.Set;
 import kotlin.Unit;
 import kotlinx.coroutines.BuildersKt;
 import kotlinx.coroutines.Dispatchers;
+import kotlinx.coroutines.flow.Flow;
+
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 
 public class CommunityProfileFragment extends RootieFragment {
 
@@ -254,7 +257,8 @@ public class CommunityProfileFragment extends RootieFragment {
             String uname = ProfileSession.INSTANCE.getUsername(ctx);
             if (uname != null) binding.tvUsername.setText(uname.startsWith("@") ? uname : "@" + uname);
 
-            binding.tvHeaderName.setVisibility(View.GONE);
+            binding.tvHeaderName.setText(fullName != null ? fullName : "");
+            binding.tvHeaderName.setVisibility(View.VISIBLE);
             binding.ivSettings.setVisibility(View.VISIBLE);
             binding.ivMore.setVisibility(View.GONE);
         } else {
@@ -398,6 +402,20 @@ public class CommunityProfileFragment extends RootieFragment {
             binding.llRevenue.setVisibility(View.GONE);
             binding.viewRevenueDivider.setVisibility(View.GONE);
             binding.llRevenue.setOnClickListener(null);
+        }
+
+        if (isOwnProfile) {
+            View navRoot = binding.getRoot().findViewById(R.id.comBottomNav);
+            if (navRoot != null) {
+                navRoot.setVisibility(View.VISIBLE);
+                ComBottomNavHelper.setup(this, navRoot, ComBottomNavHelper.TAB_PROFILE);
+            }
+        } else {
+            View navRoot = binding.getRoot().findViewById(R.id.comBottomNav);
+            if (navRoot != null) {
+                navRoot.setVisibility(View.GONE);
+                binding.rvPosts.setPadding(0, 0, 0, 0);
+            }
         }
     }
 
@@ -658,6 +676,11 @@ public class CommunityProfileFragment extends RootieFragment {
                 SideMenuHelper.bindCurrentUser(navView);
             }
         }
+    }
+
+    @Override
+    protected Flow<Integer> getUnreadCountFlow(Context context) {
+        return CommunityNotificationRepository.getInstance(context).getUnreadCount();
     }
 
     @Override

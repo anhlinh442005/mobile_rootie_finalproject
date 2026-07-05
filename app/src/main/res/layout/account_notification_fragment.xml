@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@color/neutral"
+        android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
@@ -29,54 +30,35 @@
 
         <TextView
             android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="sans-serif-medium"
             android:text="Thông báo"
             android:textColor="@color/primary"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ivUserAvatar"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Header Bulk Actions -->
-        <LinearLayout
-            android:id="@+id/layoutHeaderActions"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginEnd="8dp"
+        <ImageView
+            android:id="@+id/ivUserAvatar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/img_avatar"
+            android:contentDescription="Trang cá nhân"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <ImageView
-                android:id="@+id/btnMarkAllRead"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="12dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Đọc tất cả"
-                android:src="@drawable/ic_check"
-                app:tint="@color/primary" />
-
-            <ImageView
-                android:id="@+id/btnDeleteAll"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="12dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Xoá tất cả"
-                android:src="@drawable/ic_bin"
-                app:tint="#D73B35" />
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -86,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_white_rounded_corner_border"
         app:layout_constraintTop_toBottomOf="@id/topBar">
 
@@ -120,7 +102,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Category Filter Chips -->
+    <!-- Category Filter Chips (unchanged) -->
     <HorizontalScrollView
         android:id="@+id/tabScrollView"
         android:layout_width="match_parent"
@@ -141,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_btn_buy"
+                android:background="@drawable/tab_active_bg"
                 android:clickable="true"
                 android:focusable="true"
                 android:fontFamily="sans-serif-medium"
@@ -202,42 +184,101 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <!-- Section header: Mới nhất / Đọc tất cả / Xoá tất cả -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutHeaderActions"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tabScrollView">
+
+        <TextView
+            android:id="@+id/tvSectionNewest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="Mới nhất"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btnDeleteAll"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Xoá tất cả"
+            android:src="@drawable/ic_bin"
+            app:tint="#D73B35"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/btnMarkAllRead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:text="Đọc tất cả"
+            android:textColor="@color/primary"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnDeleteAll"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <!-- RecyclerView List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifications"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="24dp"
+        android:paddingBottom="100dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabScrollView"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeaderActions"
         tools:listitem="@layout/account_notification_item" />
 
     <!-- Empty State -->
     <LinearLayout
         android:id="@+id/layoutEmptyState"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tabScrollView"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/layoutHeaderActions">
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_email"
-            app:tint="@color/primary"
-            android:alpha="0.6" />
+        <FrameLayout
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/com_bg_post"
+            android:backgroundTint="#F2F5F1"
+            android:padding="24dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_email" />
+        </FrameLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:fontFamily="sans-serif-medium"
             android:text="Chưa có thông báo nào"
             android:textColor="@color/primary"
@@ -249,10 +290,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="sans-serif"
+            android:gravity="center"
             android:text="Bạn sẽ nhận được các thông tin quan trọng tại đây."
             android:textColor="@color/gray_dark"
             android:textSize="14sp"
-            android:gravity="center" />
+            android:lineSpacingExtra="3dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

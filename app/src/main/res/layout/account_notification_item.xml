@@ -1,141 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardNotification"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="6dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="1dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="@color/gray_light"
-    app:cardBackgroundColor="@color/white">
+    android:clipChildren="false">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- Hidden action buttons revealed on swipe left -->
+    <LinearLayout
+        android:id="@+id/layoutSwipeActions"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
+        <!-- Mark as Read (green) -->
+        <FrameLayout
+            android:id="@+id/btnMarkReadAction"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:background="#4CAF50"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_circle_checked"
+                app:tint="@color/white" />
+        </FrameLayout>
+
+        <!-- Delete (red) -->
+        <FrameLayout
+            android:id="@+id/btnDeleteAction"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:background="#F44336"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_bin"
+                app:tint="@color/white" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <!-- Foreground: notification content (slides left to reveal buttons) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardNotification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="@color/white">
 
-        <!-- Unread Badge Dot -->
-        <View
-            android:id="@+id/viewUnreadDot"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:background="@drawable/badge_dot"
-            android:visibility="visible"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Time Label -->
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="sans-serif"
-            android:textColor="@color/gray_dark"
-            android:textSize="11sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvTitle"
-            app:layout_constraintEnd_toStartOf="@id/viewUnreadDot"
-            tools:text="10:45" />
+            android:padding="16dp">
 
-        <!-- Category Icon Container -->
-        <ImageView
-            android:id="@+id/ivIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/com_bg_post"
-            android:padding="10dp"
-            android:src="@drawable/ic_voucher"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/primary" />
+            <!-- Unread Badge Dot -->
+            <View
+                android:id="@+id/viewUnreadDot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/badge_dot"
+                android:visibility="visible"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_marginEnd="12dp"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/primary"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/tvTime"
-            app:layout_constraintStart_toEndOf="@id/ivIcon"
-            app:layout_constraintTop_toTopOf="@id/ivIcon"
-            tools:text="Voucher: Giảm 50K!" />
-
-        <!-- Content Description -->
-        <TextView
-            android:id="@+id/tvContent"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="sans-serif"
-            android:lineSpacingExtra="2dp"
-            android:textColor="@color/black"
-            android:textSize="13sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvTitle"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
-            tools:text="Ưu đãi cực hời dành riêng cho bạn. Sử dụng mã GREEN50 để được giảm ngay 50.000đ cho đơn hàng thân thiện môi trường tiếp theo." />
-
-        <!-- Outlined Action Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAction"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/primary"
-            android:textSize="12sp"
-            android:paddingHorizontal="16dp"
-            app:strokeColor="@color/primary"
-            app:layout_constraintStart_toStartOf="@id/tvTitle"
-            app:layout_constraintTop_toBottomOf="@id/tvContent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="COPY MÃ" />
-
-        <!-- Individual Item Actions -->
-        <LinearLayout
-            android:id="@+id/layoutActions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvContent"
-            app:layout_constraintBottom_toBottomOf="parent">
-            <ImageView
-                android:id="@+id/btnMarkRead"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+            <!-- Time Label -->
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                android:src="@drawable/ic_check"
-                app:tint="@color/primary"
-                android:contentDescription="Đánh dấu đã đọc" />
+                android:fontFamily="sans-serif"
+                android:textColor="@color/gray_dark"
+                android:textSize="11sp"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvTitle"
+                app:layout_constraintEnd_toStartOf="@id/viewUnreadDot"
+                tools:text="10:45" />
 
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/primary"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/tvTime"
+                app:layout_constraintStart_toEndOf="@id/ivIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Voucher: Giảm 50K!" />
+
+            <!-- Category Icon Container: centered against the title+content text block -->
             <ImageView
-                android:id="@+id/btnDelete"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                android:src="@drawable/ic_bin"
-                app:tint="#D73B35"
-                android:contentDescription="Xoá thông báo" />
-        </LinearLayout>
+                android:id="@+id/ivIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/com_bg_post"
+                android:padding="10dp"
+                android:src="@drawable/ic_voucher"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvTitle"
+                app:layout_constraintBottom_toBottomOf="@id/tvContent"
+                app:tint="@color/primary" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Content Description -->
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="sans-serif"
+                android:lineSpacingExtra="2dp"
+                android:textColor="@color/black"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                tools:text="Ưu đãi cực hời dành riêng cho bạn. Sử dụng mã GREEN50 để được giảm ngay 50.000đ cho đơn hàng thân thiện môi trường tiếp theo." />
 
-</com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

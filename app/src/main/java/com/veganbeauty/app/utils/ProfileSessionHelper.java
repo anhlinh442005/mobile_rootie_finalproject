@@ -51,6 +51,11 @@ public final class ProfileSessionHelper {
     }
 
     public static void syncSessionFromUser(Context context, UserEntity user) {
+        syncSessionFromUser(context, user, false);
+    }
+
+    /** @param preserveSessionAvatar true khi chỉ lưu text profile — không đổi avatar đang hiển thị */
+    public static void syncSessionFromUser(Context context, UserEntity user, boolean preserveSessionAvatar) {
         if (user == null) {
             return;
         }
@@ -58,17 +63,26 @@ public final class ProfileSessionHelper {
         ProfileSession.setFullName(context, user.getFull_name());
         ProfileSession.setEmail(context, user.getEmail());
         ProfileSession.setPhone(context, user.getPhone());
-        ProfileSession.setUsername(context, user.getUsername());
-
-        String avatarUrl = resolveAvatarUrl(user);
-        String sessionAvatar = ProfileSession.getAvatar(context);
-        if (isRemoteAvatarUrl(sessionAvatar) && !isRemoteAvatarUrl(avatarUrl)) {
-            // Giữ avatar https (Cloudinary/Firestore) trong session, không ghi đè bằng content:// local.
-        } else if (isUsableAvatarUrl(avatarUrl)) {
-            ProfileSession.setAvatar(context, avatarUrl.trim());
+        String username = user.getUsername();
+        if (username != null && !username.trim().isEmpty()) {
+            String normalized = username.trim();
+            if (!normalized.startsWith("@")) {
+                normalized = "@" + normalized;
+            }
+            ProfileSession.setUsername(context, normalized);
         }
-        if (user.getPrimary_image() != null && !user.getPrimary_image().trim().isEmpty()) {
-            ProfileSession.setPrimaryImage(context, user.getPrimary_image().trim());
+
+        if (!preserveSessionAvatar) {
+            String avatarUrl = resolveAvatarUrl(user);
+            String sessionAvatar = ProfileSession.getAvatarStored(context);
+            if (isRemoteAvatarUrl(sessionAvatar) && !isRemoteAvatarUrl(avatarUrl)) {
+                // Giữ avatar https (Cloudinary/Firestore) trong session, không ghi đè bằng content:// local.
+            } else if (isUsableAvatarUrl(avatarUrl)) {
+                ProfileSession.setAvatar(context, avatarUrl.trim());
+            }
+            if (user.getPrimary_image() != null && !user.getPrimary_image().trim().isEmpty()) {
+                ProfileSession.setPrimaryImage(context, user.getPrimary_image().trim());
+            }
         }
         if (user.getBio() != null && !user.getBio().trim().isEmpty()) {
             ProfileSession.setBio(context, user.getBio().trim());
@@ -90,7 +104,11 @@ public final class ProfileSessionHelper {
     }
 
     public static String resolveEffectiveAvatarUrl(Context context) {
-        String sessionAvatar = ProfileSession.getAvatar(context);
+        String localAvatar = getLocalAvatarFileUri(context);
+        if (localAvatar != null) {
+            return localAvatar;
+        }
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
         if (isUsableAvatarUrl(sessionAvatar)) {
             return sessionAvatar.trim();
         }
@@ -104,7 +122,7 @@ public final class ProfileSessionHelper {
     }
 
     public static String resolveEffectiveAvatarUrl(Context context, @Nullable UserEntity user) {
-        String sessionAvatar = ProfileSession.getAvatar(context);
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
         if (isRemoteAvatarUrl(sessionAvatar)) {
             return sessionAvatar.trim();
         }
@@ -191,10 +209,47 @@ public final class ProfileSessionHelper {
 
     /** Giống Community profile: ưu tiên session trước, load UI ngay không cần chờ background. */
     public static String getAccountProfileAvatarUrl(Context context) {
-        String sessionAvatar = ProfileSession.getAvatar(context);
-        if (isRemoteAvatarUrl(sessionAvatar)) {
+        String localAvatar = getLocalAvatarFileUri(context);
+        if (localAvatar != null) {
+            return localAvatar;
+        }
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
+        if (isUsableAvatarUrl(sessionAvatar)) {
             return sessionAvatar.trim();
         }
         return resolveEffectiveAvatarUrl(context, findCurrentUser(context));
+    }
+
+    private static final String LOCAL_AVATAR_FILENAME = "user_avatar.jpg";
+
+    @Nullable
+    public static String getLocalAvatarFileUri(Context context) {
+        File file = new File(context.getFilesDir(), LOCAL_AVATAR_FILENAME);
+        if (file.exists() && file.length() > 0) {
+            return "file://" + file.getAbsolutePath();
+        }
+        return null;
+    }
+
+    /**
+     * Khôi phục avatar đã chọn/crop trên máy (vd. ảnh trước khi lưu hồ sơ bị ghi đè).
+     * @return true nếu tìm thấy file avatar local và đã gán lại vào session.
+     */
+    public static boolean restoreLocalAvatarIfPresent(Context context) {
+        String fileUri = getLocalAvatarFileUri(context);
+        if (fileUri == null) {
+            return false;
+        }
+        ProfileSession.setAvatar(context, fileUri);
+        try {
+            UserEntity user = findCurrentUser(context);
+            if (user != null) {
+                user.setAvatar(fileUri);
+                RootieDatabase.getDatabase(context.getApplicationContext()).userDao().insertUserSync(user);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }

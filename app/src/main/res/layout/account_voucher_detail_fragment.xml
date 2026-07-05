@@ -55,25 +55,13 @@
                 android:id="@+id/btnShare"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
                 android:padding="8dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Chia sẻ"
                 android:src="@drawable/ic_plane"
-                app:tint="#02542D" />
-
-            <ImageView
-                android:id="@+id/btnDelete"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="8dp"
-                android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Xoá voucher"
-                android:src="@drawable/ic_bin"
                 app:tint="#02542D" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -228,7 +228,7 @@ public class AccountRewardFragment extends RootieFragment {
             chips[i].setOnClickListener(v -> {
                 activeExchangeFilter = names[idx];
                 for (int j = 0; j < chips.length; j++) {
-                    chips[j].setBackgroundResource(j == idx ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
+                    chips[j].setBackgroundResource(j == idx ? R.drawable.tab_active_bg : R.drawable.tab_inactive_bg);
                     chips[j].setTextColor(ContextCompat.getColor(requireContext(), j == idx ? R.color.white : R.color.primary));
                 }
                 applyExchangeFilter();
@@ -244,7 +244,7 @@ public class AccountRewardFragment extends RootieFragment {
             chips[i].setOnClickListener(v -> {
                 activeFilter = names[idx];
                 for (int j = 0; j < chips.length; j++) {
-                    chips[j].setBackgroundResource(j == idx ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
+                    chips[j].setBackgroundResource(j == idx ? R.drawable.tab_active_bg : R.drawable.tab_inactive_bg);
                     chips[j].setTextColor(ContextCompat.getColor(requireContext(), j == idx ? R.color.white : R.color.primary));
                 }
                 applyGiftsFilter();

@@ -108,7 +108,7 @@ public class ExchangeGiftsAdapter extends RecyclerView.Adapter<ExchangeGiftsAdap
                 actionBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ECEFF0")));
                 img.setImageResource(iconRes);
                 img.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.primary)));
-                imgCircle.setBackgroundResource(R.drawable.bg_circle_light_green);
+                imgCircle.setBackgroundResource(R.drawable.bg_circle_grey);
                 actionBtn.setOnClickListener(null);
             } else {
                 actionBtn.setText("Đổi quà"); actionBtn.setEnabled(true);
@@ -117,7 +117,7 @@ public class ExchangeGiftsAdapter extends RecyclerView.Adapter<ExchangeGiftsAdap
                 actionBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2D3A34")));
                 img.setImageResource(iconRes);
                 img.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.primary)));
-                imgCircle.setBackgroundResource(R.drawable.bg_circle_light_green);
+                imgCircle.setBackgroundResource(R.drawable.bg_circle_grey);
                 actionBtn.setOnClickListener(v -> onActionClick.onClick(gift));
             }
         }

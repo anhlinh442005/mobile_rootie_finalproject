@@ -105,10 +105,11 @@
         android:id="@+id/dialogContentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginBottom="0dp"
         android:background="@drawable/bg_chat_dialog"
         android:clipToOutline="true"
-        app:layout_constraintTop_toBottomOf="@id/layoutChatTabs"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

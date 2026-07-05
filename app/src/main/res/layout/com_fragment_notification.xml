@@ -42,38 +42,20 @@
             android:maxLines="1"
             android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnMarkRead"
+            app:layout_constraintEnd_toStartOf="@id/ivUserAvatar"
             app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/btnMarkRead"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="4dp"
-            android:padding="8dp"
+            android:id="@+id/ivUserAvatar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="16dp"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_email"
-            android:contentDescription="Đọc tất cả"
-            app:tint="@color/primary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnDeleteAll"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/btnDeleteAll"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="12dp"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_bin"
-            android:contentDescription="Xóa tất cả"
-            app:tint="@color/primary"
+            android:src="@drawable/img_avatar"
+            android:contentDescription="Trang cá nhân"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -121,76 +103,153 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Custom TabLayout/Tabs Host -->
-    <LinearLayout
-        android:id="@+id/tabContainer"
+    <HorizontalScrollView
+        android:id="@+id/tabScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
-        android:orientation="horizontal"
+        android:scrollbars="none"
+        android:paddingHorizontal="16dp"
         app:layout_constraintTop_toBottomOf="@id/layoutSearch">
 
-        <TextView
-            android:id="@+id/tabPosts"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/tabContainer"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_btn_buy"
-            android:clickable="true"
-            android:focusable="true"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:paddingVertical="10dp"
-            android:text="Bài viết"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tabAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/tab_active_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="18dp"
+                android:text="Tất cả"
+                android:textColor="@color/white"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tabUnread"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/tab_inactive_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="18dp"
+                android:text="Chưa đọc"
+                android:textColor="@color/primary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tabInteractions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/tab_inactive_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="18dp"
+                android:text="Tương tác"
+                android:textColor="@color/primary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tabAffiliate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/tab_inactive_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="18dp"
+                android:text="Affiliate"
+                android:textColor="@color/primary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tabNews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/tab_inactive_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="18dp"
+                android:text="Tin tức"
+                android:textColor="@color/primary"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Section header: Mới nhất / Đọc tất cả -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutSectionHeader"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tabScrollView">
 
         <TextView
-            android:id="@+id/tabInteractions"
-            android:layout_width="0dp"
+            android:id="@+id/tvSectionNewest"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginHorizontal="3dp"
-            android:background="@drawable/tab_inactive_bg"
-            android:clickable="true"
-            android:focusable="true"
             android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:paddingVertical="10dp"
-            android:text="Tương tác"
+            android:text="Mới nhất"
             android:textColor="@color/primary"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tabOrders"
-            android:layout_width="0dp"
+            android:id="@+id/tvMarkAllRead"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/tab_inactive_bg"
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:paddingVertical="10dp"
-            android:text="Đơn hàng"
+            android:text="Đọc tất cả"
             android:textColor="@color/primary"
-            android:textSize="14sp" />
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Notifications List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifications"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:clipToPadding="false"
-        android:paddingBottom="16dp"
+        android:paddingBottom="100dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabContainer"
+        app:layout_constraintTop_toBottomOf="@id/layoutSectionHeader"
         tools:listitem="@layout/com_item_notification" />
 
     <!-- Empty State -->
@@ -203,7 +262,7 @@
         android:padding="32dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabContainer">
+        app:layout_constraintTop_toBottomOf="@id/layoutSectionHeader">
 
         <FrameLayout
             android:layout_width="96dp"

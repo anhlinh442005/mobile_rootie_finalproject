@@ -245,6 +245,13 @@ public class AccountOrderDetailFragment extends RootieFragment {
         binding.tvAddressPhone.setText(order.getShippingPhone());
         binding.tvAddressFull.setText(order.getShippingAddress());
 
+        if (order.getOrderNote() != null && !order.getOrderNote().trim().isEmpty()) {
+            binding.layoutNoteCard.setVisibility(View.VISIBLE);
+            binding.tvOrderNote.setText(order.getOrderNote());
+        } else {
+            binding.layoutNoteCard.setVisibility(View.GONE);
+        }
+
         binding.tvInvoiceSubtotalValue.setText(formatCurrency(subtotal));
         binding.tvInvoiceShippingValue.setText(formatCurrency(order.getShippingCost()));
         binding.tvInvoiceVoucherValue.setText("- " + formatCurrency(order.getVoucherDiscount()));

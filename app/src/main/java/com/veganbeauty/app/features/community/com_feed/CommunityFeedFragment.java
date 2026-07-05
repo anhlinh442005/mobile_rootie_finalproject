@@ -35,6 +35,7 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentFeedBinding;
 import com.veganbeauty.app.features.community.beauty_hub.CommunityBeautyHubFragment;
@@ -56,6 +57,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import kotlinx.coroutines.flow.Flow;
 
 public class CommunityFeedFragment extends RootieFragment {
 
@@ -228,6 +231,11 @@ public class CommunityFeedFragment extends RootieFragment {
         if (binding != null && binding.navView != null) {
             SideMenuHelper.bindCurrentUser(binding.navView);
         }
+    }
+
+    @Override
+    protected Flow<Integer> getUnreadCountFlow(Context context) {
+        return CommunityNotificationRepository.getInstance(context).getUnreadCount();
     }
 
     private void hideBottomNavigation() {

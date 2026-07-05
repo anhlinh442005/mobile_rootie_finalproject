@@ -22,7 +22,7 @@
             android:id="@+id/layoutIconCircle"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/bg_circle_light_green"
+            android:background="@drawable/bg_circle_grey"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -113,7 +113,7 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:backgroundTint="@color/primary"
-            app:cornerRadius="6dp"
+            app:cornerRadius="8dp"
             app:layout_constraintStart_toStartOf="@id/tvGiftTitle"
             app:layout_constraintTop_toBottomOf="@id/tvGiftSubtitle"
             app:layout_constraintBottom_toBottomOf="parent" />

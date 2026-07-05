@@ -16,6 +16,8 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.UserEntity;
+import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
+import com.veganbeauty.app.data.local.entities.ReelEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 
 import java.io.File;
@@ -30,6 +32,10 @@ public class SyncDataHelper {
 
     public interface SyncCallback {
         void onComplete(boolean success);
+    }
+
+    public interface ProfileSaveCallback {
+        void onComplete(boolean localSuccess, boolean cloudSynced);
     }
 
     public interface UploadCallback {
@@ -82,8 +88,17 @@ public class SyncDataHelper {
                 avatar = doc.getString("avatar_url");
             }
 
+            boolean keepLocalIdentity = ProfileSession.hasLocalProfileEdits(context);
+            String localAvatarFile = ProfileSessionHelper.getLocalAvatarFileUri(context);
+            if (localAvatarFile != null) {
+                ProfileSession.setAvatar(context, localAvatarFile);
+            }
+
             UserEntity user = ProfileSessionHelper.findCurrentUser(context);
             if (user == null) {
+                String initialAvatar = localAvatarFile != null
+                        ? localAvatarFile
+                        : (isRemoteAvatarUrl(avatar) ? avatar.trim() : "");
                 user = new UserEntity(
                         doc.getId(),
                         doc.getString("username") != null ? doc.getString("username") : "",
@@ -91,21 +106,28 @@ public class SyncDataHelper {
                         doc.getString("email") != null ? doc.getString("email") : "",
                         doc.getString("phone") != null ? doc.getString("phone") : "",
                         "",
-                        isRemoteAvatarUrl(avatar) ? avatar.trim() : "",
+                        initialAvatar,
                         doc.getString("primary_image")
                 );
                 if (doc.getString("bio") != null && !doc.getString("bio").trim().isEmpty()) {
                     user.setBio(doc.getString("bio").trim());
                 }
             } else {
-                if (doc.getString("full_name") != null && !doc.getString("full_name").trim().isEmpty()) {
-                    user.setFull_name(doc.getString("full_name").trim());
-                }
-                if (doc.getString("username") != null && !doc.getString("username").trim().isEmpty()) {
-                    user.setUsername(doc.getString("username").trim());
-                }
-                if (doc.getString("phone") != null && !doc.getString("phone").trim().isEmpty()) {
-                    user.setPhone(doc.getString("phone").trim());
+                if (keepLocalIdentity) {
+                    user.setFull_name(ProfileSession.getFullName(context));
+                    user.setUsername(normalizeUsernameForStorage(ProfileSession.getUsername(context)));
+                    user.setEmail(ProfileSession.getEmail(context));
+                    user.setPhone(ProfileSession.getPhone(context));
+                } else {
+                    if (doc.getString("full_name") != null && !doc.getString("full_name").trim().isEmpty()) {
+                        user.setFull_name(doc.getString("full_name").trim());
+                    }
+                    if (doc.getString("username") != null && !doc.getString("username").trim().isEmpty()) {
+                        user.setUsername(doc.getString("username").trim());
+                    }
+                    if (doc.getString("phone") != null && !doc.getString("phone").trim().isEmpty()) {
+                        user.setPhone(doc.getString("phone").trim());
+                    }
                 }
                 if (doc.getString("bio") != null && !doc.getString("bio").trim().isEmpty()) {
                     user.setBio(doc.getString("bio").trim());
@@ -113,12 +135,46 @@ public class SyncDataHelper {
                 if (doc.getString("primary_image") != null && !doc.getString("primary_image").trim().isEmpty()) {
                     user.setPrimary_image(doc.getString("primary_image").trim());
                 }
-                if (isRemoteAvatarUrl(avatar)) {
+                if (localAvatarFile != null) {
+                    user.setAvatar(localAvatarFile);
+                } else if (!keepLocalIdentity && isRemoteAvatarUrl(avatar)) {
                     user.setAvatar(avatar.trim());
+                } else if (keepLocalIdentity) {
+                    String sessionAvatar = ProfileSession.getAvatarStored(context);
+                    if (ProfileSessionHelper.isUsableAvatarUrl(sessionAvatar)) {
+                        user.setAvatar(sessionAvatar);
+                    }
                 }
             }
 
-            ProfileSessionHelper.syncSessionFromUser(context, user);
+            if (keepLocalIdentity) {
+                String localEmail = ProfileSession.getEmail(context);
+                if (localEmail != null && !localEmail.trim().isEmpty()) {
+                    user.setEmail(localEmail.trim());
+                }
+            } else if (doc.getString("email") != null && !doc.getString("email").trim().isEmpty()) {
+                user.setEmail(doc.getString("email").trim());
+            }
+
+            String dob = doc.getString("dob");
+            if (!keepLocalIdentity && dob != null && !dob.trim().isEmpty()) {
+                ProfileSession.setDob(context, dob.trim());
+            }
+            String gender = doc.getString("gender");
+            if (!keepLocalIdentity && gender != null && !gender.trim().isEmpty()) {
+                ProfileSession.setGender(context, gender.trim());
+            }
+            String cccd = doc.getString("cccd");
+            if (!keepLocalIdentity && cccd != null && !cccd.trim().isEmpty()) {
+                ProfileSession.setCCCD(context, cccd.trim());
+            }
+            String address = doc.getString("address");
+            if (!keepLocalIdentity && address != null && !address.trim().isEmpty()) {
+                ProfileSession.setAddress(context, address.trim());
+            }
+
+            boolean preserveAvatar = localAvatarFile != null || keepLocalIdentity;
+            ProfileSessionHelper.syncSessionFromUser(context, user, preserveAvatar);
             RootieDatabase.getDatabase(context).userDao().insertUserSync(user);
             pullSkincareHistoryFromFirestoreBlocking(context, userId.trim());
             seedJune2026SkincareHistoryIfNeeded(context);
@@ -154,44 +210,203 @@ public class SyncDataHelper {
         EXECUTOR.execute(() -> syncUserProfileToFirebaseAndLocalBlocking(context));
     }
 
-    private static boolean syncUserProfileToFirebaseAndLocalBlocking(Context context) {
+    public static void syncUserProfileToFirebaseAndLocal(Context context, @Nullable ProfileSaveCallback callback) {
+        EXECUTOR.execute(() -> {
+            boolean localSaved = false;
+            boolean cloudSaved = false;
+            try {
+                localSaved = persistProfileLocallyBlocking(context);
+                if (localSaved) {
+                    cloudSaved = pushProfileToFirestoreBlocking(context);
+                    ProfileUpdateNotifier.notifyUpdated();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final boolean localOk = localSaved;
+            final boolean cloudOk = cloudSaved;
+            if (callback != null) {
+                runOnMainThread(() -> callback.onComplete(localOk, cloudOk));
+            }
+        });
+    }
+
+    private static void propagateProfileChangesBlocking(Context context) {
         try {
             String userId = resolveCurrentUserId(context);
-            if (userId == null || userId.isEmpty()) {
-                userId = "user_" + UUID.randomUUID();
-                ProfileSession.setUserId(context, userId);
+            if (userId == null || userId.trim().isEmpty()) {
+                return;
             }
 
-            String avatar = resolveRemoteAvatarForSync(context);
+            String username = normalizeUsernameForStorage(ProfileSession.getUsername(context));
+            String displayName = ProfileSession.getFullName(context) != null ? ProfileSession.getFullName(context).trim() : "";
 
-            UserEntity userEntity = ProfileSessionHelper.findCurrentUser(context);
-            if (userEntity == null) {
-                userEntity = new UserEntity(
-                        userId,
-                        ProfileSession.getUsername(context) != null ? ProfileSession.getUsername(context) : "",
-                        ProfileSession.getFullName(context) != null ? ProfileSession.getFullName(context) : "",
-                        ProfileSession.getEmail(context) != null ? ProfileSession.getEmail(context) : "",
-                        ProfileSession.getPhone(context) != null ? ProfileSession.getPhone(context) : "",
-                        "",
-                        avatar,
-                        ProfileSession.getPrimaryImage(context)
-                );
-            } else {
-                userEntity.setFull_name(ProfileSession.getFullName(context) != null ? ProfileSession.getFullName(context) : userEntity.getFull_name());
-                userEntity.setUsername(ProfileSession.getUsername(context) != null ? ProfileSession.getUsername(context) : userEntity.getUsername());
-                userEntity.setEmail(ProfileSession.getEmail(context) != null ? ProfileSession.getEmail(context) : userEntity.getEmail());
-                userEntity.setPhone(ProfileSession.getPhone(context) != null ? ProfileSession.getPhone(context) : userEntity.getPhone());
-                if (isRemoteAvatarUrl(avatar)) {
-                    userEntity.setAvatar(avatar);
+            RootieDatabase db = RootieDatabase.getDatabase(context);
+            List<CommunityPostEntity> posts = db.communityDao().getPostsByAuthorSync(userId.trim());
+            if (posts != null && !posts.isEmpty()) {
+                for (CommunityPostEntity post : posts) {
+                    if (!username.isEmpty()) {
+                        post.setAuthorUsername(username);
+                    }
+                    if (!displayName.isEmpty()) {
+                        post.setAuthorDisplayName(displayName);
+                    }
                 }
+                db.communityDao().insertPosts(posts);
             }
 
-            RootieDatabase.getDatabase(context).userDao().insertUserSync(userEntity);
-            return new FirestoreService().saveUser(userEntity);
+            List<ReelEntity> reels = db.communityDao().getReelsByAuthorSync(userId.trim());
+            if (reels != null && !reels.isEmpty()) {
+                for (ReelEntity reel : reels) {
+                    if (!username.isEmpty()) {
+                        reel.setAuthorUsername(username);
+                    }
+                    if (!displayName.isEmpty()) {
+                        reel.setAuthorDisplayName(displayName);
+                    }
+                }
+                db.communityDao().insertReels(reels);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean syncUserProfileToFirebaseAndLocalBlocking(Context context) {
+        try {
+            if (!persistProfileLocallyBlocking(context)) {
+                return false;
+            }
+            pushProfileToFirestoreBlocking(context);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private static boolean persistProfileLocallyBlocking(Context context) {
+        String userId = resolveCurrentUserId(context);
+        if (userId == null || userId.isEmpty()) {
+            userId = "user_" + UUID.randomUUID();
+            ProfileSession.setUserId(context, userId);
+        }
+
+        String normalizedUsername = normalizeUsernameForStorage(ProfileSession.getUsername(context));
+        String fullName = ProfileSession.getFullName(context) != null ? ProfileSession.getFullName(context) : "";
+        String email = ProfileSession.getEmail(context) != null ? ProfileSession.getEmail(context) : "";
+        String phone = ProfileSession.getPhone(context) != null ? ProfileSession.getPhone(context) : "";
+        String bio = ProfileSession.getBio(context);
+
+        UserEntity userEntity = ProfileSessionHelper.findCurrentUser(context);
+        String preservedAvatar = preserveAvatarForProfileSave(context, userEntity);
+
+        if (userEntity == null) {
+            userEntity = new UserEntity(
+                    userId,
+                    normalizedUsername,
+                    fullName,
+                    email,
+                    phone,
+                    "",
+                    preservedAvatar,
+                    ProfileSession.getPrimaryImage(context)
+            );
+        } else {
+            userEntity.setUser_id(userId);
+            userEntity.setFull_name(fullName);
+            userEntity.setUsername(normalizedUsername);
+            userEntity.setEmail(email);
+            userEntity.setPhone(phone);
+            if (preservedAvatar != null && !preservedAvatar.isEmpty()) {
+                userEntity.setAvatar(preservedAvatar);
+            }
+        }
+        if (bio != null && !bio.trim().isEmpty()) {
+            userEntity.setBio(bio.trim());
+        }
+
+        RootieDatabase.getDatabase(context).userDao().insertUserSync(userEntity);
+        ProfileSessionHelper.syncSessionFromUser(context, userEntity, true);
+        propagateProfileChangesBlocking(context);
+        return true;
+    }
+
+    /** Giữ nguyên avatar hiện tại khi chỉ lưu thông tin text. */
+    @Nullable
+    private static String preserveAvatarForProfileSave(Context context, @Nullable UserEntity existingUser) {
+        String localAvatar = ProfileSessionHelper.getLocalAvatarFileUri(context);
+        if (localAvatar != null) {
+            return localAvatar;
+        }
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
+        if (ProfileSessionHelper.isUsableAvatarUrl(sessionAvatar)) {
+            return sessionAvatar;
+        }
+        if (existingUser != null && ProfileSessionHelper.isUsableAvatarUrl(existingUser.getAvatar())) {
+            return existingUser.getAvatar() != null ? existingUser.getAvatar().trim() : "";
+        }
+        if (existingUser != null && existingUser.getAvatar() != null && !existingUser.getAvatar().trim().isEmpty()) {
+            return existingUser.getAvatar().trim();
+        }
+        return "";
+    }
+
+    private static boolean pushProfileToFirestoreBlocking(Context context) {
+        try {
+            UserEntity userEntity = ProfileSessionHelper.findCurrentUser(context);
+            if (userEntity == null) {
+                return false;
+            }
+            String preservedAvatar = preserveAvatarForProfileSave(context, userEntity);
+            if (preservedAvatar != null && !preservedAvatar.isEmpty()) {
+                userEntity.setAvatar(preservedAvatar);
+            }
+            String dob = ProfileSession.getDob(context) != null ? ProfileSession.getDob(context) : "";
+            String gender = ProfileSession.getGender(context) != null ? ProfileSession.getGender(context) : "";
+            String cccd = ProfileSession.getCCCD(context) != null ? ProfileSession.getCCCD(context) : "";
+            String address = ProfileSession.getAddress(context) != null ? ProfileSession.getAddress(context) : "";
+            return new FirestoreService().saveUser(userEntity, dob, gender, cccd, address);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static void propagateAvatarToCommunityBlocking(Context context, String avatarUrl) {
+        if (!isRemoteAvatarUrl(avatarUrl)) {
+            return;
+        }
+        try {
+            String userId = resolveCurrentUserId(context);
+            if (userId == null || userId.trim().isEmpty()) {
+                return;
+            }
+            RootieDatabase db = RootieDatabase.getDatabase(context);
+            List<CommunityPostEntity> posts = db.communityDao().getPostsByAuthorSync(userId.trim());
+            if (posts != null && !posts.isEmpty()) {
+                for (CommunityPostEntity post : posts) {
+                    post.setAuthorAvatarUrl(avatarUrl.trim());
+                }
+                db.communityDao().insertPosts(posts);
+            }
+            List<ReelEntity> reels = db.communityDao().getReelsByAuthorSync(userId.trim());
+            if (reels != null && !reels.isEmpty()) {
+                for (ReelEntity reel : reels) {
+                    reel.setAuthorAvatarUrl(avatarUrl.trim());
+                }
+                db.communityDao().insertReels(reels);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String normalizeUsernameForStorage(@Nullable String username) {
+        if (username == null) {
+            return "";
+        }
+        return username.replace("@", "").trim();
     }
 
     private static String resolveRemoteAvatarForSync(Context context) {
@@ -284,6 +499,10 @@ public class SyncDataHelper {
 
                 RootieDatabase.getDatabase(context).userDao().insertUserSync(user);
                 success = new FirestoreService().updateUserAvatar(userId, remoteUrl);
+                if (success) {
+                    propagateAvatarToCommunityBlocking(context, remoteUrl);
+                    ProfileUpdateNotifier.notifyUpdated();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -368,11 +587,6 @@ public class SyncDataHelper {
                 firestoreService.clearOldAffiliateData();
                 firestoreService.wipeCollection("skin_bookings");
 
-                String productsJson = reader.readAsset("products.json");
-                if (productsJson != null) {
-                    firestoreService.forceSyncProductsFromJson(productsJson);
-                }
-
                 String postsJson = reader.readAsset("community_posts.json");
                 String newsJson = reader.readAsset("community_news.json");
                 if (postsJson != null && newsJson != null) {
@@ -409,18 +623,13 @@ public class SyncDataHelper {
                 if (messageTemplateJson != null && usersJson != null) {
                     List<com.veganbeauty.app.data.local.entities.ConversationEntity> allMessages =
                             com.veganbeauty.app.features.community.CommunityMessageSeeder
-                                    .buildAllPersonalizedConversations(messageTemplateJson, usersJson);
+                                     .buildAllPersonalizedConversations(messageTemplateJson, usersJson);
                     if (!allMessages.isEmpty()) {
                         firestoreService.syncCommunityMessagesFromJson(
                                 new com.google.gson.Gson().toJson(allMessages),
                                 true
                         );
                     }
-                }
-
-                String ordersJson = reader.readAsset("orders.json");
-                if (ordersJson != null) {
-                    firestoreService.syncOrders(reader.getAllOrders());
                 }
 
                 success = true;

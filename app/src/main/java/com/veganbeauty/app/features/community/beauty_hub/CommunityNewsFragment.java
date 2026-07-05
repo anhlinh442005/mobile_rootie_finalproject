@@ -51,6 +51,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import kotlinx.coroutines.flow.Flow;
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
+
 public class CommunityNewsFragment extends RootieFragment {
 
     private static final String FANPAGE_URL = RootieBrandHelper.FANPAGE_URL;
@@ -562,6 +565,11 @@ public class CommunityNewsFragment extends RootieFragment {
     @Override
     public void observeViewModel() {
         // Not used
+    }
+
+    @Override
+    protected Flow<Integer> getUnreadCountFlow(Context context) {
+        return CommunityNotificationRepository.getInstance(context).getUnreadCount();
     }
 
     @Override

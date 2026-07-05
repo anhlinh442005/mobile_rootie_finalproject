@@ -230,11 +230,7 @@ public class ShopSearchFragment extends RootieFragment {
         ShopSearchHistoryHelper.add(requireContext(), query);
         populateSearchHistory();
 
-        ShopListFragment fragment = new ShopListFragment();
-        Bundle args = new Bundle();
-        args.putString("SEARCH_QUERY", query);
-        args.putString("CATEGORY_NAME", "Tất cả");
-        fragment.setArguments(args);
+        ShopSearchResultsFragment fragment = ShopSearchResultsFragment.newInstance(query);
 
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)

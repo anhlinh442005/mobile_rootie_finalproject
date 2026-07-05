@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="310dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    app:cardCornerRadius="24dp"
-    app:cardElevation="0dp"
-    app:cardBackgroundColor="#FEFBF4"
-    app:cardUseCompatPadding="false">
+    android:padding="32dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <androidx.cardview.widget.CardView
+        android:layout_width="280dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="24dp">
+        android:layout_gravity="center"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#FEFBF4"
+        app:cardUseCompatPadding="false">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="20dp">
 
         <!-- Header Area: Centered Premium Lotus Badge with Floating Sparkles -->
         <FrameLayout
+            android:id="@+id/layout_badge"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginTop="8dp"
@@ -28,7 +38,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center"
-                android:background="@drawable/com_bg_post"
+                android:background="@drawable/bg_circle_white"
                 android:backgroundTint="#0D3E4D44" />
 
             <!-- Inner soft ring -->
@@ -36,7 +46,7 @@
                 android:layout_width="76dp"
                 android:layout_height="76dp"
                 android:layout_gravity="center"
-                android:background="@drawable/com_bg_post"
+                android:background="@drawable/bg_circle_white"
                 android:backgroundTint="#1A3E4D44">
 
                 <!-- Main Dark Green Badge -->
@@ -44,7 +54,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:background="@drawable/com_bg_post"
+                    android:background="@drawable/bg_circle_white"
                     android:backgroundTint="#3E4D44">
 
                     <!-- Lotus Line Art -->
@@ -134,22 +144,20 @@
                 android:letterSpacing="0.03" />
         </LinearLayout>
 
-        <!-- Cancel Text Link -->
-        <TextView
+        </LinearLayout>
+
+        <ImageView
             android:id="@+id/btn_dialog_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="ĐỂ SAU"
-            android:textColor="#7E8A83"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/lexend"
-            android:letterSpacing="0.05"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="#A0A0A0"
             android:clickable="true"
             android:focusable="true"
-            android:background="?attr/selectableItemBackground" />
-
-    </LinearLayout>
+            android:background="?attr/selectableItemBackgroundBorderless" />
+    </FrameLayout>
 </androidx.cardview.widget.CardView>
+</FrameLayout>

@@ -17,11 +17,15 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.ConversationEntity;
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 import com.veganbeauty.app.databinding.ComFragmentMessageBinding;
+import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.utils.ComBottomNavHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import kotlinx.coroutines.flow.Flow;
 
 public class CommunityMessageFragment extends RootieFragment {
 
@@ -57,6 +61,14 @@ public class CommunityMessageFragment extends RootieFragment {
             if (currentUserId == null) currentUserId = "";
 
             binding.btnHome.setOnClickListener(v -> ComBottomNavHelper.navigateToAppHome(this));
+
+            binding.ivNotification.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                        .replace(R.id.main_container, new CommunityNotificationFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
 
             activeUserAdapter = new ActiveUserAdapter(new ArrayList<>(), currentUserId, conv -> openChat(conv.getId()));
             binding.rvActiveUsers.setLayoutManager(new LinearLayoutManager(ctx, LinearLayoutManager.HORIZONTAL, false));
@@ -198,6 +210,11 @@ public class CommunityMessageFragment extends RootieFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected Flow<Integer> getUnreadCountFlow(Context context) {
+        return CommunityNotificationRepository.getInstance(context).getUnreadCount();
     }
 
     @Override

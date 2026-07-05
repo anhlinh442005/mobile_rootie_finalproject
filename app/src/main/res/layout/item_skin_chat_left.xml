@@ -44,6 +44,15 @@
                 android:lineSpacingExtra="3dp"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:text="Chào bạn, mình giúp gì cho bạn?" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivMessageImage"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/RoundedImageView4dp" />
         </LinearLayout>
 
         <!-- Time -->

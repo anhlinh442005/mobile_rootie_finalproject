@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/lexend"
             android:text="Nhắc hẹn chăm da"
-            android:textColor="#000000"
+            android:textColor="@color/primary"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -65,14 +65,15 @@
 
     <!-- Scrollable content area -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/reminder_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        android:scrollbars="none"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:fillViewport="true"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -197,7 +198,7 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/be_vietnam_pro"
                                     android:text="5"
-                                    android:textColor="@color/primary"
+                                    android:textColor="#FF5722"
                                     android:textSize="45sp"
                                     android:textStyle="bold" />
 
@@ -217,8 +218,8 @@
                         <ImageView
                             android:layout_width="50dp"
                             android:layout_height="50dp"
+                            android:scaleType="fitCenter"
                             android:src="@drawable/ic_fire"
-                            app:tint="#FF5722"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true" />
                     </RelativeLayout>
@@ -349,14 +350,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="47dp"
                             android:background="@drawable/skin_bg_btn_green"
+                            android:gravity="center"
                             android:text="Bắt đầu Routine"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
                             android:textSize="16sp"
                             android:fontFamily="@font/be_vietnam_pro"
                             android:textStyle="bold"
-                            android:drawableStart="@drawable/ic_leaf"
-                            android:drawablePadding="8dp"
                             android:paddingStart="16dp"
                             android:paddingEnd="16dp" />
                     </LinearLayout>
@@ -463,14 +463,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="47dp"
                             android:background="@drawable/skin_bg_btn_green"
+                            android:gravity="center"
                             android:text="Bắt đầu Routine"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
                             android:textSize="16sp"
                             android:fontFamily="@font/be_vietnam_pro"
                             android:textStyle="bold"
-                            android:drawableStart="@drawable/ic_leaf"
-                            android:drawablePadding="8dp"
                             android:paddingStart="16dp"
                             android:paddingEnd="16dp" />
                     </LinearLayout>
@@ -529,7 +528,8 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_calendar" />
+                    android:src="@drawable/ic_calendar"
+                    app:tint="@color/primary" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -567,21 +567,23 @@
                 android:layout_height="61dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/com_bg_post"
+                android:background="@drawable/skin_bg_reward_card_pending"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="12dp">
 
                 <FrameLayout
+                    android:id="@+id/flMorningRewardIcon"
                     android:layout_width="41dp"
                     android:layout_height="41dp"
-                    android:background="@drawable/skin_bg_circle_grey">
+                    android:background="@drawable/skin_bg_reward_icon_pending">
 
                     <ImageView
+                        android:id="@+id/ivMorningRewardIcon"
                         android:layout_width="17dp"
                         android:layout_height="17dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_sun"
-                        app:tint="#3E4D44" />
+                        app:tint="@color/primary" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -592,20 +594,22 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvMorningRewardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="MORNING REWARD"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/primary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvMorningRewardSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="Hoàn thành sáng"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/secondary"
                         android:textSize="10sp" />
                 </LinearLayout>
 
@@ -634,7 +638,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="+ 10 xu"
-                            android:textColor="#FFCC00"
+                            android:textColor="@color/reward_gold"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -657,21 +661,23 @@
                 android:layout_height="61dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/com_bg_post"
+                android:background="@drawable/skin_bg_reward_card_pending"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="12dp">
 
                 <FrameLayout
+                    android:id="@+id/flEveningRewardIcon"
                     android:layout_width="41dp"
                     android:layout_height="41dp"
-                    android:background="@drawable/skin_bg_circle_grey">
+                    android:background="@drawable/skin_bg_reward_icon_pending">
 
                     <ImageView
+                        android:id="@+id/ivEveningRewardIcon"
                         android:layout_width="17dp"
                         android:layout_height="17dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_ai_outline"
-                        app:tint="#3E4D44" />
+                        app:tint="@color/primary" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -682,20 +688,22 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvEveningRewardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="EVENING REWARD"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/primary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvEveningRewardSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="Hoàn thành tối"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/secondary"
                         android:textSize="10sp" />
                 </LinearLayout>
 
@@ -724,7 +732,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="+ 10 xu"
-                            android:textColor="#FFCC00"
+                            android:textColor="@color/reward_gold"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -740,27 +748,30 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Reward Item 3: WEEKLY BONUS (Highlighted in brand green) -->
+            <!-- Reward Item 3: WEEKLY BONUS -->
             <LinearLayout
                 android:id="@+id/layoutWeeklyReward"
                 android:layout_width="match_parent"
                 android:layout_height="61dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/com_bg_tab_active"
+                android:background="@drawable/skin_bg_reward_card_pending"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="12dp">
 
                 <FrameLayout
+                    android:id="@+id/flWeeklyRewardIcon"
                     android:layout_width="41dp"
                     android:layout_height="41dp"
-                    android:background="@drawable/skin_bg_circle_grey">
+                    android:background="@drawable/skin_bg_reward_icon_pending">
 
                     <ImageView
+                        android:id="@+id/ivWeeklyRewardIcon"
                         android:layout_width="13dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_star" />
+                        android:src="@drawable/ic_star"
+                        app:tint="@color/primary" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -771,20 +782,22 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvWeeklyRewardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="WEEKLY BONUS"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/primary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvWeeklyRewardSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="Chuỗi 7 ngày"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/secondary"
                         android:textSize="10sp" />
                 </LinearLayout>
 
@@ -813,7 +826,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="+ 50 xu"
-                            android:textColor="#E1C02E"
+                            android:textColor="@color/reward_gold_weekly"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -836,20 +849,23 @@
                 android:layout_height="61dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/com_bg_post"
+                android:background="@drawable/skin_bg_reward_card_pending"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="12dp">
 
                 <FrameLayout
+                    android:id="@+id/flLoyaltyRewardIcon"
                     android:layout_width="41dp"
                     android:layout_height="41dp"
-                    android:background="@drawable/skin_bg_circle_grey">
+                    android:background="@drawable/skin_bg_reward_icon_pending">
 
                     <ImageView
+                        android:id="@+id/ivLoyaltyRewardIcon"
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_ai_outline" />
+                        android:src="@drawable/ic_ai_outline"
+                        app:tint="@color/primary" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -860,20 +876,22 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvLoyaltyRewardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="LOYALTY REWARD"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/primary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvLoyaltyRewardSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="Duy trì tháng"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/secondary"
                         android:textSize="10sp" />
                 </LinearLayout>
 
@@ -902,7 +920,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="+ 200 xu"
-                            android:textColor="#FFCC00"
+                            android:textColor="@color/reward_gold"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -925,22 +943,25 @@
                 android:layout_height="61dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/com_bg_post"
+                android:background="@drawable/skin_bg_reward_card_pending"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="12dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <FrameLayout
+                    android:id="@+id/flSocialRewardIcon"
                     android:layout_width="41dp"
                     android:layout_height="41dp"
-                    android:background="@drawable/skin_bg_circle_grey">
+                    android:background="@drawable/skin_bg_reward_icon_pending">
 
                     <ImageView
+                        android:id="@+id/ivSocialRewardIcon"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_plane" />
+                        android:src="@drawable/ic_plane"
+                        app:tint="@color/primary" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -951,20 +972,22 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvSocialRewardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="SOCIAL TASK"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/primary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvSocialRewardSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="Kết nối bạn bè"
-                        android:textColor="#3E4D44"
+                        android:textColor="@color/secondary"
                         android:textSize="10sp" />
                 </LinearLayout>
 
@@ -993,7 +1016,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
                             android:text="+ 10 xu"
-                            android:textColor="#FFCC00"
+                            android:textColor="@color/reward_gold"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>

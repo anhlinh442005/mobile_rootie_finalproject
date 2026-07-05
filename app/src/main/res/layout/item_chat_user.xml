@@ -29,6 +29,15 @@
             android:textSize="14sp"
             android:lineSpacingMultiplier="1.2"
             android:text="Chào Rootie, mình là Khánh Bình đây..." />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivUserMessageImage"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/RoundedImageView4dp" />
     </LinearLayout>
 
     <!-- Message Time -->

@@ -102,8 +102,8 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<MyGiftsAdapter.ViewHold
                     actionBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2D3A34")));
                     break;
                 case "Hết hạn":
-                    badge.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ECEFF1")));
-                    badge.setTextColor(Color.parseColor("#7E8A83"));
+                    badge.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.status_cancelled_bg)));
+                    badge.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.status_cancelled_text));
                     actionBtn.setVisibility(View.GONE);
                     break;
                 default:
@@ -126,9 +126,11 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<MyGiftsAdapter.ViewHold
             }
             img.setImageResource(iconRes);
             img.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.primary)));
-            imgCircle.setBackgroundResource(R.drawable.bg_circle_light_green);
+            imgCircle.setBackgroundResource(R.drawable.bg_circle_grey);
 
-            itemView.setOnClickListener(v -> onClick.onClick(gift));
+            itemView.setAlpha(isExpired ? 0.5f : 1f);
+            itemView.setClickable(!isExpired);
+            itemView.setOnClickListener(isExpired ? null : v -> onClick.onClick(gift));
             actionBtn.setOnClickListener(v -> onAction.onClick(gift));
         }
     }

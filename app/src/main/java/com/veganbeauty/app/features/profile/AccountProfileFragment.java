@@ -42,6 +42,7 @@ import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.utils.AvatarLoader;
 import com.veganbeauty.app.utils.NavAppUtils;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.ProfileUpdateNotifier;
 import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.util.List;
@@ -55,6 +56,8 @@ public class AccountProfileFragment extends RootieFragment {
 
     private AccountProfileBinding binding;
     private OrderRepository orderRepository;
+
+    private final ProfileUpdateNotifier.Listener profileUpdateListener = () -> refreshProfileUiFromSession();
 
     @Nullable
     @Override
@@ -71,7 +74,9 @@ public class AccountProfileFragment extends RootieFragment {
         HomeHeaderHelper.setup(this, binding.getRoot());
 
         if (isLoggedIn) {
+            ProfileSessionHelper.restoreLocalAvatarIfPresent(ctx);
             bindProfileAvatar(ctx);
+            refreshProfileUiFromSession();
             loadUserProfileData(ctx);
         } else {
             AvatarLoader.loadAvatar(binding.ivAvatar, "");
@@ -200,6 +205,7 @@ public class AccountProfileFragment extends RootieFragment {
         }
 
         NavAppUtils.setupNavApp(this, view, R.id.nav_account);
+        ProfileUpdateNotifier.addListener(profileUpdateListener);
 
         binding.btnSkinWeather.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(
@@ -355,6 +361,19 @@ public class AccountProfileFragment extends RootieFragment {
                 });
     }
 
+    private void refreshProfileUiFromSession() {
+        if (binding == null || !isAdded()) {
+            return;
+        }
+        Context ctx = requireContext();
+        if (!ProfileSession.isLoggedIn(ctx)) {
+            return;
+        }
+        bindProfileAvatar(ctx);
+        binding.tvUsername.setText(ProfileSession.getFullName(ctx));
+        binding.tvEmail.setText(ProfileSession.getEmail(ctx));
+    }
+
     private void bindProfileAvatar(Context ctx) {
         if (binding == null) {
             return;
@@ -366,28 +385,19 @@ public class AccountProfileFragment extends RootieFragment {
     private void loadUserProfileData(Context ctx) {
         new Thread(() -> {
             try {
-                SyncDataHelper.pullUserProfileFromFirestoreSync(ctx);
                 ProfileSessionHelper.ensureCurrentUserInDatabase(ctx);
 
                 UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
                 if (user != null) {
-                    ProfileSessionHelper.syncSessionFromUser(ctx, user);
+                    user.setFull_name(ProfileSession.getFullName(ctx));
+                    user.setUsername(ProfileSession.getUsername(ctx).replace("@", "").trim());
+                    user.setEmail(ProfileSession.getEmail(ctx));
+                    user.setPhone(ProfileSession.getPhone(ctx));
+                    RootieDatabase.getDatabase(ctx).userDao().insertUserSync(user);
                 }
 
-                String avatarUrl = ProfileSessionHelper.getAccountProfileAvatarUrl(ctx);
-                String fallbackUrl = user != null && user.getPrimary_image() != null
-                        ? user.getPrimary_image().trim()
-                        : "";
-
                 if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        if (binding == null || !isAdded()) {
-                            return;
-                        }
-                        AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl, fallbackUrl);
-                        binding.tvUsername.setText(ProfileSession.getFullName(ctx));
-                        binding.tvEmail.setText(ProfileSession.getEmail(ctx));
-                    });
+                    getActivity().runOnUiThread(() -> refreshProfileUiFromSession());
                 }
 
                 if (orderRepository == null) {
@@ -458,23 +468,18 @@ public class AccountProfileFragment extends RootieFragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public void onResume() {
+        super.onResume();
+        if (binding != null && ProfileSession.isLoggedIn(requireContext())) {
+            ProfileSessionHelper.restoreLocalAvatarIfPresent(requireContext());
+        }
+        refreshProfileUiFromSession();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (binding != null) {
-            Context ctx = requireContext();
-            boolean isLoggedIn = ProfileSession.INSTANCE.isLoggedIn(ctx);
-            if (isLoggedIn) {
-                bindProfileAvatar(ctx);
-                loadUserProfileData(ctx);
-            } else {
-                AvatarLoader.loadAvatar(binding.ivAvatar, "");
-            }
-        }
+    public void onDestroyView() {
+        ProfileUpdateNotifier.removeListener(profileUpdateListener);
+        super.onDestroyView();
+        binding = null;
     }
 }
