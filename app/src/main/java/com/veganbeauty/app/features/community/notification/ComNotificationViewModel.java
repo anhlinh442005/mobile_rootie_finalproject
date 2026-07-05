@@ -35,7 +35,7 @@ public class ComNotificationViewModel extends ViewModel {
 
     private final MutableLiveData<List<ComNotificationItem>> notifications = new MutableLiveData<>();
     private final MutableLiveData<List<ComNotificationListItem>> filteredNotifications = new MutableLiveData<>();
-    private final MutableLiveData<String> activeTab = new MutableLiveData<>("POST");
+    private final MutableLiveData<String> activeTab = new MutableLiveData<>("ALL");
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -341,12 +341,17 @@ public class ComNotificationViewModel extends ViewModel {
             allNotis = notifications.getValue();
         }
         if (allNotis == null) allNotis = new ArrayList<>();
-        String tab = activeTab.getValue() != null ? activeTab.getValue() : "POST";
+        String tab = activeTab.getValue() != null ? activeTab.getValue() : "ALL";
         String query = searchQuery.getValue() != null ? searchQuery.getValue() : "";
 
         List<ComNotificationItem> tabFiltered = new ArrayList<>();
         for (ComNotificationItem item : allNotis) {
-            if (item.getType().equals(tab)) tabFiltered.add(item);
+            if ("ORDER".equals(item.getType())) {
+                continue;
+            }
+            if ("ALL".equals(tab) || item.getType().equals(tab)) {
+                tabFiltered.add(item);
+            }
         }
 
         List<ComNotificationItem> searchFiltered;

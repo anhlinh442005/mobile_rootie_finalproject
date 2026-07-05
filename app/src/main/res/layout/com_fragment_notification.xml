@@ -113,7 +113,7 @@
         app:layout_constraintTop_toBottomOf="@id/layoutSearch">
 
         <TextView
-            android:id="@+id/tabPosts"
+            android:id="@+id/tabAll"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -124,12 +124,12 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:paddingVertical="10dp"
-            android:text="Bài viết"
+            android:text="Tất cả"
             android:textColor="@color/white"
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/tabInteractions"
+            android:id="@+id/tabPosts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -140,12 +140,12 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:paddingVertical="10dp"
-            android:text="Tương tác"
+            android:text="Bài viết"
             android:textColor="@color/primary"
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/tabOrders"
+            android:id="@+id/tabInteractions"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -156,7 +156,7 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:paddingVertical="10dp"
-            android:text="Đơn hàng"
+            android:text="Tương tác"
             android:textColor="@color/primary"
             android:textSize="14sp" />
 

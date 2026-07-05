@@ -139,9 +139,9 @@ public class CommunityNotificationFragment extends RootieFragment {
 
         _binding.rvNotifications.setAdapter(adapter);
 
+        _binding.tabAll.setOnClickListener(v -> viewModel.selectTab("ALL"));
         _binding.tabPosts.setOnClickListener(v -> viewModel.selectTab("POST"));
         _binding.tabInteractions.setOnClickListener(v -> viewModel.selectTab("INTERACTION"));
-        _binding.tabOrders.setOnClickListener(v -> viewModel.selectTab("ORDER"));
 
         String userAvatar = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getAvatar(requireContext());
         if (userAvatar != null && !userAvatar.isEmpty()) {
@@ -246,20 +246,20 @@ public class CommunityNotificationFragment extends RootieFragment {
     }
 
     private void updateTabStyles(String activeTab) {
+        boolean allActive = "ALL".equals(activeTab);
         boolean postsActive = "POST".equals(activeTab);
         boolean interactionsActive = "INTERACTION".equals(activeTab);
-        boolean ordersActive = "ORDER".equals(activeTab);
 
+        _binding.tabAll.setBackgroundResource(allActive ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
         _binding.tabPosts.setBackgroundResource(postsActive ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
         _binding.tabInteractions.setBackgroundResource(interactionsActive ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
-        _binding.tabOrders.setBackgroundResource(ordersActive ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
 
         int whiteColor = ContextCompat.getColor(requireContext(), R.color.white);
         int primaryColor = ContextCompat.getColor(requireContext(), R.color.primary);
 
+        _binding.tabAll.setTextColor(allActive ? whiteColor : primaryColor);
         _binding.tabPosts.setTextColor(postsActive ? whiteColor : primaryColor);
         _binding.tabInteractions.setTextColor(interactionsActive ? whiteColor : primaryColor);
-        _binding.tabOrders.setTextColor(ordersActive ? whiteColor : primaryColor);
     }
 
     @Override
