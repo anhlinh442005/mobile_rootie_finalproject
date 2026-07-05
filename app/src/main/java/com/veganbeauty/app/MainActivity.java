@@ -748,7 +748,7 @@ public class MainActivity extends AppCompatActivity {
 
                         ImageView arrowIcon = findViewById(R.id.skin_ai_floating_chat_head_arrow_icon);
                         if (arrowIcon != null) {
-                            arrowIcon.setImageResource(isLeft ? R.drawable.ic_chevron_right : R.drawable.ic_chevron_left);
+                            arrowIcon.setImageResource(isLeft ? R.drawable.ic_arrow_next : R.drawable.ic_arrow_back);
                         }
 
                         chatHeadArrow.setVisibility(View.VISIBLE);

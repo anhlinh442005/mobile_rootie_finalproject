@@ -20,7 +20,7 @@
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Quay lại"
-            android:src="@drawable/ic_arrow_back_thin"
+            android:src="@drawable/ic_arrow_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -371,7 +371,7 @@
                         android:layout_height="20dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/ic_chevron_right"
+                        android:src="@drawable/ic_arrow_next"
                         app:tint="@color/primary" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>

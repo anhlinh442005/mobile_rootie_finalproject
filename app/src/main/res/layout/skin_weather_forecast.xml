@@ -38,7 +38,7 @@
                     android:layout_height="32dp"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_arrow_back_thin"
+                    android:src="@drawable/ic_arrow_back"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
@@ -1014,7 +1014,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/ic_dashed_arrow_down" />
+                    android:src="@drawable/ic_arrow_dashed_down" />
 
                 <!-- Card 2: Vitamin C Serum -->
                 <LinearLayout
@@ -1076,7 +1076,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/ic_dashed_arrow_down" />
+                    android:src="@drawable/ic_arrow_down" />
 
                 <!-- Card 3: Moisturizer Gel -->
                 <LinearLayout
@@ -1138,7 +1138,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/ic_dashed_arrow_down" />
+                    android:src="@drawable/ic_arrow_dashed_down" />
 
                 <!-- Card 4: SPF 50+ -->
                 <LinearLayout

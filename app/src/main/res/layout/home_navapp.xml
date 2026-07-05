@@ -8,6 +8,11 @@
     android:background="@android:color/transparent"
     tools:showIn="@layout/home_fragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/home_nav_content_height"
@@ -151,7 +156,7 @@
                     android:layout_height="24dp"
                     android:contentDescription="Cá nhân"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_account" />
+                    android:src="@drawable/ic_account_outline" />
 
                 <TextView
                     android:id="@+id/tv_nav_account"
@@ -219,5 +224,13 @@
             app:layout_constraintTop_toTopOf="@id/nav_myskin" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/nav_bottom_inset_fill"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white" />
+
+    </LinearLayout>
 
 </com.veganbeauty.app.ui.widget.BottomNavContainer>

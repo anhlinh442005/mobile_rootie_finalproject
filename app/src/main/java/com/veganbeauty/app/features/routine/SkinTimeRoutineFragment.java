@@ -1,5 +1,6 @@
 package com.veganbeauty.app.features.routine;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.LifecycleOwnerKt;
 
 import com.veganbeauty.app.R;
@@ -222,8 +224,13 @@ public class SkinTimeRoutineFragment extends RootieFragment {
             String stepId = routineType + "_" + step.getIndex();
             boolean isStepCompleted = completedSteps.contains(stepId) || isSubmitted;
 
-            if (isStepCompleted) stepBinding.ivCheckbox.setImageResource(R.drawable.quiz_ic_selected);
-            else stepBinding.ivCheckbox.setImageResource(R.drawable.skin_ic_circle_unchecked);
+            if (isStepCompleted) {
+                stepBinding.ivCheckbox.setImageResource(R.drawable.ic_circle_checked);
+                ImageViewCompat.setImageTintList(stepBinding.ivCheckbox, ColorStateList.valueOf(0xFF3E4D44));
+            } else {
+                stepBinding.ivCheckbox.setImageResource(R.drawable.ic_circle);
+                ImageViewCompat.setImageTintList(stepBinding.ivCheckbox, ColorStateList.valueOf(0xFFD9D9D9));
+            }
 
             ProductEntity matchedProduct = stepProducts.get(step.getIndex());
             if (matchedProduct != null) {
@@ -400,13 +407,13 @@ public class SkinTimeRoutineFragment extends RootieFragment {
 
     private int getStepIconRes(String name) {
         String lower = name.toLowerCase();
-        if (lower.contains("cleanser") || lower.contains("sữa rửa mặt") || lower.contains("rửa mặt")) return R.drawable.skin_ic_step_water_drop;
+        if (lower.contains("cleanser") || lower.contains("sữa rửa mặt") || lower.contains("rửa mặt")) return R.drawable.ic_water_drop_outline;
         if (lower.contains("toner") || lower.contains("nước hoa hồng") || lower.contains("cân bằng")) return R.drawable.skin_ic_step_ph;
         if (lower.contains("serum") || lower.contains("tinh chất")) return R.drawable.skin_ic_step_chemistry;
-        if (lower.contains("moisturizer") || lower.contains("kem dưỡng ẩm") || lower.contains("dưỡng ẩm") || lower.contains("khóa ẩm")) return R.drawable.skin_ic_step_face;
+        if (lower.contains("moisturizer") || lower.contains("kem dưỡng ẩm") || lower.contains("dưỡng ẩm") || lower.contains("khóa ẩm")) return R.drawable.ic_face;
         if (lower.contains("sunscreen") || lower.contains("chống nắng") || lower.contains("kem chống nắng")) return R.drawable.skin_ic_step_sunscreen;
-        if (lower.contains("makeup remover") || lower.contains("tẩy trang")) return R.drawable.skin_ic_step_water_drop;
-        return R.drawable.skin_ic_step_face;
+        if (lower.contains("makeup remover") || lower.contains("tẩy trang")) return R.drawable.ic_water_drop_outline;
+        return R.drawable.ic_face;
     }
 
     @Override

@@ -57,7 +57,7 @@
                 android:id="@+id/ivSelectAll"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/ic_cart_unchecked" />
+                android:src="@drawable/ic_circle" />
 
             <TextView
                 android:id="@+id/tvSelectAllLabel"
@@ -130,7 +130,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/ic_chevron_right"
+                android:src="@drawable/ic_arrow_next"
                 app:tint="@color/primary" />
         </LinearLayout>
 
@@ -311,7 +311,7 @@
                     android:id="@+id/ivPriceToggleArrow"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:src="@drawable/ic_chevron_right"
+                    android:src="@drawable/ic_arrow_next"
                     android:rotation="270"
                     android:layout_marginStart="4dp"
                     app:tint="@color/primary" />

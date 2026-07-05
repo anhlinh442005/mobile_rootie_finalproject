@@ -412,10 +412,10 @@ public class ShopVoucherFragment extends RootieFragment {
                 expiry.setText(item.expiryText);
 
                 if (isSelected) {
-                    selectIndicator.setImageResource(R.drawable.ic_cart_checked);
+                    selectIndicator.setImageResource(R.drawable.ic_circle_checked);
                     selectIndicator.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
                 } else {
-                    selectIndicator.setImageResource(R.drawable.ic_cart_unchecked);
+                    selectIndicator.setImageResource(R.drawable.ic_circle);
                     selectIndicator.setImageTintList(ColorStateList.valueOf(Color.parseColor("#807F7F")));
                 }
 

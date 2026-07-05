@@ -27,7 +27,8 @@
             android:layout_marginTop="2dp"
             android:clickable="true"
             android:focusable="true"
-            android:src="@drawable/skin_ic_checkbox_checked" />
+            android:src="@drawable/ic_checkbox_checked"
+            app:tint="@color/primary" />
 
         <!-- Step content container -->
         <LinearLayout

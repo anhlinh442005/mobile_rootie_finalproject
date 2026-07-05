@@ -44,6 +44,9 @@ public class FirestoreService {
     private final Gson gson = new Gson();
 
     public org.json.JSONArray getSkinHistory(String userEmail) {
+        if (userEmail == null || userEmail.trim().isEmpty()) {
+            return new org.json.JSONArray();
+        }
         try {
             // Because the json data uses userId like 'xuannk_001' or userEmail, we query by userId/email.
             // Here we check both or just 'userEmail' for simplicity.

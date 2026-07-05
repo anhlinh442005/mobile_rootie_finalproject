@@ -287,9 +287,11 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
             }
         }
         if (allSelected) {
-            _binding.ivSelectAll.setImageResource(R.drawable.ic_cart_checked);
+            _binding.ivSelectAll.setImageResource(R.drawable.ic_circle_checked);
+            _binding.ivSelectAll.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
         } else {
-            _binding.ivSelectAll.setImageResource(R.drawable.ic_cart_unchecked);
+            _binding.ivSelectAll.setImageResource(R.drawable.ic_circle);
+            _binding.ivSelectAll.setImageTintList(null);
         }
     }
 

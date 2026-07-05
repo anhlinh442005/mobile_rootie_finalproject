@@ -18,7 +18,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_chevron_left"
+            android:src="@drawable/ic_arrow_back"
             app:tint="@color/primary" />
 
         <TextView
@@ -58,7 +58,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_contact"
+                    android:src="@drawable/ic_circle_account"
                     android:background="@drawable/com_bg_circle_gray"
                     android:padding="12dp"
                     app:tint="@color/primary"/>
@@ -102,7 +102,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="12dp"
-                    android:src="@drawable/ic_close"
+                    android:src="@drawable/ic_cancel"
                     app:tint="@color/primary"/>
             </LinearLayout>
 

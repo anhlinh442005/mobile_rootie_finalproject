@@ -18,11 +18,6 @@ import com.veganbeauty.app.features.shop.search.ShopSearchFragment;
 
 import java.util.List;
 
-import kotlin.coroutines.Continuation;
-import kotlin.coroutines.CoroutineContext;
-import kotlin.coroutines.EmptyCoroutineContext;
-import kotlinx.coroutines.flow.FlowCollector;
-
 public final class HomeHeaderHelper {
 
     private HomeHeaderHelper() {
@@ -110,37 +105,12 @@ public final class HomeHeaderHelper {
     }
 
     private static void bindNotificationBadge(Fragment fragment, TextView badge) {
-        new Thread(() -> {
-            try {
-                Thread.sleep(300);
-                Context ctx = fragment.getContext();
-                if (ctx == null) return;
-
-                NotificationRepository.getInstance(ctx)
-                        .getUnreadCount()
-                        .collect(new FlowCollector<Integer>() {
-                            @Override
-                            public Object emit(Integer count, Continuation<? super kotlin.Unit> continuation) {
-                                if (fragment.getActivity() != null) {
-                                    fragment.getActivity().runOnUiThread(() ->
-                                            NotificationBadgeHelper.updateBadgeCount(badge, count)
-                                    );
-                                }
-                                return kotlin.Unit.INSTANCE;
-                            }
-                        }, new Continuation<kotlin.Unit>() {
-                            @Override
-                            public CoroutineContext getContext() {
-                                return EmptyCoroutineContext.INSTANCE;
-                            }
-
-                            @Override
-                            public void resumeWith(Object o) {
-                            }
-                        });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        if (fragment.getContext() == null) {
+            return;
+        }
+        FlowLiveDataConversions.asLiveData(
+                NotificationRepository.getInstance(fragment.requireContext()).getUnreadCount()
+        ).observe(fragment.getViewLifecycleOwner(), count ->
+                NotificationBadgeHelper.updateBadgeCount(badge, count));
     }
 }

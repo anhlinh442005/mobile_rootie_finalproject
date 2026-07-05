@@ -2,6 +2,7 @@ package com.veganbeauty.app.features.routine;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -383,11 +384,11 @@ public class SkinCalendarFragment extends RootieFragment {
                     tvName.setText(step.getName());
                     boolean isTicked = morningTickedIds.contains("morning_" + step.getIndex());
                     if (isTicked) {
-                        imvCheck.setImageResource(R.drawable.ic_check_circle);
-                        imvCheck.setImageTintList(null);
+                        imvCheck.setImageResource(R.drawable.ic_circle_checked);
+                        imvCheck.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
                         tvName.setTextColor(Color.parseColor("#3E4D44"));
                     } else {
-                        imvCheck.setImageResource(R.drawable.ic_close_grey);
+                        imvCheck.setImageResource(R.drawable.ic_cancel);
                         imvCheck.setImageTintList(null);
                         tvName.setTextColor(Color.parseColor("#AEAEB2"));
                     }
@@ -418,11 +419,11 @@ public class SkinCalendarFragment extends RootieFragment {
                     tvName.setText(step.getName());
                     boolean isTicked = morningTickedIds.contains("evening_" + step.getIndex());
                     if (isTicked) {
-                        imvCheck.setImageResource(R.drawable.ic_check_circle);
-                        imvCheck.setImageTintList(null);
+                        imvCheck.setImageResource(R.drawable.ic_circle_checked);
+                        imvCheck.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
                         tvName.setTextColor(Color.parseColor("#3E4D44"));
                     } else {
-                        imvCheck.setImageResource(R.drawable.ic_close_grey);
+                        imvCheck.setImageResource(R.drawable.ic_cancel);
                         imvCheck.setImageTintList(null);
                         tvName.setTextColor(Color.parseColor("#AEAEB2"));
                     }

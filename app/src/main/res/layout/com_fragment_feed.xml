@@ -67,7 +67,7 @@
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:layout_marginStart="4dp"
-                android:src="@drawable/ic_chevron_down"
+                android:src="@drawable/ic_arrow_down"
                 app:tint="@color/primary" />
         </LinearLayout>
 

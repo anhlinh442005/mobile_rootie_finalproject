@@ -2,8 +2,15 @@ package com.veganbeauty.app.utils;
 
 import android.content.Context;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.data.local.entities.UserEntity;
+import com.veganbeauty.app.data.local.ProfileSession;
+
+import java.util.UUID;
+import java.io.File;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +37,34 @@ public class SyncDataHelper {
     }
 
     public static void syncUserProfileToFirebaseAndLocal(Context context) {
+        EXECUTOR.execute(() -> {
+            try {
+                String userId = ProfileSession.INSTANCE.getUserId(context);
+                if (userId == null || userId.isEmpty()) {
+                    userId = "user_" + UUID.randomUUID().toString();
+                    ProfileSession.INSTANCE.setUserId(context, userId);
+                }
+
+                UserEntity userEntity = new UserEntity(
+                        userId,
+                        ProfileSession.INSTANCE.getFullName(context), // Username fallback
+                        ProfileSession.INSTANCE.getFullName(context),
+                        ProfileSession.INSTANCE.getEmail(context),
+                        ProfileSession.INSTANCE.getPhone(context),
+                        "", // Password not synced here
+                        ProfileSession.INSTANCE.getAvatar(context),
+                        null
+                );
+
+                // Must update local Room database FIRST so it doesn't get overridden by old data when UI resumes immediately
+                com.veganbeauty.app.data.local.RootieDatabase.getDatabase(context).userDao().insertUserSync(userEntity);
+
+                FirestoreService firestoreService = new FirestoreService();
+                firestoreService.saveUser(userEntity);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public interface UploadCallback {
@@ -37,7 +72,45 @@ public class SyncDataHelper {
     }
 
     public static void uploadAvatarToFirebase(Context context, android.net.Uri fileUri, UploadCallback callback) {
-        if (callback != null) callback.onResult(null);
+        if (fileUri == null) {
+            if (callback != null) callback.onResult(null);
+            return;
+        }
+
+        EXECUTOR.execute(() -> {
+            try {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                String fileName = "avatars/avatar_" + UUID.randomUUID().toString() + ".jpg";
+                StorageReference ref = storage.getReference().child(fileName);
+                
+                android.net.Uri uriToUpload = fileUri;
+                if (fileUri.toString().startsWith("file://")) {
+                    File file = new File(fileUri.getPath());
+                    uriToUpload = android.net.Uri.fromFile(file);
+                }
+                
+                ref.putFile(uriToUpload)
+                        .continueWithTask(task -> {
+                            if (!task.isSuccessful() && task.getException() != null) {
+                                throw task.getException();
+                            }
+                            return ref.getDownloadUrl();
+                        })
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                String downloadUrl = task.getResult().toString();
+                                // MUST save to session so the Save button will catch it
+                                ProfileSession.INSTANCE.setAvatar(context, downloadUrl);
+                                if (callback != null) callback.onResult(downloadUrl);
+                            } else {
+                                if (callback != null) callback.onResult(null);
+                            }
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (callback != null) callback.onResult(null);
+            }
+        });
     }
 
     /**

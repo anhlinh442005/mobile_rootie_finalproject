@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Cart icon for dark/green backgrounds (#47574B, primary, etc.) -->
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:gravity="center"
-    android:src="@drawable/ic_cart"
-    android:tint="@android:color/white" />

@@ -154,7 +154,7 @@
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="72dp"
-        android:src="@drawable/ic_double_chevron_up"
+        android:src="@drawable/ic_arrow_doubleup"
         app:tint="@color/primary"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"

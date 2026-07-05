@@ -40,7 +40,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="8dp"
-                    android:src="@drawable/ic_chevron_left"
+                    android:src="@drawable/ic_arrow_back"
                     app:tint="#02542D" />
 
                 <!-- Header Title -->
@@ -460,7 +460,7 @@
                                 android:layout_height="12dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerVertical="true"
-                                android:src="@drawable/ic_chevron_down"
+                                android:src="@drawable/ic_arrow_down"
                                 app:tint="#8E8E93" />
                         </RelativeLayout>
                     </LinearLayout>
@@ -501,7 +501,7 @@
                                 android:layout_height="12dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerVertical="true"
-                                android:src="@drawable/ic_chevron_down"
+                                android:src="@drawable/ic_arrow_down"
                                 app:tint="#8E8E93" />
                         </RelativeLayout>
                     </LinearLayout>

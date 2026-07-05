@@ -20,7 +20,7 @@
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_chevron_left"
+            android:src="@drawable/ic_arrow_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -109,7 +109,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_chevron_right"
+                        android:src="@drawable/ic_arrow_next"
                         app:tint="@color/content" />
                 </LinearLayout>
             </LinearLayout>
@@ -531,7 +531,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_chevron_right"
+                        android:src="@drawable/ic_arrow_next"
                         app:tint="@color/primary" />
                 </LinearLayout>
 
@@ -629,7 +629,8 @@
                         android:id="@+id/ivPaymentRadio"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_check_circle" />
+                        android:src="@drawable/ic_circle_checked"
+                        app:tint="@color/primary" />
 
                     <ImageView
                         android:id="@+id/ivPaymentMethodIcon"
@@ -931,7 +932,7 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_check_circle"
+                    android:src="@drawable/ic_circle_checked"
                     app:tint="@color/primary"
                     android:scaleType="fitCenter" />
             </FrameLayout>

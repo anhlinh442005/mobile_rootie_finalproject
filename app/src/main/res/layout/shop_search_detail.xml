@@ -19,7 +19,7 @@
             android:id="@+id/btnBack"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_chevron_left"
+            android:src="@drawable/ic_arrow_back"
             app:tint="@color/primary" />
 
         <LinearLayout
@@ -60,7 +60,7 @@
                 android:layout_height="16dp"
                 android:background="@drawable/bg_circle_grey"
                 android:padding="2dp"
-                android:src="@drawable/ic_close"
+                android:src="@drawable/ic_cancel"
                 app:tint="@color/content" />
         </LinearLayout>
     </LinearLayout>

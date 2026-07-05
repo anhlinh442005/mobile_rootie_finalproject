@@ -95,7 +95,7 @@
                 <ImageView
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:src="@drawable/ic_heart_outline"
+                    android:src="@drawable/ic_heart"
                     app:tint="#888888" />
                 <TextView
                     android:id="@+id/tvLikes"

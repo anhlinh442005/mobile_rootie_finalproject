@@ -2,6 +2,8 @@ package com.veganbeauty.app.ui.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -10,9 +12,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.veganbeauty.app.R;
+
 /**
- * Root wrapper for the custom bottom nav. Applies system navigation-bar insets
- * so the bar sits above the gesture area on all devices.
+ * Root wrapper for the custom bottom nav. The 104dp bar (notch, FAB, tabs) stays
+ * unchanged; a white fill below extends to the physical screen bottom.
  */
 public class BottomNavContainer extends FrameLayout {
 
@@ -34,9 +38,19 @@ public class BottomNavContainer extends FrameLayout {
     private void init() {
         setClipChildren(false);
         setClipToPadding(false);
-        ViewCompat.setOnApplyWindowInsetsListener(this, (view, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(this, (v, insets) -> {
             Insets navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
-            view.setPadding(0, 0, 0, navBars.bottom);
+            int bottomInset = navBars.bottom;
+            if (bottomInset == 0) {
+                bottomInset = insets.getInsetsIgnoringVisibility(
+                        WindowInsetsCompat.Type.navigationBars()).bottom;
+            }
+            View insetFill = findViewById(R.id.nav_bottom_inset_fill);
+            if (insetFill != null) {
+                ViewGroup.LayoutParams lp = insetFill.getLayoutParams();
+                lp.height = bottomInset;
+                insetFill.setLayoutParams(lp);
+            }
             return insets;
         });
     }

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -210,11 +211,13 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
 
     private void updateCheckboxUI(ImageView ivCheckbox, boolean isChecked) {
         if (isChecked) {
-            ivCheckbox.setImageResource(R.drawable.skin_ic_checkbox_checked);
+            ivCheckbox.setImageResource(R.drawable.ic_checkbox_checked);
+            ivCheckbox.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
             ivCheckbox.setBackground(null);
             ivCheckbox.setPadding(0, 0, 0, 0);
         } else {
-            ivCheckbox.setImageResource(R.drawable.skin_ic_checkbox_unchecked);
+            ivCheckbox.setImageResource(R.drawable.ic_checkbox_unchecked);
+            ivCheckbox.setImageTintList(ColorStateList.valueOf(Color.parseColor("#D9D9D9")));
             ivCheckbox.setBackground(null);
             ivCheckbox.setPadding(0, 0, 0, 0);
         }

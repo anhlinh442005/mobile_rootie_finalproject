@@ -130,7 +130,7 @@
                 android:id="@+id/iv_chevron"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/ic_chevron_right"
+                android:src="@drawable/ic_arrow_next"
                 app:tint="@color/tertiary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

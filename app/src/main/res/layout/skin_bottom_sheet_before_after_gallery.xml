@@ -17,7 +17,7 @@
             android:id="@+id/gallery_btn_close"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_close"
+            android:src="@drawable/ic_cancel"
             android:contentDescription="Đóng"
             android:tint="@color/primary" />
 
@@ -37,7 +37,7 @@
             android:id="@+id/gallery_btn_download"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_download"
+            android:src="@drawable/ic_dowload"
             android:contentDescription="Lưu ảnh"
             android:tint="@color/primary" />
     </LinearLayout>

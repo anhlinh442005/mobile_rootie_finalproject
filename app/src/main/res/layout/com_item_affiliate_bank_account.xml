@@ -14,7 +14,7 @@
         android:id="@+id/ivCheck"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/ic_check_circle"
+        android:src="@drawable/ic_circle_checked"
         app:tint="#6E846A" />
 
     <ImageView

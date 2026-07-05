@@ -431,7 +431,11 @@ public class AccountProfileEditFragment extends RootieFragment {
         progressToast.show();
 
         SyncDataHelper.uploadAvatarToFirebase(context, fileUri, downloadUrl -> {
-            if (getActivity() != null) {
+            if (downloadUrl != null) {
+                // Flush the new URL to Firestore and Room database automatically
+                SyncDataHelper.syncUserProfileToFirebaseAndLocal(context);
+            }
+            if (getActivity() != null && isAdded()) {
                 getActivity().runOnUiThread(() -> {
                     if (downloadUrl != null) {
                         loadAvatarImage(downloadUrl);

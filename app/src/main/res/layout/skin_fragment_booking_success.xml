@@ -14,7 +14,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:padding="10dp"
-        android:src="@drawable/ic_chevron_left"
+        android:src="@drawable/ic_arrow_back"
         app:tint="@color/primary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

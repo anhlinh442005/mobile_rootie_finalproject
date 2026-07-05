@@ -25,7 +25,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            android:src="@drawable/ic_arrow_back_thin"
+            android:src="@drawable/ic_arrow_back"
             app:tint="#02542D" />
 
         <!-- Title -->
@@ -176,7 +176,9 @@
                             android:id="@+id/pb_sensitivity"
                             style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="0dp"
-                            android:layout_height="8dp"
+                            android:layout_height="12dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:progress="80"
                             android:progressDrawable="@drawable/progress_sensitivity" />
@@ -210,7 +212,9 @@
                             android:id="@+id/pb_hydration"
                             style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="0dp"
-                            android:layout_height="8dp"
+                            android:layout_height="12dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:progress="60"
                             android:progressDrawable="@drawable/progress_hydration" />
@@ -244,7 +248,9 @@
                             android:id="@+id/pb_elasticity"
                             style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="0dp"
-                            android:layout_height="8dp"
+                            android:layout_height="12dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:progress="75"
                             android:progressDrawable="@drawable/progress_elasticity" />
@@ -278,7 +284,9 @@
                             android:id="@+id/pb_sebum"
                             style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="0dp"
-                            android:layout_height="8dp"
+                            android:layout_height="12dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:progress="85"
                             android:progressDrawable="@drawable/progress_oily" />
@@ -545,434 +553,307 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp" />
 
-                    <!-- Hydration Chart Row -->
+                                        <!-- hydration Compact Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="10dp"
                         android:background="@drawable/bg_expert_reason_card"
                         android:backgroundTint="#F7F9FA"
-                        android:padding="12dp">
+                        android:padding="14dp"
+                        android:gravity="center_vertical">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="💧 Độ ẩm da (Hydration)"
-                                android:textColor="#3E4D44"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/skin_compare_hydration_diff"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:fontFamily="@font/lexend"
-                                android:text="+0% (Duy trì)"
-                                android:textColor="#677559"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                        </RelativeLayout>
+                            android:fontFamily="@font/lexend"
+                            android:text="Độ ẩm da"
+                            android:drawableStart="@drawable/ic_skin_moisture"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="#3E4D44"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="6dp">
-                            <TextView
-                                android:layout_width="65dp"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Lần trước"
-                                android:textColor="#7E8A83"
-                                android:textSize="11sp" />
-                            <ProgressBar
-                                android:id="@+id/skin_compare_hydration_progress_old"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="6dp"
-                                android:layout_weight="1"
-                                android:progress="50"
-                                android:progressDrawable="@drawable/progress_compare_old" />
+                            android:gravity="center_vertical">
                             <TextView
                                 android:id="@+id/skin_compare_hydration_old"
-                                android:layout_width="35dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="end"
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#7E8A83"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                                android:textSize="13sp" />
                             <TextView
-                                android:layout_width="65dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Hiện tại"
-                                android:textColor="#3E4D44"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                            <ProgressBar
-                                android:id="@+id/skin_compare_hydration_progress"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:progress="50"
-                                android:progressDrawable="@drawable/progress_hydration" />
+                                android:layout_marginHorizontal="6dp"
+                                android:text="➔"
+                                android:textColor="#7E8A83"
+                                android:textSize="12sp" />
                             <TextView
                                 android:id="@+id/skin_compare_hydration_new"
-                                android:layout_width="35dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="end"
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#3E4D44"
                                 android:textStyle="bold"
-                                android:textSize="11sp" />
+                                android:textSize="13sp" />
                         </LinearLayout>
-                    </LinearLayout>
 
-                    <!-- Sebum Chart Row -->
+                        <TextView
+                            android:id="@+id/skin_compare_hydration_diff"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:fontFamily="@font/lexend"
+                            android:text="+0%"
+                            android:textColor="#677559"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <!-- sebum Compact Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="10dp"
                         android:background="@drawable/bg_expert_reason_card"
                         android:backgroundTint="#F7F9FA"
-                        android:padding="12dp">
+                        android:padding="14dp"
+                        android:gravity="center_vertical">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="🧪 Độ dầu (Sebum)"
-                                android:textColor="#3E4D44"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/skin_compare_sebum_diff"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:fontFamily="@font/lexend"
-                                android:text="+0% (Duy trì)"
-                                android:textColor="#677559"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                        </RelativeLayout>
+                            android:fontFamily="@font/lexend"
+                            android:text="Độ dầu (Sebum)"
+                            android:drawableStart="@drawable/quiz_ic_option_oily"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="#3E4D44"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="6dp">
-                            <TextView
-                                android:layout_width="65dp"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Lần trước"
-                                android:textColor="#7E8A83"
-                                android:textSize="11sp" />
-                            <ProgressBar
-                                android:id="@+id/skin_compare_sebum_progress_old"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="6dp"
-                                android:layout_weight="1"
-                                android:progress="50"
-                                android:progressDrawable="@drawable/progress_compare_old" />
+                            android:gravity="center_vertical">
                             <TextView
                                 android:id="@+id/skin_compare_sebum_old"
-                                android:layout_width="35dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="end"
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#7E8A83"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                                android:textSize="13sp" />
                             <TextView
-                                android:layout_width="65dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Hiện tại"
-                                android:textColor="#3E4D44"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                            <ProgressBar
-                                android:id="@+id/skin_compare_sebum_progress"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:progress="50"
-                                android:progressDrawable="@drawable/progress_oily" />
+                                android:layout_marginHorizontal="6dp"
+                                android:text="➔"
+                                android:textColor="#7E8A83"
+                                android:textSize="12sp" />
                             <TextView
                                 android:id="@+id/skin_compare_sebum_new"
-                                android:layout_width="35dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="end"
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#3E4D44"
                                 android:textStyle="bold"
-                                android:textSize="11sp" />
+                                android:textSize="13sp" />
                         </LinearLayout>
-                    </LinearLayout>
 
-                    <!-- Sensitivity Chart Row -->
+                        <TextView
+                            android:id="@+id/skin_compare_sebum_diff"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:fontFamily="@font/lexend"
+                            android:text="+0%"
+                            android:textColor="#677559"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <!-- sensitivity Compact Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="10dp"
                         android:background="@drawable/bg_expert_reason_card"
                         android:backgroundTint="#F7F9FA"
-                        android:padding="12dp">
+                        android:padding="14dp"
+                        android:gravity="center_vertical">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="🛡️ Độ nhạy cảm (Sensitivity)"
-                                android:textColor="#3E4D44"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/skin_compare_sensitivity_diff"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:fontFamily="@font/lexend"
-                                android:text="+0% (Duy trì)"
-                                android:textColor="#677559"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                        </RelativeLayout>
+                            android:fontFamily="@font/lexend"
+                            android:text="Độ nhạy cảm"
+                            android:drawableStart="@drawable/ic_skin_sensitivity"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="#3E4D44"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="6dp">
-                            <TextView
-                                android:layout_width="65dp"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Lần trước"
-                                android:textColor="#7E8A83"
-                                android:textSize="11sp" />
-                            <ProgressBar
-                                android:id="@+id/skin_compare_sensitivity_progress_old"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="6dp"
-                                android:layout_weight="1"
-                                android:progress="50"
-                                android:progressDrawable="@drawable/progress_compare_old" />
+                            android:gravity="center_vertical">
                             <TextView
                                 android:id="@+id/skin_compare_sensitivity_old"
-                                android:layout_width="35dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="end"
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#7E8A83"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                                android:textSize="13sp" />
                             <TextView
-                                android:layout_width="65dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Hiện tại"
-                                android:textColor="#3E4D44"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                            <ProgressBar
-                                android:id="@+id/skin_compare_sensitivity_progress"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:progress="50"
-                                android:progressDrawable="@drawable/progress_sensitivity" />
+                                android:layout_marginHorizontal="6dp"
+                                android:text="➔"
+                                android:textColor="#7E8A83"
+                                android:textSize="12sp" />
                             <TextView
                                 android:id="@+id/skin_compare_sensitivity_new"
-                                android:layout_width="35dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="end"
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#3E4D44"
                                 android:textStyle="bold"
-                                android:textSize="11sp" />
+                                android:textSize="13sp" />
                         </LinearLayout>
-                    </LinearLayout>
 
-                    <!-- Elasticity Chart Row -->
+                        <TextView
+                            android:id="@+id/skin_compare_sensitivity_diff"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:fontFamily="@font/lexend"
+                            android:text="+0%"
+                            android:textColor="#677559"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <!-- elasticity Compact Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="10dp"
                         android:background="@drawable/bg_expert_reason_card"
                         android:backgroundTint="#F7F9FA"
-                        android:padding="12dp">
+                        android:padding="14dp"
+                        android:gravity="center_vertical">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="✨ Độ đàn hồi (Elasticity)"
-                                android:textColor="#3E4D44"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/skin_compare_elasticity_diff"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:fontFamily="@font/lexend"
-                                android:text="+0% (Duy trì)"
-                                android:textColor="#677559"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                        </RelativeLayout>
+                            android:fontFamily="@font/lexend"
+                            android:text="Độ đàn hồi"
+                            android:drawableStart="@drawable/ic_skin_star"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="#3E4D44"
+                            android:textColor="#3E4D44"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="6dp">
-                            <TextView
-                                android:layout_width="65dp"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/lexend"
-                                android:text="Lần trước"
-                                android:textColor="#7E8A83"
-                                android:textSize="11sp" />
-                            <ProgressBar
-                                android:id="@+id/skin_compare_elasticity_progress_old"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="6dp"
-                                android:layout_weight="1"
-                                android:progress="75"
-                                android:progressDrawable="@drawable/progress_compare_old" />
-                            <TextView
-                                android:id="@+id/skin_compare_elasticity_old"
-                                android:layout_width="35dp"
-                                android:layout_height="wrap_content"
-                                android:gravity="end"
-                                android:fontFamily="@font/lexend"
-                                android:text="75%"
-                                android:textColor="#7E8A83"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical">
                             <TextView
-                                android:layout_width="65dp"
+                                android:id="@+id/skin_compare_elasticity_old"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/lexend"
-                                android:text="Hiện tại"
-                                android:textColor="#3E4D44"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                            <ProgressBar
-                                android:id="@+id/skin_compare_elasticity_progress"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:progress="75"
-                                android:progressDrawable="@drawable/progress_elasticity" />
+                                android:text="50%"
+                                android:textColor="#7E8A83"
+                                android:textSize="13sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="6dp"
+                                android:text="➔"
+                                android:textColor="#7E8A83"
+                                android:textSize="12sp" />
                             <TextView
                                 android:id="@+id/skin_compare_elasticity_new"
-                                android:layout_width="35dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="end"
                                 android:fontFamily="@font/lexend"
-                                android:text="75%"
+                                android:text="50%"
                                 android:textColor="#3E4D44"
                                 android:textStyle="bold"
-                                android:textSize="11sp" />
+                                android:textSize="13sp" />
                         </LinearLayout>
-                    </LinearLayout>
 
-                    <!-- Divider -->
+                        <TextView
+                            android:id="@+id/skin_compare_elasticity_diff"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:fontFamily="@font/lexend"
+                            android:text="+0%"
+                            android:textColor="#677559"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+<!-- Divider -->
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#EAECE3"
                         android:layout_marginBottom="14dp" />
 
-                    <!-- Product Efficacy Analysis Title -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lexend"
-                        android:text="Phân tích hiệu quả sản phẩm đang dùng"
-                        android:textColor="#3E4D44"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="8dp" />
-
-                    <!-- Efficacy details text -->
-                    <TextView
-                        android:id="@+id/skin_tv_product_efficacy_analysis"
+                    <!-- Product Efficacy Analysis -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/lexend"
-                        android:text="Chưa có đủ dữ liệu lịch sử để phân tích hiệu quả sản phẩm."
-                        android:textColor="#3E4D44"
-                        android:textSize="12sp"
-                        android:lineSpacingMultiplier="1.3" />
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_expert_reason_card"
+                        android:backgroundTint="#F2FBF6"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="Phân tích hiệu quả sản phẩm đang dùng"
+                            android:textColor="#02542D"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Efficacy details text -->
+                        <TextView
+                            android:id="@+id/skin_tv_product_efficacy_analysis"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend"
+                            android:text="Chưa có đủ dữ liệu lịch sử để phân tích hiệu quả sản phẩm."
+                            android:textColor="#3E4D44"
+                            android:textSize="14sp"
+                            android:lineSpacingMultiplier="1.4" />
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -1001,7 +882,7 @@
                 android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="#3E4D44"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
+                app:cardElevation="6dp"
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout
@@ -1015,14 +896,14 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="10dp">
+                        android:layout_marginBottom="12dp">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginEnd="8dp"
-                            android:src="@drawable/ic_ai_outline"
-                            app:tint="@color/nav_icon_color" />
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:layout_marginEnd="10dp"
+                            android:src="@drawable/ic_skin_ai_sparkles"
+                            app:tint="#EAECE3" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -1040,9 +921,9 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend"
                         android:text="Với nền da dầu nhạy cảm, ưu tiên hàng đầu của bạn là làm sạch nhẹ nhàng và phục hồi hàng rào bảo vệ da. Tránh các loại sữa rửa mặt tạo bọt quá mạnh hoặc chứa sulfate. Hãy bổ sung tinh chất Rau má để làm dịu các vùng da đỏ và duy trì độ ẩm bằng các loại gel dưỡng mỏng nhẹ không gây bít tắc lỗ chân lông."
-                        android:textColor="#FFFFFF"
+                        android:textColor="#F7F9FA"
                         android:textSize="15sp"
-                        android:lineSpacingMultiplier="1.45" />
+                        android:lineSpacingMultiplier="1.4" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

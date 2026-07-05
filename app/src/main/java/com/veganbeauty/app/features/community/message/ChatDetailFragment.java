@@ -2,6 +2,8 @@ package com.veganbeauty.app.features.community.message;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +11,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.veganbeauty.app.R;
@@ -85,7 +89,59 @@ public class ChatDetailFragment extends RootieFragment {
 
         binding.ivLike.setOnClickListener(v -> sendMessage(MessageHelper.MESSAGE_LIKE));
 
+        setupInputBarInsets();
+        setupInputFocusBehavior();
+
         loadConversation();
+    }
+
+    private void setupInputBarInsets() {
+        final int baseBottomPad = (int) (12 * getResources().getDisplayMetrics().density);
+        ViewCompat.setOnApplyWindowInsetsListener(binding.llInput, (v, windowInsets) -> {
+            Insets navBars = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+            v.setPadding(
+                    v.getPaddingLeft(),
+                    v.getPaddingTop(),
+                    v.getPaddingRight(),
+                    baseBottomPad + navBars.bottom
+            );
+            return windowInsets;
+        });
+        ViewCompat.requestApplyInsets(binding.llInput);
+    }
+
+    private void setupInputFocusBehavior() {
+        binding.etMessage.setOnFocusChangeListener((v, hasFocus) -> updateInputExpandedState());
+        binding.etMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateInputExpandedState();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    private void updateInputExpandedState() {
+        if (binding == null) {
+            return;
+        }
+        boolean expanded = binding.etMessage.hasFocus()
+                || !binding.etMessage.getText().toString().trim().isEmpty();
+        binding.llInputActions.setVisibility(expanded ? View.GONE : View.VISIBLE);
+
+        ViewGroup.LayoutParams inputLp = binding.llMessageInput.getLayoutParams();
+        if (inputLp instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLp = (ViewGroup.MarginLayoutParams) inputLp;
+            marginLp.setMarginStart(expanded ? 0 : (int) (14 * getResources().getDisplayMetrics().density));
+            binding.llMessageInput.setLayoutParams(marginLp);
+        }
     }
 
     @Override

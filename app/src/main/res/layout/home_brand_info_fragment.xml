@@ -22,7 +22,7 @@
             android:layout_height="24dp"
             android:layout_centerVertical="true"
             android:contentDescription="Back"
-            android:src="@drawable/ic_arrow_back_thin"
+            android:src="@drawable/ic_arrow_back"
             app:tint="@color/primary" />
 
         <TextView
@@ -302,7 +302,7 @@
                             <ImageView
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
-                                android:src="@drawable/ic_heart_outline"
+                                android:src="@drawable/ic_heart"
                                 app:tint="@color/secondary" />
 
                             <TextView
@@ -396,7 +396,7 @@
                                 <ImageView
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
-                                    android:src="@drawable/ic_eye"
+                                    android:src="@drawable/ic_eyes"
                                     app:tint="@color/primary" />
 
                                 <TextView

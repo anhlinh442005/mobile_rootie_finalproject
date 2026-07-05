@@ -25,6 +25,7 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.QuizTestResultBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.data.remote.FirestoreService;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -457,6 +458,7 @@ public class QuizTestResultFragment extends RootieFragment {
                                     else if (textResult.startsWith("```")) cleanJson = textResult.substring(3, textResult.lastIndexOf("```")).trim();
 
                                     JSONObject routineObj = new JSONObject(cleanJson);
+                                    String assessmentStr = routineObj.optString("assessment", "");
                                     JSONArray morningJson = routineObj.getJSONArray("morning_steps");
                                     JSONArray eveningJson = routineObj.getJSONArray("evening_steps");
 
@@ -472,6 +474,12 @@ public class QuizTestResultFragment extends RootieFragment {
                                             for (int i = 0; i < eveningJson.length(); i++) {
                                                 JSONObject step = eveningJson.getJSONObject(i);
                                                 eveningSteps.add(new AiSkincareStep(i, step.getString("name"), step.getString("product"), step.getString("reason"), true));
+                                            }
+
+                                            if (!assessmentStr.isEmpty()) {
+                                                binding.tvRecommendation.setText(assessmentStr);
+                                                requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
+                                                        .edit().putString("RECOMMENDATION", assessmentStr).apply();
                                             }
 
                                             populateSteps();
@@ -594,11 +602,17 @@ public class QuizTestResultFragment extends RootieFragment {
             tvProduct.setText(step.getRecommendedProduct());
             tvReason.setText(step.getDescription());
 
-            ivCheckbox.setImageResource(step.isChecked() ? R.drawable.skin_ic_checkbox_checked : R.drawable.skin_ic_checkbox_unchecked);
+            ivCheckbox.setImageResource(step.isChecked() ? R.drawable.ic_checkbox_checked : R.drawable.ic_checkbox_unchecked);
+            ivCheckbox.setImageTintList(step.isChecked()
+                    ? ColorStateList.valueOf(Color.parseColor("#3E4D44"))
+                    : ColorStateList.valueOf(Color.parseColor("#D9D9D9")));
 
             View.OnClickListener clickListener = v -> {
                 step.setChecked(!step.isChecked());
-                ivCheckbox.setImageResource(step.isChecked() ? R.drawable.skin_ic_checkbox_checked : R.drawable.skin_ic_checkbox_unchecked);
+                ivCheckbox.setImageResource(step.isChecked() ? R.drawable.ic_checkbox_checked : R.drawable.ic_checkbox_unchecked);
+                ivCheckbox.setImageTintList(step.isChecked()
+                        ? ColorStateList.valueOf(Color.parseColor("#3E4D44"))
+                        : ColorStateList.valueOf(Color.parseColor("#D9D9D9")));
             };
 
             ivCheckbox.setOnClickListener(clickListener);
@@ -645,6 +659,13 @@ public class QuizTestResultFragment extends RootieFragment {
 
             historyArray.put(newLog);
             prefs.edit().putString("QUIZ_HISTORY_LIST", historyArray.toString()).apply();
+            
+            // Sync to Firestore
+            FirestoreService firestoreService = new FirestoreService();
+            String email = ProfileSession.INSTANCE.getEmail(requireContext());
+            if (email != null && !email.isEmpty()) {
+                firestoreService.addSkinHistory(email, newLog);
+            }
         } catch (Exception e) { e.printStackTrace(); }
 
         if (isEligibleForReward) {

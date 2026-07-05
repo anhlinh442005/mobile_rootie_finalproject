@@ -136,7 +136,7 @@
         android:clickable="true"
         android:focusable="true"
         android:padding="6dp"
-        android:src="@drawable/ic_close"
+        android:src="@drawable/ic_cancel"
         app:tint="#888888"
         android:visibility="gone" />
 

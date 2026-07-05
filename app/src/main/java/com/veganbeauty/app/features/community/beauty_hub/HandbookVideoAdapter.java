@@ -158,7 +158,7 @@ public class HandbookVideoAdapter extends RecyclerView.Adapter<HandbookVideoAdap
             holder.ivHeart.setImageResource(R.drawable.ic_heart_filled);
         } else {
             holder.ivHeart.clearColorFilter();
-            holder.ivHeart.setImageResource(R.drawable.ic_heart_outline);
+            holder.ivHeart.setImageResource(R.drawable.ic_heart);
         }
     }
 
