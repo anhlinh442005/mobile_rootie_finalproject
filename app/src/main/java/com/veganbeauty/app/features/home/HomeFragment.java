@@ -525,12 +525,32 @@ public class HomeFragment extends RootieFragment {
 
             if (!hasShownQuizPopupThisSession) {
                 hasShownQuizPopupThisSession = true;
-                View dv = LayoutInflater.from(getContext()).inflate(R.layout.dialog_quiz_test_weekly_reminder, null);
-                android.app.Dialog dialog = new MaterialAlertDialogBuilder(requireContext()).setView(dv).create();
-                if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                dv.findViewById(R.id.btn_dialog_confirm).setOnClickListener(v -> { dialog.dismiss(); navigateToQuizIntro(); });
-                dv.findViewById(R.id.btn_dialog_cancel).setOnClickListener(v -> dialog.dismiss());
-                dialog.show();
+                binding.getRoot().postDelayed(() -> {
+                    if (!isAdded() || getContext() == null) return;
+                    View dv = LayoutInflater.from(getContext()).inflate(R.layout.dialog_quiz_test_weekly_reminder, null);
+                    android.app.Dialog dialog = new MaterialAlertDialogBuilder(requireContext()).setView(dv).create();
+                    dialog.setCancelable(true);
+                    dialog.setCanceledOnTouchOutside(true);
+                    if (dialog.getWindow() != null) {
+                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        dialog.getWindow().setDimAmount(0.65f);
+                    }
+                    dv.findViewById(R.id.btn_dialog_confirm).setOnClickListener(v -> { dialog.dismiss(); navigateToQuizIntro(); });
+                    dv.findViewById(R.id.btn_dialog_cancel).setOnClickListener(v -> dialog.dismiss());
+                    dialog.show();
+
+                    ObjectAnimator sx = ObjectAnimator.ofFloat(dv, "scaleX", 0.7f, 1.05f, 1f);
+                    ObjectAnimator sy = ObjectAnimator.ofFloat(dv, "scaleY", 0.7f, 1.05f, 1f);
+                    AnimatorSet anim = new AnimatorSet(); anim.playTogether(sx, sy); anim.setDuration(500);
+                    anim.setInterpolator(new OvershootInterpolator(1.5f)); anim.start();
+
+                    View badge = dv.findViewById(R.id.layout_badge);
+                    if (badge != null) {
+                        ObjectAnimator bounce = ObjectAnimator.ofFloat(badge, "translationY", 0f, -15f, 0f);
+                        bounce.setDuration(1200); bounce.setRepeatCount(ObjectAnimator.INFINITE);
+                        bounce.setInterpolator(new AccelerateDecelerateInterpolator()); bounce.start();
+                    }
+                }, 3000);
             }
         } else {
             binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.GONE);
