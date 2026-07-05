@@ -62,7 +62,10 @@ public class NotificationRepository {
         int count = 0;
         if (list != null) {
             for (NotificationItem item : list) {
-                if (!item.isRead()) {
+                // Account bell only counts non-community notifications
+                String type = item.getNotificationType() != null ? item.getNotificationType() : "";
+                boolean isCommunity = "POST".equals(type) || "INTERACTION".equals(type);
+                if (!isCommunity && !item.isRead()) {
                     count++;
                 }
             }

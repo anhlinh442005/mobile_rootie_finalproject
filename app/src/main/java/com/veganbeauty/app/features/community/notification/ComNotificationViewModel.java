@@ -305,6 +305,7 @@ public class ComNotificationViewModel extends ViewModel {
         }
         notifications.setValue(current);
         saveNotificationsToLocal(context, current);
+        applyFilter();
     }
 
     public void deleteNotification(Context context, String id) {

@@ -70,74 +70,128 @@ public class CommunityNotificationFragment extends RootieFragment {
 
         _binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        adapter = new ComNotificationAdapter(item -> {
-            viewModel.markAsRead(requireContext(), item.getId());
-            switch (item.getType()) {
-                case "POST":
-                case "INTERACTION":
-                    if (item.getPostId() != null && !item.getPostId().isEmpty()) {
-                        boolean isNewsPost = true;
-                        for (char c : item.getPostId().toCharArray()) {
-                            if (!Character.isDigit(c)) {
-                                isNewsPost = false;
-                                break;
+        adapter = new ComNotificationAdapter(
+            // onItemClick
+            item -> {
+                viewModel.markAsRead(requireContext(), item.getId());
+                switch (item.getType()) {
+                    case "POST":
+                    case "INTERACTION":
+                        if (item.getPostId() != null && !item.getPostId().isEmpty()) {
+                            boolean isNewsPost = true;
+                            for (char c : item.getPostId().toCharArray()) {
+                                if (!Character.isDigit(c)) { isNewsPost = false; break; }
+                            }
+                            if (isNewsPost) {
+                                com.veganbeauty.app.features.community.beauty_hub.CommunityNewsFragment newsFragment =
+                                    com.veganbeauty.app.features.community.beauty_hub.CommunityNewsFragment.newInstance(item.getPostId());
+                                getParentFragmentManager().beginTransaction()
+                                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                                    .replace(R.id.main_container, newsFragment).addToBackStack(null).commit();
+                            } else {
+                                String uid = item.getUserId() != null ? item.getUserId() : "test_001";
+                                com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment postFrag =
+                                    com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment.newInstance(uid, 0, 0, item.getPostId());
+                                getParentFragmentManager().beginTransaction()
+                                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                                    .replace(R.id.main_container, postFrag).addToBackStack(null).commit();
                             }
                         }
-                        if (isNewsPost) {
-                            com.veganbeauty.app.features.community.beauty_hub.CommunityNewsFragment newsFragment = com.veganbeauty.app.features.community.beauty_hub.CommunityNewsFragment.newInstance(item.getPostId());
-                            getParentFragmentManager().beginTransaction()
-                                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
-                                    .replace(R.id.main_container, newsFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        } else {
-                            String targetUserId = item.getUserId() != null ? item.getUserId() : "test_001";
-                            com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment postDetailFragment = com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment.newInstance(targetUserId, 0, 0, item.getPostId());
-                            getParentFragmentManager().beginTransaction()
-                                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
-                                    .replace(R.id.main_container, postDetailFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-
-                        boolean shouldShowComments = "COMMENT".equals(item.getActionType()) || "REPLY".equals(item.getActionType()) || "LIKE".equals(item.getActionType()) || (item.getContent() != null && item.getContent().contains("bình luận"));
-                        if (shouldShowComments) {
-                            View v = getView();
-                            if (v != null) {
-                                v.postDelayed(() -> {
-                                    if (isAdded()) {
-                                        com.veganbeauty.app.features.community.com_feed.CommunityCommentBottomSheet commentBottomSheet = com.veganbeauty.app.features.community.com_feed.CommunityCommentBottomSheet.newInstance(item.getPostId(), 5, item.getCommentId());
-                                        commentBottomSheet.show(getParentFragmentManager(), com.veganbeauty.app.features.community.com_feed.CommunityCommentBottomSheet.TAG);
-                                    }
-                                }, 350);
-                            }
-                        }
-                    }
-                    break;
-                case "ORDER":
-                    if ("WITHDRAW".equals(item.getActionType())) {
-                        WithdrawalDetailPlaceholderFragment wdFragment = WithdrawalDetailPlaceholderFragment.newInstance(
-                                "#WD20260615",
-                                "500.000đ",
-                                item.getTime() + " • " + item.getDate(),
-                                "Thành công"
-                        );
-                        getParentFragmentManager().beginTransaction()
-                                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
-                                .replace(R.id.main_container, wdFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    } else {
-                        Toast.makeText(requireContext(), "Chi tiết đơn hàng: " + item.getUserName(), Toast.LENGTH_SHORT).show();
-                    }
-                    break;
+                        break;
+                }
+            },
+            // onDeleteClick
+            item -> new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Xóa thông báo")
+                .setMessage("Bạn có chắc chắn muốn xóa thông báo này?")
+                .setPositiveButton("Xóa", (d, w) -> {
+                    viewModel.deleteNotification(requireContext(), item.getId());
+                    Toast.makeText(requireContext(), "Đã xóa thông báo", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Hủy", null)
+                .show(),
+            // onMarkReadClick
+            item -> {
+                viewModel.markAsRead(requireContext(), item.getId());
+                Toast.makeText(requireContext(), "Đã đánh dấu đã đọc", Toast.LENGTH_SHORT).show();
             }
-        }, item -> {
-            viewModel.deleteNotification(requireContext(), item.getId());
-            Toast.makeText(requireContext(), "Đã xóa thông báo", Toast.LENGTH_SHORT).show();
-        });
+        );
 
         _binding.rvNotifications.setAdapter(adapter);
+
+        // ── Swipe gesture: swipe left to open, release to stay open ──
+        final float actionWidthPx = 128 * getResources().getDisplayMetrics().density;
+        final float SWIPE_THRESHOLD = actionWidthPx * 0.3f;
+
+        _binding.rvNotifications.addOnItemTouchListener(new androidx.recyclerview.widget.RecyclerView.OnItemTouchListener() {
+            private float startX, startY, lastX;
+            private boolean isSwiping = false;
+            private ComNotificationAdapter.NotificationViewHolder swipeHolder = null;
+
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull androidx.recyclerview.widget.RecyclerView rv, @NonNull android.view.MotionEvent e) {
+                switch (e.getAction()) {
+                    case android.view.MotionEvent.ACTION_DOWN:
+                        startX = e.getX(); startY = e.getY(); lastX = startX; isSwiping = false; swipeHolder = null;
+                        View child = rv.findChildViewUnder(startX, startY);
+                        if (child != null) {
+                            androidx.recyclerview.widget.RecyclerView.ViewHolder vh = rv.getChildViewHolder(child);
+                            if (vh instanceof ComNotificationAdapter.NotificationViewHolder) {
+                                swipeHolder = (ComNotificationAdapter.NotificationViewHolder) vh;
+                            }
+                        }
+                        break;
+                    case android.view.MotionEvent.ACTION_MOVE:
+                        float dx = e.getX() - startX;
+                        float dy = e.getY() - startY;
+                        if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12 && dx < 0) {
+                            isSwiping = true;
+                            rv.getParent().requestDisallowInterceptTouchEvent(true);
+                        }
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull androidx.recyclerview.widget.RecyclerView rv, @NonNull android.view.MotionEvent e) {
+                if (swipeHolder == null) return;
+                float curX = e.getX();
+                float totalDx = curX - startX;
+
+                switch (e.getAction()) {
+                    case android.view.MotionEvent.ACTION_MOVE:
+                        if (isSwiping) {
+                            // Clamp: only slide left up to actionWidthPx
+                            float tx = Math.max(-actionWidthPx, Math.min(0f, totalDx));
+                            swipeHolder.getForeground().setTranslationX(tx);
+                        }
+                        lastX = curX;
+                        break;
+
+                    case android.view.MotionEvent.ACTION_UP:
+                    case android.view.MotionEvent.ACTION_CANCEL:
+                        if (isSwiping) {
+                            float finalTx = swipeHolder.getForeground().getTranslationX();
+                            if (finalTx < -SWIPE_THRESHOLD) {
+                                // Snap fully open
+                                adapter.openItem(swipeHolder, actionWidthPx);
+                            } else {
+                                // Snap closed
+                                adapter.closeOpenedItem();
+                                swipeHolder.animateForeground(0f);
+                            }
+                            rv.getParent().requestDisallowInterceptTouchEvent(false);
+                        }
+                        isSwiping = false; swipeHolder = null;
+                        break;
+                }
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean b) {}
+        });
+
 
         _binding.tabAll.setOnClickListener(v -> viewModel.selectTab("ALL"));
         _binding.tabUnread.setOnClickListener(v -> viewModel.selectTab("UNREAD"));
@@ -161,139 +215,6 @@ public class CommunityNotificationFragment extends RootieFragment {
             intent.putExtra("navigateToTab", "profile");
             intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
-        });
-
-        // Swipe LEFT to reveal delete (red) + mark-read (green) buttons
-        int DELETE_BTN_WIDTH = (int) (80 * getResources().getDisplayMetrics().density);
-        int MARK_BTN_WIDTH   = (int) (80 * getResources().getDisplayMetrics().density);
-        int TOTAL_WIDTH = DELETE_BTN_WIDTH + MARK_BTN_WIDTH;
-
-        androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback swipeCallback =
-            new androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
-                @Override
-                public boolean onMove(@NonNull androidx.recyclerview.widget.RecyclerView rv,
-                                      @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder vh,
-                                      @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder target) {
-                    return false;
-                }
-
-                @Override
-                public void onSwiped(@NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder vh, int dir) {
-                    // snap back immediately; tap on drawn buttons is handled in onChildDraw via touch interceptor
-                    adapter.notifyItemChanged(vh.getAdapterPosition());
-                }
-
-                @Override
-                public float getSwipeThreshold(@NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder vh) {
-                    return 2f; // never auto-dismiss, user must tap icon
-                }
-
-                @Override
-                public void onChildDraw(@NonNull android.graphics.Canvas c,
-                                        @NonNull androidx.recyclerview.widget.RecyclerView rv,
-                                        @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder vh,
-                                        float dX, float dY, int actionState, boolean isActive) {
-                    if (!(vh instanceof ComNotificationAdapter.NotificationViewHolder)) {
-                        super.onChildDraw(c, rv, vh, dX, dY, actionState, isActive);
-                        return;
-                    }
-                    View item = vh.itemView;
-                    float absDx = Math.abs(dX);
-                    if (absDx == 0) { super.onChildDraw(c, rv, vh, dX, dY, actionState, isActive); return; }
-
-                    // Clamp dX so the item doesn't scroll further than needed
-                    float clampedDx = Math.max(dX, -TOTAL_WIDTH);
-
-                    // Draw delete (red) background on the far right
-                    android.graphics.Paint deletePaint = new android.graphics.Paint();
-                    deletePaint.setColor(android.graphics.Color.parseColor("#F44336"));
-                    c.drawRect(item.getRight() - DELETE_BTN_WIDTH, item.getTop(), item.getRight(), item.getBottom(), deletePaint);
-
-                    // Draw mark-read (teal/green) background just to the left of delete
-                    android.graphics.Paint readPaint = new android.graphics.Paint();
-                    readPaint.setColor(android.graphics.Color.parseColor("#4CAF50"));
-                    c.drawRect(item.getRight() - TOTAL_WIDTH, item.getTop(), item.getRight() - DELETE_BTN_WIDTH, item.getBottom(), readPaint);
-
-                    // Draw icons
-                    int iconSize = (int) (24 * getResources().getDisplayMetrics().density);
-                    int iconPad  = (item.getHeight() - iconSize) / 2;
-
-                    // Trash icon (delete)
-                    android.graphics.drawable.Drawable trash = ContextCompat.getDrawable(requireContext(), R.drawable.ic_bin);
-                    if (trash != null) {
-                        trash.setTint(android.graphics.Color.WHITE);
-                        int left = item.getRight() - DELETE_BTN_WIDTH + (DELETE_BTN_WIDTH - iconSize) / 2;
-                        trash.setBounds(left, item.getTop() + iconPad, left + iconSize, item.getTop() + iconPad + iconSize);
-                        trash.draw(c);
-                    }
-
-                    // Check icon (mark read)
-                    android.graphics.drawable.Drawable check = ContextCompat.getDrawable(requireContext(), R.drawable.ic_circle_checked);
-                    if (check != null) {
-                        check.setTint(android.graphics.Color.WHITE);
-                        int left = item.getRight() - TOTAL_WIDTH + (MARK_BTN_WIDTH - iconSize) / 2;
-                        check.setBounds(left, item.getTop() + iconPad, left + iconSize, item.getTop() + iconPad + iconSize);
-                        check.draw(c);
-                    }
-
-                    super.onChildDraw(c, rv, vh, clampedDx, dY, actionState, isActive);
-                }
-            };
-
-        androidx.recyclerview.widget.ItemTouchHelper touchHelper = new androidx.recyclerview.widget.ItemTouchHelper(swipeCallback);
-        touchHelper.attachToRecyclerView(_binding.rvNotifications);
-
-        // Touch interceptor to detect taps on the swipe-revealed buttons
-        _binding.rvNotifications.addOnItemTouchListener(new androidx.recyclerview.widget.RecyclerView.OnItemTouchListener() {
-            private float startX, startY;
-            @Override
-            public boolean onInterceptTouchEvent(@NonNull androidx.recyclerview.widget.RecyclerView rv, @NonNull android.view.MotionEvent e) {
-                if (e.getAction() == android.view.MotionEvent.ACTION_DOWN) {
-                    startX = e.getX(); startY = e.getY();
-                } else if (e.getAction() == android.view.MotionEvent.ACTION_UP) {
-                    float dx = Math.abs(e.getX() - startX);
-                    float dy = Math.abs(e.getY() - startY);
-                    if (dx < 10 && dy < 10) {
-                        float touchX = e.getX();
-                        float touchY = e.getY();
-                        // Find which ViewHolder was touched
-                        View child = rv.findChildViewUnder(touchX + TOTAL_WIDTH, touchY);
-                        if (child != null) {
-                            androidx.recyclerview.widget.RecyclerView.ViewHolder vh = rv.getChildViewHolder(child);
-                            if (vh instanceof ComNotificationAdapter.NotificationViewHolder) {
-                                ComNotificationItem notifItem = ((ComNotificationAdapter.NotificationViewHolder) vh).getBoundItem();
-                                if (notifItem != null) {
-                                    float itemRight = child.getRight();
-                                    // Delete zone
-                                    if (touchX >= itemRight - DELETE_BTN_WIDTH && touchX <= itemRight) {
-                                        new android.app.AlertDialog.Builder(requireContext())
-                                            .setTitle("Xóa thông báo")
-                                            .setMessage("Bạn có chắc chắn muốn xóa thông báo này?")
-                                            .setPositiveButton("Xóa", (d, w) -> {
-                                                viewModel.deleteNotification(requireContext(), notifItem.getId());
-                                                Toast.makeText(requireContext(), "Đã xóa thông báo", Toast.LENGTH_SHORT).show();
-                                            })
-                                            .setNegativeButton("Hủy", (d, w) -> adapter.notifyItemChanged(vh.getAdapterPosition()))
-                                            .setOnCancelListener(d -> adapter.notifyItemChanged(vh.getAdapterPosition()))
-                                            .show();
-                                        return true;
-                                    }
-                                    // Mark-read zone
-                                    if (touchX >= itemRight - TOTAL_WIDTH && touchX < itemRight - DELETE_BTN_WIDTH) {
-                                        viewModel.markAsRead(requireContext(), notifItem.getId());
-                                        Toast.makeText(requireContext(), "Đã đánh dấu đã đọc", Toast.LENGTH_SHORT).show();
-                                        adapter.notifyItemChanged(vh.getAdapterPosition());
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return false;
-            }
-            @Override public void onTouchEvent(@NonNull androidx.recyclerview.widget.RecyclerView rv, @NonNull android.view.MotionEvent e) {}
-            @Override public void onRequestDisallowInterceptTouchEvent(boolean b) {}
         });
 
         _binding.etSearch.addTextChangedListener(new TextWatcher() {
