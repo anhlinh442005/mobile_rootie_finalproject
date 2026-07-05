@@ -1,89 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/neutral"
-    android:fitsSystemWindows="true">
+    android:background="@color/neutral">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <!-- Header App Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
+        android:layout_height="56dp"
+        android:background="@drawable/bg_header_gradient"
+        android:elevation="3dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Header App Bar (Scrolls away) -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/header"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/bg_header_gradient"
-            android:elevation="5dp"
-            app:layout_scrollFlags="scroll|enterAlways">
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_chevron_left"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#3E4D44" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lịch sử lịch đặt"
+            android:textColor="#3E4D44"
+            android:textSize="20sp"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Notification Bell Button -->
+        <FrameLayout
+            android:id="@+id/btn_notification"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/btn_back"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="16dp"
-                android:padding="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_arrow_back"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="#3E4D44" />
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_bell" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Filters Row: Icon + Status Tags -->
+    <LinearLayout
+        android:id="@+id/filter_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/neutral"
+        android:elevation="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <!-- Advanced Filter Button -->
+        <LinearLayout
+            android:id="@+id/btn_advanced_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_stroke"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_filter"
+                app:tint="@color/content" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lịch sử lịch đặt"
-                android:textColor="#3E4D44"
-                android:textSize="20sp"
-                android:fontFamily="@font/be_vietnam_pro_bold"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="Lọc"
+                android:textColor="@color/content"
+                android:textSize="13sp" />
+        </LinearLayout>
 
-            <!-- Notification Bell Button -->
-            <FrameLayout
-                android:id="@+id/btn_notification"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_bell" />
-            </FrameLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- Filters (Stays pinned at top after header scrolls away) -->
+        <!-- Status Filter Tags -->
         <HorizontalScrollView
             android:id="@+id/filter_scroll"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/neutral"
-            android:elevation="5dp"
+            android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingHorizontal="20dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
             android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="8dp">
+                android:paddingVertical="4dp">
 
                 <TextView
                     android:id="@+id/filter_all"
@@ -96,6 +133,19 @@
                     android:paddingVertical="6dp"
                     android:text="Tất Cả"
                     android:textColor="@color/neutral"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/filter_pending"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/skin_bg_outline"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="6dp"
+                    android:text="Chờ Xác Nhận"
+                    android:textColor="@color/primary"
                     android:textSize="13sp" />
 
                 <TextView
@@ -137,17 +187,65 @@
                     android:textSize="13sp" />
             </LinearLayout>
         </HorizontalScrollView>
-    </com.google.android.material.appbar.AppBarLayout>
+    </LinearLayout>
+
+    <!-- Result Count -->
+    <TextView
+        android:id="@+id/tv_result_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:textColor="@color/tertiary"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_row" />
 
     <!-- List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_history"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingHorizontal="0dp"
-        android:paddingTop="12dp"
+        android:overScrollMode="never"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="8dp"
         android:paddingBottom="40dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_result_count" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/empty_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_result_count">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Không tìm thấy lịch hẹn"
+            android:textColor="@color/tertiary"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_empty_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Thử thay đổi từ khoá hoặc bộ lọc"
+            android:textColor="@color/tertiary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

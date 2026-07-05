@@ -1031,12 +1031,15 @@ public class FirestoreService {
         }
     }
 
-    public boolean updateBookingReview(String bookingId, float rating, String reviewText, String reviewDate) {
+    public boolean updateBookingReview(String bookingId, float rating, String reviewText, String reviewDate,
+                                       int earnedPoints, int totalPoints) {
         try {
             Map<String, Object> updates = new HashMap<>();
             updates.put("userRating", rating);
             updates.put("userReview", reviewText);
             updates.put("reviewDate", reviewDate);
+            updates.put("earnedPoints", earnedPoints);
+            updates.put("totalPoints", totalPoints);
             Tasks.await(db.collection("bookings").document(bookingId).update(updates));
             return true;
         } catch (Exception e) {

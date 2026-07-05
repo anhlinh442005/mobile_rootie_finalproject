@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:paddingTop="12dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:id="@+id/drag_handle"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#C4C4C4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Title Row -->
+    <TextView
+        android:id="@+id/tv_sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/be_vietnam_pro_bold"
+        android:text="Bộ lọc nâng cao"
+        android:textColor="@color/primary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/drag_handle" />
+
+    <TextView
+        android:id="@+id/btn_clear_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="Xoá tất cả"
+        android:textColor="@color/secondary"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_sheet_title"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <View
+        android:id="@+id/divider_top"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="#F0F0F0"
+        app:layout_constraintTop_toBottomOf="@id/tv_sheet_title" />
+
+    <!-- Filter Fields -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintHeight_max="380dp"
+        app:layout_constraintTop_toBottomOf="@id/divider_top"
+        app:layout_constraintBottom_toTopOf="@id/divider_bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp">
+
+            <!-- Tên dịch vụ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_clipboard_outline"
+                    app:tint="@color/content" />
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Tên dịch vụ"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/edt_service_name"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_search_bar"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:hint="VD: Soi da"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/tertiary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Tên chi nhánh -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_store_outline"
+                    app:tint="@color/content" />
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Tên chi nhánh"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/edt_store_name"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_search_bar"
+                    android:drawableEnd="@drawable/ic_chevron_down"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/tertiary"
+                    android:focusable="false"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:hint="VD: Gò Vấp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/tertiary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Ngày -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_calendar_outline"
+                    app:tint="@color/content" />
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Ngày"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/edt_date"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_search_bar"
+                    android:drawableEnd="@drawable/ic_calendar_outline"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/tertiary"
+                    android:focusable="false"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:hint="Chọn ngày"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/tertiary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Giờ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_clock"
+                    app:tint="@color/content" />
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Giờ"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/edt_time"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_search_bar"
+                    android:drawableEnd="@drawable/ic_chevron_down"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/tertiary"
+                    android:focusable="false"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:hint="Chọn giờ"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/tertiary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Tháng -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_calendar"
+                    app:tint="@color/content" />
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Tháng"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/edt_month"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_search_bar"
+                    android:drawableEnd="@drawable/ic_chevron_down"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/tertiary"
+                    android:focusable="false"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:hint="Chọn tháng"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/primary"
+                    android:textColorHint="@color/tertiary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/divider_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F0F0F0"
+        app:layout_constraintBottom_toTopOf="@id/layout_buttons" />
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:id="@+id/layout_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/neutral"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_reset"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Đặt lại"
+            android:textAllCaps="false"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/primary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_apply"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1.5"
+            android:backgroundTint="@color/primary"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Áp dụng"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

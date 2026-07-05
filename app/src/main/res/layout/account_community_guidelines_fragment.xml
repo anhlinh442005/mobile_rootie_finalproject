@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/neutral">
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/white"
+        android:paddingHorizontal="16dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:contentDescription="Back"
+            android:focusable="true"
+            android:src="@drawable/ic_arrow_back_thin"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Tiêu chuẩn cộng đồng"
+            android:textColor="@color/primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/header"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card_white"
+            android:elevation="2dp"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:lineSpacingExtra="4dp"
+                android:text="Rootie là cộng đồng yêu làm đẹp thuần chay, nơi mọi người chia sẻ kinh nghiệm chăm sóc da, routine và sản phẩm một cách tích cực, an toàn và tôn trọng lẫn nhau. Khi tham gia Beauty Explore, bình luận, đánh giá hoặc tương tác trên ứng dụng, bạn đồng ý tuân thủ các tiêu chuẩn dưới đây."
+                android:textColor="@color/content"
+                android:textSize="13sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginVertical="16dp"
+                android:background="@color/gray_light" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="1. Tôn trọng và thân thiện"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingExtra="4dp"
+                android:text="Không quấy rối, xúc phạm, phân biệt đối xử hoặc công kích cá nhân. Hãy lắng nghe và phản hồi mang tính xây dựng, đặc biệt khi thảo luận về tình trạng da nhạy cảm hay trải nghiệm điều trị."
+                android:textColor="@color/content"
+                android:textSize="12sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginVertical="16dp"
+                android:background="@color/gray_light" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="2. Nội dung được khuyến khích"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingExtra="4dp"
+                android:text="• Chia sẻ routine chăm sóc da thực tế và hành trình cải thiện làn da.\n• Đánh giá sản phẩm trung thực, có trải nghiệm sử dụng rõ ràng.\n• Gợi ý thành phần, mẹo dưỡng da phù hợp với triết lý thuần chay của Rootie.\n• Hỗ trợ thành viên mới trong cộng đồng một cách nhẹ nhàng, không phán xét."
+                android:textColor="@color/content"
+                android:textSize="12sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginVertical="16dp"
+                android:background="@color/gray_light" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="3. Nội dung không được phép"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingExtra="4dp"
+                android:text="• Spam, quảng cáo trái phép, link lừa đảo hoặc nội dung gây hiểu nhầm.\n• Thông tin y khoa sai lệch, chẩn đoán bệnh hoặc khuyến khích tự điều trị nguy hiểm.\n• Hình ảnh phản cảm, bạo lực, vi phạm bản quyền hoặc quyền riêng tư của người khác.\n• Mua bán, trao đổi sản phẩm không qua kênh chính thức của Rootie."
+                android:textColor="@color/content"
+                android:textSize="12sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginVertical="16dp"
+                android:background="@color/gray_light" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="4. Đánh giá và chia sẻ trải nghiệm"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingExtra="4dp"
+                android:text="Đánh giá sản phẩm, dịch vụ soi da hay lịch hẹn cần dựa trên trải nghiệm thật. Không đăng review giả, nhận hối lộ hoặc cố ý bôi nhọ thương hiệu. Kết quả quét da AI chỉ mang tính tham khảo, không thay thế tư vấn từ chuyên gia."
+                android:textColor="@color/content"
+                android:textSize="12sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginVertical="16dp"
+                android:background="@color/gray_light" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="5. Bảo vệ quyền riêng tư"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingExtra="4dp"
+                android:text="Không đăng tải thông tin cá nhân của người khác (số điện thoại, địa chỉ, hình ảnh khuôn mặt) khi chưa được phép. Hãy cân nhắc che thông tin nhạy cảm trước khi chia sẻ ảnh da hoặc hóa đơn mua hàng."
+                android:textColor="@color/content"
+                android:textSize="12sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginVertical="16dp"
+                android:background="@color/gray_light" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="6. Xử lý vi phạm"
+                android:textColor="@color/primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingExtra="4dp"
+                android:text="Rootie có quyền ẩn, gỡ nội dung hoặc tạm khóa tài khoản vi phạm tiêu chuẩn cộng đồng. Với hành vi nghiêm trọng hoặc tái phạm, tài khoản có thể bị chấm dứt vĩnh viễn. Nếu bạn phát hiện nội dung không phù hợp, vui lòng báo cáo qua Trung tâm hỗ trợ."
+                android:textColor="@color/content"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:gravity="center"
+                android:text="Cảm ơn bạn đã cùng Rootie xây dựng một cộng đồng làm đẹp lành mạnh và tử tế."
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

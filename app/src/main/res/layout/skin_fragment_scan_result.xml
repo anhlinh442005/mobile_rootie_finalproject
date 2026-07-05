@@ -273,8 +273,9 @@
 
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="220dp"
-                        android:layout_marginTop="8dp">
+                        android:layout_height="260dp"
+                        android:layout_marginTop="8dp"
+                        android:clipChildren="false">
 
                         <com.github.mikephil.charting.charts.RadarChart
                             android:id="@+id/skin_result_radar_chart"

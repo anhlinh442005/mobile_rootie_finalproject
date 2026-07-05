@@ -3,6 +3,8 @@ package com.veganbeauty.app.features.myskin;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
+import com.veganbeauty.app.data.local.entities.StoreEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 
 import java.text.SimpleDateFormat;
@@ -43,6 +46,10 @@ public class BookingFragment extends RootieFragment {
     private BookingTimeAdapter timeAdapter;
     private BookingDateAdapter dateAdapter;
     private RecyclerView rvDates;
+    private TextView storeNameView;
+    private ImageView storeImageView;
+    private List<StoreEntity> branchList = new ArrayList<>();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private final List<String> baseTimes = Arrays.asList("09:00","10:00","11:00","14:00","15:00","16:00","17:00","18:00");
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -66,14 +73,12 @@ public class BookingFragment extends RootieFragment {
     @Override
     public void setupUI(View view) {
         Bundle args = getArguments();
-        storeNameStr = args != null ? args.getString("STORE_NAME", "Rootie Gò Vấp") : "Rootie Gò Vấp";
-        storeAddressStr = args != null ? args.getString("STORE_ADDRESS", "27 Quang Trung, P.10, Gò Vấp") : "27 Quang Trung, P.10, Gò Vấp";
+        storeNameStr = args != null ? args.getString("STORE_NAME", "") : "";
+        storeAddressStr = args != null ? args.getString("STORE_ADDRESS", "") : "";
         storeImageUrlStr = args != null ? args.getString("STORE_IMAGE_URL", "") : "";
 
-        TextView storeName = view.findViewById(R.id.booking_store_name);
-        TextView storeAddress = view.findViewById(R.id.booking_store_address);
-        ImageView storeImage = view.findViewById(R.id.booking_store_image);
-        TextView btnChangeStore = view.findViewById(R.id.btn_change_store);
+        storeNameView = view.findViewById(R.id.booking_store_name);
+        storeImageView = view.findViewById(R.id.booking_store_image);
         ImageView btnBack = view.findViewById(R.id.btn_back);
         TextView btnConfirm = view.findViewById(R.id.btn_confirm_booking);
         ImageView btnCalendar = view.findViewById(R.id.booking_btn_calendar);
@@ -81,17 +86,23 @@ public class BookingFragment extends RootieFragment {
         rvDates = view.findViewById(R.id.rv_dates);
         RecyclerView rvTimes = view.findViewById(R.id.rv_times);
 
-        storeName.setText(storeNameStr);
-        storeAddress.setText(storeAddressStr);
+        if (!storeNameStr.isEmpty()) {
+            storeNameView.setText(storeNameStr);
+        } else {
+            storeNameView.setText("Chọn chi nhánh");
+        }
         if (!storeImageUrlStr.isEmpty()) {
             com.bumptech.glide.Glide.with(requireContext())
                     .load(storeImageUrlStr)
                     .placeholder(R.drawable.imv_logo)
                     .error(R.drawable.imv_logo)
-                    .into(storeImage);
+                    .into(storeImageView);
         } else {
-            storeImage.setImageResource(R.drawable.imv_logo);
+            storeImageView.setImageResource(R.drawable.imv_logo);
         }
+
+        storeNameView.setOnClickListener(v -> showBranchPicker());
+        loadBranchesFromFirebase();
 
         List<BookingService> mockServices = Arrays.asList(
                 new BookingService("1", "Soi da cơ bản", "30 phút * Miễn phí", "30 phút"),
@@ -128,14 +139,60 @@ public class BookingFragment extends RootieFragment {
         });
 
         btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        btnChangeStore.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         btnConfirm.setOnClickListener(v -> {
+            if (storeNameStr.isEmpty()) {
+                Toast.makeText(getContext(), "Vui lòng chọn chi nhánh", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (selectedService == null || selectedDate == null || selectedTime == null) {
                 Toast.makeText(getContext(), "Vui lòng chọn đầy đủ Dịch vụ, Ngày và Giờ", Toast.LENGTH_SHORT).show();
                 return;
             }
             showConfirmationDialog();
         });
+    }
+
+    private void loadBranchesFromFirebase() {
+        executor.execute(() -> {
+            List<StoreEntity> stores = new FirestoreService().fetchAllStores();
+            mainHandler.post(() -> {
+                branchList = stores != null ? stores : new ArrayList<>();
+            });
+        });
+    }
+
+    private void showBranchPicker() {
+        if (branchList.isEmpty()) {
+            Toast.makeText(getContext(), "Đang tải danh sách chi nhánh...", Toast.LENGTH_SHORT).show();
+            loadBranchesFromFirebase();
+            return;
+        }
+
+        String[] branchNames = new String[branchList.size()];
+        for (int i = 0; i < branchList.size(); i++) {
+            branchNames[i] = branchList.get(i).getTenCuaHang();
+        }
+
+        new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
+                .setTitle("Chọn chi nhánh")
+                .setItems(branchNames, (dialog, which) -> {
+                    StoreEntity selected = branchList.get(which);
+                    storeNameStr = selected.getTenCuaHang();
+                    storeAddressStr = selected.getDiaChiDayDu();
+                    storeImageUrlStr = selected.getImageUrl();
+
+                    storeNameView.setText(storeNameStr);
+                    if (!storeImageUrlStr.isEmpty()) {
+                        com.bumptech.glide.Glide.with(requireContext())
+                                .load(storeImageUrlStr)
+                                .placeholder(R.drawable.imv_logo)
+                                .error(R.drawable.imv_logo)
+                                .into(storeImageView);
+                    } else {
+                        storeImageView.setImageResource(R.drawable.imv_logo);
+                    }
+                })
+                .show();
     }
 
     private void setupDateList(Calendar startCal) {
@@ -182,7 +239,7 @@ public class BookingFragment extends RootieFragment {
             boolean isToday = now.get(Calendar.YEAR) == selectedCal.get(Calendar.YEAR)
                     && now.get(Calendar.DAY_OF_YEAR) == selectedCal.get(Calendar.DAY_OF_YEAR);
             int curH = now.get(Calendar.HOUR_OF_DAY);
-            
+
             String userEmail = ProfileSession.getEmail(requireContext());
             List<BookingHistoryEntity> userBookings = new LocalJsonReader(requireContext()).getUserBookingHistory(userEmail);
             String selectedDateStr = new SimpleDateFormat("dd/MM", Locale.getDefault()).format(selectedCal.getTime()) + "/" + selectedCal.get(Calendar.YEAR);
@@ -191,10 +248,10 @@ public class BookingFragment extends RootieFragment {
                 String timeSlot = baseTimes.get(i);
                 int slotHour = Integer.parseInt(timeSlot.split(":")[0]);
                 boolean locked = isToday && slotHour <= curH;
-                
+
                 if (!locked && userBookings != null) {
                     for (BookingHistoryEntity b : userBookings) {
-                        if (("Sắp diễn ra".equals(b.getStatus()) || "Chờ xác nhận".equals(b.getStatus())) 
+                        if (("Sắp diễn ra".equals(b.getStatus()) || "Chờ xác nhận".equals(b.getStatus()) || "pending".equalsIgnoreCase(b.getStatus())) 
                             && selectedDateStr.equals(b.getDateDisplay()) 
                             && b.getTime() != null && b.getTime().startsWith(timeSlot)) {
                             locked = true;
@@ -235,8 +292,9 @@ public class BookingFragment extends RootieFragment {
         String userId = ProfileSession.getUserId(requireContext());
         String isoTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(new Date());
 
+        String bookingId = "RS" + String.valueOf(System.currentTimeMillis()).substring(String.valueOf(System.currentTimeMillis()).length() - 8);
         BookingHistoryEntity booking = new BookingHistoryEntity(
-                "RS" + String.valueOf(System.currentTimeMillis()).substring(String.valueOf(System.currentTimeMillis()).length() - 8),
+                bookingId,
                 userId,
                 ProfileSession.getFullName(requireContext()),
                 ProfileSession.getPhone(requireContext()),
@@ -264,7 +322,7 @@ public class BookingFragment extends RootieFragment {
             new FirestoreService().uploadBooking(bookingFinal);
         });
 
-        BookingSuccessFragment successFragment = BookingSuccessFragment.newInstance(storeNameStr, dateTime, specialist, service);
+        BookingSuccessFragment successFragment = BookingSuccessFragment.newInstance(bookingId, storeNameStr, dateTime, specialist, service);
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.slide_out_right)
                 .replace(R.id.main_container, successFragment)

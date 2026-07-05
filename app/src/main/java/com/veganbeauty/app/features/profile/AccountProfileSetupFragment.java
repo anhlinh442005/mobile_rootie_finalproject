@@ -114,7 +114,12 @@ public class AccountProfileSetupFragment extends RootieFragment {
         });
 
         _binding.btnHelpCenter.setOnClickListener(v -> Toast.makeText(context, "Trung tâm hỗ trợ (Đang phát triển)", Toast.LENGTH_SHORT).show());
-        _binding.btnCommunityGuidelines.setOnClickListener(v -> Toast.makeText(context, "Tiêu chuẩn cộng đồng (Đang phát triển)", Toast.LENGTH_SHORT).show());
+        _binding.btnCommunityGuidelines.setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, new CommunityGuidelinesFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
         _binding.btnTerms.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new HomePolicyFragment())

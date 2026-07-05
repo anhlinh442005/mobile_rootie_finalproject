@@ -24,6 +24,15 @@ public class HomeAboutUsFragment extends RootieFragment {
     public void setupUI(@NonNull View view) {
         NavAppUtils.setupNavApp(this, view, R.id.nav_home);
         HomeHeaderHelper.setup(this, view);
+
+        View btnBack = view.findViewById(R.id.btn_back);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+                    getParentFragmentManager().popBackStack();
+                }
+            });
+        }
     }
 
     @Override
