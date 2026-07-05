@@ -139,7 +139,7 @@ public class IngredientFragment extends Fragment {
                 boolean isSelected = ("Tất cả".equals(chipType) && selectedType == null) || chipType.equals(selectedType);
 
                 if (isSelected) {
-                    chip.setBackgroundResource(R.drawable.com_bg_chip_selected);
+                    chip.setBackgroundResource(R.drawable.bg_btn_buy);
                     chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
                 } else {
                     chip.setBackgroundResource(R.drawable.com_bg_chip_default);

@@ -102,9 +102,33 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <include
+    <FrameLayout
         android:id="@+id/home_header_notification_btn"
-        layout="@layout/include_notification_bell"
         android:layout_width="36dp"
-        android:layout_height="36dp" />
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/home_ic_notification"
+            android:tint="@color/primary" />
+
+        <TextView
+            android:id="@+id/home_header_notification_badge"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/home_bg_notification_badge"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/white"
+            android:textSize="8sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>

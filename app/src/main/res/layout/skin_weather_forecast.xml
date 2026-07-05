@@ -29,7 +29,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="66dp"
-                android:background="@drawable/bg_header_gradient"
+                android:background="@drawable/bg_points_card_gradient"
                 android:paddingHorizontal="16dp">
 
                 <ImageView
@@ -323,7 +323,7 @@
                             android:layout_height="42dp"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:src="@drawable/ic_weather_sun"
+                            android:src="@drawable/ic_sun"
                             app:tint="#F0C43D" />
                     </RelativeLayout>
 
@@ -598,7 +598,7 @@
                             android:id="@+id/iv_warning_icon"
                             android:layout_width="18dp"
                             android:layout_height="18dp"
-                            android:src="@drawable/ic_weather_warning"
+                            android:src="@drawable/ic_warning"
                             app:tint="#3E4D44" />
 
                         <TextView
@@ -628,7 +628,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_weather_sparkles"
+                    android:src="@drawable/ic_ai_outline"
                     app:tint="#3E4D44" />
 
                 <TextView
@@ -712,7 +712,7 @@
                             android:layout_height="10dp"
                             android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_dialog_btn_confirm"
                             android:backgroundTint="#F04758" />
 
                         <TextView
@@ -753,7 +753,7 @@
                             android:layout_height="10dp"
                             android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_dialog_btn_confirm"
                             android:backgroundTint="#9ADDFA" />
 
                         <TextView
@@ -794,7 +794,7 @@
                             android:layout_height="10dp"
                             android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_dialog_btn_confirm"
                             android:backgroundTint="#F9FAEE" />
 
                         <TextView
@@ -850,7 +850,7 @@
                         android:layout_height="24dp"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/ic_skin_weather_noti"
+                        android:src="@drawable/ic_cloud_sun_rain"
                         app:tint="@color/secondary" />
 
                     <!-- Text description -->
@@ -899,7 +899,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
@@ -921,7 +921,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_weather_wand"
+                        android:src="@drawable/ic_wand"
                         app:tint="@color/primary" />
 
                     <TextView
@@ -969,14 +969,14 @@
                     <FrameLayout
                         android:layout_width="46dp"
                         android:layout_height="46dp"
-                        android:background="@drawable/bg_circle_green"
+                        android:background="@drawable/bg_dialog_btn_confirm"
                         android:backgroundTint="@color/primary_light"
                         android:padding="8dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_weather_drop"
+                            android:src="@drawable/ic_water"
                             app:tint="@color/primary" />
                     </FrameLayout>
 
@@ -1031,14 +1031,14 @@
                     <FrameLayout
                         android:layout_width="46dp"
                         android:layout_height="46dp"
-                        android:background="@drawable/bg_circle_green"
+                        android:background="@drawable/bg_dialog_btn_confirm"
                         android:backgroundTint="@color/primary_light"
                         android:padding="8dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_weather_sun_outlined"
+                            android:src="@drawable/ic_sun"
                             app:tint="@color/primary" />
                     </FrameLayout>
 
@@ -1093,14 +1093,14 @@
                     <FrameLayout
                         android:layout_width="46dp"
                         android:layout_height="46dp"
-                        android:background="@drawable/bg_circle_green"
+                        android:background="@drawable/bg_dialog_btn_confirm"
                         android:backgroundTint="@color/primary_light"
                         android:padding="8dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_weather_lotion"
+                            android:src="@drawable/ic_blog_bodycare"
                             app:tint="@color/primary" />
                     </FrameLayout>
 
@@ -1155,14 +1155,14 @@
                     <FrameLayout
                         android:layout_width="46dp"
                         android:layout_height="46dp"
-                        android:background="@drawable/bg_circle_green"
+                        android:background="@drawable/bg_dialog_btn_confirm"
                         android:backgroundTint="@color/primary_light"
                         android:padding="8dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_weather_protect"
+                            android:src="@drawable/ic_shield_verified"
                             app:tint="@color/primary" />
                     </FrameLayout>
 
@@ -1207,7 +1207,7 @@
                     android:id="@+id/btn_suit_appropriate"
                     android:layout_width="108dp"
                     android:layout_height="39dp"
-                    android:background="@drawable/bg_btn_solid_feedback"
+                    android:background="@drawable/com_bg_tab_active"
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:clickable="true"
@@ -1216,7 +1216,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_weather_like"
+                        android:src="@drawable/ic_like"
                         app:tint="#FFFFFF" />
 
                     <TextView
@@ -1241,7 +1241,7 @@
                     android:id="@+id/btn_suit_lighter"
                     android:layout_width="85dp"
                     android:layout_height="39dp"
-                    android:background="@drawable/bg_btn_outlined_feedback"
+                    android:background="@drawable/quiz_bg_pill_suitable"
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:clickable="true"
@@ -1250,7 +1250,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_weather_wand"
+                        android:src="@drawable/ic_wand"
                         app:tint="#67814D" />
 
                     <TextView
@@ -1275,7 +1275,7 @@
                     android:id="@+id/btn_suit_unsuitable"
                     android:layout_width="108dp"
                     android:layout_height="39dp"
-                    android:background="@drawable/bg_btn_outlined_feedback"
+                    android:background="@drawable/quiz_bg_pill_suitable"
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:clickable="true"
@@ -1284,7 +1284,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_weather_dislike"
+                        android:src="@drawable/ic_dislike"
                         app:tint="#67814D" />
 
                     <TextView

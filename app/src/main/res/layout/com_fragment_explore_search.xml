@@ -31,7 +31,7 @@
             android:layout_weight="1"
             android:layout_height="40dp"
             android:layout_marginStart="12dp"
-            android:background="@drawable/bg_search_bar"
+            android:background="@drawable/bg_white_rounded_corner_border"
             android:hint="Tìm kiếm cẩm nang, chăm da..."
             android:paddingHorizontal="12dp"
             android:drawableStart="@drawable/ic_search"

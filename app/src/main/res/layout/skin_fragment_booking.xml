@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:background="@drawable/skin_bg_store_card"
+                android:background="@drawable/com_bg_popup_menu"
                 android:padding="12dp">
 
                 <androidx.cardview.widget.CardView
@@ -203,7 +203,7 @@
             android:id="@+id/btn_confirm_booking"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/skin_bg_btn_book"
+            android:background="@drawable/bg_btn_buy"
             android:fontFamily="@font/be_vietnam_pro"
             android:gravity="center"
             android:text="Xác nhận đặt lịch"

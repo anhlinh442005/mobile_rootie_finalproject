@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/skin_bg_store_card"
+    android:background="@drawable/com_bg_popup_menu"
     android:padding="20dp">
 
     <LinearLayout
@@ -212,7 +212,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/skin_bg_btn_solid_dark"
+        android:background="@drawable/com_bg_tab_active"
         android:gravity="center"
         android:text="Gửi"
         android:textColor="@color/white"

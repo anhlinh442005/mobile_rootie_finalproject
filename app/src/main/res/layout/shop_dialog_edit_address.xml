@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:background="@drawable/bg_dialog_container"
+    android:background="@drawable/com_bg_post"
     android:orientation="vertical"
     android:padding="24dp">
 
@@ -133,7 +133,7 @@
                 android:layout_height="26dp"
                 android:layout_gravity="center_vertical|start"
                 android:layout_marginStart="2dp"
-                android:src="@drawable/bg_switch_thumb" />
+                android:src="@drawable/bg_white_rounded_corner_border" />
         </FrameLayout>
     </LinearLayout>
 
@@ -171,7 +171,7 @@
             android:layout_width="0dp"
             android:layout_height="45dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_btn_solid"
+            android:background="@drawable/bg_btn_buy"
             android:backgroundTint="#375633"
             android:clickable="true"
             android:focusable="true">

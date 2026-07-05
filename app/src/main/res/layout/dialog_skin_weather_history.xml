@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/bg_bottom_sheet"
+    android:background="@drawable/com_bg_post"
     android:paddingTop="12dp"
     android:paddingBottom="24dp"
     android:paddingHorizontal="20dp">
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/bg_btn_solid_feedback"
+        android:background="@drawable/com_bg_tab_active"
         android:backgroundTint="@color/primary"
         android:fontFamily="@font/lexend"
         android:gravity="center"

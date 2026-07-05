@@ -11,7 +11,7 @@
         android:id="@+id/clHeader"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
@@ -350,7 +350,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_info_chip_green"
+                    android:background="@drawable/bg_tag_valid"
                     android:fontFamily="@font/be_vietnam_pro_regular"
                     android:padding="10dp"
                     android:text="Bạn đã chọn nhận hàng tại cửa hàng. Vui lòng chọn cửa hàng bên dưới."
@@ -458,7 +458,7 @@
                         android:layout_height="26dp"
                         android:layout_gravity="center_vertical|start"
                         android:layout_marginStart="2dp"
-                        android:src="@drawable/bg_switch_thumb" />
+                        android:src="@drawable/bg_white_rounded_corner_border" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -573,7 +573,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </LinearLayout>
 
@@ -879,7 +879,7 @@
                     android:layout_height="26dp"
                     android:layout_gravity="center_vertical|start"
                     android:layout_marginStart="2dp"
-                    android:src="@drawable/bg_switch_thumb" />
+                    android:src="@drawable/bg_white_rounded_corner_border" />
             </FrameLayout>
         </LinearLayout>
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/skin_bg_rounded_white"
+    android:background="@drawable/com_bg_post"
     android:padding="20dp">
 
     <!-- Close button -->
@@ -22,7 +22,7 @@
         android:id="@+id/iv_warning"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@drawable/quiz_ic_warning_circle"
+        android:src="@drawable/ic_warning"
         app:layout_constraintBottom_toBottomOf="@id/tv_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_title" />
@@ -126,7 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:background="@drawable/skin_bg_btn_book"
+                    android:background="@drawable/bg_btn_buy"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="2dp"
                     android:text="Sắp diễn ra"

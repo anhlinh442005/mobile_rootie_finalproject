@@ -16,7 +16,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_arrow_back"
+            android:src="@drawable/ic_arrow_back_thin"
             app:tint="#555555" />
 
         <LinearLayout
@@ -48,7 +48,7 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_menu_sort"
+            android:src="@drawable/ic_menu"
             app:tint="#555555" />
     </RelativeLayout>
 

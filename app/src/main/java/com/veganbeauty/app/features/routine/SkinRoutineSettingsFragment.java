@@ -110,7 +110,7 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         binding.tabMorning.setOnClickListener(v -> {
             if (!isMorningTabSelected) {
                 isMorningTabSelected = true;
-                binding.tabMorning.setBackgroundResource(R.drawable.skin_bg_tab_selected);
+                binding.tabMorning.setBackgroundResource(R.drawable.skin_bg_btn_green);
                 binding.tabMorning.setTextColor(Color.WHITE);
                 binding.tabEvening.setBackgroundColor(Color.TRANSPARENT);
                 binding.tabEvening.setTextColor(Color.parseColor("#3E4D44"));
@@ -121,7 +121,7 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         binding.tabEvening.setOnClickListener(v -> {
             if (isMorningTabSelected) {
                 isMorningTabSelected = false;
-                binding.tabEvening.setBackgroundResource(R.drawable.skin_bg_tab_selected);
+                binding.tabEvening.setBackgroundResource(R.drawable.skin_bg_btn_green);
                 binding.tabEvening.setTextColor(Color.WHITE);
                 binding.tabMorning.setBackgroundColor(Color.TRANSPARENT);
                 binding.tabMorning.setTextColor(Color.parseColor("#3E4D44"));
@@ -136,7 +136,7 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
     private void updateSwitchUI(ViewGroup container, ImageView thumb, boolean enabled) {
         int margin = (int) (2 * getResources().getDisplayMetrics().density);
         if (enabled) {
-            container.setBackgroundResource(R.drawable.ic_switch_track_on_yellow);
+            container.setBackgroundResource(R.drawable.ic_switch_track_on);
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) thumb.getLayoutParams();
             lp.gravity = Gravity.CENTER_VERTICAL | Gravity.END;
             lp.setMarginStart(0); lp.setMarginEnd(margin);

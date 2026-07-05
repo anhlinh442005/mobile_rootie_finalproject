@@ -180,16 +180,16 @@ public class AccountProfileAddressFragment extends RootieFragment {
         binding.tvOfficeAddress.setText(officeAddr);
 
         if ("HOME".equals(defaultType)) {
-            binding.badgeHomeDefault.setBackgroundResource(R.drawable.bg_badge_default_active);
+            binding.badgeHomeDefault.setBackgroundResource(R.drawable.bg_dialog_btn_confirm);
             binding.badgeHomeDefault.setTextColor(Color.parseColor("#D9D9D9"));
             
-            binding.badgeOfficeDefault.setBackgroundResource(R.drawable.bg_badge_default_inactive);
+            binding.badgeOfficeDefault.setBackgroundResource(R.drawable.tab_inactive_bg);
             binding.badgeOfficeDefault.setTextColor(Color.parseColor("#000000"));
         } else {
-            binding.badgeOfficeDefault.setBackgroundResource(R.drawable.bg_badge_default_active);
+            binding.badgeOfficeDefault.setBackgroundResource(R.drawable.bg_dialog_btn_confirm);
             binding.badgeOfficeDefault.setTextColor(Color.parseColor("#D9D9D9"));
             
-            binding.badgeHomeDefault.setBackgroundResource(R.drawable.bg_badge_default_inactive);
+            binding.badgeHomeDefault.setBackgroundResource(R.drawable.tab_inactive_bg);
             binding.badgeHomeDefault.setTextColor(Color.parseColor("#000000"));
         }
     }

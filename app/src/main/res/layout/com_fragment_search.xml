@@ -43,7 +43,7 @@
             android:layout_height="36dp"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
-            android:background="@drawable/bg_search_bar"
+            android:background="@drawable/bg_white_rounded_corner_border"
             app:layout_constraintStart_toEndOf="@id/ivBack"
             app:layout_constraintEnd_toStartOf="@id/tvSearchAction"
             app:layout_constraintTop_toTopOf="parent"

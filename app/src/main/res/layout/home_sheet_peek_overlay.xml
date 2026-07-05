@@ -21,6 +21,6 @@
         android:layout_height="5dp"
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="14dp"
-        android:background="@drawable/home_peek_handle" />
+        android:background="@drawable/bg_btn_buy" />
 
 </FrameLayout>

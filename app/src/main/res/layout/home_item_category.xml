@@ -10,7 +10,7 @@
     <FrameLayout
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:background="@drawable/bg_home_category_circle"
+        android:background="@drawable/bg_circle_grey"
         android:padding="14dp">
 
         <ImageView

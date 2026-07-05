@@ -28,7 +28,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_circle_icon"
+                android:background="@drawable/com_bg_post"
                 android:backgroundTint="#0D677559" />
 
             <!-- Inner soft ring -->
@@ -36,7 +36,7 @@
                 android:layout_width="76dp"
                 android:layout_height="76dp"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_circle_icon"
+                android:background="@drawable/com_bg_post"
                 android:backgroundTint="#1A677559">
 
                 <!-- Main Olive Green Badge -->
@@ -44,7 +44,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:background="@drawable/bg_circle_icon"
+                    android:background="@drawable/com_bg_post"
                     android:backgroundTint="#677559">
 
                     <!-- Lotus/Sparkles Line Art -->
@@ -53,7 +53,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/quiz_ic_lotus"
+                        android:src="@drawable/ic_flower"
                         app:tint="#FEFBF4" />
                 </FrameLayout>
             </FrameLayout>
@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="@drawable/status_badge_bg"
+            android:background="@drawable/com_bg_post"
             android:backgroundTint="#FFF6E5"
             android:paddingHorizontal="12dp"
             android:paddingVertical="5dp"
@@ -121,7 +121,7 @@
             android:id="@+id/btn_dialog_confirm"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@drawable/bg_btn_pill_solid"
+            android:background="@drawable/bg_btn_buy"
             android:backgroundTint="#3E4D44"
             android:gravity="center"
             android:orientation="horizontal"

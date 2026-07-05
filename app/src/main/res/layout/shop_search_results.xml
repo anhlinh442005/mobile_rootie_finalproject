@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp">
@@ -27,7 +27,7 @@
             android:layout_height="36dp"
             android:layout_marginHorizontal="16dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_search_bar"
+            android:background="@drawable/bg_white_rounded_corner_border"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="12dp">

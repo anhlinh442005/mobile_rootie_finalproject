@@ -25,7 +25,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="66dp"
-                android:background="@drawable/bg_header_gradient"
+                android:background="@drawable/bg_points_card_gradient"
                 android:paddingHorizontal="16dp"
                 android:gravity="center_vertical">
 
@@ -62,7 +62,7 @@
                     android:layout_centerVertical="true"
                     android:padding="7dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_notification"
+                    android:src="@drawable/ic_bell"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true" />
@@ -81,7 +81,8 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginTop="2dp"
-                    android:src="@drawable/ic_warning_red" />
+                    android:src="@drawable/ic_warning_outline"
+                    app:tint="@color/selector_warning_tint" />
 
                 <TextView
                     android:layout_width="0dp"

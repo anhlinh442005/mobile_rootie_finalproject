@@ -129,7 +129,7 @@ public class VoucherListAdapter extends RecyclerView.Adapter<VoucherListAdapter.
 
         String typeKey = item.getType().toLowerCase().replace(" ", "").replace("_", "");
         if ("freeship".equals(typeKey) || "voucherfreeship".equals(typeKey)) {
-            binding.ivVoucherIcon.setImageResource(R.drawable.ic_truck);
+            binding.ivVoucherIcon.setImageResource(R.drawable.ic_shipping);
             binding.ivVoucherIcon.setColorFilter(Color.parseColor("#556348"));
             binding.ivVoucherIconBg.setBackgroundResource(R.drawable.bg_icon_rounded_green);
         } else if ("gift".equals(typeKey) || "productgift".equals(typeKey) || "product".equals(typeKey) || "product_gift".equals(typeKey)) {
@@ -177,7 +177,7 @@ public class VoucherListAdapter extends RecyclerView.Adapter<VoucherListAdapter.
             binding.tvVoucherCodeLabel.setTextColor(Color.parseColor("#666666"));
 
             binding.btnVoucherAction.setText("Sử dụng ngay");
-            binding.btnVoucherAction.setBackgroundResource(R.drawable.bg_button_copy);
+            binding.btnVoucherAction.setBackgroundResource(R.drawable.com_bg_tab_active);
             binding.btnVoucherAction.setTextColor(Color.WHITE);
             binding.btnVoucherAction.setEnabled(true);
             binding.btnVoucherAction.setOnClickListener(v -> {
@@ -192,7 +192,7 @@ public class VoucherListAdapter extends RecyclerView.Adapter<VoucherListAdapter.
             });
 
             binding.tvVoucherStatusTag.setText("Hết hạn");
-            binding.tvVoucherStatusTag.setBackgroundResource(R.drawable.bg_tag_expired);
+            binding.tvVoucherStatusTag.setBackgroundResource(R.drawable.bg_circle_grey);
             binding.tvVoucherStatusTag.setTextColor(Color.parseColor("#888888"));
 
             binding.tvVoucherTitle.setPaintFlags(binding.tvVoucherTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -202,7 +202,7 @@ public class VoucherListAdapter extends RecyclerView.Adapter<VoucherListAdapter.
             binding.tvVoucherCodeLabel.setTextColor(Color.parseColor("#999999"));
 
             binding.btnVoucherAction.setText("Đã hết hạn");
-            binding.btnVoucherAction.setBackgroundResource(R.drawable.bg_button_disabled);
+            binding.btnVoucherAction.setBackgroundResource(R.drawable.bg_circle_grey);
             binding.btnVoucherAction.setTextColor(Color.parseColor("#888888"));
             binding.btnVoucherAction.setEnabled(false);
             binding.btnVoucherAction.setOnClickListener(null);

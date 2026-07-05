@@ -204,7 +204,8 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_warning_red" />
+                    android:src="@drawable/ic_warning_outline"
+                    app:tint="@color/selector_warning_tint" />
 
                 <!-- Rich styling for bold "500 điểm" text is handled dynamically in Kotlin -->
                 <TextView
@@ -341,7 +342,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/tab_active_bg"
+                            android:background="@drawable/bg_btn_buy"
                             android:clickable="true"
                             android:focusable="true"
                             android:fontFamily="sans-serif"
@@ -429,7 +430,7 @@
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
-                            android:src="@drawable/ic_location"
+                            android:src="@drawable/ic_account_location"
                             app:tint="#718096" />
 
                         <TextView
@@ -465,7 +466,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/tab_active_bg"
+                        android:background="@drawable/bg_btn_buy"
                         android:clickable="true"
                         android:focusable="true"
                         android:fontFamily="sans-serif"

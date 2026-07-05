@@ -96,12 +96,12 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 }
                 itemHolder.llActions.setVisibility(View.VISIBLE);
             } else if (status.equalsIgnoreCase("Đã hoàn thành")) {
-                itemHolder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_completed);
+                itemHolder.tvStatusTag.setBackgroundResource(R.drawable.bg_tag_valid);
                 itemHolder.tvStatusTag.setTextColor(Color.parseColor("#2E7D32"));
                 itemHolder.llActions.setVisibility(View.GONE);
             } else if (status.equalsIgnoreCase("Đã huỷ") || status.equalsIgnoreCase("Đã hủy")) {
                 itemHolder.tvStatusTag.setText("Đã huỷ");
-                itemHolder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_cancelled);
+                itemHolder.tvStatusTag.setBackgroundResource(R.drawable.bg_tag_expiring);
                 itemHolder.tvStatusTag.setTextColor(Color.parseColor("#C62828"));
                 itemHolder.llActions.setVisibility(View.GONE);
             } else {

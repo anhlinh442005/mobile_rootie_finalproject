@@ -95,7 +95,7 @@
             android:id="@+id/llQuantityControl"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
-            android:background="@drawable/bg_bottom_sheet_buy"
+            android:background="@drawable/com_bg_card_gray"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@id/cvProductImage"

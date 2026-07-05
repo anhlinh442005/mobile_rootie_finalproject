@@ -22,7 +22,7 @@
             android:layout_width="238dp"
             android:layout_height="197dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/slogan1"
+            android:src="@drawable/img_logo_slogan"
             android:layout_marginBottom="40dp" />
 
         <!-- Status Message -->
@@ -52,7 +52,7 @@
                 android:layout_width="64dp"
                 android:layout_height="73dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/quiz_ic_loading_character"
+                android:src="@drawable/mascot_loading"
                 android:layout_marginBottom="-4dp" />
 
             <!-- Custom Progress Bar -->
@@ -66,7 +66,7 @@
                     android:id="@+id/v_progress_fill"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:background="@drawable/quiz_bg_progress_fill" />
+                    android:background="@drawable/bg_badge_expiring" />
             </FrameLayout>
 
         </LinearLayout>

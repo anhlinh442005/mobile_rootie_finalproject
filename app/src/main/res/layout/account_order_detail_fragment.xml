@@ -106,7 +106,7 @@
                     android:id="@+id/tvStatusBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/status_badge_bg"
+                    android:background="@drawable/com_bg_post"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
                     android:fontFamily="sans-serif-medium"
@@ -192,7 +192,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_btn_subaction"
+                    android:background="@drawable/com_bg_post"
                     android:gravity="center"
                     android:paddingVertical="12dp"
                     android:paddingHorizontal="16dp"
@@ -207,7 +207,7 @@
                         android:layout_marginEnd="8dp"
                         android:visibility="gone"
                         tools:visibility="visible"
-                        tools:src="@drawable/ic_truck"
+                        tools:src="@drawable/ic_shipping"
                         tools:tint="@color/status_delivering_text" />
 
                     <TextView
@@ -266,7 +266,7 @@
                     android:id="@+id/ivPinIcon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_location"
+                    android:src="@drawable/ic_account_location"
                     app:tint="@color/primary"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -503,7 +503,7 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:background="@drawable/bg_btn_solid"
+            android:background="@drawable/bg_btn_buy"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"

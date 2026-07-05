@@ -143,7 +143,7 @@ public abstract class RootieFragment extends Fragment {
         );
         bellLp.gravity = Gravity.CENTER;
         bellIcon.setLayoutParams(bellLp);
-        bellIcon.setImageResource(R.drawable.ic_notification);
+        bellIcon.setImageResource(R.drawable.ic_bell);
         notificationContainer.addView(bellIcon);
 
         int size = (int) (14 * density);

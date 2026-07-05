@@ -19,7 +19,7 @@
         android:id="@+id/fl_option_icon_bg"
         android:layout_width="38dp"
         android:layout_height="38dp"
-        android:background="@drawable/quiz_bg_icon_rounded"
+        android:background="@drawable/com_bg_post"
         android:backgroundTint="#EAF2E3">
 
         <ImageView
@@ -27,7 +27,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
-            android:src="@drawable/quiz_ic_option_normal"
+            android:src="@drawable/ic_face_normal"
             app:tint="#3E4D44" />
     </FrameLayout>
 

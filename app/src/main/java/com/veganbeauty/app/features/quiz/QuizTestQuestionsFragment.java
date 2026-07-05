@@ -148,19 +148,19 @@ public class QuizTestQuestionsFragment extends RootieFragment {
                 String optionTextLower = optionText.toLowerCase();
                 int iconResId;
                 if (optionTextLower.contains("khô") || optionTextLower.contains("căng") || optionTextLower.contains("yếu") || optionTextLower.contains("mỏng") || optionTextLower.contains("thiếu")) {
-                    iconResId = R.drawable.quiz_ic_option_dry;
+                    iconResId = R.drawable.ic_dry;
                 } else if (optionTextLower.contains("dầu") || optionTextLower.contains("nhờn") || optionTextLower.contains("bóng") || optionTextLower.contains("mụn") || optionTextLower.contains("nhiều") || optionTextLower.contains("to")) {
-                    iconResId = R.drawable.quiz_ic_option_oily;
+                    iconResId = R.drawable.ic_water;
                 } else if (optionTextLower.contains("hỗn hợp") || optionTextLower.contains("không đều") || optionTextLower.contains("ửng đỏ") || optionTextLower.contains("rát") || optionTextLower.contains("kích ứng") || optionTextLower.contains("thỉnh thoảng") || optionTextLower.contains("nhạy cảm") || optionTextLower.contains("dễ")) {
-                    iconResId = R.drawable.quiz_ic_option_combination;
+                    iconResId = R.drawable.ic_ai_face;
                 } else if (optionTextLower.contains("bình thường") || optionTextLower.contains("không") || optionTextLower.contains("khỏe") || optionTextLower.contains("ít")) {
-                    iconResId = R.drawable.quiz_ic_option_normal;
+                    iconResId = R.drawable.ic_face_normal;
                 } else {
                     switch (i) {
-                        case 0: iconResId = R.drawable.quiz_ic_option_dry; break;
-                        case 1: iconResId = R.drawable.quiz_ic_option_normal; break;
-                        case 2: iconResId = R.drawable.quiz_ic_option_oily; break;
-                        default: iconResId = R.drawable.quiz_ic_option_combination; break;
+                        case 0: iconResId = R.drawable.ic_dry; break;
+                        case 1: iconResId = R.drawable.ic_face_normal; break;
+                        case 2: iconResId = R.drawable.ic_water; break;
+                        default: iconResId = R.drawable.ic_ai_face; break;
                     }
                 }
                 ivOptionIcon.setImageResource(iconResId);

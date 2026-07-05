@@ -175,7 +175,7 @@
                         <View
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_dialog_btn_confirm"
                             android:backgroundTint="#20FFFFFF"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -184,7 +184,7 @@
                         <View
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_dialog_btn_confirm"
                             android:backgroundTint="#20FFFFFF"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"

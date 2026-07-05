@@ -206,7 +206,7 @@ public class ReelPlayerDialog extends DialogFragment {
                     itemBinding.btnFollow.setTextColor(Color.WHITE);
                 } else {
                     itemBinding.btnFollow.setText("Theo dõi");
-                    itemBinding.btnFollow.setBackgroundResource(R.drawable.com_bg_filter_selected);
+                    itemBinding.btnFollow.setBackgroundResource(R.drawable.bg_btn_buy);
                     itemBinding.btnFollow.setBackgroundColor(Color.parseColor("#E53935"));
                     itemBinding.btnFollow.setTextColor(Color.WHITE);
                 }

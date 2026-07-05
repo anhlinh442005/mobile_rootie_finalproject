@@ -31,8 +31,6 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
-import com.veganbeauty.app.data.local.entities.ExploreVideoEntity;
-import com.veganbeauty.app.data.local.entities.IngredientEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import com.veganbeauty.app.databinding.ShopProductDetailBinding;
@@ -907,7 +905,7 @@ public class ShopDetailFragment extends RootieFragment {
         if (!triggeredAvoids.isEmpty() || !triggeredCautions.isEmpty()) {
             binding.cvSkinCompatibility.setCardBackgroundColor(Color.parseColor("#FFF2DF"));
             binding.cvSkinCompatibility.setStrokeColor(Color.parseColor("#D2945D"));
-            binding.ivCompatibilityIcon.setImageResource(R.drawable.quiz_ic_warning_triangle);
+            binding.ivCompatibilityIcon.setImageResource(R.drawable.ic_warning_triangle);
             binding.ivCompatibilityIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#FE851A")));
 
             binding.tvCompatibilityTitle.setText("Cảnh báo thành phần không phù hợp");
@@ -1015,7 +1013,7 @@ public class ShopDetailFragment extends RootieFragment {
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(sizePx, sizePx);
             lp.setMargins(4, 0, 4, 0);
             ImageView imageView = new ImageView(ctx);
-            imageView.setImageResource((i == 0) ? R.drawable.bg_circle_green : R.drawable.bg_circle_grey);
+            imageView.setImageResource((i == 0) ? R.drawable.bg_dialog_btn_confirm : R.drawable.bg_circle_grey);
             indicators.add(imageView);
             binding.llIndicatorContainer.addView(imageView, lp);
         }
@@ -1030,7 +1028,7 @@ public class ShopDetailFragment extends RootieFragment {
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(sizePx, sizePx);
                     lp.setMargins(4, 0, 4, 0);
                     indicators.get(i).setLayoutParams(lp);
-                    indicators.get(i).setImageResource((i == position) ? R.drawable.bg_circle_green : R.drawable.bg_circle_grey);
+                    indicators.get(i).setImageResource((i == position) ? R.drawable.bg_dialog_btn_confirm : R.drawable.bg_circle_grey);
                 }
             }
         };

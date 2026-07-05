@@ -186,9 +186,9 @@ public class CommunityNotificationFragment extends RootieFragment {
         boolean interactionsActive = "INTERACTION".equals(activeTab);
         boolean ordersActive = "ORDER".equals(activeTab);
 
-        _binding.tabPosts.setBackgroundResource(postsActive ? R.drawable.tab_active_bg : R.drawable.tab_inactive_bg);
-        _binding.tabInteractions.setBackgroundResource(interactionsActive ? R.drawable.tab_active_bg : R.drawable.tab_inactive_bg);
-        _binding.tabOrders.setBackgroundResource(ordersActive ? R.drawable.tab_active_bg : R.drawable.tab_inactive_bg);
+        _binding.tabPosts.setBackgroundResource(postsActive ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
+        _binding.tabInteractions.setBackgroundResource(interactionsActive ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
+        _binding.tabOrders.setBackgroundResource(ordersActive ? R.drawable.bg_btn_buy : R.drawable.tab_inactive_bg);
 
         int whiteColor = ContextCompat.getColor(requireContext(), R.color.white);
         int primaryColor = ContextCompat.getColor(requireContext(), R.color.primary);

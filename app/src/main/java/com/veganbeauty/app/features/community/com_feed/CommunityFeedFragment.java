@@ -275,7 +275,7 @@ public class CommunityFeedFragment extends RootieFragment {
                     tv.setBackground(requireContext().getDrawable(R.drawable.com_bg_filter_normal));
                     tv.setTextColor(requireContext().getColor(R.color.primary));
                 }
-                textView.setBackground(requireContext().getDrawable(R.drawable.com_bg_filter_selected));
+                textView.setBackground(requireContext().getDrawable(R.drawable.bg_btn_buy));
                 textView.setTextColor(Color.WHITE);
 
                 String text = textView.getText().toString();

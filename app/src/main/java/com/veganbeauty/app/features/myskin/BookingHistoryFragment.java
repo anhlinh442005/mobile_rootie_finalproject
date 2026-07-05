@@ -224,19 +224,19 @@ public class BookingHistoryFragment extends RootieFragment {
     }
 
     private void updateFilterUI() {
-        _binding.filterAll.setBackgroundResource(currentStatusFilter.equals("ALL") ? R.drawable.skin_bg_btn_book : R.drawable.skin_bg_outline);
+        _binding.filterAll.setBackgroundResource(currentStatusFilter.equals("ALL") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
         _binding.filterAll.setTextColor(currentStatusFilter.equals("ALL") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
 
-        _binding.filterPending.setBackgroundResource(currentStatusFilter.equals("PENDING") ? R.drawable.skin_bg_btn_book : R.drawable.skin_bg_outline);
+        _binding.filterPending.setBackgroundResource(currentStatusFilter.equals("PENDING") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
         _binding.filterPending.setTextColor(currentStatusFilter.equals("PENDING") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
 
-        _binding.filterUpcoming.setBackgroundResource(currentStatusFilter.equals("UPCOMING") ? R.drawable.skin_bg_btn_book : R.drawable.skin_bg_outline);
+        _binding.filterUpcoming.setBackgroundResource(currentStatusFilter.equals("UPCOMING") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
         _binding.filterUpcoming.setTextColor(currentStatusFilter.equals("UPCOMING") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
 
-        _binding.filterCompleted.setBackgroundResource(currentStatusFilter.equals("COMPLETED") ? R.drawable.skin_bg_btn_book : R.drawable.skin_bg_outline);
+        _binding.filterCompleted.setBackgroundResource(currentStatusFilter.equals("COMPLETED") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
         _binding.filterCompleted.setTextColor(currentStatusFilter.equals("COMPLETED") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
 
-        _binding.filterCancelled.setBackgroundResource(currentStatusFilter.equals("CANCELLED") ? R.drawable.skin_bg_btn_book : R.drawable.skin_bg_outline);
+        _binding.filterCancelled.setBackgroundResource(currentStatusFilter.equals("CANCELLED") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
         _binding.filterCancelled.setTextColor(currentStatusFilter.equals("CANCELLED") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
     }
 

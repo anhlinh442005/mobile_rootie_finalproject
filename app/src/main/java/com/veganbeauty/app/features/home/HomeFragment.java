@@ -5,8 +5,6 @@ import android.animation.ObjectAnimator;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +45,6 @@ import com.veganbeauty.app.features.home.adapter.HomeProductGridAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutItem;
 import com.veganbeauty.app.features.home.adapter.HomeTopSearchAdapter;
-import com.veganbeauty.app.features.home.HomeHeaderHelper;
 import com.veganbeauty.app.features.myskin.AccountSyncHelper;
 import com.veganbeauty.app.features.myskin.ChooseBranchFragment;
 import com.veganbeauty.app.features.myskin.MySkinFragment;
@@ -169,15 +166,15 @@ public class HomeFragment extends RootieFragment {
                 new HomeShortcutItem("Quét sản phẩm", R.drawable.ic_qrscan, () -> navigateTo(new BarcodeScanFragment())),
                 new HomeShortcutItem("Soi Da AI", R.drawable.ic_ai_outline, () -> navigateTo(new SkinScanFragment())),
                 new HomeShortcutItem("Đặt lịch soi da", R.drawable.ic_calendar_outline, () -> navigateTo(new ChooseBranchFragment())),
-                new HomeShortcutItem("Routine của tôi", R.drawable.ic_skincare, () -> navigateTo(new MySkinFragment())),
+                new HomeShortcutItem("Routine của tôi", R.drawable.ic_flower, () -> navigateTo(new MySkinFragment())),
                 new HomeShortcutItem("Dự báo da hôm nay", R.drawable.ic_water_drop_outline, () -> navigateIfLoggedIn(new SkinWeatherForecastFragment())),
                 new HomeShortcutItem("Kiểm tra dị ứng", R.drawable.ic_shield_outline, () -> navigateTo(new QuizTestIntroFragment())),
                 new HomeShortcutItem("Hồ sơ làn da", R.drawable.ic_clipboard_outline, () -> navigateIfLoggedIn(new SkinHistoryFragment())),
                 new HomeShortcutItem("Nhắc chăm da", R.drawable.ic_bell, () -> navigateIfLoggedIn(new SkinReminderFragment())),
                 new HomeShortcutItem("Đổi quà Rootie Xu", R.drawable.ic_gift, () -> navigateTo(new AccountRewardFragment())),
                 new HomeShortcutItem("Cửa hàng gần bạn", R.drawable.ic_store_outline, () -> navigateTo(new ShopStoreSystemFragment())),
-                new HomeShortcutItem("Beauty Explore", R.drawable.ic_reel_outline, () -> navigateTo(new ComLoadingFragment())),
-                new HomeShortcutItem("Tra cứu thành phần", R.drawable.ic_shortcut_ingredient, () -> Toast.makeText(getContext(), "Tính năng đang phát triển", Toast.LENGTH_SHORT).show())
+                new HomeShortcutItem("Beauty Explore", R.drawable.ic_explore, () -> navigateTo(new ComLoadingFragment())),
+                new HomeShortcutItem("Tra cứu thành phần", R.drawable.ic_leaf, () -> Toast.makeText(getContext(), "Tính năng đang phát triển", Toast.LENGTH_SHORT).show())
         );
     }
 
@@ -415,8 +412,8 @@ public class HomeFragment extends RootieFragment {
                 int icon;
                 switch (cat) {
                     case "Combo & Bộ Sản Phẩm": icon = R.drawable.ic_gift; break;
-                    case "Chăm sóc da": case "Chăm Sóc Da Mặt": icon = R.drawable.ic_skincare; break;
-                    case "Tắm & Dưỡng Thể": case "Chăm Sóc Cơ Thể": icon = R.drawable.ic_shower; break;
+                    case "Chăm sóc da": case "Chăm Sóc Da Mặt": icon = R.drawable.ic_flower; break;
+                    case "Tắm & Dưỡng Thể": case "Chăm Sóc Cơ Thể": icon = R.drawable.ic_water; break;
                     case "Dưỡng Môi": case "Chăm Sóc Môi": icon = R.drawable.ic_lips; break;
                     default: icon = R.drawable.ic_grid; break;
                 }
@@ -514,20 +511,17 @@ public class HomeFragment extends RootieFragment {
         if (getContext() == null) return;
         long lastTestTime = ProfileSession.getLastSkinTestTime(requireContext());
         long sevenDaysMs = 7L * 24 * 60 * 60 * 1000;
-        boolean needsTest = lastTestTime != 0L && (System.currentTimeMillis() - lastTestTime >= sevenDaysMs);
+        boolean needsTest = true; // Ép hiển thị mặc định theo yêu cầu
 
         if (needsTest) {
-            if (!ProfileSession.isQuizReminderDismissedWeekly(requireContext())) {
-                binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.VISIBLE);
-                binding.quizTestWeeklyReminderLayout.getRoot().setOnClickListener(v -> navigateToQuizIntro());
-                binding.quizTestWeeklyReminderLayout.quizTestBtnDismissReminder.setOnClickListener(v -> {
-                    ProfileSession.setQuizReminderDismissedWeekly(requireContext(), true);
-                    binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Đã ẩn nhắc nhở tuần này", Toast.LENGTH_SHORT).show();
-                });
-            } else {
+            // Bỏ qua check đã dismiss để luôn hiện khi load lại app
+            binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.VISIBLE);
+            binding.quizTestWeeklyReminderLayout.getRoot().setOnClickListener(v -> navigateToQuizIntro());
+            binding.quizTestWeeklyReminderLayout.quizTestBtnDismissReminder.setOnClickListener(v -> {
+                ProfileSession.setQuizReminderDismissedWeekly(requireContext(), true);
                 binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.GONE);
-            }
+                Toast.makeText(getContext(), "Đã ẩn nhắc nhở", Toast.LENGTH_SHORT).show();
+            });
 
             if (!hasShownQuizPopupThisSession) {
                 hasShownQuizPopupThisSession = true;

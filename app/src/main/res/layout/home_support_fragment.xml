@@ -227,7 +227,7 @@
                         android:layout_height="60dp"
                         android:background="@drawable/home_support_icon_bg"
                         android:padding="16dp"
-                        android:src="@drawable/ic_truck"
+                        android:src="@drawable/ic_shipping"
                         app:tint="@color/primary" />
 
                     <TextView
@@ -280,7 +280,7 @@
                         android:layout_height="60dp"
                         android:background="@drawable/home_support_icon_bg"
                         android:padding="16dp"
-                        android:src="@drawable/ic_skin_history"
+                        android:src="@drawable/ic_history"
                         app:tint="@color/primary" />
 
                     <TextView

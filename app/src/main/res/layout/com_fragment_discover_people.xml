@@ -59,7 +59,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_circle_account"
-                    android:background="@drawable/com_bg_circle_gray"
+                    android:background="@drawable/bg_circle_grey"
                     android:padding="12dp"
                     app:tint="@color/primary"/>
 
@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:text="Kết nối"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/com_bg_btn_dark_green"
+                    android:background="@drawable/bg_btn_buy"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="6dp"
                     android:textSize="13sp"

@@ -116,7 +116,7 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_voucher_detail_ticket_gradient"
+                        android:background="@drawable/bg_points_card_gradient"
                         android:paddingVertical="32dp"
                         android:paddingHorizontal="24dp">
 
@@ -181,7 +181,7 @@
                         <View
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_dialog_btn_confirm"
                             android:backgroundTint="#20FFFFFF"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -190,7 +190,7 @@
                         <View
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:background="@drawable/bg_circle_green"
+                            android:background="@drawable/bg_dialog_btn_confirm"
                             android:backgroundTint="#20FFFFFF"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -211,7 +211,7 @@
                 <View
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@drawable/bg_voucher_detail_cutout"
+                    android:background="@drawable/com_bg_post"
                     app:layout_constraintTop_toTopOf="@id/cardTicket"
                     app:layout_constraintBottom_toTopOf="@id/cardTicket"
                     app:layout_constraintStart_toStartOf="@id/guidelineTicketCutout"
@@ -221,7 +221,7 @@
                 <View
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@drawable/bg_voucher_detail_cutout"
+                    android:background="@drawable/com_bg_post"
                     app:layout_constraintTop_toBottomOf="@id/cardTicket"
                     app:layout_constraintBottom_toBottomOf="@id/cardTicket"
                     app:layout_constraintStart_toStartOf="@id/guidelineTicketCutout"
@@ -258,7 +258,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:background="@drawable/bg_voucher_code_container"
+                android:background="@drawable/bg_white_rounded_corner_border"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"

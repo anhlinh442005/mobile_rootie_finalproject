@@ -39,7 +39,7 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_menu_sort"
+            android:src="@drawable/ic_menu"
             app:tint="@color/primary" />
     </RelativeLayout>
 
@@ -139,7 +139,7 @@
                         <ImageView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:src="@drawable/ic_time"
+                            android:src="@drawable/ic_clock"
                             app:tint="@color/white" />
 
                         <TextView

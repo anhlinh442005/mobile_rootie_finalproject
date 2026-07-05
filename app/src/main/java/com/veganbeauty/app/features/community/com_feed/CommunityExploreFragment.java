@@ -274,7 +274,7 @@ public class CommunityExploreFragment extends RootieFragment {
 
 
 
-        _binding.ivHome.setOnClickListener(v -> ComBottomNavHelper.navigateToAppHome(this));
+        _binding.ivBack.setOnClickListener(v -> ComBottomNavHelper.navigateToAppHome(this));
 
 
 

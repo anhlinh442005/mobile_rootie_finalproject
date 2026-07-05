@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintWidth_default="wrap"
         app:layout_constraintWidth_max="280dp"
-        android:background="@drawable/bg_chat_bubble_user"
+        android:background="@drawable/com_bg_tab_active"
         android:orientation="vertical"
         android:paddingHorizontal="14dp"
         android:paddingVertical="10dp"

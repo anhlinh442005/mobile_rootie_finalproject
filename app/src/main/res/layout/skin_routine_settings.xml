@@ -48,7 +48,7 @@
             android:contentDescription="Thông báo"
             android:padding="13dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_notification"
+            android:src="@drawable/ic_bell"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -109,7 +109,7 @@
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_skin_sun"
+                                android:src="@drawable/ic_sun"
                                 app:tint="#3E4D44" />
                         </FrameLayout>
 
@@ -154,7 +154,7 @@
                                 android:layout_height="26dp"
                                 android:layout_gravity="center_vertical|start"
                                 android:layout_marginStart="2dp"
-                                android:src="@drawable/bg_switch_thumb" />
+                                android:src="@drawable/bg_white_rounded_corner_border" />
                         </FrameLayout>
                     </LinearLayout>
 
@@ -180,7 +180,7 @@
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/ic_moon_outline"
+                                android:src="@drawable/ic_moon"
                                 app:tint="#3E4D44" />
                         </FrameLayout>
 
@@ -225,7 +225,7 @@
                                 android:layout_height="26dp"
                                 android:layout_gravity="center_vertical|start"
                                 android:layout_marginStart="2dp"
-                                android:src="@drawable/bg_switch_thumb" />
+                                android:src="@drawable/bg_white_rounded_corner_border" />
                         </FrameLayout>
                     </LinearLayout>
 
@@ -280,7 +280,7 @@
                                 android:layout_height="26dp"
                                 android:layout_gravity="center_vertical|start"
                                 android:layout_marginStart="2dp"
-                                android:src="@drawable/bg_switch_thumb" />
+                                android:src="@drawable/bg_white_rounded_corner_border" />
                         </FrameLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -315,7 +315,7 @@
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_skin_ai_sparkles" />
+                            android:src="@drawable/ic_ai_outline" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -346,7 +346,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
-                                android:background="@drawable/skin_bg_tab_selected"
+                                android:background="@drawable/skin_bg_btn_green"
                                 android:paddingHorizontal="6dp"
                                 android:paddingVertical="1dp"
                                 android:text="MỚI"
@@ -422,7 +422,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/skin_bg_tab_selected"
+                    android:background="@drawable/skin_bg_btn_green"
                     android:fontFamily="@font/be_vietnam_pro"
                     android:gravity="center"
                     android:text="Sáng"
@@ -460,7 +460,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_margin="16dp"
-        android:background="@drawable/skin_bg_tab_selected"
+        android:background="@drawable/skin_bg_btn_green"
         android:fontFamily="@font/lexend"
         android:text="Lưu cấu hình"
         android:textAllCaps="false"

@@ -123,7 +123,7 @@ public class ChooseBranchFragment extends RootieFragment {
     private void setFilter(String province, TextView selectedTextView) {
         currentFilter = province;
 
-        int unselectedBg = R.drawable.skin_bg_store_card;
+        int unselectedBg = R.drawable.com_bg_popup_menu;
         int unselectedColor = ContextCompat.getColor(requireContext(), R.color.primary);
 
         filterAll.setBackgroundResource(unselectedBg);
@@ -138,7 +138,7 @@ public class ChooseBranchFragment extends RootieFragment {
         filterDn.setBackgroundResource(unselectedBg);
         filterDn.setTextColor(unselectedColor);
 
-        selectedTextView.setBackgroundResource(R.drawable.skin_bg_btn_book);
+        selectedTextView.setBackgroundResource(R.drawable.bg_btn_buy);
         selectedTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.neutral));
 
         applyFilters();

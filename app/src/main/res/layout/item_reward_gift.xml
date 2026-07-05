@@ -89,7 +89,7 @@
             android:textSize="11sp"
             android:paddingHorizontal="8dp"
             android:paddingVertical="3dp"
-            android:background="@drawable/status_badge_bg"
+            android:background="@drawable/com_bg_post"
             android:layout_marginEnd="8dp"
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/tvGiftValue"

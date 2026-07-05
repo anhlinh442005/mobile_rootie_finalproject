@@ -34,7 +34,7 @@
             android:id="@+id/ivTypeBadge"
             android:layout_width="18dp"
             android:layout_height="18dp"
-            android:background="@drawable/bg_circle_icon"
+            android:background="@drawable/com_bg_post"
             android:backgroundTint="@color/white"
             android:padding="3dp"
             android:src="@drawable/ic_heart"

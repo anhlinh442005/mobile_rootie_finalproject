@@ -35,7 +35,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_com_nav_tab_glow"
+                android:background="@drawable/bg_com_nav_glow"
                 android:visibility="invisible" />
 
             <ImageView
@@ -83,7 +83,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_com_nav_tab_glow"
+                android:background="@drawable/bg_com_nav_glow"
                 android:visibility="invisible" />
 
             <ImageView
@@ -131,7 +131,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_com_nav_tab_glow"
+                android:background="@drawable/bg_com_nav_glow"
                 android:visibility="invisible" />
 
             <ImageView
@@ -139,7 +139,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_nav_com_explore"
+                android:src="@drawable/ic_explore"
                 app:tint="@color/tertiary" />
         </FrameLayout>
 
@@ -179,7 +179,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_com_nav_tab_glow"
+                android:background="@drawable/bg_com_nav_glow"
                 android:visibility="invisible" />
 
             <ImageView
@@ -227,7 +227,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_com_nav_tab_glow"
+                android:background="@drawable/bg_com_nav_glow"
                 android:visibility="invisible" />
 
             <ImageView

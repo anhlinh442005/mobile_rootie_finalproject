@@ -30,7 +30,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_arrow_back"
+            android:src="@drawable/ic_arrow_back_thin"
             app:tint="@color/primary" />
                         
                     <TextView android:fontFamily="@font/be_vietnam_pro"
@@ -53,9 +53,10 @@
                         
                     <ImageView
                         android:id="@+id/ivNotification"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_notification" />
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/home_ic_notification"
+                        app:tint="@color/black" />
                 </LinearLayout>
 
                 <!-- Cover Image -->
@@ -320,7 +321,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
-                            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_location" app:tint="#666666" />
+                            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_account_location" app:tint="#666666" />
                             <TextView android:fontFamily="@font/be_vietnam_pro" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="669 Đỗ Mười, Linh Xuân, Thủ Đức, TP.HCM" android:textColor="#666666" android:textSize="13sp" />
                         </LinearLayout>
                     </LinearLayout>

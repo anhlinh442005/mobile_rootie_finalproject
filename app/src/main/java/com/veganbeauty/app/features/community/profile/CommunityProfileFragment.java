@@ -275,11 +275,7 @@ public class CommunityProfileFragment extends RootieFragment {
         String effectiveAvatarUrl = isOwnProfile
                 ? ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx)
                 : finalAvatarUrl;
-        if (effectiveAvatarUrl != null && !effectiveAvatarUrl.isEmpty()) {
-            com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(effectiveAvatarUrl).error(R.drawable.img_avatar).circleCrop().into(binding.ivAvatar);
-        } else {
-            binding.ivAvatar.setImageResource(R.drawable.img_avatar);
-        }
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, effectiveAvatarUrl);
 
         if (isOwnProfile) {
             new Thread(() -> {
@@ -293,11 +289,7 @@ public class CommunityProfileFragment extends RootieFragment {
                         return;
                     }
                     ProfileSession.setAvatar(ctx, resolvedAvatar);
-                    com.bumptech.glide.Glide.with(binding.ivAvatar.getContext())
-                            .load(resolvedAvatar)
-                            .error(R.drawable.img_avatar)
-                            .circleCrop()
-                            .into(binding.ivAvatar);
+                    com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, resolvedAvatar);
                 });
             }).start();
         }
@@ -350,8 +342,8 @@ public class CommunityProfileFragment extends RootieFragment {
         }
 
         if (effectiveAvatarUrl != null && !effectiveAvatarUrl.isEmpty()) {
-            com.bumptech.glide.Glide.with(binding.ivHighlight1.getContext()).load(effectiveAvatarUrl).into(binding.ivHighlight1);
-            com.bumptech.glide.Glide.with(binding.ivHighlight2.getContext()).load(effectiveAvatarUrl).into(binding.ivHighlight2);
+            com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivHighlight1, effectiveAvatarUrl);
+            com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivHighlight2, effectiveAvatarUrl);
         }
 
         SharedPreferences prefs = ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);

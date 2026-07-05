@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:background="@drawable/skin_bg_rounded_white"
+    android:background="@drawable/com_bg_post"
     android:minHeight="100dp"
     android:padding="12dp">
 
@@ -17,7 +17,7 @@
             android:id="@+id/attr_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/skin_bg_attr_title_pill"
+            android:background="@drawable/bg_dialog_btn_confirm"
             android:fontFamily="@font/be_vietnam_pro_bold"
             android:gravity="center"
             android:paddingHorizontal="14dp"

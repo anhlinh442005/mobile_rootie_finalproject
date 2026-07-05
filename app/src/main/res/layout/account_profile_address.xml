@@ -12,7 +12,7 @@
         android:id="@+id/header_bar"
         android:layout_width="match_parent"
         android:layout_height="66dp"
-        android:background="@drawable/bg_header_security_gradient">
+        android:background="@drawable/bg_points_card_gradient">
 
         <!-- Back Button -->
         <ImageView
@@ -52,7 +52,7 @@
             android:focusable="true"
             android:padding="7dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_notification" />
+            android:src="@drawable/ic_bell" />
     </RelativeLayout>
 
     <!-- CONTENT BODY -->
@@ -146,7 +146,7 @@
                             android:layout_centerVertical="true"
                             android:layout_marginStart="8dp"
                             android:layout_toEndOf="@id/tv_home_title"
-                            android:background="@drawable/bg_badge_default_active"
+                            android:background="@drawable/bg_dialog_btn_confirm"
                             android:fontFamily="@font/lexend"
                             android:gravity="center_vertical"
                             android:paddingHorizontal="10dp"
@@ -344,7 +344,7 @@
                             android:layout_centerVertical="true"
                             android:layout_marginStart="8dp"
                             android:layout_toEndOf="@id/tv_office_title"
-                            android:background="@drawable/bg_badge_default_inactive"
+                            android:background="@drawable/tab_inactive_bg"
                             android:fontFamily="@font/lexend"
                             android:gravity="center_vertical"
                             android:paddingHorizontal="10dp"
@@ -505,7 +505,7 @@
             android:id="@+id/btn_add_address"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:background="@drawable/bg_btn_solid"
+            android:background="@drawable/bg_btn_buy"
             android:backgroundTint="@color/primary"
             android:clickable="true"
             android:focusable="true"
@@ -521,7 +521,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_address_location_add" />
+                    android:src="@drawable/ic_account_location" />
 
                 <TextView
                     android:layout_width="wrap_content"

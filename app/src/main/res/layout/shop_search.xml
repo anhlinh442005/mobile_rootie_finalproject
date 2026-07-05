@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:gravity="center_vertical"
-        android:background="@drawable/bg_header_gradient">
+        android:background="@drawable/bg_points_card_gradient">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -28,7 +28,7 @@
             android:layout_height="36dp"
             android:layout_weight="1"
             android:layout_marginHorizontal="16dp"
-            android:background="@drawable/bg_search_bar"
+            android:background="@drawable/bg_white_rounded_corner_border"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="12dp">
@@ -197,7 +197,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_hot_deals_inner"
+                    android:background="@drawable/com_bg_post"
                     android:orientation="vertical"
                     android:paddingVertical="4dp">
 

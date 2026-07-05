@@ -154,7 +154,7 @@ public class SkinHistoryFragment extends RootieFragment {
 
             for (TextView f : filters) {
                 if (f == selected) {
-                    f.setBackgroundResource(R.drawable.skin_bg_btn_solid_dark);
+                    f.setBackgroundResource(R.drawable.com_bg_tab_active);
                     f.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
                 } else {
                     f.setBackgroundResource(R.drawable.skin_bg_card_outline);

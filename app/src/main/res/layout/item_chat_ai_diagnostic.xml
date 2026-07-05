@@ -79,7 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_diagnostic_desc"
+            android:background="@drawable/bg_chat_input_box"
             android:orientation="vertical"
             android:padding="14dp">
 
@@ -114,8 +114,8 @@
                     android:id="@+id/ivMetricMoisture"
                     android:layout_width="42dp"
                     android:layout_height="42dp"
-                    android:background="@drawable/bg_circle_metric_grey"
-                    android:src="@drawable/ic_water_drop_outline"
+                    android:background="@drawable/bg_white_rounded_corner_border"
+                    android:src="@drawable/ic_water"
                     android:padding="11dp" />
 
                 <TextView
@@ -217,7 +217,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_diagnostic_desc"
+            android:background="@drawable/bg_chat_input_box"
             android:orientation="vertical"
             android:padding="14dp">
 
@@ -308,7 +308,7 @@
             android:layout_width="match_parent"
             android:layout_height="46dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/skin_bg_tab_selected"
+            android:background="@drawable/skin_bg_btn_green"
             android:backgroundTint="#3E4D44"
             android:fontFamily="@font/lexend"
             android:text="Thêm trọn bộ vào giỏ hàng"

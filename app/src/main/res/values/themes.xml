@@ -74,7 +74,7 @@
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_marginHorizontal">3dp</item>
-        <item name="android:background">@drawable/bg_dialog_input</item>
+        <item name="android:background">@drawable/bg_edittext_rounded</item>
         <item name="android:gravity">center</item>
         <item name="android:inputType">number</item>
         <item name="android:maxLength">1</item>

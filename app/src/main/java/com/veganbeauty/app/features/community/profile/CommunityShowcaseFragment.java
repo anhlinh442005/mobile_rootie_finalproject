@@ -73,7 +73,7 @@ public class CommunityShowcaseFragment extends Fragment {
         String titleText = userName != null ? userName : "Na Na";
         _binding.tvShowcaseTitle.setText("Trang trưng bày của " + titleText);
 
-        com.bumptech.glide.Glide.with(_binding.ivAvatar.getContext()).load(avatarUrl != null ? avatarUrl : "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg").error(R.drawable.img_avatar).circleCrop().into(_binding.ivAvatar);
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(_binding.ivAvatar, avatarUrl, "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg");
 
         _binding.ivFilterSort.setOnClickListener(v -> {
             CommunitySortBottomSheet bottomSheet = new CommunitySortBottomSheet(0, selectedSort -> {

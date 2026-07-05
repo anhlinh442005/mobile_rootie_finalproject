@@ -13,18 +13,17 @@
         layout="@layout/home_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:elevation="10dp" />
+        android:layout_alignParentTop="true" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/homeScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/home_header"
         android:layout_alignParentBottom="true"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="@dimen/home_nav_content_height"
+        android:paddingBottom="56dp"
         android:scrollbars="none">
 
         <LinearLayout
@@ -104,7 +103,7 @@
                             android:layout_marginTop="4dp"
                             android:text="Sáng nay bạn chưa hoàn thành Routine, bấm để bắt đầu!"
                             android:textColor="#DDDFC4"
-                            android:textSize="@dimen/home_section_see_all_size" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <ImageView
@@ -114,7 +113,7 @@
                         android:layout_marginStart="8dp"
                         android:contentDescription="@null"
                         android:scaleX="-1"
-                        android:src="@drawable/ic_arrow_back"
+                        android:src="@drawable/ic_arrow_back_thin"
                         app:tint="#FFFFFF" />
                 </LinearLayout>
 
@@ -275,7 +274,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="7dp"
-                        android:background="@drawable/bg_promo_feature_card"
+                        android:background="@drawable/bg_home_promo_sunscreen"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingHorizontal="8dp"
@@ -322,7 +321,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="7dp"
-                        android:background="@drawable/bg_promo_feature_card"
+                        android:background="@drawable/bg_home_promo_sunscreen"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingHorizontal="8dp"
@@ -369,7 +368,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="7dp"
-                        android:background="@drawable/bg_promo_feature_card"
+                        android:background="@drawable/bg_home_promo_sunscreen"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingHorizontal="8dp"
@@ -379,7 +378,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:contentDescription="@null"
-                            android:src="@drawable/ic_check"
+                            android:src="@drawable/ic_circle_checked"
                             app:tint="#1B3E2D" />
 
                         <LinearLayout
@@ -415,7 +414,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_promo_feature_card"
+                        android:background="@drawable/bg_home_promo_sunscreen"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingHorizontal="8dp"
@@ -425,7 +424,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:contentDescription="@null"
-                            android:src="@drawable/ic_weather_sparkles"
+                            android:src="@drawable/ic_star"
                             app:tint="#1B3E2D" />
 
                         <LinearLayout
@@ -533,7 +532,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/home_recent_activity"
                         android:textColor="#1B3E2D"
-                        android:textSize="@dimen/home_section_title_size"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -544,7 +543,7 @@
                         android:layout_centerVertical="true"
                         android:text="Xem tất cả ❯"
                         android:textColor="#4A5D4E"
-                        android:textSize="@dimen/home_section_see_all_size" />
+                        android:textSize="12sp" />
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -824,15 +823,30 @@
             </androidx.cardview.widget.CardView>
 
             <!-- Categories -->
-            <TextView
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:paddingHorizontal="16dp"
-                android:text="@string/home_categories"
-                android:textColor="#28362E"
-                android:textSize="@dimen/home_section_title_size"
-                android:textStyle="bold" />
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/home_categories"
+                    android:textColor="#28362E"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCategoriesSeeAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/home_see_all"
+                    android:textColor="@color/secondary"
+                    android:textSize="12sp" />
+            </RelativeLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCategories"
@@ -871,7 +885,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/home_bestsellers"
                             android:textColor="#1B3E2D"
-                            android:textSize="@dimen/home_section_title_size"
+                            android:textSize="17sp"
                             android:fontFamily="@font/be_vietnam_pro_bold" />
 
                         <TextView
@@ -881,7 +895,7 @@
                             android:layout_centerVertical="true"
                             android:text="Xem tất cả >"
                             android:textColor="#7A8B7B"
-                            android:textSize="@dimen/home_section_see_all_size"
+                            android:textSize="12sp"
                             android:fontFamily="@font/be_vietnam_pro_regular" />
                     </RelativeLayout>
 
@@ -917,7 +931,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/home_top_search"
                             android:textColor="#4A564A"
-                            android:textSize="@dimen/home_section_title_size"
+                            android:textSize="14sp"
                             android:fontFamily="@font/be_vietnam_pro_bolditalic" />
 
                         <TextView
@@ -927,7 +941,7 @@
                             android:layout_centerVertical="true"
                             android:text="Xem tất cả >"
                             android:textColor="#7A8B7B"
-                            android:textSize="@dimen/home_section_see_all_size"
+                            android:textSize="12sp"
                             android:fontFamily="@font/be_vietnam_pro_regular" />
                     </RelativeLayout>
 
@@ -987,16 +1001,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
+                        android:layout_gravity="start"
                         android:background="@drawable/bg_pill_dark_olive"
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="10dp"
-                        android:text="Khám phá ngay  "
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:text="Tìm Hiểu ngay  "
                         android:textColor="@color/white"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:gravity="center"
-                        app:drawableEndCompat="@drawable/ic_arrow_next"
+                        app:drawableEndCompat="@drawable/ic_arrow_back_thin"
                         app:drawableTint="@color/white" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -1013,7 +1028,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/home_recommendations"
                     android:textColor="#28362E"
-                    android:textSize="@dimen/home_section_title_size"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
             </RelativeLayout>
 
@@ -1065,6 +1080,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:clipChildren="false"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        android:elevation="16dp" />
 
 </RelativeLayout>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_dialog_container"
+    android:background="@drawable/com_bg_post"
     android:paddingHorizontal="20dp"
     android:paddingTop="28dp"
     android:paddingBottom="24dp">
@@ -52,7 +52,7 @@
                 android:layout_height="64dp"
                 android:layout_gravity="center"
                 android:contentDescription="MoMo"
-                android:src="@drawable/ic_momo" />
+                android:src="@drawable/ic_logo_momo" />
         </FrameLayout>
     </FrameLayout>
 
@@ -89,7 +89,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:background="@drawable/bg_info_chip_green"
+        android:background="@drawable/bg_tag_valid"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="12dp"

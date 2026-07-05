@@ -65,7 +65,7 @@ public class QuizTestLevelSelectionFragment extends RootieFragment {
 
     private void updateUI() {
         if (isAdvancedSelected) {
-            binding.cardQuizBasic.setBackgroundResource(R.drawable.quiz_bg_card_normal);
+            binding.cardQuizBasic.setBackgroundResource(R.drawable.quiz_bg_option);
             binding.ivCheckBasic.setVisibility(View.GONE);
             binding.flIconBasicBg.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F0F5EC")));
             binding.ivIconBasic.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
@@ -80,7 +80,7 @@ public class QuizTestLevelSelectionFragment extends RootieFragment {
             binding.flIconBasicBg.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
             binding.ivIconBasic.setImageTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
 
-            binding.cardQuizAdvanced.setBackgroundResource(R.drawable.quiz_bg_card_normal);
+            binding.cardQuizAdvanced.setBackgroundResource(R.drawable.quiz_bg_option);
             binding.ivCheckAdvanced.setVisibility(View.GONE);
             binding.flIconAdvancedBg.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F0F5EC")));
             binding.ivIconAdvanced.setImageTintList(ColorStateList.valueOf(Color.parseColor("#879578")));

@@ -189,7 +189,7 @@ public class AccountNotificationFragment extends RootieFragment {
         for (Map.Entry<String, TextView> entry : tabs.entrySet()) {
             TextView textView = entry.getValue();
             if (entry.getKey().equalsIgnoreCase(activeTab)) {
-                textView.setBackgroundResource(R.drawable.tab_active_bg);
+                textView.setBackgroundResource(R.drawable.bg_btn_buy);
                 textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
             } else {
                 textView.setBackgroundResource(R.drawable.tab_inactive_bg);

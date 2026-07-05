@@ -25,7 +25,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="66dp"
-                android:background="@drawable/bg_header_gradient"
+                android:background="@drawable/bg_points_card_gradient"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="16dp">
 
@@ -63,7 +63,7 @@
                     android:layout_centerVertical="true"
                     android:padding="7dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_notification"
+                    android:src="@drawable/ic_bell"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true" />
@@ -420,7 +420,7 @@
                                 android:layout_height="26dp"
                                 android:layout_gravity="center_vertical|start"
                                 android:layout_marginStart="2dp"
-                                android:src="@drawable/bg_switch_thumb" />
+                                android:src="@drawable/bg_white_rounded_corner_border" />
                         </FrameLayout>
                     </RelativeLayout>
 
@@ -478,7 +478,7 @@
                                 android:layout_height="26dp"
                                 android:layout_gravity="center_vertical|start"
                                 android:layout_marginStart="2dp"
-                                android:src="@drawable/bg_switch_thumb" />
+                                android:src="@drawable/bg_white_rounded_corner_border" />
                         </FrameLayout>
                     </RelativeLayout>
                 </LinearLayout>

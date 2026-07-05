@@ -25,7 +25,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="66dp"
-                android:background="@drawable/bg_header_gradient"
+                android:background="@drawable/bg_points_card_gradient"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="16dp">
 
@@ -66,7 +66,7 @@
                     android:focusable="true"
                     android:padding="7dp"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_notification" />
+                    android:src="@drawable/ic_bell" />
             </RelativeLayout>
 
             <!-- Card 1: General Settings (Bật/Tắt, Âm thanh, Rung, Lock screen) -->
@@ -111,7 +111,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
 
@@ -152,7 +152,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
 
@@ -193,7 +193,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
 
@@ -234,7 +234,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
             </LinearLayout>
@@ -277,7 +277,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_truck"
+                            android:src="@drawable/ic_shipping"
                             app:tint="#8E8E93" />
                     </FrameLayout>
 
@@ -327,7 +327,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
             </LinearLayout>
@@ -411,7 +411,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
 
@@ -444,7 +444,7 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
-                            android:background="@drawable/bg_dropdown_box"
+                            android:background="@drawable/home_bg_input"
                             android:paddingHorizontal="12dp">
 
                             <Spinner
@@ -485,7 +485,7 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
-                            android:background="@drawable/bg_dropdown_box"
+                            android:background="@drawable/home_bg_input"
                             android:paddingHorizontal="12dp">
 
                             <Spinner
@@ -588,7 +588,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
             </LinearLayout>
@@ -632,7 +632,7 @@
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_notification" />
+                            android:src="@drawable/ic_bell" />
                     </FrameLayout>
 
                     <!-- Text labels -->
@@ -681,7 +681,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
             </LinearLayout>
@@ -765,7 +765,7 @@
                             android:layout_height="26dp"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginStart="2dp"
-                            android:src="@drawable/bg_switch_thumb" />
+                            android:src="@drawable/bg_white_rounded_corner_border" />
                     </FrameLayout>
                 </RelativeLayout>
 
@@ -815,7 +815,7 @@
                                 android:layout_height="26dp"
                                 android:layout_gravity="center_vertical|start"
                                 android:layout_marginStart="2dp"
-                                android:src="@drawable/bg_switch_thumb" />
+                                android:src="@drawable/bg_white_rounded_corner_border" />
                         </FrameLayout>
                     </RelativeLayout>
 
@@ -851,7 +851,7 @@
                                 android:layout_height="26dp"
                                 android:layout_gravity="center_vertical|start"
                                 android:layout_marginStart="2dp"
-                                android:src="@drawable/bg_switch_thumb" />
+                                android:src="@drawable/bg_white_rounded_corner_border" />
                         </FrameLayout>
                     </RelativeLayout>
                 </LinearLayout>

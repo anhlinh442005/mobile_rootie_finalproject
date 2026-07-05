@@ -74,7 +74,7 @@ public class ChatMessageAdapter extends ListAdapter<ChatMessageEntity, ChatMessa
             holder.tvMessage.setVisibility(View.VISIBLE);
             holder.ivLikeMessage.setVisibility(View.GONE);
             holder.tvMessage.setText(msg.getText());
-            holder.llBubble.setBackgroundResource(R.drawable.com_bg_card_rounded);
+            holder.llBubble.setBackgroundResource(R.drawable.com_bg_post);
 
             int horizontalPadding = (int) (16 * holder.itemView.getResources().getDisplayMetrics().density);
             int verticalPadding = (int) (10 * holder.itemView.getResources().getDisplayMetrics().density);

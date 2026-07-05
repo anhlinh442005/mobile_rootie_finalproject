@@ -10,7 +10,7 @@
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
         android:layout_height="66dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp">
 
@@ -51,7 +51,7 @@
             android:focusable="true"
             android:padding="7dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_notification" />
+            android:src="@drawable/ic_bell" />
     </RelativeLayout>
 
     <!-- Content Area below Header and above Bottom Nav -->
@@ -81,7 +81,8 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/ic_warning_red" />
+                android:src="@drawable/ic_warning_outline"
+                app:tint="@color/selector_warning_tint" />
 
             <TextView
                 android:id="@+id/tv_warning_text"
@@ -109,7 +110,7 @@
                 android:id="@+id/tab_all"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:background="@drawable/tab_active_bg"
+                android:background="@drawable/bg_btn_buy"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"

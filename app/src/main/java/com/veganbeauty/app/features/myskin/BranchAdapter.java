@@ -82,9 +82,9 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder
         holder.checkIcon.setVisibility(isSelected ? View.VISIBLE : View.GONE);
         
         if (isSelected) {
-            holder.container.setBackgroundResource(R.drawable.skin_bg_store_card);
+            holder.container.setBackgroundResource(R.drawable.com_bg_popup_menu);
         } else {
-            holder.container.setBackgroundResource(R.drawable.skin_bg_store_card);
+            holder.container.setBackgroundResource(R.drawable.com_bg_popup_menu);
         }
 
         holder.container.setOnClickListener(v -> {

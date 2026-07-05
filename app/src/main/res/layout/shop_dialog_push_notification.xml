@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:background="@drawable/bg_dialog_container"
+    android:background="@drawable/com_bg_post"
     android:orientation="vertical"
     android:padding="20dp">
 
@@ -27,7 +27,7 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:contentDescription="Rootie"
-                android:src="@drawable/ic_notification" />
+                android:src="@drawable/ic_bell" />
 
             <TextView
                 android:id="@+id/tvPushAppName"
@@ -115,7 +115,7 @@
             android:layout_width="0dp"
             android:layout_height="45dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_btn_solid"
+            android:background="@drawable/bg_btn_buy"
             android:backgroundTint="#375633"
             android:clickable="true"
             android:focusable="true">

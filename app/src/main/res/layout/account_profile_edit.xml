@@ -10,7 +10,7 @@
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
         android:layout_height="66dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:paddingHorizontal="16dp"
         android:gravity="center_vertical">
 
@@ -161,7 +161,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_pill_green"
+                    android:background="@drawable/bg_button_light_green"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingHorizontal="12dp"

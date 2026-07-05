@@ -134,7 +134,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
                             closeLp.setMarginEnd((int) (4 * density));
                             ivClose.setLayoutParams(closeLp);
                             ivClose.setImageResource(R.drawable.ic_cancel);
-                            ivClose.setBackgroundResource(R.drawable.bg_circle_white);
+                            ivClose.setBackgroundResource(R.drawable.com_bg_post);
                             ivClose.setPadding(12, 12, 12, 12);
                             ivClose.setOnClickListener(v -> {
                                 if (container.getParent() instanceof ViewGroup) {
@@ -176,7 +176,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
                         tv.setBackgroundResource(R.drawable.com_bg_chip_solid_normal);
                         tv.setTextColor(Color.parseColor("#4B6554"));
                     } else {
-                        tv.setBackgroundResource(R.drawable.com_bg_filter_selected);
+                        tv.setBackgroundResource(R.drawable.bg_btn_buy);
                         tv.setTextColor(Color.WHITE);
                     }
                 });
@@ -307,7 +307,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
                                 TextView newChip = new TextView(getContext());
                                 newChip.setText(issue);
                                 newChip.setTextColor(Color.WHITE);
-                                newChip.setBackgroundResource(R.drawable.com_bg_filter_selected);
+                                newChip.setBackgroundResource(R.drawable.bg_btn_buy);
                                 int padH = (int) (12 * getResources().getDisplayMetrics().density);
                                 int padV = (int) (4 * getResources().getDisplayMetrics().density);
                                 newChip.setPadding(padH, padV, padH, padV);
@@ -325,7 +325,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
                                         newChip.setBackgroundResource(R.drawable.com_bg_chip_solid_normal);
                                         newChip.setTextColor(Color.parseColor("#4B6554"));
                                     } else {
-                                        newChip.setBackgroundResource(R.drawable.com_bg_filter_selected);
+                                        newChip.setBackgroundResource(R.drawable.bg_btn_buy);
                                         newChip.setTextColor(Color.WHITE);
                                     }
                                 });
@@ -353,7 +353,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
                                 TextView newChip = new TextView(getContext());
                                 newChip.setText(topic);
                                 newChip.setTextColor(Color.WHITE);
-                                newChip.setBackgroundResource(R.drawable.com_bg_filter_selected);
+                                newChip.setBackgroundResource(R.drawable.bg_btn_buy);
                                 int padH = (int) (12 * getResources().getDisplayMetrics().density);
                                 int padV = (int) (4 * getResources().getDisplayMetrics().density);
                                 newChip.setPadding(padH, padV, padH, padV);
@@ -371,7 +371,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
                                         newChip.setBackgroundResource(R.drawable.com_bg_chip_solid_normal);
                                         newChip.setTextColor(Color.parseColor("#4B6554"));
                                     } else {
-                                        newChip.setBackgroundResource(R.drawable.com_bg_filter_selected);
+                                        newChip.setBackgroundResource(R.drawable.bg_btn_buy);
                                         newChip.setTextColor(Color.WHITE);
                                     }
                                 });
@@ -505,7 +505,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
             container.setOrientation(LinearLayout.VERTICAL);
             container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             container.setPadding(0, 48, 0, 48);
-            container.setBackgroundResource(R.drawable.com_bg_top_rounded_white);
+            container.setBackgroundResource(R.drawable.com_bg_dialog_mutual);
 
             TextView title = new TextView(requireContext());
             title.setText("Chọn sản phẩm để gắn");

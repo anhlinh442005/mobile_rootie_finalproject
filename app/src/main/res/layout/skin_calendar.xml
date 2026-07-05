@@ -140,7 +140,7 @@
                     <ImageView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/ic_skin_fire"
+                        android:src="@drawable/ic_fire"
                         app:tint="#FF5722"
                         app:layout_constraintBottom_toBottomOf="@id/tvCurrentStreak"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +160,7 @@
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
-                            android:src="@drawable/ic_skin_trend"
+                            android:src="@drawable/ic_trend"
                             android:layout_marginEnd="8dp" />
 
                         <TextView
@@ -204,7 +204,7 @@
                             android:layout_height="32dp"
                             android:background="@drawable/bg_circle_beige"
                             android:padding="6dp"
-                            android:src="@drawable/ic_skin_medal"
+                            android:src="@drawable/ic_medal"
                             android:layout_marginEnd="12dp" />
 
                         <LinearLayout
@@ -255,7 +255,7 @@
                             android:layout_height="32dp"
                             android:background="@drawable/bg_circle_beige"
                             android:padding="6dp"
-                            android:src="@drawable/ic_skin_target"
+                            android:src="@drawable/ic_circle_checked"
                             android:layout_marginEnd="12dp" />
 
                         <LinearLayout
@@ -465,7 +465,7 @@
                             android:layout_height="46dp"
                             android:background="@drawable/bg_circle_yellow_indicator"
                             android:padding="11dp"
-                            android:src="@drawable/ic_skin_moon"
+                            android:src="@drawable/ic_moon"
                             android:layout_marginEnd="16dp" />
 
                         <LinearLayout
@@ -507,7 +507,7 @@
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
-                            android:src="@drawable/ic_skin_bulb"
+                            android:src="@drawable/ic_lightbulb"
                             app:tint="#3E4D44"
                             android:layout_marginEnd="12dp" />
 
@@ -553,7 +553,7 @@
                     android:layout_height="36dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="4dp"
-                    android:background="@drawable/com_bg_btn_dark_green"
+                    android:background="@drawable/bg_btn_buy"
                     android:text="Tháng này"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"

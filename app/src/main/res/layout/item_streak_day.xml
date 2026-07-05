@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/be_vietnam_pro"
         android:text="21"
-        android:textColor="#FFFFFF"
+        android:textColor="#3E4D44"
         android:textSize="12sp"
         android:textStyle="bold" />
 </LinearLayout>

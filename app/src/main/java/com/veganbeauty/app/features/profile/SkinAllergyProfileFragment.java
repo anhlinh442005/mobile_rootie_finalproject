@@ -31,10 +31,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import kotlinx.coroutines.BuildersKt;
@@ -142,6 +140,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
     private void addPill(ViewGroup container, String text, int backgroundResId, String textColorStr) {
         TextView pillView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.quiz_item_pill, container, false);
         pillView.setText(text);
+        pillView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14f);
         pillView.setBackgroundResource(backgroundResId);
         pillView.setTextColor(Color.parseColor(textColorStr));
         container.addView(pillView);
@@ -362,7 +361,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 }
 
                 if (!triggeredAvoids.isEmpty()) {
-                    ivBadgeIcon.setImageResource(R.drawable.quiz_ic_warning_triangle);
+                    ivBadgeIcon.setImageResource(R.drawable.ic_warning_triangle);
                     ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#F04758")));
                     tvBadge.setText("Nguy cơ kích ứng cao");
                     tvBadge.setTextColor(Color.parseColor("#F04758"));
@@ -370,7 +369,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                     String avoidStr = String.join(", ", uniqueAvoids);
                     tvProdDesc.setText("Sản phẩm có chứa " + avoidStr + " không phù hợp với loại da nhạy cảm của bạn, dễ gây dị ứng hoặc kích ứng đỏ rát.");
                 } else if (!triggeredCautions.isEmpty()) {
-                    ivBadgeIcon.setImageResource(R.drawable.quiz_ic_warning_triangle);
+                    ivBadgeIcon.setImageResource(R.drawable.ic_warning_triangle);
                     ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#EAAA08")));
                     tvBadge.setText("Cần lưu ý khi dùng");
                     tvBadge.setTextColor(Color.parseColor("#EAAA08"));
@@ -413,6 +412,14 @@ public class SkinAllergyProfileFragment extends RootieFragment {
             case "petrolatum": return "Vaseline";
             default: return chemicalName;
         }
+    }
+
+    private static final int COMPARE_BG_IMPROVED = Color.parseColor("#F2FBF6");
+    private static final int COMPARE_BG_DEFAULT = Color.parseColor("#F7F9FA");
+
+    private void setCompareCellBackground(View cell, boolean improved) {
+        if (cell == null) return;
+        cell.setBackgroundTintList(ColorStateList.valueOf(improved ? COMPARE_BG_IMPROVED : COMPARE_BG_DEFAULT));
     }
 
     private void setupSkinComparison(SharedPreferences prefs, int currentHydration, int currentSebum, int currentSensitivity, int currentElasticity) {
@@ -465,6 +472,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 binding.skinCompareHydrationDiff.setText("0% (Duy trì)");
                 binding.skinCompareHydrationDiff.setTextColor(Color.parseColor("#7E8A83"));
             }
+            setCompareCellBackground(binding.skinCompareHydrationCell, hydDiff > 0);
 
             binding.skinCompareSebumOld.setText(oldSebum + "%");
             binding.skinCompareSebumNew.setText(currentSebum + "%");
@@ -479,6 +487,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 binding.skinCompareSebumDiff.setText("0% (Duy trì)");
                 binding.skinCompareSebumDiff.setTextColor(Color.parseColor("#7E8A83"));
             }
+            setCompareCellBackground(binding.skinCompareSebumCell, sebDiff < 0);
 
             binding.skinCompareSensitivityOld.setText(oldSensitivity + "%");
             binding.skinCompareSensitivityNew.setText(currentSensitivity + "%");
@@ -493,6 +502,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 binding.skinCompareSensitivityDiff.setText("0% (Duy trì)");
                 binding.skinCompareSensitivityDiff.setTextColor(Color.parseColor("#7E8A83"));
             }
+            setCompareCellBackground(binding.skinCompareSensitivityCell, sensDiff < 0);
 
             binding.skinCompareElasticityOld.setText(oldElasticity + "%");
             binding.skinCompareElasticityNew.setText(currentElasticity + "%");
@@ -507,6 +517,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 binding.skinCompareElasticityDiff.setText("0% (Duy trì)");
                 binding.skinCompareElasticityDiff.setTextColor(Color.parseColor("#7E8A83"));
             }
+            setCompareCellBackground(binding.skinCompareElasticityCell, elastDiff > 0);
 
             float temp = prefs.getFloat("SAVED_WEATHER_TEMP", -100f);
             int humidityVal = prefs.getInt("SAVED_WEATHER_HUMIDITY", -1);

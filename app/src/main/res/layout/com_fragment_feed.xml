@@ -34,7 +34,7 @@
             android:id="@+id/ivMenu"
             android:layout_width="22dp"
             android:layout_height="22dp"
-            android:src="@drawable/ic_menu_sort"
+            android:src="@drawable/ic_menu"
             app:tint="@color/primary"
             app:layout_constraintStart_toEndOf="@id/ivHome"
             android:layout_marginStart="12dp"
@@ -100,7 +100,7 @@
                 android:id="@+id/ivNotification"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/ic_notification" />
+                android:src="@drawable/ic_bell" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -157,7 +157,7 @@
                     android:id="@+id/tvFilterAll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/com_bg_filter_selected"
+                    android:background="@drawable/bg_pill_dark_olive"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="6dp"
                     android:text="Dành cho bạn"

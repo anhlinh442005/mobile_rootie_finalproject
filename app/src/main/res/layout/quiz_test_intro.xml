@@ -10,7 +10,7 @@
         android:id="@+id/rl_header"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:elevation="2dp">
 
         <!-- Back Button -->
@@ -35,7 +35,7 @@
             android:layout_height="60dp"
             android:layout_centerInParent="true"
             android:scaleType="fitCenter"
-            android:src="@drawable/slogan1" />
+            android:src="@drawable/img_logo_slogan" />
 
         <!-- Notification Button -->
         <FrameLayout
@@ -135,14 +135,14 @@
                         <FrameLayout
                             android:layout_width="46dp"
                             android:layout_height="46dp"
-                            android:background="@drawable/bg_circle_icon"
+                            android:background="@drawable/com_bg_post"
                             android:backgroundTint="#D8E8C6">
 
                             <ImageView
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/quiz_ic_chemistry_flask"
+                                android:src="@drawable/ic_chemistry_flask"
                                 app:tint="#3E4D44" />
                         </FrameLayout>
 
@@ -193,14 +193,14 @@
                         <FrameLayout
                             android:layout_width="46dp"
                             android:layout_height="46dp"
-                            android:background="@drawable/bg_circle_icon"
+                            android:background="@drawable/com_bg_post"
                             android:backgroundTint="#FFEEEE">
 
                             <ImageView
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/quiz_ic_warning_triangle" />
+                                android:src="@drawable/ic_warning_triangle" />
                         </FrameLayout>
 
                         <LinearLayout
@@ -250,14 +250,14 @@
                         <FrameLayout
                             android:layout_width="46dp"
                             android:layout_height="46dp"
-                            android:background="@drawable/bg_circle_icon"
+                            android:background="@drawable/com_bg_post"
                             android:backgroundTint="#EEEFEC">
 
                             <ImageView
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/quiz_ic_lotus" />
+                                android:src="@drawable/ic_flower" />
                         </FrameLayout>
 
                         <LinearLayout
@@ -307,14 +307,14 @@
                         <FrameLayout
                             android:layout_width="46dp"
                             android:layout_height="46dp"
-                            android:background="@drawable/bg_circle_icon"
+                            android:background="@drawable/com_bg_post"
                             android:backgroundTint="#EEEFEC">
 
                             <ImageView
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/quiz_ic_warning_circle"
+                                android:src="@drawable/ic_warning"
                                 app:tint="#3E4D44" />
                         </FrameLayout>
 
@@ -357,7 +357,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_btn_solid"
+        android:background="@drawable/bg_btn_buy"
         android:backgroundTint="#677559"
         android:clickable="true"
         android:focusable="true"

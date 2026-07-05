@@ -10,7 +10,7 @@
         android:id="@+id/rl_header"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:elevation="2dp">
 
         <!-- Back Button -->
@@ -144,14 +144,14 @@
                         android:gravity="center_vertical"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="6dp"
-                        android:background="@drawable/status_badge_bg"
+                        android:background="@drawable/com_bg_post"
                         android:backgroundTint="#EAECE3">
 
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:layout_marginEnd="6dp"
-                            android:src="@drawable/quiz_ic_wavy_check" />
+                            android:src="@drawable/ic_badge_check" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -177,7 +177,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_marginEnd="10dp"
-                    android:src="@drawable/quiz_ic_chemistry_flask"
+                    android:src="@drawable/ic_chemistry_flask"
                     app:tint="#3E4D44" />
 
                 <TextView
@@ -208,7 +208,7 @@
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_circle_icon"
+                        android:background="@drawable/com_bg_post"
                         android:backgroundTint="#C00707" />
 
                     <TextView
@@ -247,7 +247,7 @@
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_circle_icon"
+                        android:background="@drawable/com_bg_post"
                         android:backgroundTint="#677559" />
 
                     <TextView
@@ -286,7 +286,7 @@
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_circle_icon"
+                        android:background="@drawable/com_bg_post"
                         android:backgroundTint="#E4F5E8" />
 
                     <TextView
@@ -444,7 +444,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="46dp"
                     android:orientation="horizontal"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#EAECE3"
                     android:padding="3dp"
                     android:layout_marginBottom="16dp">
@@ -455,7 +455,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_btn_solid"
+                        android:background="@drawable/bg_btn_buy"
                         android:backgroundTint="#677559"
                         android:clickable="true"
                         android:focusable="true">
@@ -509,7 +509,7 @@
                     android:layout_height="48dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="10dp"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#677559"
                     android:clickable="true"
                     android:focusable="true">
@@ -532,7 +532,7 @@
                     android:layout_height="48dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="24dp"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#F2F3EB"
                     android:clickable="true"
                     android:focusable="true">
@@ -564,7 +564,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginBottom="10dp"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#677559"
                     android:clickable="true"
                     android:focusable="true">
@@ -586,7 +586,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginBottom="12dp"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#DDDFC4"
                     android:clickable="true"
                     android:focusable="true">
@@ -607,7 +607,7 @@
                     android:id="@+id/btn_done"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#F2F3EB"
                     android:clickable="true"
                     android:focusable="true">

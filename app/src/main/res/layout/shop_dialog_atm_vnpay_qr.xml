@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_dialog_container"
+    android:background="@drawable/com_bg_post"
     android:paddingHorizontal="20dp"
     android:paddingTop="20dp"
     android:paddingBottom="24dp">
@@ -99,7 +99,7 @@
             android:layout_width="240dp"
             android:layout_height="240dp"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_qr_inner"
+            android:background="@drawable/bg_white_rounded_corner_border"
             android:padding="12dp">
 
             <ImageView
@@ -210,7 +210,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:background="@drawable/bg_info_chip_green"
+        android:background="@drawable/bg_tag_valid"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="10dp"

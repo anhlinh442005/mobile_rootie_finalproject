@@ -11,7 +11,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -122,7 +122,7 @@
                         android:layout_height="96dp"
                         android:layout_marginEnd="-16dp"
                         android:layout_marginBottom="-16dp"
-                        android:src="@drawable/skin_ic_lotus_bg"
+                        android:src="@drawable/ic_flower"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -332,7 +332,7 @@
             android:id="@+id/btnCompleteRoutine"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@drawable/skin_bg_btn_dark_green"
+            android:background="@drawable/com_bg_tab_active"
             android:fontFamily="@font/be_vietnam_pro"
             android:text="Hoàn tất Routine"
             android:textAllCaps="false"

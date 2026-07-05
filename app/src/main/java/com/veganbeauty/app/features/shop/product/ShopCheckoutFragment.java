@@ -138,14 +138,8 @@ public class ShopCheckoutFragment extends RootieFragment {
         database = RootieDatabase.getDatabase(requireContext());
         isLoggedIn = ProfileSession.isLoggedIn(requireContext());
         if (getArguments() != null) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                @SuppressWarnings("unchecked")
-                ArrayList<CartItemEntity> items = getArguments().getSerializable(ARG_CHECKOUT_ITEMS, ArrayList.class);
-                checkoutItems = items != null ? items : new ArrayList<>();
-            } else {
-                checkoutItems = (ArrayList<CartItemEntity>) getArguments().getSerializable(ARG_CHECKOUT_ITEMS);
-                if (checkoutItems == null) checkoutItems = new ArrayList<>();
-            }
+            checkoutItems = (ArrayList<CartItemEntity>) getArguments().getSerializable(ARG_CHECKOUT_ITEMS);
+            if (checkoutItems == null) checkoutItems = new ArrayList<>();
             selectedVoucherCode = getArguments().getString(ARG_INITIAL_VOUCHER_CODE);
             voucherDiscountAmount = getArguments().getLong(ARG_INITIAL_VOUCHER_DISCOUNT, 0L);
             isVoucherApplied = (selectedVoucherCode != null && !selectedVoucherCode.isEmpty());
@@ -448,7 +442,7 @@ public class ShopCheckoutFragment extends RootieFragment {
             binding.ivPaymentMethodIcon.setImageResource(R.drawable.ic_credit_card);
             binding.ivPaymentMethodIcon.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#3E4D44")));
         } else if ("Thanh toán trực tuyến MoMo".equals(paymentMethod)) {
-            binding.ivPaymentMethodIcon.setImageResource(R.drawable.ic_momo);
+            binding.ivPaymentMethodIcon.setImageResource(R.drawable.ic_logo_momo);
             binding.ivPaymentMethodIcon.setImageTintList(null);
         } else if ("Thanh toán trực tuyến VNPay".equals(paymentMethod)) {
             binding.ivPaymentMethodIcon.setImageResource(R.drawable.ic_vnpay);

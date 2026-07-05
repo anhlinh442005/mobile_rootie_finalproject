@@ -5,7 +5,7 @@
     android:id="@+id/quiz_test_card_weekly_reminder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_weekly_reminder_gradient"
+    android:background="@drawable/bg_points_card_gradient"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="12dp"
@@ -17,13 +17,13 @@
         android:id="@+id/icon_container"
         android:layout_width="38dp"
         android:layout_height="38dp"
-        android:background="@drawable/bg_circle_icon"
+        android:background="@drawable/com_bg_post"
         android:backgroundTint="#26FFFFFF">
         <ImageView
             android:layout_width="22dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
-            android:src="@drawable/quiz_ic_lotus"
+            android:src="@drawable/ic_flower"
             app:tint="#FFFFFF" />
     </FrameLayout>
 
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
-                android:background="@drawable/status_badge_bg"
+                android:background="@drawable/com_bg_post"
                 android:backgroundTint="#FF9F00"
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="1dp"
@@ -83,7 +83,7 @@
         android:id="@+id/btn_action_checkin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_btn_solid"
+        android:background="@drawable/bg_btn_buy"
         android:backgroundTint="#FFFFFF"
         android:clickable="false"
         android:focusable="false"

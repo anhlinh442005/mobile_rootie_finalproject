@@ -15,7 +15,7 @@
         android:contentDescription="Thông báo"
         android:padding="0dp"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_notification" />
+        android:src="@drawable/ic_bell" />
 
     <TextView
         android:id="@+id/viewNotificationBadge"

@@ -199,7 +199,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
     private void updateSwitchUI(FrameLayout container, ImageView thumb, boolean enabled) {
         if (enabled) {
-            container.setBackgroundResource(R.drawable.ic_switch_track_on_yellow);
+            container.setBackgroundResource(R.drawable.ic_switch_track_on);
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) thumb.getLayoutParams();
             lp.gravity = android.view.Gravity.CENTER_VERTICAL | android.view.Gravity.END;
             lp.setMarginStart(0);
@@ -618,10 +618,10 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         boolean isNight = hour < 6 || hour >= 18;
         if (isNight) {
-            getBinding().ivWeatherIcon.setImageResource(R.drawable.ic_skin_moon);
+            getBinding().ivWeatherIcon.setImageResource(R.drawable.ic_moon);
             getBinding().ivWeatherIcon.setColorFilter(Color.parseColor("#90A4AE"));
         } else {
-            getBinding().ivWeatherIcon.setImageResource(R.drawable.ic_weather_sun);
+            getBinding().ivWeatherIcon.setImageResource(R.drawable.ic_sun);
             getBinding().ivWeatherIcon.setColorFilter(Color.parseColor("#F0C43D"));
         }
 
@@ -683,16 +683,16 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
         int warningBgRes, warningTextColRes;
         if (!snapshot.success) {
-            warningBgRes = R.drawable.bg_warning_orange;
+            warningBgRes = R.drawable.bg_card_status_orange;
             warningTextColRes = R.color.warning_text_orange;
         } else if (uv >= 8 || (hasPm25 && pm25Val > 55)) {
-            warningBgRes = R.drawable.bg_warning_red;
+            warningBgRes = R.drawable.bg_card_status_red;
             warningTextColRes = R.color.warning_text_red;
         } else if (humidity < 40 || uv >= 5.0 || (hasPm25 && pm25Val > 35)) {
-            warningBgRes = R.drawable.bg_warning_orange;
+            warningBgRes = R.drawable.bg_card_status_orange;
             warningTextColRes = R.color.warning_text_orange;
         } else {
-            warningBgRes = R.drawable.bg_warning_yellow;
+            warningBgRes = R.drawable.bg_card_status_yellow;
             warningTextColRes = R.color.warning_text_yellow;
         }
         
@@ -954,8 +954,8 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     }
 
     private void setupFeedbackButtons() {
-        android.graphics.drawable.Drawable activeBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_btn_solid_feedback);
-        android.graphics.drawable.Drawable inactiveBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_btn_outlined_feedback);
+        android.graphics.drawable.Drawable activeBg = ContextCompat.getDrawable(requireContext(), R.drawable.com_bg_tab_active);
+        android.graphics.drawable.Drawable inactiveBg = ContextCompat.getDrawable(requireContext(), R.drawable.quiz_bg_pill_suitable);
         if (activeBg == null || inactiveBg == null) {
             return;
         }
@@ -1099,10 +1099,10 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         boolean isNight = hour < 6 || hour >= 18;
         if (isNight) {
-            getBinding().ivWeatherIcon.setImageResource(R.drawable.ic_skin_moon);
+            getBinding().ivWeatherIcon.setImageResource(R.drawable.ic_moon);
             getBinding().ivWeatherIcon.setColorFilter(Color.parseColor("#90A4AE"));
         } else {
-            getBinding().ivWeatherIcon.setImageResource(R.drawable.ic_weather_sun);
+            getBinding().ivWeatherIcon.setImageResource(R.drawable.ic_sun);
             getBinding().ivWeatherIcon.setColorFilter(Color.parseColor("#F0C43D"));
         }
 
@@ -1152,13 +1152,13 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
         int warningBgRes, warningTextColRes;
         if (diagnostic.getUv() >= 8 || diagnostic.getPm25() >= 50) {
-            warningBgRes = R.drawable.bg_warning_red;
+            warningBgRes = R.drawable.bg_card_status_red;
             warningTextColRes = R.color.warning_text_red;
         } else if (diagnostic.getHumidity() < 40 || diagnostic.getUv() >= 5.0 || diagnostic.getPm25() >= 25) {
-            warningBgRes = R.drawable.bg_warning_orange;
+            warningBgRes = R.drawable.bg_card_status_orange;
             warningTextColRes = R.color.warning_text_orange;
         } else {
-            warningBgRes = R.drawable.bg_warning_yellow;
+            warningBgRes = R.drawable.bg_card_status_yellow;
             warningTextColRes = R.color.warning_text_yellow;
         }
         getBinding().layoutWarningBox.setBackgroundResource(warningBgRes);

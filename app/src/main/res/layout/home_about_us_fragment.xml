@@ -212,7 +212,7 @@
                         android:layout_width="56dp"
                         android:layout_height="3dp"
                         android:layout_marginTop="10dp"
-                        android:background="@drawable/bg_pill_green" />
+                        android:background="@drawable/bg_button_light_green" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -267,7 +267,7 @@
                             <FrameLayout
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:background="@drawable/bg_about_icon_circle">
+                                android:background="@drawable/bg_icon_rounded_green">
 
                                 <ImageView
                                     android:layout_width="22dp"
@@ -305,13 +305,13 @@
                             <FrameLayout
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:background="@drawable/bg_about_icon_circle">
+                                android:background="@drawable/bg_icon_rounded_green">
 
                                 <ImageView
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/quiz_ic_chemistry_flask"
+                                    android:src="@drawable/ic_chemistry_flask"
                                     app:tint="@color/secondary" />
                             </FrameLayout>
 
@@ -343,7 +343,7 @@
                             <FrameLayout
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:background="@drawable/bg_about_icon_circle">
+                                android:background="@drawable/bg_icon_rounded_green">
 
                                 <ImageView
                                     android:layout_width="22dp"
@@ -381,7 +381,7 @@
                             <FrameLayout
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:background="@drawable/bg_about_icon_circle">
+                                android:background="@drawable/bg_icon_rounded_green">
 
                                 <ImageView
                                     android:layout_width="22dp"

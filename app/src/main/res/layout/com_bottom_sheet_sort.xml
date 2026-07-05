@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@drawable/bg_bottom_sheet">
+    android:background="@drawable/com_bg_post">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -31,27 +31,27 @@
 
     <LinearLayout android:id="@+id/layoutSortCreator" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="16dp" android:gravity="center_vertical">
         <TextView android:fontFamily="@font/be_vietnam_pro_medium" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Lựa chọn của nhà sáng tạo" android:textColor="@color/black" android:textSize="16sp" />
-        <ImageView android:id="@+id/ivRadioCreator" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_primary_checked" />
+        <ImageView android:id="@+id/ivRadioCreator" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_checked" />
     </LinearLayout>
 
     <LinearLayout android:id="@+id/layoutSortSuggest" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="16dp" android:gravity="center_vertical">
         <TextView android:fontFamily="@font/be_vietnam_pro_medium" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Đề xuất" android:textColor="@color/black" android:textSize="16sp" />
-        <ImageView android:id="@+id/ivRadioSuggest" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_primary_unchecked" />
+        <ImageView android:id="@+id/ivRadioSuggest" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_unchecked" />
     </LinearLayout>
 
     <LinearLayout android:id="@+id/layoutSortBestSeller" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="16dp" android:gravity="center_vertical">
         <TextView android:fontFamily="@font/be_vietnam_pro_medium" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Bán chạy nhất" android:textColor="@color/black" android:textSize="16sp" />
-        <ImageView android:id="@+id/ivRadioBestSeller" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_primary_unchecked" />
+        <ImageView android:id="@+id/ivRadioBestSeller" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_unchecked" />
     </LinearLayout>
 
     <LinearLayout android:id="@+id/layoutSortPriceLow" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="16dp" android:gravity="center_vertical">
         <TextView android:fontFamily="@font/be_vietnam_pro_medium" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Giá từ thấp đến cao" android:textColor="@color/black" android:textSize="16sp" />
-        <ImageView android:id="@+id/ivRadioPriceLow" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_primary_unchecked" />
+        <ImageView android:id="@+id/ivRadioPriceLow" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_unchecked" />
     </LinearLayout>
 
     <LinearLayout android:id="@+id/layoutSortPriceHigh" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingVertical="16dp" android:gravity="center_vertical">
         <TextView android:fontFamily="@font/be_vietnam_pro_medium" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Giá từ cao xuống thấp" android:textColor="@color/black" android:textSize="16sp" />
-        <ImageView android:id="@+id/ivRadioPriceHigh" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_primary_unchecked" />
+        <ImageView android:id="@+id/ivRadioPriceHigh" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_radio_unchecked" />
     </LinearLayout>
 
     <View android:layout_width="match_parent" android:layout_height="24dp" />

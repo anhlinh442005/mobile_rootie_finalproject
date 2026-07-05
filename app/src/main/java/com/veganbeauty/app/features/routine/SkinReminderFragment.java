@@ -155,7 +155,7 @@ public class SkinReminderFragment extends RootieFragment {
             binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#677559"));
             binding.btnStartMorningRoutine.setText("Đã hoàn thành");
             binding.btnStartMorningRoutine.setEnabled(true);
-            binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.quiz_ic_selected, 0, 0, 0);
+            binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
 
             binding.tvMorningRewardXu.setText("+ 10 xu");
             binding.tvMorningRewardXu.setTextColor(Color.parseColor("#8E8E93"));
@@ -172,7 +172,7 @@ public class SkinReminderFragment extends RootieFragment {
                 binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"));
                 binding.btnStartMorningRoutine.setText("Chưa đến giờ");
                 binding.btnStartMorningRoutine.setEnabled(true);
-                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0);
+                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
 
                 binding.tvMorningRewardXu.setText("+ 10 xu");
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
@@ -188,7 +188,7 @@ public class SkinReminderFragment extends RootieFragment {
                 binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#FF3B30"));
                 binding.btnStartMorningRoutine.setText("Đã bỏ lỡ");
                 binding.btnStartMorningRoutine.setEnabled(true);
-                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0);
+                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
 
                 binding.tvMorningRewardXu.setText("+ 10 xu");
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
@@ -209,7 +209,7 @@ public class SkinReminderFragment extends RootieFragment {
                 }
                 binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"));
                 binding.btnStartMorningRoutine.setEnabled(true);
-                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0);
+                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
 
                 binding.tvMorningRewardXu.setText("+ 10 xu");
                 binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
@@ -271,7 +271,7 @@ public class SkinReminderFragment extends RootieFragment {
             binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#677559"));
             binding.btnStartEveningRoutine.setText("Đã hoàn thành");
             binding.btnStartEveningRoutine.setEnabled(true);
-            binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.quiz_ic_selected, 0, 0, 0);
+            binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
 
             binding.tvEveningRewardXu.setText("+ 10 xu");
             binding.tvEveningRewardXu.setTextColor(Color.parseColor("#8E8E93"));
@@ -294,7 +294,7 @@ public class SkinReminderFragment extends RootieFragment {
                 }
                 binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"));
                 binding.btnStartEveningRoutine.setEnabled(true);
-                binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0);
+                binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
 
                 binding.tvEveningRewardXu.setText("+ 10 xu");
                 binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
@@ -310,7 +310,7 @@ public class SkinReminderFragment extends RootieFragment {
                 binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"));
                 binding.btnStartEveningRoutine.setText("Chưa đến giờ");
                 binding.btnStartEveningRoutine.setEnabled(true);
-                binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_skin_routine_white, 0, 0, 0);
+                binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
 
                 binding.tvEveningRewardXu.setText("+ 10 xu");
                 binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
@@ -446,14 +446,14 @@ public class SkinReminderFragment extends RootieFragment {
             itemBinding.tvDayNum.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
 
             if (isToday) {
-                itemBinding.tvDayLabel.setTextColor(Color.WHITE);
+                itemBinding.tvDayLabel.setTextColor(Color.parseColor("#3E4D44"));
                 itemBinding.tvDayLabel.setAlpha(1.0f);
             } else {
-                itemBinding.tvDayLabel.setTextColor(Color.parseColor("#80FFFFFF"));
+                itemBinding.tvDayLabel.setTextColor(Color.parseColor("#803E4D44"));
             }
 
             if (isCompleted) {
-                itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_white);
+                itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.com_bg_post);
                 itemBinding.ivDayIcon.setImageResource(R.drawable.ic_check);
                 itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#3E4D44"));
             } else {
@@ -464,7 +464,7 @@ public class SkinReminderFragment extends RootieFragment {
                 } else {
                     itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_white_border);
                     itemBinding.ivDayIcon.setImageResource(R.drawable.ic_calendar_outline);
-                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#B3FFFFFF"));
+                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#803E4D44"));
                 }
             }
 

@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,9 +72,9 @@ public class CommunitySortBottomSheet extends BottomSheetDialogFragment {
     private void updateUI(List<ImageView> radios, int selected) {
         for (int i = 0; i < radios.size(); i++) {
             if (i == selected) {
-                radios.get(i).setImageResource(R.drawable.ic_radio_primary_checked);
+                radios.get(i).setImageResource(R.drawable.ic_radio_checked);
             } else {
-                radios.get(i).setImageResource(R.drawable.ic_radio_primary_unchecked);
+                radios.get(i).setImageResource(R.drawable.ic_radio_unchecked);
             }
         }
     }

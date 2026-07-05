@@ -126,7 +126,7 @@
             android:layout_height="wrap_content"
             tools:text="Theo dõi"
             android:textColor="@android:color/white"
-            android:background="@drawable/com_bg_btn_dark_green"
+            android:background="@drawable/bg_btn_buy"
             android:paddingHorizontal="14dp"
             android:paddingVertical="6dp"
             android:textSize="12sp"

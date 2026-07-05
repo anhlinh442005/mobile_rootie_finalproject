@@ -98,7 +98,7 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<MyGiftsAdapter.ViewHold
                     badge.setTextColor(Color.parseColor("#D97706"));
                     actionBtn.setVisibility(View.VISIBLE); actionBtn.setText("Sử dụng");
                     actionBtn.setTextColor(Color.WHITE);
-                    actionBtn.setBackgroundResource(R.drawable.tab_active_bg);
+                    actionBtn.setBackgroundResource(R.drawable.bg_btn_buy);
                     actionBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2D3A34")));
                     break;
                 case "Hết hạn":
@@ -111,7 +111,7 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<MyGiftsAdapter.ViewHold
                     badge.setTextColor(Color.parseColor("#2E7D32"));
                     actionBtn.setVisibility(View.VISIBLE); actionBtn.setText("Sử dụng");
                     actionBtn.setTextColor(Color.WHITE);
-                    actionBtn.setBackgroundResource(R.drawable.tab_active_bg);
+                    actionBtn.setBackgroundResource(R.drawable.bg_btn_buy);
                     actionBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2D3A34")));
                     break;
             }
@@ -119,9 +119,9 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<MyGiftsAdapter.ViewHold
             int iconRes;
             switch (gift.getGiftType()) {
                 case "voucher_discount": case "voucher": iconRes = R.drawable.ic_voucher; break;
-                case "voucher_freeship": case "freeship": iconRes = R.drawable.ic_truck; break;
+                case "voucher_freeship": case "freeship": iconRes = R.drawable.ic_shipping; break;
                 case "gift": iconRes = R.drawable.ic_gift; break;
-                case "product": iconRes = R.drawable.ic_logo_ol; break;
+                case "product": iconRes = R.drawable.ic_logo_rootie; break;
                 default: iconRes = R.drawable.ic_gift; break;
             }
             img.setImageResource(iconRes);

@@ -4,7 +4,7 @@
     android:id="@+id/store_branch_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/skin_bg_store_card"
+    android:background="@drawable/com_bg_popup_menu"
     android:layout_marginBottom="12dp"
     android:layout_marginHorizontal="20dp"
     android:clickable="true"

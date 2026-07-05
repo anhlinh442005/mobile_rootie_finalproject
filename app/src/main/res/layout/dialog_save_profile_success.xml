@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@drawable/bg_dialog_container"
+    android:background="@drawable/com_bg_post"
     android:gravity="center">
 
     <ImageView
@@ -39,7 +39,7 @@
         android:id="@+id/btnDialogDismiss"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:background="@drawable/bg_btn_pill_solid"
+        android:background="@drawable/bg_btn_buy"
         android:text="Hoàn tất"
         android:textColor="#FFFFFF"
         android:textSize="14sp"

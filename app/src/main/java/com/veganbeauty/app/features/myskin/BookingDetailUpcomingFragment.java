@@ -181,7 +181,7 @@ public class BookingDetailUpcomingFragment extends RootieFragment {
                     _binding.skinDetailStatusTag.setText("Chờ xác nhận");
                     _binding.skinDetailStatusTag.setBackgroundColor(Color.parseColor("#FF9800"));
                 } else {
-                    _binding.skinDetailStatusTag.setBackgroundResource(R.drawable.skin_bg_btn_book);
+                    _binding.skinDetailStatusTag.setBackgroundResource(R.drawable.bg_btn_buy);
                 }
                 _binding.skinDetailStatusTag.setTextColor(Color.WHITE);
                 _binding.skinDetailBottomActions.setVisibility(View.VISIBLE);

@@ -29,7 +29,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_more_horiz"
+            android:src="@drawable/ic_dots"
             app:tint="@color/primary" />
     </LinearLayout>
 

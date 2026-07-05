@@ -91,7 +91,7 @@ public class HandbookFragment extends Fragment {
             chip.setPadding(16 * dp, 6 * dp, 16 * dp, 6 * dp);
             
             if (i == 0) {
-                chip.setBackgroundResource(R.drawable.com_bg_chip_selected);
+                chip.setBackgroundResource(R.drawable.bg_btn_buy);
                 chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
             } else {
                 chip.setBackgroundResource(R.drawable.com_bg_chip_default);

@@ -13,7 +13,7 @@
         android:id="@+id/ivRadio"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_radio_unselected" />
+        android:src="@drawable/ic_radio_unchecked" />
 
     <ImageView
         android:id="@+id/ivBankLogo"

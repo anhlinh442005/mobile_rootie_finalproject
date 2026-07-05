@@ -10,7 +10,7 @@
         android:id="@+id/rl_header"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:elevation="2dp">
 
         <!-- Back Button -->
@@ -36,7 +36,7 @@
             android:fontFamily="@font/be_vietnam_pro"
             android:text="Hồ sơ da &amp; Dị ứng"
             android:textColor="#000000"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <!-- Notification Button -->
@@ -74,7 +74,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="18dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="12dp"
             android:clipToPadding="false"
             android:clipChildren="false">
 
@@ -86,13 +87,14 @@
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="4dp"
-                app:cardUseCompatPadding="true">
+                app:cardUseCompatPadding="false">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="14dp">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -114,7 +116,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="LOẠI DA CỦA BẠN"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="15sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -125,7 +127,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="Da dầu nhạy cảm"
                         android:textColor="#3E4D44"
-                        android:textSize="24sp"
+                        android:textSize="26sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="10dp" />
 
@@ -136,7 +138,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="Làn da của bạn có xu hướng tiết nhiều dầu ở vùng chữ T nhưng dễ dàng bị kích ứng, đỏ rát bởi các tác nhân môi trường hoặc mỹ phẩm mạnh."
                         android:textColor="#3E4D44"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:lineSpacingMultiplier="1.25"
                         android:layout_marginBottom="16dp" />
 
@@ -154,7 +156,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="Chỉ số làn da chi tiết"
                         android:textColor="#3E4D44"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp" />
 
@@ -171,7 +173,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="Độ nhạy cảm"
                             android:textColor="#555555"
-                            android:textSize="13sp" />
+                            android:textSize="15sp" />
                         <ProgressBar
                             android:id="@+id/pb_sensitivity"
                             style="?android:attr/progressBarStyleHorizontal"
@@ -189,7 +191,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="80%"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="15sp"
                             android:textStyle="bold"
                             android:gravity="end" />
                     </LinearLayout>
@@ -207,7 +209,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="Độ ẩm"
                             android:textColor="#555555"
-                            android:textSize="13sp" />
+                            android:textSize="15sp" />
                         <ProgressBar
                             android:id="@+id/pb_hydration"
                             style="?android:attr/progressBarStyleHorizontal"
@@ -225,7 +227,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="60%"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="15sp"
                             android:textStyle="bold"
                             android:gravity="end" />
                     </LinearLayout>
@@ -243,7 +245,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="Độ đàn hồi"
                             android:textColor="#555555"
-                            android:textSize="13sp" />
+                            android:textSize="15sp" />
                         <ProgressBar
                             android:id="@+id/pb_elasticity"
                             style="?android:attr/progressBarStyleHorizontal"
@@ -261,7 +263,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="75%"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="15sp"
                             android:textStyle="bold"
                             android:gravity="end" />
                     </LinearLayout>
@@ -279,7 +281,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="Độ dầu"
                             android:textColor="#555555"
-                            android:textSize="13sp" />
+                            android:textSize="15sp" />
                         <ProgressBar
                             android:id="@+id/pb_sebum"
                             style="?android:attr/progressBarStyleHorizontal"
@@ -297,7 +299,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="85%"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="15sp"
                             android:textStyle="bold"
                             android:gravity="end" />
                     </LinearLayout>
@@ -316,7 +318,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="Hiện trạng phân bổ vùng da"
                         android:textColor="#3E4D44"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="6dp" />
 
@@ -327,7 +329,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="Vùng chữ T nhiều dầu nhờn, bóng loáng, vùng chữ U khô nhẹ nhạy cảm dễ ửng đỏ rát."
                         android:textColor="#3E4D44"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:lineSpacingMultiplier="1.2"
                         android:layout_marginBottom="16dp" />
 
@@ -339,14 +341,14 @@
                         android:gravity="center_vertical"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="6dp"
-                        android:background="@drawable/status_badge_bg"
+                        android:background="@drawable/com_bg_post"
                         android:backgroundTint="#EAECE3">
 
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:layout_marginEnd="6dp"
-                            android:src="@drawable/quiz_ic_wavy_check" />
+                            android:src="@drawable/ic_badge_check" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -354,7 +356,7 @@
                             android:fontFamily="@font/be_vietnam_pro"
                             android:text="Độ chính xác 98%"
                             android:textColor="#677559"
-                            android:textSize="12sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
@@ -372,7 +374,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_marginEnd="10dp"
-                    android:src="@drawable/quiz_ic_chemistry_flask"
+                    android:src="@drawable/ic_chemistry_flask"
                     app:tint="#3E4D44" />
 
                 <TextView
@@ -381,7 +383,7 @@
                     android:fontFamily="@font/lexend"
                     android:text="Phân tích thành phần"
                     android:textColor="#3E4D44"
-                    android:textSize="20sp"
+                    android:textSize="22sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -403,7 +405,7 @@
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_circle_icon"
+                        android:background="@drawable/com_bg_post"
                         android:backgroundTint="#C00707" />
 
                     <TextView
@@ -412,7 +414,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="NÊN TRÁNH"
                         android:textColor="#3E4D44"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -442,7 +444,7 @@
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_circle_icon"
+                        android:background="@drawable/com_bg_post"
                         android:backgroundTint="#677559" />
 
                     <TextView
@@ -451,7 +453,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="CẨN TRỌNG"
                         android:textColor="#3E4D44"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -481,7 +483,7 @@
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_circle_icon"
+                        android:background="@drawable/com_bg_post"
                         android:backgroundTint="#E4F5E8" />
 
                     <TextView
@@ -490,7 +492,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="PHÙ HỢP"
                         android:textColor="#3E4D44"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -502,86 +504,72 @@
 
             </LinearLayout>
 
-            <!-- Section: Skin Comparison Chart & Efficacy Analysis -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/skin_card_comparison_efficacy"
+            <!-- Section: Skin Comparison — grid 2x2, không khung ngoài -->
+            <LinearLayout
+                android:id="@+id/skin_comparison_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="15dp"
-                app:cardElevation="4dp"
-                app:cardUseCompatPadding="true">
+                android:orientation="vertical">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/lexend"
+                    android:text="So sánh &amp; Đánh giá hiệu quả"
+                    android:textColor="#3E4D44"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/lexend"
+                    android:text="Chỉ số da (Cũ → Mới)"
+                    android:textColor="#7E8A83"
+                    android:textSize="14sp" />
+
+                <!-- Hàng 1: Độ ẩm | Độ dầu -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:layout_marginBottom="8dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
+                    <!-- Độ ẩm da -->
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_marginEnd="8dp"
-                            android:src="@drawable/ic_ai_outline"
-                            app:tint="#3E4D44" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/lexend"
-                            android:text="So sánh &amp; Đánh giá hiệu quả"
-                            android:textColor="#3E4D44"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lexend"
-                        android:text="Biểu đồ so sánh chỉ số da (Cũ vs Mới)"
-                        android:textColor="#7E8A83"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="12dp" />
-
-                                        <!-- hydration Compact Row -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="10dp"
+                        android:id="@+id/skin_compare_hydration_cell"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
                         android:background="@drawable/bg_expert_reason_card"
                         android:backgroundTint="#F7F9FA"
-                        android:padding="14dp"
-                        android:gravity="center_vertical">
+                        android:orientation="vertical"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp">
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:ellipsize="end"
                             android:fontFamily="@font/lexend"
+                            android:maxLines="1"
                             android:text="Độ ẩm da"
-                            android:drawableStart="@drawable/ic_skin_moisture"
-                            android:drawablePadding="8dp"
-                            android:drawableTint="#3E4D44"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
                             <TextView
                                 android:id="@+id/skin_compare_hydration_old"
                                 android:layout_width="wrap_content"
@@ -589,14 +577,16 @@
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#7E8A83"
-                                android:textSize="13sp" />
+                                android:textSize="14sp" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="6dp"
-                                android:text="➔"
+                                android:layout_marginHorizontal="4dp"
+                                android:text="→"
                                 android:textColor="#7E8A83"
-                                android:textSize="12sp" />
+                                android:textSize="13sp" />
+
                             <TextView
                                 android:id="@+id/skin_compare_hydration_new"
                                 android:layout_width="wrap_content"
@@ -604,50 +594,54 @@
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#3E4D44"
-                                android:textStyle="bold"
-                                android:textSize="13sp" />
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
                         <TextView
                             android:id="@+id/skin_compare_hydration_diff"
-                            android:layout_width="100dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="end"
+                            android:layout_marginTop="4dp"
                             android:fontFamily="@font/lexend"
-                            android:text="+0%"
+                            android:maxLines="2"
+                            android:text="0% (Duy trì)"
                             android:textColor="#677559"
-                            android:textSize="11sp"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
-                    <!-- sebum Compact Row -->
+
+                    <!-- Độ dầu -->
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="10dp"
+                        android:id="@+id/skin_compare_sebum_cell"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
                         android:background="@drawable/bg_expert_reason_card"
                         android:backgroundTint="#F7F9FA"
-                        android:padding="14dp"
-                        android:gravity="center_vertical">
+                        android:orientation="vertical"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp">
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:ellipsize="end"
                             android:fontFamily="@font/lexend"
-                            android:text="Độ dầu (Sebum)"
-                            android:drawableStart="@drawable/quiz_ic_option_oily"
-                            android:drawablePadding="8dp"
-                            android:drawableTint="#3E4D44"
+                            android:maxLines="1"
+                            android:text="Độ dầu"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
                             <TextView
                                 android:id="@+id/skin_compare_sebum_old"
                                 android:layout_width="wrap_content"
@@ -655,14 +649,16 @@
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#7E8A83"
-                                android:textSize="13sp" />
+                                android:textSize="14sp" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="6dp"
-                                android:text="➔"
+                                android:layout_marginHorizontal="4dp"
+                                android:text="→"
                                 android:textColor="#7E8A83"
-                                android:textSize="12sp" />
+                                android:textSize="13sp" />
+
                             <TextView
                                 android:id="@+id/skin_compare_sebum_new"
                                 android:layout_width="wrap_content"
@@ -670,50 +666,63 @@
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#3E4D44"
-                                android:textStyle="bold"
-                                android:textSize="13sp" />
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
                         <TextView
                             android:id="@+id/skin_compare_sebum_diff"
-                            android:layout_width="100dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="end"
+                            android:layout_marginTop="4dp"
                             android:fontFamily="@font/lexend"
-                            android:text="+0%"
+                            android:maxLines="2"
+                            android:text="0% (Duy trì)"
                             android:textColor="#677559"
-                            android:textSize="11sp"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
-                    <!-- sensitivity Compact Row -->
+                </LinearLayout>
+
+                <!-- Hàng 2: Nhạy cảm | Đàn hồi -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <!-- Độ nhạy cảm -->
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="10dp"
+                        android:id="@+id/skin_compare_sensitivity_cell"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
                         android:background="@drawable/bg_expert_reason_card"
                         android:backgroundTint="#F7F9FA"
-                        android:padding="14dp"
-                        android:gravity="center_vertical">
+                        android:orientation="vertical"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp">
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:ellipsize="end"
                             android:fontFamily="@font/lexend"
+                            android:maxLines="1"
                             android:text="Độ nhạy cảm"
-                            android:drawableStart="@drawable/ic_skin_sensitivity"
-                            android:drawablePadding="8dp"
-                            android:drawableTint="#3E4D44"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
                             <TextView
                                 android:id="@+id/skin_compare_sensitivity_old"
                                 android:layout_width="wrap_content"
@@ -721,14 +730,16 @@
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#7E8A83"
-                                android:textSize="13sp" />
+                                android:textSize="14sp" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="6dp"
-                                android:text="➔"
+                                android:layout_marginHorizontal="4dp"
+                                android:text="→"
                                 android:textColor="#7E8A83"
-                                android:textSize="12sp" />
+                                android:textSize="13sp" />
+
                             <TextView
                                 android:id="@+id/skin_compare_sensitivity_new"
                                 android:layout_width="wrap_content"
@@ -736,50 +747,54 @@
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#3E4D44"
-                                android:textStyle="bold"
-                                android:textSize="13sp" />
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
                         <TextView
                             android:id="@+id/skin_compare_sensitivity_diff"
-                            android:layout_width="100dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="end"
+                            android:layout_marginTop="4dp"
                             android:fontFamily="@font/lexend"
-                            android:text="+0%"
+                            android:maxLines="2"
+                            android:text="0% (Duy trì)"
                             android:textColor="#677559"
-                            android:textSize="11sp"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
-                    <!-- elasticity Compact Row -->
+
+                    <!-- Độ đàn hồi -->
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="10dp"
+                        android:id="@+id/skin_compare_elasticity_cell"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
                         android:background="@drawable/bg_expert_reason_card"
                         android:backgroundTint="#F7F9FA"
-                        android:padding="14dp"
-                        android:gravity="center_vertical">
+                        android:orientation="vertical"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp">
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:ellipsize="end"
                             android:fontFamily="@font/lexend"
+                            android:maxLines="1"
                             android:text="Độ đàn hồi"
-                            android:drawableStart="@drawable/ic_skin_star"
-                            android:drawablePadding="8dp"
-                            android:drawableTint="#3E4D44"
                             android:textColor="#3E4D44"
-                            android:textSize="13sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
                             <TextView
                                 android:id="@+id/skin_compare_elasticity_old"
                                 android:layout_width="wrap_content"
@@ -787,14 +802,16 @@
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#7E8A83"
-                                android:textSize="13sp" />
+                                android:textSize="14sp" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="6dp"
-                                android:text="➔"
+                                android:layout_marginHorizontal="4dp"
+                                android:text="→"
                                 android:textColor="#7E8A83"
-                                android:textSize="12sp" />
+                                android:textSize="13sp" />
+
                             <TextView
                                 android:id="@+id/skin_compare_elasticity_new"
                                 android:layout_width="wrap_content"
@@ -802,60 +819,55 @@
                                 android:fontFamily="@font/lexend"
                                 android:text="50%"
                                 android:textColor="#3E4D44"
-                                android:textStyle="bold"
-                                android:textSize="13sp" />
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
                         <TextView
                             android:id="@+id/skin_compare_elasticity_diff"
-                            android:layout_width="100dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="end"
-                            android:fontFamily="@font/lexend"
-                            android:text="+0%"
-                            android:textColor="#677559"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-<!-- Divider -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#EAECE3"
-                        android:layout_marginBottom="14dp" />
-
-                    <!-- Product Efficacy Analysis -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@drawable/bg_expert_reason_card"
-                        android:backgroundTint="#F2FBF6"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/lexend"
-                            android:text="Phân tích hiệu quả sản phẩm đang dùng"
-                            android:textColor="#02542D"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp" />
-
-                        <!-- Efficacy details text -->
-                        <TextView
-                            android:id="@+id/skin_tv_product_efficacy_analysis"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:fontFamily="@font/lexend"
-                            android:text="Chưa có đủ dữ liệu lịch sử để phân tích hiệu quả sản phẩm."
-                            android:textColor="#3E4D44"
-                            android:textSize="14sp"
-                            android:lineSpacingMultiplier="1.4" />
+                            android:maxLines="2"
+                            android:text="0% (Duy trì)"
+                            android:textColor="#677559"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+
+                <!-- Phân tích hiệu quả sản phẩm -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_expert_reason_card"
+                    android:backgroundTint="#F2FBF6"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="12dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/lexend"
+                        android:text="Phân tích hiệu quả sản phẩm đang dùng"
+                        android:textColor="#02542D"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/skin_tv_product_efficacy_analysis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend"
+                        android:lineSpacingMultiplier="1.4"
+                        android:text="Chưa có đủ dữ liệu lịch sử để phân tích hiệu quả sản phẩm."
+                        android:textColor="#3E4D44"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
 
             <!-- Section: Products in Use -->
             <TextView
@@ -864,7 +876,7 @@
                 android:fontFamily="@font/lexend"
                 android:text="Sản phẩm đang sử dụng"
                 android:textColor="#3E4D44"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp" />
 
@@ -873,7 +885,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="0dp" />
 
             <!-- Section: AI Recommendations -->
             <androidx.cardview.widget.CardView
@@ -883,7 +895,7 @@
                 app:cardBackgroundColor="#3E4D44"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="6dp"
-                app:cardUseCompatPadding="true">
+                app:cardUseCompatPadding="false">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -902,7 +914,7 @@
                             android:layout_width="26dp"
                             android:layout_height="26dp"
                             android:layout_marginEnd="10dp"
-                            android:src="@drawable/ic_skin_ai_sparkles"
+                            android:src="@drawable/ic_ai_outline"
                             app:tint="#EAECE3" />
 
                         <TextView
@@ -911,7 +923,7 @@
                             android:fontFamily="@font/lexend"
                             android:text="Lời khuyên từ Rootie AI"
                             android:textColor="#FFFFFF"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -932,6 +944,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:paddingHorizontal="16dp"
                 android:layout_marginBottom="16dp">
 
                 <!-- Button 1: Xem Báo cáo làn da cá nhân -->
@@ -940,7 +953,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginBottom="10dp"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#677559"
                     android:clickable="true"
                     android:focusable="true">
@@ -952,7 +965,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="Xem Báo cáo làn da cá nhân"
                         android:textColor="#FFFFFF"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
                 </FrameLayout>
 
@@ -962,7 +975,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginBottom="12dp"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#DDDFC4"
                     android:clickable="true"
                     android:focusable="true">
@@ -974,7 +987,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="Thiết lập Routine &amp; Nhắc hẹn"
                         android:textColor="#677559"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
                 </FrameLayout>
 
@@ -983,7 +996,7 @@
                     android:id="@+id/btn_retake_quiz"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:background="@drawable/bg_btn_solid"
+                    android:background="@drawable/bg_btn_buy"
                     android:backgroundTint="#F2F3EB"
                     android:clickable="true"
                     android:focusable="true">
@@ -995,7 +1008,7 @@
                         android:fontFamily="@font/lexend"
                         android:text="QUAY LẠI LÀM QUIZ"
                         android:textColor="#3E4D44"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
                 </FrameLayout>
             </LinearLayout>

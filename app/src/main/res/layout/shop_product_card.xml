@@ -81,7 +81,8 @@
                     android:contentDescription="@null"
                     android:padding="8dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_cart" />
+                    android:src="@drawable/ic_cart"
+                    app:tint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddToCart"
@@ -92,13 +93,18 @@
                     android:minHeight="36dp"
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     android:backgroundTint="@color/primary"
                     android:fontFamily="@font/be_vietnam_pro_semibold"
                     android:includeFontPadding="true"
                     android:text="Chọn mua"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
+                    android:maxLines="1"
+                    android:lines="1"
+                    android:ellipsize="end"
                     app:cornerRadius="8dp" />
             </LinearLayout>
 

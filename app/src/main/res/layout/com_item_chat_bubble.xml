@@ -48,7 +48,7 @@
             android:id="@+id/llBubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/com_bg_card_rounded"
+            android:background="@drawable/com_bg_post"
             android:backgroundTint="#758864"
             android:paddingHorizontal="16dp"
             android:paddingVertical="10dp">

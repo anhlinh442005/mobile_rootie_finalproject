@@ -5,12 +5,10 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -297,7 +295,7 @@ public class QuizTestResultFragment extends RootieFragment {
                 }
 
                 if (!triggeredAvoids.isEmpty()) {
-                    ivBadgeIcon.setImageResource(R.drawable.quiz_ic_warning_triangle);
+                    ivBadgeIcon.setImageResource(R.drawable.ic_warning_triangle);
                     ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#F04758")));
                     tvBadge.setText("Nguy cơ kích ứng cao");
                     tvBadge.setTextColor(Color.parseColor("#F04758"));
@@ -306,7 +304,7 @@ public class QuizTestResultFragment extends RootieFragment {
                     String namesStr = String.join(", ", uniqueNames);
                     tvProdDesc.setText("Sản phẩm chứa " + namesStr + " không phù hợp với da nhạy cảm của bạn.");
                 } else if (!triggeredCautions.isEmpty()) {
-                    ivBadgeIcon.setImageResource(R.drawable.quiz_ic_warning_circle);
+                    ivBadgeIcon.setImageResource(R.drawable.ic_warning_outline);
                     ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#E29400")));
                     tvBadge.setText("Cần thận trọng khi dùng");
                     tvBadge.setTextColor(Color.parseColor("#E29400"));
@@ -315,7 +313,7 @@ public class QuizTestResultFragment extends RootieFragment {
                     String namesStr = String.join(", ", uniqueNames);
                     tvProdDesc.setText("Sản phẩm chứa " + namesStr + " cần lưu ý theo dõi khi sử dụng.");
                 } else {
-                    ivBadgeIcon.setImageResource(R.drawable.quiz_ic_selected);
+                    ivBadgeIcon.setImageResource(R.drawable.ic_check);
                     ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#375633")));
                     tvBadge.setText("Lành tính - Khuyên dùng");
                     tvBadge.setTextColor(Color.parseColor("#375633"));
@@ -349,14 +347,14 @@ public class QuizTestResultFragment extends RootieFragment {
 
     private void updateTabUI() {
         if (isMorningTab) {
-            binding.tabMorning.setBackgroundResource(R.drawable.bg_btn_solid);
+            binding.tabMorning.setBackgroundResource(R.drawable.bg_btn_buy);
             binding.tabMorning.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#677559")));
             binding.tvTabMorning.setTextColor(Color.WHITE);
             binding.tabEvening.setBackgroundResource(android.R.color.transparent);
             binding.tabEvening.setBackgroundTintList(null);
             binding.tvTabEvening.setTextColor(Color.parseColor("#677559"));
         } else {
-            binding.tabEvening.setBackgroundResource(R.drawable.bg_btn_solid);
+            binding.tabEvening.setBackgroundResource(R.drawable.bg_btn_buy);
             binding.tabEvening.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#677559")));
             binding.tvTabEvening.setTextColor(Color.WHITE);
             binding.tabMorning.setBackgroundResource(android.R.color.transparent);

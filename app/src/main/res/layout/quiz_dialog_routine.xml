@@ -52,7 +52,7 @@
         android:id="@+id/btn_close_dialog"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@drawable/bg_btn_solid"
+        android:background="@drawable/bg_btn_buy"
         android:backgroundTint="#677559"
         android:clickable="true"
         android:focusable="true">

@@ -57,7 +57,7 @@
                 android:layout_gravity="bottom|end"
                 android:layout_marginEnd="2dp"
                 android:layout_marginBottom="2dp"
-                android:background="@drawable/bg_circle_green" />
+                android:background="@drawable/bg_dialog_btn_confirm" />
         </FrameLayout>
 
         <!-- Title Container -->
@@ -118,63 +118,101 @@
         android:background="@color/neutral"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_chat_input_box"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Plus Icon with Circle Outline Background -->
+            <!-- Plus -->
             <ImageButton
                 android:id="@+id/btnPlus"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:background="@drawable/skin_bg_circle_completed"
-                android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/ic_add"
-                android:padding="8dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Thêm đính kèm"
-                app:tint="@color/primary"
-                style="?android:attr/borderlessButtonStyle" />
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_add"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/primary" />
 
-            <!-- Text Input Field (Capsule Shape) -->
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/bg_skin_chat_input">
+            <!-- Camera -->
+            <ImageButton
+                android:id="@+id/btnCamera"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="2dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Chụp ảnh"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_camera"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnPlus"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/primary" />
 
-                <EditText
-                    android:id="@+id/etMessageInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:hint="Nhập tin nhắn..."
-                    android:textColorHint="@color/tertiary"
-                    android:textColor="@color/primary"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/be_vietnam_pro"
-                    android:inputType="textShortMessage"
-                    android:imeOptions="actionSend"
-                    android:paddingHorizontal="16dp" />
-            </FrameLayout>
+            <!-- Gallery -->
+            <ImageButton
+                android:id="@+id/btnGallery"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="2dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Chọn ảnh"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_gallery"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnCamera"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/primary" />
 
-            <!-- Circular Send Button -->
+            <!-- Send -->
             <ImageButton
                 android:id="@+id/btnSend"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/skin_bg_circle_completed"
                 android:backgroundTint="@color/primary"
-                android:src="@drawable/ic_send_white"
-                android:padding="11dp"
                 android:contentDescription="Gửi tin nhắn"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_plane"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/white" />
-        </LinearLayout>
+
+            <!-- Text Input -->
+            <EditText
+                android:id="@+id/etMessageInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp"
+                android:background="@null"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:hint="Nhập tin nhắn..."
+                android:imeOptions="actionSend"
+                android:inputType="textShortMessage"
+                android:maxLines="3"
+                android:paddingVertical="0dp"
+                android:textColor="@color/primary"
+                android:textColorHint="@color/tertiary"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnSend"
+                app:layout_constraintStart_toEndOf="@id/btnGallery"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

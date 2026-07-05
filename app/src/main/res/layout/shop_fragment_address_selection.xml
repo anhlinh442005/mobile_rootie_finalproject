@@ -11,7 +11,7 @@
         android:id="@+id/clToolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:elevation="1dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -80,7 +80,7 @@
             android:id="@+id/clStep1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_search_bar"
+            android:background="@drawable/bg_white_rounded_corner_border"
             android:paddingHorizontal="12dp"
             android:paddingVertical="12dp"
             app:layout_constraintTop_toTopOf="parent">
@@ -134,7 +134,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@drawable/bg_search_bar"
+            android:background="@drawable/bg_white_rounded_corner_border"
             android:paddingHorizontal="12dp"
             android:paddingVertical="12dp"
             android:visibility="gone"
@@ -145,7 +145,7 @@
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/bg_circle_green"
+                android:background="@drawable/bg_dialog_btn_confirm"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

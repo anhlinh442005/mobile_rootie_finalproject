@@ -347,7 +347,7 @@ public class AccountVoucherFragment extends RootieFragment {
     }
 
     private void updateTabSelection(TextView selectedTab, List<TextView> inactiveTabs) {
-        selectedTab.setBackgroundResource(R.drawable.tab_active_bg);
+        selectedTab.setBackgroundResource(R.drawable.bg_btn_buy);
         selectedTab.setTextColor(Color.WHITE);
         selectedTab.setTypeface(null, Typeface.BOLD);
 

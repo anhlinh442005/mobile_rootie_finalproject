@@ -138,7 +138,7 @@ public class AccountVoucherDetailFragment extends RootieFragment {
 
         String normalizedType = voucherType.toLowerCase(Locale.ROOT).replace(" ", "").replace("_", "");
         if (normalizedType.equals("freeship") || normalizedType.equals("voucherfreeship")) {
-            binding.ivVoucherIcon.setImageResource(R.drawable.ic_truck);
+            binding.ivVoucherIcon.setImageResource(R.drawable.ic_shipping);
         } else if (normalizedType.equals("gift") || normalizedType.equals("productgift") || normalizedType.equals("product") || normalizedType.equals("product_gift")) {
             binding.ivVoucherIcon.setImageResource(R.drawable.ic_gift);
         } else {

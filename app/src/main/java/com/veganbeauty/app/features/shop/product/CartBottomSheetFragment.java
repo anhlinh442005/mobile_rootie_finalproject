@@ -151,7 +151,7 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
 
         _binding.llVoucherRow.setOnClickListener(v -> {
             ShopVoucherFragment voucherFragment = ShopVoucherFragment.newInstance(selectedVoucherCode);
-            getParentFragmentManager().beginTransaction()
+            requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_container, voucherFragment)
                     .addToBackStack(null)
                     .commit();
@@ -195,7 +195,7 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
                         selectedVoucherCode,
                         voucherDiscountAmount
                 );
-                getParentFragmentManager().beginTransaction()
+                requireActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_container, checkoutFragment)
                         .addToBackStack(null)
                         .commit();

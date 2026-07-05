@@ -57,8 +57,8 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
                     android:background="@drawable/bg_icon_rounded"
                     android:padding="12dp"
                     android:src="@drawable/ic_scan_face"
@@ -103,7 +103,7 @@
                     android:layout_height="48dp"
                     android:background="@drawable/bg_icon_rounded"
                     android:padding="12dp"
-                    android:src="@drawable/ic_scan_lightbulb"
+                    android:src="@drawable/ic_lightbulb"
                     app:tint="#2E3A33" />
 
                 <LinearLayout
@@ -145,7 +145,7 @@
                     android:layout_height="48dp"
                     android:background="@drawable/bg_icon_rounded"
                     android:padding="12dp"
-                    android:src="@drawable/ic_scan_phone"
+                    android:src="@drawable/ic_smartphone"
                     app:tint="#2E3A33" />
 
                 <LinearLayout
@@ -230,7 +230,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_scan_sparkles"
+                    android:src="@drawable/ic_ai_outline"
                     app:tint="#2E3A33" />
 
                 <TextView

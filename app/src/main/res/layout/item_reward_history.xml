@@ -25,7 +25,7 @@
         android:layout_width="10dp"
         android:layout_height="10dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/bg_circle_green"
+        android:background="@drawable/bg_dialog_btn_confirm"
         android:backgroundTint="@color/primary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -81,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:background="@drawable/status_badge_bg"
+            android:background="@drawable/com_bg_post"
             android:backgroundTint="#E8F5E9"
             android:paddingHorizontal="8dp"
             android:paddingVertical="3dp"

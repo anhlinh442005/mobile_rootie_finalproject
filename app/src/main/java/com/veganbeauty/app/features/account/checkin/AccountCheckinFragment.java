@@ -242,9 +242,9 @@ public class AccountCheckinFragment extends RootieFragment {
 
     private void highlightRewardCard(int streak) {
         int currentMod = (streak == 0) ? 0 : ((streak - 1) % 7) + 1;
-        binding.cardReward1.setBackgroundResource(R.drawable.bg_reward_card_default);
-        binding.cardReward2.setBackgroundResource(R.drawable.bg_reward_card_default);
-        binding.cardReward3.setBackgroundResource(R.drawable.bg_reward_card_default);
+        binding.cardReward1.setBackgroundResource(R.drawable.bg_dialog_qr);
+        binding.cardReward2.setBackgroundResource(R.drawable.bg_dialog_qr);
+        binding.cardReward3.setBackgroundResource(R.drawable.bg_dialog_qr);
 
         if (currentMod == 7) {
             binding.cardReward3.setBackgroundResource(R.drawable.bg_reward_card_selected);

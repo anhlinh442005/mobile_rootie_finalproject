@@ -93,7 +93,7 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
                 for (TextView c : chips) {
                     if (c == null) continue;
                     if (c == chip) {
-                        c.setBackgroundResource(R.drawable.com_bg_chip_selected);
+                        c.setBackgroundResource(R.drawable.bg_btn_buy);
                         c.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#6E846A")));
                         c.setTextColor(Color.WHITE);
                     } else {

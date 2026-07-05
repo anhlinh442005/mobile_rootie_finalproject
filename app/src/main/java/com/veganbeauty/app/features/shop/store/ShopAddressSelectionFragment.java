@@ -134,7 +134,7 @@ public class ShopAddressSelectionFragment extends RootieFragment {
             _binding.clStep1.setBackgroundResource(R.drawable.bg_btn_outlined);
             _binding.tvStep1Text.setText(selectedProvince != null ? selectedProvince : "Chọn Tỉnh/Thành phố");
             _binding.tvStep1Change.setVisibility(View.GONE);
-            _binding.viewStep1Dot.setBackgroundResource(R.drawable.bg_circle_green);
+            _binding.viewStep1Dot.setBackgroundResource(R.drawable.bg_dialog_btn_confirm);
 
             _binding.viewConnectingLine.setVisibility(View.GONE);
             _binding.clStep2.setVisibility(View.GONE);
@@ -167,7 +167,7 @@ public class ShopAddressSelectionFragment extends RootieFragment {
             _binding.clStep2.setVisibility(View.VISIBLE);
             _binding.clStep2.setBackgroundResource(R.drawable.bg_btn_outlined);
             _binding.tvStep2Text.setText(selectedDistrict != null ? selectedDistrict : "Chọn Quận/Huyện");
-            _binding.viewStep2Dot.setBackgroundResource(R.drawable.bg_circle_green);
+            _binding.viewStep2Dot.setBackgroundResource(R.drawable.bg_dialog_btn_confirm);
 
             _binding.etSearch.setHint("Nhập tìm Quận/Huyện");
 

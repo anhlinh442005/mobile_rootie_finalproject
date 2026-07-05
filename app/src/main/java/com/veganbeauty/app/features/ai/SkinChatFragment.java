@@ -147,6 +147,8 @@ public class SkinChatFragment extends DialogFragment {
         });
 
         _binding.btnPlus.setOnClickListener(v -> Toast.makeText(requireContext(), "Tính năng đính kèm tệp sẽ sớm ra mắt!", Toast.LENGTH_SHORT).show());
+        _binding.btnCamera.setOnClickListener(v -> Toast.makeText(requireContext(), "Tính năng chụp ảnh sẽ sớm ra mắt!", Toast.LENGTH_SHORT).show());
+        _binding.btnGallery.setOnClickListener(v -> Toast.makeText(requireContext(), "Tính năng chọn ảnh sẽ sớm ra mắt!", Toast.LENGTH_SHORT).show());
     }
 
     private void loadConversationData() {

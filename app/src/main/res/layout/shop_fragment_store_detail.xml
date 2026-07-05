@@ -11,7 +11,7 @@
         android:id="@+id/clToolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_header_gradient"
+        android:background="@drawable/bg_points_card_gradient"
         android:elevation="2dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -134,7 +134,7 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:layout_marginTop="2dp"
-                            android:src="@drawable/ic_location"
+                            android:src="@drawable/ic_account_location"
                             app:tint="@color/gray_dark" />
 
                         <TextView
@@ -230,7 +230,7 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_btn_pill_solid"
+            android:background="@drawable/bg_btn_buy"
             android:text="Xem chỉ đường"
             android:textColor="@color/white"
             android:fontFamily="@font/be_vietnam_pro_bold"
@@ -243,7 +243,7 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:background="@drawable/bg_btn_pill_outlined"
+            android:background="@drawable/bg_btn_outlined"
             android:text="Liên hệ"
             android:textColor="@color/primary"
             android:fontFamily="@font/be_vietnam_pro_bold"

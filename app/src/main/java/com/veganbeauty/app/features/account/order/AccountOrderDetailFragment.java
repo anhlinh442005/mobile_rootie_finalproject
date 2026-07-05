@@ -18,8 +18,6 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
@@ -282,7 +280,7 @@ public class AccountOrderDetailFragment extends RootieFragment {
                 binding.tvBannerSubActionText.setTextColor(ContextCompat.getColor(context, textResId));
 
                 binding.ivBannerSubActionIcon.setVisibility(View.VISIBLE);
-                binding.ivBannerSubActionIcon.setImageResource(R.drawable.ic_truck);
+                binding.ivBannerSubActionIcon.setImageResource(R.drawable.ic_shipping);
                 binding.ivBannerSubActionIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(context, textResId)));
 
                 binding.btnBannerSubAction.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
@@ -300,7 +298,7 @@ public class AccountOrderDetailFragment extends RootieFragment {
                 binding.tvBannerSubActionText.setTextColor(ContextCompat.getColor(context, textResId));
 
                 binding.ivBannerSubActionIcon.setVisibility(View.VISIBLE);
-                binding.ivBannerSubActionIcon.setImageResource(R.drawable.ic_logo_ol);
+                binding.ivBannerSubActionIcon.setImageResource(R.drawable.ic_logo_rootie);
                 binding.ivBannerSubActionIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(context, textResId)));
 
                 binding.btnBannerSubAction.setOnClickListener(v -> getParentFragmentManager().beginTransaction()

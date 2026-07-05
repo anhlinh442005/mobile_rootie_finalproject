@@ -112,7 +112,7 @@ public class CommunityAffiliateOrdersFragment extends Fragment {
                 continue;
             }
             if (entry.getKey().equals(activeFilter)) {
-                tab.setBackgroundResource(R.drawable.tab_active_bg);
+                tab.setBackgroundResource(R.drawable.bg_btn_buy);
                 tab.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
             } else {
                 tab.setBackgroundResource(R.drawable.tab_inactive_bg);

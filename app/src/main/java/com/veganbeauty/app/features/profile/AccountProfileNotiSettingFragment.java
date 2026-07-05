@@ -219,7 +219,7 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
     private void updateSwitchUI(FrameLayout container, ImageView thumb, boolean enabled) {
         int margin = (int)(2 * getResources().getDisplayMetrics().density);
         if (enabled) {
-            container.setBackgroundResource(container == binding.switchSkinWeatherContainer ? R.drawable.ic_switch_track_on_yellow : R.drawable.ic_switch_track_on);
+            container.setBackgroundResource(container == binding.switchSkinWeatherContainer ? R.drawable.ic_switch_track_on : R.drawable.ic_switch_track_on);
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) thumb.getLayoutParams();
             lp.gravity = Gravity.CENTER_VERTICAL | Gravity.END;
             lp.setMarginStart(0); lp.setMarginEnd(margin);

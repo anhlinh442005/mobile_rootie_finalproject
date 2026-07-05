@@ -251,7 +251,7 @@ public class ExploreSearchFragment extends RootieFragment {
             com.bumptech.glide.Glide.with(holder.ivThumbnail.getContext()).load(thumbUrl).into(holder.ivThumbnail);
 
             if (video.getAvatarUrl() == null || video.getAvatarUrl().trim().isEmpty()) {
-                int[] avatarRes = {R.drawable.img_avatar, R.drawable.ic_user_outline, R.drawable.img_avatar, R.drawable.ic_user_outline};
+                int[] avatarRes = {R.drawable.img_avatar, R.drawable.ic_account_outline, R.drawable.img_avatar, R.drawable.ic_account_outline};
                 int randomAvatar = avatarRes[(int) (Math.random() * avatarRes.length)];
                 com.bumptech.glide.Glide.with(holder.ivAvatar.getContext()).load(randomAvatar).circleCrop().into(holder.ivAvatar);
             } else {

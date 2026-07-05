@@ -61,10 +61,10 @@ public class AffiliateBankAccountAdapter extends RecyclerView.Adapter<AffiliateB
             tvAccountHolder.setText(account.getAccountHolder());
 
             if (account.isDefault()) {
-                ivRadio.setImageResource(R.drawable.ic_radio_selected);
+                ivRadio.setImageResource(R.drawable.ic_radio_checked);
                 tvDefaultBadge.setVisibility(View.VISIBLE);
             } else {
-                ivRadio.setImageResource(R.drawable.ic_radio_unselected);
+                ivRadio.setImageResource(R.drawable.ic_radio_unchecked);
                 tvDefaultBadge.setVisibility(View.GONE);
             }
 

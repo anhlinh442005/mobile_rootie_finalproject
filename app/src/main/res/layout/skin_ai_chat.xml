@@ -89,11 +89,18 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <!-- Bottom Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E2E8DC"
+        <!-- More Dots Button -->
+        <ImageButton
+            android:id="@+id/btnMore"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_dots"
+            android:scaleType="centerInside"
+            android:contentDescription="Tùy chọn thêm"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -250,7 +257,7 @@
                 android:layout_marginEnd="6dp"
                 android:background="@drawable/skin_bg_circle_completed"
                 android:backgroundTint="@color/primary"
-                android:src="@drawable/ic_send_white"
+                android:src="@drawable/ic_plane"
                 android:padding="8dp"
                 android:contentDescription="Gửi tin nhắn"
                 app:layout_constraintEnd_toEndOf="parent"

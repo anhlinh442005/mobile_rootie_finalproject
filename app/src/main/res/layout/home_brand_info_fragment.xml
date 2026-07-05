@@ -268,7 +268,7 @@
                             <ImageView
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
-                                android:src="@drawable/quiz_ic_chemistry_flask"
+                                android:src="@drawable/ic_chemistry_flask"
                                 app:tint="@color/secondary" />
 
                             <TextView

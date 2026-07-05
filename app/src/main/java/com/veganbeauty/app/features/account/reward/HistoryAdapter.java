@@ -108,7 +108,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 status.setTextColor(Color.parseColor("#C53030"));
                 status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FED7D7")));
             }
-            dot.setBackgroundResource(isMostRecent ? R.drawable.bg_circle_green : R.drawable.bg_circle_grey);
+            dot.setBackgroundResource(isMostRecent ? R.drawable.bg_dialog_btn_confirm : R.drawable.bg_circle_grey);
             dot.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(isMostRecent ? "#3E4D44" : "#A0AEC0")));
             lineTop.setVisibility(isFirst ? View.INVISIBLE : View.VISIBLE);
             lineBottom.setVisibility(isLast ? View.INVISIBLE : View.VISIBLE);

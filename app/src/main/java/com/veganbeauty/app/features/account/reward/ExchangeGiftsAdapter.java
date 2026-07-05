@@ -95,7 +95,7 @@ public class ExchangeGiftsAdapter extends RecyclerView.Adapter<ExchangeGiftsAdap
             if (isLocked) {
                 actionBtn.setText("Chưa đủ ĐK"); actionBtn.setEnabled(false);
                 actionBtn.setTextColor(Color.parseColor("#A0AEC0"));
-                actionBtn.setBackgroundResource(R.drawable.status_badge_bg);
+                actionBtn.setBackgroundResource(R.drawable.com_bg_post);
                 actionBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ECEFF0")));
                 img.setImageResource(R.drawable.ic_lock);
                 img.setImageTintList(ColorStateList.valueOf(Color.parseColor("#A0AEC0")));
@@ -104,7 +104,7 @@ public class ExchangeGiftsAdapter extends RecyclerView.Adapter<ExchangeGiftsAdap
             } else if (notEnough) {
                 actionBtn.setText("Đổi quà"); actionBtn.setEnabled(false);
                 actionBtn.setTextColor(Color.parseColor("#A0AEC0"));
-                actionBtn.setBackgroundResource(R.drawable.status_badge_bg);
+                actionBtn.setBackgroundResource(R.drawable.com_bg_post);
                 actionBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ECEFF0")));
                 img.setImageResource(iconRes);
                 img.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.primary)));
@@ -113,7 +113,7 @@ public class ExchangeGiftsAdapter extends RecyclerView.Adapter<ExchangeGiftsAdap
             } else {
                 actionBtn.setText("Đổi quà"); actionBtn.setEnabled(true);
                 actionBtn.setTextColor(Color.WHITE);
-                actionBtn.setBackgroundResource(R.drawable.tab_active_bg);
+                actionBtn.setBackgroundResource(R.drawable.bg_btn_buy);
                 actionBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2D3A34")));
                 img.setImageResource(iconRes);
                 img.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.primary)));
@@ -125,9 +125,9 @@ public class ExchangeGiftsAdapter extends RecyclerView.Adapter<ExchangeGiftsAdap
         private int getIconRes(String type) {
             switch (type) {
                 case "voucher_discount": case "voucher": return R.drawable.ic_voucher;
-                case "voucher_freeship": case "freeship": return R.drawable.ic_truck;
+                case "voucher_freeship": case "freeship": return R.drawable.ic_shipping;
                 case "gift": return R.drawable.ic_gift;
-                case "product": return R.drawable.ic_logo_ol;
+                case "product": return R.drawable.ic_logo_rootie;
                 default: return R.drawable.ic_gift;
             }
         }

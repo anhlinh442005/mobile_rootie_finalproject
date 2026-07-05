@@ -310,7 +310,7 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             String username = video.getUsername() != null ? video.getUsername().trim() : "";
             tvUsername.setText(username.isEmpty() ? "@rootie_community" : "@" + username.replace(" ", ""));
 
-            int[] avatarRes = {R.drawable.img_avatar, R.drawable.ic_user_outline, R.drawable.img_avatar, R.drawable.ic_user_outline};
+            int[] avatarRes = {R.drawable.img_avatar, R.drawable.ic_account_outline, R.drawable.img_avatar, R.drawable.ic_account_outline};
             int randomAvatar = avatarRes[(int) (Math.random() * avatarRes.length)];
 
             String avatarUrl = video.getAvatarUrl() == null || video.getAvatarUrl().trim().isEmpty()

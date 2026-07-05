@@ -127,7 +127,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/skin_bg_btn_book"
+                    android:background="@drawable/bg_btn_buy"
                     android:fontFamily="@font/be_vietnam_pro"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="6dp"

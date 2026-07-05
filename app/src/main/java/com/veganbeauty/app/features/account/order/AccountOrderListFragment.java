@@ -202,7 +202,7 @@ public class AccountOrderListFragment extends RootieFragment {
             String status = entry.getKey();
             TextView textView = entry.getValue();
             if (status.equalsIgnoreCase(activeStatus)) {
-                textView.setBackgroundResource(R.drawable.tab_active_bg);
+                textView.setBackgroundResource(R.drawable.bg_btn_buy);
                 textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
             } else {
                 textView.setBackgroundResource(R.drawable.tab_inactive_bg);

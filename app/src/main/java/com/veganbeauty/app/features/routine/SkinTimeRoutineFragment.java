@@ -331,7 +331,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         if (isSubmitted) {
             binding.btnCompleteRoutine.setText("Đã hoàn thành");
             binding.btnCompleteRoutine.setEnabled(false);
-            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.bg_button_disabled);
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.bg_circle_grey);
             binding.btnCompleteRoutine.setTextColor(Color.parseColor("#8E8E93"));
         } else if (!isWithinTimeWindow(routineType)) {
             int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
@@ -340,12 +340,12 @@ public class SkinTimeRoutineFragment extends RootieFragment {
                 else binding.btnCompleteRoutine.setText("Đã bỏ lỡ");
             } else binding.btnCompleteRoutine.setText("Chưa đến giờ");
             binding.btnCompleteRoutine.setEnabled(false);
-            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.bg_button_disabled);
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.bg_circle_grey);
             binding.btnCompleteRoutine.setTextColor(Color.parseColor("#8E8E93"));
         } else {
             binding.btnCompleteRoutine.setText("Hoàn tất Routine");
             binding.btnCompleteRoutine.setEnabled(true);
-            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.skin_bg_btn_dark_green);
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.com_bg_tab_active);
             binding.btnCompleteRoutine.setTextColor(Color.WHITE);
         }
     }
@@ -413,10 +413,10 @@ public class SkinTimeRoutineFragment extends RootieFragment {
     private int getStepIconRes(String name) {
         String lower = name.toLowerCase();
         if (lower.contains("cleanser") || lower.contains("sữa rửa mặt") || lower.contains("rửa mặt")) return R.drawable.ic_water_drop_outline;
-        if (lower.contains("toner") || lower.contains("nước hoa hồng") || lower.contains("cân bằng")) return R.drawable.skin_ic_step_ph;
-        if (lower.contains("serum") || lower.contains("tinh chất")) return R.drawable.skin_ic_step_chemistry;
+        if (lower.contains("toner") || lower.contains("nước hoa hồng") || lower.contains("cân bằng")) return R.drawable.ic_water_drop;
+        if (lower.contains("serum") || lower.contains("tinh chất")) return R.drawable.ic_chemistry_flask;
         if (lower.contains("moisturizer") || lower.contains("kem dưỡng ẩm") || lower.contains("dưỡng ẩm") || lower.contains("khóa ẩm")) return R.drawable.ic_face;
-        if (lower.contains("sunscreen") || lower.contains("chống nắng") || lower.contains("kem chống nắng")) return R.drawable.skin_ic_step_sunscreen;
+        if (lower.contains("sunscreen") || lower.contains("chống nắng") || lower.contains("kem chống nắng")) return R.drawable.ic_sun;
         if (lower.contains("makeup remover") || lower.contains("tẩy trang")) return R.drawable.ic_water_drop_outline;
         return R.drawable.ic_face;
     }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet"
+    android:background="@drawable/com_bg_post"
     android:paddingTop="12dp">
 
     <!-- Drag Handle -->
@@ -173,7 +173,7 @@
                     android:layout_height="26dp"
                     android:layout_gravity="center_vertical|start"
                     android:layout_marginStart="2dp"
-                    android:src="@drawable/bg_switch_thumb" />
+                    android:src="@drawable/bg_white_rounded_corner_border" />
             </FrameLayout>
         </LinearLayout>
 

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:background="@drawable/skin_bg_rounded_white"
+    android:background="@drawable/com_bg_post"
     android:padding="12dp">
 
     <LinearLayout
@@ -36,6 +36,6 @@
         android:layout_width="8dp"
         android:layout_height="8dp"
         android:layout_gravity="bottom|end"
-        android:background="@drawable/bg_circle_green" />
+        android:background="@drawable/bg_dialog_btn_confirm" />
 
 </FrameLayout>

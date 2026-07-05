@@ -100,8 +100,6 @@ public class HomeWelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        com.veganbeauty.app.features.myskin.BookingSampleSeeder.seedIfNeeded(this);
-        com.veganbeauty.app.features.community.UserSocialSeeder.seedIfNeeded(this);
         if (com.veganbeauty.app.data.local.ProfileSession.INSTANCE.isLoggedIn(this)) {
             navigateToMain();
             finish();

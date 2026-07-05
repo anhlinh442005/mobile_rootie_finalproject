@@ -20,7 +20,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_arrow_back"
+            android:src="@drawable/ic_arrow_back_thin"
             app:tint="@color/primary" />
 
         <LinearLayout
@@ -54,7 +54,7 @@
         android:layout_height="48dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
-        android:background="@drawable/com_bg_card_green_light"
+        android:background="@drawable/com_bg_chip_solid_normal"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="12dp">

@@ -53,7 +53,7 @@
                 android:id="@+id/chipAvailable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/com_bg_chip_selected"
+                android:background="@drawable/bg_btn_buy"
                 android:backgroundTint="#6E846A"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:paddingHorizontal="16dp"

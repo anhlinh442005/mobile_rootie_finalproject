@@ -51,7 +51,7 @@
                     android:id="@+id/tv_step_index"
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:background="@drawable/bg_circle_icon"
+                    android:background="@drawable/com_bg_post"
                     android:backgroundTint="#DDDFC4"
                     android:gravity="center"
                     android:fontFamily="@font/lexend"

@@ -252,7 +252,7 @@ public class SkinCalendarFragment extends RootieFragment {
 
             if (cellDateStr.equals(todayStr)) {
                 tvDayNum.setTextColor(Color.WHITE);
-                tvDayNum.setBackgroundResource(R.drawable.bg_circle_dark_olive);
+                tvDayNum.setBackgroundResource(R.drawable.com_bg_tab_active);
             } else {
                 tvDayNum.setTextColor(Color.parseColor("#3E4D44"));
                 tvDayNum.setBackground(null);
@@ -293,7 +293,7 @@ public class SkinCalendarFragment extends RootieFragment {
         Context ctx = getContext();
         if (ctx == null) return;
 
-        Drawable activeBg = ContextCompat.getDrawable(ctx, R.drawable.com_bg_btn_dark_green);
+        Drawable activeBg = ContextCompat.getDrawable(ctx, R.drawable.bg_btn_buy);
         Drawable inactiveBg = ContextCompat.getDrawable(ctx, R.drawable.bg_pill_grey_translucent);
 
         binding.btnTabMonth.setBackground(index == 0 ? activeBg : inactiveBg);
