@@ -27,6 +27,7 @@ public class HomeProductGridAdapter extends ListAdapter<ProductEntity, HomeProdu
             @Override public void onProductClick(ProductEntity product) {}
             @Override public void onQuickAddToCart(ProductEntity product, View cartButton, android.widget.ImageView productImage) {}
             @Override public void onCartLongPress(ProductEntity product) {}
+            @Override public void onBuyNow(ProductEntity product) {}
         };
     }
 
@@ -67,6 +68,14 @@ public class HomeProductGridAdapter extends ListAdapter<ProductEntity, HomeProdu
             });
 
             binding.tvProductName.setText(product.getName());
+            binding.tvStockRemaining.setText(
+                    binding.getRoot().getContext().getString(
+                            com.veganbeauty.app.R.string.home_product_stock_remaining,
+                            product.getStock()
+                    )
+            );
+            binding.btnBuyNow.setOnClickListener(v -> listener.onBuyNow(product));
+
             binding.tvPrice.setText(priceFormatter.format(product.getPrice()));
 
             long originalPrice = (long) (product.getPrice() / 0.65);

@@ -65,26 +65,6 @@
             android:textColor="@color/primary"
             android:textSize="12sp" />
 
-        <!-- Nút Đặt lịch -->
-        <TextView
-            android:id="@+id/skin_store_btn_book"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="end"
-            android:background="@drawable/bg_btn_buy"
-            android:clickable="true"
-            android:focusable="true"
-            android:fontFamily="@font/be_vietnam_pro"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="8dp"
-            android:text="Đặt lịch"
-            android:textColor="@color/neutral"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
     </LinearLayout>
 
 </LinearLayout>

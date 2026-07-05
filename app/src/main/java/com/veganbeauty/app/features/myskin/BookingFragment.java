@@ -1,7 +1,6 @@
 package com.veganbeauty.app.features.myskin;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -26,6 +25,7 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
 import com.veganbeauty.app.data.local.entities.StoreEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.features.home.BottomNavHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -94,14 +94,18 @@ public class BookingFragment extends RootieFragment {
         if (!storeImageUrlStr.isEmpty()) {
             com.bumptech.glide.Glide.with(requireContext())
                     .load(storeImageUrlStr)
-                    .placeholder(R.drawable.imv_logo)
-                    .error(R.drawable.imv_logo)
+                    .placeholder(R.drawable.skin_store)
+                    .error(R.drawable.skin_store)
                     .into(storeImageView);
         } else {
-            storeImageView.setImageResource(R.drawable.imv_logo);
+            storeImageView.setImageResource(R.drawable.skin_store);
         }
 
-        storeNameView.setOnClickListener(v -> showBranchPicker());
+        storeNameView.setOnClickListener(v -> {
+            if (ensureLoggedIn()) {
+                showBranchPicker();
+            }
+        });
         loadBranchesFromFirebase();
 
         List<BookingService> mockServices = Arrays.asList(
@@ -109,37 +113,35 @@ public class BookingFragment extends RootieFragment {
                 new BookingService("2", "Soi da chuyên sâu", "45 phút * 199.000 đ", "45 phút"),
                 new BookingService("3", "Soi da & tư vấn 1:1", "60 phút * 299.000 đ", "60 phút")
         );
-        rvServices.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvServices.setAdapter(new BookingServiceAdapter(mockServices, service -> selectedService = service));
+        rvServices.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        rvServices.setNestedScrollingEnabled(false);
+        rvServices.setAdapter(new BookingServiceAdapter(
+                mockServices,
+                service -> selectedService = service,
+                this::ensureLoggedIn
+        ));
 
-        timeAdapter = new BookingTimeAdapter(new ArrayList<>(), time -> selectedTime = time);
+        timeAdapter = new BookingTimeAdapter(
+                new ArrayList<>(),
+                time -> selectedTime = time,
+                this::ensureLoggedIn
+        );
         rvTimes.setLayoutManager(new GridLayoutManager(getContext(), 4));
         rvTimes.setAdapter(timeAdapter);
 
         setupDateList(Calendar.getInstance());
 
         btnCalendar.setOnClickListener(v -> {
-            Calendar currentCal = Calendar.getInstance();
-            Calendar maxCal = Calendar.getInstance();
-            maxCal.add(Calendar.MONTH, 2);
-            DatePickerDialog picker = new DatePickerDialog(requireContext(), android.R.style.Theme_DeviceDefault_Light_Dialog_Alert,
-                    (dp, year, month, day) -> {
-                        Calendar chosen = Calendar.getInstance();
-                        chosen.set(year, month, day);
-                        setupDateList(chosen);
-                    },
-                    currentCal.get(Calendar.YEAR), currentCal.get(Calendar.MONTH), currentCal.get(Calendar.DAY_OF_MONTH));
-            picker.getDatePicker().setMinDate(currentCal.getTimeInMillis());
-            picker.getDatePicker().setMaxDate(maxCal.getTimeInMillis());
-            picker.show();
-            if (picker.getButton(DatePickerDialog.BUTTON_POSITIVE) != null)
-                picker.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.primary, null));
-            if (picker.getButton(DatePickerDialog.BUTTON_NEGATIVE) != null)
-                picker.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.content, null));
+            if (ensureLoggedIn()) {
+                showCalendarPicker();
+            }
         });
 
         btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         btnConfirm.setOnClickListener(v -> {
+            if (!ensureLoggedIn()) {
+                return;
+            }
             if (storeNameStr.isEmpty()) {
                 Toast.makeText(getContext(), "Vui lòng chọn chi nhánh", Toast.LENGTH_SHORT).show();
                 return;
@@ -168,31 +170,36 @@ public class BookingFragment extends RootieFragment {
             return;
         }
 
-        String[] branchNames = new String[branchList.size()];
-        for (int i = 0; i < branchList.size(); i++) {
-            branchNames[i] = branchList.get(i).getTenCuaHang();
+        BookingBranchBottomSheet sheet = new BookingBranchBottomSheet();
+        sheet.setBranchList(branchList);
+        sheet.setOnBranchSelectedListener(this::applySelectedBranch);
+        sheet.show(getChildFragmentManager(), BookingBranchBottomSheet.TAG);
+    }
+
+    private void applySelectedBranch(StoreEntity selected) {
+        storeNameStr = selected.getTenCuaHang();
+        storeAddressStr = selected.getDiaChiDayDu();
+        storeImageUrlStr = selected.getImageUrl();
+
+        storeNameView.setText(storeNameStr);
+        if (!storeImageUrlStr.isEmpty()) {
+            com.bumptech.glide.Glide.with(requireContext())
+                    .load(storeImageUrlStr)
+                    .placeholder(R.drawable.skin_store)
+                    .error(R.drawable.skin_store)
+                    .into(storeImageView);
+        } else {
+            storeImageView.setImageResource(R.drawable.skin_store);
         }
+    }
 
-        new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
-                .setTitle("Chọn chi nhánh")
-                .setItems(branchNames, (dialog, which) -> {
-                    StoreEntity selected = branchList.get(which);
-                    storeNameStr = selected.getTenCuaHang();
-                    storeAddressStr = selected.getDiaChiDayDu();
-                    storeImageUrlStr = selected.getImageUrl();
-
-                    storeNameView.setText(storeNameStr);
-                    if (!storeImageUrlStr.isEmpty()) {
-                        com.bumptech.glide.Glide.with(requireContext())
-                                .load(storeImageUrlStr)
-                                .placeholder(R.drawable.imv_logo)
-                                .error(R.drawable.imv_logo)
-                                .into(storeImageView);
-                    } else {
-                        storeImageView.setImageResource(R.drawable.imv_logo);
-                    }
-                })
-                .show();
+    private void showCalendarPicker() {
+        BookingCalendarBottomSheet sheet = new BookingCalendarBottomSheet();
+        if (selectedDate != null && selectedDate.getFullDate() != null) {
+            sheet.setInitialDate(selectedDate.getFullDate());
+        }
+        sheet.setOnDateSelectedListener(chosen -> setupDateList(chosen));
+        sheet.show(getChildFragmentManager(), BookingCalendarBottomSheet.TAG);
     }
 
     private void setupDateList(Calendar startCal) {
@@ -223,7 +230,7 @@ public class BookingFragment extends RootieFragment {
             selectedDate = date;
             selectedTime = null;
             updateTimeSlots(date.getFullDate());
-        });
+        }, this::ensureLoggedIn);
         if (rvDates.getLayoutManager() == null)
             rvDates.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         rvDates.setAdapter(dateAdapter);
@@ -263,6 +270,14 @@ public class BookingFragment extends RootieFragment {
             }
         }
         timeAdapter.updateData(times);
+    }
+
+    private boolean ensureLoggedIn() {
+        if (ProfileSession.isLoggedIn(requireContext())) {
+            return true;
+        }
+        BottomNavHelper.showLoginRequiredDialog(requireContext());
+        return false;
     }
 
     private void showConfirmationDialog() {

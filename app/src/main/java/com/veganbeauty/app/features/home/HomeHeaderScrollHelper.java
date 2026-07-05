@@ -31,10 +31,9 @@ public final class HomeHeaderScrollHelper {
     public void install() {
         header.post(() -> {
             headerHeightPx = header.getHeight();
-            if (headerHeightPx > 0) {
-                scrollView.setPadding(0, headerHeightPx, 0, bottomPaddingPx);
-                scrollView.setClipToPadding(false);
-            }
+            // ScrollView already sits below the header in layout — only reserve bottom inset.
+            scrollView.setPadding(0, 0, 0, bottomPaddingPx);
+            scrollView.setClipToPadding(false);
         });
     }
 

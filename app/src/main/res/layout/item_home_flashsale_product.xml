@@ -46,6 +46,15 @@
             android:textColor="#28362E"
             android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/tvFlashStockRemaining"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:textColor="@color/warning_text_orange"
+            android:textSize="9sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -132,10 +141,10 @@
             android:layout_width="match_parent"
             android:layout_height="28dp"
             android:layout_marginTop="4dp"
-            android:backgroundTint="#47574B"
+            android:backgroundTint="@color/home_voucher_orange_dark"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="Chọn"
+            android:text="@string/home_product_buy_now"
             android:paddingTop="2dp"
             android:textAlignment="center"
             android:fontFamily="@font/be_vietnam_pro_semibold"

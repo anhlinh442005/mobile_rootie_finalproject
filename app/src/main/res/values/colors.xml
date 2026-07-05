@@ -7,6 +7,9 @@
     <color name="secondary">#677559</color>
     <color name="content">#677559</color>
     <color name="tertiary">#97A49C</color>
+    <color name="flashsale_v2_outer_border">#75A63E</color>
+    <color name="flashsale_v2_wrapper_bg">#D8E8C6</color>
+    <color name="home_background">#FAFAF4</color>
     <color name="neutral">#FEFBF4</color>
     <color name="nav_icon_color">#DDDFC4</color>
 
@@ -64,5 +67,20 @@
     <color name="warning_text_yellow">#8A6D00</color>
     <color name="warning_text_orange">#D35400</color>
     <color name="warning_text_red">#C62828</color>
+
+    <!-- Home voucher ticket -->
+    <color name="home_voucher_cream">#F8F6F0</color>
+    <color name="home_voucher_green_dark">#3E5538</color>
+    <color name="home_voucher_green">#556B4E</color>
+    <color name="home_voucher_green_light">#E3EDE0</color>
+    <color name="home_voucher_orange_dark">#D35400</color>
+    <color name="home_voucher_orange">#F2994A</color>
+    <color name="home_voucher_orange_light">#FDF2E9</color>
+
+    <!-- Home category cards -->
+    <color name="home_category_card_bg">#FAF9F6</color>
+    <color name="home_category_card_stroke">#EDEAE4</color>
+    <color name="home_category_icon">#C4A052</color>
+    <color name="home_category_icon_blob">#33F5D89A</color>
 </resources>
 

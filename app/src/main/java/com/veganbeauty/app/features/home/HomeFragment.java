@@ -35,6 +35,7 @@ import com.veganbeauty.app.data.repository.ProductRepository;
 import com.veganbeauty.app.databinding.HomeFragmentBinding;
 import com.veganbeauty.app.features.account.reward.AccountRewardFragment;
 import com.veganbeauty.app.features.profile.AccountVoucherFragment;
+import com.veganbeauty.app.features.community.beauty_hub.IngredientFragment;
 import com.veganbeauty.app.features.community.com_feed.ComLoadingFragment;
 import com.veganbeauty.app.features.home.adapter.HomeBannerAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeProductCartListener;
@@ -122,6 +123,11 @@ public class HomeFragment extends RootieFragment {
         public void onCartLongPress(ProductEntity product) {
             showChooseQuantitySheet(product);
         }
+
+        @Override
+        public void onBuyNow(ProductEntity product) {
+            buyNowToCheckout(product, 1);
+        }
     };
 
     private static boolean hasShownQuizPopupThisSession = false;
@@ -188,7 +194,7 @@ public class HomeFragment extends RootieFragment {
                 new HomeShortcutItem("Đổi quà Rootie Xu", R.drawable.ic_gift, () -> navigateTo(new AccountRewardFragment())),
                 new HomeShortcutItem("Cửa hàng gần bạn", R.drawable.ic_store_outline, () -> navigateTo(new ShopStoreSystemFragment())),
                 new HomeShortcutItem("Beauty Explore", R.drawable.ic_explore, () -> navigateTo(new ComLoadingFragment())),
-                new HomeShortcutItem("Tra cứu thành phần", R.drawable.ic_leaf, () -> Toast.makeText(getContext(), "Tính năng đang phát triển", Toast.LENGTH_SHORT).show())
+                new HomeShortcutItem("Tra cứu thành phần", R.drawable.ic_leaf, () -> navigateTo(new IngredientFragment()))
         );
     }
 
@@ -271,9 +277,17 @@ public class HomeFragment extends RootieFragment {
     private void updateTimerUI(long millis) {
         if (binding == null) return;
         long s = (millis / 1000) % 60, m = (millis / 60000) % 60, h = (millis / 3600000) % 24;
-        binding.tvFlashHour.setText(String.format(Locale.getDefault(), "%02d", h));
-        binding.tvFlashMinute.setText(String.format(Locale.getDefault(), "%02d", m));
-        binding.tvFlashSecond.setText(String.format(Locale.getDefault(), "%02d", s));
+        String hourStr = String.format(Locale.getDefault(), "%02d", h);
+        String minuteStr = String.format(Locale.getDefault(), "%02d", m);
+        String secondStr = String.format(Locale.getDefault(), "%02d", s);
+        binding.flashsaleV2Section.tvFlashV2Hour.setText(hourStr);
+        binding.flashsaleV2Section.tvFlashV2Minute.setText(minuteStr);
+        binding.flashsaleV2Section.tvFlashV2Second.setText(secondStr);
+    }
+
+    private void updateFlashSaleV2State(boolean hasProducts) {
+        if (binding == null) return;
+        binding.flashsaleV2Section.llFlashV2Countdown.setVisibility(hasProducts ? View.VISIBLE : View.GONE);
     }
 
     private void setupParallaxScroll() {
@@ -293,7 +307,6 @@ public class HomeFragment extends RootieFragment {
             float screenCenterY = scrollY + v.getHeight() / 2f;
             float cardCenterY = binding.cvPromoLotus.getTop() + binding.cvPromoLotus.getHeight() / 2f;
             float dist = cardCenterY - screenCenterY;
-            binding.tvPromoLotusLeft.setTranslationY(-dist * 0.15f);
             binding.llPromoLotusRight.setTranslationY(-dist * 0.15f);
             binding.ivPromoLotus3.setTranslationY(-dist * 0.15f);
             binding.ivPromoLotus1.setTranslationY(dist * 0.15f);
@@ -346,7 +359,7 @@ public class HomeFragment extends RootieFragment {
         bestsellerAdapter = new HomeBestsellerAdapter(homeProductCartListener);
         topSearchAdapter = new HomeTopSearchAdapter(this::openProductDetail);
         flashSaleAdapter = new HomeFlashsaleAdapter(homeProductCartListener);
-        categoryAdapter = new HomeCategoryAdapter();
+        categoryAdapter = new HomeCategoryAdapter(this::navigateToCategoryList);
         bannerAdapter = new HomeBannerAdapter();
         shortcutAdapter = new HomeShortcutAdapter();
 
@@ -354,8 +367,10 @@ public class HomeFragment extends RootieFragment {
         binding.rvShortcuts.setAdapter(shortcutAdapter);
         binding.rvShortcuts.setNestedScrollingEnabled(false);
 
-        binding.rvFlashSale.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        binding.rvFlashSale.setAdapter(flashSaleAdapter);
+        binding.flashsaleV2Section.rvFlashSaleV2.setLayoutManager(
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.flashsaleV2Section.rvFlashSaleV2.setAdapter(flashSaleAdapter);
+        binding.flashsaleV2Section.rvFlashSaleV2.setNestedScrollingEnabled(false);
 
         binding.rvRecentActivity.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.rvRecentActivity.setAdapter(recentAdapter);
@@ -372,8 +387,9 @@ public class HomeFragment extends RootieFragment {
         binding.rvTopSearch.setAdapter(topSearchAdapter);
         binding.rvTopSearch.setNestedScrollingEnabled(false);
 
-        binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.rvCategories.setAdapter(categoryAdapter);
+        binding.rvCategories.setNestedScrollingEnabled(false);
 
         voucherCategoryAdapter = new HomeVoucherCategoryAdapter(this::filterVouchersByCategory);
         voucherCardAdapter = new HomeVoucherCardAdapter();
@@ -479,10 +495,17 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void bindProductSections(List<ProductEntity> products) {
+        List<ProductEntity> flashSaleProducts = new ArrayList<>();
+        List<ProductEntity> shuffled = new ArrayList<>();
+        if (!products.isEmpty()) {
+            shuffled = new ArrayList<>(products);
+            Collections.shuffle(shuffled);
+            flashSaleProducts = shuffled.subList(0, Math.min(4, shuffled.size()));
+        }
+        flashSaleAdapter.submitList(flashSaleProducts);
+        updateFlashSaleV2State(!flashSaleProducts.isEmpty());
+
         if (products.isEmpty()) return;
-        List<ProductEntity> shuffled = new ArrayList<>(products);
-        Collections.shuffle(shuffled);
-        flashSaleAdapter.submitList(shuffled.subList(0, Math.min(4, shuffled.size())));
         recentAdapter.submitList(products.subList(0, Math.min(8, products.size())));
 
         allRecommendationProducts = shuffled.subList(0, Math.min(20, shuffled.size()));
@@ -509,7 +532,7 @@ public class HomeFragment extends RootieFragment {
                     default: icon = R.drawable.ic_grid; break;
                 }
                 categories.add(new HomeCategoryItem(cat, icon));
-                if (categories.size() >= 6) break;
+                if (categories.size() >= 4) break;
             }
         }
         categoryAdapter.submitList(categories);
@@ -547,6 +570,29 @@ public class HomeFragment extends RootieFragment {
         }
     }
 
+    private void buyNowToCheckout(ProductEntity product, int quantity) {
+        if (product.getStock() <= 0) {
+            android.widget.Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        com.veganbeauty.app.data.local.entities.CartItemEntity checkoutItem = new com.veganbeauty.app.data.local.entities.CartItemEntity(
+                product.getId(),
+                product.getName(),
+                product.getMainImage(),
+                product.getPrice(),
+                quantity,
+                true
+        );
+        ArrayList<com.veganbeauty.app.data.local.entities.CartItemEntity> list = new ArrayList<>();
+        list.add(checkoutItem);
+        com.veganbeauty.app.features.shop.product.ShopCheckoutFragment checkoutFragment =
+                com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(list, "", 0L);
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.main_container, checkoutFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
     private void showChooseQuantitySheet(ProductEntity product) {
         com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet bottomSheet = new com.veganbeauty.app.features.shop.product.ChooseQuantityBottomSheet(
                 product,
@@ -558,21 +604,7 @@ public class HomeFragment extends RootieFragment {
 
                     @Override
                     public void onBuyNowClick(ProductEntity p, int quantity) {
-                        com.veganbeauty.app.data.local.entities.CartItemEntity checkoutItem = new com.veganbeauty.app.data.local.entities.CartItemEntity(
-                                p.getId(),
-                                p.getName(),
-                                p.getMainImage(),
-                                p.getPrice(),
-                                quantity,
-                                true
-                        );
-                        ArrayList<com.veganbeauty.app.data.local.entities.CartItemEntity> list = new ArrayList<>();
-                        list.add(checkoutItem);
-                        com.veganbeauty.app.features.shop.product.ShopCheckoutFragment checkoutFragment = com.veganbeauty.app.features.shop.product.ShopCheckoutFragment.newInstance(list, "", 0L);
-                        getParentFragmentManager().beginTransaction()
-                                .replace(R.id.main_container, checkoutFragment)
-                                .addToBackStack(null)
-                                .commit();
+                        buyNowToCheckout(p, quantity);
                     }
                 }
         );
@@ -581,6 +613,19 @@ public class HomeFragment extends RootieFragment {
 
     private void openShop() {
         getParentFragmentManager().beginTransaction().replace(R.id.main_container, new ShopListFragment()).commit();
+    }
+
+    private void navigateToCategoryList(HomeCategoryItem category) {
+        ShopListFragment listFragment = new ShopListFragment();
+        Bundle args = new Bundle();
+        args.putString("CATEGORY_NAME", category.getName());
+        listFragment.setArguments(args);
+
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.main_container, listFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void setupStreakWidget() {
@@ -608,11 +653,6 @@ public class HomeFragment extends RootieFragment {
             // Bỏ qua check đã dismiss để luôn hiện khi load lại app
             binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.VISIBLE);
             binding.quizTestWeeklyReminderLayout.getRoot().setOnClickListener(v -> navigateToQuizIntro());
-            binding.quizTestWeeklyReminderLayout.quizTestBtnDismissReminder.setOnClickListener(v -> {
-                ProfileSession.setQuizReminderDismissedWeekly(requireContext(), true);
-                binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Đã ẩn nhắc nhở", Toast.LENGTH_SHORT).show();
-            });
 
             if (!hasShownQuizPopupThisSession) {
                 hasShownQuizPopupThisSession = true;

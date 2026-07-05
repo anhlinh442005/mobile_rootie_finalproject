@@ -243,7 +243,10 @@ public class AccountProfileEditFragment extends RootieFragment {
                 .addToBackStack(null)
                 .commit());
 
-        binding.btnChangePassword.setOnClickListener(v -> Toast.makeText(ctx, "Thay đổi mật khẩu", Toast.LENGTH_SHORT).show());
+        binding.btnChangePassword.setOnClickListener(v -> {
+            AccountChangePasswordSheet sheet = new AccountChangePasswordSheet();
+            sheet.show(getParentFragmentManager(), "AccountChangePasswordSheet");
+        });
     }
 
     private void loadAvatarImage(String uri) {

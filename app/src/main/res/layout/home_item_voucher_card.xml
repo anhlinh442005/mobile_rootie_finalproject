@@ -1,172 +1,368 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="280dp"
+    android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:layout_marginEnd="12dp"
-    app:cardBackgroundColor="@color/white"
+    android:layout_marginBottom="8dp"
+    app:cardBackgroundColor="@color/home_voucher_cream"
     app:cardCornerRadius="12dp"
-    app:cardElevation="3dp">
+    app:cardElevation="6dp"
+    app:cardPreventCornerOverlap="false"
+    app:strokeWidth="0dp">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingBottom="12dp">
 
-        <TextView
-            android:id="@+id/tvVoucherBadge"
+        <View
+            android:id="@+id/voucherTicketTop"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_home_voucher_ticket_top"
+            app:layout_constraintBottom_toTopOf="@id/voucherDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/voucherTicketBottom"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_home_voucher_ticket_bottom"
+            app:layout_constraintBottom_toBottomOf="@id/layoutVoucherBottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/voucherDivider" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineLeftPanel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/bg_badge_expiring"
-            android:elevation="2dp"
-            android:fontFamily="@font/be_vietnam_pro_bold"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            android:textColor="@color/white"
-            android:textSize="10sp"
-            android:visibility="gone"
-            tools:text="Sắp hết mã"
-            tools:visibility="visible" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="92dp" />
 
-        <LinearLayout
-            android:id="@+id/layoutVoucherTop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="14dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="10dp">
-
-            <FrameLayout
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_circle_light_green">
-
-                <ImageView
-                    android:id="@+id/ivVoucherIcon"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_voucher"
-                    app:tint="@color/primary" />
-            </FrameLayout>
+        <FrameLayout
+            android:id="@+id/layoutVoucherLeft"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_home_voucher_left_discount"
+            app:layout_constraintBottom_toBottomOf="@id/layoutVoucherRight"
+            app:layout_constraintEnd_toStartOf="@id/guidelineLeftPanel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvVoucherTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/be_vietnam_pro_bold"
-                        android:maxLines="1"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        tools:text="[Mua sớm] Giảm đến 50K" />
-
-                    <ImageView
-                        android:id="@+id/ivVoucherInfo"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginStart="4dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_help"
-                        app:tint="#9AA89A" />
-                </LinearLayout>
+                android:id="@+id/layoutDiscountValue"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="6dp"
+                android:paddingTop="18dp"
+                android:paddingBottom="10dp">
 
                 <TextView
-                    android:id="@+id/tvVoucherDesc"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tvValueLabel"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:ellipsize="end"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:letterSpacing="0.08"
+                    android:text="GIẢM"
+                    android:textColor="@color/white"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/tvValueAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:textColor="@color/white"
+                    android:textSize="28sp"
+                    tools:text="50K" />
+
+                <TextView
+                    android:id="@+id/tvMinOrder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_home_voucher_min_order"
                     android:fontFamily="@font/be_vietnam_pro"
-                    android:maxLines="2"
-                    android:textColor="#677559"
-                    android:textSize="11sp"
-                    tools:text="Giảm 10% tối đa 50k từ đơn 300k" />
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:textColor="@color/white"
+                    android:textSize="9sp"
+                    tools:text="Đơn từ 300K" />
             </LinearLayout>
-        </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutFreeshipValue"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="6dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="10dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/ivFreeshipIcon"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_shipping"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:letterSpacing="0.04"
+                    android:text="FREESHIP"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvFreeshipScope"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:text="Toàn quốc"
+                    android:textColor="#E8FFFFFF"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:alpha="0.35"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_flower"
+                app:tint="@color/white" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/ivScallopEdge"
+            android:layout_width="8dp"
+            android:layout_height="0dp"
+            android:contentDescription="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/home_voucher_scallop_edge"
+            app:layout_constraintBottom_toBottomOf="@id/layoutVoucherRight"
+            app:layout_constraintStart_toEndOf="@id/layoutVoucherLeft"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutVoucherRight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="108dp"
+            android:paddingStart="10dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivScallopEdge"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivWatermark"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:alpha="0.06"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_flower"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:tint="@color/home_voucher_green" />
+
+            <TextView
+                android:id="@+id/tvVoucherBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_home_voucher_ribbon_green"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:textColor="@color/white"
+                android:textSize="9sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Sắp hết mã"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/layoutScopeBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_home_voucher_badge_green"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/ivScopeIcon"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_flower"
+                    app:tint="@color/home_voucher_green" />
+
+                <TextView
+                    android:id="@+id/tvScopeBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:textColor="@color/home_voucher_green_dark"
+                    android:textSize="9sp"
+                    tools:text="Cho tất cả sản phẩm" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvVoucherDesc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:lineSpacingExtra="2dp"
+                android:maxLines="3"
+                android:textColor="@color/primary"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutScopeBadge"
+                tools:text="Áp dụng cho tất cả sản phẩm chăm sóc da mặt của Rootie. Không áp dụng kèm ưu đãi khác." />
+
+            <LinearLayout
+                android:id="@+id/layoutExpiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_home_voucher_badge_green"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvVoucherDesc">
+
+                <ImageView
+                    android:id="@+id/ivExpiryIcon"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_clock"
+                    app:tint="@color/home_voucher_green" />
+
+                <TextView
+                    android:id="@+id/tvExpiry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:textColor="@color/home_voucher_green_dark"
+                    android:textSize="9sp"
+                    tools:text="HSD: 30/06/2025" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/voucherDivider"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_below="@id/layoutVoucherTop"
-            android:layout_marginHorizontal="14dp"
-            android:background="@drawable/dashed_line_horizontal"
-            android:layerType="software" />
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutVoucherRight" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/layoutVoucherBottom"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/voucherDivider"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_home_voucher_code_bar"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="10dp">
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/voucherDivider">
 
-            <LinearLayout
-                android:id="@+id/layoutVoucherCode"
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_copy"
+                app:tint="@color/secondary" />
+
+            <TextView
+                android:id="@+id/tvVoucherCode"
                 android:layout_width="0dp"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_voucher_code_container"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="10dp">
-
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_copy"
-                    app:tint="#677559" />
-
-                <TextView
-                    android:id="@+id/tvVoucherCode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:fontFamily="@font/be_vietnam_pro_bold"
-                    android:textColor="@color/primary"
-                    android:textSize="13sp"
-                    tools:text="ROOTIE50" />
-            </LinearLayout>
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:letterSpacing="0.06"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                tools:text="RT50KDEC" />
 
             <TextView
                 android:id="@+id/btnVoucherCopy"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_button_copy"
+                android:layout_height="30dp"
+                android:background="@drawable/bg_home_voucher_btn_green"
                 android:clickable="true"
                 android:focusable="true"
                 android:fontFamily="@font/be_vietnam_pro_bold"
                 android:gravity="center"
-                android:minWidth="72dp"
+                android:minWidth="64dp"
                 android:paddingHorizontal="12dp"
                 android:text="COPY"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
         </LinearLayout>
-    </RelativeLayout>
-</androidx.cardview.widget.CardView>
+
+        <View
+            android:id="@+id/voucherCutoutLeft"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="-10dp"
+            android:background="@drawable/bg_home_voucher_cutout"
+            app:layout_constraintBottom_toBottomOf="@id/voucherDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/voucherDivider" />
+
+        <View
+            android:id="@+id/voucherCutoutRight"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="-10dp"
+            android:background="@drawable/bg_home_voucher_cutout"
+            app:layout_constraintBottom_toBottomOf="@id/voucherDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/voucherDivider" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

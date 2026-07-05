@@ -12,4 +12,6 @@ public interface HomeProductCartListener {
     void onQuickAddToCart(ProductEntity product, View cartButton, ImageView productImage);
 
     void onCartLongPress(ProductEntity product);
+
+    void onBuyNow(ProductEntity product);
 }

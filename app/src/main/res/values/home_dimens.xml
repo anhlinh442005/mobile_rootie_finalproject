@@ -2,7 +2,9 @@
 <resources>
     <dimen name="home_section_title_size">16sp</dimen>
     <dimen name="home_section_see_all_size">14sp</dimen>
-    <dimen name="home_category_label_size">12sp</dimen>
+    <dimen name="home_category_label_size">13sp</dimen>
+    <dimen name="home_category_card_height">118dp</dimen>
+    <dimen name="home_category_card_margin">6dp</dimen>
 
     <dimen name="home_button_radius">24dp</dimen>
     <dimen name="home_sheet_corner_radius">28dp</dimen>
@@ -10,9 +12,11 @@
     <dimen name="home_banner_dot_size">8dp</dimen>
     <dimen name="home_banner_dot_margin">6dp</dimen>
 
+    <dimen name="home_section_spacing">16dp</dimen>
+
     <!-- Viettel-style bottom nav -->
     <dimen name="home_nav_bar_height">56dp</dimen>
-    <dimen name="home_nav_content_height">104dp</dimen>
+    <dimen name="home_nav_content_height">72dp</dimen>
     <dimen name="home_nav_top_corner_radius">24dp</dimen>
     <dimen name="home_nav_notch_radius">36dp</dimen>
     <dimen name="home_nav_notch_gap">8dp</dimen>

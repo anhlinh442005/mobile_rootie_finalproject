@@ -20,6 +20,11 @@
     <string name="home_see_all">Xem tất cả</string>
     <string name="home_flash_sale_placeholder">Flash Sale — thiết kế sẽ cập nhật sau</string>
     <string name="home_flashsale_urgency_label">Ưu đãi giá sốc</string>
+    <string name="home_flashsale_v2_ends_in">Kết thúc sau:</string>
+    <string name="home_flashsale_v2_hour">Giờ</string>
+    <string name="home_flashsale_v2_minute">Phút</string>
+    <string name="home_flashsale_v2_second">Giây</string>
+    <string name="home_flashsale_v2_stock_hint">Số lượng có hạn</string>
     <string name="home_promo_sunscreen_subtitle">Chống nắng phổ rộng</string>
     <string name="home_promo_sunscreen_title">Sữa chống nắng bí đao</string>
     <string name="home_promo_sunscreen_desc">Bảo vệ da toàn diện, finish mỏng nhẹ suốt cả ngày.</string>
@@ -28,6 +33,8 @@
     <string name="home_promo_lotus_title">Tinh chất xịt dưỡng Sen Hậu Giang</string>
     <string name="home_promo_lotus_desc">Cấp ẩm tức thì, làm dịu và phục hồi làn da căng mọng.</string>
     <string name="home_buy_now">MUA NGAY →</string>
+    <string name="home_product_stock_remaining">Chỉ còn %1$d</string>
+    <string name="home_product_buy_now">Mua ngay</string>
     <string name="home_categories">Danh mục</string>
     <string name="home_bestsellers">Bán chạy</string>
     <string name="home_top_search">Top Tìm Kiếm</string>

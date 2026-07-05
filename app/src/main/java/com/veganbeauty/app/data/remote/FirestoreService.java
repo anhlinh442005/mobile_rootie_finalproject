@@ -405,6 +405,40 @@ public class FirestoreService {
         }
     }
 
+    public boolean userExistsByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            QuerySnapshot snapshot = Tasks.await(
+                    db.collection("users").whereEqualTo("email", email.trim()).limit(1).get(),
+                    8,
+                    java.util.concurrent.TimeUnit.SECONDS
+            );
+            return !snapshot.isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean userExistsByPhone(String phone) {
+        if (phone == null || phone.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            QuerySnapshot snapshot = Tasks.await(
+                    db.collection("users").whereEqualTo("phone", phone.trim()).limit(1).get(),
+                    8,
+                    java.util.concurrent.TimeUnit.SECONDS
+            );
+            return !snapshot.isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public UserEntity authenticateUser(String emailOrPhone, String passwordHash, String passwordPlain, boolean isEmail) {
         try {
             String field = isEmail ? "email" : "phone";

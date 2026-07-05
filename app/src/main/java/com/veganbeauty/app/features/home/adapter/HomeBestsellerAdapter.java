@@ -27,6 +27,7 @@ public class HomeBestsellerAdapter extends ListAdapter<ProductEntity, HomeBestse
             @Override public void onProductClick(ProductEntity product) {}
             @Override public void onQuickAddToCart(ProductEntity product, View cartButton, android.widget.ImageView productImage) {}
             @Override public void onCartLongPress(ProductEntity product) {}
+            @Override public void onBuyNow(ProductEntity product) {}
         };
     }
 

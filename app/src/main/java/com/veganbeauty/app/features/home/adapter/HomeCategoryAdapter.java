@@ -12,8 +12,15 @@ import com.veganbeauty.app.databinding.HomeItemCategoryBinding;
 
 public class HomeCategoryAdapter extends ListAdapter<HomeCategoryItem, HomeCategoryAdapter.ViewHolder> {
 
-    public HomeCategoryAdapter() {
+    public interface OnCategoryClickListener {
+        void onCategoryClick(HomeCategoryItem category);
+    }
+
+    private final OnCategoryClickListener listener;
+
+    public HomeCategoryAdapter(OnCategoryClickListener listener) {
         super(new DiffCallback());
+        this.listener = listener;
     }
 
     @NonNull
@@ -41,6 +48,9 @@ public class HomeCategoryAdapter extends ListAdapter<HomeCategoryItem, HomeCateg
         public void bind(HomeCategoryItem item) {
             binding.tvCategoryName.setText(item.getName());
             binding.ivCategory.setImageResource(item.getIconResId());
+            binding.getRoot().setOnClickListener(v -> {
+                if (listener != null) listener.onCategoryClick(item);
+            });
         }
     }
 
