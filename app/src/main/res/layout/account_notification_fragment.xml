@@ -53,19 +53,25 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btnMarkAllRead"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:padding="12dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Đọc tất cả"
                 android:src="@drawable/ic_check"
                 app:tint="@color/primary" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btnDeleteAll"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:padding="12dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Xoá tất cả"
                 android:src="@drawable/ic_bin"

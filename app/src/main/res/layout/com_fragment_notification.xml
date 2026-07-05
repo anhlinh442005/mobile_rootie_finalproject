@@ -46,11 +46,14 @@
             app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btnMarkRead"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="4dp"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_mail_opened"
             android:contentDescription="Đọc tất cả"
@@ -59,11 +62,14 @@
             app:layout_constraintEnd_toStartOf="@id/btnDeleteAll"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btnDeleteAll"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="12dp"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_bin"
             android:contentDescription="Xóa tất cả"

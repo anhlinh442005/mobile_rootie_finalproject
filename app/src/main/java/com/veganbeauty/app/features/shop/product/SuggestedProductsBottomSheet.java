@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import androidx.lifecycle.FlowLiveDataConversions;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
@@ -82,33 +83,22 @@ public class SuggestedProductsBottomSheet extends BottomSheetDialogFragment {
 
     private void loadSuggestedProducts() {
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-        executor.execute(() -> {
-            try {
-                db.productDao().getAllProducts().collect(new FlowCollector<List<ProductEntity>>() {
-                    @Override
-                    public Object emit(List<ProductEntity> products, kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                        List<ProductEntity> suggested = new ArrayList<>();
-                        if (products != null) {
-                            for (ProductEntity product : products) {
-                                if (product.isNew() || product.getPrice() >= 500000 || 
-                                   (product.getCategory() != null && product.getCategory().toLowerCase().contains("combo"))) {
-                                    suggested.add(product);
-                                    if (suggested.size() >= 10) break;
-                                }
-                            }
+        FlowLiveDataConversions.asLiveData(db.productDao().getAllProducts())
+            .observe(getViewLifecycleOwner(), products -> {
+                List<ProductEntity> suggested = new ArrayList<>();
+                if (products != null) {
+                    for (ProductEntity product : products) {
+                        if (product.isNew() || product.getPrice() >= 500000 || 
+                           (product.getCategory() != null && product.getCategory().toLowerCase().contains("combo"))) {
+                            suggested.add(product);
+                            if (suggested.size() >= 10) break;
                         }
-                        requireActivity().runOnUiThread(() -> {
-                            if (isAdded()) {
-                                productAdapter.submitList(suggested);
-                            }
-                        });
-                        return kotlin.Unit.INSTANCE;
                     }
-                }, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+                }
+                if (isAdded()) {
+                    productAdapter.submitList(suggested);
+                }
+            });
     }
 
     private void navigateToDetail(ProductEntity product) {

@@ -128,11 +128,11 @@ public class OrderListViewModel extends RootieViewModel {
         int total = orders.size();
         int pending = 0;
         for (OrderEntity order : orders) {
-            if ("Chờ xử lý".equalsIgnoreCase(order.getStatus())) {
+            if ("Chờ xác nhận".equalsIgnoreCase(order.getStatus())) {
                 pending++;
             }
         }
-        _orderStats.setValue(total + " đơn • " + pending + " chờ xử lý");
+        _orderStats.setValue(total + " đơn • " + pending + " chờ xác nhận");
     }
 
     public void refreshOrders() {

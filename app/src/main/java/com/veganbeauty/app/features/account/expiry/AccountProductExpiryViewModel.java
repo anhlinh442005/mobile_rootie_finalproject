@@ -70,29 +70,11 @@ public class AccountProductExpiryViewModel extends ViewModel {
     }
 
     private void observeProducts() {
-        Flow<List<UserProductExpiryEntity>> productsFlow = repository.getExpiryProductsForUser(userId);
-        executor.execute(() -> {
-            try {
-                productsFlow.collect(new FlowCollector<List<UserProductExpiryEntity>>() {
-                    @Override
-                    public Object emit(List<UserProductExpiryEntity> value, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                        currentProducts = value != null ? value : new ArrayList<>();
-                        updateAllProducts();
-                        updateSoonProducts();
-                        return kotlin.Unit.INSTANCE;
-                    }
-                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
-                    @NonNull
-                    @Override
-                    public kotlin.coroutines.CoroutineContext getContext() {
-                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
-                    }
-                    @Override
-                    public void resumeWith(@NonNull Object o) {}
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        LiveData<List<UserProductExpiryEntity>> productsLiveData = androidx.lifecycle.FlowLiveDataConversions.asLiveData(repository.getExpiryProductsForUser(userId));
+        _allExpiryProducts.addSource(productsLiveData, value -> {
+            currentProducts = value != null ? value : new ArrayList<>();
+            updateAllProducts();
+            updateSoonProducts();
         });
     }
 

@@ -126,4 +126,73 @@ public class AffiliateHelper {
             e.printStackTrace();
         }
     }
+
+    public static String addWithdrawal(Context context, String userId, long amount) {
+        String wdId = UUID.randomUUID().toString();
+        try {
+            JSONArray affiliateArray = getAffiliateData(context);
+            JSONObject userAffiliateObj = null;
+            for (int i = 0; i < affiliateArray.length(); i++) {
+                JSONObject obj = affiliateArray.getJSONObject(i);
+                if (obj.optString("user_id").equals(userId)) {
+                    userAffiliateObj = obj;
+                    break;
+                }
+            }
+            if (userAffiliateObj == null) {
+                userAffiliateObj = new JSONObject();
+                userAffiliateObj.put("user_id", userId);
+                userAffiliateObj.put("total_revenue", 0L);
+                userAffiliateObj.put("total_commission", 0L);
+                userAffiliateObj.put("pending_commission", 0L);
+                userAffiliateObj.put("successful_orders", 0);
+                userAffiliateObj.put("new_customers", 0);
+                userAffiliateObj.put("orders", new JSONArray());
+                userAffiliateObj.put("withdrawals", new JSONArray());
+                affiliateArray.put(userAffiliateObj);
+            }
+            
+            JSONArray withdrawalsArr = userAffiliateObj.optJSONArray("withdrawals");
+            if (withdrawalsArr == null) withdrawalsArr = new JSONArray();
+            
+            JSONObject newWd = new JSONObject();
+            newWd.put("id", wdId);
+            newWd.put("amount", amount);
+            newWd.put("status", "Đang xử lý");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", new Locale("vi", "VN"));
+            newWd.put("date", sdf.format(new Date()));
+            
+            withdrawalsArr.put(newWd);
+            userAffiliateObj.put("withdrawals", withdrawalsArr);
+            saveAffiliateData(context, affiliateArray);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return wdId;
+    }
+
+    public static void updateWithdrawalStatus(Context context, String userId, String withdrawalId, String status) {
+        try {
+            JSONArray affiliateArray = getAffiliateData(context);
+            for (int i = 0; i < affiliateArray.length(); i++) {
+                JSONObject obj = affiliateArray.getJSONObject(i);
+                if (obj.optString("user_id").equals(userId)) {
+                    JSONArray withdrawalsArr = obj.optJSONArray("withdrawals");
+                    if (withdrawalsArr != null) {
+                        for (int j = 0; j < withdrawalsArr.length(); j++) {
+                            JSONObject wd = withdrawalsArr.getJSONObject(j);
+                            if (wd.optString("id").equals(withdrawalId)) {
+                                wd.put("status", status);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            saveAffiliateData(context, affiliateArray);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.veganbeauty.app.R;
@@ -226,27 +227,21 @@ public class ShopListFragment extends RootieFragment {
             }
         });
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-            db.cartDao().getAllCartItems().collect(new FlowCollector<List<CartItemEntity>>() {
-                @Nullable
-                @Override
-                public Object emit(List<CartItemEntity> items, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                    int totalQty = 0;
-                    for (CartItemEntity item : items) {
-                        totalQty += item.getQuantity();
-                    }
-                    if (totalQty > 0) {
-                        _binding.tvCartBadge.setVisibility(View.VISIBLE);
-                        _binding.tvCartBadge.setText(String.valueOf(totalQty));
-                    } else {
-                        _binding.tvCartBadge.setVisibility(View.GONE);
-                    }
-                    return kotlin.Unit.INSTANCE;
+        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
+        FlowLiveDataConversions.asLiveData(db.cartDao().getAllCartItems())
+            .observe(getViewLifecycleOwner(), items -> {
+                if (items == null) return;
+                int totalQty = 0;
+                for (CartItemEntity item : items) {
+                    totalQty += item.getQuantity();
                 }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
-        });
+                if (totalQty > 0) {
+                    _binding.tvCartBadge.setVisibility(View.VISIBLE);
+                    _binding.tvCartBadge.setText(String.valueOf(totalQty));
+                } else {
+                    _binding.tvCartBadge.setVisibility(View.GONE);
+                }
+            });
     }
 
     @Override

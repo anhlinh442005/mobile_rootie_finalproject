@@ -59,10 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
         // One-time wipe + re-upload canonical asset data to Firebase
         android.content.SharedPreferences syncPrefs = getSharedPreferences("rootie_prefs", MODE_PRIVATE);
-        if (!syncPrefs.getBoolean("firebase_assets_sync_v2", false)) {
+        if (!syncPrefs.getBoolean("firebase_assets_sync_v3", false)) {
             com.veganbeauty.app.utils.SyncDataHelper.syncAllLocalDataToFirebase(this, success -> {
                 if (success) {
-                    syncPrefs.edit().putBoolean("firebase_assets_sync_v2", true).apply();
+                    syncPrefs.edit().putBoolean("firebase_assets_sync_v3", true).apply();
                 }
             });
         }
@@ -271,17 +271,27 @@ public class MainActivity extends AppCompatActivity {
                 // Upload FCM Token to Firestore under users/{userId}
                 try {
                     String currentUserId = com.veganbeauty.app.data.local.ProfileSession.getCurrentUserId(MainActivity.this);
+                    com.veganbeauty.app.data.remote.FirestoreService fs = new com.veganbeauty.app.data.remote.FirestoreService();
+                    
                     com.google.firebase.firestore.FirebaseFirestore.getInstance()
                         .collection("users")
                         .document(currentUserId)
                         .update("fcm_token", token)
+                        .addOnCompleteListener(t -> {
+                            fs.startListeningToNotifications(MainActivity.this, currentUserId);
+                            fs.startListeningToUserEvents(MainActivity.this, currentUserId);
+                        })
                         .addOnFailureListener(e -> {
                             java.util.Map<String, Object> data = new java.util.HashMap<>();
                             data.put("fcm_token", token);
                             com.google.firebase.firestore.FirebaseFirestore.getInstance()
                                 .collection("users")
                                 .document(currentUserId)
-                                .set(data, com.google.firebase.firestore.SetOptions.merge());
+                                .set(data, com.google.firebase.firestore.SetOptions.merge())
+                                .addOnCompleteListener(t -> {
+                                    fs.startListeningToNotifications(MainActivity.this, currentUserId);
+                                    fs.startListeningToUserEvents(MainActivity.this, currentUserId);
+                                });
                         });
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -519,10 +529,19 @@ public class MainActivity extends AppCompatActivity {
     private void collapseExtraBubblesImmediately() {
         if (bubbleAi == null || bubbleHuman == null) return;
         if (isExtraBubblesExpanded) {
+            final View chatHead = findViewById(R.id.skin_ai_floating_chat_head);
+            if (chatHead != null) {
+                float density = getResources().getDisplayMetrics().density;
+                float offsetNeed = 5 * density;
+                float collapsedX = chatHead.getX() + offsetNeed;
+                float collapsedY = chatHead.getY() + offsetNeed;
+                bubbleAi.setX(collapsedX);
+                bubbleAi.setY(collapsedY);
+                bubbleHuman.setX(collapsedX);
+                bubbleHuman.setY(collapsedY);
+            }
             bubbleAi.setVisibility(View.GONE);
-            bubbleAi.setTranslationY(0f);
             bubbleHuman.setVisibility(View.GONE);
-            bubbleHuman.setTranslationY(0f);
             isExtraBubblesExpanded = false;
             updateUnreadBadges();
         }
@@ -532,9 +551,18 @@ public class MainActivity extends AppCompatActivity {
         final View chatHead = findViewById(R.id.skin_ai_floating_chat_head);
         if (bubbleAi == null || bubbleHuman == null || chatHead == null) return;
 
+        float density = getResources().getDisplayMetrics().density;
+        float offsetNeed = 5 * density;
+        float mainX = chatHead.getX();
+        float mainY = chatHead.getY();
+
+        float collapsedX = mainX + offsetNeed;
+        float collapsedY = mainY + offsetNeed;
+
         if (isExtraBubblesExpanded) {
             bubbleAi.animate()
-                .translationY(0)
+                .x(collapsedX)
+                .y(collapsedY)
                 .alpha(0f)
                 .setDuration(200)
                 .withEndAction(() -> {
@@ -543,7 +571,8 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .start();
             bubbleHuman.animate()
-                .translationY(0)
+                .x(collapsedX)
+                .y(collapsedY)
                 .alpha(0f)
                 .setDuration(200)
                 .withEndAction(() -> {
@@ -554,39 +583,42 @@ public class MainActivity extends AppCompatActivity {
             isExtraBubblesExpanded = false;
             updateUnreadBadges();
         } else {
-            float mainX = chatHead.getX();
-            float mainY = chatHead.getY();
-            float density = getResources().getDisplayMetrics().density;
-            float offsetNeed = 5 * density;
-
-            float bubbleX = mainX + offsetNeed;
-            float bubbleY = mainY + offsetNeed;
-
-            bubbleAi.setX(bubbleX);
-            bubbleAi.setY(bubbleY);
-            bubbleHuman.setX(bubbleX);
-            bubbleHuman.setY(bubbleY);
+            bubbleAi.setX(collapsedX);
+            bubbleAi.setY(collapsedY);
+            bubbleHuman.setX(collapsedX);
+            bubbleHuman.setY(collapsedY);
 
             bubbleAi.setVisibility(View.VISIBLE);
             bubbleHuman.setVisibility(View.VISIBLE);
 
             bubbleAi.setAlpha(0f);
-            bubbleAi.setTranslationY(0f);
             bubbleHuman.setAlpha(0f);
-            bubbleHuman.setTranslationY(0f);
 
-            float targetY_Ai = -65 * density;
-            float targetY_Human = -125 * density;
+            int screenHeight = getResources().getDisplayMetrics().heightPixels;
+            boolean expandDown = mainY < screenHeight / 2f;
+
+            float targetY_Ai;
+            float targetY_Human;
+
+            if (expandDown) {
+                targetY_Ai = mainY + 70 * density;
+                targetY_Human = mainY + 130 * density;
+            } else {
+                targetY_Ai = mainY - 60 * density;
+                targetY_Human = mainY - 120 * density;
+            }
 
             bubbleAi.animate()
-                .translationY(targetY_Ai)
+                .x(collapsedX)
+                .y(targetY_Ai)
                 .alpha(1f)
                 .setDuration(300)
                 .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
                 .start();
 
             bubbleHuman.animate()
-                .translationY(targetY_Human)
+                .x(collapsedX)
+                .y(targetY_Human)
                 .alpha(1f)
                 .setDuration(300)
                 .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
@@ -605,8 +637,9 @@ public class MainActivity extends AppCompatActivity {
             .apply();
         updateUnreadBadges();
 
-        com.veganbeauty.app.features.ai.SkinAiChatFragment dialog = new com.veganbeauty.app.features.ai.SkinAiChatFragment();
-        loadFragment(dialog);
+        com.veganbeauty.app.features.ai.SkinChatDialogContainer dialog =
+            com.veganbeauty.app.features.ai.SkinChatDialogContainer.newInstance(true);
+        dialog.show(getSupportFragmentManager(), "SkinChatDialogContainer");
     }
 
     private void openSkinChatDialog() {
@@ -616,8 +649,9 @@ public class MainActivity extends AppCompatActivity {
         com.veganbeauty.app.features.community.message.MessageHelper.markAsRead(this, skinChatConvId, currentUserId);
         updateUnreadBadges();
 
-        com.veganbeauty.app.features.ai.SkinChatFragment dialog = new com.veganbeauty.app.features.ai.SkinChatFragment();
-        dialog.show(getSupportFragmentManager(), "SkinChatDialog");
+        com.veganbeauty.app.features.ai.SkinChatDialogContainer dialog =
+            com.veganbeauty.app.features.ai.SkinChatDialogContainer.newInstance(false);
+        dialog.show(getSupportFragmentManager(), "SkinChatDialogContainer");
     }
 
     private void setupUnreadBadgesLogic() {
@@ -660,6 +694,93 @@ public class MainActivity extends AppCompatActivity {
 
         // Initial update of badges
         updateUnreadBadges();
+        
+        setupRewardPointsTierListener();
+    }
+
+    private void setupRewardPointsTierListener() {
+        try {
+            com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase.getDatabase(this);
+            androidx.lifecycle.FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+                .observe(this, ptsList -> {
+                    int pts = (ptsList != null && !ptsList.isEmpty()) ? ptsList.get(0).total : 0;
+                    String newTier;
+                    if (pts >= 20000) newTier = "VIP";
+                    else if (pts >= 10000) newTier = "Vàng";
+                    else if (pts >= 5000) newTier = "Bạc";
+                    else newTier = "Thường";
+
+                    android.content.SharedPreferences prefs = getSharedPreferences("RootiePrefs", MODE_PRIVATE);
+                    String oldTier = prefs.getString("LAST_KNOWN_TIER", null);
+                    
+                    if (oldTier == null) {
+                        prefs.edit().putString("LAST_KNOWN_TIER", newTier).apply();
+                    } else if (!oldTier.equals(newTier)) {
+                        prefs.edit().putString("LAST_KNOWN_TIER", newTier).apply();
+                        
+                        int oldLvl = 0;
+                        if ("Bạc".equals(oldTier)) oldLvl = 1;
+                        else if ("Vàng".equals(oldTier)) oldLvl = 2;
+                        else if ("VIP".equals(oldTier)) oldLvl = 3;
+                        
+                        int newLvl = 0;
+                        if ("Bạc".equals(newTier)) newLvl = 1;
+                        else if ("Vàng".equals(newTier)) newLvl = 2;
+                        else if ("VIP".equals(newTier)) newLvl = 3;
+                        
+                        if (newLvl > oldLvl) {
+                            String title = "Thăng hạng thành viên mới! \uD83D\uDC51";
+                            String content = "Chúc mừng bạn đã thăng hạng thành công từ hạng " + oldTier + " lên hạng " + newTier + "!";
+                            
+                            String id = java.util.UUID.randomUUID().toString();
+                            String currentDate = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(new java.util.Date());
+                            com.veganbeauty.app.data.local.entities.NotificationItem item = new com.veganbeauty.app.data.local.entities.NotificationItem(
+                                    id,
+                                    title,
+                                    content,
+                                    currentDate,
+                                    "Tài khoản",
+                                    null,
+                                    null,
+                                    "XEM HẠNG",
+                                    false,
+                                    "Hôm nay",
+                                    "ic_bell",
+                                    "member_tier",
+                                    null,
+                                    null
+                            );
+                            com.veganbeauty.app.data.repository.NotificationRepository.getInstance(MainActivity.this).addNotification(item);
+                            
+                            com.veganbeauty.app.features.account.notification.NotificationPushHelper.sendPushNotification(
+                                    MainActivity.this,
+                                    id,
+                                    title,
+                                    content,
+                                    "member_tier",
+                                    null,
+                                    null,
+                                    null
+                            );
+                            
+                            String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(MainActivity.this);
+                            new com.veganbeauty.app.data.remote.FirestoreService().sendCommunityNotificationEvent(
+                                    currentUserId,
+                                    "rootie_system",
+                                    "Rootie System",
+                                    "",
+                                    "MEMBER_TIER",
+                                    "UPDATE",
+                                    content,
+                                    null,
+                                    null
+                            );
+                        }
+                    }
+                });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateUnreadBadges() {
@@ -708,6 +829,9 @@ public class MainActivity extends AppCompatActivity {
             String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);
             String skinChatConvId = "chat_rootie_vn_" + currentUserId;
             com.veganbeauty.app.features.community.message.MessageHelper.removeConversationListener(skinChatConvId);
+            com.veganbeauty.app.data.remote.FirestoreService fsService = new com.veganbeauty.app.data.remote.FirestoreService();
+            fsService.stopListeningToNotifications();
+            fsService.stopListeningToUserEvents();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -815,6 +939,39 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
             }
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(android.view.MotionEvent ev) {
+        if (isExtraBubblesExpanded && ev.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+            View chatHead = findViewById(R.id.skin_ai_floating_chat_head);
+            if (chatHead != null && bubbleAi != null && bubbleHuman != null) {
+                int[] chatHeadLocation = new int[2];
+                int[] aiLocation = new int[2];
+                int[] humanLocation = new int[2];
+
+                chatHead.getLocationOnScreen(chatHeadLocation);
+                bubbleAi.getLocationOnScreen(aiLocation);
+                bubbleHuman.getLocationOnScreen(humanLocation);
+
+                float x = ev.getRawX();
+                float y = ev.getRawY();
+
+                boolean insideChatHead = x >= chatHeadLocation[0] && x <= chatHeadLocation[0] + chatHead.getWidth()
+                        && y >= chatHeadLocation[1] && y <= chatHeadLocation[1] + chatHead.getHeight();
+
+                boolean insideAi = x >= aiLocation[0] && x <= aiLocation[0] + bubbleAi.getWidth()
+                        && y >= aiLocation[1] && y <= aiLocation[1] + bubbleAi.getHeight();
+
+                boolean insideHuman = x >= humanLocation[0] && x <= humanLocation[0] + bubbleHuman.getWidth()
+                        && y >= humanLocation[1] && y <= humanLocation[1] + bubbleHuman.getHeight();
+
+                if (!insideChatHead && !insideAi && !insideHuman) {
+                    toggleExtraBubbles();
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     private void loadFragment(Fragment fragment) {

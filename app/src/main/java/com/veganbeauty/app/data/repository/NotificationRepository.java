@@ -34,6 +34,18 @@ public class NotificationRepository {
     private final MutableStateFlow<List<NotificationItem>> _notifications = kotlinx.coroutines.flow.StateFlowKt.MutableStateFlow(new ArrayList<>());
     public final StateFlow<List<NotificationItem>> notifications = _notifications;
 
+    private Set<String> getDeletedNotificationIds() {
+        android.content.SharedPreferences prefs = context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE);
+        return prefs.getStringSet("deleted_ids", new HashSet<>());
+    }
+
+    private void addDeletedNotificationId(String id) {
+        android.content.SharedPreferences prefs = context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE);
+        Set<String> deletedIds = new HashSet<>(prefs.getStringSet("deleted_ids", new HashSet<>()));
+        deletedIds.add(id);
+        prefs.edit().putStringSet("deleted_ids", deletedIds).apply();
+    }
+
     private final MutableStateFlow<Integer> _unreadCount = kotlinx.coroutines.flow.StateFlowKt.MutableStateFlow(0);
 
     private NotificationRepository(Context context) {
@@ -60,7 +72,24 @@ public class NotificationRepository {
 
     public void refreshNotifications() {
         List<NotificationItem> assetList = localJsonReader.getAllNotifications();
+        Set<String> deletedIds = getDeletedNotificationIds();
+        
+        List<NotificationItem> filteredAssetList = new ArrayList<>();
+        for (NotificationItem item : assetList) {
+            if (!deletedIds.contains(item.getId())) {
+                filteredAssetList.add(item);
+            }
+        }
+        assetList = filteredAssetList;
+
         List<NotificationItem> localList = loadNotificationsFromLocal();
+        List<NotificationItem> filteredLocalList = new ArrayList<>();
+        for (NotificationItem item : localList) {
+            if (!deletedIds.contains(item.getId())) {
+                filteredLocalList.add(item);
+            }
+        }
+        localList = filteredLocalList;
 
         List<NotificationItem> finalList;
         if (localList.isEmpty()) {
@@ -206,6 +235,7 @@ public class NotificationRepository {
     }
 
     public void deleteNotification(String id) {
+        addDeletedNotificationId(id);
         List<NotificationItem> currentList = new ArrayList<>(_notifications.getValue());
         currentList.removeIf(item -> item.getId().equals(id));
         _notifications.setValue(currentList);
@@ -214,6 +244,12 @@ public class NotificationRepository {
     }
 
     public void deleteAllNotifications() {
+        List<NotificationItem> currentList = _notifications.getValue();
+        if (currentList != null) {
+            for (NotificationItem item : currentList) {
+                addDeletedNotificationId(item.getId());
+            }
+        }
         List<NotificationItem> emptyList = new ArrayList<>();
         _notifications.setValue(emptyList);
         updateUnreadCount(emptyList);

@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -118,18 +119,13 @@ public class ShopAddressSelectionFragment extends RootieFragment {
     }
 
     private void loadStores() {
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            repository.getAllStores().collect(new kotlinx.coroutines.flow.FlowCollector<List<StoreEntity>>() {
-                @Nullable
-                @Override
-                public Object emit(List<StoreEntity> stores, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+        FlowLiveDataConversions.asLiveData(repository.getAllStores())
+            .observe(getViewLifecycleOwner(), stores -> {
+                if (stores != null) {
                     allStoresList = stores;
                     updateStageUI();
-                    return kotlin.Unit.INSTANCE;
                 }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
-        });
+            });
     }
 
     private void updateStageUI() {

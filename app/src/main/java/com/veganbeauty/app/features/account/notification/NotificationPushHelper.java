@@ -103,6 +103,10 @@ public class NotificationPushHelper {
                 case "skin care": actionText = "CHĂM DA NGAY"; break;
                 case "checkin": actionText = "ĐIỂM DANH"; break;
                 case "schedule date": actionText = "XEM LỊCH HẸN"; break;
+                case "member_tier":
+                case "tier":
+                    actionText = "XEM HẠNG";
+                    break;
             }
         }
 

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -180,68 +181,61 @@ public class ShopVoucherFragment extends RootieFragment {
         RootieDatabase db = RootieDatabase.getDatabase(context);
         repository = new OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), new LocalJsonReader(context));
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    repository.getAllUserGifts().collect(new FlowCollector<List<UserGiftEntity>>() {
-                        @Nullable
-                        @Override
-                        public Object emit(List<UserGiftEntity> dbGifts, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            List<VoucherItem> systemVouchers = loadVouchersFromAssets(context);
-                            List<VoucherItem> mappedDbVouchers = new ArrayList<>();
+        FlowLiveDataConversions.asLiveData(repository.getAllUserGifts())
+            .observe(getViewLifecycleOwner(), dbGifts -> {
+                if (dbGifts == null) return;
+                List<VoucherItem> systemVouchers = loadVouchersFromAssets(context);
+                List<VoucherItem> mappedDbVouchers = new ArrayList<>();
 
-                            for (UserGiftEntity gift : dbGifts) {
-                                if ("voucher_discount".equals(gift.getGiftType()) || "voucher_freeship".equals(gift.getGiftType())) {
-                                    String statusVal = computeStatusFromExpiry(gift.getExpiryDate());
-                                    mappedDbVouchers.add(new VoucherItem(
-                                            "db_" + gift.getId(), gift.getTitle(), gift.getDescription(),
-                                            gift.getCode(), statusVal, gift.getExpiryDate(),
-                                            "voucher_freeship".equals(gift.getGiftType()) ? "free ship" : "discount",
-                                            true, 0, gift.getMinOrderValue(), gift.getApplicableProducts(),
-                                            gift.getOfferType(), gift.getDiscountValue()
-                                    ));
-                                }
-                            }
+                for (UserGiftEntity gift : dbGifts) {
+                    if ("voucher_discount".equals(gift.getGiftType()) || "voucher_freeship".equals(gift.getGiftType())) {
+                        String statusVal = computeStatusFromExpiry(gift.getExpiryDate());
+                        mappedDbVouchers.add(new VoucherItem(
+                                "db_" + gift.getId(), gift.getTitle(), gift.getDescription(),
+                                gift.getCode(), statusVal, gift.getExpiryDate(),
+                                "voucher_freeship".equals(gift.getGiftType()) ? "free ship" : "discount",
+                                true, 0, gift.getMinOrderValue(), gift.getApplicableProducts(),
+                                gift.getOfferType(), gift.getDiscountValue()
+                        ));
+                    }
+                }
 
-                            List<VoucherItem> activeSystem = new ArrayList<>();
-                            for (VoucherItem sys : systemVouchers) {
-                                if (!AccountVoucherFragment.getDeletedSystemVoucherIdsStatic().contains(sys.getId())) {
-                                    activeSystem.add(sys);
-                                }
-                            }
+                List<VoucherItem> activeSystem = new ArrayList<>();
+                for (VoucherItem sys : systemVouchers) {
+                    if (!AccountVoucherFragment.getDeletedSystemVoucherIdsStatic().contains(sys.getId())) {
+                        activeSystem.add(sys);
+                    }
+                }
 
-                            List<VoucherItem> allVouchers = new ArrayList<>(activeSystem);
-                            allVouchers.addAll(mappedDbVouchers);
+                List<VoucherItem> allVouchers = new ArrayList<>(activeSystem);
+                allVouchers.addAll(mappedDbVouchers);
 
-                            List<VoucherItem> activeVouchers = new ArrayList<>();
-                            for (VoucherItem item : allVouchers) {
-                                if ("valid".equals(item.getStatus()) || "expiring".equals(item.getStatus())) {
-                                    activeVouchers.add(item);
-                                }
-                            }
+                List<VoucherItem> activeVouchers = new ArrayList<>();
+                for (VoucherItem item : allVouchers) {
+                    if ("valid".equals(item.getStatus()) || "expiring".equals(item.getStatus())) {
+                        activeVouchers.add(item);
+                    }
+                }
 
-                            voucherList.clear();
-                            for (VoucherItem item : activeVouchers) {
-                                String minSpendText = "Đơn tối thiểu: " + formatCurrency(item.getMinOrderValue()) + "đ";
-                                String expiryText = "Hết hạn: " + formatHsd(item.getHsd());
-                                voucherList.add(new VoucherUiModel(
-                                        item.getCode(), item.getTitle(), minSpendText, expiryText,
-                                        item.getDiscountValue(), item.getMinOrderValue()
-                                ));
-                            }
-                            adapter.notifyDataSetChanged();
+                voucherList.clear();
+                for (VoucherItem item : activeVouchers) {
+                    String minSpendText = "Đơn tối thiểu: " + formatCurrency(item.getMinOrderValue()) + "đ";
+                    String expiryText = "Hết hạn: " + formatHsd(item.getHsd());
+                    voucherList.add(new VoucherUiModel(
+                            item.getCode(), item.getTitle(), minSpendText, expiryText,
+                            item.getDiscountValue(), item.getMinOrderValue()
+                    ));
+                }
+                adapter.notifyDataSetChanged();
 
-                            if (selectedVoucherCode != null) {
-                                VoucherUiModel matched = null;
-                                for (VoucherUiModel v : voucherList) {
-                                    if (v.code.equals(selectedVoucherCode)) { matched = v; break; }
-                                }
-                                if (matched != null) adapter.setSelectedCode(selectedVoucherCode);
-                            }
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+                if (selectedVoucherCode != null) {
+                    VoucherUiModel matched = null;
+                    for (VoucherUiModel v : voucherList) {
+                        if (v.code.equals(selectedVoucherCode)) { matched = v; break; }
+                    }
+                    if (matched != null) adapter.setSelectedCode(selectedVoucherCode);
+                }
+            });
     }
 
     private String computeStatusFromExpiry(String expiryStr) {

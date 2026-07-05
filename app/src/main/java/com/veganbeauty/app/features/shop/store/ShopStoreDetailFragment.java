@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.LifecycleCoroutineScope;
 import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -135,35 +136,22 @@ public class ShopStoreDetailFragment extends RootieFragment {
     }
 
     private void loadNearbyStores() {
-        LifecycleCoroutineScope scope = LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner());
-
-
-        // Use traditional coroutine launch via flow collection
-        kotlinx.coroutines.BuildersKt.launch(scope, null, null, (coroutineScope, continuation) -> {
-            repository.getAllStores().collect(new FlowCollector<List<StoreEntity>>() {
-                @Nullable
-                @Override
-                public Object emit(List<StoreEntity> stores, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                    if (currentStore == null) return kotlin.Unit.INSTANCE;
-                    String currentDistrict = currentStore.getQuanHuyen() != null ? currentStore.getQuanHuyen().trim() : "";
-                    List<StoreEntity> filtered = new ArrayList<>();
-                    for (StoreEntity s : stores) {
-                        if (!s.getId().equals(currentStore.getId()) && currentDistrict.equalsIgnoreCase(s.getQuanHuyen())) {
-                            filtered.add(s);
-                        }
+        FlowLiveDataConversions.asLiveData(repository.getAllStores())
+            .observe(getViewLifecycleOwner(), stores -> {
+                if (currentStore == null || stores == null) return;
+                String currentDistrict = currentStore.getQuanHuyen() != null ? currentStore.getQuanHuyen().trim() : "";
+                List<StoreEntity> filtered = new ArrayList<>();
+                for (StoreEntity s : stores) {
+                    if (!s.getId().equals(currentStore.getId()) && currentDistrict.equalsIgnoreCase(s.getQuanHuyen())) {
+                        filtered.add(s);
                     }
-                    requireActivity().runOnUiThread(() -> {
-                        nearbyStoresList = filtered;
-                        nearbyAdapter.notifyDataSetChanged();
-                        boolean hasNearby = !filtered.isEmpty();
-                        binding.rvNearbyStores.setVisibility(hasNearby ? View.VISIBLE : View.GONE);
-                        binding.tvNoNearbyStores.setVisibility(!hasNearby ? View.VISIBLE : View.GONE);
-                    });
-                    return kotlin.Unit.INSTANCE;
                 }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
-        });
+                nearbyStoresList = filtered;
+                nearbyAdapter.notifyDataSetChanged();
+                boolean hasNearby = !filtered.isEmpty();
+                binding.rvNearbyStores.setVisibility(hasNearby ? View.VISIBLE : View.GONE);
+                binding.tvNoNearbyStores.setVisibility(!hasNearby ? View.VISIBLE : View.GONE);
+            });
     }
 
     private void openGoogleMaps(double lat, double lng) {

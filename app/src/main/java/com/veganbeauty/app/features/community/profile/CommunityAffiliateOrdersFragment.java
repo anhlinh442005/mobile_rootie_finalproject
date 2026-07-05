@@ -233,7 +233,7 @@ public class CommunityAffiliateOrdersFragment extends Fragment {
             return "Đang giao";
         }
         if (order.getAffiliate() != null && "confirmed".equals(order.getAffiliate().getCommissionStatus())
-                && !"Đang xử lý".equals(status) && !"Chờ xử lý".equals(status) && !"Đang giao".equals(status)) {
+                && !"Đang xử lý".equals(status) && !"Chờ xác nhận".equals(status) && !"Đang giao".equals(status)) {
             return "Thành công";
         }
         return "Đang xử lý";

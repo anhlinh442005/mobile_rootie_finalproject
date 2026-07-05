@@ -113,7 +113,7 @@
                 android:gravity="center"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="8dp"
-                android:text="Chờ xử lý"
+                android:text="Chờ xác nhận"
                 android:textColor="@color/primary"
                 android:textSize="14sp" />
 

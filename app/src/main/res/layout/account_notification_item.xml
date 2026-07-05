@@ -114,7 +114,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvContent"
             app:layout_constraintBottom_toBottomOf="parent">
-
             <ImageView
                 android:id="@+id/btnMarkRead"
                 android:layout_width="36dp"

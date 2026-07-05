@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -266,6 +267,45 @@ public class CommunityAffiliateWithdrawFragment extends Fragment {
                 etAmount.addTextChangedListener(this);
             }
         });
+
+        if (btnSubmit != null) {
+            btnSubmit.setOnClickListener(v -> {
+                String cleanString = etAmount.getText().toString().replace(".", "");
+                if (cleanString.isEmpty()) return;
+                long amount = Long.parseLong(cleanString);
+                if (amount <= 0 || amount > availableBalance) {
+                    Toast.makeText(getContext(), "Số tiền không hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                String userId = com.veganbeauty.app.features.community.CommunitySocialHelper.resolveUserId(getContext());
+                String wdId = AffiliateHelper.addWithdrawal(requireContext(), userId, amount);
+                Toast.makeText(getContext(), "Yêu cầu rút tiền trị giá " + etAmount.getText().toString() + "đ đã được gửi thành công!", Toast.LENGTH_LONG).show();
+                
+                // Refresh local withdraw data UI
+                loadWithdrawData(view);
+                etAmount.setText("");
+                
+                // Simulate approval/transfer in 5 seconds
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                    if (getContext() != null) {
+                        AffiliateHelper.updateWithdrawalStatus(getContext(), userId, wdId, "Đã chuyển");
+                        // Trigger Firestore notification event so that listener catches it
+                        new com.veganbeauty.app.data.remote.FirestoreService().sendCommunityNotificationEvent(
+                                userId,
+                                null, // System
+                                "Hệ thống Rootie",
+                                null,
+                                "ORDER",
+                                "WITHDRAW",
+                                "Yêu cầu rút tiền tích lũy trị giá " + String.format(new Locale("vi", "VN"), "%,dđ", amount) + " của bạn đã hoàn thành.",
+                                null,
+                                null
+                        );
+                    }
+                }, 5000);
+            });
+        }
     }
 
     private void showAddBankDialog() {

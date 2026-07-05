@@ -121,6 +121,12 @@ public class NotificationIntentHandler {
                     .replace(R.id.main_container, fragment)
                     .addToBackStack(null)
                     .commit();
+            } else if (type.equals("member_tier") || type.equals("tier")) {
+                com.veganbeauty.app.features.account.reward.AccountRewardFragment fragment = new com.veganbeauty.app.features.account.reward.AccountRewardFragment();
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.main_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
             } else if (type.equals("schedule date") || (scheduleId != null && !scheduleId.isEmpty())) {
                 String actualScheduleId = scheduleId != null ? scheduleId : "BK_NOTI_101";
                 String userEmail = com.veganbeauty.app.data.local.ProfileSession.getEmail(activity);

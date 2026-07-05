@@ -1310,4 +1310,247 @@ public class FirestoreService {
         }
         return list;
     }
+
+    private static com.google.firebase.firestore.ListenerRegistration notificationListener;
+    private static com.google.firebase.firestore.ListenerRegistration userEventsListener;
+    private static final long appStartTime = System.currentTimeMillis();
+
+    public void startListeningToNotifications(Context context, String userId) {
+        if (userId == null || userId.trim().isEmpty()) return;
+        if (notificationListener != null) {
+            notificationListener.remove();
+        }
+
+        notificationListener = db.collection("community_notifications")
+                .whereEqualTo("targetUserId", userId)
+                .whereGreaterThan("timestamp", appStartTime)
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    if (snapshots == null) return;
+
+                    for (com.google.firebase.firestore.DocumentChange dc : snapshots.getDocumentChanges()) {
+                        if (dc.getType() == com.google.firebase.firestore.DocumentChange.Type.ADDED) {
+                            com.google.firebase.firestore.DocumentSnapshot doc = dc.getDocument();
+                            String id = doc.getString("id");
+                            if (id == null) id = doc.getId();
+                            String actorId = doc.getString("userId");
+                            String userName = doc.getString("userName");
+                            String userAvatar = doc.getString("userAvatar");
+                            String type = doc.getString("type");
+                            String actionType = doc.getString("actionType");
+                            String content = doc.getString("content");
+                            String postId = doc.getString("postId");
+                            String commentId = doc.getString("commentId");
+
+                            if (type == null) type = "POST";
+                            if (actionType == null) actionType = "COMMENT";
+                            if (content == null) content = "";
+
+                            // Add to local database/file
+                            com.veganbeauty.app.features.community.notification.CommunityNotificationHelper.addCommunityNotification(
+                                    context, id, actorId, userName, userAvatar, type, actionType, content, postId, commentId
+                            );
+
+                            // Send Push Notification
+                            if ("ORDER".equalsIgnoreCase(type)) {
+                                com.veganbeauty.app.features.account.notification.NotificationPushHelper.sendPushNotification(
+                                        context,
+                                        id,
+                                        "Trạng thái yêu cầu rút tiền",
+                                        content,
+                                        "order",
+                                        null,
+                                        null,
+                                        null
+                                );
+                            } else {
+                                String title = "Cộng đồng Rootie";
+                                if ("LIKE".equalsIgnoreCase(actionType)) {
+                                    title = userName + " đã thích bài viết của bạn";
+                                } else if ("SHARE".equalsIgnoreCase(actionType)) {
+                                    title = userName + " đã chia sẻ bài viết của bạn";
+                                } else if ("COMMENT".equalsIgnoreCase(actionType)) {
+                                    title = userName + " đã bình luận về bài viết của bạn";
+                                } else if ("REPLY".equalsIgnoreCase(actionType)) {
+                                    title = userName + " đã trả lời bình luận của bạn";
+                                }
+                                com.veganbeauty.app.features.account.notification.NotificationPushHelper.sendCommunityPushNotification(
+                                        context,
+                                        id,
+                                        title,
+                                        content,
+                                        "open_community_notification_list"
+                                );
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void startListeningToUserEvents(Context context, String userId) {
+        if (userId == null || userId.trim().isEmpty()) return;
+        if (userEventsListener != null) {
+            userEventsListener.remove();
+        }
+
+        userEventsListener = db.collection("community_notifications")
+                .whereEqualTo("targetUserId", userId)
+                .whereGreaterThan("timestamp", appStartTime)
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    if (snapshots == null) return;
+
+                    for (com.google.firebase.firestore.DocumentChange dc : snapshots.getDocumentChanges()) {
+                        if (dc.getType() == com.google.firebase.firestore.DocumentChange.Type.ADDED) {
+                            com.google.firebase.firestore.DocumentSnapshot doc = dc.getDocument();
+                            String type = doc.getString("type");
+                            if (type == null) continue;
+
+                            if ("ORDER_SUCCESS".equalsIgnoreCase(type)
+                                    || "PROMOTION".equalsIgnoreCase(type)
+                                    || "VOUCHER".equalsIgnoreCase(type)
+                                    || "MEMBER_TIER".equalsIgnoreCase(type)
+                                    || "TIER".equalsIgnoreCase(type)) {
+
+                                String id = doc.getString("id");
+                                if (id == null) id = doc.getId();
+                                String content = doc.getString("content");
+                                if (content == null) content = "";
+                                String title = doc.getString("title");
+
+                                String category = "Khác";
+                                String notificationType = "general";
+                                String actionText = null;
+                                String orderId = null;
+                                String voucherCode = null;
+                                String iconResName = "ic_bell";
+
+                                if ("ORDER_SUCCESS".equalsIgnoreCase(type)) {
+                                    if (title == null || title.trim().isEmpty()) title = "Đơn hàng đặt thành công! \uD83D\uDED2";
+                                    category = "Đơn hàng";
+                                    notificationType = "order";
+                                    actionText = "CHI TIẾT";
+                                    orderId = doc.getString("postId");
+                                    if (orderId == null || orderId.trim().isEmpty()) {
+                                        orderId = doc.getString("orderId");
+                                    }
+                                    iconResName = "ic_notification";
+                                } else if ("PROMOTION".equalsIgnoreCase(type) || "VOUCHER".equalsIgnoreCase(type)) {
+                                    if (title == null || title.trim().isEmpty()) title = "Ưu đãi mới cực hot! \uD83C\uDF81";
+                                    category = "Khác";
+                                    notificationType = "voucher";
+                                    actionText = "COPY MÃ";
+                                    voucherCode = doc.getString("postId");
+                                    if (voucherCode == null || voucherCode.trim().isEmpty()) {
+                                        voucherCode = doc.getString("voucherCode");
+                                    }
+                                    iconResName = "ic_bell";
+                                } else if ("MEMBER_TIER".equalsIgnoreCase(type) || "TIER".equalsIgnoreCase(type)) {
+                                    if (title == null || title.trim().isEmpty()) title = "Hạng thành viên đã cập nhật! \uD83D\uDC51";
+                                    category = "Tài khoản";
+                                    notificationType = "member_tier";
+                                    actionText = "XEM HẠNG";
+                                    iconResName = "ic_bell";
+                                }
+
+                                // Check duplicate locally
+                                boolean exists = false;
+                                com.veganbeauty.app.data.repository.NotificationRepository repo = com.veganbeauty.app.data.repository.NotificationRepository.getInstance(context);
+                                if (repo.notifications.getValue() != null) {
+                                    for (com.veganbeauty.app.data.local.entities.NotificationItem item : repo.notifications.getValue()) {
+                                        if (item.getId().equals(id)) {
+                                            exists = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (!exists) {
+                                    String currentDate = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(new java.util.Date());
+                                    com.veganbeauty.app.data.local.entities.NotificationItem item = new com.veganbeauty.app.data.local.entities.NotificationItem(
+                                            id,
+                                            title,
+                                            content,
+                                            currentDate,
+                                            category,
+                                            null,
+                                            voucherCode,
+                                            actionText,
+                                            false,
+                                            "Hôm nay",
+                                            iconResName,
+                                            notificationType,
+                                            orderId,
+                                            null
+                                    );
+
+                                    repo.addNotification(item);
+
+                                    com.veganbeauty.app.features.account.notification.NotificationPushHelper.sendPushNotification(
+                                            context,
+                                            id,
+                                            title,
+                                            content,
+                                            notificationType,
+                                            voucherCode,
+                                            orderId,
+                                            null
+                                    );
+                                }
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void stopListeningToNotifications() {
+        if (notificationListener != null) {
+            notificationListener.remove();
+            notificationListener = null;
+        }
+    }
+
+    public void stopListeningToUserEvents() {
+        if (userEventsListener != null) {
+            userEventsListener.remove();
+            userEventsListener = null;
+        }
+    }
+
+    public void sendCommunityNotificationEvent(
+            String targetUserId,
+            String actorId,
+            String userName,
+            String userAvatar,
+            String type,
+            String actionType,
+            String content,
+            String postId,
+            String commentId
+    ) {
+        if (targetUserId == null || targetUserId.trim().isEmpty()) return;
+        
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", UUID.randomUUID().toString());
+        map.put("targetUserId", targetUserId);
+        map.put("userId", actorId);
+        map.put("userName", userName);
+        map.put("userAvatar", userAvatar != null ? userAvatar : "");
+        map.put("type", type);
+        map.put("actionType", actionType);
+        map.put("content", content);
+        map.put("postId", postId != null ? postId : "");
+        map.put("commentId", commentId != null ? commentId : "");
+        map.put("timestamp", System.currentTimeMillis());
+        
+        db.collection("community_notifications")
+                .add(map)
+                .addOnFailureListener(Throwable::printStackTrace);
+    }
 }

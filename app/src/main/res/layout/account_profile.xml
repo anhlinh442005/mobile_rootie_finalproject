@@ -559,7 +559,7 @@
                     android:clipToPadding="false"
                     android:orientation="horizontal">
 
-                    <!-- Step 1: Chờ xử lý -->
+                    <!-- Step 1: Chờ xác nhận -->
                     <LinearLayout
                         android:id="@+id/btn_status_pending"
                         android:layout_width="0dp"
@@ -615,7 +615,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:gravity="center"
-                            android:text="Chờ xử lý"
+                            android:text="Chờ xác nhận"
                             android:textColor="@color/primary"
                             android:textSize="10sp" />
                     </LinearLayout>

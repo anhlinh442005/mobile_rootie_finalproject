@@ -225,67 +225,48 @@ public class AccountRewardDetailFragment extends RootieFragment {
     @Override
     public void observeViewModel() {
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-        new Thread(() -> {
-            try {
-                db.rewardPointDao().getTotalPointsFlow().collect(new FlowCollector<List<RewardPointDao.TotalPoints>>() {
-                    @Override
-                    public Object emit(List<RewardPointDao.TotalPoints> ptsList, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                        int pointsVal = (ptsList != null && !ptsList.isEmpty()) ? ptsList.get(0).total : 0;
-                        currentPoints = pointsVal;
-                        if (getActivity() != null && _binding != null) {
-                            getActivity().runOnUiThread(() -> {
-                                _binding.tvUserBalance.setText("Bạn hiện có: " + String.format("%,d xu", pointsVal).replace(',', '.'));
+        androidx.lifecycle.FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+            .observe(getViewLifecycleOwner(), ptsList -> {
+                int pointsVal = (ptsList != null && !ptsList.isEmpty()) ? ptsList.get(0).total : 0;
+                currentPoints = pointsVal;
+                if (_binding != null) {
+                    _binding.tvUserBalance.setText("Bạn hiện có: " + String.format("%,d xu", pointsVal).replace(',', '.'));
 
-                                boolean isLockedByRank = (rankRequired.equals("Vàng") && pointsVal < 10000) || 
-                                                         (rankRequired.equals("VIP") && pointsVal < 20000) ||
-                                                         (rankRequired.equals("Kim Cương") && pointsVal < 20000);
-                                boolean isNotEnoughPoints = pointsVal < giftCost;
+                    boolean isLockedByRank = (rankRequired.equals("Vàng") && pointsVal < 10000) || 
+                                             (rankRequired.equals("VIP") && pointsVal < 20000) ||
+                                             (rankRequired.equals("Kim Cương") && pointsVal < 20000);
+                    boolean isNotEnoughPoints = pointsVal < giftCost;
 
-                                if (pointsVal >= giftCost) {
-                                    _binding.pbRedeemProgress.setProgress(100);
-                                    _binding.tvQualifyStatus.setText("✓ Đủ điều kiện");
-                                    _binding.tvQualifyStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary));
-                                } else {
-                                    _binding.pbRedeemProgress.setProgress(pointsVal * 100 / giftCost);
-                                    _binding.tvQualifyStatus.setText("✗ Chưa đủ xu");
-                                    _binding.tvQualifyStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_cancelled_text));
-                                }
+                    if (pointsVal >= giftCost) {
+                        _binding.pbRedeemProgress.setProgress(100);
+                        _binding.tvQualifyStatus.setText("✓ Đủ điều kiện");
+                        _binding.tvQualifyStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary));
+                    } else {
+                        _binding.pbRedeemProgress.setProgress(pointsVal * 100 / giftCost);
+                        _binding.tvQualifyStatus.setText("✗ Chưa đủ xu");
+                        _binding.tvQualifyStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_cancelled_text));
+                    }
 
-                                if (!isOwned) {
-                                    if (isLockedByRank) {
-                                        _binding.btnRedeemNow.setEnabled(false);
-                                        _binding.btnRedeemNow.setText("Chưa đủ hạng");
-                                        _binding.btnRedeemNow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.gray_light));
-                                        _binding.btnRedeemNow.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
-                                    } else if (isNotEnoughPoints) {
-                                        _binding.btnRedeemNow.setEnabled(false);
-                                        _binding.btnRedeemNow.setText("Không đủ xu");
-                                        _binding.btnRedeemNow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.gray_light));
-                                        _binding.btnRedeemNow.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
-                                    } else {
-                                        _binding.btnRedeemNow.setEnabled(true);
-                                        _binding.btnRedeemNow.setText("Đổi quà");
-                                        _binding.btnRedeemNow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.primary));
-                                        _binding.btnRedeemNow.setTextColor(Color.WHITE);
-                                    }
-                                }
-                            });
+                    if (!isOwned) {
+                        if (isLockedByRank) {
+                            _binding.btnRedeemNow.setEnabled(false);
+                            _binding.btnRedeemNow.setText("Chưa đủ hạng");
+                            _binding.btnRedeemNow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.gray_light));
+                            _binding.btnRedeemNow.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
+                        } else if (isNotEnoughPoints) {
+                            _binding.btnRedeemNow.setEnabled(false);
+                            _binding.btnRedeemNow.setText("Không đủ xu");
+                            _binding.btnRedeemNow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.gray_light));
+                            _binding.btnRedeemNow.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_dark));
+                        } else {
+                            _binding.btnRedeemNow.setEnabled(true);
+                            _binding.btnRedeemNow.setText("Đổi quà");
+                            _binding.btnRedeemNow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.primary));
+                            _binding.btnRedeemNow.setTextColor(Color.WHITE);
                         }
-                        return kotlin.Unit.INSTANCE;
                     }
-                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
-                    @NonNull
-                    @Override
-                    public kotlin.coroutines.CoroutineContext getContext() {
-                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
-                    }
-                    @Override
-                    public void resumeWith(@NonNull Object o) {}
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+                }
+            });
     }
 
     private void handleRedeemAction() {

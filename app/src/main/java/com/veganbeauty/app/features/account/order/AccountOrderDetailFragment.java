@@ -165,7 +165,7 @@ public class AccountOrderDetailFragment extends RootieFragment {
         int badgeBgRes;
         int badgeTextRes;
         switch (order.getStatus()) {
-            case "Chờ xử lý":
+            case "Chờ xác nhận":
                 badgeBgRes = R.color.status_pending_bg;
                 badgeTextRes = R.color.status_pending_text;
                 break;
@@ -261,8 +261,8 @@ public class AccountOrderDetailFragment extends RootieFragment {
         if (context == null) return;
 
         switch (order.getStatus()) {
-            case "Chờ xử lý":
-                binding.tvBannerStatus.setText("● Chờ xử lý");
+            case "Chờ xác nhận":
+                binding.tvBannerStatus.setText("● Chờ xác nhận");
                 binding.tvBannerDesc.setText("Đơn hàng của bạn sẽ được nhân viên xác nhận và tiến hành đóng gói đóng gói");
                 binding.btnBannerSubAction.setVisibility(View.GONE);
                 break;
@@ -326,7 +326,7 @@ public class AccountOrderDetailFragment extends RootieFragment {
         if (context == null) return;
 
         switch (order.getStatus()) {
-            case "Chờ xử lý":
+            case "Chờ xác nhận":
             case "Đang xử lý":
                 binding.btnActionLeft.setVisibility(View.VISIBLE);
                 binding.btnActionLeft.setText("Liên hệ hỗ trợ");

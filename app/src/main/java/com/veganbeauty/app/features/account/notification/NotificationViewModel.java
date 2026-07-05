@@ -3,6 +3,8 @@ package com.veganbeauty.app.features.account.notification;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.FlowLiveDataConversions;
 
 import com.veganbeauty.app.core.base.RootieViewModel;
 import com.veganbeauty.app.data.local.entities.NotificationItem;
@@ -15,9 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import kotlinx.coroutines.flow.Flow;
-import kotlinx.coroutines.flow.FlowCollector;
-
 public class NotificationViewModel extends RootieViewModel {
 
     private final NotificationRepository repository;
@@ -29,7 +28,7 @@ public class NotificationViewModel extends RootieViewModel {
     private final MutableLiveData<String> _searchQuery = new MutableLiveData<>("");
     public final LiveData<String> searchQuery = _searchQuery;
 
-    private final MutableLiveData<List<NotificationListItem>> _notificationItems = new MutableLiveData<>(new ArrayList<>());
+    private final MediatorLiveData<List<NotificationListItem>> _notificationItems = new MediatorLiveData<>();
     public final LiveData<List<NotificationListItem>> notificationItems = _notificationItems;
 
     private List<NotificationItem> currentAllNotifications = new ArrayList<>();
@@ -37,29 +36,11 @@ public class NotificationViewModel extends RootieViewModel {
     public NotificationViewModel(NotificationRepository repository) {
         this.repository = repository;
 
-        Flow<List<NotificationItem>> allNotifications = repository.notifications;
-        
-        executor.execute(() -> {
-            try {
-                allNotifications.collect(new FlowCollector<List<NotificationItem>>() {
-                    @Override
-                    public Object emit(List<NotificationItem> value, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                        currentAllNotifications = value;
-                        updateItems(value, _selectedTab.getValue(), _searchQuery.getValue());
-                        return kotlin.Unit.INSTANCE;
-                    }
-                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
-                    @NonNull
-                    @Override
-                    public kotlin.coroutines.CoroutineContext getContext() {
-                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
-                    }
-
-                    @Override
-                    public void resumeWith(@NonNull Object o) {}
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
+        LiveData<List<NotificationItem>> allNotifications = FlowLiveDataConversions.asLiveData(repository.notifications);
+        _notificationItems.addSource(allNotifications, value -> {
+            if (value != null) {
+                currentAllNotifications = value;
+                updateItems(value, _selectedTab.getValue(), _searchQuery.getValue());
             }
         });
     }
@@ -72,6 +53,13 @@ public class NotificationViewModel extends RootieViewModel {
         List<NotificationItem> filteredByCategory = new ArrayList<>();
         if ("Tất cả".equalsIgnoreCase(tab)) {
             filteredByCategory.addAll(allNotifications);
+        } else if ("Khác".equalsIgnoreCase(tab)) {
+            for (NotificationItem item : allNotifications) {
+                String cat = item.getCategory() != null ? item.getCategory().trim() : "";
+                if (!"Khuyến mãi".equalsIgnoreCase(cat) && !"Đơn hàng".equalsIgnoreCase(cat)) {
+                    filteredByCategory.add(item);
+                }
+            }
         } else {
             for (NotificationItem item : allNotifications) {
                 if (tab.equalsIgnoreCase(item.getCategory())) {

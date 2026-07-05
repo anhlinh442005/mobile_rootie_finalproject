@@ -14,7 +14,7 @@ import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.veganbeauty.app.R;
-import com.veganbeauty.app.core.base.RootieFragment;
+import androidx.fragment.app.DialogFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.SkinAiChatBinding;
 import com.veganbeauty.app.features.ai.RootieChatAdapter.RootieChatItem;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-public class SkinAiChatFragment extends RootieFragment {
+public class SkinAiChatFragment extends DialogFragment {
 
     private SkinAiChatBinding binding;
     private RootieChatAdapter chatAdapter;
@@ -56,13 +56,38 @@ public class SkinAiChatFragment extends RootieFragment {
     }
 
     @Override
-    protected void setupUI(@NonNull View view) {
-        if (isFullScreen) {
-            view.setBackgroundColor(Color.WHITE);
-        } else {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupUI(view);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getShowsDialog() && getDialog() != null && getDialog().getWindow() != null) {
+            android.view.Window window = getDialog().getWindow();
+            int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.90);
+            int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.85);
+            window.setLayout(width, height);
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setWindowAnimations(0);
+        }
+    }
+
+    private void setupUI(@NonNull View view) {
+        boolean isInsideContainer = getParentFragment() instanceof SkinChatDialogContainer;
+        if (isInsideContainer) {
+            view.setBackgroundResource(android.R.color.transparent);
+        } else if (getShowsDialog()) {
             view.setBackgroundResource(R.drawable.bg_chat_dialog);
             view.setClipToOutline(true);
             view.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+        } else {
+            if (isFullScreen) {
+                view.setBackgroundColor(Color.WHITE);
+            } else {
+                view.setBackgroundResource(R.color.neutral);
+            }
         }
 
         setupRecyclerView();
@@ -86,7 +111,15 @@ public class SkinAiChatFragment extends RootieFragment {
     }
 
     private void setupListeners() {
-        binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        binding.btnBack.setOnClickListener(v -> {
+            if (getParentFragment() instanceof SkinChatDialogContainer) {
+                ((SkinChatDialogContainer) getParentFragment()).dismiss();
+            } else if (getShowsDialog()) {
+                dismiss();
+            } else {
+                getParentFragmentManager().popBackStack();
+            }
+        });
 
         binding.btnSend.setOnClickListener(v -> {
             String text = binding.etMessageInput.getText().toString().trim();

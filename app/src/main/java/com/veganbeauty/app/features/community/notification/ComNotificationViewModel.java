@@ -75,7 +75,7 @@ public class ComNotificationViewModel extends ViewModel {
 
             final List<ComNotificationItem> finalList = loadedList;
             notifications.postValue(finalList);
-            applyFilterPost();
+            applyFilter(finalList);
         });
     }
 
@@ -331,55 +331,13 @@ public class ComNotificationViewModel extends ViewModel {
     }
 
     private void applyFilter() {
-        List<ComNotificationItem> allNotis = notifications.getValue();
-        if (allNotis == null) allNotis = new ArrayList<>();
-        String tab = activeTab.getValue() != null ? activeTab.getValue() : "POST";
-        String query = searchQuery.getValue() != null ? searchQuery.getValue() : "";
-
-        List<ComNotificationItem> tabFiltered = new ArrayList<>();
-        for (ComNotificationItem item : allNotis) {
-            if (item.getType().equals(tab)) tabFiltered.add(item);
-        }
-
-        List<ComNotificationItem> searchFiltered;
-        if (query.trim().isEmpty()) {
-            searchFiltered = tabFiltered;
-        } else {
-            searchFiltered = new ArrayList<>();
-            String lq = query.toLowerCase();
-            for (ComNotificationItem item : tabFiltered) {
-                if (item.getUserName().toLowerCase().contains(lq) || item.getContent().toLowerCase().contains(lq)) {
-                    searchFiltered.add(item);
-                }
-            }
-        }
-
-        for (ComNotificationItem item : searchFiltered) {
-            item.setSection(getSectionName(item.getDate()));
-        }
-
-        Map<String, List<ComNotificationItem>> grouped = new LinkedHashMap<>();
-        for (ComNotificationItem item : searchFiltered) {
-            grouped.computeIfAbsent(item.getSection(), k -> new ArrayList<>()).add(item);
-        }
-
-        List<ComNotificationListItem> flatList = new ArrayList<>();
-        for (String sectionName : Arrays.asList("Hôm nay", "Hôm qua", "Cũ hơn")) {
-            List<ComNotificationItem> items = grouped.get(sectionName);
-            if (items != null && !items.isEmpty()) {
-                flatList.add(new ComNotificationListItem.Header(sectionName));
-                for (ComNotificationItem item : items) {
-                    flatList.add(new ComNotificationListItem.Notification(item));
-                }
-            }
-        }
-
-        filteredNotifications.postValue(flatList);
+        applyFilter(null);
     }
 
-    private void applyFilterPost() {
-        // Called from background thread — use postValue
-        List<ComNotificationItem> allNotis = notifications.getValue();
+    private void applyFilter(List<ComNotificationItem> allNotis) {
+        if (allNotis == null) {
+            allNotis = notifications.getValue();
+        }
         if (allNotis == null) allNotis = new ArrayList<>();
         String tab = activeTab.getValue() != null ? activeTab.getValue() : "POST";
         String query = searchQuery.getValue() != null ? searchQuery.getValue() : "";

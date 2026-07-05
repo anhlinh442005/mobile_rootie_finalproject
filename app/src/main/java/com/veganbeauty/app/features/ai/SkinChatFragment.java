@@ -78,14 +78,20 @@ public class SkinChatFragment extends DialogFragment {
             int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.85);
             window.setLayout(width, height);
             window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setWindowAnimations(0);
         }
     }
 
     private void setupUI(View view) {
-        if (getShowsDialog()) {
+        boolean isInsideContainer = getParentFragment() instanceof SkinChatDialogContainer;
+        if (isInsideContainer) {
+            view.setBackgroundResource(android.R.color.transparent);
+        } else if (getShowsDialog()) {
             view.setBackgroundResource(R.drawable.bg_chat_dialog);
             view.setClipToOutline(true);
             view.setOutlineProvider(android.view.ViewOutlineProvider.BACKGROUND);
+        } else {
+            view.setBackgroundResource(R.color.neutral);
         }
 
         setupRecyclerView();
@@ -120,7 +126,15 @@ public class SkinChatFragment extends DialogFragment {
     }
 
     private void setupListeners() {
-        _binding.btnBack.setOnClickListener(v -> dismiss());
+        _binding.btnBack.setOnClickListener(v -> {
+            if (getParentFragment() instanceof SkinChatDialogContainer) {
+                ((SkinChatDialogContainer) getParentFragment()).dismiss();
+            } else if (getShowsDialog()) {
+                dismiss();
+            } else {
+                getParentFragmentManager().popBackStack();
+            }
+        });
 
         _binding.btnSend.setOnClickListener(v -> sendMessage());
 

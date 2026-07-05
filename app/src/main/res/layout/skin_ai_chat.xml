@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     android:background="@color/neutral">
 
-    <!-- Header bar with Light Gradient Background -->
+    <!-- Header bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="66dp"
-        android:background="@drawable/skin_bg_top_bar_gradient"
+        android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent">
 
         <!-- Back Button -->
@@ -27,18 +27,38 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- AI Avatar in Header -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/ivHeaderAvatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+        <!-- Avatar Container with Online status dot -->
+        <FrameLayout
+            android:id="@+id/avatarContainer"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:layout_marginStart="8dp"
-            android:src="@drawable/mascot_message"
-            android:scaleType="centerCrop"
-            app:shapeAppearanceOverlay="@style/CircleImageView"
             app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Round Avatar ImageView -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivHeaderAvatar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/mascot_message"
+                android:scaleType="centerInside"
+                android:padding="5dp"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="@color/gray_light"
+                app:strokeWidth="1dp" />
+
+            <!-- Green Online Dot with White Border -->
+            <View
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/bg_circle_green" />
+        </FrameLayout>
 
         <!-- Title Container -->
         <LinearLayout
@@ -46,8 +66,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:orientation="vertical"
-            app:layout_constraintStart_toEndOf="@id/ivHeaderAvatar"
-            app:layout_constraintEnd_toStartOf="@id/btnMore"
+            app:layout_constraintStart_toEndOf="@id/avatarContainer"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -57,46 +77,23 @@
                 android:fontFamily="@font/be_vietnam_pro"
                 android:text="Rootie AI"
                 android:textColor="@color/primary"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <!-- Little Green Dot -->
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="4dp"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/skin_bg_circle_completed"
-                    android:backgroundTint="@color/primary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/be_vietnam_pro"
-                    android:text="CONSULTING MODE"
-                    android:textColor="@color/gray_dark"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="Online"
+                android:textColor="@color/gray_dark"
+                android:textSize="12sp" />
         </LinearLayout>
 
-        <!-- More Dots Button -->
-        <ImageButton
-            android:id="@+id/btnMore"
-            android:layout_width="33dp"
-            android:layout_height="33dp"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_more_dots"
-            android:scaleType="centerInside"
-            android:contentDescription="Tùy chọn thêm"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+        <!-- Bottom Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E2E8DC"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.FlowLiveDataConversions;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.veganbeauty.app.R;
@@ -178,35 +179,13 @@ public class AccountOrderReviewFragment extends RootieFragment {
     }
 
     private void loadOrderData() {
-        new Thread(() -> {
-            try {
-                repository.getOrderById(orderId).collect(new FlowCollector<List<OrderEntity>>() {
-                    @Override
-                    public Object emit(List<OrderEntity> list, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                        if (list != null && !list.isEmpty()) {
-                            OrderEntity ord = list.get(0);
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> {
-                                    order = ord;
-                                    bindOrderDetails(ord);
-                                });
-                            }
-                        }
-                        return kotlin.Unit.INSTANCE;
-                    }
-                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
-                    @NonNull
-                    @Override
-                    public kotlin.coroutines.CoroutineContext getContext() {
-                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
-                    }
-                    @Override
-                    public void resumeWith(@NonNull Object o) {}
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        FlowLiveDataConversions.asLiveData(repository.getOrderById(orderId))
+            .observe(getViewLifecycleOwner(), list -> {
+                if (list != null && !list.isEmpty()) {
+                    order = list.get(0);
+                    bindOrderDetails(order);
+                }
+            });
     }
 
     private void bindOrderDetails(OrderEntity ord) {

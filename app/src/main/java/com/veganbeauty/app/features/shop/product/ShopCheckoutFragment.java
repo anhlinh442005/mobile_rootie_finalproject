@@ -972,7 +972,7 @@ public class ShopCheckoutFragment extends RootieFragment {
         if (billingEmail != null && billingEmail.trim().isEmpty()) billingEmail = null;
 
         OrderEntity order = new OrderEntity(
-                orderCode, nowDate, nowTime, "Chờ xử lý", totalAmount, subTotal, orderItems,
+                orderCode, nowDate, nowTime, "Chờ xác nhận", totalAmount, subTotal, orderItems,
                 finalUserId, isGuest, recipientName, recipientPhone, recipientAddress, 0L,
                 voucherDiscountAmount, method, null, false, 0, null, null, false, false,
                 recipientName, recipientPhone, billingEmail
@@ -996,6 +996,20 @@ public class ShopCheckoutFragment extends RootieFragment {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 Map<String, Object> orderMap = new Gson().fromJson(new Gson().toJsonTree(order), Map.class);
                 com.google.android.gms.tasks.Tasks.await(db.collection("orders").document(order.getId()).set(orderMap));
+
+                if (order.getUserId() != null && !order.getUserId().trim().isEmpty()) {
+                    new com.veganbeauty.app.data.remote.FirestoreService().sendCommunityNotificationEvent(
+                            order.getUserId(),
+                            "rootie_system",
+                            "Rootie System",
+                            "",
+                            "ORDER_SUCCESS",
+                            "CREATE",
+                            "Đơn hàng #" + order.getId() + " của bạn đã được tạo thành công.",
+                            order.getId(),
+                            null
+                    );
+                }
 
                 Map<String, Object> newNotification = new HashMap<>();
                 newNotification.put("title", "Có đơn hàng mới! \uD83D\uDED2");

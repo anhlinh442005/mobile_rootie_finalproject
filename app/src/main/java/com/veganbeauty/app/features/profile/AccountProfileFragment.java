@@ -119,7 +119,7 @@ public class AccountProfileFragment extends RootieFragment {
 
         setSecuredOnClickListener(binding.btnStatusPending, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, AccountOrderListFragment.newInstance("Chờ xử lý"))
+                    .replace(R.id.main_container, AccountOrderListFragment.newInstance("Chờ xác nhận"))
                     .addToBackStack(null)
                     .commit();
         });
@@ -400,7 +400,7 @@ public class AccountProfileFragment extends RootieFragment {
                 String status = order.getStatus();
                 if (status == null) continue;
                 switch (status) {
-                    case "Chờ xử lý":
+                    case "Chờ xác nhận":
                         pending++;
                         break;
                     case "Đang xử lý":

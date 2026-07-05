@@ -120,7 +120,7 @@ public class AccountOrderTrackingFragment extends RootieFragment {
         int badgeTextRes = R.color.status_pending_text;
 
         switch (order.getStatus()) {
-            case "Chờ xử lý":
+            case "Chờ xác nhận":
                 badgeBgRes = R.color.status_pending_bg;
                 badgeTextRes = R.color.status_pending_text;
                 break;
@@ -181,7 +181,7 @@ public class AccountOrderTrackingFragment extends RootieFragment {
             steps.add(new TrackingStep("Đang giao đến bạn", "Shipper đang trên đường giao hàng đến địa chỉ của bạn.", formatDateTime(cal4), "Hoàn tất".equals(status) || "Đang giao".equals(status), "Đang giao".equals(status)));
             steps.add(new TrackingStep("Đơn hàng đã giao cho đơn vị vận chuyển", "Đơn vị vận chuyển đã tiếp nhận đơn hàng và đang vận chuyển.", formatDateTime(cal3), "Hoàn tất".equals(status) || "Đang giao".equals(status), false));
             steps.add(new TrackingStep("Đơn hàng đã được đóng gói", "Nhân viên đã đóng gói sản phẩm hoàn tất.", formatDateTime(cal2), "Hoàn tất".equals(status) || "Đang giao".equals(status) || "Đang xử lý".equals(status), "Đang xử lý".equals(status)));
-            steps.add(new TrackingStep("Đặt hàng thành công", "Đơn hàng của bạn đã được ghi nhận trên hệ thống.", formatDateTime(cal1), true, "Chờ xử lý".equals(status)));
+            steps.add(new TrackingStep("Đặt hàng thành công", "Đơn hàng của bạn đã được ghi nhận trên hệ thống.", formatDateTime(cal1), true, "Chờ xác nhận".equals(status)));
         }
 
         for (int i = 0; i < steps.size(); i++) {

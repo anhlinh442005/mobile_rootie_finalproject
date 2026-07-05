@@ -31,6 +31,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -191,33 +192,24 @@ public class ShopStoreSystemFragment extends RootieFragment {
     }
 
     private void loadStoresAndCheckPermission() {
-        BuildersKt.launch(
-                LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()),
-                kotlin.coroutines.EmptyCoroutineContext.INSTANCE,
-                kotlinx.coroutines.CoroutineStart.DEFAULT,
-                (coroutineScope, continuation) -> {
-                    repository.getAllStores().collect(new kotlinx.coroutines.flow.FlowCollector<List<StoreEntity>>() {
-                        @Override
-                        public Object emit(List<StoreEntity> stores, Continuation<? super Unit> continuation) {
-                            allStoresList = stores;
-                            if (allStoresList.isEmpty()) {
-                                try {
-                                    repository.refreshStores();
-                                } catch (Exception ignored) {}
-                            } else {
-                                if (!hasCheckedPermissionOnStart) {
-                                    hasCheckedPermissionOnStart = true;
-                                    checkAndPromptPermission(true);
-                                } else {
-                                    checkAndPromptPermission(false);
-                                }
-                            }
-                            return Unit.INSTANCE;
+        FlowLiveDataConversions.asLiveData(repository.getAllStores())
+            .observe(getViewLifecycleOwner(), stores -> {
+                if (stores != null) {
+                    allStoresList = stores;
+                    if (allStoresList.isEmpty()) {
+                        try {
+                            repository.refreshStores();
+                        } catch (Exception ignored) {}
+                    } else {
+                        if (!hasCheckedPermissionOnStart) {
+                            hasCheckedPermissionOnStart = true;
+                            checkAndPromptPermission(true);
+                        } else {
+                            checkAndPromptPermission(false);
                         }
-                    }, continuation);
-                    return Unit.INSTANCE;
+                    }
                 }
-        );
+            });
     }
 
     private void checkAndPromptPermission(boolean autoPrompt) {
@@ -645,16 +637,26 @@ public class ShopStoreSystemFragment extends RootieFragment {
             b.tvStoreHours.setText("Mở cửa từ " + (store.getMoCua() != null ? store.getMoCua() : "") + " đến " + (store.getDongCua() != null ? store.getDongCua() : ""));
             b.tvStoreAddress.setText(store.getDiaChiDayDu());
 
-            b.btnDirections.setOnClickListener(v -> openGoogleMaps(store.getLat(), store.getLng()));
+            b.btnDirections.setOnClickListener(v -> {
+                int currentPos = holder.getBindingAdapterPosition();
+                if (currentPos != RecyclerView.NO_POSITION) {
+                    StoreEntity currentStore = items.get(currentPos);
+                    openGoogleMaps(currentStore.getLat(), currentStore.getLng());
+                }
+            });
 
             b.getRoot().setOnClickListener(v -> {
-                selectedIndex = position;
-                highlightPin(position);
-                ShopStoreDetailFragment detailFragment = ShopStoreDetailFragment.newInstance(store);
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, detailFragment)
-                        .addToBackStack(null)
-                        .commit();
+                int currentPos = holder.getBindingAdapterPosition();
+                if (currentPos != RecyclerView.NO_POSITION) {
+                    selectedIndex = currentPos;
+                    highlightPin(currentPos);
+                    StoreEntity currentStore = items.get(currentPos);
+                    ShopStoreDetailFragment detailFragment = ShopStoreDetailFragment.newInstance(currentStore);
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, detailFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
             });
         }
 

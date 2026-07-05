@@ -177,27 +177,6 @@ public class AccountNotificationFragment extends RootieFragment {
         });
 
         viewModel.selectedTab.observe(getViewLifecycleOwner(), this::updateTabStyles);
-
-        new Thread(() -> {
-            try {
-                NotificationRepository.getInstance(requireContext()).getUnreadCount().collect(new FlowCollector<Integer>() {
-                    @Override
-                    public Object emit(Integer count, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                        return kotlin.Unit.INSTANCE;
-                    }
-                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
-                    @NonNull
-                    @Override
-                    public kotlin.coroutines.CoroutineContext getContext() {
-                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
-                    }
-                    @Override
-                    public void resumeWith(@NonNull Object o) {}
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 
     private void updateTabStyles(String activeTab) {

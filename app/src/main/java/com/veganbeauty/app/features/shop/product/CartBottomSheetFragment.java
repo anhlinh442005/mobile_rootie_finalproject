@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -204,18 +205,13 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void observeCartItems() {
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getMain(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-            database.cartDao().getAllCartItems().collect(new kotlinx.coroutines.flow.FlowCollector<List<CartItemEntity>>() {
-                @Nullable
-                @Override
-                public Object emit(List<CartItemEntity> items, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+        FlowLiveDataConversions.asLiveData(database.cartDao().getAllCartItems())
+            .observe(getViewLifecycleOwner(), items -> {
+                if (items != null) {
                     adapter.submitList(items);
                     updateUI(items);
-                    return kotlin.Unit.INSTANCE;
                 }
-            }, continuation);
-            return kotlin.Unit.INSTANCE;
-        });
+            });
     }
 
     private void updateUI(List<CartItemEntity> items) {

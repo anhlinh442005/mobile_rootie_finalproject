@@ -152,7 +152,7 @@ public class AccountOrderListFragment extends RootieFragment {
         _binding.rvOrders.setAdapter(orderAdapter);
 
         _binding.tabAll.setOnClickListener(v -> viewModel.setFilter("Tất cả"));
-        _binding.tabPending.setOnClickListener(v -> viewModel.setFilter("Chờ xử lý"));
+        _binding.tabPending.setOnClickListener(v -> viewModel.setFilter("Chờ xác nhận"));
         _binding.tabProcessing.setOnClickListener(v -> viewModel.setFilter("Đang xử lý"));
         _binding.tabDelivering.setOnClickListener(v -> viewModel.setFilter("Đang giao"));
         _binding.tabSuccess.setOnClickListener(v -> viewModel.setFilter("Hoàn tất"));
@@ -192,7 +192,7 @@ public class AccountOrderListFragment extends RootieFragment {
         if (_binding == null) return;
         Map<String, TextView> tabs = new HashMap<>();
         tabs.put("Tất cả", _binding.tabAll);
-        tabs.put("Chờ xử lý", _binding.tabPending);
+        tabs.put("Chờ xác nhận", _binding.tabPending);
         tabs.put("Đang xử lý", _binding.tabProcessing);
         tabs.put("Đang giao", _binding.tabDelivering);
         tabs.put("Hoàn tất", _binding.tabSuccess);

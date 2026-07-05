@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -131,45 +132,23 @@ public class CommunityShowcaseFragment extends Fragment {
         }));
 
         RootieDatabase db = RootieDatabase.getDatabase(ctx);
-        new Thread(() -> {
-            try {
-                db.cartDao().getAllCartItems().collect(new FlowCollector<List<com.veganbeauty.app.data.local.entities.CartItemEntity>>() {
-                    @Override
-                    public Object emit(List<com.veganbeauty.app.data.local.entities.CartItemEntity> items, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                        int count = 0;
-                        if (items != null) {
-                            for (com.veganbeauty.app.data.local.entities.CartItemEntity item : items) {
-                                count += item.getQuantity();
-                            }
-                        }
-                        final int finalCount = count;
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                if (_binding != null) {
-                                    if (finalCount > 0) {
-                                        _binding.tvCartBadge.setVisibility(View.VISIBLE);
-                                        _binding.tvCartBadge.setText(finalCount > 99 ? "99+" : String.valueOf(finalCount));
-                                    } else {
-                                        _binding.tvCartBadge.setVisibility(View.GONE);
-                                    }
-                                }
-                            });
-                        }
-                        return kotlin.Unit.INSTANCE;
+        FlowLiveDataConversions.asLiveData(db.cartDao().getAllCartItems())
+            .observe(getViewLifecycleOwner(), items -> {
+                int count = 0;
+                if (items != null) {
+                    for (com.veganbeauty.app.data.local.entities.CartItemEntity item : items) {
+                        count += item.getQuantity();
                     }
-                }, new kotlin.coroutines.Continuation<kotlin.Unit>() {
-                    @NonNull
-                    @Override
-                    public kotlin.coroutines.CoroutineContext getContext() {
-                        return kotlin.coroutines.EmptyCoroutineContext.INSTANCE;
+                }
+                if (_binding != null) {
+                    if (count > 0) {
+                        _binding.tvCartBadge.setVisibility(View.VISIBLE);
+                        _binding.tvCartBadge.setText(count > 99 ? "99+" : String.valueOf(count));
+                    } else {
+                        _binding.tvCartBadge.setVisibility(View.GONE);
                     }
-                    @Override
-                    public void resumeWith(@NonNull Object o) {}
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+                }
+            });
 
         _binding.ivCart.setOnClickListener(v -> {
             CartBottomSheetFragment bottomSheet = new CartBottomSheetFragment();

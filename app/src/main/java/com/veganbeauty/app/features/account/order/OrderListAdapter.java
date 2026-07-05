@@ -111,7 +111,7 @@ public class OrderListAdapter extends ListAdapter<OrderEntity, OrderListAdapter.
             int textResId;
 
             switch (order.getStatus()) {
-                case "Chờ xử lý":
+                case "Chờ xác nhận":
                     bgResId = R.color.status_pending_bg;
                     textResId = R.color.status_pending_text;
                     break;
@@ -218,7 +218,7 @@ public class OrderListAdapter extends ListAdapter<OrderEntity, OrderListAdapter.
                 OnOrderClickListener onReviewClick
         ) {
             switch (order.getStatus()) {
-                case "Chờ xử lý":
+                case "Chờ xác nhận":
                     binding.btnActionOutlined.setVisibility(View.VISIBLE);
                     binding.btnActionOutlined.setText("Hủy đơn");
                     binding.btnActionOutlined.setOnClickListener(v -> onCancelClick.onClick(order));

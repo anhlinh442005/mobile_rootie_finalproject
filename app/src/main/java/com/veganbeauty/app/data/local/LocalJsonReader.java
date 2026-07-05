@@ -575,37 +575,35 @@ public class LocalJsonReader {
     }
 
     public List<NotificationItem> getAllNotifications() {
+        List<NotificationItem> notificationList = new ArrayList<>();
         try {
-            String jsonString = readAssetFile("notification_account.json");
-            if (jsonString == null || jsonString.trim().isEmpty()) {
-                return new ArrayList<>();
-            }
-            JSONArray jsonArray = new JSONArray(jsonString);
-            List<NotificationItem> list = new ArrayList<>();
+            String jsonString = readAssetFile("notifications.json");
+            if (jsonString == null) return notificationList;
+            JSONObject root = new JSONObject(jsonString);
+            org.json.JSONArray jsonArray = root.getJSONArray("notifications");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = jsonArray.getJSONObject(i);
-                list.add(new NotificationItem(
+                notificationList.add(new NotificationItem(
                         obj.getString("id"),
                         obj.getString("title"),
                         obj.getString("content"),
                         obj.getString("time"),
                         obj.getString("category"),
-                        obj.optString("tag", "").isEmpty() ? null : obj.optString("tag"),
-                        obj.optString("voucherCode", "").isEmpty() ? null : obj.optString("voucherCode"),
-                        obj.optString("actionText", "").isEmpty() ? null : obj.optString("actionText"),
+                        obj.optString("tag", "").isEmpty() ? null : obj.optString("tag", ""),
+                        obj.optString("voucherCode", "").isEmpty() ? null : obj.optString("voucherCode", ""),
+                        obj.optString("actionText", "").isEmpty() ? null : obj.optString("actionText", ""),
                         obj.optBoolean("isRead", false),
                         obj.optString("section", "Hôm nay"),
                         obj.getString("iconResName"),
-                        obj.optString("notificationType", "").isEmpty() ? null : obj.optString("notificationType"),
-                        obj.optString("orderId", "").isEmpty() ? null : obj.optString("orderId"),
-                        obj.optString("scheduleId", "").isEmpty() ? null : obj.optString("scheduleId")
+                        obj.optString("notificationType", "").isEmpty() ? null : obj.optString("notificationType", ""),
+                        obj.optString("orderId", "").isEmpty() ? null : obj.optString("orderId", ""),
+                        obj.optString("scheduleId", "").isEmpty() ? null : obj.optString("scheduleId", "")
                 ));
             }
-            return list;
         } catch (Exception e) {
             e.printStackTrace();
-            return new ArrayList<>();
         }
+        return notificationList;
     }
 
     public Context getAppContext() {
