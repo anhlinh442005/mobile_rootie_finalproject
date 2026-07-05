@@ -349,7 +349,11 @@ public class ComNotificationViewModel extends ViewModel {
             if ("ORDER".equals(item.getType())) {
                 continue;
             }
-            if ("ALL".equals(tab) || item.getType().equals(tab)) {
+            if ("ALL".equals(tab)) {
+                tabFiltered.add(item);
+            } else if ("UNREAD".equals(tab)) {
+                if (!item.isRead()) tabFiltered.add(item);
+            } else if (item.getType().equals(tab)) {
                 tabFiltered.add(item);
             }
         }
