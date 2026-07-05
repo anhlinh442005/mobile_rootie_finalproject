@@ -10,7 +10,7 @@
     <FrameLayout
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:background="@drawable/bg_circle_green_indicator"
+        android:background="@drawable/bg_home_category_circle"
         android:padding="14dp">
 
         <ImageView
@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/ic_grid"
-            app:tint="@color/white" />
+            app:tint="@color/primary" />
     </FrameLayout>
 
     <TextView

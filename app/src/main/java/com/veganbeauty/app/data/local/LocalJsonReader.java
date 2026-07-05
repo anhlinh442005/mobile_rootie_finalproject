@@ -921,11 +921,24 @@ public class LocalJsonReader {
     }
 
     private void sortBookingsByNewest(List<BookingHistoryEntity> bookings) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
         Collections.sort(bookings, (a, b) -> {
-            int cmp = compareCreatedAt(b.getCreatedAt(), a.getCreatedAt());
+            long timeA = parseCreatedAtMillis(a.getCreatedAt(), sdf);
+            long timeB = parseCreatedAtMillis(b.getCreatedAt(), sdf);
+            int cmp = Long.compare(timeB, timeA);
             if (cmp != 0) return cmp;
             return b.getId().compareTo(a.getId());
         });
+    }
+
+    private long parseCreatedAtMillis(String createdAt, SimpleDateFormat sdf) {
+        if (createdAt == null || createdAt.isEmpty()) return 0L;
+        try {
+            java.util.Date d = sdf.parse(createdAt);
+            return d != null ? d.getTime() : 0L;
+        } catch (Exception e) {
+            return 0L;
+        }
     }
 
     private int compareCreatedAt(String a, String b) {

@@ -15,17 +15,37 @@ public class BookingDateParser {
 
             if (clean.contains("/")) {
                 String[] parts = clean.split("/");
-                if (parts.length >= 2) {
+                if (parts.length > 0) {
                     dayNum = parts[0];
-                    String month = parts[1];
+                    int monthNum = 0;
+                    if (parts.length > 1) {
+                        try { monthNum = Integer.parseInt(parts[1]); } catch (NumberFormatException ignored) {}
+                    }
+                    String monthStr = monthNum > 0 ? "Tháng " + monthNum : "Tháng --";
                     String dow = dayOfWeek != null ? dayOfWeek : "";
-                    monthDayStr = "Tháng " + month + "\n" + dow;
+                    if (dow.equalsIgnoreCase("Chủ Nhật") || dow.equalsIgnoreCase("CN") || dow.equalsIgnoreCase("Chủ nhật")) dow = "CN";
+                    else if (dow.startsWith("Thứ ")) dow = "T." + dow.substring(4);
+                    monthDayStr = monthStr + "\n" + dow;
                     return new Pair<>(dayNum, monthDayStr);
                 }
             }
 
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(\\d+)\\s+tháng\\s+(\\d+)", java.util.regex.Pattern.CASE_INSENSITIVE);
+            java.util.regex.Matcher matcher = pattern.matcher(clean);
+            if (matcher.find()) {
+                dayNum = matcher.group(1);
+                String month = matcher.group(2);
+                String dow = dayOfWeek != null ? dayOfWeek : "";
+                if (dow.equalsIgnoreCase("Chủ Nhật") || dow.equalsIgnoreCase("CN") || dow.equalsIgnoreCase("Chủ nhật")) dow = "CN";
+                else if (dow.startsWith("Thứ ")) dow = "T." + dow.substring(4);
+                monthDayStr = "Tháng " + month + "\n" + dow;
+                return new Pair<>(dayNum, monthDayStr);
+            }
+
             if (clean.contains(" ")) {
                 dayNum = clean.split(" ")[0];
+            } else {
+                dayNum = clean;
             }
         } catch (Exception e) {
             // Keep safe fallback values.

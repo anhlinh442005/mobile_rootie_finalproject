@@ -48,7 +48,7 @@
         android:layout_marginTop="24dp"
         android:text="Đã lưu lịch hẹn soi da"
         android:textColor="@color/secondary"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:fontFamily="@font/be_vietnam_pro"
         app:layout_constraintTop_toBottomOf="@id/success_icon_container"
@@ -65,7 +65,7 @@
         android:gravity="center"
         android:text="Lịch hẹn đã tạo thành công, bạn\nhãy sắp xếp đến đúng giờ nhé!"
         android:textColor="@color/tertiary"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:fontFamily="@font/be_vietnam_pro"
         app:layout_constraintTop_toBottomOf="@id/success_title"
         app:layout_constraintStart_toStartOf="parent"
@@ -89,6 +89,34 @@
             android:orientation="vertical"
             android:padding="24dp">
 
+            <!-- Row 0: Mã lịch hẹn -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:text="Mã lịch hẹn"
+                    android:textColor="@color/secondary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+
+                <TextView
+                    android:id="@+id/info_booking_id"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:textColor="@color/primary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/be_vietnam_pro" />
+            </LinearLayout>
+
             <!-- Row 1: Chi nhánh -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,12 +125,12 @@
                 android:layout_marginBottom="16dp">
 
                 <TextView
-                    android:layout_width="120dp"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:text="Chi nhánh"
                     android:textColor="@color/secondary"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/be_vietnam_pro" />
 
                 <TextView
@@ -113,7 +141,7 @@
                     android:text="Rootie Gò Vấp"
                     android:textColor="@color/secondary"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/be_vietnam_pro" />
             </LinearLayout>
 
@@ -125,12 +153,12 @@
                 android:layout_marginBottom="16dp">
 
                 <TextView
-                    android:layout_width="120dp"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:text="Ngày giờ"
                     android:textColor="@color/secondary"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/be_vietnam_pro" />
 
                 <TextView
@@ -141,7 +169,7 @@
                     android:text="25/05/2026 - 10:00"
                     android:textColor="@color/secondary"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/be_vietnam_pro" />
             </LinearLayout>
 
@@ -153,12 +181,12 @@
                 android:layout_marginBottom="16dp">
 
                 <TextView
-                    android:layout_width="120dp"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:text="Chuyên viên"
                     android:textColor="@color/secondary"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/be_vietnam_pro" />
 
                 <TextView
@@ -169,7 +197,7 @@
                     android:text="Nguyễn Khánh Xuân"
                     android:textColor="@color/secondary"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/be_vietnam_pro" />
             </LinearLayout>
 
@@ -180,12 +208,12 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="120dp"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:text="Dịch vụ"
                     android:textColor="@color/secondary"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/be_vietnam_pro" />
 
                 <TextView
@@ -196,7 +224,7 @@
                     android:text="Soi da chuyên sâu"
                     android:textColor="@color/secondary"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:fontFamily="@font/be_vietnam_pro" />
             </LinearLayout>
 
@@ -207,14 +235,14 @@
     <TextView
         android:id="@+id/btn_home"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="50dp"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="40dp"
         android:background="@drawable/skin_bg_outline"
         android:gravity="center"
         android:text="Về trang chủ"
         android:textColor="@color/primary"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:fontFamily="@font/be_vietnam_pro"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent" />

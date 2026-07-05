@@ -17,13 +17,15 @@ import com.veganbeauty.app.features.home.HomeFragment;
 
 public class BookingSuccessFragment extends RootieFragment {
 
+    private String bookingId;
     private String storeName;
     private String dateTime;
     private String specialist;
     private String serviceName;
 
-    public static BookingSuccessFragment newInstance(String storeName, String dateTime, String specialist, String serviceName) {
+    public static BookingSuccessFragment newInstance(String bookingId, String storeName, String dateTime, String specialist, String serviceName) {
         Bundle args = new Bundle();
+        args.putString("BOOKING_ID", bookingId);
         args.putString("STORE_NAME", storeName);
         args.putString("DATE_TIME", dateTime);
         args.putString("SPECIALIST", specialist);
@@ -42,17 +44,20 @@ public class BookingSuccessFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         if (getArguments() != null) {
+            bookingId = getArguments().getString("BOOKING_ID", "");
             storeName = getArguments().getString("STORE_NAME", "Rootie Gò Vấp");
             dateTime = getArguments().getString("DATE_TIME", "");
             specialist = getArguments().getString("SPECIALIST", "Nguyễn Khánh Xuân");
             serviceName = getArguments().getString("SERVICE_NAME", "");
         } else {
+            bookingId = "";
             storeName = "Rootie Gò Vấp";
             dateTime = "";
             specialist = "Nguyễn Khánh Xuân";
             serviceName = "";
         }
 
+        TextView tvBookingId = view.findViewById(R.id.info_booking_id);
         TextView tvStoreName = view.findViewById(R.id.info_store_name);
         TextView tvDateTime = view.findViewById(R.id.info_date_time);
         TextView tvSpecialist = view.findViewById(R.id.info_specialist);
@@ -61,6 +66,7 @@ public class BookingSuccessFragment extends RootieFragment {
         ImageView btnBack = view.findViewById(R.id.btn_back);
         TextView btnHome = view.findViewById(R.id.btn_home);
 
+        tvBookingId.setText(bookingId);
         tvStoreName.setText(storeName);
         tvDateTime.setText(dateTime);
         tvSpecialist.setText(specialist);

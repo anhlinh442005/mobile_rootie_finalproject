@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container_date"
-    android:layout_width="60dp"
-    android:layout_height="60dp"
+    android:layout_width="64dp"
+    android:layout_height="64dp"
     android:layout_marginEnd="8dp"
     android:background="@drawable/skin_bg_outline"
     android:clickable="true"
@@ -17,7 +17,7 @@
         android:fontFamily="@font/be_vietnam_pro"
         android:text="Thứ 6"
         android:textColor="@color/primary"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:textStyle="bold" />
 
     <TextView
@@ -27,5 +27,5 @@
         android:fontFamily="@font/be_vietnam_pro"
         android:text="24/05"
         android:textColor="@color/tertiary"
-        android:textSize="11sp" />
+        android:textSize="12sp" />
 </LinearLayout>

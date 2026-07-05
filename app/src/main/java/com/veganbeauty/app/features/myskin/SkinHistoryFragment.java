@@ -21,6 +21,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
@@ -43,6 +45,10 @@ public class SkinHistoryFragment extends RootieFragment {
     private JSONArray allHistory;
     private JSONArray currentHistory;
     private SkinHistoryAdapter adapter;
+
+    private ArrayList<String> chartLabels = new ArrayList<>();
+    private int selectedChartIndex = -1;
+    private LineDataSet currentDataSet;
 
     @Nullable
     @Override
@@ -216,7 +222,8 @@ public class SkinHistoryFragment extends RootieFragment {
         adapter.updateData(listData);
 
         ArrayList<Entry> entries = new ArrayList<>();
-        ArrayList<String> labels = new ArrayList<>();
+        chartLabels.clear();
+        selectedChartIndex = -1;
 
         List<JSONObject> chartSorted = sortJsonArray(data, false);
         int len = chartSorted.size();
@@ -229,13 +236,14 @@ public class SkinHistoryFragment extends RootieFragment {
                 String shortDate = dateStr.length() >= 5 ? dateStr.substring(0, 5) : dateStr;
 
                 entries.add(new Entry((float) i, score));
-                labels.add(shortDate);
+                chartLabels.add(shortDate);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         LineDataSet dataSet = new LineDataSet(entries, "Điểm số da");
+        currentDataSet = dataSet;
         dataSet.setColor(Color.parseColor("#4B5541"));
         dataSet.setCircleColor(Color.parseColor("#4B5541"));
         dataSet.setLineWidth(2f);
@@ -248,6 +256,9 @@ public class SkinHistoryFragment extends RootieFragment {
         dataSet.setFillColor(Color.parseColor("#E6EBE6"));
         dataSet.setFillAlpha(50);
         dataSet.setMode(LineDataSet.Mode.LINEAR);
+        dataSet.setHighLightColor(Color.parseColor("#E53935"));
+        dataSet.setDrawHighlightIndicators(false);
+        dataSet.setHighlightEnabled(true);
 
         dataSet.setValueFormatter(new ValueFormatter() {
             @Override
@@ -261,14 +272,42 @@ public class SkinHistoryFragment extends RootieFragment {
         _binding.skinHistoryLineChart.setData(lineData);
         _binding.skinHistoryLineChart.getDescription().setEnabled(false);
         _binding.skinHistoryLineChart.getLegend().setEnabled(false);
-        _binding.skinHistoryLineChart.setTouchEnabled(false);
+        _binding.skinHistoryLineChart.setTouchEnabled(true);
+        _binding.skinHistoryLineChart.setHighlightPerTapEnabled(true);
+        _binding.skinHistoryLineChart.setHighlightPerDragEnabled(false);
+        _binding.skinHistoryLineChart.setDragEnabled(false);
+        _binding.skinHistoryLineChart.setScaleEnabled(false);
+        _binding.skinHistoryLineChart.setPinchZoom(false);
+
+        _binding.skinHistoryLineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                selectedChartIndex = (int) e.getX();
+                applyChartSelection();
+            }
+
+            @Override
+            public void onNothingSelected() {
+                selectedChartIndex = -1;
+                applyChartSelection();
+            }
+        });
 
         XAxis xAxis = _binding.skinHistoryLineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int index = Math.round(value);
+                if (index == selectedChartIndex && index >= 0 && index < chartLabels.size()) {
+                    return chartLabels.get(index);
+                }
+                return "";
+            }
+        });
         xAxis.setDrawGridLines(true);
         xAxis.setGridColor(Color.parseColor("#EAEAEA"));
-        xAxis.setTextColor(Color.parseColor("#555555"));
+        xAxis.setTextColor(Color.parseColor("#E53935"));
         xAxis.setTextSize(12f);
         xAxis.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro_bold));
         xAxis.setGranularity(1f);
@@ -293,6 +332,22 @@ public class SkinHistoryFragment extends RootieFragment {
         _binding.skinHistoryLineChart.setExtraOffsets(0f, 20f, 16f, 12f);
 
         _binding.skinHistoryLineChart.animateX(500);
+        _binding.skinHistoryLineChart.invalidate();
+    }
+
+    private void applyChartSelection() {
+        if (_binding == null || currentDataSet == null) return;
+
+        int count = currentDataSet.getEntryCount();
+        int defaultColor = Color.parseColor("#4B5541");
+        int selectedColor = Color.parseColor("#E53935");
+
+        List<Integer> circleColors = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            circleColors.add(i == selectedChartIndex ? selectedColor : defaultColor);
+        }
+        currentDataSet.setCircleColors(circleColors);
+
         _binding.skinHistoryLineChart.invalidate();
     }
 

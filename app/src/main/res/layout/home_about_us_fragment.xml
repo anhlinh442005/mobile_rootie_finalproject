@@ -288,16 +288,6 @@
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/be_vietnam_pro"
-                                android:gravity="center"
-                                android:lineSpacingExtra="2dp"
-                                android:text="Ưu tiên nguyên liệu thuần khiết, an toàn và lành tính."
-                                android:textColor="@color/content"
-                                android:textSize="9sp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -336,16 +326,6 @@
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/be_vietnam_pro"
-                                android:gravity="center"
-                                android:lineSpacingExtra="2dp"
-                                android:text="Loại bỏ những thành phần không cần thiết, tập trung vào hiệu quả."
-                                android:textColor="@color/content"
-                                android:textSize="9sp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -384,16 +364,6 @@
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/be_vietnam_pro"
-                                android:gravity="center"
-                                android:lineSpacingExtra="2dp"
-                                android:text="Phù hợp với mọi làn da, kể cả da nhạy cảm."
-                                android:textColor="@color/content"
-                                android:textSize="9sp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -432,16 +402,6 @@
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:fontFamily="@font/be_vietnam_pro"
-                                android:gravity="center"
-                                android:lineSpacingExtra="2dp"
-                                android:text="Bao bì tái chế, hướng tới phát triển bền vững."
-                                android:textColor="@color/content"
-                                android:textSize="9sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>

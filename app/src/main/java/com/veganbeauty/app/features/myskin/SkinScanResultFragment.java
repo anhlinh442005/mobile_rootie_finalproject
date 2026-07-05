@@ -23,9 +23,15 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.github.mikephil.charting.charts.RadarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+
+import android.view.ScaleGestureDetector;
+import android.view.MotionEvent;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.veganbeauty.app.BuildConfig;
 import com.veganbeauty.app.R;
@@ -688,12 +694,19 @@ public class SkinScanResultFragment extends RootieFragment {
     }
 
     private void setupRadarChart(JSONObject eval) throws Exception {
+        List<String> labels = new ArrayList<>();
+        labels.add("Độ ẩm");
+        labels.add("Dầu");
+        labels.add("Lỗ chân lông");
+        labels.add("Sắc tố");
+        labels.add("Nhạy cảm");
+
         float moisture = (float) eval.getJSONObject("moisture").getInt("score");
         float oil = (float) eval.getJSONObject("oil").getInt("score");
         float pores = (float) eval.getJSONObject("pores").getInt("score");
         float pigmentation = (float) eval.getJSONObject("pigmentation").getInt("score");
         float sensitivity = (float) eval.getJSONObject("sensitivity").getInt("score");
-        
+
         List<Float> scores = new ArrayList<>();
         scores.add(moisture);
         scores.add(oil);
@@ -716,7 +729,7 @@ public class SkinScanResultFragment extends RootieFragment {
         dataSet.setDrawHighlightIndicators(false);
 
         RadarData radarData = new RadarData(dataSet);
-        radarData.setDrawValues(false); // Hide overlapping data point values
+        radarData.setDrawValues(false);
         radarData.setValueTextColor(Color.parseColor("#333333"));
 
         RadarChart chart = binding.skinResultRadarChart;
@@ -728,16 +741,52 @@ public class SkinScanResultFragment extends RootieFragment {
         chart.setWebColorInner(Color.parseColor("#E6EBE6"));
         chart.setWebAlpha(255);
 
-        chart.getXAxis().setDrawLabels(false);
-        chart.getYAxis().setLabelCount(5, false);
-        chart.getYAxis().setTextSize(11f);
-        chart.getYAxis().setAxisMinimum(0f);
-        chart.getYAxis().setAxisMaximum(100f);
-        chart.getYAxis().setDrawLabels(false);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setTextSize(10f);
+        xAxis.setYOffset(0f);
+        xAxis.setXOffset(0f);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setTextColor(Color.parseColor("#4A5D3E"));
 
+        YAxis yAxis = chart.getYAxis();
+        yAxis.setLabelCount(5, false);
+        yAxis.setTextSize(11f);
+        yAxis.setAxisMinimum(0f);
+        yAxis.setAxisMaximum(100f);
+        yAxis.setDrawLabels(false);
+
+        chart.setRotationEnabled(false);
         chart.getLegend().setEnabled(false);
         chart.animateXY(1000, 1000);
         chart.invalidate();
+
+        setupChartPinchZoom(chart);
+    }
+
+    private void setupChartPinchZoom(View chartView) {
+        final float[] scaleFactor = {1.0f};
+        final float minScale = 0.8f;
+        final float maxScale = 2.5f;
+
+        ScaleGestureDetector scaleDetector = new ScaleGestureDetector(requireContext(),
+                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                    @Override
+                    public boolean onScale(ScaleGestureDetector detector) {
+                        scaleFactor[0] *= detector.getScaleFactor();
+                        scaleFactor[0] = Math.max(minScale, Math.min(scaleFactor[0], maxScale));
+                        chartView.setScaleX(scaleFactor[0]);
+                        chartView.setScaleY(scaleFactor[0]);
+                        return true;
+                    }
+                });
+
+        chartView.setOnTouchListener((v, event) -> {
+            scaleDetector.onTouchEvent(event);
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                v.performClick();
+            }
+            return true;
+        });
     }
 
     private void populateMetrics(JSONObject eval) throws Exception {

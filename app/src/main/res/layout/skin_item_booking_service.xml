@@ -26,7 +26,7 @@
             android:fontFamily="@font/be_vietnam_pro"
             android:text="Soi da cơ bản"
             android:textColor="@color/primary"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
@@ -37,7 +37,7 @@
             android:fontFamily="@font/be_vietnam_pro"
             android:text="30 phút * Miễn phí"
             android:textColor="@color/tertiary"
-            android:textSize="12sp" />
+            android:textSize="13sp" />
     </LinearLayout>
 
     <ImageView
