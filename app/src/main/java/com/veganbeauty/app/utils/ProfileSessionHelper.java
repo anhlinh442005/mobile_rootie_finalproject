@@ -61,7 +61,10 @@ public final class ProfileSessionHelper {
         ProfileSession.setUsername(context, user.getUsername());
 
         String avatarUrl = resolveAvatarUrl(user);
-        if (isUsableAvatarUrl(avatarUrl)) {
+        String sessionAvatar = ProfileSession.getAvatar(context);
+        if (isRemoteAvatarUrl(sessionAvatar) && !isRemoteAvatarUrl(avatarUrl)) {
+            // Giữ avatar https (Cloudinary/Firestore) trong session, không ghi đè bằng content:// local.
+        } else if (isUsableAvatarUrl(avatarUrl)) {
             ProfileSession.setAvatar(context, avatarUrl.trim());
         }
         if (user.getPrimary_image() != null && !user.getPrimary_image().trim().isEmpty()) {
@@ -101,6 +104,19 @@ public final class ProfileSessionHelper {
     }
 
     public static String resolveEffectiveAvatarUrl(Context context, @Nullable UserEntity user) {
+        String sessionAvatar = ProfileSession.getAvatar(context);
+        if (isRemoteAvatarUrl(sessionAvatar)) {
+            return sessionAvatar.trim();
+        }
+        if (user != null) {
+            String fromUser = resolveAvatarUrl(user);
+            if (isRemoteAvatarUrl(fromUser)) {
+                return fromUser.trim();
+            }
+        }
+        if (isUsableAvatarUrl(sessionAvatar)) {
+            return sessionAvatar.trim();
+        }
         if (user != null) {
             String fromUser = resolveAvatarUrl(user);
             if (isUsableAvatarUrl(fromUser)) {
@@ -108,6 +124,14 @@ public final class ProfileSessionHelper {
             }
         }
         return resolveEffectiveAvatarUrl(context);
+    }
+
+    public static boolean isRemoteAvatarUrl(@Nullable String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return false;
+        }
+        String value = url.trim();
+        return value.startsWith("https://") || value.startsWith("http://");
     }
 
     public static boolean isUsableAvatarUrl(@Nullable String url) {
@@ -162,6 +186,15 @@ public final class ProfileSessionHelper {
     }
 
     public static String getDisplayAvatarUrl(Context context) {
+        return resolveEffectiveAvatarUrl(context, findCurrentUser(context));
+    }
+
+    /** Giống Community profile: ưu tiên session trước, load UI ngay không cần chờ background. */
+    public static String getAccountProfileAvatarUrl(Context context) {
+        String sessionAvatar = ProfileSession.getAvatar(context);
+        if (isRemoteAvatarUrl(sessionAvatar)) {
+            return sessionAvatar.trim();
+        }
         return resolveEffectiveAvatarUrl(context, findCurrentUser(context));
     }
 }

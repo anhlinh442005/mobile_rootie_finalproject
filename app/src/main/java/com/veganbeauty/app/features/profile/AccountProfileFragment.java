@@ -71,6 +71,7 @@ public class AccountProfileFragment extends RootieFragment {
         HomeHeaderHelper.setup(this, binding.getRoot());
 
         if (isLoggedIn) {
+            bindProfileAvatar(ctx);
             loadUserProfileData(ctx);
         } else {
             AvatarLoader.loadAvatar(binding.ivAvatar, "");
@@ -354,34 +355,53 @@ public class AccountProfileFragment extends RootieFragment {
                 });
     }
 
+    private void bindProfileAvatar(Context ctx) {
+        if (binding == null) {
+            return;
+        }
+        String avatarUrl = ProfileSessionHelper.getAccountProfileAvatarUrl(ctx);
+        AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl);
+    }
+
     private void loadUserProfileData(Context ctx) {
         new Thread(() -> {
-            SyncDataHelper.pullUserProfileFromFirestoreSync(ctx);
-            ProfileSessionHelper.ensureCurrentUserInDatabase(ctx);
-            if (orderRepository == null) {
-                RootieDatabase db = RootieDatabase.getDatabase(ctx);
-                orderRepository = new OrderRepository(
-                        db.orderDao(),
-                        db.rewardPointDao(),
-                        db.userGiftDao(),
-                        new LocalJsonReader(ctx)
-                );
-            }
-            orderRepository.syncOrdersFromAssetsBlocking();
+            try {
+                SyncDataHelper.pullUserProfileFromFirestoreSync(ctx);
+                ProfileSessionHelper.ensureCurrentUserInDatabase(ctx);
 
-            UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
-            if (user != null) {
-                ProfileSessionHelper.syncSessionFromUser(ctx, user);
-            }
-            String avatarUrl = ProfileSessionHelper.getDisplayAvatarUrl(ctx);
-            String fallbackUrl = user != null && user.getPrimary_image() != null ? user.getPrimary_image().trim() : "";
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    if (binding == null || !isAdded()) return;
-                    AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl, fallbackUrl);
-                    binding.tvUsername.setText(ProfileSession.getFullName(ctx));
-                    binding.tvEmail.setText(ProfileSession.getEmail(ctx));
-                });
+                UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
+                if (user != null) {
+                    ProfileSessionHelper.syncSessionFromUser(ctx, user);
+                }
+
+                String avatarUrl = ProfileSessionHelper.getAccountProfileAvatarUrl(ctx);
+                String fallbackUrl = user != null && user.getPrimary_image() != null
+                        ? user.getPrimary_image().trim()
+                        : "";
+
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        if (binding == null || !isAdded()) {
+                            return;
+                        }
+                        AvatarLoader.loadAvatar(binding.ivAvatar, avatarUrl, fallbackUrl);
+                        binding.tvUsername.setText(ProfileSession.getFullName(ctx));
+                        binding.tvEmail.setText(ProfileSession.getEmail(ctx));
+                    });
+                }
+
+                if (orderRepository == null) {
+                    RootieDatabase db = RootieDatabase.getDatabase(ctx);
+                    orderRepository = new OrderRepository(
+                            db.orderDao(),
+                            db.rewardPointDao(),
+                            db.userGiftDao(),
+                            new LocalJsonReader(ctx)
+                    );
+                }
+                orderRepository.syncOrdersFromAssetsBlocking();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
     }
@@ -450,6 +470,7 @@ public class AccountProfileFragment extends RootieFragment {
             Context ctx = requireContext();
             boolean isLoggedIn = ProfileSession.INSTANCE.isLoggedIn(ctx);
             if (isLoggedIn) {
+                bindProfileAvatar(ctx);
                 loadUserProfileData(ctx);
             } else {
                 AvatarLoader.loadAvatar(binding.ivAvatar, "");
