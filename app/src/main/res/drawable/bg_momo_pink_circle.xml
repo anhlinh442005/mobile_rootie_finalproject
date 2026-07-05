@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Momo pink circle background with subtle gradient -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="200"
+        android:startColor="#FFD0E2"
+        android:centerColor="#FFB0CC"
+        android:endColor="#FF80B5" />
+</shape>
