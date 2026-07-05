@@ -69,7 +69,9 @@ public class SyncDataHelper {
             }
 
             DocumentSnapshot doc = Tasks.await(
-                    FirebaseFirestore.getInstance().collection("users").document(userId.trim()).get()
+                    FirebaseFirestore.getInstance().collection("users").document(userId.trim()).get(),
+                    8,
+                    java.util.concurrent.TimeUnit.SECONDS
             );
             if (!doc.exists()) {
                 return;

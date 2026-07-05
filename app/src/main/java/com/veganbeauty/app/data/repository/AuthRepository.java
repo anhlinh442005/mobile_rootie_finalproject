@@ -2,7 +2,10 @@ package com.veganbeauty.app.data.repository;
 
 import com.veganbeauty.app.data.local.dao.UserDao;
 import com.veganbeauty.app.data.local.entities.UserEntity;
+import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.remote.FirestoreService;
+
+import android.content.Context;
 
 import java.security.MessageDigest;
 import java.util.UUID;
@@ -13,10 +16,12 @@ import java.util.regex.Pattern;
 public class AuthRepository {
 
     private final UserDao userDao;
+    private final Context appContext;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public AuthRepository(UserDao userDao) {
+    public AuthRepository(UserDao userDao, Context context) {
         this.userDao = userDao;
+        this.appContext = context.getApplicationContext();
     }
 
     private String hashPassword(String password) {
@@ -37,29 +42,63 @@ public class AuthRepository {
     public UserEntity login(String emailOrPhone, String password) throws Exception {
         String hashedPassword = hashPassword(password);
         boolean isEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(emailOrPhone).matches();
-        
-        if ("test@example.com".equals(emailOrPhone) || "rootiebeatutvl@gmail.com".equals(emailOrPhone)) {
-            UserEntity user = isEmail ? userDao.getUserByEmailSync(emailOrPhone) : userDao.getUserByPhoneSync(emailOrPhone);
-            if (user != null) return user;
+
+        // 1) Local Room trước — nhanh, hoạt động cả khi mạng chậm/offline
+        UserEntity localUser = isEmail
+                ? userDao.getUserByEmailAndPasswordSync(emailOrPhone, hashedPassword)
+                : userDao.getUserByPhoneAndPasswordSync(emailOrPhone, hashedPassword);
+        if (localUser == null) {
+            localUser = isEmail
+                    ? userDao.getUserByEmailAndPasswordSync(emailOrPhone, password)
+                    : userDao.getUserByPhoneAndPasswordSync(emailOrPhone, password);
         }
-        
-        FirestoreService firestoreService = new FirestoreService();
-        UserEntity firebaseUser = firestoreService.authenticateUser(emailOrPhone, hashedPassword, password, isEmail);
-        if (firebaseUser != null) {
+        if (localUser != null) {
+            return localUser;
+        }
+
+        UserEntity assetUser = authenticateFromAssets(emailOrPhone, hashedPassword, password, isEmail);
+        if (assetUser != null) {
             try {
-                userDao.insertUserSync(firebaseUser);
+                userDao.insertUserSync(assetUser);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return firebaseUser;
+            return assetUser;
         }
-        
-        UserEntity user = isEmail ? userDao.getUserByEmailAndPasswordSync(emailOrPhone, hashedPassword) 
-                                  : userDao.getUserByPhoneAndPasswordSync(emailOrPhone, hashedPassword);
-        if (user != null) return user;
-        
-        return isEmail ? userDao.getUserByEmailAndPasswordSync(emailOrPhone, password)
-                       : userDao.getUserByPhoneAndPasswordSync(emailOrPhone, password);
+
+        // 2) Firestore — fallback khi local chưa có hoặc mật khẩu đổi trên cloud
+        try {
+            FirestoreService firestoreService = new FirestoreService();
+            UserEntity firebaseUser = firestoreService.authenticateUser(emailOrPhone, hashedPassword, password, isEmail);
+            if (firebaseUser != null) {
+                try {
+                    userDao.insertUserSync(firebaseUser);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return firebaseUser;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private UserEntity authenticateFromAssets(String emailOrPhone, String hashedPassword, String passwordPlain, boolean isEmail) {
+        for (UserEntity candidate : new LocalJsonReader(appContext).getUsers()) {
+            boolean identityMatch = isEmail
+                    ? emailOrPhone.equalsIgnoreCase(candidate.getEmail())
+                    : emailOrPhone.equals(candidate.getPhone());
+            if (!identityMatch) {
+                continue;
+            }
+            String stored = candidate.getPassword() != null ? candidate.getPassword() : "";
+            if (stored.equals(hashedPassword) || stored.equals(passwordPlain)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     // Making this synchronous for Java compatibility, you should call this in a background thread

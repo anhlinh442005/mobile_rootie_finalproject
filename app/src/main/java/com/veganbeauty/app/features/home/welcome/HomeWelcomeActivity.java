@@ -177,12 +177,15 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             }
         }).start();
 
-        com.veganbeauty.app.data.repository.AuthRepository repository = new com.veganbeauty.app.data.repository.AuthRepository(db.userDao());
+        com.veganbeauty.app.data.repository.AuthRepository repository = new com.veganbeauty.app.data.repository.AuthRepository(db.userDao(), getApplicationContext());
         com.veganbeauty.app.features.auth.AuthViewModelFactory factory = new com.veganbeauty.app.features.auth.AuthViewModelFactory(repository);
         authViewModel = new androidx.lifecycle.ViewModelProvider(this, factory).get(com.veganbeauty.app.features.auth.AuthViewModel.class);
 
         authViewModel.loginState.observe(this, state -> {
-            if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) {
+            if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Loading) {
+                setLoginInProgress(true);
+            } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) {
+                setLoginInProgress(false);
                 com.veganbeauty.app.data.local.entities.UserEntity user = ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) state)
                         .getUser();
                 // Save all user info into ProfileSession so other screens can read it
@@ -198,14 +201,11 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 );
                 com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPrimaryImage(this, user.getPrimary_image() != null ? user.getPrimary_image() : "");
 
+                navigateToMain();
                 com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsFromFirestore(this);
-                com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        navigateToMain();
-                    }
-                });
+                com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(this, null);
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
+                setLoginInProgress(false);
                 android.widget.Toast.makeText(this,
                         ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) state).getMessage(),
                         android.widget.Toast.LENGTH_SHORT).show();
@@ -1373,6 +1373,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private void setLoginInProgress(boolean inProgress) {
+        if (loginBinding == null) {
+            return;
+        }
+        loginBinding.homeBtnLogin.setEnabled(!inProgress);
+        loginBinding.homeBtnLogin.setText(inProgress ? "Đang đăng nhập..." : getString(R.string.home_btn_login));
     }
 
     private void navigateToMain() {

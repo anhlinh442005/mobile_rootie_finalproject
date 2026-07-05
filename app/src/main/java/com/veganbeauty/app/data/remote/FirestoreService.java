@@ -250,9 +250,11 @@ public class FirestoreService {
     public UserEntity authenticateUser(String emailOrPhone, String passwordHash, String passwordPlain, boolean isEmail) {
         try {
             String field = isEmail ? "email" : "phone";
-            QuerySnapshot snapshot = Tasks.await(db.collection("users")
-                    .whereEqualTo(field, emailOrPhone)
-                    .get());
+            QuerySnapshot snapshot = Tasks.await(
+                    db.collection("users").whereEqualTo(field, emailOrPhone).get(),
+                    8,
+                    java.util.concurrent.TimeUnit.SECONDS
+            );
 
             for (DocumentSnapshot doc : snapshot.getDocuments()) {
                 String dbPassword = doc.getString("password") != null ? doc.getString("password") : "";
