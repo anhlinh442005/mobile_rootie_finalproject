@@ -10,8 +10,8 @@
         android:id="@+id/skin_detail_header"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_points_card_gradient"
-        android:elevation="1dp"
+        android:background="@drawable/bg_header_gradient"
+        android:elevation="3dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -61,11 +61,13 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/skin_detail_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/skin_detail_header"
+        android:clipToPadding="false"
+        android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@id/skin_detail_bottom_actions"
-        android:fillViewport="true">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -79,7 +81,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/com_bg_tab_active"
-                android:padding="16dp"
+                android:padding="20dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:layout_marginBottom="16dp">
 
                 <TextView
@@ -93,7 +97,7 @@
                     android:fontFamily="@font/be_vietnam_pro"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/skin_detail_store_image_card"/>
+                    app:layout_constraintEnd_toStartOf="@id/skin_detail_store_image"/>
 
                 <TextView
                     android:id="@+id/skin_detail_status_tag"
@@ -140,7 +144,7 @@
                     android:layout_marginEnd="16dp"
                     app:layout_constraintTop_toBottomOf="@id/skin_detail_order_id"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/skin_detail_store_image_card"/>
+                    app:layout_constraintEnd_toStartOf="@id/skin_detail_store_image"/>
 
                 <ImageView
                     android:id="@+id/skin_detail_ic_date"
@@ -187,24 +191,19 @@
                     app:layout_constraintBottom_toBottomOf="@id/skin_detail_ic_time"
                     app:layout_constraintStart_toEndOf="@id/skin_detail_ic_time"/>
 
-                <!-- Circular Image on Right -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/skin_detail_store_image_card"
-                    android:layout_width="120dp"
+                <!-- Mascot Skin -->
+                <ImageView
+                    android:id="@+id/skin_detail_store_image"
+                    android:layout_width="96dp"
                     android:layout_height="120dp"
-                    app:cardCornerRadius="60dp"
-                    app:cardElevation="0dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/mascot_success"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginEnd="-20dp">
-                    <ImageView
-                        android:id="@+id/skin_detail_store_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/imv_logo"/>
-                </androidx.cardview.widget.CardView>
+                    android:layout_marginStart="12dp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

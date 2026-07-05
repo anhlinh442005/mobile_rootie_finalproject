@@ -85,7 +85,10 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             itemHolder.tvStatusTag.setText(entity.getStatus());
 
             String status = entity.getStatus() != null ? entity.getStatus() : "";
-            if (status.equalsIgnoreCase("Sắp diễn ra") || status.equalsIgnoreCase("Chờ xác nhận") || status.equalsIgnoreCase("pending")) {
+            if (status.equalsIgnoreCase("Sắp diễn ra")
+                    || status.equalsIgnoreCase("Chờ xác nhận")
+                    || status.equalsIgnoreCase("pending")
+                    || status.equalsIgnoreCase("Đã duyệt")) {
                 if (status.equalsIgnoreCase("Chờ xác nhận") || status.equalsIgnoreCase("pending")) {
                     itemHolder.tvStatusTag.setText("Chờ xác nhận");
                     itemHolder.tvStatusTag.setBackgroundResource(R.drawable.skin_bg_badge_pending);

@@ -20,6 +20,7 @@ import com.veganbeauty.app.databinding.SkinFragmentBookingDetailCancelledBinding
 public class BookingDetailCancelledFragment extends RootieFragment {
 
     private SkinFragmentBookingDetailCancelledBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private static BookingHistoryEntity bookingData = null;
 
     public static BookingDetailCancelledFragment newInstance(BookingHistoryEntity data) {
@@ -60,13 +61,19 @@ public class BookingDetailCancelledFragment extends RootieFragment {
             Toast.makeText(getContext(), "Đã sao chép mã đặt lịch", Toast.LENGTH_SHORT).show();
         });
 
-        binding.skinDetailBtnContactStore.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Liên hệ chi nhánh clicked", Toast.LENGTH_SHORT).show();
-        });
-
         binding.skinDetailBtnRebookNow.setOnClickListener(v -> navigateToBooking());
         binding.skinDetailBtnRebookBottom.setOnClickListener(v -> navigateToBooking());
         binding.skinDetailBtnBookOtherBottom.setOnClickListener(v -> navigateToBooking());
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.skinDetailHeader,
+                binding.skinDetailScroll,
+                0
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.skinDetailScroll);
     }
 
     private void navigateToBooking() {
@@ -86,9 +93,7 @@ public class BookingDetailCancelledFragment extends RootieFragment {
             binding.skinDetailCancelledAt.setText("Đã huỷ vào: " + data.getCancelledAt());
         }
 
-        if (data.getStoreImage() != null && !data.getStoreImage().isEmpty()) {
-            com.bumptech.glide.Glide.with(binding.skinDetailStoreImage.getContext()).load(data.getStoreImage()).placeholder(R.drawable.imv_logo).error(R.drawable.imv_logo).into(binding.skinDetailStoreImage);
-        }
+        binding.skinDetailStoreImage.setImageResource(R.drawable.mascot_success);
 
         if (data.getCancelReason() != null && !data.getCancelReason().isEmpty()) {
             binding.skinDetailCancelReason.setText(data.getCancelReason());

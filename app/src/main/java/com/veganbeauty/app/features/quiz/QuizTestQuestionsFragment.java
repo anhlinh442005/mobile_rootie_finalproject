@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.databinding.QuizTestQuestionsBinding;
+import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,6 +41,7 @@ public class QuizTestQuestionsFragment extends RootieFragment {
     private static final String ARG_LEVEL_TYPE = "level_type";
 
     private QuizTestQuestionsBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private JSONArray questions = new JSONArray();
     private int currentQuestionIndex = 0;
     private String levelType = "advanced";
@@ -72,7 +75,25 @@ public class QuizTestQuestionsFragment extends RootieFragment {
 
         binding.btnPrevQuestion.setOnClickListener(v -> goToPrevQuestion());
 
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, new AccountNotificationFragment())
+                        .addToBackStack(null)
+                        .commit());
+
         displayQuestion();
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.rlHeader,
+                binding.quizScroll,
+                0,
+                0,
+                binding.pbQuiz
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.quizScroll);
     }
 
     private void loadQuestions() {

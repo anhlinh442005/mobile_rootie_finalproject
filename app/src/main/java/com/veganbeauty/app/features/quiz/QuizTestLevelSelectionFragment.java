@@ -13,10 +13,13 @@ import androidx.annotation.Nullable;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.databinding.QuizTestLevelSelectionBinding;
+import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 public class QuizTestLevelSelectionFragment extends RootieFragment {
 
     private QuizTestLevelSelectionBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private boolean isAdvancedSelected = true;
 
     @Nullable
@@ -30,12 +33,11 @@ public class QuizTestLevelSelectionFragment extends RootieFragment {
     public void setupUI(@NonNull View view) {
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        binding.btnNotification.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, new AccountNotificationFragment())
+                        .addToBackStack(null)
+                        .commit());
 
         binding.cardQuizBasic.setOnClickListener(v -> selectBasic());
         binding.cardQuizAdvanced.setOnClickListener(v -> selectAdvanced());
@@ -51,6 +53,16 @@ public class QuizTestLevelSelectionFragment extends RootieFragment {
         });
 
         updateUI();
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.rlHeader,
+                binding.quizScroll,
+                0
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.quizScroll);
     }
 
     private void selectBasic() {

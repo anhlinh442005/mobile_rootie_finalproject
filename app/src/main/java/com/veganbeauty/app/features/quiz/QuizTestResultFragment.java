@@ -23,7 +23,10 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.QuizTestResultBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,7 +50,14 @@ import kotlinx.coroutines.Dispatchers;
 
 public class QuizTestResultFragment extends RootieFragment {
 
+    private static final int QUIZ_REWARD_POINTS = 100;
+
+    private interface OnSkinProfileSavedListener {
+        void onSaved(boolean rewardGranted, int rewardPoints);
+    }
+
     private QuizTestResultBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private final String GEMINI_API_KEY = com.veganbeauty.app.BuildConfig.GEMINI_API_KEY;
     private final List<AiSkincareStep> morningSteps = new ArrayList<>();
     private final List<AiSkincareStep> eveningSteps = new ArrayList<>();
@@ -92,15 +102,27 @@ public class QuizTestResultFragment extends RootieFragment {
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        binding.btnDone.setOnClickListener(v ->
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new QuizTestIntroFragment())
+                        .replace(R.id.main_container, new AccountNotificationFragment())
+                        .addToBackStack(null)
                         .commit());
+
+        boolean canRetakeQuiz = ProfileSession.isQuizRewardEligible(requireContext());
+        binding.btnDone.setVisibility(canRetakeQuiz ? View.VISIBLE : View.GONE);
+        if (canRetakeQuiz) {
+            binding.btnDone.setOnClickListener(v ->
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, new QuizTestIntroFragment())
+                            .commit());
+        }
 
         String finalSkinType = skinType;
         String finalRecommendation = recommendation;
         Set<String> finalFlaggedSet = flaggedSet;
-        binding.btnSaveProfile.setOnClickListener(v -> saveSkinProfile(prefs, finalSkinType, finalRecommendation, finalFlaggedSet, sensitivity, hydration, elasticity, sebum, false));
+        binding.btnSaveProfile.setOnClickListener(v ->
+                saveSkinProfile(prefs, finalSkinType, finalRecommendation, finalFlaggedSet, sensitivity, hydration, elasticity, sebum,
+                        this::onSaveProfileFinished));
 
         boolean isFirstTest = getArguments() != null && getArguments().getBoolean("IS_FIRST_TEST", false);
         if (isFirstTest) {
@@ -126,6 +148,17 @@ public class QuizTestResultFragment extends RootieFragment {
         BottomNavHelper.setup(this, binding.getRoot(), R.id.nav_myskin, tabId -> {
             BottomNavHelper.navigate(this, tabId);
         });
+
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.rlHeader,
+                binding.quizScroll,
+                0
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.quizScroll);
     }
 
     private void addPill(ViewGroup container, String text, int backgroundResId, String textColorStr) {
@@ -342,7 +375,14 @@ public class QuizTestResultFragment extends RootieFragment {
             }
         });
         binding.btnApplyRoutine.setOnClickListener(v -> saveSelectedStepsToProfile(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum));
-        binding.tvRetakeQuizInline.setOnClickListener(v -> getParentFragmentManager().beginTransaction().replace(R.id.main_container, new QuizTestIntroFragment()).commit());
+        boolean canRetakeQuiz = ProfileSession.isQuizRewardEligible(requireContext());
+        binding.tvRetakeQuizInline.setVisibility(canRetakeQuiz ? View.VISIBLE : View.GONE);
+        if (canRetakeQuiz) {
+            binding.tvRetakeQuizInline.setOnClickListener(v ->
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, new QuizTestIntroFragment())
+                            .commit());
+        }
     }
 
     private void updateTabUI() {
@@ -620,7 +660,7 @@ public class QuizTestResultFragment extends RootieFragment {
         }
     }
 
-    private void saveSkinProfile(SharedPreferences prefs, String skinType, String recommendation, Set<String> flaggedSet, int sensitivity, int hydration, int elasticity, int sebum, boolean silent) {
+    private void saveSkinProfile(SharedPreferences prefs, String skinType, String recommendation, Set<String> flaggedSet, int sensitivity, int hydration, int elasticity, int sebum, @Nullable OnSkinProfileSavedListener listener) {
         String skinAreas = prefs.getString("SKIN_AREAS_DESC", "Độ ẩm và bã nhờn phân bổ tương đối đồng đều trên các vùng da.");
 
         long lastTestTime = ProfileSession.getLastSkinTestTime(requireContext());
@@ -657,8 +697,7 @@ public class QuizTestResultFragment extends RootieFragment {
 
             historyArray.put(newLog);
             prefs.edit().putString("QUIZ_HISTORY_LIST", historyArray.toString()).apply();
-            
-            // Sync to Firestore
+
             FirestoreService firestoreService = new FirestoreService();
             String email = ProfileSession.INSTANCE.getEmail(requireContext());
             if (email != null && !email.isEmpty()) {
@@ -672,65 +711,72 @@ public class QuizTestResultFragment extends RootieFragment {
                     BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
                         try {
                             db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                                    0, "SYSTEM_WEEKLY_QUIZ", 100, "Cập nhật làn da định kỳ hàng tuần (+100 xu)", currentTime
+                                    0, "SYSTEM_WEEKLY_QUIZ", QUIZ_REWARD_POINTS,
+                                    "Cập nhật làn da định kỳ hàng tuần (+" + QUIZ_REWARD_POINTS + " xu)", currentTime
                             ));
                             com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(requireContext());
                         } catch (Exception e) { e.printStackTrace(); }
 
-                        if (!silent) {
-                            View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null);
-                            TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
-                            TextView tvMsg = dialogView.findViewById(R.id.tv_dialog_message);
-                            View llCoinBadge = dialogView.findViewById(R.id.ll_dialog_coin_badge);
-                            TextView tvCoinText = dialogView.findViewById(R.id.tv_dialog_coin_text);
-                            View btnConfirm = dialogView.findViewById(R.id.btn_dialog_confirm);
-                            TextView tvConfirmText = dialogView.findViewById(R.id.tv_dialog_confirm_text);
-                            View btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
-
-                            tvTitle.setText("Nhận 100 xu thành công!");
-                            tvMsg.setText("Cảm ơn bạn đã cập nhật chỉ số da định kỳ. Bạn được cộng +100 xu vào ví thành viên!");
-                            llCoinBadge.setVisibility(View.VISIBLE);
-                            tvCoinText.setText("Tặng +100 Xu thành viên");
-                            tvConfirmText.setText("TUYỆT VỜI");
-                            btnCancel.setVisibility(View.GONE);
-
-                            AlertDialog customDialog = new AlertDialog.Builder(requireContext()).setView(dialogView).create();
-                            if (customDialog.getWindow() != null) customDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-                            btnConfirm.setOnClickListener(v -> {
-                                customDialog.dismiss();
-                                getParentFragmentManager().popBackStack();
-                            });
-                            customDialog.setOnDismissListener(dialog -> getParentFragmentManager().popBackStack());
-                            customDialog.show();
+                        if (listener != null && isAdded()) {
+                            listener.onSaved(true, QUIZ_REWARD_POINTS);
                         }
                         return kotlin.Unit.INSTANCE;
                     }, cont));
-        } else {
-            if (!silent) {
-                View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null);
-                TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
-                TextView tvMsg = dialogView.findViewById(R.id.tv_dialog_message);
-                View btnConfirm = dialogView.findViewById(R.id.btn_dialog_confirm);
-                TextView tvConfirmText = dialogView.findViewById(R.id.tv_dialog_confirm_text);
-                View btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
-
-                tvTitle.setText("Đã lưu hồ sơ da!");
-                tvMsg.setText("Chỉ số da và loại da " + skinType + " đã được lưu vào lịch sử của bạn.");
-                tvConfirmText.setText("ĐỒNG Ý");
-                btnCancel.setVisibility(View.GONE);
-
-                AlertDialog customDialog = new AlertDialog.Builder(requireContext()).setView(dialogView).create();
-                if (customDialog.getWindow() != null) customDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-                btnConfirm.setOnClickListener(v -> {
-                    customDialog.dismiss();
-                    getParentFragmentManager().popBackStack();
-                });
-                customDialog.setOnDismissListener(dialog -> getParentFragmentManager().popBackStack());
-                customDialog.show();
-            }
+        } else if (listener != null && isAdded()) {
+            listener.onSaved(false, 0);
         }
+    }
+
+    private void onSaveProfileFinished(boolean rewardGranted, int rewardPoints) {
+        if (!isAdded()) return;
+        if (rewardGranted) {
+            showCoinRewardThen(this::popBackStackIfAdded, rewardPoints, "từ quiz cập nhật chỉ số da");
+        } else {
+            showSavedProfileDialog();
+        }
+    }
+
+    private void showCoinRewardThen(Runnable onDismiss, int rewardPoints, String source) {
+        getParentFragmentManager().setFragmentResultListener(
+                CoinRewardDialogHelper.RESULT_DISMISSED,
+                getViewLifecycleOwner(),
+                (requestKey, result) -> {
+                    getParentFragmentManager().clearFragmentResultListener(CoinRewardDialogHelper.RESULT_DISMISSED);
+                    if (onDismiss != null) onDismiss.run();
+                });
+        CoinRewardDialogHelper.show(this, rewardPoints, source);
+    }
+
+    private void popBackStackIfAdded() {
+        if (isAdded()) {
+            getParentFragmentManager().popBackStack();
+        }
+    }
+
+    private void showSavedProfileDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null);
+        TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
+        TextView tvMsg = dialogView.findViewById(R.id.tv_dialog_message);
+        View btnConfirm = dialogView.findViewById(R.id.btn_dialog_confirm);
+        TextView tvConfirmText = dialogView.findViewById(R.id.tv_dialog_confirm_text);
+        View btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
+
+        tvTitle.setText("Đã lưu hồ sơ da!");
+        tvMsg.setText("Chỉ số da đã được lưu vào lịch sử của bạn.");
+        tvConfirmText.setText("ĐỒNG Ý");
+        btnCancel.setVisibility(View.GONE);
+
+        AlertDialog customDialog = new AlertDialog.Builder(requireContext()).setView(dialogView).create();
+        if (customDialog.getWindow() != null) {
+            customDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        btnConfirm.setOnClickListener(v -> {
+            customDialog.dismiss();
+            popBackStackIfAdded();
+        });
+        customDialog.setOnDismissListener(dialog -> popBackStackIfAdded());
+        customDialog.show();
     }
 
     private void saveSelectedStepsToProfile(SharedPreferences prefs, String skinType, String recommendation, Set<String> flaggedSet, int sensitivity, int hydration, int elasticity, int sebum) {
@@ -747,8 +793,18 @@ public class QuizTestResultFragment extends RootieFragment {
         ProfileSession.setMorningSteps(requireContext(), morningSave);
         ProfileSession.setEveningSteps(requireContext(), eveningSave);
 
-        saveSkinProfile(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum, true);
+        saveSkinProfile(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum,
+                (rewardGranted, rewardPoints) -> {
+                    if (!isAdded()) return;
+                    if (rewardGranted) {
+                        showCoinRewardThen(this::showApplyRoutineReminderDialog, rewardPoints, "từ quiz cập nhật chỉ số da");
+                    } else {
+                        showApplyRoutineReminderDialog();
+                    }
+                });
+    }
 
+    private void showApplyRoutineReminderDialog() {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null);
         TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
         TextView tvMsg = dialogView.findViewById(R.id.tv_dialog_message);

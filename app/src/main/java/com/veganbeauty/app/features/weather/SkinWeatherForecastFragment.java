@@ -64,6 +64,7 @@ import java.util.UUID;
 public class SkinWeatherForecastFragment extends RootieFragment {
 
     private SkinWeatherForecastBinding _binding;
+    private WeatherHeaderScrollHelper headerScrollHelper;
     private SkinWeatherForecastBinding getBinding() {
         return _binding;
     }
@@ -154,6 +155,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         setupToolbar();
+        setupScrollHideHeader();
         setupBottomNavigation();
         loadUserProfileData();
         loadCachedWeatherSnapshot();
@@ -237,6 +239,16 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                 );
             }
         }));
+    }
+
+    private void setupScrollHideHeader() {
+        int bottomPad = (int) getResources().getDimension(R.dimen.home_nav_bar_height);
+        headerScrollHelper = new WeatherHeaderScrollHelper(
+                getBinding().layoutWeatherHeader,
+                getBinding().scrollContent,
+                bottomPad
+        );
+        headerScrollHelper.attach();
     }
 
     private void setupToolbar() {

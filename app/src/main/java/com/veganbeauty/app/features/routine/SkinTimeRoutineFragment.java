@@ -2,14 +2,19 @@ package com.veganbeauty.app.features.routine;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.LifecycleOwnerKt;
 
@@ -22,6 +27,7 @@ import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.ItemTimeRoutineStepBinding;
 import com.veganbeauty.app.databinding.SkinTimeRoutineBinding;
+import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 
 import java.text.SimpleDateFormat;
@@ -62,6 +68,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         }
 
         com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, ProfileSession.getAvatar(ctx));
+        binding.ivAvatar.setOnClickListener(v -> BottomNavHelper.navigate(this, R.id.nav_account));
 
         String fullName = ProfileSession.getFullName(ctx);
         if ("morning".equals(routineType)) {
@@ -87,7 +94,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
 
         loadSteps();
 
-        binding.btnNotification.setOnClickListener(v ->
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                         .addToBackStack(null).commit());
@@ -151,15 +158,25 @@ public class SkinTimeRoutineFragment extends RootieFragment {
                 else ProfileSession.setEveningRewardAwarded(ctx, targetDate, true);
 
                 RootieDatabase db = RootieDatabase.getDatabase(ctx);
+                final int rewardPoints = 10;
                 LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
                         BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
                             try {
                                 db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                                        0, "morning".equals(routineType) ? "MORNING_ROUTINE" : "EVENING_ROUTINE", 10,
+                                        0, "morning".equals(routineType) ? "MORNING_ROUTINE" : "EVENING_ROUTINE", rewardPoints,
                                         "morning".equals(routineType) ? "Hoàn thành Routine Sáng" : "Hoàn thành Routine Tối", System.currentTimeMillis()
                                 ));
                                 com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx);
-                                Toast.makeText(ctx, "Tuyệt vời! Bạn đã hoàn thành 100% Routine và nhận được +10 xu!", Toast.LENGTH_LONG).show();
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
+                                        String source = "morning".equals(routineType)
+                                                ? "từ Routine Sáng"
+                                                : "từ Routine Tối";
+                                        com.veganbeauty.app.utils.CoinRewardDialogHelper.show(
+                                                SkinTimeRoutineFragment.this, rewardPoints, source
+                                        );
+                                    });
+                                }
                                 checkStreakAndUpdateAsync(routineType);
                             } catch (Exception e) { e.printStackTrace(); }
                             return kotlin.Unit.INSTANCE;
@@ -331,8 +348,9 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         if (isSubmitted) {
             binding.btnCompleteRoutine.setText("Đã hoàn thành");
             binding.btnCompleteRoutine.setEnabled(false);
-            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.bg_circle_grey);
-            binding.btnCompleteRoutine.setTextColor(Color.parseColor("#8E8E93"));
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.skin_bg_btn_green);
+            binding.btnCompleteRoutine.setTextColor(Color.WHITE);
+            applyCompleteButtonIcon(R.drawable.ic_check);
         } else if (!isWithinTimeWindow(routineType)) {
             int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
             if ("morning".equals(routineType)) {
@@ -340,14 +358,35 @@ public class SkinTimeRoutineFragment extends RootieFragment {
                 else binding.btnCompleteRoutine.setText("Đã bỏ lỡ");
             } else binding.btnCompleteRoutine.setText("Chưa đến giờ");
             binding.btnCompleteRoutine.setEnabled(false);
-            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.bg_circle_grey);
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.skin_bg_btn_disabled);
             binding.btnCompleteRoutine.setTextColor(Color.parseColor("#8E8E93"));
+            applyCompleteButtonIcon(0);
         } else {
             binding.btnCompleteRoutine.setText("Hoàn tất Routine");
             binding.btnCompleteRoutine.setEnabled(true);
-            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.com_bg_tab_active);
+            binding.btnCompleteRoutine.setBackgroundResource(R.drawable.skin_bg_btn_green);
             binding.btnCompleteRoutine.setTextColor(Color.WHITE);
+            applyCompleteButtonIcon(0);
         }
+    }
+
+    private void applyCompleteButtonIcon(@DrawableRes int iconRes) {
+        if (binding == null) return;
+        if (iconRes == 0) {
+            binding.btnCompleteRoutine.setCompoundDrawables(null, null, null, null);
+            return;
+        }
+        Drawable icon = ContextCompat.getDrawable(requireContext(), iconRes);
+        if (icon == null) {
+            binding.btnCompleteRoutine.setCompoundDrawables(null, null, null, null);
+            return;
+        }
+        icon = icon.mutate();
+        int sizePx = (int) (15 * getResources().getDisplayMetrics().density);
+        icon.setBounds(0, 0, sizePx, sizePx);
+        icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        binding.btnCompleteRoutine.setCompoundDrawables(icon, null, null, null);
+        binding.btnCompleteRoutine.setCompoundDrawablePadding((int) (6 * getResources().getDisplayMetrics().density));
     }
 
     private void checkStreakAndUpdate(String type) throws Exception {
