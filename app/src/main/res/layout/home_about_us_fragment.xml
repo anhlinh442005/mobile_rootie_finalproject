@@ -22,7 +22,7 @@
             android:clickable="true"
             android:contentDescription="Back"
             android:focusable="true"
-            android:src="@drawable/ic_arrow_back_thin"
+            android:src="@drawable/ic_arrow_back"
             app:tint="@color/primary" />
 
         <TextView
@@ -349,7 +349,7 @@
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/ic_heart_outline"
+                                    android:src="@drawable/ic_heart"
                                     app:tint="@color/secondary" />
                             </FrameLayout>
 
@@ -441,7 +441,7 @@
                                 <ImageView
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
-                                    android:src="@drawable/ic_eye"
+                                    android:src="@drawable/ic_eyes"
                                     app:tint="@color/primary" />
 
                                 <TextView

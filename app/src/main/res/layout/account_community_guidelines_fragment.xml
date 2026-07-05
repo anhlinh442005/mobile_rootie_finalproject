@@ -21,7 +21,7 @@
             android:clickable="true"
             android:contentDescription="Back"
             android:focusable="true"
-            android:src="@drawable/ic_arrow_back_thin"
+            android:src="@drawable/ic_arrow_back"
             app:tint="@color/primary" />
 
         <TextView
