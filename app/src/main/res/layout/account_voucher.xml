@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FEFBF4">
+    android:background="#FAFAF4">
 
     <!-- Header Panel -->
     <RelativeLayout
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
         android:layout_height="66dp"
-        android:background="@drawable/bg_points_card_gradient"
+        android:background="#FAFAF4"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp">
 
@@ -110,7 +110,7 @@
                 android:id="@+id/tab_all"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:background="@drawable/bg_btn_buy"
+                android:background="@drawable/tab_active_bg"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"

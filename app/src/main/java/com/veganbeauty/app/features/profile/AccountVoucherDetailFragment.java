@@ -134,8 +134,6 @@ public class AccountVoucherDetailFragment extends RootieFragment {
         binding.btnShare.setOnClickListener(shareAction);
         binding.btnShareVoucher.setOnClickListener(shareAction);
 
-        binding.btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
-
         String normalizedType = voucherType.toLowerCase(Locale.ROOT).replace(" ", "").replace("_", "");
         if (normalizedType.equals("freeship") || normalizedType.equals("voucherfreeship")) {
             binding.ivVoucherIcon.setImageResource(R.drawable.ic_shipping);

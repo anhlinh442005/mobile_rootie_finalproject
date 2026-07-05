@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 public class SkinChatFragment extends DialogFragment {
 
@@ -37,6 +39,105 @@ public class SkinChatFragment extends DialogFragment {
     private SkinChatAdapter chatAdapter;
     private final List<ChatMessage> messagesList = new ArrayList<>();
     private String conversationId = "";
+
+    private final ActivityResultLauncher<String> pickFileLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    String fileName = getFileName(uri);
+                    sendTextMessage("Đã đính kèm tệp: " + fileName);
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    sendTextMessage("image:" + uri.toString());
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<Void> takePhotoLauncher = registerForActivityResult(
+            new ActivityResultContracts.TakePicturePreview(), bitmap -> {
+                if (bitmap != null) {
+                    String uriStr = saveBitmapToCache(bitmap);
+                    if (uriStr != null) {
+                        sendTextMessage("image:" + uriStr);
+                    }
+                }
+            }
+    );
+
+    private String saveBitmapToCache(android.graphics.Bitmap bitmap) {
+        try {
+            java.io.File cachePath = new java.io.File(requireContext().getCacheDir(), "images");
+            cachePath.mkdirs();
+            java.io.File file = new java.io.File(cachePath, "image_" + System.currentTimeMillis() + ".jpg");
+            java.io.FileOutputStream stream = new java.io.FileOutputStream(file);
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 100, stream);
+            stream.close();
+            return android.net.Uri.fromFile(file).toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private final ActivityResultLauncher<String> requestCameraPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    try {
+                        takePhotoLauncher.launch(null);
+                    } catch (Exception e) {
+                        Toast.makeText(requireContext(), "Không thể mở camera", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Cần cấp quyền camera để chụp ảnh", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
+
+    private void sendTextMessage(String text) {
+        String currentUserId = getCurrentUserId();
+        MessageHelper.sendMessage(requireContext(), conversationId, currentUserId, "rootie_vn", text);
+        loadConversationData();
+    }
+
+    private String getFileName(android.net.Uri uri) {
+        String result = null;
+        if ("content".equals(uri.getScheme())) {
+            android.database.Cursor cursor = requireContext().getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int index = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                    if (index != -1) {
+                        result = cursor.getString(index);
+                    }
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
+    private void updateInputIconsVisibility() {
+        if (_binding == null) return;
+        boolean hasFocus = _binding.etMessageInput.hasFocus();
+        boolean hasText = _binding.etMessageInput.getText().length() > 0;
+        int visibility = (hasFocus || hasText) ? View.GONE : View.VISIBLE;
+        _binding.btnCamera.setVisibility(visibility);
+        _binding.btnGallery.setVisibility(visibility);
+    }
 
     public enum Sender {
         AGENT, USER, TIME
@@ -74,10 +175,11 @@ public class SkinChatFragment extends DialogFragment {
         super.onStart();
         if (getShowsDialog() && getDialog() != null && getDialog().getWindow() != null) {
             android.view.Window window = getDialog().getWindow();
-            int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.90);
-            int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.85);
+            int width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.80);
             window.setLayout(width, height);
             window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setGravity(android.view.Gravity.BOTTOM);
             window.setWindowAnimations(0);
         }
     }
@@ -146,9 +248,29 @@ public class SkinChatFragment extends DialogFragment {
             return false;
         });
 
-        _binding.btnPlus.setOnClickListener(v -> Toast.makeText(requireContext(), "Tính năng đính kèm tệp sẽ sớm ra mắt!", Toast.LENGTH_SHORT).show());
-        _binding.btnCamera.setOnClickListener(v -> Toast.makeText(requireContext(), "Tính năng chụp ảnh sẽ sớm ra mắt!", Toast.LENGTH_SHORT).show());
-        _binding.btnGallery.setOnClickListener(v -> Toast.makeText(requireContext(), "Tính năng chọn ảnh sẽ sớm ra mắt!", Toast.LENGTH_SHORT).show());
+        _binding.btnPlus.setOnClickListener(v -> pickFileLauncher.launch("*/*"));
+        _binding.btnCamera.setOnClickListener(v -> {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA)
+                    == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                try {
+                    takePhotoLauncher.launch(null);
+                } catch (Exception e) {
+                    Toast.makeText(requireContext(), "Không thể mở camera", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                requestCameraPermissionLauncher.launch(android.Manifest.permission.CAMERA);
+            }
+        });
+        _binding.btnGallery.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+
+        _binding.etMessageInput.setOnFocusChangeListener((v, hasFocus) -> updateInputIconsVisibility());
+        _binding.etMessageInput.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateInputIconsVisibility();
+            }
+            @Override public void afterTextChanged(android.text.Editable s) {}
+        });
     }
 
     private void loadConversationData() {
@@ -283,12 +405,38 @@ public class SkinChatFragment extends DialogFragment {
             ChatMessage item = list.get(position);
             if (holder instanceof LeftViewHolder) {
                 LeftViewHolder h = (LeftViewHolder) holder;
-                h.binding.tvMessage.setText(item.text);
+                if (item.text != null && item.text.startsWith("image:")) {
+                    h.binding.tvMessage.setVisibility(View.GONE);
+                    h.binding.ivMessageImage.setVisibility(View.VISIBLE);
+                    String imgUri = item.text.substring(6);
+                    com.bumptech.glide.Glide.with(h.binding.ivMessageImage.getContext())
+                            .load(imgUri)
+                            .placeholder(android.R.color.darker_gray)
+                            .error(android.R.color.darker_gray)
+                            .into(h.binding.ivMessageImage);
+                } else {
+                    h.binding.tvMessage.setVisibility(View.VISIBLE);
+                    h.binding.ivMessageImage.setVisibility(View.GONE);
+                    h.binding.tvMessage.setText(item.text);
+                }
                 h.binding.tvTime.setText(item.time);
                 AvatarLoader.loadAvatar(h.binding.ivAvatar, RootieBrandHelper.AVATAR_URL);
             } else if (holder instanceof RightViewHolder) {
                 RightViewHolder h = (RightViewHolder) holder;
-                h.binding.tvMessage.setText(item.text);
+                if (item.text != null && item.text.startsWith("image:")) {
+                    h.binding.tvMessage.setVisibility(View.GONE);
+                    h.binding.ivMessageImage.setVisibility(View.VISIBLE);
+                    String imgUri = item.text.substring(6);
+                    com.bumptech.glide.Glide.with(h.binding.ivMessageImage.getContext())
+                            .load(imgUri)
+                            .placeholder(android.R.color.darker_gray)
+                            .error(android.R.color.darker_gray)
+                            .into(h.binding.ivMessageImage);
+                } else {
+                    h.binding.tvMessage.setVisibility(View.VISIBLE);
+                    h.binding.ivMessageImage.setVisibility(View.GONE);
+                    h.binding.tvMessage.setText(item.text);
+                }
                 h.binding.tvTime.setText(item.time);
             } else if (holder instanceof TimeViewHolder) {
                 TimeViewHolder h = (TimeViewHolder) holder;
