@@ -389,11 +389,10 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void loadVouchersFromFirebase() {
-        new Thread(() -> {
-            List<VoucherEntity> vouchers = new FirestoreService().fetchAllVouchers();
-            if (!isAdded()) return;
-            requireActivity().runOnUiThread(() -> bindVouchers(vouchers));
-        }).start();
+        new FirestoreService().fetchVouchers(vouchers -> {
+            if (!isAdded() || binding == null) return;
+            bindVouchers(vouchers);
+        });
     }
 
     private void bindVouchers(List<VoucherEntity> vouchers) {
@@ -404,13 +403,21 @@ public class HomeFragment extends RootieFragment {
         }
         binding.sectionVouchers.setVisibility(View.VISIBLE);
         voucherCategoryAdapter.submitCategories(buildVoucherCategories(allVouchers));
-        selectedVoucherCategory = "Tất cả";
         filterVouchersByCategory("Tất cả");
     }
 
     private List<String> buildVoucherCategories(List<VoucherEntity> vouchers) {
         Set<String> categories = new LinkedHashSet<>();
         categories.add("Tất cả");
+        String[] presets = {"🔥 Flash Sale", "Chăm sóc da", "Combo & Quà", "Freeship", "Giảm giá"};
+        for (String preset : presets) {
+            for (VoucherEntity voucher : vouchers) {
+                if (matchesCategory(voucher, preset)) {
+                    categories.add(preset);
+                    break;
+                }
+            }
+        }
         for (VoucherEntity voucher : vouchers) {
             String category = voucher.getCategory();
             if (category != null && !category.trim().isEmpty()) {
@@ -418,6 +425,16 @@ public class HomeFragment extends RootieFragment {
             }
         }
         return new ArrayList<>(categories);
+    }
+
+    private boolean matchesCategory(VoucherEntity voucher, String filter) {
+        if ("Tất cả".equals(filter)) return true;
+        String category = voucher.getCategory() != null ? voucher.getCategory().toLowerCase(Locale.ROOT) : "";
+        String type = voucher.getType() != null ? voucher.getType().toLowerCase(Locale.ROOT) : "";
+        String normalized = filter.toLowerCase(Locale.ROOT).replace("🔥 ", "");
+        return category.contains(normalized)
+                || type.contains(normalized.replace(" ", "_"))
+                || ("freeship".equals(normalized) && (type.contains("free") || category.contains("free")));
     }
 
     private void filterVouchersByCategory(String category) {
@@ -428,7 +445,8 @@ public class HomeFragment extends RootieFragment {
         }
         List<VoucherEntity> filtered = new ArrayList<>();
         for (VoucherEntity voucher : allVouchers) {
-            if (category.equalsIgnoreCase(voucher.getCategory())) {
+            if (matchesCategory(voucher, category)
+                    || category.equalsIgnoreCase(voucher.getCategory())) {
                 filtered.add(voucher);
             }
         }
@@ -643,6 +661,7 @@ public class HomeFragment extends RootieFragment {
         setupStreakWidget();
         setupQuizReminder();
         AccountSyncHelper.sync(requireContext(), null);
+        loadVouchersFromFirebase();
     }
 
     @Override

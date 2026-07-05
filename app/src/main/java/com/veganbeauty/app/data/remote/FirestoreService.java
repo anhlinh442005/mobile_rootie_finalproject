@@ -26,6 +26,8 @@ import com.veganbeauty.app.data.local.entities.UserMemoryEntity;
 import com.veganbeauty.app.data.local.entities.VoucherEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -114,52 +116,86 @@ public class FirestoreService {
         }
     }
 
+    public interface VouchersCallback {
+        void onLoaded(@NonNull List<VoucherEntity> vouchers);
+    }
+
+    public void fetchVouchers(@NonNull VouchersCallback callback) {
+        db.collection("vouchers").get()
+                .addOnSuccessListener(snapshot -> callback.onLoaded(parseVoucherSnapshot(snapshot)))
+                .addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    callback.onLoaded(new ArrayList<>());
+                });
+    }
+
     public List<VoucherEntity> fetchAllVouchers() {
         try {
             QuerySnapshot snapshot = Tasks.await(db.collection("vouchers").get());
-            List<VoucherEntity> vouchers = new ArrayList<>();
-            for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                VoucherEntity voucher = mapVoucherDocument(doc);
-                if (voucher != null && voucher.isActive()) {
-                    vouchers.add(voucher);
-                }
-            }
-            vouchers.sort((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()));
-            return vouchers;
+            return parseVoucherSnapshot(snapshot);
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
+    private List<VoucherEntity> parseVoucherSnapshot(QuerySnapshot snapshot) {
+        List<VoucherEntity> vouchers = new ArrayList<>();
+        for (DocumentSnapshot doc : snapshot.getDocuments()) {
+            VoucherEntity voucher = mapVoucherDocument(doc);
+            if (voucher != null && voucher.isActive()) {
+                vouchers.add(voucher);
+            }
+        }
+        vouchers.sort((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()));
+        return vouchers;
+    }
+
     private VoucherEntity mapVoucherDocument(DocumentSnapshot doc) {
         Boolean active = doc.getBoolean("isActive");
         if (active == null) active = doc.getBoolean("is_active");
+        if (active == null) active = doc.getBoolean("active");
         if (active == null) active = true;
         if (!active) return null;
 
-        String title = firstNonEmpty(doc.getString("title"), "");
-        String code = firstNonEmpty(doc.getString("code"), "");
+        String title = firstNonEmpty(
+                doc.getString("title"),
+                doc.getString("name"),
+                doc.getString("tieu_de"),
+                ""
+        );
+        String code = firstNonEmpty(
+                doc.getString("code"),
+                doc.getString("voucherCode"),
+                doc.getString("ma"),
+                doc.getString("voucher_code"),
+                ""
+        );
         if (title.isEmpty() || code.isEmpty()) return null;
 
-        String description = firstNonEmpty(doc.getString("description"), "");
+        String description = firstNonEmpty(
+                doc.getString("description"),
+                doc.getString("content"),
+                doc.getString("mo_ta"),
+                ""
+        );
         String type = firstNonEmpty(doc.getString("type"), "discount");
-        String category = firstNonEmpty(doc.getString("category"), "");
+        String category = firstNonEmpty(doc.getString("category"), doc.getString("loai"), "");
         if (category.isEmpty()) {
             category = mapVoucherTypeToCategory(type);
         }
 
         String expiryDate = firstNonEmpty(doc.getString("hsd"), "");
         if (expiryDate.isEmpty()) {
-            expiryDate = firstNonEmpty(doc.getString("expiryDate"), "");
+            expiryDate = firstNonEmpty(doc.getString("expiryDate"), doc.getString("expiration"), "");
         }
 
-        String offerType = firstNonEmpty(doc.getString("offerType"), "fixed_amount");
-        long discountValue = numberAsLong(doc.get("discountValue"));
-        long minOrderValue = numberAsLong(doc.get("minOrderValue"));
+        String offerType = firstNonEmpty(doc.getString("offerType"), doc.getString("offer_type"), "fixed_amount");
+        long discountValue = numberAsLong(firstPresent(doc, "discountValue", "discount_value", "discount"));
+        long minOrderValue = numberAsLong(firstPresent(doc, "minOrderValue", "min_order_value", "minOrder"));
 
-        String badge = doc.getString("badge");
-        if (badge == null || badge.trim().isEmpty()) {
+        String badge = firstNonEmpty(doc.getString("badge"), doc.getString("tag"), "");
+        if (badge.isEmpty()) {
             Long qty = doc.getLong("quantity");
             if (qty != null && qty > 0 && qty <= 50) {
                 badge = "Sắp hết mã";
@@ -172,8 +208,9 @@ public class FirestoreService {
         }
 
         int sortOrder = 0;
-        if (doc.get("sortOrder") instanceof Number) {
-            sortOrder = ((Number) doc.get("sortOrder")).intValue();
+        Object sortRaw = firstPresent(doc, "sortOrder", "sort_order", "order");
+        if (sortRaw instanceof Number) {
+            sortOrder = ((Number) sortRaw).intValue();
         }
 
         return new VoucherEntity(
@@ -192,6 +229,14 @@ public class FirestoreService {
                 sortOrder,
                 quantity
         );
+    }
+
+    private static Object firstPresent(DocumentSnapshot doc, String... keys) {
+        for (String key : keys) {
+            Object value = doc.get(key);
+            if (value != null) return value;
+        }
+        return null;
     }
 
     private static String mapVoucherTypeToCategory(String type) {
@@ -219,9 +264,11 @@ public class FirestoreService {
         return 0L;
     }
 
-    private static String firstNonEmpty(String value, String fallback) {
-        if (value != null && !value.trim().isEmpty()) return value.trim();
-        return fallback;
+    private static String firstNonEmpty(String... values) {
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) return value.trim();
+        }
+        return "";
     }
 
     public ProductEntity fetchProductByBarcode(String barcode) {
