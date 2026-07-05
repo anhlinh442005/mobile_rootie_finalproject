@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.UserEntity;
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 import com.veganbeauty.app.utils.RootieBrandHelper;
 
 import org.json.JSONArray;
@@ -35,7 +36,7 @@ public class ComNotificationViewModel extends ViewModel {
 
     private final MutableLiveData<List<ComNotificationItem>> notifications = new MutableLiveData<>();
     private final MutableLiveData<List<ComNotificationListItem>> filteredNotifications = new MutableLiveData<>();
-    private final MutableLiveData<String> activeTab = new MutableLiveData<>("ALL");
+    private final MutableLiveData<String> activeTab = new MutableLiveData<>("POST");
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -49,6 +50,12 @@ public class ComNotificationViewModel extends ViewModel {
     }
 
     public void initData(Context context) {
+        if (CommunityNotificationRepository.isGuest(context)) {
+            List<ComNotificationItem> empty = new ArrayList<>();
+            notifications.postValue(empty);
+            applyFilter(empty);
+            return;
+        }
         executor.execute(() -> {
             List<ComNotificationItem> loadedList = loadNotificationsFromLocal(context);
             boolean needsRegen = loadedList != null && !loadedList.isEmpty();
@@ -76,6 +83,7 @@ public class ComNotificationViewModel extends ViewModel {
             final List<ComNotificationItem> finalList = loadedList;
             notifications.postValue(finalList);
             applyFilter(finalList);
+            CommunityNotificationRepository.getInstance(context).refresh();
         });
     }
 
@@ -122,6 +130,7 @@ public class ComNotificationViewModel extends ViewModel {
     }
 
     private void saveNotificationsToLocal(Context context, List<ComNotificationItem> items) {
+        if (CommunityNotificationRepository.isGuest(context)) return;
         try {
             JSONArray jsonArray = new JSONArray();
             for (ComNotificationItem item : items) {
@@ -140,7 +149,7 @@ public class ComNotificationViewModel extends ViewModel {
                 obj.put("commentId", item.getCommentId() != null ? item.getCommentId() : "");
                 jsonArray.put(obj);
             }
-            File file = new File(context.getFilesDir(), "local_notifications.json");
+            File file = CommunityNotificationRepository.getNotificationsFile(context);
             FileWriter writer = new FileWriter(file);
             writer.write(jsonArray.toString());
             writer.close();
@@ -150,8 +159,9 @@ public class ComNotificationViewModel extends ViewModel {
     }
 
     private List<ComNotificationItem> loadNotificationsFromLocal(Context context) {
+        if (CommunityNotificationRepository.isGuest(context)) return null;
         try {
-            File file = new File(context.getFilesDir(), "local_notifications.json");
+            File file = CommunityNotificationRepository.getNotificationsFile(context);
             if (!file.exists()) return null;
             BufferedReader br = new BufferedReader(new FileReader(file));
             StringBuilder sb = new StringBuilder();
@@ -244,8 +254,6 @@ public class ComNotificationViewModel extends ViewModel {
                         finalName = "Hệ thống";
                     }
                     finalAvatar = RootieBrandHelper.AVATAR_URL;
-                } else if (finalName.equals("Hệ thống") || finalName.equals("Hệ thống Rootie")) {
-                    finalAvatar = RootieBrandHelper.AVATAR_URL;
                 } else if (finalAvatar.isEmpty()) {
                     switch (userId) {
                         case "75675216": finalAvatar = "https://i.pinimg.com/736x/b1/f4/f1/b1f4f17046008cee09ece025370ebae3.jpg"; break;
@@ -292,6 +300,7 @@ public class ComNotificationViewModel extends ViewModel {
         notifications.setValue(current);
         saveNotificationsToLocal(context, current);
         applyFilter();
+        CommunityNotificationRepository.getInstance(context).refresh();
     }
 
     public void markAsRead(Context context, String id) {
@@ -305,7 +314,7 @@ public class ComNotificationViewModel extends ViewModel {
         }
         notifications.setValue(current);
         saveNotificationsToLocal(context, current);
-        applyFilter();
+        CommunityNotificationRepository.getInstance(context).refresh();
     }
 
     public void deleteNotification(Context context, String id) {
@@ -318,6 +327,7 @@ public class ComNotificationViewModel extends ViewModel {
         notifications.setValue(updated);
         saveNotificationsToLocal(context, updated);
         applyFilter();
+        CommunityNotificationRepository.getInstance(context).refresh();
     }
 
     public void deleteAllNotifications(Context context) {
@@ -331,6 +341,7 @@ public class ComNotificationViewModel extends ViewModel {
         notifications.setValue(updated);
         saveNotificationsToLocal(context, updated);
         applyFilter();
+        CommunityNotificationRepository.getInstance(context).refresh();
     }
 
     private void applyFilter() {
@@ -342,21 +353,12 @@ public class ComNotificationViewModel extends ViewModel {
             allNotis = notifications.getValue();
         }
         if (allNotis == null) allNotis = new ArrayList<>();
-        String tab = activeTab.getValue() != null ? activeTab.getValue() : "ALL";
+        String tab = activeTab.getValue() != null ? activeTab.getValue() : "POST";
         String query = searchQuery.getValue() != null ? searchQuery.getValue() : "";
 
         List<ComNotificationItem> tabFiltered = new ArrayList<>();
         for (ComNotificationItem item : allNotis) {
-            if ("ORDER".equals(item.getType())) {
-                continue;
-            }
-            if ("ALL".equals(tab)) {
-                tabFiltered.add(item);
-            } else if ("UNREAD".equals(tab)) {
-                if (!item.isRead()) tabFiltered.add(item);
-            } else if (item.getType().equals(tab)) {
-                tabFiltered.add(item);
-            }
+            if (item.getType().equals(tab)) tabFiltered.add(item);
         }
 
         List<ComNotificationItem> searchFiltered;

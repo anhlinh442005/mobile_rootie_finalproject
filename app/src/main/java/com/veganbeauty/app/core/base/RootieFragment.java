@@ -26,6 +26,8 @@ import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.home.NotificationBadgeHelper;
 
+import kotlinx.coroutines.flow.Flow;
+
 public abstract class RootieFragment extends Fragment {
 
     @Override
@@ -72,6 +74,15 @@ public abstract class RootieFragment extends Fragment {
 
     protected boolean shouldSetupNotificationBell() {
         return true;
+    }
+
+    /**
+     * Data source for the bell badge count. Screens inside the community section (which have
+     * their own notification stream, separate from the general/account one) must override this
+     * so their badge never gets bound to the general unread count.
+     */
+    protected Flow<Integer> getUnreadCountFlow(Context context) {
+        return NotificationRepository.getInstance(context).getUnreadCount();
     }
 
     private void injectNotificationButtonIfNeeded(View view) {
@@ -263,6 +274,10 @@ public abstract class RootieFragment extends Fragment {
 
         if (notificationBtn == null) return;
 
+        // Capture this before any wrapping below reassigns notificationBtn to a new
+        // container view, otherwise the check further down always sees an unset listener.
+        boolean hadOwnClickListener = notificationBtn.hasOnClickListeners();
+
         Context ctx = requireContext();
         float density = ctx.getResources().getDisplayMetrics().density;
 
@@ -394,7 +409,7 @@ public abstract class RootieFragment extends Fragment {
         }
 
         // Only wire default navigation when the screen did not set its own handler in setupUI().
-        if (!notificationBtn.hasOnClickListeners()) {
+        if (!hadOwnClickListener) {
             notificationBtn.setOnClickListener(v -> {
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new AccountNotificationFragment())
@@ -406,7 +421,7 @@ public abstract class RootieFragment extends Fragment {
         if (badgeTextView != null) {
             TextView finalBadge = badgeTextView;
             FlowLiveDataConversions.asLiveData(
-                    NotificationRepository.getInstance(requireContext()).getUnreadCount()
+                    getUnreadCountFlow(requireContext())
             ).observe(getViewLifecycleOwner(), count ->
                     NotificationBadgeHelper.updateBadgeCount(finalBadge, count));
         }

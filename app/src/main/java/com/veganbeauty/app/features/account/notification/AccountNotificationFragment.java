@@ -91,10 +91,6 @@ public class AccountNotificationFragment extends RootieFragment {
         listAdapter = new NotificationListAdapter(
                 item -> {
                     viewModel.markAsRead(item.getId());
-                    handleNotificationNavigation(item);
-                },
-                item -> {
-                    viewModel.markAsRead(item.getId());
                     if ("COPY MÃ".equals(item.getActionText()) && item.getVoucherCode() != null && !item.getVoucherCode().isEmpty()) {
                         if (getContext() != null) {
                             copyToClipboard(getContext(), item.getVoucherCode());
@@ -130,7 +126,21 @@ public class AccountNotificationFragment extends RootieFragment {
             }
         });
 
+        String userAvatar = ProfileSession.getAvatar(requireContext());
+        if (userAvatar != null && !userAvatar.isEmpty()) {
+            com.bumptech.glide.Glide.with(this).load(userAvatar).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(getBinding().ivUserAvatar);
+        } else {
+            com.bumptech.glide.Glide.with(this).load(R.drawable.img_avatar).circleCrop().into(getBinding().ivUserAvatar);
+        }
+        getBinding().ivUserAvatar.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(requireContext(), com.veganbeauty.app.MainActivity.class);
+            intent.putExtra("navigateToTab", "profile");
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        });
+
         getBinding().rvNotifications.setAdapter(listAdapter);
+        setupSwipeGesture();
 
         getBinding().tabAll.setOnClickListener(v -> viewModel.selectTab("Tất cả"));
         getBinding().tabPromo.setOnClickListener(v -> viewModel.selectTab("Khuyến mãi"));
@@ -166,6 +176,76 @@ public class AccountNotificationFragment extends RootieFragment {
         });
     }
 
+    private void setupSwipeGesture() {
+        final float actionWidthPx = 128 * getResources().getDisplayMetrics().density;
+        final float swipeThreshold = actionWidthPx * 0.3f;
+
+        getBinding().rvNotifications.addOnItemTouchListener(new androidx.recyclerview.widget.RecyclerView.OnItemTouchListener() {
+            private float startX, startY;
+            private boolean isSwiping = false;
+            private NotificationListAdapter.NotificationViewHolder swipeHolder = null;
+
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull androidx.recyclerview.widget.RecyclerView rv, @NonNull android.view.MotionEvent e) {
+                switch (e.getAction()) {
+                    case android.view.MotionEvent.ACTION_DOWN:
+                        startX = e.getX(); startY = e.getY(); isSwiping = false; swipeHolder = null;
+                        View child = rv.findChildViewUnder(startX, startY);
+                        if (child != null) {
+                            androidx.recyclerview.widget.RecyclerView.ViewHolder vh = rv.getChildViewHolder(child);
+                            if (vh instanceof NotificationListAdapter.NotificationViewHolder) {
+                                swipeHolder = (NotificationListAdapter.NotificationViewHolder) vh;
+                            }
+                        }
+                        break;
+                    case android.view.MotionEvent.ACTION_MOVE:
+                        if (swipeHolder == null) break;
+                        float dx = e.getX() - startX;
+                        float dy = e.getY() - startY;
+                        if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12 && dx < 0) {
+                            isSwiping = true;
+                            rv.getParent().requestDisallowInterceptTouchEvent(true);
+                        }
+                        break;
+                }
+                return isSwiping;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull androidx.recyclerview.widget.RecyclerView rv, @NonNull android.view.MotionEvent e) {
+                if (swipeHolder == null) return;
+                float totalDx = e.getX() - startX;
+
+                switch (e.getAction()) {
+                    case android.view.MotionEvent.ACTION_MOVE:
+                        if (isSwiping) {
+                            float tx = Math.max(-actionWidthPx, Math.min(0f, totalDx));
+                            swipeHolder.getForeground().setTranslationX(tx);
+                        }
+                        break;
+
+                    case android.view.MotionEvent.ACTION_UP:
+                    case android.view.MotionEvent.ACTION_CANCEL:
+                        if (isSwiping) {
+                            float finalTx = swipeHolder.getForeground().getTranslationX();
+                            if (finalTx < -swipeThreshold) {
+                                listAdapter.openItem(swipeHolder, actionWidthPx);
+                            } else {
+                                listAdapter.closeOpenedItem();
+                                swipeHolder.animateForeground(0f);
+                            }
+                            rv.getParent().requestDisallowInterceptTouchEvent(false);
+                        }
+                        isSwiping = false; swipeHolder = null;
+                        break;
+                }
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean b) {}
+        });
+    }
+
     @Override
     public void observeViewModel() {
         viewModel.notificationItems.observe(getViewLifecycleOwner(), items -> {
@@ -189,7 +269,7 @@ public class AccountNotificationFragment extends RootieFragment {
         for (Map.Entry<String, TextView> entry : tabs.entrySet()) {
             TextView textView = entry.getValue();
             if (entry.getKey().equalsIgnoreCase(activeTab)) {
-                textView.setBackgroundResource(R.drawable.bg_btn_buy);
+                textView.setBackgroundResource(R.drawable.tab_active_bg);
                 textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
             } else {
                 textView.setBackgroundResource(R.drawable.tab_inactive_bg);

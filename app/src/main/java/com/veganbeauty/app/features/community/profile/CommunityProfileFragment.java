@@ -64,6 +64,9 @@ import java.util.Set;
 import kotlin.Unit;
 import kotlinx.coroutines.BuildersKt;
 import kotlinx.coroutines.Dispatchers;
+import kotlinx.coroutines.flow.Flow;
+
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 
 public class CommunityProfileFragment extends RootieFragment {
 
@@ -658,6 +661,11 @@ public class CommunityProfileFragment extends RootieFragment {
                 SideMenuHelper.bindCurrentUser(navView);
             }
         }
+    }
+
+    @Override
+    protected Flow<Integer> getUnreadCountFlow(Context context) {
+        return CommunityNotificationRepository.getInstance(context).getUnreadCount();
     }
 
     @Override

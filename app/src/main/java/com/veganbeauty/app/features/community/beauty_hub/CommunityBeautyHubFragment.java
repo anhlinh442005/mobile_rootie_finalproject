@@ -24,6 +24,7 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CommunityBlogEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentBeautyHubBinding;
 import com.veganbeauty.app.features.community.blog.CommunityBlogFragment;
@@ -41,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import kotlinx.coroutines.flow.Flow;
 
 public class CommunityBeautyHubFragment extends RootieFragment {
 
@@ -294,6 +297,11 @@ public class CommunityBeautyHubFragment extends RootieFragment {
             }
             notebookAdapter.updateData(notebooks);
         });
+    }
+
+    @Override
+    protected Flow<Integer> getUnreadCountFlow(Context context) {
+        return CommunityNotificationRepository.getInstance(context).getUnreadCount();
     }
 
     @Override

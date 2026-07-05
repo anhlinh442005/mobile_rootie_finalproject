@@ -142,6 +142,7 @@ public class CommunityNotificationFragment extends RootieFragment {
                         }
                         break;
                     case android.view.MotionEvent.ACTION_MOVE:
+                        if (swipeHolder == null) break;
                         float dx = e.getX() - startX;
                         float dy = e.getY() - startY;
                         if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12 && dx < 0) {
@@ -150,7 +151,7 @@ public class CommunityNotificationFragment extends RootieFragment {
                         }
                         break;
                 }
-                return false;
+                return isSwiping;
             }
 
             @Override
@@ -249,7 +250,7 @@ public class CommunityNotificationFragment extends RootieFragment {
         boolean postsActive = "POST".equals(activeTab);
         boolean interactionsActive = "INTERACTION".equals(activeTab);
 
-        int activeBg = R.drawable.bg_btn_buy;
+        int activeBg = R.drawable.tab_active_bg;
         int inactiveBg = R.drawable.tab_inactive_bg;
         _binding.tabAll.setBackgroundResource(allActive ? activeBg : inactiveBg);
         _binding.tabUnread.setBackgroundResource(unreadActive ? activeBg : inactiveBg);

@@ -2,6 +2,7 @@ package com.veganbeauty.app.features.community.notification;
 
 import android.content.Context;
 
+import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 import com.veganbeauty.app.utils.RootieBrandHelper;
 
 import org.json.JSONArray;
@@ -32,7 +33,9 @@ public class CommunityNotificationHelper {
             String postId,
             String commentId
     ) {
-        File file = new File(context.getFilesDir(), "local_notifications.json");
+        if (CommunityNotificationRepository.isGuest(context)) return;
+
+        File file = CommunityNotificationRepository.getNotificationsFile(context);
         List<ComNotificationItem> list = new ArrayList<>();
 
         if (file.exists()) {
@@ -152,6 +155,7 @@ public class CommunityNotificationHelper {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(newArray.toString().getBytes(StandardCharsets.UTF_8));
             }
+            CommunityNotificationRepository.getInstance(context).refresh();
         } catch (Exception e) {
             e.printStackTrace();
         }

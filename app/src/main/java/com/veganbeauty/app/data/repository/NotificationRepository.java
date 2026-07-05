@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.NotificationItem;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,16 +35,47 @@ public class NotificationRepository {
     private final MutableStateFlow<List<NotificationItem>> _notifications = kotlinx.coroutines.flow.StateFlowKt.MutableStateFlow(new ArrayList<>());
     public final StateFlow<List<NotificationItem>> notifications = _notifications;
 
+    private String currentUserId;
+
+    /** Empty means "khách vãng lai" (not logged in) — such sessions must never see any notification. */
+    private String resolveUserId() {
+        String userId = ProfileSessionHelper.getEffectiveUserId(context);
+        return userId == null ? "" : userId.trim();
+    }
+
+    private boolean isGuest() {
+        return currentUserId == null || currentUserId.isEmpty();
+    }
+
+    private String getDeletedIdsKey() {
+        return "deleted_ids_" + currentUserId;
+    }
+
+    private String getNotificationsFileName() {
+        return "local_account_notifications_" + currentUserId + ".json";
+    }
+
+    /** Reloads data scoped to the currently logged in user whenever the session changes. */
+    private void ensureUserScope() {
+        String userId = resolveUserId();
+        if (!userId.equals(currentUserId)) {
+            currentUserId = userId;
+            refreshNotifications();
+        }
+    }
+
     private Set<String> getDeletedNotificationIds() {
+        if (isGuest()) return new HashSet<>();
         android.content.SharedPreferences prefs = context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE);
-        return prefs.getStringSet("deleted_ids", new HashSet<>());
+        return prefs.getStringSet(getDeletedIdsKey(), new HashSet<>());
     }
 
     private void addDeletedNotificationId(String id) {
+        if (isGuest()) return;
         android.content.SharedPreferences prefs = context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE);
-        Set<String> deletedIds = new HashSet<>(prefs.getStringSet("deleted_ids", new HashSet<>()));
+        Set<String> deletedIds = new HashSet<>(prefs.getStringSet(getDeletedIdsKey(), new HashSet<>()));
         deletedIds.add(id);
-        prefs.edit().putStringSet("deleted_ids", deletedIds).apply();
+        prefs.edit().putStringSet(getDeletedIdsKey(), deletedIds).apply();
     }
 
     private final MutableStateFlow<Integer> _unreadCount = kotlinx.coroutines.flow.StateFlowKt.MutableStateFlow(0);
@@ -51,6 +83,7 @@ public class NotificationRepository {
     private NotificationRepository(Context context) {
         this.context = context.getApplicationContext();
         this.localJsonReader = new LocalJsonReader(this.context);
+        this.currentUserId = resolveUserId();
         refreshNotifications();
     }
 
@@ -74,6 +107,12 @@ public class NotificationRepository {
     }
 
     public void refreshNotifications() {
+        if (isGuest()) {
+            _notifications.setValue(new ArrayList<>());
+            _unreadCount.setValue(0);
+            return;
+        }
+
         List<NotificationItem> assetList = localJsonReader.getAllNotifications();
         Set<String> deletedIds = getDeletedNotificationIds();
         
@@ -133,7 +172,8 @@ public class NotificationRepository {
     }
 
     private List<NotificationItem> loadNotificationsFromLocal() {
-        File file = new File(context.getFilesDir(), "local_account_notifications.json");
+        if (isGuest()) return new ArrayList<>();
+        File file = new File(context.getFilesDir(), getNotificationsFileName());
         if (!file.exists()) return new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
@@ -172,6 +212,7 @@ public class NotificationRepository {
     }
 
     private void saveNotificationsToLocal(List<NotificationItem> list) {
+        if (isGuest()) return;
         try {
             JSONArray jsonArray = new JSONArray();
             for (NotificationItem item : list) {
@@ -192,7 +233,7 @@ public class NotificationRepository {
                 obj.put("scheduleId", item.getScheduleId() != null ? item.getScheduleId() : "");
                 jsonArray.put(obj);
             }
-            File file = new File(context.getFilesDir(), "local_account_notifications.json");
+            File file = new File(context.getFilesDir(), getNotificationsFileName());
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(jsonArray.toString().getBytes(StandardCharsets.UTF_8));
             }
@@ -260,6 +301,7 @@ public class NotificationRepository {
     }
 
     public void addNotification(NotificationItem item) {
+        if (isGuest()) return;
         List<NotificationItem> currentList = new ArrayList<>(_notifications.getValue());
         currentList.removeIf(it -> it.getId().equals(item.getId()));
         currentList.add(0, item);
@@ -278,6 +320,7 @@ public class NotificationRepository {
                 }
             }
         }
+        INSTANCE.ensureUserScope();
         return INSTANCE;
     }
 }
