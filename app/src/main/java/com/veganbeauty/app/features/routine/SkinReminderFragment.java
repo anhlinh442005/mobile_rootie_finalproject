@@ -2,14 +2,21 @@ package com.veganbeauty.app.features.routine;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.FlowLiveDataConversions;
 
 import com.veganbeauty.app.R;
@@ -19,6 +26,8 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.ItemStreakDayBinding;
 import com.veganbeauty.app.databinding.SkinReminderBinding;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
+import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,6 +38,7 @@ import java.util.Set;
 public class SkinReminderFragment extends RootieFragment {
 
     private SkinReminderBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
 
     @Nullable
     @Override
@@ -84,6 +94,16 @@ public class SkinReminderFragment extends RootieFragment {
                         .commit());
 
         binding.btnSocialTask.setOnClickListener(v -> triggerSocialTaskReward());
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.topBar,
+                binding.reminderScroll,
+                0
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.reminderScroll);
     }
 
     private void refreshUI() {
@@ -103,6 +123,7 @@ public class SkinReminderFragment extends RootieFragment {
 
         int currentStreak = ProfileSession.getSkinStreak(ctx);
         binding.tvStreakDays.setText(String.valueOf(currentStreak));
+        binding.tvStreakDays.setTextColor(Color.parseColor("#FF5722"));
 
         String motivationMsg;
         if (currentStreak == 0) motivationMsg = "Hãy bắt đầu ngày đầu tiên để chăm sóc làn da của bạn nhé! ✨";
@@ -155,50 +176,20 @@ public class SkinReminderFragment extends RootieFragment {
             binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#677559"));
             binding.btnStartMorningRoutine.setText("Đã hoàn thành");
             binding.btnStartMorningRoutine.setEnabled(true);
-            binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
-
-            binding.tvMorningRewardXu.setText("+ 10 xu");
-            binding.tvMorningRewardXu.setTextColor(Color.parseColor("#8E8E93"));
-            binding.ivMorningRewardCoin.setColorFilter(Color.parseColor("#8E8E93"));
-            binding.tvMorningRewardFrequency.setText("HÀNG NGÀY");
-            binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-            binding.layoutMorningReward.setAlpha(1.0f);
-            if (binding.layoutMorningReward.getChildAt(0) != null) binding.layoutMorningReward.getChildAt(0).setAlpha(0.5f);
-            if (binding.layoutMorningReward.getChildAt(1) != null) binding.layoutMorningReward.getChildAt(1).setAlpha(0.5f);
-            if (binding.layoutMorningReward.getChildAt(2) != null) binding.layoutMorningReward.getChildAt(2).setAlpha(hasCompletedMorningToday ? 1.0f : 0.5f);
+            applyRoutineButtonIcon(binding.btnStartMorningRoutine, R.drawable.ic_check);
         } else {
             if (hour < 6) {
                 binding.tvMorningHeaderStatus.setText("SÁNG NAY • CHƯA ĐẾN GIỜ");
                 binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"));
                 binding.btnStartMorningRoutine.setText("Chưa đến giờ");
                 binding.btnStartMorningRoutine.setEnabled(true);
-                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
-
-                binding.tvMorningRewardXu.setText("+ 10 xu");
-                binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
-                binding.ivMorningRewardCoin.clearColorFilter();
-                binding.tvMorningRewardFrequency.setText("HÀNG NGÀY");
-                binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-                binding.layoutMorningReward.setAlpha(1.0f);
-                if (binding.layoutMorningReward.getChildAt(0) != null) binding.layoutMorningReward.getChildAt(0).setAlpha(1.0f);
-                if (binding.layoutMorningReward.getChildAt(1) != null) binding.layoutMorningReward.getChildAt(1).setAlpha(1.0f);
-                if (binding.layoutMorningReward.getChildAt(2) != null) binding.layoutMorningReward.getChildAt(2).setAlpha(1.0f);
+                applyRoutineButtonIcon(binding.btnStartMorningRoutine, R.drawable.ic_leaf);
             } else if (hour >= 11) {
                 binding.tvMorningHeaderStatus.setText("SÁNG NAY • ĐÃ BỎ LỠ");
                 binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#FF3B30"));
                 binding.btnStartMorningRoutine.setText("Đã bỏ lỡ");
                 binding.btnStartMorningRoutine.setEnabled(true);
-                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
-
-                binding.tvMorningRewardXu.setText("+ 10 xu");
-                binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
-                binding.ivMorningRewardCoin.clearColorFilter();
-                binding.tvMorningRewardFrequency.setText("HÀNG NGÀY");
-                binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-                binding.layoutMorningReward.setAlpha(1.0f);
-                if (binding.layoutMorningReward.getChildAt(0) != null) binding.layoutMorningReward.getChildAt(0).setAlpha(0.5f);
-                if (binding.layoutMorningReward.getChildAt(1) != null) binding.layoutMorningReward.getChildAt(1).setAlpha(0.5f);
-                if (binding.layoutMorningReward.getChildAt(2) != null) binding.layoutMorningReward.getChildAt(2).setAlpha(0.5f);
+                applyRoutineButtonIcon(binding.btnStartMorningRoutine, R.drawable.ic_leaf);
             } else {
                 if (completedMorningStepsCount > 0) {
                     binding.tvMorningHeaderStatus.setText("SÁNG NAY • ĐANG THỰC HIỆN");
@@ -209,21 +200,11 @@ public class SkinReminderFragment extends RootieFragment {
                 }
                 binding.tvMorningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"));
                 binding.btnStartMorningRoutine.setEnabled(true);
-                binding.btnStartMorningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
-
-                binding.tvMorningRewardXu.setText("+ 10 xu");
-                binding.tvMorningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
-                binding.ivMorningRewardCoin.clearColorFilter();
-                binding.tvMorningRewardFrequency.setText("HÀNG NGÀY");
-                binding.tvMorningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-                binding.layoutMorningReward.setAlpha(1.0f);
-                if (binding.layoutMorningReward.getChildAt(0) != null) binding.layoutMorningReward.getChildAt(0).setAlpha(1.0f);
-                if (binding.layoutMorningReward.getChildAt(1) != null) binding.layoutMorningReward.getChildAt(1).setAlpha(1.0f);
-                if (binding.layoutMorningReward.getChildAt(2) != null) binding.layoutMorningReward.getChildAt(2).setAlpha(1.0f);
+                applyRoutineButtonIcon(binding.btnStartMorningRoutine, R.drawable.ic_leaf);
             }
         }
 
-        // Evening Logic
+        boolean morningMissed = !isMorningSubmitted && hour >= 11;
         boolean isEveningActive = hour >= 18 || hour < 2;
         String eveningTargetDate;
         if (hour < 2) {
@@ -271,17 +252,7 @@ public class SkinReminderFragment extends RootieFragment {
             binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#677559"));
             binding.btnStartEveningRoutine.setText("Đã hoàn thành");
             binding.btnStartEveningRoutine.setEnabled(true);
-            binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
-
-            binding.tvEveningRewardXu.setText("+ 10 xu");
-            binding.tvEveningRewardXu.setTextColor(Color.parseColor("#8E8E93"));
-            binding.ivEveningRewardCoin.setColorFilter(Color.parseColor("#8E8E93"));
-            binding.tvEveningRewardFrequency.setText("HÀNG NGÀY");
-            binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-            binding.layoutEveningReward.setAlpha(1.0f);
-            if (binding.layoutEveningReward.getChildAt(0) != null) binding.layoutEveningReward.getChildAt(0).setAlpha(0.5f);
-            if (binding.layoutEveningReward.getChildAt(1) != null) binding.layoutEveningReward.getChildAt(1).setAlpha(0.5f);
-            if (binding.layoutEveningReward.getChildAt(2) != null) binding.layoutEveningReward.getChildAt(2).setAlpha(hasCompletedEveningToday ? 1.0f : 0.5f);
+            applyRoutineButtonIcon(binding.btnStartEveningRoutine, R.drawable.ic_check);
         } else {
             if (isEveningActive) {
                 String prefixStr = hour < 2 ? "TỐI QUA" : "TỐI NAY";
@@ -294,105 +265,30 @@ public class SkinReminderFragment extends RootieFragment {
                 }
                 binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"));
                 binding.btnStartEveningRoutine.setEnabled(true);
-                binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
-
-                binding.tvEveningRewardXu.setText("+ 10 xu");
-                binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
-                binding.ivEveningRewardCoin.clearColorFilter();
-                binding.tvEveningRewardFrequency.setText("HÀNG NGÀY");
-                binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-                binding.layoutEveningReward.setAlpha(1.0f);
-                if (binding.layoutEveningReward.getChildAt(0) != null) binding.layoutEveningReward.getChildAt(0).setAlpha(1.0f);
-                if (binding.layoutEveningReward.getChildAt(1) != null) binding.layoutEveningReward.getChildAt(1).setAlpha(1.0f);
-                if (binding.layoutEveningReward.getChildAt(2) != null) binding.layoutEveningReward.getChildAt(2).setAlpha(1.0f);
+                applyRoutineButtonIcon(binding.btnStartEveningRoutine, R.drawable.ic_leaf);
             } else {
                 binding.tvEveningHeaderStatus.setText("TỐI NAY • CHƯA ĐẾN GIỜ");
                 binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#3E4D44"));
                 binding.btnStartEveningRoutine.setText("Chưa đến giờ");
                 binding.btnStartEveningRoutine.setEnabled(true);
-                binding.btnStartEveningRoutine.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_leaf, 0, 0, 0);
-
-                binding.tvEveningRewardXu.setText("+ 10 xu");
-                binding.tvEveningRewardXu.setTextColor(Color.parseColor("#FFCC00"));
-                binding.ivEveningRewardCoin.clearColorFilter();
-                binding.tvEveningRewardFrequency.setText("HÀNG NGÀY");
-                binding.tvEveningRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-                binding.layoutEveningReward.setAlpha(1.0f);
-                if (binding.layoutEveningReward.getChildAt(0) != null) binding.layoutEveningReward.getChildAt(0).setAlpha(1.0f);
-                if (binding.layoutEveningReward.getChildAt(1) != null) binding.layoutEveningReward.getChildAt(1).setAlpha(1.0f);
-                if (binding.layoutEveningReward.getChildAt(2) != null) binding.layoutEveningReward.getChildAt(2).setAlpha(1.0f);
+                applyRoutineButtonIcon(binding.btnStartEveningRoutine, R.drawable.ic_leaf);
             }
-        }
-
-        if (currentStreak >= 7) {
-            binding.tvWeeklyRewardXu.setText("+ 50 xu");
-            binding.tvWeeklyRewardXu.setTextColor(Color.parseColor("#8E8E93"));
-            binding.ivWeeklyRewardCoin.setColorFilter(Color.parseColor("#8E8E93"));
-            binding.tvWeeklyRewardFrequency.setText("HÀNG TUẦN");
-            binding.tvWeeklyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-            binding.layoutWeeklyReward.setAlpha(1.0f);
-            if (binding.layoutWeeklyReward.getChildAt(0) != null) binding.layoutWeeklyReward.getChildAt(0).setAlpha(0.5f);
-            if (binding.layoutWeeklyReward.getChildAt(1) != null) binding.layoutWeeklyReward.getChildAt(1).setAlpha(0.5f);
-            if (binding.layoutWeeklyReward.getChildAt(2) != null) binding.layoutWeeklyReward.getChildAt(2).setAlpha(1.0f);
-        } else {
-            binding.tvWeeklyRewardXu.setText("+ 50 xu");
-            binding.tvWeeklyRewardXu.setTextColor(Color.parseColor("#E1C02E"));
-            binding.ivWeeklyRewardCoin.clearColorFilter();
-            binding.tvWeeklyRewardFrequency.setText("HÀNG TUẦN");
-            binding.tvWeeklyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-            binding.layoutWeeklyReward.setAlpha(1.0f);
-            if (binding.layoutWeeklyReward.getChildAt(0) != null) binding.layoutWeeklyReward.getChildAt(0).setAlpha(1.0f);
-            if (binding.layoutWeeklyReward.getChildAt(1) != null) binding.layoutWeeklyReward.getChildAt(1).setAlpha(1.0f);
-            if (binding.layoutWeeklyReward.getChildAt(2) != null) binding.layoutWeeklyReward.getChildAt(2).setAlpha(1.0f);
-        }
-
-        if (currentStreak >= 30) {
-            binding.tvLoyaltyRewardXu.setText("+ 200 xu");
-            binding.tvLoyaltyRewardXu.setTextColor(Color.parseColor("#8E8E93"));
-            binding.ivLoyaltyRewardCoin.setColorFilter(Color.parseColor("#8E8E93"));
-            binding.tvLoyaltyRewardFrequency.setText("HÀNG THÁNG");
-            binding.tvLoyaltyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-            binding.layoutLoyaltyReward.setAlpha(1.0f);
-            if (binding.layoutLoyaltyReward.getChildAt(0) != null) binding.layoutLoyaltyReward.getChildAt(0).setAlpha(0.5f);
-            if (binding.layoutLoyaltyReward.getChildAt(1) != null) binding.layoutLoyaltyReward.getChildAt(1).setAlpha(0.5f);
-            if (binding.layoutLoyaltyReward.getChildAt(2) != null) binding.layoutLoyaltyReward.getChildAt(2).setAlpha(1.0f);
-        } else {
-            binding.tvLoyaltyRewardXu.setText("+ 200 xu");
-            binding.tvLoyaltyRewardXu.setTextColor(Color.parseColor("#FFCC00"));
-            binding.ivLoyaltyRewardCoin.clearColorFilter();
-            binding.tvLoyaltyRewardFrequency.setText("HÀNG THÁNG");
-            binding.tvLoyaltyRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-            binding.layoutLoyaltyReward.setAlpha(1.0f);
-            if (binding.layoutLoyaltyReward.getChildAt(0) != null) binding.layoutLoyaltyReward.getChildAt(0).setAlpha(1.0f);
-            if (binding.layoutLoyaltyReward.getChildAt(1) != null) binding.layoutLoyaltyReward.getChildAt(1).setAlpha(1.0f);
-            if (binding.layoutLoyaltyReward.getChildAt(2) != null) binding.layoutLoyaltyReward.getChildAt(2).setAlpha(1.0f);
         }
 
         Set<String> completedSocialDates = ProfileSession.getSkinSocialCompletedDates(ctx);
         boolean hasCompletedSocialToday = completedSocialDates.contains(todayStr);
-        if (hasCompletedSocialToday) {
-            binding.tvSocialRewardXu.setText("+ 10 xu");
-            binding.tvSocialRewardXu.setTextColor(Color.parseColor("#8E8E93"));
-            binding.ivSocialRewardCoin.setColorFilter(Color.parseColor("#8E8E93"));
-            binding.tvSocialRewardFrequency.setText("MỖI LƯỢT");
-            binding.tvSocialRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-            binding.btnSocialTask.setAlpha(1.0f);
-            binding.btnSocialTask.setEnabled(false);
-            if (binding.btnSocialTask.getChildAt(0) != null) binding.btnSocialTask.getChildAt(0).setAlpha(0.5f);
-            if (binding.btnSocialTask.getChildAt(1) != null) binding.btnSocialTask.getChildAt(1).setAlpha(0.5f);
-            if (binding.btnSocialTask.getChildAt(2) != null) binding.btnSocialTask.getChildAt(2).setAlpha(1.0f);
-        } else {
-            binding.tvSocialRewardXu.setText("+ 10 xu");
-            binding.tvSocialRewardXu.setTextColor(Color.parseColor("#FFCC00"));
-            binding.ivSocialRewardCoin.clearColorFilter();
-            binding.tvSocialRewardFrequency.setText("MỖI LƯỢT");
-            binding.tvSocialRewardFrequency.setTextColor(Color.parseColor("#AEAEB2"));
-            binding.btnSocialTask.setAlpha(1.0f);
-            binding.btnSocialTask.setEnabled(true);
-            if (binding.btnSocialTask.getChildAt(0) != null) binding.btnSocialTask.getChildAt(0).setAlpha(1.0f);
-            if (binding.btnSocialTask.getChildAt(1) != null) binding.btnSocialTask.getChildAt(1).setAlpha(1.0f);
-            if (binding.btnSocialTask.getChildAt(2) != null) binding.btnSocialTask.getChildAt(2).setAlpha(1.0f);
-        }
+        binding.btnSocialTask.setEnabled(!hasCompletedSocialToday);
+
+        updateRewardCards(
+                isMorningSubmitted,
+                hasCompletedMorningToday,
+                morningMissed,
+                isEveningSubmitted,
+                hasCompletedEveningToday,
+                currentStreak >= 7,
+                currentStreak >= 30,
+                hasCompletedSocialToday
+        );
     }
 
     private String getRoutineDate(String type) {
@@ -448,23 +344,25 @@ public class SkinReminderFragment extends RootieFragment {
             if (isToday) {
                 itemBinding.tvDayLabel.setTextColor(Color.parseColor("#3E4D44"));
                 itemBinding.tvDayLabel.setAlpha(1.0f);
+                itemBinding.tvDayNum.setTextColor(Color.parseColor("#FF5722"));
             } else {
                 itemBinding.tvDayLabel.setTextColor(Color.parseColor("#803E4D44"));
+                itemBinding.tvDayNum.setTextColor(Color.parseColor("#3E4D44"));
             }
 
             if (isCompleted) {
                 itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.com_bg_post);
-                itemBinding.ivDayIcon.setImageResource(R.drawable.ic_check);
-                itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#3E4D44"));
+                itemBinding.ivDayIcon.setImageResource(R.drawable.ic_circle_checked);
+                itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#677559"));
             } else {
                 if (isToday) {
                     itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_today_border);
                     itemBinding.ivDayIcon.setImageResource(R.drawable.ic_calendar_outline);
-                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#E05D3B"));
+                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#FF5722"));
                 } else {
                     itemBinding.layoutIconContainer.setBackgroundResource(R.drawable.bg_circle_white_border);
                     itemBinding.ivDayIcon.setImageResource(R.drawable.ic_calendar_outline);
-                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#803E4D44"));
+                    itemBinding.ivDayIcon.setColorFilter(Color.parseColor("#677559"));
                 }
             }
 
@@ -485,16 +383,18 @@ public class SkinReminderFragment extends RootieFragment {
         }
 
         RootieDatabase db = RootieDatabase.getDatabase(ctx);
+        final int rewardPoints = 10;
         new Thread(() -> {
             try {
                 db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                        0, "SOCIAL_TASK", 10, "Kết nối bạn bè (Social Task)", System.currentTimeMillis()
+                        0, "SOCIAL_TASK", rewardPoints, "Kết nối bạn bè (Social Task)", System.currentTimeMillis()
                 ));
                 com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx);
                 ProfileSession.addSkinSocialCompletedDate(ctx, todayStr);
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        Toast.makeText(ctx, "Kết nối thành công! +10 xu", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, "Kết nối thành công!", Toast.LENGTH_SHORT).show();
+                        CoinRewardDialogHelper.show(SkinReminderFragment.this, rewardPoints, "từ nhiệm vụ kết nối bạn bè");
                         refreshUI();
                     });
                 }
@@ -519,6 +419,168 @@ public class SkinReminderFragment extends RootieFragment {
                     int totalPoints = (points != null && !points.isEmpty()) ? points.get(0).total : 0;
                     binding.tvUserCoins.setText(totalPoints + " ROOTIE COINS");
                 });
+    }
+
+    private void updateRewardCards(
+            boolean morningCompleted,
+            boolean morningRewardClaimed,
+            boolean morningMissed,
+            boolean eveningCompleted,
+            boolean eveningRewardClaimed,
+            boolean weeklyCompleted,
+            boolean loyaltyCompleted,
+            boolean socialCompleted
+    ) {
+        Context ctx = requireContext();
+        applyRewardCardStyle(
+                binding.layoutMorningReward,
+                binding.flMorningRewardIcon,
+                binding.ivMorningRewardIcon,
+                binding.tvMorningRewardTitle,
+                binding.tvMorningRewardSubtitle,
+                morningCompleted,
+                morningMissed ? 0.55f : 1.0f
+        );
+        applyRewardXuStyle(
+                binding.ivMorningRewardCoin,
+                binding.tvMorningRewardXu,
+                binding.tvMorningRewardFrequency,
+                morningRewardClaimed,
+                ContextCompat.getColor(ctx, R.color.reward_gold)
+        );
+
+        applyRewardCardStyle(
+                binding.layoutEveningReward,
+                binding.flEveningRewardIcon,
+                binding.ivEveningRewardIcon,
+                binding.tvEveningRewardTitle,
+                binding.tvEveningRewardSubtitle,
+                eveningCompleted,
+                1.0f
+        );
+        applyRewardXuStyle(
+                binding.ivEveningRewardCoin,
+                binding.tvEveningRewardXu,
+                binding.tvEveningRewardFrequency,
+                eveningRewardClaimed,
+                ContextCompat.getColor(ctx, R.color.reward_gold)
+        );
+
+        applyRewardCardStyle(
+                binding.layoutWeeklyReward,
+                binding.flWeeklyRewardIcon,
+                binding.ivWeeklyRewardIcon,
+                binding.tvWeeklyRewardTitle,
+                binding.tvWeeklyRewardSubtitle,
+                weeklyCompleted,
+                1.0f
+        );
+        applyRewardXuStyle(
+                binding.ivWeeklyRewardCoin,
+                binding.tvWeeklyRewardXu,
+                binding.tvWeeklyRewardFrequency,
+                weeklyCompleted,
+                ContextCompat.getColor(ctx, R.color.reward_gold_weekly)
+        );
+
+        applyRewardCardStyle(
+                binding.layoutLoyaltyReward,
+                binding.flLoyaltyRewardIcon,
+                binding.ivLoyaltyRewardIcon,
+                binding.tvLoyaltyRewardTitle,
+                binding.tvLoyaltyRewardSubtitle,
+                loyaltyCompleted,
+                1.0f
+        );
+        applyRewardXuStyle(
+                binding.ivLoyaltyRewardCoin,
+                binding.tvLoyaltyRewardXu,
+                binding.tvLoyaltyRewardFrequency,
+                loyaltyCompleted,
+                ContextCompat.getColor(ctx, R.color.reward_gold)
+        );
+
+        applyRewardCardStyle(
+                binding.btnSocialTask,
+                binding.flSocialRewardIcon,
+                binding.ivSocialRewardIcon,
+                binding.tvSocialRewardTitle,
+                binding.tvSocialRewardSubtitle,
+                socialCompleted,
+                1.0f
+        );
+        applyRewardXuStyle(
+                binding.ivSocialRewardCoin,
+                binding.tvSocialRewardXu,
+                binding.tvSocialRewardFrequency,
+                socialCompleted,
+                ContextCompat.getColor(ctx, R.color.reward_gold)
+        );
+    }
+
+    private void applyRewardCardStyle(
+            View card,
+            View iconContainer,
+            ImageView icon,
+            TextView title,
+            TextView subtitle,
+            boolean completed,
+            float cardAlpha
+    ) {
+        card.setAlpha(cardAlpha);
+        Context ctx = requireContext();
+        int primary = ContextCompat.getColor(ctx, R.color.primary);
+        int secondary = ContextCompat.getColor(ctx, R.color.secondary);
+        int white = ContextCompat.getColor(ctx, R.color.white);
+
+        if (completed) {
+            card.setBackgroundResource(R.drawable.skin_bg_reward_card_completed);
+            iconContainer.setBackgroundResource(R.drawable.skin_bg_reward_icon_completed);
+            title.setTextColor(primary);
+            subtitle.setTextColor(secondary);
+            icon.setColorFilter(white, PorterDuff.Mode.SRC_IN);
+        } else {
+            card.setBackgroundResource(R.drawable.skin_bg_reward_card_pending);
+            iconContainer.setBackgroundResource(R.drawable.skin_bg_reward_icon_pending);
+            title.setTextColor(primary);
+            subtitle.setTextColor(ContextCompat.getColor(ctx, R.color.tertiary));
+            icon.setColorFilter(secondary, PorterDuff.Mode.SRC_IN);
+        }
+    }
+
+    private void applyRewardXuStyle(
+            ImageView coinIcon,
+            TextView xuText,
+            TextView frequencyText,
+            boolean claimed,
+            int activeGoldColor
+    ) {
+        int muted = Color.parseColor("#8E8E93");
+        int frequency = Color.parseColor("#AEAEB2");
+        if (claimed) {
+            xuText.setTextColor(muted);
+            coinIcon.setColorFilter(muted, PorterDuff.Mode.SRC_IN);
+        } else {
+            xuText.setTextColor(activeGoldColor);
+            coinIcon.clearColorFilter();
+        }
+        frequencyText.setTextColor(frequency);
+    }
+
+    private void applyRoutineButtonIcon(AppCompatButton button, @DrawableRes int iconRes) {
+        Drawable icon = ContextCompat.getDrawable(requireContext(), iconRes);
+        if (icon == null) {
+            button.setCompoundDrawables(null, null, null, null);
+            return;
+        }
+        icon = icon.mutate();
+        float density = getResources().getDisplayMetrics().density;
+        int iconDp = iconRes == R.drawable.ic_check ? 15 : 20;
+        int sizePx = (int) (iconDp * density);
+        icon.setBounds(0, 0, sizePx, sizePx);
+        icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        button.setCompoundDrawables(icon, null, null, null);
+        button.setCompoundDrawablePadding((int) ((iconRes == R.drawable.ic_check ? 6 : 8) * density));
     }
 
     @Override

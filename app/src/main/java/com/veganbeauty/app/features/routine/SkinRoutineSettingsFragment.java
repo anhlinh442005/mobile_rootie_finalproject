@@ -24,6 +24,7 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.SkinRoutineSettingsBinding;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,6 +36,7 @@ import java.util.Set;
 public class SkinRoutineSettingsFragment extends RootieFragment {
 
     private SkinRoutineSettingsBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private boolean isMorningTabSelected = true;
     private final List<SkincareStep> morningSteps = new ArrayList<>();
     private final List<SkincareStep> eveningSteps = new ArrayList<>();
@@ -57,7 +59,7 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         Context ctx = requireContext();
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.btnNotification.setOnClickListener(v ->
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                         .addToBackStack(null).commit());
@@ -110,7 +112,7 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         binding.tabMorning.setOnClickListener(v -> {
             if (!isMorningTabSelected) {
                 isMorningTabSelected = true;
-                binding.tabMorning.setBackgroundResource(R.drawable.skin_bg_btn_green);
+                binding.tabMorning.setBackgroundResource(R.drawable.skin_bg_tab_selected);
                 binding.tabMorning.setTextColor(Color.WHITE);
                 binding.tabEvening.setBackgroundColor(Color.TRANSPARENT);
                 binding.tabEvening.setTextColor(Color.parseColor("#3E4D44"));
@@ -121,7 +123,7 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         binding.tabEvening.setOnClickListener(v -> {
             if (isMorningTabSelected) {
                 isMorningTabSelected = false;
-                binding.tabEvening.setBackgroundResource(R.drawable.skin_bg_btn_green);
+                binding.tabEvening.setBackgroundResource(R.drawable.skin_bg_tab_selected);
                 binding.tabEvening.setTextColor(Color.WHITE);
                 binding.tabMorning.setBackgroundColor(Color.TRANSPARENT);
                 binding.tabMorning.setTextColor(Color.parseColor("#3E4D44"));
@@ -131,6 +133,16 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
 
         binding.btnAddStep.setOnClickListener(v -> showAddStepDialog());
         binding.btnSaveConfig.setOnClickListener(v -> saveConfiguration());
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.layoutHeader,
+                binding.settingsScroll,
+                0
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.settingsScroll);
     }
 
     private void updateSwitchUI(ViewGroup container, ImageView thumb, boolean enabled) {

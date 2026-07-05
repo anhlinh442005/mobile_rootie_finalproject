@@ -168,7 +168,7 @@ public class HomeFragment extends RootieFragment {
                 new HomeShortcutItem("Đặt lịch soi da", R.drawable.ic_calendar_outline, () -> navigateTo(new ChooseBranchFragment())),
                 new HomeShortcutItem("Routine của tôi", R.drawable.ic_flower, () -> navigateTo(new MySkinFragment())),
                 new HomeShortcutItem("Dự báo da hôm nay", R.drawable.ic_water_drop_outline, () -> navigateIfLoggedIn(new SkinWeatherForecastFragment())),
-                new HomeShortcutItem("Kiểm tra dị ứng", R.drawable.ic_shield_outline, () -> navigateTo(new QuizTestIntroFragment())),
+                new HomeShortcutItem("Kiểm tra dị ứng", R.drawable.ic_shield_outline, this::navigateToQuizIntro),
                 new HomeShortcutItem("Hồ sơ làn da", R.drawable.ic_clipboard_outline, () -> navigateIfLoggedIn(new SkinHistoryFragment())),
                 new HomeShortcutItem("Nhắc chăm da", R.drawable.ic_bell, () -> navigateIfLoggedIn(new SkinReminderFragment())),
                 new HomeShortcutItem("Đổi quà Rootie Xu", R.drawable.ic_gift, () -> navigateTo(new AccountRewardFragment())),
@@ -510,11 +510,10 @@ public class HomeFragment extends RootieFragment {
     private void setupQuizReminder() {
         if (getContext() == null) return;
         long lastTestTime = ProfileSession.getLastSkinTestTime(requireContext());
-        long sevenDaysMs = 7L * 24 * 60 * 60 * 1000;
-        boolean needsTest = true; // Ép hiển thị mặc định theo yêu cầu
+        boolean needsWeeklyTest = ProfileSession.isQuizRewardEligible(requireContext());
+        boolean dismissed = ProfileSession.isQuizReminderDismissedWeekly(requireContext());
 
-        if (needsTest) {
-            // Bỏ qua check đã dismiss để luôn hiện khi load lại app
+        if (needsWeeklyTest && !dismissed) {
             binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.VISIBLE);
             binding.quizTestWeeklyReminderLayout.getRoot().setOnClickListener(v -> navigateToQuizIntro());
             binding.quizTestWeeklyReminderLayout.quizTestBtnDismissReminder.setOnClickListener(v -> {
@@ -534,7 +533,7 @@ public class HomeFragment extends RootieFragment {
             }
         } else {
             binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.GONE);
-            if (lastTestTime == 0L && !hasShownQuizPopupThisSession) {
+            if (lastTestTime == 0L && !hasShownQuizPopupThisSession && !dismissed) {
                 hasShownQuizPopupThisSession = true;
                 binding.getRoot().postDelayed(() -> {
                     if (!isAdded()) return;
@@ -560,6 +559,15 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void navigateToQuizIntro() {
+        if (!ProfileSession.isQuizRewardEligible(requireContext())) {
+            int daysLeft = ProfileSession.getDaysUntilQuizReward(requireContext());
+            Toast.makeText(
+                    requireContext(),
+                    "Bạn đã kiểm tra da gần đây. Vui lòng quay lại sau " + daysLeft + " ngày để nhận thưởng 100 xu.",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new QuizTestIntroFragment()).addToBackStack(null).commit();
     }

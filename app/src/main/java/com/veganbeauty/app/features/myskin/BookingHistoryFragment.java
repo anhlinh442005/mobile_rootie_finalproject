@@ -1,11 +1,18 @@
 package com.veganbeauty.app.features.myskin;
 
+import android.app.AlertDialog;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,15 +28,20 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
+import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.databinding.SkinFragmentBookingHistoryBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BookingHistoryFragment extends RootieFragment {
 
     private SkinFragmentBookingHistoryBinding _binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private BookingHistoryAdapter adapter;
     private final List<BookingHistoryEntity> allBookings = new ArrayList<>();
     private final List<BookingHistoryEntity> filteredBookings = new ArrayList<>();
@@ -43,6 +55,7 @@ public class BookingHistoryFragment extends RootieFragment {
 
     private ListenerRegistration bookingsListener;
     private ListenerRegistration bookingsListenerByEmail;
+    private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
 
     @Nullable
     @Override
@@ -55,27 +68,7 @@ public class BookingHistoryFragment extends RootieFragment {
     protected void setupUI(@NonNull View view) {
         _binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        adapter = new BookingHistoryAdapter(filteredBookings, booking -> {
-            if ("Sắp diễn ra".equals(booking.getStatus()) || "Chờ xác nhận".equals(booking.getStatus())) {
-                BookingDetailUpcomingFragment fragment = BookingDetailUpcomingFragment.newInstance(booking);
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            } else if ("Đã hoàn thành".equals(booking.getStatus())) {
-                BookingDetailCompletedFragment fragment = BookingDetailCompletedFragment.newInstance(booking);
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            } else {
-                BookingDetailCancelledFragment fragment = BookingDetailCancelledFragment.newInstance(booking);
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+        adapter = new BookingHistoryAdapter(filteredBookings, this::openBookingDetail, this::showCancelDialog);
         _binding.rvHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
         _binding.rvHistory.setAdapter(adapter);
 
@@ -87,7 +80,20 @@ public class BookingHistoryFragment extends RootieFragment {
 
         _binding.btnAdvancedFilter.setOnClickListener(v -> showAdvancedFilter());
 
+        setupScrollHideHeader();
         loadBookings();
+    }
+
+    private void setupScrollHideHeader() {
+        float density = getResources().getDisplayMetrics().density;
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                _binding.header,
+                _binding.rvHistory,
+                (int) (12 * density),
+                (int) (40 * density),
+                _binding.filterRow
+        );
+        headerScrollHelper.attachToRecyclerView(_binding.rvHistory);
     }
 
     @Override
@@ -151,6 +157,20 @@ public class BookingHistoryFragment extends RootieFragment {
                     if (item != null) skinResults.add(item.toString());
                 }
             }
+
+            List<String> feedbackImages = new ArrayList<>();
+            List<?> rawFeedbackImages = (List<?>) doc.get("feedbackImageUrls");
+            if (rawFeedbackImages != null) {
+                for (Object item : rawFeedbackImages) {
+                    if (item != null) {
+                        String url = item.toString().trim();
+                        if (!url.isEmpty()) {
+                            feedbackImages.add(url);
+                        }
+                    }
+                }
+            }
+
             String docId = doc.getString("id");
             if (docId == null || docId.isEmpty()) docId = doc.getId();
 
@@ -189,7 +209,8 @@ public class BookingHistoryFragment extends RootieFragment {
                     doc.getString("nextAppointmentDate") != null ? doc.getString("nextAppointmentDate") : "",
                     doc.getString("nextAppointmentText") != null ? doc.getString("nextAppointmentText") : "",
                     doc.getString("cancelledAt") != null ? doc.getString("cancelledAt") : "",
-                    doc.getString("cancelReason") != null ? doc.getString("cancelReason") : ""
+                    doc.getString("cancelReason") != null ? doc.getString("cancelReason") : "",
+                    feedbackImages
             );
         } catch (Exception e) {
             return null;
@@ -224,20 +245,17 @@ public class BookingHistoryFragment extends RootieFragment {
     }
 
     private void updateFilterUI() {
-        _binding.filterAll.setBackgroundResource(currentStatusFilter.equals("ALL") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
-        _binding.filterAll.setTextColor(currentStatusFilter.equals("ALL") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
+        styleFilterChip(_binding.filterAll, currentStatusFilter.equals("ALL"));
+        styleFilterChip(_binding.filterPending, currentStatusFilter.equals("PENDING"));
+        styleFilterChip(_binding.filterUpcoming, currentStatusFilter.equals("UPCOMING"));
+        styleFilterChip(_binding.filterCompleted, currentStatusFilter.equals("COMPLETED"));
+        styleFilterChip(_binding.filterCancelled, currentStatusFilter.equals("CANCELLED"));
+    }
 
-        _binding.filterPending.setBackgroundResource(currentStatusFilter.equals("PENDING") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
-        _binding.filterPending.setTextColor(currentStatusFilter.equals("PENDING") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
-
-        _binding.filterUpcoming.setBackgroundResource(currentStatusFilter.equals("UPCOMING") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
-        _binding.filterUpcoming.setTextColor(currentStatusFilter.equals("UPCOMING") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
-
-        _binding.filterCompleted.setBackgroundResource(currentStatusFilter.equals("COMPLETED") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
-        _binding.filterCompleted.setTextColor(currentStatusFilter.equals("COMPLETED") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
-
-        _binding.filterCancelled.setBackgroundResource(currentStatusFilter.equals("CANCELLED") ? R.drawable.bg_btn_buy : R.drawable.skin_bg_outline);
-        _binding.filterCancelled.setTextColor(currentStatusFilter.equals("CANCELLED") ? Color.WHITE : ContextCompat.getColor(requireContext(), R.color.primary));
+    private void styleFilterChip(TextView chip, boolean selected) {
+        chip.setBackgroundResource(selected ? R.drawable.skin_bg_filter_chip_active : R.drawable.skin_bg_outline);
+        chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary));
+        chip.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
     }
 
     private void loadBookings() {
@@ -320,6 +338,121 @@ public class BookingHistoryFragment extends RootieFragment {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private void openBookingDetail(BookingHistoryEntity booking) {
+        String status = booking.getStatus() != null ? booking.getStatus().trim() : "";
+        if (isCancellableStatus(status)) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, BookingDetailUpcomingFragment.newInstance(booking))
+                    .addToBackStack(null)
+                    .commit();
+        } else if ("Đã hoàn thành".equalsIgnoreCase(status)) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, BookingDetailCompletedFragment.newInstance(booking))
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, BookingDetailCancelledFragment.newInstance(booking))
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
+    private void showCancelDialog(BookingHistoryEntity data) {
+        if (!isCancellableStatus(data.getStatus())) {
+            Toast.makeText(requireContext(), "Lịch hẹn này không thể huỷ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.skin_dialog_cancel_booking, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        String[] parsedDate = com.veganbeauty.app.features.myskin.BookingHistoryAdapter.BookingDateParser.parseDateDisplay(
+                data.getDateDisplay(), data.getMonthDisplay(), data.getDayOfWeek());
+
+        TextView tvDate = dialogView.findViewById(R.id.tv_date);
+        if (tvDate != null) tvDate.setText(parsedDate[0]);
+
+        TextView tvMonthDay = dialogView.findViewById(R.id.tv_month_day);
+        if (tvMonthDay != null) tvMonthDay.setText(parsedDate[1]);
+
+        TextView tvServiceName = dialogView.findViewById(R.id.tv_service_name);
+        if (tvServiceName != null) tvServiceName.setText(data.getServiceName());
+
+        TextView tvTime = dialogView.findViewById(R.id.tv_time);
+        if (tvTime != null) tvTime.setText(data.getTime() + " (" + data.getDuration() + ")");
+
+        TextView tvStoreName = dialogView.findViewById(R.id.tv_store_name);
+        if (tvStoreName != null) tvStoreName.setText(data.getStoreName());
+
+        TextView tvStoreAddress = dialogView.findViewById(R.id.tv_store_address);
+        if (tvStoreAddress != null) tvStoreAddress.setText(data.getStoreAddress());
+
+        Spinner spReason = dialogView.findViewById(R.id.sp_reason);
+        List<String> reasons = Arrays.asList(
+                "Chọn lý do hủy lịch", "Thay đổi lịch trình", "Tìm được địa điểm khác",
+                "Lý do sức khoẻ", "Đã đặt nhầm dịch vụ", "Lý do khác");
+        if (spReason != null) {
+            spReason.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, reasons));
+        }
+
+        EditText etOtherReason = dialogView.findViewById(R.id.et_other_reason);
+
+        View btnClose = dialogView.findViewById(R.id.btn_close);
+        if (btnClose != null) btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        View btnBack = dialogView.findViewById(R.id.btn_back);
+        if (btnBack != null) btnBack.setOnClickListener(v -> dialog.dismiss());
+
+        View btnConfirmCancel = dialogView.findViewById(R.id.btn_confirm_cancel);
+        if (btnConfirmCancel != null) {
+            btnConfirmCancel.setOnClickListener(v -> {
+                String selectedReason = spReason != null && spReason.getSelectedItem() != null
+                        ? spReason.getSelectedItem().toString() : "";
+                String otherReason = etOtherReason != null ? etOtherReason.getText().toString().trim() : "";
+
+                String finalReason;
+                if ("Lý do khác".equals(selectedReason) && !otherReason.isEmpty()) {
+                    finalReason = otherReason;
+                } else if ("Lý do khác".equals(selectedReason)) {
+                    finalReason = "Lý do khác";
+                } else if ("Chọn lý do hủy lịch".equals(selectedReason) && !otherReason.isEmpty()) {
+                    finalReason = otherReason;
+                } else if ("Chọn lý do hủy lịch".equals(selectedReason)) {
+                    finalReason = "Không có lý do cụ thể";
+                } else {
+                    finalReason = selectedReason;
+                }
+
+                final String bookingId = data.getId();
+                android.content.Context appContext = requireContext().getApplicationContext();
+                new LocalJsonReader(appContext).updateBookingStatus(bookingId, "Đã huỷ", finalReason);
+                ioExecutor.execute(() -> new FirestoreService().updateBookingStatus(bookingId, "Đã huỷ", finalReason));
+
+                Toast.makeText(requireContext(), "Huỷ lịch thành công", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                loadBookings();
+            });
+        }
+        dialog.show();
+    }
+
+    static boolean isCancellableStatus(String status) {
+        if (status == null || status.trim().isEmpty()) {
+            return false;
+        }
+        String normalized = status.trim();
+        return "Chờ xác nhận".equalsIgnoreCase(normalized)
+                || "pending".equalsIgnoreCase(normalized)
+                || "Sắp diễn ra".equalsIgnoreCase(normalized)
+                || "Đã duyệt".equalsIgnoreCase(normalized);
     }
 
     private void showAdvancedFilter() {
@@ -424,13 +557,23 @@ public class BookingHistoryFragment extends RootieFragment {
         _binding = null;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ioExecutor.shutdown();
+    }
+
     static class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAdapter.ViewHolder> {
         private final List<BookingHistoryEntity> list;
-        private final OnBookingClickListener listener;
+        private final OnBookingClickListener viewDetailListener;
+        private final OnBookingClickListener cancelListener;
 
-        BookingHistoryAdapter(List<BookingHistoryEntity> list, OnBookingClickListener listener) {
+        BookingHistoryAdapter(List<BookingHistoryEntity> list,
+                              OnBookingClickListener viewDetailListener,
+                              OnBookingClickListener cancelListener) {
             this.list = list;
-            this.listener = listener;
+            this.viewDetailListener = viewDetailListener;
+            this.cancelListener = cancelListener;
         }
 
         @NonNull
@@ -471,7 +614,24 @@ public class BookingHistoryFragment extends RootieFragment {
                 holder.tvStatusTag.setTextColor(Color.parseColor("#D32F2F"));
             }
 
-            holder.itemView.setOnClickListener(v -> listener.onClick(booking));
+            boolean cancellable = isCancellableStatus(booking.getStatus());
+            if (cancellable) {
+                holder.llActions.setVisibility(View.VISIBLE);
+                holder.btnCancel.setVisibility(View.VISIBLE);
+                holder.btnViewDetail.setVisibility(View.VISIBLE);
+                holder.btnCancel.setOnClickListener(v -> {
+                    if (cancelListener != null) cancelListener.onClick(booking);
+                });
+                holder.btnViewDetail.setOnClickListener(v -> {
+                    if (viewDetailListener != null) viewDetailListener.onClick(booking);
+                });
+            } else {
+                holder.llActions.setVisibility(View.GONE);
+            }
+
+            holder.itemView.setOnClickListener(v -> {
+                if (viewDetailListener != null) viewDetailListener.onClick(booking);
+            });
         }
 
         @Override
@@ -486,6 +646,9 @@ public class BookingHistoryFragment extends RootieFragment {
             TextView tvMonthDay;
             TextView tvTime;
             TextView tvStore;
+            View llActions;
+            TextView btnCancel;
+            TextView btnViewDetail;
 
             ViewHolder(View view) {
                 super(view);
@@ -495,6 +658,9 @@ public class BookingHistoryFragment extends RootieFragment {
                 tvMonthDay = view.findViewById(R.id.tv_history_month_day);
                 tvTime = view.findViewById(R.id.tv_history_time);
                 tvStore = view.findViewById(R.id.tv_history_store);
+                llActions = view.findViewById(R.id.ll_history_actions);
+                btnCancel = view.findViewById(R.id.btn_cancel_booking);
+                btnViewDetail = view.findViewById(R.id.btn_view_detail);
             }
         }
     }

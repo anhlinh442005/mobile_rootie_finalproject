@@ -4,6 +4,6 @@
     <!-- Transparent inside, red-orange border for today -->
     <solid android:color="@android:color/transparent" />
     <stroke
-        android:width="2dp"
-        android:color="#E05D3B" />
+        android:width="2.5dp"
+        android:color="#FF5722" />
 </shape>

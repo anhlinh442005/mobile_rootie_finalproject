@@ -9,7 +9,9 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -71,7 +73,8 @@ public final class BookingSampleSeeder {
                 "28/03/2026",
                 "Nên tái khám sau 30 ngày",
                 "",
-                ""
+                "",
+                Collections.emptyList()
         );
         return booking;
     }
@@ -134,6 +137,10 @@ public final class BookingSampleSeeder {
         map.put("visitedAt", "2026-02-28T14:05:00");
         map.put("checkInCode", "CH001-2847");
         map.put("skinResults", booking.getSkinResults());
+        org.json.JSONObject scanResult = BookingSkinScanResultHelper.buildFromBooking(null, booking);
+        if (scanResult != null) {
+            map.put("skinScanResult", BookingSkinScanResultHelper.toFirestoreMap(scanResult));
+        }
         map.put("consultantName", booking.getConsultantName());
         map.put("consultantAvatar", booking.getConsultantAvatar());
         map.put("consultantRating", booking.getConsultantRating());
@@ -142,10 +149,7 @@ public final class BookingSampleSeeder {
         map.put("reviewDate", booking.getReviewDate());
         map.put("beforeImage", booking.getBeforeImage());
         map.put("afterImage", booking.getAfterImage());
-        map.put("feedbackImageUrls", Arrays.asList(
-                booking.getBeforeImage(),
-                booking.getAfterImage()
-        ));
+        map.put("feedbackImageUrls", new ArrayList<String>());
         map.put("earnedPoints", booking.getEarnedPoints());
         map.put("totalPoints", booking.getTotalPoints());
         map.put("nextAppointmentDate", booking.getNextAppointmentDate());

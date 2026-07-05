@@ -2,6 +2,8 @@ package com.veganbeauty.app.data.remote;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -79,6 +81,27 @@ public class FirestoreService {
         } catch (Exception e) {
             e.printStackTrace();
             return new org.json.JSONArray();
+        }
+    }
+
+    public org.json.JSONObject getBookingSkinScanResult(String bookingId) {
+        if (bookingId == null || bookingId.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            DocumentSnapshot doc = Tasks.await(
+                    db.collection("bookings").document(bookingId.trim()).get());
+            if (!doc.exists()) {
+                return null;
+            }
+            Object raw = doc.get("skinScanResult");
+            if (raw instanceof Map) {
+                return new org.json.JSONObject((Map<?, ?>) raw);
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -281,10 +304,22 @@ public class FirestoreService {
     }
 
     public boolean saveUser(UserEntity user) {
+        return saveUser(user, null, null);
+    }
+
+    public boolean saveUser(UserEntity user, @Nullable String dob, @Nullable String gender) {
+        return saveUser(user, dob, gender, null, null);
+    }
+
+    public boolean saveUser(UserEntity user, @Nullable String dob, @Nullable String gender,
+                            @Nullable String cccd, @Nullable String address) {
         try {
             Map<String, Object> userMap = new HashMap<>();
             userMap.put("username", user.getUsername());
-            userMap.put("avatar", user.getAvatar() != null ? user.getAvatar() : "");
+            String avatar = user.getAvatar() != null ? user.getAvatar().trim() : "";
+            if (avatar.startsWith("https://") || avatar.startsWith("http://")) {
+                userMap.put("avatar", avatar);
+            }
             userMap.put("email", user.getEmail());
             userMap.put("phone", user.getPhone());
             userMap.put("full_name", user.getFull_name());
@@ -295,7 +330,24 @@ public class FirestoreService {
             if (user.getBio() != null && !user.getBio().trim().isEmpty()) {
                 userMap.put("bio", user.getBio());
             }
-            Tasks.await(db.collection("users").document(user.getUser_id()).set(userMap, com.google.firebase.firestore.SetOptions.merge()));
+            if (dob != null && !dob.trim().isEmpty()) {
+                userMap.put("dob", dob.trim());
+            }
+            if (gender != null && !gender.trim().isEmpty()) {
+                userMap.put("gender", gender.trim());
+            }
+            if (cccd != null && !cccd.trim().isEmpty()) {
+                userMap.put("cccd", cccd.trim());
+            }
+            if (address != null && !address.trim().isEmpty()) {
+                userMap.put("address", address.trim());
+            }
+            userMap.put("updated_at", FieldValue.serverTimestamp());
+            Tasks.await(
+                    db.collection("users").document(user.getUser_id()).set(userMap, com.google.firebase.firestore.SetOptions.merge()),
+                    8,
+                    java.util.concurrent.TimeUnit.SECONDS
+            );
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1050,6 +1102,18 @@ public class FirestoreService {
         }
     }
 
+    public boolean updateBookingFeedbackImages(String bookingId, List<String> imageUrls) {
+        try {
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("feedbackImageUrls", imageUrls != null ? imageUrls : new ArrayList<>());
+            Tasks.await(db.collection("bookings").document(bookingId).update(updates));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public List<BookingHistoryEntity> getUserBookingHistory(String userIdOrEmail) {
         if (userIdOrEmail == null || userIdOrEmail.trim().isEmpty()) {
             return new ArrayList<>();
@@ -1128,6 +1192,19 @@ public class FirestoreService {
                 }
             }
 
+            List<String> feedbackImages = new ArrayList<>();
+            List<?> rawFeedbackImages = (List<?>) doc.get("feedbackImageUrls");
+            if (rawFeedbackImages != null) {
+                for (Object item : rawFeedbackImages) {
+                    if (item != null) {
+                        String url = item.toString().trim();
+                        if (!url.isEmpty()) {
+                            feedbackImages.add(url);
+                        }
+                    }
+                }
+            }
+
             String docId = doc.getString("id");
             if (docId == null || docId.isEmpty()) {
                 docId = doc.getId();
@@ -1168,7 +1245,8 @@ public class FirestoreService {
                     doc.getString("nextAppointmentDate") != null ? doc.getString("nextAppointmentDate") : "",
                     doc.getString("nextAppointmentText") != null ? doc.getString("nextAppointmentText") : "",
                     doc.getString("cancelledAt") != null ? doc.getString("cancelledAt") : "",
-                    doc.getString("cancelReason") != null ? doc.getString("cancelReason") : ""
+                    doc.getString("cancelReason") != null ? doc.getString("cancelReason") : "",
+                    feedbackImages
             );
         } catch (Exception e) {
             e.printStackTrace();

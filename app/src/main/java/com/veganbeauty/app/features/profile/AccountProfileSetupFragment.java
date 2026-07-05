@@ -47,7 +47,11 @@ public class AccountProfileSetupFragment extends RootieFragment {
 
         com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
 
-        _binding.btnNotification.setOnClickListener(v -> Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show());
+        _binding.layoutNotification.getRoot().setOnClickListener(v ->
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                        .addToBackStack(null)
+                        .commit());
 
         _binding.btnAccountSecurity.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
