@@ -118,6 +118,8 @@ public class SyncDataHelper {
 
             ProfileSessionHelper.syncSessionFromUser(context, user);
             RootieDatabase.getDatabase(context).userDao().insertUserSync(user);
+            pullSkincareHistoryFromFirestoreBlocking(context, userId.trim());
+            seedJune2026SkincareHistoryIfNeeded(context);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -425,4 +427,295 @@ public class SyncDataHelper {
             }
         });
     }
+
+    public static void pushSkincareHistoryToFirestore(Context context, String date) {
+        EXECUTOR.execute(() -> {
+            try {
+                if (!ProfileSession.isLoggedIn(context)) {
+                    return;
+                }
+                String userId = resolveCurrentUserId(context);
+                if (userId == null || userId.trim().isEmpty()) {
+                    return;
+                }
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                // 1. Lấy chi tiết lịch sử ngày cụ thể
+                java.util.Set<String> completedSteps = ProfileSession.getCompletedStepIdsForDate(context, date);
+                java.util.List<String> morningCompletedSteps = new java.util.ArrayList<>();
+                java.util.List<String> eveningCompletedSteps = new java.util.ArrayList<>();
+                for (String stepId : completedSteps) {
+                    if (stepId.startsWith("morning_")) {
+                        morningCompletedSteps.add(stepId);
+                    } else if (stepId.startsWith("evening_")) {
+                        eveningCompletedSteps.add(stepId);
+                    }
+                }
+
+                boolean morningSubmitted = ProfileSession.isRoutineSubmitted(context, "morning", date);
+                boolean eveningSubmitted = ProfileSession.isRoutineSubmitted(context, "evening", date);
+                boolean morningRewardAwarded = ProfileSession.isMorningRewardAwarded(context, date);
+                boolean eveningRewardAwarded = ProfileSession.isEveningRewardAwarded(context, date);
+
+                java.util.Map<String, Object> historyData = new java.util.HashMap<>();
+                historyData.put("morning_completed_steps", morningCompletedSteps);
+                historyData.put("evening_completed_steps", eveningCompletedSteps);
+                historyData.put("morning_submitted", morningSubmitted);
+                historyData.put("evening_submitted", eveningSubmitted);
+                historyData.put("morning_reward_awarded", morningRewardAwarded);
+                historyData.put("evening_reward_awarded", eveningRewardAwarded);
+
+                Tasks.await(
+                        db.collection("users")
+                                .document(userId.trim())
+                                .collection("skincare_history")
+                                .document(date)
+                                .set(historyData)
+                );
+
+                // 2. Cập nhật thông tin Streak toàn cục lên document chính của user
+                int skinStreak = ProfileSession.getSkinStreak(context);
+                int skinMaxStreak = context.getSharedPreferences("rootie_profile_prefs", Context.MODE_PRIVATE)
+                        .getInt("skin_max_streak", 0);
+                String skinLastCompletedDate = ProfileSession.getSkinLastCompletedDate(context);
+                java.util.Set<String> completedMorningDates = ProfileSession.getCompletedMorningDates(context);
+                java.util.Set<String> completedEveningDates = ProfileSession.getCompletedEveningDates(context);
+
+                java.util.Map<String, Object> statsData = new java.util.HashMap<>();
+                statsData.put("skin_streak", skinStreak);
+                statsData.put("skin_max_streak", skinMaxStreak);
+                statsData.put("skin_last_completed_date", skinLastCompletedDate);
+                statsData.put("completed_morning_dates", new java.util.ArrayList<>(completedMorningDates));
+                statsData.put("completed_evening_dates", new java.util.ArrayList<>(completedEveningDates));
+
+                Tasks.await(
+                        db.collection("users")
+                                .document(userId.trim())
+                                .set(statsData, com.google.firebase.firestore.SetOptions.merge())
+                );
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public static void pullSkincareHistoryFromFirestoreBlocking(Context context, String userId) {
+        try {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentSnapshot userDoc = Tasks.await(db.collection("users").document(userId).get());
+            if (userDoc.exists()) {
+                // 1. Khôi phục thông tin streak
+                if (userDoc.contains("skin_streak")) {
+                    Long val = userDoc.getLong("skin_streak");
+                    if (val != null) {
+                        int localStreak = ProfileSession.getSkinStreak(context);
+                        if (val.intValue() > localStreak) {
+                            ProfileSession.setSkinStreak(context, val.intValue());
+                        }
+                    }
+                }
+                if (userDoc.contains("skin_max_streak")) {
+                    Long val = userDoc.getLong("skin_max_streak");
+                    if (val != null) {
+                        android.content.SharedPreferences prefs = context.getSharedPreferences("rootie_profile_prefs", Context.MODE_PRIVATE);
+                        int localMax = prefs.getInt("skin_max_streak", 0);
+                        if (val.intValue() > localMax) {
+                            prefs.edit().putInt("skin_max_streak", val.intValue()).apply();
+                        }
+                    }
+                }
+                if (userDoc.contains("skin_last_completed_date")) {
+                    String lastDate = userDoc.getString("skin_last_completed_date");
+                    if (lastDate != null && !lastDate.isEmpty()) {
+                        ProfileSession.setSkinLastCompletedDate(context, lastDate);
+                    }
+                }
+
+                // 2. Khôi phục các ngày hoàn thành bằng cách MERGE với dữ liệu local
+                if (userDoc.contains("completed_morning_dates")) {
+                    java.util.List<String> list = (java.util.List<String>) userDoc.get("completed_morning_dates");
+                    if (list != null) {
+                        java.util.Set<String> merged = new java.util.HashSet<>(ProfileSession.getCompletedMorningDates(context));
+                        merged.addAll(list);
+                        ProfileSession.setCompletedMorningDates(context, merged);
+                    }
+                }
+                if (userDoc.contains("completed_evening_dates")) {
+                    java.util.List<String> list = (java.util.List<String>) userDoc.get("completed_evening_dates");
+                    if (list != null) {
+                        java.util.Set<String> merged = new java.util.HashSet<>(ProfileSession.getCompletedEveningDates(context));
+                        merged.addAll(list);
+                        ProfileSession.setCompletedEveningDates(context, merged);
+                    }
+                }
+            }
+
+            // 3. Khôi phục chi tiết lịch sử từng ngày từ subcollection bằng cách MERGE
+            com.google.firebase.firestore.QuerySnapshot historySnapshot = Tasks.await(
+                    db.collection("users").document(userId).collection("skincare_history").get()
+            );
+
+            for (DocumentSnapshot doc : historySnapshot.getDocuments()) {
+                String date = doc.getId();
+
+                boolean localMorningSubmitted = ProfileSession.isRoutineSubmitted(context, "morning", date);
+                boolean localEveningSubmitted = ProfileSession.isRoutineSubmitted(context, "evening", date);
+                boolean localMorningRewardAwarded = ProfileSession.isMorningRewardAwarded(context, date);
+                boolean localEveningRewardAwarded = ProfileSession.isEveningRewardAwarded(context, date);
+
+                boolean morningSubmitted = (doc.getBoolean("morning_submitted") != null && doc.getBoolean("morning_submitted")) || localMorningSubmitted;
+                boolean eveningSubmitted = (doc.getBoolean("evening_submitted") != null && doc.getBoolean("evening_submitted")) || localEveningSubmitted;
+                boolean morningRewardAwarded = (doc.getBoolean("morning_reward_awarded") != null && doc.getBoolean("morning_reward_awarded")) || localMorningRewardAwarded;
+                boolean eveningRewardAwarded = (doc.getBoolean("evening_reward_awarded") != null && doc.getBoolean("evening_reward_awarded")) || localEveningRewardAwarded;
+
+                ProfileSession.setRoutineSubmitted(context, "morning", date, morningSubmitted);
+                ProfileSession.setRoutineSubmitted(context, "evening", date, eveningSubmitted);
+                ProfileSession.setMorningRewardAwarded(context, date, morningRewardAwarded);
+                ProfileSession.setEveningRewardAwarded(context, date, eveningRewardAwarded);
+
+                // Khôi phục các bước đã tích chọn bằng cách MERGE
+                java.util.Set<String> stepIds = new java.util.HashSet<>(ProfileSession.getCompletedStepIdsForDate(context, date));
+                java.util.List<String> morningSteps = (java.util.List<String>) doc.get("morning_completed_steps");
+                if (morningSteps != null) {
+                    stepIds.addAll(morningSteps);
+                }
+                java.util.List<String> eveningSteps = (java.util.List<String>) doc.get("evening_completed_steps");
+                if (eveningSteps != null) {
+                    stepIds.addAll(eveningSteps);
+                }
+                ProfileSession.setCompletedStepIdsForDate(context, date, stepIds);
+            }
+
+            // 4. Đồng bộ ngược lại các thay đổi đã merge từ local lên Firestore để đảm bảo Firestore có đầy đủ dữ liệu nhất
+            pushAllLocalSkincareHistoryToFirestoreBlocking(context, userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void pushAllLocalSkincareHistoryToFirestoreBlocking(Context context, String userId) {
+        try {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            java.util.Set<String> morningDates = ProfileSession.getCompletedMorningDates(context);
+            java.util.Set<String> eveningDates = ProfileSession.getCompletedEveningDates(context);
+
+            java.util.Set<String> allDates = new java.util.HashSet<>(morningDates);
+            allDates.addAll(eveningDates);
+
+            for (String date : allDates) {
+                java.util.Set<String> completedSteps = ProfileSession.getCompletedStepIdsForDate(context, date);
+                java.util.List<String> morningCompletedSteps = new java.util.ArrayList<>();
+                java.util.List<String> eveningCompletedSteps = new java.util.ArrayList<>();
+                for (String stepId : completedSteps) {
+                    if (stepId.startsWith("morning_")) {
+                        morningCompletedSteps.add(stepId);
+                    } else if (stepId.startsWith("evening_")) {
+                        eveningCompletedSteps.add(stepId);
+                    }
+                }
+
+                boolean morningSubmitted = ProfileSession.isRoutineSubmitted(context, "morning", date);
+                boolean eveningSubmitted = ProfileSession.isRoutineSubmitted(context, "evening", date);
+                boolean morningRewardAwarded = ProfileSession.isMorningRewardAwarded(context, date);
+                boolean eveningRewardAwarded = ProfileSession.isEveningRewardAwarded(context, date);
+
+                java.util.Map<String, Object> historyData = new java.util.HashMap<>();
+                historyData.put("morning_completed_steps", morningCompletedSteps);
+                historyData.put("evening_completed_steps", eveningCompletedSteps);
+                historyData.put("morning_submitted", morningSubmitted);
+                historyData.put("evening_submitted", eveningSubmitted);
+                historyData.put("morning_reward_awarded", morningRewardAwarded);
+                historyData.put("evening_reward_awarded", eveningRewardAwarded);
+
+                Tasks.await(
+                        db.collection("users")
+                                .document(userId.trim())
+                                .collection("skincare_history")
+                                .document(date)
+                                .set(historyData)
+                );
+            }
+
+            int skinStreak = ProfileSession.getSkinStreak(context);
+            int skinMaxStreak = context.getSharedPreferences("rootie_profile_prefs", Context.MODE_PRIVATE)
+                    .getInt("skin_max_streak", 0);
+            String skinLastCompletedDate = ProfileSession.getSkinLastCompletedDate(context);
+
+            java.util.Map<String, Object> statsData = new java.util.HashMap<>();
+            statsData.put("skin_streak", skinStreak);
+            statsData.put("skin_max_streak", skinMaxStreak);
+            statsData.put("skin_last_completed_date", skinLastCompletedDate);
+            statsData.put("completed_morning_dates", new java.util.ArrayList<>(morningDates));
+            statsData.put("completed_evening_dates", new java.util.ArrayList<>(eveningDates));
+
+            Tasks.await(
+                    db.collection("users")
+                            .document(userId.trim())
+                            .set(statsData, com.google.firebase.firestore.SetOptions.merge())
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void seedJune2026SkincareHistoryIfNeeded(Context context) {
+        try {
+            if (!ProfileSession.isLoggedIn(context)) {
+                return;
+            }
+            String userId = resolveCurrentUserId(context);
+            if (userId == null || userId.trim().isEmpty()) {
+                return;
+            }
+
+            android.content.SharedPreferences prefs = context.getSharedPreferences("rootie_profile_prefs", Context.MODE_PRIVATE);
+            if (prefs.getBoolean("june_2026_seeded_v1", false)) {
+                return;
+            }
+
+            // Gieo dữ liệu từ ngày 10 đến ngày 25 tháng 06, 2026
+            java.util.Set<String> morningDates = new java.util.HashSet<>(ProfileSession.getCompletedMorningDates(context));
+            java.util.Set<String> eveningDates = new java.util.HashSet<>(ProfileSession.getCompletedEveningDates(context));
+
+            for (int day = 10; day <= 25; day++) {
+                String date = "2026-06-" + String.format(java.util.Locale.US, "%02d", day);
+                morningDates.add(date);
+                eveningDates.add(date);
+
+                ProfileSession.setRoutineSubmitted(context, "morning", date, true);
+                ProfileSession.setRoutineSubmitted(context, "evening", date, true);
+                ProfileSession.setMorningRewardAwarded(context, date, true);
+                ProfileSession.setEveningRewardAwarded(context, date, true);
+
+                // Gieo các bước đã hoàn thành
+                java.util.Set<String> stepIds = new java.util.HashSet<>();
+                stepIds.add("morning_0");
+                stepIds.add("morning_1");
+                stepIds.add("morning_2");
+                stepIds.add("evening_0");
+                stepIds.add("evening_1");
+                stepIds.add("evening_2");
+                ProfileSession.setCompletedStepIdsForDate(context, date, stepIds);
+            }
+
+            ProfileSession.setCompletedMorningDates(context, morningDates);
+            ProfileSession.setCompletedEveningDates(context, eveningDates);
+
+            // Cập nhật streak và ngày cuối cùng hoàn thành
+            ProfileSession.setSkinStreak(context, 16);
+            prefs.edit().putInt("skin_max_streak", 16).apply();
+            ProfileSession.setSkinLastCompletedDate(context, "2026-06-25");
+
+            prefs.edit().putBoolean("june_2026_seeded_v1", true).apply();
+
+            // Đẩy toàn bộ dữ liệu mới gieo lên Firestore
+            pushAllLocalSkincareHistoryToFirestoreBlocking(context, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
+

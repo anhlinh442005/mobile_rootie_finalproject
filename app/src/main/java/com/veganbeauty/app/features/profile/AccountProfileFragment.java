@@ -335,7 +335,7 @@ public class AccountProfileFragment extends RootieFragment {
         String userId = ProfileSessionHelper.getEffectiveUserId(ctx);
         String phone = ProfileSession.getPhone(ctx);
 
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+        new Thread(() -> {
             orderRepository.syncOrdersFromAssetsBlocking();
             List<OrderEntity> orders = orderRepository.filterBuyerOrdersFromAssets(userId, phone);
             if (getActivity() != null) {
@@ -344,8 +344,7 @@ public class AccountProfileFragment extends RootieFragment {
                     updateOrderBadges(orders);
                 });
             }
-            return Unit.INSTANCE;
-        });
+        }).start();
 
         FlowLiveDataConversions.asLiveData(orderRepository.getOrdersForBuyer(userId, phone))
                 .observe(getViewLifecycleOwner(), roomOrders -> {
@@ -356,7 +355,7 @@ public class AccountProfileFragment extends RootieFragment {
     }
 
     private void loadUserProfileData(Context ctx) {
-        BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+        new Thread(() -> {
             SyncDataHelper.pullUserProfileFromFirestoreSync(ctx);
             ProfileSessionHelper.ensureCurrentUserInDatabase(ctx);
             if (orderRepository == null) {
@@ -384,8 +383,7 @@ public class AccountProfileFragment extends RootieFragment {
                     binding.tvEmail.setText(ProfileSession.getEmail(ctx));
                 });
             }
-            return Unit.INSTANCE;
-        });
+        }).start();
     }
 
     private void updateOrderBadges(@Nullable List<OrderEntity> orders) {

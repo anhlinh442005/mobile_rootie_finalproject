@@ -129,12 +129,20 @@ public class SkinReminderFragment extends RootieFragment {
         }
 
         int completedMorningStepsCount;
-        if (hasCompletedMorningToday || isMorningSubmitted) {
+        if (hasCompletedMorningToday) {
             completedMorningStepsCount = activeMorningStepsCount;
         } else {
             Set<String> completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr);
             int count = 0;
-            for (String id : completedStepIds) if (id.startsWith("morning_")) count++;
+            for (String raw : rawMorningSteps) {
+                String[] parts = raw.split(":");
+                if (parts.length >= 4 && Boolean.parseBoolean(parts[3])) {
+                    try {
+                        int index = Integer.parseInt(parts[0]);
+                        if (completedStepIds.contains("morning_" + index)) count++;
+                    } catch (Exception ignored) {}
+                }
+            }
             completedMorningStepsCount = count;
         }
 
@@ -237,12 +245,20 @@ public class SkinReminderFragment extends RootieFragment {
         }
 
         int completedEveningStepsCount;
-        if (hasCompletedEveningToday || isEveningSubmitted) {
+        if (hasCompletedEveningToday) {
             completedEveningStepsCount = activeEveningStepsCount;
         } else {
             Set<String> completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, eveningTargetDate);
             int count = 0;
-            for (String id : completedStepIds) if (id.startsWith("evening_")) count++;
+            for (String raw : rawEveningSteps) {
+                String[] parts = raw.split(":");
+                if (parts.length >= 4 && Boolean.parseBoolean(parts[3])) {
+                    try {
+                        int index = Integer.parseInt(parts[0]);
+                        if (completedStepIds.contains("evening_" + index)) count++;
+                    } catch (Exception ignored) {}
+                }
+            }
             completedEveningStepsCount = count;
         }
 

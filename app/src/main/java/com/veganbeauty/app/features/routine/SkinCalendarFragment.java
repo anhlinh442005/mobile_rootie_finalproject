@@ -92,8 +92,8 @@ public class SkinCalendarFragment extends RootieFragment {
         calculateHabitAnalysis(ctx);
         renderCalendar(ctx);
 
-        binding.btnPrevMonth.setOnClickListener(v -> { calendar.add(Calendar.MONTH, -1); renderCalendar(ctx); });
-        binding.btnNextMonth.setOnClickListener(v -> { calendar.add(Calendar.MONTH, 1); renderCalendar(ctx); });
+        binding.btnPrevMonth.setOnClickListener(v -> { calendar.add(Calendar.MONTH, -1); renderCalendar(ctx); populateTimeline(ctx); });
+        binding.btnNextMonth.setOnClickListener(v -> { calendar.add(Calendar.MONTH, 1); renderCalendar(ctx); populateTimeline(ctx); });
 
         setupTabs(ctx);
         populateTimeline(ctx);
@@ -311,9 +311,25 @@ public class SkinCalendarFragment extends RootieFragment {
 
     private void populateTimeline(Context ctx) {
         binding.layoutTimelineContainer.removeAllViews();
-        int listDaysCount = selectedTab == 0 ? 7 : (selectedTab == 1 ? 3 : 1);
 
-        Calendar tempCal = Calendar.getInstance();
+        Calendar tempCal = (Calendar) calendar.clone();
+        Calendar today = Calendar.getInstance();
+        if (tempCal.get(Calendar.YEAR) < today.get(Calendar.YEAR) ||
+                (tempCal.get(Calendar.YEAR) == today.get(Calendar.YEAR) && tempCal.get(Calendar.MONTH) < today.get(Calendar.MONTH))) {
+            tempCal.set(Calendar.DAY_OF_MONTH, tempCal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        } else {
+            tempCal.setTime(new Date());
+        }
+
+        int listDaysCount;
+        if (selectedTab == 0) {
+            listDaysCount = tempCal.get(Calendar.DAY_OF_MONTH);
+        } else if (selectedTab == 1) {
+            listDaysCount = 7;
+        } else {
+            listDaysCount = 1;
+        }
+
         Set<String> morningDates = ProfileSession.getCompletedMorningDates(ctx);
         Set<String> eveningDates = ProfileSession.getCompletedEveningDates(ctx);
 
@@ -356,7 +372,7 @@ public class SkinCalendarFragment extends RootieFragment {
             TextView tvNoActivityMsg = viewDay.findViewById(R.id.tvNoActivityMsg);
             View layoutRewardPill = viewDay.findViewById(R.id.layoutRewardPill);
 
-            Set<String> morningTickedIds = ProfileSession.getCompletedStepIdsForDate(ctx, cellDateStr);
+            Set<String> completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, cellDateStr);
             boolean isMorningRewardAwarded = ProfileSession.isMorningRewardAwarded(ctx, cellDateStr);
             boolean isEveningRewardAwarded = ProfileSession.isEveningRewardAwarded(ctx, cellDateStr);
 
@@ -382,7 +398,7 @@ public class SkinCalendarFragment extends RootieFragment {
                     ImageView imvCheck = stepView.findViewById(R.id.imvStepCheck);
 
                     tvName.setText(step.getName());
-                    boolean isTicked = morningTickedIds.contains("morning_" + step.getIndex());
+                    boolean isTicked = completedStepIds.contains("morning_" + step.getIndex());
                     if (isTicked) {
                         imvCheck.setImageResource(R.drawable.ic_circle_checked);
                         imvCheck.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
@@ -417,7 +433,7 @@ public class SkinCalendarFragment extends RootieFragment {
                     ImageView imvCheck = stepView.findViewById(R.id.imvStepCheck);
 
                     tvName.setText(step.getName());
-                    boolean isTicked = morningTickedIds.contains("evening_" + step.getIndex());
+                    boolean isTicked = completedStepIds.contains("evening_" + step.getIndex());
                     if (isTicked) {
                         imvCheck.setImageResource(R.drawable.ic_circle_checked);
                         imvCheck.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3E4D44")));
