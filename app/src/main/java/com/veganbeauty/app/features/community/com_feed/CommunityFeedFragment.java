@@ -46,6 +46,7 @@ import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.utils.ComBottomNavHelper;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.ProfileUpdateNotifier;
 import com.veganbeauty.app.utils.SideMenuHelper;
 
 import java.util.ArrayList;
@@ -76,6 +77,13 @@ public class CommunityFeedFragment extends RootieFragment {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private List<UserEntity> lastStoryUsers = new ArrayList<>();
+
+    private final ProfileUpdateNotifier.Listener profileUpdateListener = () -> {
+        if (binding != null && isAdded()) {
+            refreshStoriesFromSession();
+        }
+    };
 
     @Nullable
     @Override
@@ -98,6 +106,7 @@ public class CommunityFeedFragment extends RootieFragment {
     public void setupUI(@NonNull View view) {
         binding.rvStories.setAdapter(storyAdapter);
         binding.rvPosts.setAdapter(postAdapter);
+        ProfileUpdateNotifier.addListener(profileUpdateListener);
         refreshFollowingState();
         postAdapter.setOnFollowStateChangedListener(this::onFollowStateChanged);
 
@@ -419,8 +428,10 @@ public class CommunityFeedFragment extends RootieFragment {
                         List<CommunityPostEntity> pinnedPosts = FeedDataCache.getPinnedPosts();
                         for (int i = pinnedPosts.size() - 1; i >= 0; i--) {
                             CommunityPostEntity pinned = pinnedPosts.get(i);
+                            if (pinned == null || pinned.getPostId() == null) continue;
                             if (!matchesCurrentFilter(pinned)) continue;
-                            allFilteredPosts.removeIf(p -> pinned.getPostId().equals(p.getPostId()));
+                            String pinnedId = pinned.getPostId();
+                            allFilteredPosts.removeIf(p -> p != null && pinnedId.equals(p.getPostId()));
                             allFilteredPosts.add(0, pinned);
                         }
 
@@ -518,37 +529,11 @@ public class CommunityFeedFragment extends RootieFragment {
                     ownUserId = "test_001";
                 }
                 final String currentUserId = ownUserId;
-                final String avatarUrl = ProfileSessionHelper.getDisplayAvatarUrl(ctx);
 
                 mainHandler.post(() -> {
                     if (!isAdded()) return;
                     List<UserEntity> safeUsers = users != null ? users : Collections.emptyList();
-                    List<UserEntity> allStories = new ArrayList<>(safeUsers);
-
-                    Collections.sort(allStories, (o1, o2) -> {
-                        boolean f1 = myFriendsIds.contains(o1.getUser_id());
-                        boolean f2 = myFriendsIds.contains(o2.getUser_id());
-                        return Boolean.compare(f2, f1);
-                    });
-
-                    UserEntity currentUser = null;
-                    for (UserEntity user : safeUsers) {
-                        if (currentUserId.equals(user.getUser_id())) {
-                            currentUser = user;
-                            break;
-                        }
-                    }
-
-                    UserEntity myStory = new UserEntity(
-                            currentUserId, "Tin của bạn", "Tin của bạn", "", "", "", avatarUrl, null
-                    );
-                    if (currentUser != null) {
-                        myStory.setBio(currentUser.getBio());
-                        myStory.setSkinType(currentUser.getSkinType());
-                        myStory.setConcerns(currentUser.getConcerns());
-                    }
-                    allStories.add(0, myStory);
-                    storyAdapter.updateData(allStories);
+                    bindStories(safeUsers, myFriendsIds, currentUserId);
                     updateFeedData(true);
                 });
             });
@@ -558,8 +543,66 @@ public class CommunityFeedFragment extends RootieFragment {
         viewModel.getReels().observe(getViewLifecycleOwner(), reels -> {});
     }
 
+    private void refreshStoriesFromSession() {
+        Context ctx = getContext();
+        if (ctx == null || binding == null) {
+            return;
+        }
+        List<UserEntity> users = lastStoryUsers;
+        if (users == null || users.isEmpty()) {
+            users = viewModel != null && viewModel.getUsers().getValue() != null
+                    ? viewModel.getUsers().getValue()
+                    : Collections.emptyList();
+        }
+        List<String> myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser(
+                ProfileSessionHelper.getEffectiveUserId(ctx));
+        if (myFriendsIdsList.isEmpty()) {
+            myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser("test_001");
+        }
+        String ownUserId = ProfileSessionHelper.getEffectiveUserId(ctx);
+        if (ownUserId == null || ownUserId.isEmpty()) {
+            ownUserId = "test_001";
+        }
+        bindStories(users, new HashSet<>(myFriendsIdsList), ownUserId);
+    }
+
+    private void bindStories(List<UserEntity> safeUsers, Set<String> myFriendsIds, String currentUserId) {
+        List<UserEntity> allStories = new ArrayList<>(safeUsers);
+        Collections.sort(allStories, (o1, o2) -> {
+            boolean f1 = myFriendsIds.contains(o1.getUser_id());
+            boolean f2 = myFriendsIds.contains(o2.getUser_id());
+            return Boolean.compare(f2, f1);
+        });
+
+        UserEntity currentUser = null;
+        for (UserEntity user : safeUsers) {
+            if (currentUserId.equals(user.getUser_id())) {
+                currentUser = user;
+                break;
+            }
+        }
+
+        Context ctx = getContext();
+        String avatarUrl = ctx != null
+                ? ProfileSessionHelper.getDisplayAvatarUrl(ctx)
+                : "";
+
+        UserEntity myStory = new UserEntity(
+                currentUserId, "Tin của bạn", "Tin của bạn", "", "", "", avatarUrl, null
+        );
+        if (currentUser != null) {
+            myStory.setBio(currentUser.getBio());
+            myStory.setSkinType(currentUser.getSkinType());
+            myStory.setConcerns(currentUser.getConcerns());
+        }
+        allStories.add(0, myStory);
+        lastStoryUsers = new ArrayList<>(safeUsers);
+        storyAdapter.updateData(allStories);
+    }
+
     @Override
     public void onDestroyView() {
+        ProfileUpdateNotifier.removeListener(profileUpdateListener);
         super.onDestroyView();
         binding = null;
     }

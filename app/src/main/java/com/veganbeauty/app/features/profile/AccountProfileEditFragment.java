@@ -531,7 +531,8 @@ public class AccountProfileEditFragment extends RootieFragment {
             String fileUri = "file://" + path;
             ProfileSession.setAvatar(requireContext(), fileUri);
             loadAvatarImage(fileUri);
-            uploadAvatarToCloudinary(Uri.parse(fileUri));
+            ProfileUpdateNotifier.notifyUpdated();
+            uploadAvatarToCloud(Uri.parse(fileUri));
         } else {
             Toast.makeText(getContext(), "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show();
         }
@@ -543,24 +544,16 @@ public class AccountProfileEditFragment extends RootieFragment {
             String fileUri = "file://" + path;
             ProfileSession.setAvatar(requireContext(), fileUri);
             loadAvatarImage(fileUri);
-            uploadAvatarToCloudinary(Uri.parse(fileUri));
+            ProfileUpdateNotifier.notifyUpdated();
+            uploadAvatarToCloud(Uri.parse(fileUri));
         } else {
             Toast.makeText(getContext(), "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void uploadAvatarToCloudinary(Uri fileUri) {
+    private void uploadAvatarToCloud(Uri fileUri) {
         Context context = requireContext();
-        if (!com.veganbeauty.app.utils.CloudinaryConfig.isConfigured()) {
-            Toast.makeText(
-                            context,
-                            "Chưa cấu hình Cloudinary. Sửa CloudinaryConfig.java.",
-                            Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        Toast.makeText(context, "Đang tải ảnh đại diện lên Cloudinary...", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Đang tải ảnh đại diện lên cloud...", Toast.LENGTH_LONG).show();
 
         avatarUploadFinished = false;
         if (avatarUploadTimeoutRunnable != null) {

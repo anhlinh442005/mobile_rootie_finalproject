@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 public class ComLoadingFragment extends Fragment {
 
     private boolean isDataLoaded = false;
+    private volatile boolean destroyed = false;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Nullable
@@ -47,20 +48,28 @@ public class ComLoadingFragment extends Fragment {
         ImageView ivMascotLoading = view.findViewById(R.id.ivMascotLoading);
         ProgressBar progressBar = view.findViewById(R.id.progressBar);
 
-        view.post(() -> {
-            ValueAnimator animator = ValueAnimator.ofInt(0, 100);
-            animator.setDuration(1500);
-            animator.addUpdateListener(animation -> {
-                int progress = (int) animation.getAnimatedValue();
-                progressBar.setProgress(progress);
-                
-                int width = progressBar.getWidth() - ivMascotLoading.getWidth();
-                if (width > 0) {
-                    ivMascotLoading.setTranslationX(width * progress / 100f);
+        if (progressBar != null && ivMascotLoading != null) {
+            view.post(() -> {
+                if (!isAdded()) {
+                    return;
                 }
+                ValueAnimator animator = ValueAnimator.ofInt(0, 100);
+                animator.setDuration(1500);
+                animator.addUpdateListener(animation -> {
+                    if (!isAdded() || progressBar == null || ivMascotLoading == null) {
+                        return;
+                    }
+                    int progress = (int) animation.getAnimatedValue();
+                    progressBar.setProgress(progress);
+
+                    int width = progressBar.getWidth() - ivMascotLoading.getWidth();
+                    if (width > 0) {
+                        ivMascotLoading.setTranslationX(width * progress / 100f);
+                    }
+                });
+                animator.start();
             });
-            animator.start();
-        });
+        }
 
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
         CommunityRepository repository = new CommunityRepository(
@@ -80,24 +89,26 @@ public class ComLoadingFragment extends Fragment {
             }
         });
 
-        repository.seedFromAssetsSync();
-        viewModel.refreshData();
-
         executor.execute(() -> {
             long startTime = System.currentTimeMillis();
             long maxWaitMs = 8000L;
-            
-            while (!isDataLoaded && (System.currentTimeMillis() - startTime) < maxWaitMs) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
+            try {
+                // Heavy local DB seeding must stay off the main thread to avoid ANR / force-close.
+                repository.seedFromAssetsSync();
+                viewModel.refreshData();
+
+                while (!isDataLoaded && (System.currentTimeMillis() - startTime) < maxWaitMs) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
                 }
-            }
-            
-            Context ctx = getContext();
-            if (ctx != null) {
-                try {
+
+                Context ctx = getContext();
+                if (ctx != null) {
                     UserSocialSeeder.seedIfNeeded(ctx);
                     LocalJsonReader reader = new LocalJsonReader(ctx);
                     reader.syncSocialFromFirestore(new FirestoreService());
@@ -106,31 +117,44 @@ public class ComLoadingFragment extends Fragment {
                     FeedDataCache.newsList = reader.getCommunityNews();
                     FeedDataCache.mySocialData = reader.getSocialDataForUser(userId);
                     FeedDataCache.clearPinnedPosts();
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            
+
             long elapsed = System.currentTimeMillis() - startTime;
             if (elapsed < 2500) {
                 try {
                     Thread.sleep(2500 - elapsed);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             }
-            
+
             androidx.fragment.app.FragmentActivity currentActivity = getActivity();
             if (currentActivity != null) {
-                currentActivity.runOnUiThread(() -> {
-                    if (isAdded() && !isDetached()) {
-                        getParentFragmentManager().beginTransaction()
-                                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                                .replace(R.id.main_container, new CommunityFeedFragment())
-                                .commitAllowingStateLoss();
-                    }
-                });
+                currentActivity.runOnUiThread(() -> openCommunityFeed());
             }
         });
+    }
+
+    private void openCommunityFeed() {
+        if (destroyed || !isAdded() || isDetached()) {
+            return;
+        }
+        try {
+            getParentFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.main_container, new CommunityFeedFragment())
+                    .commitAllowingStateLoss();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        destroyed = true;
+        super.onDestroyView();
     }
 }

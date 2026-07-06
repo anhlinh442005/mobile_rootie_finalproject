@@ -29,8 +29,8 @@ import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
-import com.veganbeauty.app.utils.CloudinaryConfig;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.ProfileUpdateNotifier;
 import com.veganbeauty.app.utils.SyncDataHelper;
 import com.yalantis.ucrop.UCrop;
 
@@ -241,14 +241,9 @@ public class CommunityEditProfileFragment extends Fragment {
         ProfileSession.setBio(ctx, newBio);
 
         if (selectedAvatarUri != null) {
-            if (!CloudinaryConfig.isConfigured()) {
-                Toast.makeText(ctx, "Chưa cấu hình Cloudinary. Sửa CloudinaryConfig.java.", Toast.LENGTH_LONG).show();
-                return;
-            }
-
             isSaving = true;
             setSaveEnabled(false);
-            Toast.makeText(ctx, "Đang tải ảnh đại diện lên Cloudinary...", Toast.LENGTH_LONG).show();
+            Toast.makeText(ctx, "Đang tải ảnh đại diện lên cloud...", Toast.LENGTH_LONG).show();
 
             final String finalUname = newUname;
             SyncDataHelper.uploadAndSyncAvatar(ctx, selectedAvatarUri, (success, secureUrl, errorMessage) -> {
@@ -353,7 +348,11 @@ public class CommunityEditProfileFragment extends Fragment {
 
                 ProfileSessionHelper.syncSessionFromUser(ctx, user);
                 RootieDatabase.getDatabase(ctx).userDao().insertUserSync(user);
+                RootieDatabase.getDatabase(ctx).communityDao().insertUsers(
+                        java.util.Collections.singletonList(user)
+                );
                 new FirestoreService().saveUser(user);
+                ProfileUpdateNotifier.notifyUpdated();
             } catch (Exception e) {
                 e.printStackTrace();
             }

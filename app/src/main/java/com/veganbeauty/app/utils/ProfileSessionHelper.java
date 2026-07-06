@@ -242,6 +242,10 @@ public final class ProfileSessionHelper {
      * @return true nếu tìm thấy file avatar local và đã gán lại vào session.
      */
     public static boolean restoreLocalAvatarIfPresent(Context context) {
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
+        if (isRemoteAvatarUrl(sessionAvatar)) {
+            return false;
+        }
         String fileUri = getLocalAvatarFileUri(context);
         if (fileUri == null) {
             return false;

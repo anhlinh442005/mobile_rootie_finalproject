@@ -14,9 +14,11 @@ public class FeedDataCache {
     private static final List<CommunityPostEntity> pinnedPosts = new ArrayList<>();
 
     public static void addPinnedPost(CommunityPostEntity post) {
-        if (post == null) return;
+        if (post == null || post.getPostId() == null) return;
+        String postId = post.getPostId();
         for (int i = pinnedPosts.size() - 1; i >= 0; i--) {
-            if (post.getPostId().equals(pinnedPosts.get(i).getPostId())) {
+            CommunityPostEntity existing = pinnedPosts.get(i);
+            if (existing != null && postId.equals(existing.getPostId())) {
                 pinnedPosts.remove(i);
             }
         }

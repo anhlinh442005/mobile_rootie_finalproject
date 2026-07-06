@@ -361,9 +361,23 @@ public class SyncDataHelper {
         }
 
         RootieDatabase.getDatabase(context).userDao().insertUserSync(userEntity);
+        propagateCurrentUserToCommunityUsersBlocking(context, userEntity);
         ProfileSessionHelper.syncSessionFromUser(context, userEntity, true);
         propagateProfileChangesBlocking(context);
         return true;
+    }
+
+    private static void propagateCurrentUserToCommunityUsersBlocking(Context context, UserEntity user) {
+        if (user == null || user.getUser_id() == null || user.getUser_id().trim().isEmpty()) {
+            return;
+        }
+        try {
+            RootieDatabase.getDatabase(context).communityDao().insertUsers(
+                    java.util.Collections.singletonList(user)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /** Giữ nguyên avatar hiện tại khi chỉ lưu thông tin text. */
@@ -533,11 +547,12 @@ public class SyncDataHelper {
             }
 
             RootieDatabase.getDatabase(appCtx).userDao().insertUserSync(user);
+            propagateCurrentUserToCommunityUsersBlocking(appCtx, user);
             boolean firestoreOk = new FirestoreService().updateUserAvatar(userId, remoteUrl);
             if (firestoreOk) {
                 propagateAvatarToCommunityBlocking(appCtx, remoteUrl);
-                ProfileUpdateNotifier.notifyUpdated();
             }
+            ProfileUpdateNotifier.notifyUpdated();
             return firestoreOk;
         } catch (Exception e) {
             e.printStackTrace();
@@ -555,7 +570,7 @@ public class SyncDataHelper {
         });
     }
 
-    /** Upload Cloudinary rồi đồng bộ session/Room/Firestore — luồng gộp, không xếp hàng sau sync nặng. */
+    /** Upload Firebase Storage (ưu tiên) rồi đồng bộ session/Room/Firestore. */
     public static void uploadAndSyncAvatar(Context context, Uri fileUri, AvatarSyncCallback callback) {
         Context appCtx = context.getApplicationContext();
         AVATAR_EXECUTOR.execute(() -> {
@@ -564,26 +579,23 @@ public class SyncDataHelper {
             try {
                 if (fileUri == null) {
                     uploadError = "Uri ảnh null";
-                } else if (!CloudinaryConfig.isConfigured()) {
-                    uploadError = "Chưa cấu hình Cloudinary";
                 } else {
                     String userId = resolveCurrentUserId(appCtx);
                     if (userId == null || userId.trim().isEmpty()) {
                         uploadError = "Thiếu user_id — hãy đăng nhập lại";
                     } else {
-                        File imageFile = CloudinaryUploadHelper.resolveImageFile(appCtx, fileUri);
-                        secureUrl = CloudinaryUploadHelper.uploadAvatarFile(imageFile, userId.trim());
+                        secureUrl = uploadAvatarToFirebaseBlocking(appCtx, fileUri, userId.trim());
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                uploadError = e.getMessage() != null ? e.getMessage() : "Lỗi upload Cloudinary";
+                uploadError = e.getMessage() != null ? e.getMessage() : "Lỗi upload Firebase Storage";
             }
 
             if (secureUrl == null) {
                 final String err = uploadError != null && !uploadError.isEmpty()
                         ? uploadError
-                        : "Upload Cloudinary thất bại. Kiểm tra mạng và upload preset.";
+                        : "Upload avatar thất bại. Kiểm tra mạng và thử lại.";
                 runOnMainThread(() -> {
                     if (callback != null) {
                         callback.onComplete(false, null, err);
@@ -596,13 +608,26 @@ public class SyncDataHelper {
             final String url = secureUrl;
             final String warning = firestoreOk
                     ? null
-                    : "Ảnh đã lên Cloudinary; Firebase chưa cập nhật — thử lại khi có mạng.";
+                    : "Ảnh đã lên cloud; Firestore chưa cập nhật — thử lại khi có mạng.";
             runOnMainThread(() -> {
                 if (callback != null) {
                     callback.onComplete(true, url, warning);
                 }
             });
         });
+    }
+
+    private static String uploadAvatarToFirebaseBlocking(Context context, Uri fileUri, String userId) throws Exception {
+        File imageFile = CloudinaryUploadHelper.resolveImageFile(context, fileUri);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        String storagePath = "avatars/" + userId + "/avatar_" + System.currentTimeMillis() + ".jpg";
+        StorageReference ref = storage.getReference().child(storagePath);
+        Tasks.await(ref.putFile(Uri.fromFile(imageFile)));
+        android.net.Uri downloadUri = Tasks.await(ref.getDownloadUrl());
+        if (downloadUri == null || downloadUri.toString().trim().isEmpty()) {
+            throw new Exception("Firebase Storage không trả về download URL");
+        }
+        return downloadUri.toString().trim();
     }
 
     public static void uploadAvatarToFirebase(Context context, android.net.Uri fileUri, UploadCallback callback) {
