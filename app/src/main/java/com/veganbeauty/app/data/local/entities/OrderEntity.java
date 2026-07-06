@@ -39,7 +39,9 @@ public class OrderEntity {
     private long shippingCost;
     private long voucherDiscount;
     private String paymentMethod;
+    @Nullable
     private String expectedDeliveryTime;
+    @Nullable
     private String deliveryDate;
     
     private boolean isAffiliate;
@@ -140,11 +142,13 @@ public class OrderEntity {
     public String getPaymentMethod() { return paymentMethod; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
+    @Nullable
     public String getExpectedDeliveryTime() { return expectedDeliveryTime; }
-    public void setExpectedDeliveryTime(String expectedDeliveryTime) { this.expectedDeliveryTime = expectedDeliveryTime; }
+    public void setExpectedDeliveryTime(@Nullable String expectedDeliveryTime) { this.expectedDeliveryTime = expectedDeliveryTime; }
 
+    @Nullable
     public String getDeliveryDate() { return deliveryDate; }
-    public void setDeliveryDate(String deliveryDate) { this.deliveryDate = deliveryDate; }
+    public void setDeliveryDate(@Nullable String deliveryDate) { this.deliveryDate = deliveryDate; }
 
     public boolean isAffiliate() { return isAffiliate; }
     public void setAffiliate(boolean affiliate) { isAffiliate = affiliate; }

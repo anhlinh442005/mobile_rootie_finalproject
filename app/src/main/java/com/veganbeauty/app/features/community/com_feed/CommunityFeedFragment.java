@@ -583,9 +583,7 @@ public class CommunityFeedFragment extends RootieFragment {
         }
 
         Context ctx = getContext();
-        String avatarUrl = ctx != null
-                ? ProfileSessionHelper.getDisplayAvatarUrl(ctx)
-                : "";
+        String avatarUrl = resolveStoryAvatarUrl(ctx);
 
         UserEntity myStory = new UserEntity(
                 currentUserId, "Tin của bạn", "Tin của bạn", "", "", "", avatarUrl, null
@@ -598,6 +596,25 @@ public class CommunityFeedFragment extends RootieFragment {
         allStories.add(0, myStory);
         lastStoryUsers = new ArrayList<>(safeUsers);
         storyAdapter.updateData(allStories);
+    }
+
+    /** Session/local only — must not touch Room on the main thread. */
+    private String resolveStoryAvatarUrl(@Nullable Context ctx) {
+        if (ctx == null) {
+            return "";
+        }
+        String sessionAvatar = ProfileSession.getAvatarStored(ctx);
+        if (ProfileSessionHelper.isRemoteAvatarUrl(sessionAvatar)) {
+            return sessionAvatar.trim();
+        }
+        String localAvatar = ProfileSessionHelper.getLocalAvatarFileUri(ctx);
+        if (localAvatar != null) {
+            return localAvatar;
+        }
+        if (ProfileSessionHelper.isUsableAvatarUrl(sessionAvatar)) {
+            return sessionAvatar.trim();
+        }
+        return ProfileSession.getAvatar(ctx);
     }
 
     @Override

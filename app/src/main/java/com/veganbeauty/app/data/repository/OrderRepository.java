@@ -88,48 +88,52 @@ public class OrderRepository {
                     Log.e("OrderRepository", "Listen failed.", e);
                     return;
                 }
-                if (snapshot != null) {
-                    List<OrderEntity> orders = new ArrayList<>();
-                    Gson gson = new Gson();
-                    android.content.Context appContext = localJsonReader.getAppContext();
-                    for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                        try {
-                            java.util.Map<String, Object> map = doc.getData();
-                            if (map == null) continue;
-                            JsonElement jsonTree = gson.toJsonTree(map);
-                            OrderEntity order = gson.fromJson(jsonTree, OrderEntity.class);
-                            if (order == null || order.getId() == null) continue;
-
-                            OrderEntity existing = orderDao.getOrderByIdSync(order.getId());
-                            String previousStatus = existing != null ? existing.getStatus() : null;
-                            String newStatus = order.getStatus();
-                            orders.add(order);
-
-                            if (existing != null
-                                    && newStatus != null
-                                    && !newStatus.equals(previousStatus)) {
-                                OrderStatusNotifier.notifyIfStatusChanged(
-                                        appContext,
-                                        order,
-                                        previousStatus,
-                                        newStatus
-                                );
-                            }
-                        } catch (Exception ex) {
-                            Log.e("OrderRepository", "Error parsing order", ex);
-                        }
-                    }
-                    if (!orders.isEmpty()) {
-                        new Thread(() -> {
-                            try {
-                                orderDao.insertOrders(orders);
-                            } catch (Exception ex) {
-                                Log.e("OrderRepository", "Error inserting orders", ex);
-                            }
-                        }).start();
-                    }
+                if (snapshot == null) {
+                    return;
                 }
+                ioExecutor.execute(() -> handleOrderSnapshot(snapshot));
             });
+        }
+    }
+
+    private void handleOrderSnapshot(com.google.firebase.firestore.QuerySnapshot snapshot) {
+        List<OrderEntity> orders = new ArrayList<>();
+        Gson gson = new Gson();
+        android.content.Context appContext = localJsonReader.getAppContext();
+        for (DocumentSnapshot doc : snapshot.getDocuments()) {
+            try {
+                java.util.Map<String, Object> map = doc.getData();
+                if (map == null) continue;
+                JsonElement jsonTree = gson.toJsonTree(map);
+                OrderEntity order = gson.fromJson(jsonTree, OrderEntity.class);
+                if (order == null || order.getId() == null) continue;
+                normalizeOrderForRoom(order);
+
+                OrderEntity existing = orderDao.getOrderByIdSync(order.getId());
+                String previousStatus = existing != null ? existing.getStatus() : null;
+                String newStatus = order.getStatus();
+                orders.add(order);
+
+                if (existing != null
+                        && newStatus != null
+                        && !newStatus.equals(previousStatus)) {
+                    OrderStatusNotifier.notifyIfStatusChanged(
+                            appContext,
+                            order,
+                            previousStatus,
+                            newStatus
+                    );
+                }
+            } catch (Exception ex) {
+                Log.e("OrderRepository", "Error parsing order", ex);
+            }
+        }
+        if (!orders.isEmpty()) {
+            try {
+                orderDao.insertOrders(orders);
+            } catch (Exception ex) {
+                Log.e("OrderRepository", "Error inserting orders", ex);
+            }
         }
     }
 
@@ -309,6 +313,9 @@ public class OrderRepository {
                 Log.w("OrderRepository", "No orders found in orders.json");
                 return;
             }
+            for (OrderEntity order : mockOrders) {
+                normalizeOrderForRoom(order);
+            }
             try {
                 orderDao.insertOrders(mockOrders);
             } catch (Exception batchError) {
@@ -357,6 +364,19 @@ public class OrderRepository {
 
     private static String normalizePhone(@Nullable String phone) {
         return phone != null ? phone.replace(" ", "").trim() : "";
+    }
+
+    /** Room/KSP rejects null for String columns parsed from JSON/Firestore without this field. */
+    private static void normalizeOrderForRoom(OrderEntity order) {
+        if (order == null) {
+            return;
+        }
+        if (order.getExpectedDeliveryTime() == null) {
+            order.setExpectedDeliveryTime("");
+        }
+        if (order.getDeliveryDate() == null) {
+            order.setDeliveryDate("");
+        }
     }
 
     private static boolean matchesBuyer(OrderEntity order, String userId, String normalizedPhone) {
