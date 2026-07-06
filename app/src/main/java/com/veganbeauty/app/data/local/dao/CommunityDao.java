@@ -67,6 +67,12 @@ public interface CommunityDao {
     @Query("SELECT * FROM ingredients")
     Flow<List<IngredientEntity>> getAllIngredients();
 
+    @Query("SELECT COUNT(*) FROM ingredients")
+    int countIngredientsSync();
+
+    @Query("SELECT COUNT(*) FROM community_posts")
+    int countPostsSync();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertIngredients(List<IngredientEntity> ingredients);
 

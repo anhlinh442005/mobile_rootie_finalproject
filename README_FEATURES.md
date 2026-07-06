@@ -32,12 +32,12 @@ Tôi đã thiết kế và lập trình hoàn chỉnh Module **Trang Cá nhân &
 
 ---
 
-## 📂 2. CHI TIẾT CÁC TỆP MÃ NGUỒN (KOTLIN/JAVA)
+## 📂 2. CHI TIẾT CÁC TỆP MÃ NGUỒN (JAVA)
 Được viết mới hoàn toàn và đặt trong thư mục: `app/src/main/java/com/veganbeauty/app/features/profile/`
 
-* **`AccountProfileFragment.kt`**: Xử lý hiển thị thông tin trang cá nhân chính, sự kiện click vào các nút chức năng (như đặt hẹn, đơn hàng, mở màn hình edit...).
-* **`AccountProfileEditFragment.kt`**: Xử lý form cập nhật thông tin cá nhân, cho phép người dùng sửa ảnh đại diện, kiểm tra tính hợp lệ của dữ liệu trước khi lưu.
-* **`AccountProfilePersonalInfoFragment.kt`**: Hiển thị thông tin bảo mật của người dùng.
+* **`AccountProfileFragment.java`**: Xử lý hiển thị thông tin trang cá nhân chính, sự kiện click vào các nút chức năng (như đặt hẹn, đơn hàng, mở màn hình edit...).
+* **`AccountProfileEditFragment.java`**: Xử lý form cập nhật thông tin cá nhân, cho phép người dùng sửa ảnh đại diện, kiểm tra tính hợp lệ của dữ liệu trước khi lưu.
+* **`AccountProfilePersonalInfoFragment.java`**: Hiển thị thông tin bảo mật của người dùng.
 * **`educational/AccountProfileFragmentJava.java`**: Tệp tham khảo viết bằng Java phục vụ học tập/đối chiếu.
 
 ---
@@ -45,7 +45,7 @@ Tôi đã thiết kế và lập trình hoàn chỉnh Module **Trang Cá nhân &
 ## 🎨 3. CHI TIẾT CÁC FILE THIẾT KẾ GIAO DIỆN (XML LAYOUTS)
 Được tạo mới 100% trong thư mục: `app/src/main/res/layout/`
 
-* **`account_profile.xml`**: Layout trang cá nhân (dài 1084 dòng) được thiết kế chi tiết bằng RelativeLayout và LinearLayout lồng ghép, sử dụng CardView để tạo độ nổi khối hiện đại, ScrollView giúp cuộn trang mượt mà không bị tràn màn hình.
+* **`account_profile.xml`**: Layout trang cá nhân (dài ~1363 dòng) được thiết kế chi tiết bằng RelativeLayout và LinearLayout lồng ghép, sử dụng CardView để tạo độ nổi khối hiện đại, ScrollView giúp cuộn trang mượt mà không bị tràn màn hình.
 * **`account_profile_edit.xml`**: Layout màn hình chỉnh sửa thông tin cá nhân với các trường TextInput, nút bấm Lưu được thiết kế chuyên nghiệp.
 * **`account_profile_personal_info.xml`**: Layout trang thông tin chi tiết bảo mật của tài khoản.
 

@@ -95,6 +95,14 @@ public class MainActivity extends AppCompatActivity {
                                 new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext())
                         );
                 orderRepository.seedOrdersFromAssetsIfNeeded();
+
+                com.veganbeauty.app.data.repository.CommunityRepository communityRepository =
+                        new com.veganbeauty.app.data.repository.CommunityRepository(
+                                db.communityDao(),
+                                new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()),
+                                new com.veganbeauty.app.data.remote.FirestoreService()
+                        );
+                communityRepository.seedFromAssetsIfNeeded();
             } catch (Exception e) {
                 e.printStackTrace();
             }
