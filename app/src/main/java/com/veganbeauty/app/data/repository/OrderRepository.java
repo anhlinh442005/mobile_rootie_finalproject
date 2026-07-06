@@ -2,10 +2,13 @@ package com.veganbeauty.app.data.repository;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.veganbeauty.app.data.local.LocalJsonReader;
@@ -19,9 +22,12 @@ import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.repository.OrderStatusNotifier;
 import com.veganbeauty.app.utils.SyncDataHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,6 +39,10 @@ public class OrderRepository {
 
     private static final String TAG = "OrderRepository";
     private static final int ADMIN_ORDERS_LIMIT = 100;
+    private static final String ORDER_PREFS = "rootie_order_prefs";
+    private static final String PREF_ORDERS_CREATED_AT_BACKFILL = "orders_created_at_backfill_v1";
+
+    private static volatile int listenerGeneration = 0;
 
     private final OrderDao orderDao;
     private final RewardPointDao rewardPointDao;
@@ -94,19 +104,77 @@ public class OrderRepository {
             return;
         }
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        com.google.firebase.firestore.Query query = db.collection("orders")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .limit(ADMIN_ORDERS_LIMIT);
-        attachOrderListener(query);
-        Log.d(TAG, "Admin orders listener started (limit " + ADMIN_ORDERS_LIMIT + ", orderBy createdAt desc)");
+        final int generation = ++listenerGeneration;
+        ioExecutor.execute(() -> {
+            backfillFirestoreOrdersCreatedAtBlocking();
+            if (generation != listenerGeneration) {
+                return;
+            }
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Query query = db.collection("orders")
+                    .orderBy("createdAt", Query.Direction.DESCENDING)
+                    .limit(ADMIN_ORDERS_LIMIT);
+            attachOrderListener(query);
+            Log.d(TAG, "Admin orders listener started (limit " + ADMIN_ORDERS_LIMIT + ", orderBy createdAt desc)");
+        });
     }
 
     public void stopListeningToOrders() {
+        listenerGeneration++;
         if (orderListener != null) {
             orderListener.remove();
             orderListener = null;
             Log.d(TAG, "Orders listener removed");
+        }
+    }
+
+    /** One-time: set createdAt on legacy Firestore orders so admin query can include them. */
+    private void backfillFirestoreOrdersCreatedAtBlocking() {
+        android.content.Context ctx = localJsonReader.getAppContext();
+        android.content.SharedPreferences prefs =
+                ctx.getSharedPreferences(ORDER_PREFS, android.content.Context.MODE_PRIVATE);
+        if (prefs.getBoolean(PREF_ORDERS_CREATED_AT_BACKFILL, false)) {
+            return;
+        }
+
+        try {
+            QuerySnapshot snapshot = Tasks.await(
+                    FirebaseFirestore.getInstance().collection("orders").get()
+            );
+            WriteBatch batch = FirebaseFirestore.getInstance().batch();
+            int pending = 0;
+            int updated = 0;
+
+            for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                Long existing = doc.contains("createdAt") ? doc.getLong("createdAt") : null;
+                if (existing != null && existing > 0L) {
+                    continue;
+                }
+
+                long createdAt = resolveCreatedAtForFirestore(doc);
+                if (createdAt <= 0L) {
+                    Log.w(TAG, "Skip backfill createdAt for order " + doc.getId());
+                    continue;
+                }
+
+                batch.update(doc.getReference(), "createdAt", createdAt);
+                pending++;
+                updated++;
+                if (pending >= 400) {
+                    Tasks.await(batch.commit());
+                    batch = FirebaseFirestore.getInstance().batch();
+                    pending = 0;
+                }
+            }
+
+            if (pending > 0) {
+                Tasks.await(batch.commit());
+            }
+
+            prefs.edit().putBoolean(PREF_ORDERS_CREATED_AT_BACKFILL, true).apply();
+            Log.d(TAG, "Backfilled createdAt on " + updated + " Firestore order(s)");
+        } catch (Exception e) {
+            Log.e(TAG, "Orders createdAt backfill failed; will retry on next admin order screen", e);
         }
     }
 
@@ -431,8 +499,39 @@ public class OrderRepository {
             }
         }
         if (order.getCreatedAt() <= 0L) {
-            order.setCreatedAt(createdAtFromOrderId(order.getId()));
+            long fromId = createdAtFromOrderId(order.getId());
+            if (fromId > 0L) {
+                order.setCreatedAt(fromId);
+                return;
+            }
+            if (doc != null) {
+                order.setCreatedAt(createdAtFromOrderFields(
+                        doc.getString("orderDate"),
+                        doc.getString("orderTime")
+                ));
+            }
         }
+    }
+
+    private static long resolveCreatedAtForFirestore(DocumentSnapshot doc) {
+        if (doc == null) {
+            return 0L;
+        }
+        Long existing = doc.contains("createdAt") ? doc.getLong("createdAt") : null;
+        if (existing != null && existing > 0L) {
+            return existing;
+        }
+
+        String orderId = doc.getString("id");
+        if (orderId == null || orderId.trim().isEmpty()) {
+            orderId = doc.getId();
+        }
+
+        long fromId = createdAtFromOrderId(orderId);
+        if (fromId > 0L) {
+            return fromId;
+        }
+        return createdAtFromOrderFields(doc.getString("orderDate"), doc.getString("orderTime"));
     }
 
     private static long createdAtFromOrderId(@Nullable String orderId) {
@@ -444,8 +543,31 @@ public class OrderRepository {
             return 0L;
         }
         try {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US);
-            java.util.Date parsed = sdf.parse(matcher.group(1));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+            Date parsed = sdf.parse(matcher.group(1));
+            return parsed != null ? parsed.getTime() : 0L;
+        } catch (Exception e) {
+            return 0L;
+        }
+    }
+
+    private static long createdAtFromOrderFields(@Nullable String orderDate, @Nullable String orderTime) {
+        if (orderDate == null || orderDate.trim().isEmpty()) {
+            return 0L;
+        }
+        try {
+            String datePart = orderDate.trim();
+            String timePart = orderTime != null ? orderTime.trim() : "";
+            SimpleDateFormat sdf;
+            String raw;
+            if (!timePart.isEmpty()) {
+                sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US);
+                raw = datePart + " " + timePart;
+            } else {
+                sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+                raw = datePart;
+            }
+            Date parsed = sdf.parse(raw);
             return parsed != null ? parsed.getTime() : 0L;
         } catch (Exception e) {
             return 0L;
