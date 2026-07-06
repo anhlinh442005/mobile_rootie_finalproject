@@ -183,6 +183,22 @@ public class AccountOrderListFragment extends RootieFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (viewModel != null) {
+            viewModel.resumeOrderRealtimeSync();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (viewModel != null) {
+            viewModel.pauseOrderRealtimeSync();
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         _binding = null;

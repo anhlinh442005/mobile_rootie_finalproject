@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Embedded;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
@@ -60,6 +61,10 @@ public class OrderEntity {
     private String billingPhone;
     private String billingEmail;
     private String orderNote;
+
+    /** Firestore sort key — not persisted in Room. */
+    @Ignore
+    private long createdAt;
 
     public OrderEntity(@NonNull String id) {
         this.id = id;
@@ -186,6 +191,9 @@ public class OrderEntity {
 
     public String getOrderNote() { return orderNote; }
     public void setOrderNote(String orderNote) { this.orderNote = orderNote; }
+
+    public long getCreatedAt() { return createdAt; }
+    public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
 
     @Override
     public boolean equals(Object o) {

@@ -986,6 +986,7 @@ public class ShopCheckoutFragment extends RootieFragment {
         );
         order.setDeliveryDate("");
         order.setOrderNote(binding.etNote.getText().toString().trim());
+        order.setCreatedAt(now);
         AffiliateTrackingHelper.applyAffiliateAttribution(requireContext(), order, checkoutItems);
         return order;
     }
@@ -1044,6 +1045,11 @@ public class ShopCheckoutFragment extends RootieFragment {
 
             try {
                 Map<String, Object> orderMap = new Gson().fromJson(new Gson().toJsonTree(order), Map.class);
+                if (order.getCreatedAt() > 0L) {
+                    orderMap.put("createdAt", order.getCreatedAt());
+                } else {
+                    orderMap.put("createdAt", System.currentTimeMillis());
+                }
                 com.google.android.gms.tasks.Tasks.await(db.collection("orders").document(order.getId()).set(orderMap));
 
                 if (order.getUserId() != null && !order.getUserId().trim().isEmpty()) {

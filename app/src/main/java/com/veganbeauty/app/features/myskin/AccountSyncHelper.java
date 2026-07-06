@@ -83,6 +83,8 @@ public final class AccountSyncHelper {
                 db.userGiftDao(),
                 new LocalJsonReader(appContext)
         );
-        orderRepository.startListeningToOrders(safeUserId, safePhone);
+        if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
+            orderRepository.startListeningToOrders(safeUserId, safePhone);
+        }
     }
 }

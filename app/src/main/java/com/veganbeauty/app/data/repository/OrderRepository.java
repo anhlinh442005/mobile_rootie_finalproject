@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.veganbeauty.app.data.local.LocalJsonReader;
@@ -29,6 +30,9 @@ import androidx.annotation.Nullable;
 import kotlinx.coroutines.flow.Flow;
 
 public class OrderRepository {
+
+    private static final String TAG = "OrderRepository";
+    private static final int ADMIN_ORDERS_LIMIT = 100;
 
     private final OrderDao orderDao;
     private final RewardPointDao rewardPointDao;
@@ -66,17 +70,47 @@ public class OrderRepository {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
 
+        if (com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
+            Log.d(TAG, "Skipping global orders listener for admin; use startAdminOrdersListener on order screen");
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         com.google.firebase.firestore.Query query = null;
 
-        if (com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            query = db.collection("orders");
-        } else if (!safeUserId.isEmpty()) {
+        if (!safeUserId.isEmpty()) {
             query = db.collection("orders").whereEqualTo("userId", safeUserId);
         } else if (!safePhone.isEmpty()) {
             query = db.collection("orders").whereEqualTo("billingPhone", safePhone);
         }
 
+        attachOrderListener(query);
+    }
+
+    /** Admin-only: recent orders realtime — call from order list screen resume. */
+    public void startAdminOrdersListener(String userId) {
+        String safeUserId = userId != null ? userId.trim() : "";
+        if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        com.google.firebase.firestore.Query query = db.collection("orders")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(ADMIN_ORDERS_LIMIT);
+        attachOrderListener(query);
+        Log.d(TAG, "Admin orders listener started (limit " + ADMIN_ORDERS_LIMIT + ", orderBy createdAt desc)");
+    }
+
+    public void stopListeningToOrders() {
+        if (orderListener != null) {
+            orderListener.remove();
+            orderListener = null;
+            Log.d(TAG, "Orders listener removed");
+        }
+    }
+
+    private void attachOrderListener(@Nullable com.google.firebase.firestore.Query query) {
         if (orderListener != null) {
             orderListener.remove();
             orderListener = null;
@@ -85,7 +119,7 @@ public class OrderRepository {
         if (query != null) {
             orderListener = query.addSnapshotListener((snapshot, e) -> {
                 if (e != null) {
-                    Log.e("OrderRepository", "Listen failed.", e);
+                    Log.e(TAG, "Listen failed.", e);
                     return;
                 }
                 if (snapshot == null) {
@@ -107,6 +141,7 @@ public class OrderRepository {
                 JsonElement jsonTree = gson.toJsonTree(map);
                 OrderEntity order = gson.fromJson(jsonTree, OrderEntity.class);
                 if (order == null || order.getId() == null) continue;
+                enrichCreatedAt(order, doc);
                 normalizeOrderForRoom(order);
 
                 OrderEntity existing = orderDao.getOrderByIdSync(order.getId());
@@ -140,7 +175,9 @@ public class OrderRepository {
     public Flow<List<OrderEntity>> getOrdersForBuyer(String userId, String phone) {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
-        startListeningToOrders(safeUserId, safePhone);
+        if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
+            startListeningToOrders(safeUserId, safePhone);
+        }
         return observeOrdersForBuyer(safeUserId, safePhone);
     }
 
@@ -192,7 +229,10 @@ public class OrderRepository {
                     userGiftDao.insertUserGifts(initGifts);
                 }
 
-                startListeningToOrders(userId, phone);
+                String safeUserId = userId != null ? userId.trim() : "";
+                if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
+                    startListeningToOrders(userId, phone);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -376,6 +416,39 @@ public class OrderRepository {
         }
         if (order.getDeliveryDate() == null) {
             order.setDeliveryDate("");
+        }
+    }
+
+    private static void enrichCreatedAt(OrderEntity order, DocumentSnapshot doc) {
+        if (order == null) {
+            return;
+        }
+        if (doc != null && doc.contains("createdAt")) {
+            Long value = doc.getLong("createdAt");
+            if (value != null && value > 0L) {
+                order.setCreatedAt(value);
+                return;
+            }
+        }
+        if (order.getCreatedAt() <= 0L) {
+            order.setCreatedAt(createdAtFromOrderId(order.getId()));
+        }
+    }
+
+    private static long createdAtFromOrderId(@Nullable String orderId) {
+        if (orderId == null || orderId.trim().isEmpty()) {
+            return 0L;
+        }
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("(\\d{8})").matcher(orderId);
+        if (!matcher.find()) {
+            return 0L;
+        }
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US);
+            java.util.Date parsed = sdf.parse(matcher.group(1));
+            return parsed != null ? parsed.getTime() : 0L;
+        } catch (Exception e) {
+            return 0L;
         }
     }
 

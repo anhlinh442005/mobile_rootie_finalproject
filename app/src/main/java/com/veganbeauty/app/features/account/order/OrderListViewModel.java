@@ -14,6 +14,7 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.RootieBrandHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,5 +153,20 @@ public class OrderListViewModel extends RootieViewModel {
                 e.printStackTrace();
             }
         });
+    }
+
+    /** Start Firestore realtime sync while order list screen is visible. */
+    public void resumeOrderRealtimeSync() {
+        BuyerIdentity identity = resolveBuyerIdentity();
+        if (RootieBrandHelper.isAdminUser(identity.userId)) {
+            repository.startAdminOrdersListener(identity.userId);
+        } else {
+            repository.startListeningToOrders(identity.userId, identity.phone);
+        }
+    }
+
+    /** Stop Firestore realtime sync when leaving order list screen. */
+    public void pauseOrderRealtimeSync() {
+        repository.stopListeningToOrders();
     }
 }
