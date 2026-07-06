@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -27,6 +28,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SyncDataHelper {
+
+    private static final String TAG = "SyncDataHelper";
 
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
     /** Tách riêng — tránh avatar upload bị kẹt sau job sync Firebase nặng trên EXECUTOR. */
@@ -764,6 +767,8 @@ public class SyncDataHelper {
                     return;
                 }
 
+                Log.d(TAG, "Pushed skincare history because user changed routine");
+
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
 
                 // 1. Lấy chi tiết lịch sử ngày cụ thể
@@ -913,8 +918,7 @@ public class SyncDataHelper {
                 ProfileSession.setCompletedStepIdsForDate(context, date, stepIds);
             }
 
-            // 4. Đồng bộ ngược lại các thay đổi đã merge từ local lên Firestore để đảm bảo Firestore có đầy đủ dữ liệu nhất
-            pushAllLocalSkincareHistoryToFirestoreBlocking(context, userId);
+            Log.d(TAG, "Pulled skincare history from Firestore without pushing back");
 
         } catch (Exception e) {
             e.printStackTrace();
