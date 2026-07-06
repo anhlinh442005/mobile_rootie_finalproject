@@ -65,7 +65,7 @@ public class AccountProfileSecurityFragment extends RootieFragment {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new AccountProfileEditFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         _binding.btnUsername.setOnClickListener(v -> {

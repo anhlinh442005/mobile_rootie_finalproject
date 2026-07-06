@@ -663,28 +663,28 @@ public class LocalJsonReader {
     public List<NotificationItem> getAllNotifications() {
         List<NotificationItem> notificationList = new ArrayList<>();
         try {
-            String jsonString = readAssetFile("notifications.json");
+            String jsonString = readAssetFile("notification_account.json");
             if (jsonString == null) return notificationList;
-            JSONObject root = new JSONObject(jsonString);
-            org.json.JSONArray jsonArray = root.getJSONArray("notifications");
+            org.json.JSONArray jsonArray = new org.json.JSONArray(jsonString);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = jsonArray.getJSONObject(i);
-                notificationList.add(new NotificationItem(
-                        obj.getString("id"),
-                        obj.getString("title"),
-                        obj.getString("content"),
-                        obj.getString("time"),
-                        obj.getString("category"),
-                        obj.optString("tag", "").isEmpty() ? null : obj.optString("tag", ""),
-                        obj.optString("voucherCode", "").isEmpty() ? null : obj.optString("voucherCode", ""),
-                        obj.optString("actionText", "").isEmpty() ? null : obj.optString("actionText", ""),
+                NotificationItem item = new NotificationItem(
+                        obj.optString("id", ""),
+                        obj.optString("title", ""),
+                        obj.optString("content", ""),
+                        obj.optString("time", ""),
+                        obj.optString("category", ""),
+                        obj.optString("tag", ""),
+                        obj.optString("voucherCode", ""),
+                        obj.optString("actionText", ""),
                         obj.optBoolean("isRead", false),
-                        obj.optString("section", "Hôm nay"),
-                        obj.getString("iconResName"),
-                        obj.optString("notificationType", "").isEmpty() ? null : obj.optString("notificationType", ""),
-                        obj.optString("orderId", "").isEmpty() ? null : obj.optString("orderId", ""),
-                        obj.optString("scheduleId", "").isEmpty() ? null : obj.optString("scheduleId", "")
-                ));
+                        obj.optString("section", ""),
+                        obj.optString("iconResName", ""),
+                        obj.optString("notificationType", ""),
+                        obj.optString("orderId", ""),
+                        obj.optString("scheduleId", "")
+                );
+                notificationList.add(item);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1209,11 +1209,11 @@ public class LocalJsonReader {
                 while (reader.hasNext()) {
                     String name = reader.nextName();
                     if ("_id".equals(name)) {
-                        id = reader.nextString();
+                        if (reader.peek() == android.util.JsonToken.NULL) { reader.nextNull(); } else { id = reader.nextString(); }
                     } else if ("title".equals(name)) {
-                        title = reader.nextString();
+                        if (reader.peek() == android.util.JsonToken.NULL) { reader.nextNull(); } else { title = reader.nextString(); }
                     } else if ("shortDescription".equals(name)) {
-                        shortDesc = reader.nextString();
+                        if (reader.peek() == android.util.JsonToken.NULL) { reader.nextNull(); } else { shortDesc = reader.nextString(); }
                     } else if ("publishedAt".equals(name)) {
                         if (reader.peek() == android.util.JsonToken.NULL) {
                             reader.nextNull();

@@ -53,7 +53,7 @@ public final class HomeHeaderHelper {
                 fragment.getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new AccountNotificationFragment())
                         .addToBackStack(null)
-                        .commit();
+                        .commitAllowingStateLoss();
             });
         }
 
@@ -69,7 +69,7 @@ public final class HomeHeaderHelper {
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.main_container, new ShopSearchFragment())
                 .addToBackStack(null)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     private static void openQrScan(Fragment fragment) {
@@ -77,7 +77,7 @@ public final class HomeHeaderHelper {
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.main_container, new BarcodeScanFragment())
                 .addToBackStack(null)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     private static void bindCartBadge(Fragment fragment, TextView badge) {

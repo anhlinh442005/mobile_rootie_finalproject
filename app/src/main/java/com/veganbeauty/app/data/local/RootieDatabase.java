@@ -40,6 +40,27 @@ import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.local.entities.UserMemoryEntity;
 import com.veganbeauty.app.data.local.entities.UserProductExpiryEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
+import com.veganbeauty.app.data.local.entities.RawJsonAssetEntity;
+import com.veganbeauty.app.data.local.dao.RawJsonAssetDao;
+
+import com.veganbeauty.app.data.local.entities.AffiliatesEntity;
+import com.veganbeauty.app.data.local.entities.AffiliateProductEntity;
+import com.veganbeauty.app.data.local.entities.CategoriesEntity;
+import com.veganbeauty.app.data.local.entities.CommunityMessageEntity;
+import com.veganbeauty.app.data.local.entities.CommunityNewsEntity;
+import com.veganbeauty.app.data.local.entities.NotificationAccountEntity;
+import com.veganbeauty.app.data.local.entities.NotificationComEntity;
+import com.veganbeauty.app.data.local.entities.PolicyEntity;
+import com.veganbeauty.app.data.local.entities.ProductWeatherEntity;
+import com.veganbeauty.app.data.local.entities.QuizCauhoiEntity;
+import com.veganbeauty.app.data.local.entities.QuizKetquaEntity;
+import com.veganbeauty.app.data.local.entities.QuizLoaidaEntity;
+import com.veganbeauty.app.data.local.entities.QuizThanhphanEntity;
+import com.veganbeauty.app.data.local.entities.UserComFriendEntity;
+import com.veganbeauty.app.data.local.entities.UserProDisplayEntity;
+import com.veganbeauty.app.data.local.entities.VoucherEntity;
+import com.veganbeauty.app.data.local.entities.WeathersEntity;
+import com.veganbeauty.app.data.local.dao.VoucherDao;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -64,9 +85,27 @@ import java.util.UUID;
                 CartItemEntity.class,
                 StoreEntity.class,
                 UserProductExpiryEntity.class,
-                SkinHistoryEntity.class
+                SkinHistoryEntity.class,
+                RawJsonAssetEntity.class,
+                AffiliatesEntity.class,
+                AffiliateProductEntity.class,
+                CategoriesEntity.class,
+                CommunityMessageEntity.class,
+                CommunityNewsEntity.class,
+                NotificationAccountEntity.class,
+                NotificationComEntity.class,
+                PolicyEntity.class,
+                ProductWeatherEntity.class,
+                QuizCauhoiEntity.class,
+                QuizKetquaEntity.class,
+                QuizLoaidaEntity.class,
+                QuizThanhphanEntity.class,
+                UserComFriendEntity.class,
+                UserProDisplayEntity.class,
+                WeathersEntity.class,
+                VoucherEntity.class
         },
-        version = 39
+        version = 43
 )
 
 @TypeConverters({ProductConverters.class})
@@ -82,6 +121,8 @@ public abstract class RootieDatabase extends RoomDatabase {
     public abstract StoreDao storeDao();
     public abstract UserProductExpiryDao userProductExpiryDao();
     public abstract SkinHistoryDao skinHistoryDao();
+    public abstract RawJsonAssetDao rawJsonAssetDao();
+    public abstract VoucherDao voucherDao();
 
     private static final String TAG = "RootieDatabase";
 

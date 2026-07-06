@@ -121,6 +121,49 @@ public class MainActivity extends AppCompatActivity {
                 storeRepository.refreshStores();
 
                 com.veganbeauty.app.data.repository.VoucherRepository.seedToFirestoreIfEmpty(getApplicationContext());
+
+                // === Seed ALL 27 json files into raw_json_assets table ===
+                com.veganbeauty.app.data.local.dao.RawJsonAssetDao rawJsonDao = db.rawJsonAssetDao();
+                String[] allAssets = getAssets().list("");
+                if (allAssets != null) {
+                    for (String assetFileName : allAssets) {
+                        if (assetFileName.toLowerCase().endsWith(".json")) {
+                            // Skip huge files to prevent OutOfMemoryError and CursorWindow overflow
+                            if (assetFileName.equals("community_blog.json") || assetFileName.equals("rootie_stores.json") || assetFileName.equals("community_video_yt.json")) {
+                                continue;
+                            }
+                            try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(getAssets().open(assetFileName), java.nio.charset.StandardCharsets.UTF_8))) {
+                                StringBuilder sb = new StringBuilder();
+                                String line;
+                                while ((line = reader.readLine()) != null) {
+                                    sb.append(line).append("\n");
+                                }
+                                com.veganbeauty.app.data.local.entities.RawJsonAssetEntity assetEntity = new com.veganbeauty.app.data.local.entities.RawJsonAssetEntity(
+                                        assetFileName,
+                                        sb.toString().trim(),
+                                        System.currentTimeMillis()
+                                );
+                                rawJsonDao.insertAsset(assetEntity);
+                            } catch (Exception fileEx) {
+                                fileEx.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+                // === Add a mock entry to user_memory table so it isn't empty ===
+                com.veganbeauty.app.data.local.dao.CommunityDao communityDao = db.communityDao();
+                com.veganbeauty.app.data.local.entities.UserMemoryEntity mockMemory = new com.veganbeauty.app.data.local.entities.UserMemoryEntity(
+                        "mock_memory_1",
+                        "WELCOME",
+                        com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(getApplicationContext()),
+                        "Rootie Admin",
+                        "https://i.pinimg.com/736x/ab/32/b1/ab32b13edefed48f94d93ee4b6f12f6b.jpg",
+                        "Chào mừng bạn đến với mạng xã hội làm đẹp Rootie!",
+                        System.currentTimeMillis()
+                );
+                communityDao.insertUserMemory(mockMemory);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

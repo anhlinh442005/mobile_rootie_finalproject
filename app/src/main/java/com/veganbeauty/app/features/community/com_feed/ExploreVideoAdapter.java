@@ -53,7 +53,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
     }
 
     public void setNavBarVisible(boolean visible, boolean animate) {
-        if (isNavBarVisible == visible) return;
+        if (isNavBarVisible == visible)
+            return;
         isNavBarVisible = visible;
         int targetMargin = visible ? navVisibleBottomMarginPx : navHiddenBottomMarginPx;
         applyBottomMarginToVisibleHolders(targetMargin, animate);
@@ -119,7 +120,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
     private void applyBottomMarginToVisibleHolders(int targetMarginPx, boolean animate) {
         RecyclerView recyclerView = attachedRecyclerView;
-        if (recyclerView == null) return;
+        if (recyclerView == null)
+            return;
         for (int i = 0; i < recyclerView.getChildCount(); i++) {
             RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
             if (holder instanceof VideoViewHolder) {
@@ -146,10 +148,15 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
     public interface OnVideoInteractionListener {
         void onLikeClick(YtVideoEntity video, boolean isLiked);
+
         void onCommentClick(YtVideoEntity video);
+
         void onShareClick(YtVideoEntity video);
+
         void onSaveClick(YtVideoEntity video, boolean isSaved);
+
         void onProfileClick(String username);
+
         void onProductClick(YtVideoEntity video);
     }
 
@@ -211,7 +218,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
         }
 
         void applyBottomMargin(int targetMarginPx, boolean animate) {
-            if (llLeftContent == null || llRightIcons == null) return;
+            if (llLeftContent == null || llRightIcons == null)
+                return;
 
             ViewGroup.MarginLayoutParams leftParams = (ViewGroup.MarginLayoutParams) llLeftContent.getLayoutParams();
             ViewGroup.MarginLayoutParams rightParams = (ViewGroup.MarginLayoutParams) llRightIcons.getLayoutParams();
@@ -296,7 +304,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
             videoView.setOnErrorListener((mp, what, extra) -> {
                 progressBar.setVisibility(View.GONE);
-                if (!ExploreVideoCache.isCached(itemView.getContext(), url) && !ExploreVideoCache.isNetworkAvailable(itemView.getContext())) {
+                if (!ExploreVideoCache.isCached(itemView.getContext(), url)
+                        && !ExploreVideoCache.isNetworkAvailable(itemView.getContext())) {
                     videoView.setVisibility(View.GONE);
                     tvOfflineHint.setVisibility(View.VISIBLE);
                 }
@@ -305,7 +314,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
         }
 
         private void fitVideoToScreen(MediaPlayer mp) {
-            if (videoView.getWidth() <= 0 || videoView.getHeight() <= 0) return;
+            if (videoView.getWidth() <= 0 || videoView.getHeight() <= 0)
+                return;
             float videoRatio = mp.getVideoWidth() / (float) mp.getVideoHeight();
             float screenRatio = videoView.getWidth() / (float) videoView.getHeight();
             float scaleX = videoRatio / screenRatio;
@@ -322,11 +332,13 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             String username = video.getUsername() != null ? video.getUsername().trim() : "";
             tvUsername.setText(username.isEmpty() ? "@rootie_community" : "@" + username.replace(" ", ""));
 
-            int[] avatarRes = {R.drawable.img_avatar, R.drawable.ic_account_outline, R.drawable.img_avatar, R.drawable.ic_account_outline};
+            int[] avatarRes = { R.drawable.img_avatar, R.drawable.ic_account_outline, R.drawable.img_avatar,
+                    R.drawable.ic_account_outline };
             int randomAvatar = avatarRes[(int) (Math.random() * avatarRes.length)];
 
             String avatarUrl = video.getAvatarUrl() == null || video.getAvatarUrl().trim().isEmpty()
-                    ? String.valueOf(randomAvatar) : video.getAvatarUrl();
+                    ? String.valueOf(randomAvatar)
+                    : video.getAvatarUrl();
 
             com.bumptech.glide.Glide.with(ivAvatar.getContext())
                     .load(avatarUrl.matches("\\d+") ? Integer.parseInt(avatarUrl) : avatarUrl)
@@ -385,7 +397,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             if (ivSave != null) {
                 ivSave.setImageResource(R.drawable.ic_save_full);
                 if (isSaved) {
-                    ivSave.setColorFilter(android.graphics.Color.parseColor("#EEDB5B"), android.graphics.PorterDuff.Mode.SRC_IN);
+                    ivSave.setColorFilter(android.graphics.Color.parseColor("#EEDB5B"),
+                            android.graphics.PorterDuff.Mode.SRC_IN);
                 } else {
                     ivSave.clearColorFilter();
                 }
@@ -395,8 +408,9 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
         private int getRealCommentCount(String videoId) {
             try {
                 java.io.File file = new java.io.File(itemView.getContext().getFilesDir(), "local_comments.json");
-                if (!file.exists()) return 0;
-                
+                if (!file.exists())
+                    return 0;
+
                 StringBuilder sb = new StringBuilder();
                 java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
                 String line;
@@ -404,7 +418,7 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                     sb.append(line);
                 }
                 br.close();
-                
+
                 org.json.JSONArray allComments = new org.json.JSONArray(sb.toString());
                 int count = 0;
                 for (int i = 0; i < allComments.length(); i++) {
@@ -436,7 +450,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                     android.content.Context ctx = itemView.getContext();
                     if (ctx instanceof androidx.appcompat.app.AppCompatActivity) {
                         androidx.appcompat.app.AppCompatActivity activity = (androidx.appcompat.app.AppCompatActivity) ctx;
-                        CommunityShareBottomSheet shareSheet = CommunityShareBottomSheet.newInstance(video.getId(), video.getUrl());
+                        CommunityShareBottomSheet shareSheet = CommunityShareBottomSheet.newInstance(video.getId(),
+                                video.getUrl());
                         shareSheet.show(activity.getSupportFragmentManager(), CommunityShareBottomSheet.TAG);
                     }
                 });
@@ -448,21 +463,25 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
                     popupWindow.setElevation(10f);
-                    popupWindow.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    popupWindow.setBackgroundDrawable(
+                            new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
 
                     TextView tvRepostVideo = popupView.findViewById(R.id.tvRepostVideo);
                     TextView tvViewReposts = popupView.findViewById(R.id.tvViewReposts);
 
                     tvRepostVideo.setOnClickListener(v1 -> {
                         popupWindow.dismiss();
-                        if (listener != null) listener.onShareClick(video);
-                        android.widget.Toast.makeText(ctx, "Đã đăng lại video", android.widget.Toast.LENGTH_SHORT).show();
+                        if (listener != null)
+                            listener.onShareClick(video);
+                        android.widget.Toast.makeText(ctx, "Đã đăng lại video", android.widget.Toast.LENGTH_SHORT)
+                                .show();
                     });
 
                     tvViewReposts.setOnClickListener(v2 -> {
                         popupWindow.dismiss();
                         if (itemView.getContext() instanceof androidx.fragment.app.FragmentActivity) {
-                            androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView.getContext();
+                            androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView
+                                    .getContext();
                             ExploreSearchFragment fragment = new ExploreSearchFragment();
                             android.os.Bundle args = new android.os.Bundle();
                             args.putBoolean("SAVED_MODE", true);
@@ -477,8 +496,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
                     popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                     int popupWidth = popupView.getMeasuredWidth();
-                    int xOffset = -(popupWidth - ivShare.getWidth()); 
-                    int yOffset = 0; 
+                    int xOffset = -(popupWidth - ivShare.getWidth());
+                    int yOffset = 0;
                     popupWindow.showAsDropDown(ivShare, xOffset, yOffset);
 
                     return true;
@@ -495,12 +514,13 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                         if (ivBigHeart != null) {
                             ivBigHeart.setVisibility(View.VISIBLE);
                             ivBigHeart.setAlpha(1f);
-                            ivBigHeart.animate().alpha(0f).setDuration(600).withEndAction(() ->
-                                    ivBigHeart.setVisibility(View.INVISIBLE)).start();
+                            ivBigHeart.animate().alpha(0f).setDuration(600)
+                                    .withEndAction(() -> ivBigHeart.setVisibility(View.INVISIBLE)).start();
                         }
                     }
                     setupEngagementStats(video);
-                    if (listener != null) listener.onLikeClick(video, !isLiked);
+                    if (listener != null)
+                        listener.onLikeClick(video, !isLiked);
                 });
             }
 
@@ -523,14 +543,17 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             if (ivComment != null) {
                 ivComment.setOnClickListener(v -> {
                     if (itemView.getContext() instanceof androidx.fragment.app.FragmentActivity) {
-                        androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView.getContext();
-                        CommunityCommentBottomSheet bottomSheet = CommunityCommentBottomSheet.newInstance(video.getId(), getRealCommentCount(video.getId()));
+                        androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView
+                                .getContext();
+                        CommunityCommentBottomSheet bottomSheet = CommunityCommentBottomSheet.newInstance(video.getId(),
+                                getRealCommentCount(video.getId()));
                         bottomSheet.setOnDismissListener(() -> {
                             setupEngagementStats(video);
                         });
                         bottomSheet.show(activity.getSupportFragmentManager(), CommunityCommentBottomSheet.TAG);
                     }
-                    if (listener != null) listener.onCommentClick(video);
+                    if (listener != null)
+                        listener.onCommentClick(video);
                 });
             }
 
@@ -544,7 +567,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                         savedVideoIds.add(video.getId());
                     }
                     setupEngagementStats(video);
-                    if (listener != null) listener.onSaveClick(video, !isSaved);
+                    if (listener != null)
+                        listener.onSaveClick(video, !isSaved);
                 });
 
                 ivSave.setOnLongClickListener(v -> {
@@ -555,7 +579,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
                     // To make elevation/shadow work
                     popupWindow.setElevation(10f);
-                    popupWindow.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    popupWindow.setBackgroundDrawable(
+                            new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
 
                     TextView tvSaveVideo = popupView.findViewById(R.id.tvSaveVideo);
                     TextView tvViewSaved = popupView.findViewById(R.id.tvViewSaved);
@@ -571,10 +596,12 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                         boolean isSaved = savedVideoIds.contains(video.getId());
                         if (isSaved) {
                             savedVideoIds.remove(video.getId());
-                            if (listener != null) listener.onSaveClick(video, false);
+                            if (listener != null)
+                                listener.onSaveClick(video, false);
                         } else {
                             savedVideoIds.add(video.getId());
-                            if (listener != null) listener.onSaveClick(video, true);
+                            if (listener != null)
+                                listener.onSaveClick(video, true);
                         }
                         setupEngagementStats(video);
                     });
@@ -582,7 +609,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                     tvViewSaved.setOnClickListener(v2 -> {
                         popupWindow.dismiss();
                         if (itemView.getContext() instanceof androidx.fragment.app.FragmentActivity) {
-                            androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView.getContext();
+                            androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView
+                                    .getContext();
                             ExploreSearchFragment fragment = new ExploreSearchFragment();
                             android.os.Bundle args = new android.os.Bundle();
                             args.putBoolean("SAVED_MODE", true);
@@ -617,15 +645,17 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
                 if (ivBigHeart != null) {
                     ivBigHeart.setVisibility(View.VISIBLE);
                     ivBigHeart.setAlpha(1f);
-                    ivBigHeart.animate().alpha(0f).setDuration(600).withEndAction(() ->
-                            ivBigHeart.setVisibility(View.INVISIBLE)).start();
+                    ivBigHeart.animate().alpha(0f).setDuration(600)
+                            .withEndAction(() -> ivBigHeart.setVisibility(View.INVISIBLE)).start();
                 }
-                if (listener != null) listener.onLikeClick(video, true);
+                if (listener != null)
+                    listener.onLikeClick(video, true);
             }
         }
 
         private void togglePlayPause() {
-            if (videoView.getVisibility() != View.VISIBLE) return;
+            if (videoView.getVisibility() != View.VISIBLE)
+                return;
             if (videoView.isPlaying()) {
                 pauseVideo();
             } else {
@@ -635,7 +665,8 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
 
         public void playVideo() {
             shouldAutoPlay = true;
-            if (videoView.getVisibility() != View.VISIBLE) return;
+            if (videoView.getVisibility() != View.VISIBLE)
+                return;
             if (isPrepared && !videoView.isPlaying()) {
                 videoView.start();
             } else if (!isPrepared) {

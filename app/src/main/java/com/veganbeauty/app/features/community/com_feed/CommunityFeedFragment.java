@@ -115,6 +115,7 @@ public class CommunityFeedFragment extends RootieFragment {
         binding.ivMenu.setOnClickListener(v -> {
             if (binding.drawerLayout != null) {
                 SideMenuHelper.bindCurrentUser(binding.navView);
+                SideMenuHelper.setupMenuNavigation(binding.navView, getParentFragmentManager(), binding.drawerLayout);
                 binding.drawerLayout.openDrawer(GravityCompat.START);
             }
         });
@@ -125,6 +126,7 @@ public class CommunityFeedFragment extends RootieFragment {
                 public void onDrawerOpened(@NonNull View drawerView) {
                     if (binding != null && binding.navView != null) {
                         SideMenuHelper.bindCurrentUser(binding.navView);
+                        SideMenuHelper.setupMenuNavigation(binding.navView, getParentFragmentManager(), binding.drawerLayout);
                     }
                 }
             });
@@ -401,12 +403,7 @@ public class CommunityFeedFragment extends RootieFragment {
                         }
                         
                         Collections.sort(allFilteredPosts, (o1, o2) -> {
-                            if (o1.getCreatedAt() == null || o2.getCreatedAt() == null) return 0;
-                            try {
-                                return Long.compare(Long.parseLong(o2.getCreatedAt()), Long.parseLong(o1.getCreatedAt()));
-                            } catch (Exception e) {
-                                return o2.getCreatedAt().compareTo(o1.getCreatedAt());
-                            }
+                            return com.veganbeauty.app.utils.TimeFormatter.compareCreatedAtDesc(o1.getCreatedAt(), o2.getCreatedAt());
                         });
 
                         if (FeedDataCache.newsList != null && !FeedDataCache.newsList.isEmpty()) {
