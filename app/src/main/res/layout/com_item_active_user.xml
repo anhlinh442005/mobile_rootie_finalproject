@@ -11,12 +11,13 @@
         android:layout_width="64dp"
         android:layout_height="64dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivAvatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@color/gray_light" />
+            android:src="@color/gray_light"
+            app:shapeAppearanceOverlay="@style/CircleImageView" />
 
         <ImageView
             android:id="@+id/ivAddStory"

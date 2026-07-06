@@ -353,9 +353,24 @@ public class OrderRepository {
                 Log.w("OrderRepository", "No orders found in orders.json");
                 return;
             }
+            
+            String currentUserId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(localJsonReader.getAppContext());
+            if (currentUserId == null || currentUserId.trim().isEmpty()) {
+                currentUserId = "test_001";
+            }
+            
             for (OrderEntity order : mockOrders) {
                 normalizeOrderForRoom(order);
+                // Map the mock data to the current logged-in user so they can see the orders
+                if ("test_001".equals(order.getUserId())) {
+                    order.setUserId(currentUserId);
+                }
+                if (order.getAffiliate() != null && "test_001".equals(order.getAffiliate().getReferrerUserId())) {
+                    order.getAffiliate().setReferrerUserId(currentUserId);
+                }
             }
+            
+            // Force replace existing orders without deleting user-created orders
             try {
                 orderDao.insertOrders(mockOrders);
             } catch (Exception batchError) {
@@ -380,8 +395,16 @@ public class OrderRepository {
         List<OrderEntity> matched = new ArrayList<>();
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = normalizePhone(phone);
+        
+        String currentUserId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(localJsonReader.getAppContext());
+        if (currentUserId == null || currentUserId.trim().isEmpty()) {
+            currentUserId = "test_001";
+        }
 
         for (OrderEntity order : allOrders) {
+            if ("test_001".equals(order.getUserId())) {
+                order.setUserId(currentUserId);
+            }
             if (matchesBuyer(order, safeUserId, safePhone)) {
                 matched.add(order);
             }

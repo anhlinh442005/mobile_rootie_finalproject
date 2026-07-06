@@ -135,7 +135,8 @@ public class CommunityCreatePostFragment extends RootieFragment {
                             ivClose.setLayoutParams(closeLp);
                             ivClose.setImageResource(R.drawable.ic_cancel);
                             ivClose.setBackgroundResource(R.drawable.com_bg_post);
-                            ivClose.setPadding(12, 12, 12, 12);
+                            int pad = (int)(6 * density);
+                            ivClose.setPadding(pad, pad, pad, pad);
                             ivClose.setOnClickListener(v -> {
                                 if (container.getParent() instanceof ViewGroup) {
                                     ((ViewGroup) container.getParent()).removeView(container);

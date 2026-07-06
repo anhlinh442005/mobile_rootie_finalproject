@@ -16,6 +16,17 @@ import com.veganbeauty.app.data.local.entities.UserEntity;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.core.view.GravityCompat;
+import android.os.Bundle;
+import android.widget.Toast;
+
+import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
+import com.veganbeauty.app.features.community.profile.CommunityEditProfileFragment;
+import com.veganbeauty.app.features.community.com_feed.ExploreSearchFragment;
+import com.veganbeauty.app.features.community.com_feed.CommunityDiscoverPeopleFragment;
 
 public final class SideMenuHelper {
 
@@ -144,5 +155,76 @@ public final class SideMenuHelper {
             handle = handle.substring(1);
         }
         return "@" + handle.toLowerCase().replace(" ", "_");
+    }
+
+    public static void setupMenuNavigation(@NonNull View menuRoot, @NonNull FragmentManager fm, @Nullable DrawerLayout drawer) {
+        View contentRoot = resolveMenuContentRoot(menuRoot);
+        Context context = contentRoot.getContext();
+
+        // Helper to navigate and close drawer
+        android.view.View.OnClickListener navListener = v -> {
+            Fragment targetFragment = null;
+            if (v.getId() == R.id.llMenuFriends) {
+                targetFragment = new CommunityDiscoverPeopleFragment();
+            } else if (v.getId() == R.id.llMenuSaved || v.getId() == R.id.llMenuFavorites) {
+                targetFragment = new ExploreSearchFragment();
+                Bundle args = new Bundle();
+                args.putBoolean("SAVED_MODE", true);
+                targetFragment.setArguments(args);
+            } else if (v.getId() == R.id.llMenuProfile) {
+                targetFragment = new CommunityProfileFragment();
+            } else if (v.getId() == R.id.llMenuProfileEdit) {
+                targetFragment = new CommunityEditProfileFragment();
+            }
+
+            if (targetFragment != null) {
+                if (drawer != null) {
+                    drawer.closeDrawer(menuRoot);
+                }
+                fm.beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.main_container, targetFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        };
+
+        // Helper for "under development" Toast
+        android.view.View.OnClickListener devListener = v -> {
+            Toast.makeText(context, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show();
+                if (drawer != null) {
+                    drawer.closeDrawer(menuRoot);
+                }
+        };
+
+        // Bind implemented features
+        View llMenuFriends = contentRoot.findViewById(R.id.llMenuFriends);
+        if (llMenuFriends != null) llMenuFriends.setOnClickListener(navListener);
+        
+        View llMenuSaved = contentRoot.findViewById(R.id.llMenuSaved);
+        if (llMenuSaved != null) llMenuSaved.setOnClickListener(navListener);
+        
+        View llMenuFavorites = contentRoot.findViewById(R.id.llMenuFavorites);
+        if (llMenuFavorites != null) llMenuFavorites.setOnClickListener(navListener);
+
+        View llMenuProfile = contentRoot.findViewById(R.id.llMenuProfile);
+        if (llMenuProfile != null) llMenuProfile.setOnClickListener(navListener);
+
+        View llMenuProfileEdit = contentRoot.findViewById(R.id.llMenuProfileEdit);
+        if (llMenuProfileEdit != null) llMenuProfileEdit.setOnClickListener(navListener);
+
+        // Bind "under development" features
+        int[] devIds = {
+                R.id.llMenuArchive, R.id.llMenuEvents,
+                R.id.llMenuPrivacy, R.id.llMenuLanguage, R.id.llMenuDarkMode,
+                R.id.llMenuTerms,
+                R.id.llMenuShowcaseProducts, R.id.llMenuShowcaseFunds
+        };
+        for (int id : devIds) {
+            View devView = contentRoot.findViewById(id);
+            if (devView != null) {
+                devView.setOnClickListener(devListener);
+            }
+        }
     }
 }

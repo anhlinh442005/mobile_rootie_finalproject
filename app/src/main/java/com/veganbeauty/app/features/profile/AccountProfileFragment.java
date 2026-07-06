@@ -115,89 +115,89 @@ public class AccountProfileFragment extends RootieFragment {
         binding.btnExpiryShelf.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new AccountProductExpiryFragment())
                 .addToBackStack(null)
-                .commit());
+                .commitAllowingStateLoss());
 
         setSecuredOnClickListener(binding.btnAllOrders, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderListFragment.newInstance("Tất cả"))
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnStatusPending, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderListFragment.newInstance("Chờ xác nhận"))
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnStatusProcessing, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderListFragment.newInstance("Đang xử lý"))
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnStatusDelivering, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderListFragment.newInstance("Đang giao"))
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnStatusSuccess, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderListFragment.newInstance("Hoàn tất"))
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnStatusCancelled, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderListFragment.newInstance("Đã hủy"))
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnEditProfile, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new AccountProfileEditFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnRewardExchange, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new AccountRewardFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnReviewProducts, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, AccountOrderListFragment.newInstance("Hoàn tất"))
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.layoutCoinsBadge, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new AccountCheckinFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         setSecuredOnClickListener(binding.btnAccountSetup, isLoggedIn, guestRedirectListener, () -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new AccountProfileSetupFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         binding.btnRootieDeal.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new AccountVoucherFragment())
                 .addToBackStack(null)
-                .commit());
+                .commitAllowingStateLoss());
 
         View pinParent = (View) view.findViewById(R.id.iv_pin).getParent();
         if (pinParent != null) {
@@ -216,17 +216,17 @@ public class AccountProfileFragment extends RootieFragment {
                 )
                 .replace(R.id.main_container, new SkinWeatherForecastFragment())
                 .addToBackStack(null)
-                .commit());
+                .commitAllowingStateLoss());
 
         binding.btnSpaHistory.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new BookingHistoryFragment())
                 .addToBackStack(null)
-                .commit());
+                .commitAllowingStateLoss());
 
         binding.btnSkinReminder.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new SkinReminderFragment())
                 .addToBackStack(null)
-                .commit());
+                .commitAllowingStateLoss());
 
         binding.btnTreatmentHistory.setOnClickListener(v -> Toast.makeText(getContext(), "Tính năng Lịch sử liệu trình đang được phát triển", Toast.LENGTH_SHORT).show());
 
@@ -390,7 +390,10 @@ public class AccountProfileFragment extends RootieFragment {
                 UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
                 if (user != null) {
                     user.setFull_name(ProfileSession.getFullName(ctx));
-                    user.setUsername(ProfileSession.getUsername(ctx).replace("@", "").trim());
+                    String username = ProfileSession.getUsername(ctx);
+                    if (username != null) {
+                        user.setUsername(username.replace("@", "").trim());
+                    }
                     user.setEmail(ProfileSession.getEmail(ctx));
                     user.setPhone(ProfileSession.getPhone(ctx));
                     RootieDatabase.getDatabase(ctx).userDao().insertUserSync(user);
