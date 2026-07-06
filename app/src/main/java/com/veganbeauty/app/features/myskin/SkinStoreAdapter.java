@@ -33,7 +33,6 @@ public class SkinStoreAdapter extends RecyclerView.Adapter<SkinStoreAdapter.View
         public final TextView storeName;
         public final TextView storeAddress;
         public final TextView storeHours;
-        public final TextView btnBook;
 
         public ViewHolder(View view) {
             super(view);
@@ -41,7 +40,6 @@ public class SkinStoreAdapter extends RecyclerView.Adapter<SkinStoreAdapter.View
             storeName = view.findViewById(R.id.skin_store_name);
             storeAddress = view.findViewById(R.id.skin_store_address);
             storeHours = view.findViewById(R.id.skin_store_hours);
-            btnBook = view.findViewById(R.id.skin_store_btn_book);
         }
     }
 
@@ -69,7 +67,7 @@ public class SkinStoreAdapter extends RecyclerView.Adapter<SkinStoreAdapter.View
             holder.storeImage.setImageResource(R.drawable.skin_store);
         }
 
-        holder.btnBook.setOnClickListener(v -> onBookClick.onBookClick(store));
+        holder.itemView.setOnClickListener(v -> onBookClick.onBookClick(store));
     }
 
     @Override

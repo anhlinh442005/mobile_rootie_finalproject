@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <FrameLayout
+        android:id="@+id/flFlashSaleV2Container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/bg_flashsale_v2_outer"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header: mascot (left) + title (right) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="96dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="4dp">
+
+            <ImageView
+                android:id="@+id/ivFlashsaleV2MascotShipping"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/mascot_shipping"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1" />
+
+            <ImageView
+                android:id="@+id/ivFlashsaleV2Title"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/homepage_flashsale_title"
+                app:layout_constraintBottom_toBottomOf="@id/ivFlashsaleV2MascotShipping"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivFlashsaleV2MascotShipping"
+                app:layout_constraintTop_toTopOf="@id/ivFlashsaleV2MascotShipping" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Muted green wrapper — hugs outer frame, wraps product + timer -->
+        <LinearLayout
+            android:id="@+id/llFlashsaleV2GreenWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/bg_flashsale_v2_green_wrapper"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:padding="6dp">
+
+            <!-- Product frame — independent -->
+            <FrameLayout
+                android:id="@+id/flFlashsaleV2ProductsFrame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_flashsale_v2_inner_frame"
+                android:clipChildren="true"
+                android:clipToOutline="true"
+                android:minHeight="140dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFlashSaleV2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="10dp"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_home_flashsale_product" />
+
+            </FrameLayout>
+
+            <!-- Timer frame — independent, below products -->
+            <LinearLayout
+                android:id="@+id/llFlashSaleV2Footer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_flashsale_v2_timer_bar"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:src="@drawable/homepage_flashsale_clock" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:text="@string/home_flashsale_v2_ends_in"
+                android:textColor="@color/white"
+                android:textSize="11sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/llFlashV2Countdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvFlashV2Hour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_white_rounded_4dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:minWidth="22dp"
+                        android:paddingHorizontal="3dp"
+                        android:text="00"
+                        android:textColor="@color/primary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="@string/home_flashsale_v2_hour"
+                        android:textColor="@color/white"
+                        android:textSize="9sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text=":"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvFlashV2Minute"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_white_rounded_4dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:minWidth="22dp"
+                        android:paddingHorizontal="3dp"
+                        android:text="00"
+                        android:textColor="@color/primary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="@string/home_flashsale_v2_minute"
+                        android:textColor="@color/white"
+                        android:textSize="9sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text=":"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvFlashV2Second"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_white_rounded_4dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:minWidth="22dp"
+                        android:paddingHorizontal="3dp"
+                        android:text="00"
+                        android:textColor="@color/primary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="@string/home_flashsale_v2_second"
+                        android:textColor="@color/white"
+                        android:textSize="9sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:contentDescription="@null"
+                android:src="@drawable/homepage_flashsale_fire" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/be_vietnam_pro_regular"
+                android:text="@string/home_flashsale_v2_stock_hint"
+                android:textColor="@color/white"
+                android:textSize="9sp" />
+
+        </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Coco & phao — on top edge of outer frame, drawn in reserved top space -->
+    <ImageView
+        android:id="@+id/ivFlashsaleV2Coco"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="start|top"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="2dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:elevation="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/homepage_flashsale_coco" />
+
+    <ImageView
+        android:id="@+id/ivFlashsaleV2Phao"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="end|top"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="4dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:elevation="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/homepage_flashsale_phao" />
+
+</FrameLayout>

@@ -671,11 +671,6 @@ public class SyncDataHelper {
                 firestoreService.clearOldAffiliateData();
                 firestoreService.wipeCollection("skin_bookings");
 
-                String productsJson = reader.readAsset("products.json");
-                if (productsJson != null) {
-                    firestoreService.forceSyncProductsFromJson(productsJson);
-                }
-
                 String postsJson = reader.readAsset("community_posts.json");
                 String newsJson = reader.readAsset("community_news.json");
                 if (postsJson != null && newsJson != null) {
@@ -712,18 +707,13 @@ public class SyncDataHelper {
                 if (messageTemplateJson != null && usersJson != null) {
                     List<com.veganbeauty.app.data.local.entities.ConversationEntity> allMessages =
                             com.veganbeauty.app.features.community.CommunityMessageSeeder
-                                    .buildAllPersonalizedConversations(messageTemplateJson, usersJson);
+                                     .buildAllPersonalizedConversations(messageTemplateJson, usersJson);
                     if (!allMessages.isEmpty()) {
                         firestoreService.syncCommunityMessagesFromJson(
                                 new com.google.gson.Gson().toJson(allMessages),
                                 true
                         );
                     }
-                }
-
-                String ordersJson = reader.readAsset("orders.json");
-                if (ordersJson != null) {
-                    firestoreService.syncOrders(reader.getAllOrders());
                 }
 
                 success = true;

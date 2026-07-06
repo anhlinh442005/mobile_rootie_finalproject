@@ -122,6 +122,22 @@ public class AffiliateHelper {
             userAffiliateObj.put("orders", ordersArr);
             
             saveAffiliateData(context, affiliateArray);
+            
+            String affiliateCode = "AFF_" + referrerUserId.toUpperCase() + "_" + productId.toUpperCase();
+            String content = "đã đặt một đơn hàng qua link affiliate của bạn: " + affiliateCode;
+            com.veganbeauty.app.features.community.notification.CommunityNotificationHelper.addCommunityNotificationForUser(
+                    context,
+                    referrerUserId,
+                    UUID.randomUUID().toString(),
+                    null,
+                    customerEmail,
+                    "",
+                    "AFFILIATE",
+                    "ORDER_PLACED",
+                    content,
+                    productId,
+                    ""
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -34,9 +34,11 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
+import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
+import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.ShopFragmentCheckoutBinding;
 import com.veganbeauty.app.utils.AffiliateTrackingHelper;
 import com.veganbeauty.app.features.shop.store.ShopStoreSelectionFragment;
@@ -186,6 +188,7 @@ public class ShopCheckoutFragment extends RootieFragment {
             binding.llGuestStorePickup.setVisibility(View.GONE);
             binding.llMemberAddress.setVisibility(View.VISIBLE);
             binding.btnChangeAddress.setVisibility(View.VISIBLE);
+            binding.llPointsRow.setVisibility(View.VISIBLE);
 
             String name = ProfileSession.getFullName(requireContext());
             if (!name.isEmpty()) recipientName = name;
@@ -204,6 +207,8 @@ public class ShopCheckoutFragment extends RootieFragment {
             }
             binding.llMemberAddress.setVisibility(View.GONE);
             binding.btnChangeAddress.setVisibility(View.GONE);
+            binding.llPointsRow.setVisibility(View.GONE);
+            isPointsChecked = false;
             updateGuestStorePickupUI();
             updateGuestStoreNotice();
         }
@@ -903,7 +908,9 @@ public class ShopCheckoutFragment extends RootieFragment {
                                     .translationY(-300f)
                                     .setDuration(800)
                                     .withEndAction(() -> {
-                                        binding.cvNotificationBanner.setVisibility(View.GONE);
+                                        if (binding != null) {
+                                            binding.cvNotificationBanner.setVisibility(View.GONE);
+                                        }
                                         onFinished.run();
                                     }).start();
                         } else onFinished.run();
@@ -951,7 +958,9 @@ public class ShopCheckoutFragment extends RootieFragment {
     }
 
     private OrderEntity buildOrderEntitySnapshot(String orderCode, long totalAmount, String method, boolean isGuest) {
-        String finalUserId = isLoggedIn ? com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext()) : null;
+        String finalUserId = isLoggedIn ? com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext()) : "";
+        if (finalUserId == null) finalUserId = "";
+        
         List<OrderItem> orderItems = new ArrayList<>();
         long subTotal = 0;
         for (CartItemEntity ci : checkoutItems) {
@@ -963,14 +972,20 @@ public class ShopCheckoutFragment extends RootieFragment {
         String nowTime = new SimpleDateFormat("HH:mm", new Locale("vi", "VN")).format(new Date(now));
 
         String billingEmail = isGuest ? binding.etGuestEmail.getText().toString().trim() : ProfileSession.getEmail(requireContext());
-        if (billingEmail != null && billingEmail.trim().isEmpty()) billingEmail = null;
+        if (billingEmail == null || billingEmail.trim().isEmpty()) billingEmail = "";
+
+        String safeRecipientName = recipientName != null ? recipientName : "";
+        String safeRecipientPhone = recipientPhone != null ? recipientPhone : "";
+        String safeRecipientAddress = recipientAddress != null ? recipientAddress : "";
 
         OrderEntity order = new OrderEntity(
                 orderCode, nowDate, nowTime, "Chờ xác nhận", totalAmount, subTotal, orderItems,
-                finalUserId, isGuest, recipientName, recipientPhone, recipientAddress, 0L,
-                voucherDiscountAmount, method, null, false, 0, null, null, false, false,
-                recipientName, recipientPhone, billingEmail
+                finalUserId, isGuest, safeRecipientName, safeRecipientPhone, safeRecipientAddress, 0L,
+                voucherDiscountAmount, method, "", false, 0, "", "", false, false,
+                safeRecipientName, safeRecipientPhone, billingEmail
         );
+        order.setDeliveryDate("");
+        order.setOrderNote(binding.etNote.getText().toString().trim());
         AffiliateTrackingHelper.applyAffiliateAttribution(requireContext(), order, checkoutItems);
         return order;
     }
@@ -978,8 +993,49 @@ public class ShopCheckoutFragment extends RootieFragment {
     private void persistOrderSync(OrderEntity order) {
         final android.content.Context appContext = requireContext().getApplicationContext();
         new Thread(() -> {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
             try {
                 database.orderDao().insertOrder(order);
+                
+                // Update local product stock and remote stock in Firestore using atomic decrement
+                FirestoreService firestore = new FirestoreService();
+                for (OrderItem item : order.getItems()) {
+                    // Use atomic decrement for Firestore to avoid race conditions
+                    try {
+                        boolean success = firestore.decrementProductStock(item.getProductId(), item.getQuantity());
+                        if (success) {
+                            Log.d(TAG, "Atomic stock decrement for " + item.getProductId() + " by " + item.getQuantity());
+                            // Fetch updated product from Firestore to sync local DB
+                            ProductEntity updatedProduct = firestore.fetchProductById(item.getProductId());
+                            if (updatedProduct != null) {
+                                database.productDao().insertProducts(java.util.Collections.singletonList(updatedProduct));
+                            }
+                        } else {
+                            Log.w(TAG, "Atomic decrement failed for " + item.getProductId() + ", trying fallback");
+                            // Fallback: manual fetch and update
+                            ProductEntity product = firestore.fetchProductById(item.getProductId());
+                            if (product == null) {
+                                product = database.productDao().getProductById(item.getProductId());
+                            }
+                            if (product != null) {
+                                int newStock = Math.max(0, product.getStock() - item.getQuantity());
+                                product.setStock(newStock);
+                                database.productDao().insertProducts(java.util.Collections.singletonList(product));
+                                firestore.updateProductStock(item.getProductId(), newStock);
+                            }
+                        }
+                    } catch (Exception fe) {
+                        Log.e(TAG, "Error during stock decrement for " + item.getProductId(), fe);
+                        // Fallback: update local only
+                        ProductEntity product = database.productDao().getProductById(item.getProductId());
+                        if (product != null) {
+                            int newStock = Math.max(0, product.getStock() - item.getQuantity());
+                            product.setStock(newStock);
+                            database.productDao().insertProducts(java.util.Collections.singletonList(product));
+                        }
+                    }
+                }
+                
                 AffiliateTrackingHelper.recordAffiliateSideEffects(appContext, order);
                 AffiliateTrackingHelper.clearAttributionForItems(appContext, checkoutItems);
             } catch (Exception e) {
@@ -987,7 +1043,6 @@ public class ShopCheckoutFragment extends RootieFragment {
             }
 
             try {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
                 Map<String, Object> orderMap = new Gson().fromJson(new Gson().toJsonTree(order), Map.class);
                 com.google.android.gms.tasks.Tasks.await(db.collection("orders").document(order.getId()).set(orderMap));
 

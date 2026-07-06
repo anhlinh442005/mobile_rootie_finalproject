@@ -130,7 +130,7 @@ public final class OrderStatusNotifier {
                 "CHI TIẾT",
                 false,
                 "Hôm nay",
-                "ic_notification",
+                "ic_bell",
                 "order",
                 orderId,
                 null

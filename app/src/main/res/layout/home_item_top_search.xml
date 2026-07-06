@@ -37,12 +37,4 @@
         android:textColor="#28362E"
         android:textSize="14sp" />
 
-    <ImageView
-        android:id="@+id/btnSearch"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="8dp"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_search"        app:tint="@color/primary" />
-
 </LinearLayout>

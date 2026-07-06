@@ -117,25 +117,8 @@ public class ProfilePostDetailFragment extends Fragment {
                     if (dbPosts != null) allPostsCombined.addAll(dbPosts);
                     if (newsList != null) allPostsCombined.addAll(newsList);
 
-                    String ownUserId = "test_001";
-                    try {
-                        String loggedInEmail = ProfileSession.getEmail(requireContext());
-                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(requireContext().getAssets().open("users.json"), StandardCharsets.UTF_8))) {
-                            StringBuilder sb = new StringBuilder();
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                sb.append(line);
-                            }
-                            JSONArray usersJsonArray = new JSONArray(sb.toString().replace("\uFEFF", ""));
-                            for (int i = 0; i < usersJsonArray.length(); i++) {
-                                JSONObject obj = usersJsonArray.getJSONObject(i);
-                                if (loggedInEmail != null && loggedInEmail.equals(obj.optString("email"))) {
-                                    ownUserId = obj.optString("user_id", "test_001");
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (Exception e) {}
+                    String ownUserId = ProfileSession.getUserId(requireContext());
+                    if (ownUserId == null || ownUserId.isEmpty()) ownUserId = "test_001";
 
                     String profileUserId = userId;
                     if (targetPostId != null && !targetPostId.isEmpty()) {

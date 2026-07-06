@@ -124,7 +124,7 @@ public class CommunityNotificationFragment extends RootieFragment {
         final float SWIPE_THRESHOLD = actionWidthPx * 0.3f;
 
         _binding.rvNotifications.addOnItemTouchListener(new androidx.recyclerview.widget.RecyclerView.OnItemTouchListener() {
-            private float startX, startY, lastX;
+            private float startX, startY, lastX, initialTx;
             private boolean isSwiping = false;
             private ComNotificationAdapter.NotificationViewHolder swipeHolder = null;
 
@@ -132,12 +132,13 @@ public class CommunityNotificationFragment extends RootieFragment {
             public boolean onInterceptTouchEvent(@NonNull androidx.recyclerview.widget.RecyclerView rv, @NonNull android.view.MotionEvent e) {
                 switch (e.getAction()) {
                     case android.view.MotionEvent.ACTION_DOWN:
-                        startX = e.getX(); startY = e.getY(); lastX = startX; isSwiping = false; swipeHolder = null;
+                        startX = e.getX(); startY = e.getY(); lastX = startX; isSwiping = false; swipeHolder = null; initialTx = 0f;
                         View child = rv.findChildViewUnder(startX, startY);
                         if (child != null) {
                             androidx.recyclerview.widget.RecyclerView.ViewHolder vh = rv.getChildViewHolder(child);
                             if (vh instanceof ComNotificationAdapter.NotificationViewHolder) {
                                 swipeHolder = (ComNotificationAdapter.NotificationViewHolder) vh;
+                                initialTx = swipeHolder.getForeground().getTranslationX();
                             }
                         }
                         break;
@@ -145,9 +146,11 @@ public class CommunityNotificationFragment extends RootieFragment {
                         if (swipeHolder == null) break;
                         float dx = e.getX() - startX;
                         float dy = e.getY() - startY;
-                        if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12 && dx < 0) {
-                            isSwiping = true;
-                            rv.getParent().requestDisallowInterceptTouchEvent(true);
+                        if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) {
+                            if (dx < 0 || (initialTx < 0 && dx > 0)) {
+                                isSwiping = true;
+                                rv.getParent().requestDisallowInterceptTouchEvent(true);
+                            }
                         }
                         break;
                 }
@@ -163,8 +166,7 @@ public class CommunityNotificationFragment extends RootieFragment {
                 switch (e.getAction()) {
                     case android.view.MotionEvent.ACTION_MOVE:
                         if (isSwiping) {
-                            // Clamp: only slide left up to actionWidthPx
-                            float tx = Math.max(-actionWidthPx, Math.min(0f, totalDx));
+                            float tx = Math.max(-actionWidthPx, Math.min(0f, initialTx + totalDx));
                             swipeHolder.getForeground().setTranslationX(tx);
                         }
                         lastX = curX;
@@ -196,8 +198,9 @@ public class CommunityNotificationFragment extends RootieFragment {
 
         _binding.tabAll.setOnClickListener(v -> viewModel.selectTab("ALL"));
         _binding.tabUnread.setOnClickListener(v -> viewModel.selectTab("UNREAD"));
-        _binding.tabPosts.setOnClickListener(v -> viewModel.selectTab("POST"));
         _binding.tabInteractions.setOnClickListener(v -> viewModel.selectTab("INTERACTION"));
+        _binding.tabAffiliate.setOnClickListener(v -> viewModel.selectTab("AFFILIATE"));
+        _binding.tabNews.setOnClickListener(v -> viewModel.selectTab("NEWS"));
 
         _binding.tvMarkAllRead.setOnClickListener(v -> {
             viewModel.markAllRead(requireContext());
@@ -247,22 +250,25 @@ public class CommunityNotificationFragment extends RootieFragment {
     private void updateTabStyles(String activeTab) {
         boolean allActive = "ALL".equals(activeTab);
         boolean unreadActive = "UNREAD".equals(activeTab);
-        boolean postsActive = "POST".equals(activeTab);
         boolean interactionsActive = "INTERACTION".equals(activeTab);
+        boolean affiliateActive = "AFFILIATE".equals(activeTab);
+        boolean newsActive = "NEWS".equals(activeTab);
 
         int activeBg = R.drawable.tab_active_bg;
         int inactiveBg = R.drawable.tab_inactive_bg;
         _binding.tabAll.setBackgroundResource(allActive ? activeBg : inactiveBg);
         _binding.tabUnread.setBackgroundResource(unreadActive ? activeBg : inactiveBg);
-        _binding.tabPosts.setBackgroundResource(postsActive ? activeBg : inactiveBg);
         _binding.tabInteractions.setBackgroundResource(interactionsActive ? activeBg : inactiveBg);
+        _binding.tabAffiliate.setBackgroundResource(affiliateActive ? activeBg : inactiveBg);
+        _binding.tabNews.setBackgroundResource(newsActive ? activeBg : inactiveBg);
 
         int white = ContextCompat.getColor(requireContext(), R.color.white);
         int primary = ContextCompat.getColor(requireContext(), R.color.primary);
         _binding.tabAll.setTextColor(allActive ? white : primary);
         _binding.tabUnread.setTextColor(unreadActive ? white : primary);
-        _binding.tabPosts.setTextColor(postsActive ? white : primary);
         _binding.tabInteractions.setTextColor(interactionsActive ? white : primary);
+        _binding.tabAffiliate.setTextColor(affiliateActive ? white : primary);
+        _binding.tabNews.setTextColor(newsActive ? white : primary);
     }
 
     @Override

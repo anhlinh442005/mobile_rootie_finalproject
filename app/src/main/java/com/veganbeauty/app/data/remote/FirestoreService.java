@@ -1,11 +1,13 @@
 package com.veganbeauty.app.data.remote;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,7 +27,10 @@ import com.veganbeauty.app.data.local.entities.ReelEntity;
 import com.veganbeauty.app.data.local.entities.StoreEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.entities.UserMemoryEntity;
+import com.veganbeauty.app.data.local.entities.VoucherEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
+
+import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,6 +47,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class FirestoreService {
+    private static final String TAG = "FirestoreService";
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final Gson gson = new Gson();
 
@@ -121,9 +127,27 @@ public class FirestoreService {
         }
     }
 
+    private List<KeyIngredient> toKeyIngredientsList(Object value) {
+        List<KeyIngredient> result = new ArrayList<>();
+        if (value instanceof List) {
+            List<?> rawList = (List<?>) value;
+            for (Object item : rawList) {
+                if (item instanceof Map) {
+                    Map<?, ?> map = (Map<?, ?>) item;
+                    Object nameObj = map.get("name");
+                    Object descObj = map.get("description");
+                    String name = nameObj != null ? nameObj.toString() : "";
+                    String desc = descObj != null ? descObj.toString() : "";
+                    result.add(new KeyIngredient(name, desc));
+                }
+            }
+        }
+        return result;
+    }
+
     public List<ProductEntity> fetchAllProducts() {
         try {
-            Task<QuerySnapshot> task = db.collection("products").get();
+            Task<QuerySnapshot> task = db.collection("products").get(com.google.firebase.firestore.Source.SERVER);
             QuerySnapshot snapshot = Tasks.await(task);
             List<ProductEntity> products = new ArrayList<>();
             for (DocumentSnapshot doc : snapshot.getDocuments()) {
@@ -136,12 +160,282 @@ public class FirestoreService {
         }
     }
 
+    public interface VouchersCallback {
+        void onLoaded(@NonNull List<VoucherEntity> vouchers);
+    }
+
+    public void fetchVouchers(@NonNull VouchersCallback callback) {
+        db.collection("vouchers").get()
+                .addOnSuccessListener(snapshot -> callback.onLoaded(parseVoucherSnapshot(snapshot)))
+                .addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    callback.onLoaded(new ArrayList<>());
+                });
+    }
+
+    public List<VoucherEntity> fetchAllVouchers() {
+        try {
+            QuerySnapshot snapshot = Tasks.await(db.collection("vouchers").get());
+            return parseVoucherSnapshot(snapshot);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    private List<VoucherEntity> parseVoucherSnapshot(QuerySnapshot snapshot) {
+        List<VoucherEntity> vouchers = new ArrayList<>();
+        for (DocumentSnapshot doc : snapshot.getDocuments()) {
+            VoucherEntity voucher = mapVoucherDocument(doc);
+            if (voucher != null && voucher.isActive()) {
+                vouchers.add(voucher);
+            }
+        }
+        vouchers.sort((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()));
+        return vouchers;
+    }
+
+    private VoucherEntity mapVoucherDocument(DocumentSnapshot doc) {
+        Boolean active = doc.getBoolean("isActive");
+        if (active == null) active = doc.getBoolean("is_active");
+        if (active == null) active = doc.getBoolean("active");
+        if (active == null) active = true;
+        if (!active) return null;
+
+        String title = firstNonEmpty(
+                doc.getString("title"),
+                doc.getString("name"),
+                doc.getString("tieu_de"),
+                ""
+        );
+        String code = firstNonEmpty(
+                doc.getString("code"),
+                doc.getString("voucherCode"),
+                doc.getString("ma"),
+                doc.getString("voucher_code"),
+                ""
+        );
+        if (title.isEmpty() || code.isEmpty()) return null;
+
+        String description = firstNonEmpty(
+                doc.getString("description"),
+                doc.getString("content"),
+                doc.getString("mo_ta"),
+                ""
+        );
+        String type = firstNonEmpty(doc.getString("type"), "discount");
+        String category = firstNonEmpty(doc.getString("category"), doc.getString("loai"), "");
+        if (category.isEmpty()) {
+            category = mapVoucherTypeToCategory(type);
+        }
+
+        String expiryDate = firstNonEmpty(doc.getString("hsd"), "");
+        if (expiryDate.isEmpty()) {
+            expiryDate = firstNonEmpty(doc.getString("expiryDate"), doc.getString("expiration"), "");
+        }
+
+        String offerType = firstNonEmpty(doc.getString("offerType"), doc.getString("offer_type"), "fixed_amount");
+        long discountValue = numberAsLong(firstPresent(doc, "discountValue", "discount_value", "discount"));
+        long minOrderValue = numberAsLong(firstPresent(doc, "minOrderValue", "min_order_value", "minOrder"));
+
+        String badge = firstNonEmpty(doc.getString("badge"), doc.getString("tag"), "");
+        if (badge.isEmpty()) {
+            Long qty = doc.getLong("quantity");
+            if (qty != null && qty > 0 && qty <= 50) {
+                badge = "Sắp hết mã";
+            }
+        }
+
+        Integer quantity = null;
+        if (doc.get("quantity") instanceof Number) {
+            quantity = ((Number) doc.get("quantity")).intValue();
+        }
+
+        int sortOrder = 0;
+        Object sortRaw = firstPresent(doc, "sortOrder", "sort_order", "order");
+        if (sortRaw instanceof Number) {
+            sortOrder = ((Number) sortRaw).intValue();
+        }
+
+        return new VoucherEntity(
+                doc.getId(),
+                title,
+                description,
+                code,
+                category,
+                type,
+                badge,
+                expiryDate,
+                offerType,
+                discountValue,
+                minOrderValue,
+                true,
+                sortOrder,
+                quantity
+        );
+    }
+
+    private static Object firstPresent(DocumentSnapshot doc, String... keys) {
+        for (String key : keys) {
+            Object value = doc.get(key);
+            if (value != null) return value;
+        }
+        return null;
+    }
+
+    private static String mapVoucherTypeToCategory(String type) {
+        if (type == null) return "Khác";
+        switch (type.toLowerCase(Locale.ROOT)) {
+            case "flash_sale":
+            case "flash sale":
+                return "Flash Sale";
+            case "free ship":
+            case "freeship":
+            case "voucher_freeship":
+                return "Freeship";
+            case "combo":
+                return "Combo & Quà";
+            case "skincare":
+            case "chăm sóc da":
+                return "Chăm sóc da";
+            default:
+                return "Giảm giá";
+        }
+    }
+
+    private static long numberAsLong(Object value) {
+        if (value instanceof Number) return ((Number) value).longValue();
+        return 0L;
+    }
+
+    private static String firstNonEmpty(String... values) {
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) return value.trim();
+        }
+        return "";
+    }
+
+    public ProductEntity fetchProductById(String id) {
+        if (id == null || id.trim().isEmpty()) return null;
+        String productId = id.trim();
+        try {
+            DocumentSnapshot doc = Tasks.await(db.collection("products").document(productId).get(com.google.firebase.firestore.Source.SERVER));
+            if (doc.exists()) {
+                return mapProductDocument(doc);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Direct document lookup failed for " + productId + ", trying fallback query", e);
+        }
+
+        // Fallback: query by "id" field (handles case where Firestore doc ID != product's id field)
+        ProductEntity found = fetchProductByField("id", productId);
+        if (found != null) return found;
+
+        // Last resort: try barcode lookup
+        return fetchProductByBarcode(productId);
+    }
+
+    private ProductEntity fetchProductByField(String fieldName, String fieldValue) {
+        try {
+            QuerySnapshot snapshot = Tasks.await(
+                db.collection("products")
+                    .whereEqualTo(fieldName, fieldValue)
+                    .limit(1)
+                    .get(com.google.firebase.firestore.Source.SERVER)
+            );
+            if (snapshot != null && !snapshot.isEmpty()) {
+                DocumentSnapshot doc = snapshot.getDocuments().get(0);
+                return mapProductDocument(doc);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Fallback query by field '" + fieldName + "' failed for " + fieldValue, e);
+        }
+        return null;
+    }
+
+    public boolean updateProductStock(String productId, int newStock) {
+        if (productId == null || productId.trim().isEmpty()) return false;
+        String trimmedId = productId.trim();
+        try {
+            // Try direct document update synchronously first
+            Tasks.await(db.collection("products").document(trimmedId).update("stock", newStock));
+            Log.d(TAG, "Stock updated via doc ID: " + trimmedId + " -> " + newStock);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Direct doc update failed for " + trimmedId + ", trying field query fallback: " + e.getMessage());
+            return updateProductStockByFieldQuery(trimmedId, newStock);
+        }
+    }
+
+    /**
+     * Atomic stock decrement - uses Firestore transaction to avoid race conditions.
+     * This is the preferred method for order checkout as it guarantees accurate stock updates.
+     */
+    public boolean decrementProductStock(String productId, int quantityToDecrement) {
+        if (productId == null || productId.trim().isEmpty()) return false;
+        if (quantityToDecrement <= 0) return false;
+        String trimmedId = productId.trim();
+        try {
+            // First try to decrement using the document ID
+            Tasks.await(db.collection("products").document(trimmedId)
+                    .update("stock", FieldValue.increment(-quantityToDecrement)));
+            Log.d(TAG, "Stock decremented atomically via doc ID: " + trimmedId + " by " + quantityToDecrement);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Atomic decrement failed for " + trimmedId + " via doc ID, trying field query: " + e.getMessage());
+            // Fallback: find by "id" field and decrement
+            return decrementProductStockByFieldQuery(trimmedId, quantityToDecrement);
+        }
+    }
+
+    private boolean decrementProductStockByFieldQuery(String productId, int quantity) {
+        try {
+            Task<QuerySnapshot> task = db.collection("products")
+                .whereEqualTo("id", productId.trim())
+                .limit(1)
+                .get();
+            QuerySnapshot snapshot = Tasks.await(task);
+            if (snapshot != null && !snapshot.isEmpty()) {
+                DocumentReference docRef = snapshot.getDocuments().get(0).getReference();
+                Tasks.await(docRef.update("stock", FieldValue.increment(-quantity)));
+                Log.d(TAG, "Stock decremented atomically via field query: " + productId + " by " + quantity);
+                return true;
+            } else {
+                Log.w(TAG, "Product not found in Firestore for atomic stock decrement: " + productId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Atomic decrement field query failed for " + productId, e);
+        }
+        return false;
+    }
+
+    private boolean updateProductStockByFieldQuery(String productId, int newStock) {
+        try {
+            Task<QuerySnapshot> task = db.collection("products")
+                .whereEqualTo("id", productId.trim())
+                .limit(1)
+                .get();
+            QuerySnapshot snapshot = Tasks.await(task);
+            if (snapshot != null && !snapshot.isEmpty()) {
+                DocumentReference docRef = snapshot.getDocuments().get(0).getReference();
+                Tasks.await(docRef.update("stock", newStock));
+                Log.d(TAG, "Stock updated via field query: " + productId + " -> " + newStock);
+                return true;
+            } else {
+                Log.w(TAG, "Product not found in Firestore for stock update: " + productId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Field query stock update failed for " + productId, e);
+        }
+        return false;
+    }
+
     public ProductEntity fetchProductByBarcode(String barcode) {
         try {
             Task<QuerySnapshot> task = db.collection("products")
                     .whereEqualTo("barcode", barcode.trim())
                     .limit(1)
-                    .get();
+                    .get(com.google.firebase.firestore.Source.SERVER);
             QuerySnapshot snapshot = Tasks.await(task);
             if (!snapshot.isEmpty()) {
                 return mapProductDocument(snapshot.getDocuments().get(0));
@@ -154,27 +448,11 @@ public class FirestoreService {
 
     @SuppressWarnings("unchecked")
     private ProductEntity mapProductDocument(DocumentSnapshot doc) {
-        List<String> albumList = (List<String>) doc.get("album");
-        if (albumList == null) albumList = new ArrayList<>();
-
-        List<Map<String, Object>> keyIngredientsRaw = (List<Map<String, Object>>) doc.get("keyIngredients");
-        List<KeyIngredient> keyIngredientsList = new ArrayList<>();
-        if (keyIngredientsRaw != null) {
-            for (Map<String, Object> map : keyIngredientsRaw) {
-                String name = map.containsKey("name") && map.get("name") instanceof String ? (String) map.get("name") : "";
-                String desc = map.containsKey("description") && map.get("description") instanceof String ? (String) map.get("description") : "";
-                keyIngredientsList.add(new KeyIngredient(name, desc));
-            }
-        }
-
-        List<String> detailedList = (List<String>) doc.get("detailedIngredients");
-        if (detailedList == null) detailedList = new ArrayList<>();
-
-        List<String> idealList = (List<String>) doc.get("idealFor");
-        if (idealList == null) idealList = new ArrayList<>();
-
-        List<String> benefitsList = (List<String>) doc.get("benefits");
-        if (benefitsList == null) benefitsList = new ArrayList<>();
+        List<String> albumList = toStringList(doc.get("album"));
+        List<KeyIngredient> keyIngredientsList = toKeyIngredientsList(doc.get("keyIngredients"));
+        List<String> detailedList = toStringList(doc.get("detailedIngredients"));
+        List<String> idealList = toStringList(doc.get("idealFor"));
+        List<String> benefitsList = toStringList(doc.get("benefits"));
 
         Object categoryIdRaw = doc.get("categoryId");
         String categoryIdsStr = "";
@@ -267,6 +545,40 @@ public class FirestoreService {
             return users;
         } catch (Exception e) {
             return new ArrayList<>();
+        }
+    }
+
+    public boolean userExistsByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            QuerySnapshot snapshot = Tasks.await(
+                    db.collection("users").whereEqualTo("email", email.trim()).limit(1).get(),
+                    8,
+                    java.util.concurrent.TimeUnit.SECONDS
+            );
+            return !snapshot.isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean userExistsByPhone(String phone) {
+        if (phone == null || phone.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            QuerySnapshot snapshot = Tasks.await(
+                    db.collection("users").whereEqualTo("phone", phone.trim()).limit(1).get(),
+                    8,
+                    java.util.concurrent.TimeUnit.SECONDS
+            );
+            return !snapshot.isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -702,6 +1014,50 @@ public class FirestoreService {
         }
     }
 
+    public boolean addCommunityNotification(String targetUserId, Map<String, Object> notificationMap) {
+        if (targetUserId == null || targetUserId.trim().isEmpty()) return false;
+        try {
+            String notifId = (String) notificationMap.get("id");
+            if (notifId == null || notifId.isEmpty()) {
+                notifId = UUID.randomUUID().toString();
+                notificationMap.put("id", notifId);
+            }
+            notificationMap.put("targetUserId", targetUserId);
+            Tasks.await(db.collection("community_notifications").document(notifId).set(notificationMap));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public com.google.firebase.firestore.ListenerRegistration listenCommunityNotifications(String targetUserId, com.google.firebase.firestore.EventListener<com.google.firebase.firestore.QuerySnapshot> listener) {
+        if (targetUserId == null || targetUserId.trim().isEmpty()) return null;
+        return db.collection("community_notifications")
+                .whereEqualTo("targetUserId", targetUserId)
+                .addSnapshotListener(listener);
+    }
+
+    public boolean markCommunityNotificationAsRead(String notifId) {
+        try {
+            Tasks.await(db.collection("community_notifications").document(notifId).update("isRead", true));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteCommunityNotification(String notifId) {
+        try {
+            Tasks.await(db.collection("community_notifications").document(notifId).delete());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean addCommentToPost(String postId, Map<String, Object> commentMap) {
         try {
             Tasks.await(db.collection("community_posts").document(postId)
@@ -793,6 +1149,28 @@ public class FirestoreService {
 
     public boolean forceSyncProductsFromJson(String jsonStr) {
         try {
+            // First, get current stock values from Firestore to preserve them
+            Map<String, Integer> existingStocks = new HashMap<>();
+            try {
+                QuerySnapshot existingSnapshot = Tasks.await(db.collection("products").get());
+                for (DocumentSnapshot doc : existingSnapshot.getDocuments()) {
+                    if (doc.contains("id") && doc.get("id") != null) {
+                        String productId = doc.getString("id");
+                        Long stock = doc.getLong("stock");
+                        if (stock != null) {
+                            existingStocks.put(productId, stock.intValue());
+                        }
+                    }
+                    // Also map by document ID
+                    Long stock = doc.getLong("stock");
+                    if (stock != null) {
+                        existingStocks.put(doc.getId(), stock.intValue());
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Could not fetch existing stocks, proceeding with JSON values", e);
+            }
+
             wipeCollection("products");
             JSONObject root = new JSONObject(jsonStr);
             JSONArray arr = root.getJSONArray("products");
@@ -802,6 +1180,14 @@ public class FirestoreService {
                 JSONObject obj = arr.getJSONObject(i);
                 String id = obj.optString("id", "");
                 if (id.isEmpty()) continue;
+                
+                // Preserve existing stock value from Firestore
+                int preservedStock = obj.optInt("stock", 50);
+                if (existingStocks.containsKey(id)) {
+                    preservedStock = existingStocks.get(id);
+                    obj.put("stock", preservedStock);
+                }
+                
                 batch.set(db.collection("products").document(id), jsonObjectToMap(obj));
                 count++;
                 if (count >= 400) {
@@ -1450,8 +1836,8 @@ public class FirestoreService {
                             if (content == null) content = "";
 
                             // Add to local database/file
-                            com.veganbeauty.app.features.community.notification.CommunityNotificationHelper.addCommunityNotification(
-                                    context, id, actorId, userName, userAvatar, type, actionType, content, postId, commentId
+                            com.veganbeauty.app.features.community.notification.CommunityNotificationHelper.addCommunityNotificationLocalOnly(
+                                    context, userId, id, actorId, userName, userAvatar, type, actionType, content, postId, commentId
                             );
 
                             // Send Push Notification
@@ -1540,7 +1926,7 @@ public class FirestoreService {
                                     if (orderId == null || orderId.trim().isEmpty()) {
                                         orderId = doc.getString("orderId");
                                     }
-                                    iconResName = "ic_notification";
+                                    iconResName = "ic_bell";
                                 } else if ("PROMOTION".equalsIgnoreCase(type) || "VOUCHER".equalsIgnoreCase(type)) {
                                     if (title == null || title.trim().isEmpty()) title = "Ưu đãi mới cực hot! \uD83C\uDF81";
                                     category = "Khác";

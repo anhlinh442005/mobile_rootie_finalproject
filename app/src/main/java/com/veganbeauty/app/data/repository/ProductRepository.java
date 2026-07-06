@@ -321,47 +321,64 @@ public class ProductRepository {
 
 
     public void seedProductsFromAssets() {
-
         try {
-
-            List<ProductEntity> localProducts = localJsonReader.getAllProducts();
-
-            if (localProducts != null && !localProducts.isEmpty()) {
-
-                productDao.insertProducts(localProducts);
-
+            int count = productDao.getProductCount();
+            if (count == 0) {
+                List<ProductEntity> localProducts = localJsonReader.getAllProducts();
+                if (localProducts != null && !localProducts.isEmpty()) {
+                    productDao.insertProducts(localProducts);
+                }
             }
-
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
-
     }
 
 
 
     public void refreshProducts(boolean force) {
-
         try {
-
-            List<ProductEntity> assetProducts = localJsonReader.getAllProducts();
-
-            if (assetProducts != null && !assetProducts.isEmpty()) {
-
-                productDao.insertProducts(assetProducts);
-
+            // Fetch live products from Firebase Firestore
+            List<ProductEntity> remoteProducts = firestoreService.fetchAllProducts();
+            if (remoteProducts != null && !remoteProducts.isEmpty()) {
+                productDao.insertProducts(remoteProducts);
+            } else {
+                // Fallback to assets JSON only if remote fetch failed/empty
+                List<ProductEntity> assetProducts = localJsonReader.getAllProducts();
+                if (assetProducts != null && !assetProducts.isEmpty()) {
+                    List<ProductEntity> dbProducts = productDao.getAllProductsSync();
+                    if (dbProducts == null || dbProducts.isEmpty()) {
+                        productDao.insertProducts(assetProducts);
+                    } else {
+                        List<ProductEntity> toInsert = new ArrayList<>();
+                        for (ProductEntity asset : assetProducts) {
+                            ProductEntity existing = productDao.getProductById(asset.getId());
+                            if (existing == null) {
+                                toInsert.add(asset);
+                            } else {
+                                asset.setStock(existing.getStock());
+                                asset.setSold(existing.getSold());
+                                toInsert.add(asset);
+                            }
+                        }
+                        if (!toInsert.isEmpty()) {
+                            productDao.insertProducts(toInsert);
+                        }
+                    }
+                }
             }
 
-            syncAllProductImagesFromAssets(assetProducts);
-
+            try {
+                List<ProductEntity> assetProducts = localJsonReader.getAllProducts();
+                if (assetProducts != null) {
+                    syncAllProductImagesFromAssets(assetProducts);
+                }
+            } catch (Exception imgEx) {
+                // Ignore image sync error if JSON is deleted
+            }
         } catch (Exception ex) {
-
             ex.printStackTrace();
-
         }
-
     }
 
 

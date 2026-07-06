@@ -81,8 +81,18 @@ public class CommunityNotificationRepository {
             JSONArray array = new JSONArray(json);
             int count = 0;
             for (int i = 0; i < array.length(); i++) {
-                if (!array.getJSONObject(i).optBoolean("isRead", false)) {
-                    count++;
+                org.json.JSONObject obj = array.getJSONObject(i);
+                if (!file.exists()) {
+                    String targetUserId = obj.optString("targetUserId", null);
+                    if (targetUserId != null && !targetUserId.equals("null") && !targetUserId.isEmpty()) {
+                        if (!targetUserId.equals(currentUserId)) continue;
+                    }
+                }
+                if (!obj.optBoolean("isRead", false)) {
+                    String type = obj.optString("type", "");
+                    if (type.equals("POST") || type.equals("INTERACTION") || type.equals("AFFILIATE") || type.equals("NEWS")) {
+                        count++;
+                    }
                 }
             }
             return count;

@@ -103,7 +103,7 @@ public class OrderListViewModel extends RootieViewModel {
         Flow<List<OrderEntity>> scopedOrders = repository.getOrdersForBuyer(userId, phone);
         LiveData<List<OrderEntity>> ordersLiveData = FlowLiveDataConversions.asLiveData(scopedOrders);
         _filteredOrders.addSource(ordersLiveData, roomOrders -> {
-            if (roomOrders != null && !roomOrders.isEmpty()) {
+            if (roomOrders != null) {
                 applyOrders(roomOrders);
             }
         });

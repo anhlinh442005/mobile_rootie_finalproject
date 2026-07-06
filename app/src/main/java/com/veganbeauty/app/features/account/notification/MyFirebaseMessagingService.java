@@ -65,8 +65,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String title = data.get("title") != null ? data.get("title") : "Hoạt động mới trong Cộng đồng";
         String body = data.get("body") != null ? data.get("body") : userName + " đã thực hiện hành động trong cộng đồng.";
 
-        CommunityNotificationHelper.addCommunityNotification(
+        CommunityNotificationHelper.addCommunityNotificationLocalOnly(
                 getApplicationContext(),
+                com.veganbeauty.app.data.repository.CommunityNotificationRepository.resolveUserId(getApplicationContext()),
                 id,
                 userId,
                 userName,

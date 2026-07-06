@@ -100,7 +100,12 @@ public class ChatMessageAdapter extends ListAdapter<ChatMessageEntity, ChatMessa
             }
             if (showAvatar) {
                 if (partnerAvatarUrl.isEmpty()) {
-                    holder.ivPartnerAvatar.setImageResource(R.drawable.img_avatar);
+                    ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
+                            .data(R.drawable.img_avatar)
+                            .transformations(new CircleCropTransformation())
+                            .target(holder.ivPartnerAvatar)
+                            .build();
+                    Coil.imageLoader(holder.itemView.getContext()).enqueue(request);
                 } else {
                     ImageRequest request = new ImageRequest.Builder(holder.itemView.getContext())
                             .data(partnerAvatarUrl)

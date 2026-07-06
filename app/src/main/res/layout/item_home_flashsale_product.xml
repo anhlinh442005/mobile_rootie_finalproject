@@ -46,6 +46,15 @@
             android:textColor="#28362E"
             android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/tvFlashStockRemaining"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:textColor="@color/warning_text_orange"
+            android:textSize="9sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,15 +82,69 @@
                 android:textSize="9sp" />
         </LinearLayout>
 
+        <FrameLayout
+            android:id="@+id/flFlashUrgencyBar"
+            android:layout_width="match_parent"
+            android:layout_height="22dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_flashsale_urgency_track"
+            android:clipChildren="true"
+            android:clipToOutline="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/vFlashUrgencyFill"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="78"
+                    android:background="@drawable/bg_flashsale_urgency_fill" />
+
+                <Space
+                    android:id="@+id/vFlashUrgencySpacer"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="22" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="4dp">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_flashsale_flame" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:maxLines="1"
+                    android:text="@string/home_flashsale_urgency_label"
+                    android:textColor="@color/white"
+                    android:textSize="8sp" />
+            </LinearLayout>
+        </FrameLayout>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFlashBuy"
             android:layout_width="match_parent"
             android:layout_height="28dp"
             android:layout_marginTop="4dp"
-            android:backgroundTint="#47574B"
+            android:backgroundTint="@color/home_voucher_orange_dark"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="Chọn"
+            android:text="@string/home_product_buy_now"
             android:paddingTop="2dp"
             android:textAlignment="center"
             android:fontFamily="@font/be_vietnam_pro_semibold"

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="8dp"
+    android:height="120dp"
+    android:viewportWidth="8"
+    android:viewportHeight="120">
+    <path
+        android:fillColor="@color/home_voucher_cream"
+        android:pathData="M8,0 L8,120 L0,120 L0,114 Q8,108 0,102 Q8,96 0,90 Q8,84 0,78 Q8,72 0,66 Q8,60 0,54 Q8,48 0,42 Q8,36 0,30 Q8,24 0,18 Q8,12 0,6 L0,0 Z" />
+</vector>

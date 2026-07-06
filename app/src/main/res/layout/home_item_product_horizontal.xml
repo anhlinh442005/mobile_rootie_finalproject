@@ -41,6 +41,15 @@
         android:textColor="#28362E"
         android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/tvStockRemaining"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:textColor="@color/warning_text_orange"
+            android:textSize="10sp" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -86,6 +95,23 @@
             android:src="@drawable/ic_cart"
             app:tint="@color/white" />
     </RelativeLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBuyNow"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="6dp"
+            android:backgroundTint="@color/home_voucher_orange_dark"
+            android:fontFamily="@font/be_vietnam_pro_semibold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:text="@string/home_product_buy_now"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            app:cornerRadius="6dp" />
 </LinearLayout>
 
     <TextView

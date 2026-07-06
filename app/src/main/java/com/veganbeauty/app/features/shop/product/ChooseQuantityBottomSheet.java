@@ -60,27 +60,112 @@ public class ChooseQuantityBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void setupListeners() {
+        binding.tvQuantityValue.addTextChangedListener(new android.text.TextWatcher() {
+            private String currentText = "";
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                String input = s.toString().trim();
+                if (input.equals(currentText)) return;
+                if (input.isEmpty()) {
+                    return;
+                }
+                try {
+                    int val = Integer.parseInt(input);
+                    if (val < 1) {
+                        currentText = "1";
+                        binding.tvQuantityValue.setText("1");
+                        if (binding.tvQuantityValue instanceof android.widget.EditText) {
+                            ((android.widget.EditText) binding.tvQuantityValue).setSelection(1);
+                        }
+                        currentQuantity = 1;
+                        updatePriceAndSavings();
+                    } else if (val > product.getStock()) {
+                        android.widget.Toast.makeText(requireContext(), "Số lượng chọn vượt quá tồn kho (" + product.getStock() + ")", android.widget.Toast.LENGTH_SHORT).show();
+                        currentText = String.valueOf(product.getStock());
+                        binding.tvQuantityValue.setText(currentText);
+                        if (binding.tvQuantityValue instanceof android.widget.EditText) {
+                            ((android.widget.EditText) binding.tvQuantityValue).setSelection(currentText.length());
+                        }
+                        currentQuantity = product.getStock();
+                        updatePriceAndSavings();
+                    } else {
+                        currentText = String.valueOf(val);
+                        currentQuantity = val;
+                        updatePriceAndSavings();
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore
+                }
+            }
+        });
+
+        binding.tvQuantityValue.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                String input = binding.tvQuantityValue.getText().toString().trim();
+                if (input.isEmpty()) {
+                    binding.tvQuantityValue.setText(String.valueOf(currentQuantity));
+                }
+            }
+        });
+
         binding.btnMinus.setOnClickListener(v -> {
             if (currentQuantity > 1) {
-                currentQuantity--;
-                binding.tvQuantityValue.setText(String.valueOf(currentQuantity));
-                updatePriceAndSavings();
+                binding.tvQuantityValue.setText(String.valueOf(currentQuantity - 1));
             }
         });
 
         binding.btnPlus.setOnClickListener(v -> {
-            currentQuantity++;
-            binding.tvQuantityValue.setText(String.valueOf(currentQuantity));
-            updatePriceAndSavings();
+            if (currentQuantity >= product.getStock()) {
+                android.widget.Toast.makeText(requireContext(), "Số lượng chọn vượt quá tồn kho (" + product.getStock() + ")", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            binding.tvQuantityValue.setText(String.valueOf(currentQuantity + 1));
         });
 
         binding.btnAddToCartOutline.setOnClickListener(v -> {
-            if (listener != null) listener.onAddToCartClick(product, currentQuantity);
+            if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
+                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext());
+                dismiss();
+                return;
+            }
+            String input = binding.tvQuantityValue.getText().toString().trim();
+            if (input.isEmpty()) {
+                android.widget.Toast.makeText(requireContext(), "Vui lòng nhập số lượng", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            int finalQty = currentQuantity;
+            try {
+                finalQty = Integer.parseInt(input);
+            } catch (NumberFormatException e) {}
+            if (finalQty > product.getStock()) {
+                android.widget.Toast.makeText(requireContext(), "Số lượng chọn vượt quá tồn kho (" + product.getStock() + ")", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (listener != null) listener.onAddToCartClick(product, finalQty);
             dismiss();
         });
 
         binding.btnBuyNow.setOnClickListener(v -> {
-            if (listener != null) listener.onBuyNowClick(product, currentQuantity);
+            String input = binding.tvQuantityValue.getText().toString().trim();
+            if (input.isEmpty()) {
+                android.widget.Toast.makeText(requireContext(), "Vui lòng nhập số lượng", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            int finalQty = currentQuantity;
+            try {
+                finalQty = Integer.parseInt(input);
+            } catch (NumberFormatException e) {}
+            if (finalQty > product.getStock()) {
+                android.widget.Toast.makeText(requireContext(), "Số lượng chọn vượt quá tồn kho (" + product.getStock() + ")", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (listener != null) listener.onBuyNowClick(product, finalQty);
             dismiss();
         });
     }

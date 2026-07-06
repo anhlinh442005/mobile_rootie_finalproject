@@ -171,15 +171,31 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     class UserViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvMessage;
         private final TextView tvTime;
+        private final ImageView ivMessageImage;
 
         public UserViewHolder(View view) {
             super(view);
             tvMessage = view.findViewById(R.id.tvUserMessage);
             tvTime = view.findViewById(R.id.tvUserTime);
+            ivMessageImage = view.findViewById(R.id.ivUserMessageImage);
         }
 
         public void bind(RootieChatItem item) {
-            tvMessage.setText(item.getMessageText());
+            String text = item.getMessageText();
+            if (text != null && text.startsWith("image:")) {
+                tvMessage.setVisibility(View.GONE);
+                ivMessageImage.setVisibility(View.VISIBLE);
+                String imgUri = text.substring(6);
+                com.bumptech.glide.Glide.with(ivMessageImage.getContext())
+                        .load(imgUri)
+                        .placeholder(android.R.color.darker_gray)
+                        .error(android.R.color.darker_gray)
+                        .into(ivMessageImage);
+            } else {
+                tvMessage.setVisibility(View.VISIBLE);
+                ivMessageImage.setVisibility(View.GONE);
+                tvMessage.setText(text);
+            }
             tvTime.setText(item.getTimeStr());
         }
     }
@@ -188,16 +204,32 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private final TextView tvMessage;
         private final TextView tvTime;
         private final ImageView ivAvatar;
+        private final ImageView ivMessageImage;
 
         public AiTextViewHolder(View view) {
             super(view);
             tvMessage = view.findViewById(R.id.tvAiMessage);
             tvTime = view.findViewById(R.id.tvAiTime);
             ivAvatar = view.findViewById(R.id.ivAiAvatar);
+            ivMessageImage = view.findViewById(R.id.ivAiMessageImage);
         }
 
         public void bind(RootieChatItem item) {
-            tvMessage.setText(item.getMessageText());
+            String text = item.getMessageText();
+            if (text != null && text.startsWith("image:")) {
+                tvMessage.setVisibility(View.GONE);
+                ivMessageImage.setVisibility(View.VISIBLE);
+                String imgUri = text.substring(6);
+                com.bumptech.glide.Glide.with(ivMessageImage.getContext())
+                        .load(imgUri)
+                        .placeholder(android.R.color.darker_gray)
+                        .error(android.R.color.darker_gray)
+                        .into(ivMessageImage);
+            } else {
+                tvMessage.setVisibility(View.VISIBLE);
+                ivMessageImage.setVisibility(View.GONE);
+                tvMessage.setText(text);
+            }
             tvTime.setText(item.getTimeStr());
             ivAvatar.setImageResource(R.drawable.mascot_message);
         }

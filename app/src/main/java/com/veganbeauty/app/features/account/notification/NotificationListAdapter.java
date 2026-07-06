@@ -208,8 +208,8 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
 
     private static int resolveNotificationIconRes(Context context, String iconResName) {
         if (iconResName == null || iconResName.isEmpty()
-                || "ic_notification".equals(iconResName)
-                || "home_ic_notification".equals(iconResName)) {
+                || "ic_bell".equals(iconResName)
+                || "home_ic_bell".equals(iconResName)) {
             return R.drawable.ic_bell;
         }
         int resId = context.getResources().getIdentifier(iconResName, "drawable", context.getPackageName());

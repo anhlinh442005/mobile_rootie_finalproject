@@ -13,6 +13,7 @@ import com.veganbeauty.app.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class BookingTimeAdapter extends RecyclerView.Adapter<BookingTimeAdapter.ViewHolder> {
     public interface OnItemClickListener {
@@ -21,11 +22,17 @@ public class BookingTimeAdapter extends RecyclerView.Adapter<BookingTimeAdapter.
 
     private List<BookingTime> list;
     private final OnItemClickListener listener;
+    private final BooleanSupplier loginGate;
     private int selectedIndex = -1;
 
     public BookingTimeAdapter(List<BookingTime> list, OnItemClickListener listener) {
+        this(list, listener, () -> true);
+    }
+
+    public BookingTimeAdapter(List<BookingTime> list, OnItemClickListener listener, BooleanSupplier loginGate) {
         this.list = list != null ? list : new ArrayList<>();
         this.listener = listener;
+        this.loginGate = loginGate != null ? loginGate : () -> true;
     }
 
     public void updateData(List<BookingTime> list) {
@@ -66,8 +73,8 @@ public class BookingTimeAdapter extends RecyclerView.Adapter<BookingTimeAdapter.
         } else {
             holder.container.setAlpha(1f);
             if (isSelected) {
-                holder.container.setBackgroundResource(R.drawable.skin_bg_selected_item);
-                holder.tvTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary));
+                holder.container.setBackgroundResource(R.drawable.skin_bg_booking_slot_selected);
+                holder.tvTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.status_level_blue));
             } else {
                 holder.container.setBackgroundResource(R.drawable.skin_bg_outline);
                 holder.tvTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.content));
@@ -75,6 +82,9 @@ public class BookingTimeAdapter extends RecyclerView.Adapter<BookingTimeAdapter.
         }
 
         holder.container.setOnClickListener(v -> {
+            if (!loginGate.getAsBoolean()) {
+                return;
+            }
             if (item.isLocked()) {
                 android.widget.Toast.makeText(holder.itemView.getContext(), "Giờ này đã được bạn đặt hoặc đã qua, vui lòng chọn giờ khác.", android.widget.Toast.LENGTH_SHORT).show();
                 return;

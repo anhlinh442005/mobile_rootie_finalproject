@@ -22,21 +22,22 @@
         android:layout_below="@id/home_header"
         android:layout_alignParentBottom="true"
         android:clipToPadding="false"
-        android:fillViewport="true"
-        android:paddingBottom="56dp"
+        android:clipChildren="false"
+        android:paddingBottom="@dimen/home_nav_content_height"
         android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:orientation="vertical"
-            android:paddingBottom="8dp">
+            android:paddingTop="@dimen/home_section_spacing">
 
             <!-- Hero Banner Carousel -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:paddingHorizontal="16dp">
 
                 <androidx.cardview.widget.CardView
@@ -68,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -129,16 +130,16 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 android:background="#EFEFE8"
-                android:paddingBottom="24dp">
+                android:paddingBottom="16dp">
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guidelinePromoSplit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.52" />
+                    app:layout_constraintGuide_begin="214dp" />
 
                 <!-- Badge (trái) -->
                 <LinearLayout
@@ -146,7 +147,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="@dimen/home_section_spacing"
                     android:background="@drawable/bg_pill_dark_olive"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="10dp"
@@ -458,26 +459,18 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/llPromoFeatures" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tvHomeSloganMarquee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 android:ellipsize="marquee"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:freezesText="true"
                 android:marqueeRepeatLimit="marquee_forever"
-                android:paddingVertical="16dp"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="@string/home_slogan_marquee"
@@ -489,7 +482,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp"
                 android:gravity="center_horizontal">
@@ -505,10 +498,69 @@
                     android:id="@+id/ivExpandShortcuts"
                     android:layout_width="48dp"
                     android:layout_height="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="@dimen/home_section_spacing"
                     android:src="@drawable/ic_arrow_doubledown"
                     android:scaleType="fitCenter" />
+            </LinearLayout>
+
+            <!-- Voucher Promo Section -->
+            <LinearLayout
+                android:id="@+id/sectionVouchers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_section_spacing"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Ưu đãi mã giảm giá"
+                        android:textColor="@color/primary"
+                        android:textSize="@dimen/home_section_title_size" />
+
+                    <TextView
+                        android:id="@+id/tvVoucherSeeAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
+                        android:text="Xem tất cả >"
+                        android:textColor="#7A8B7B"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvVoucherCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvVouchers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="16dp" />
             </LinearLayout>
 
             <!-- Recent Activity -->
@@ -516,7 +568,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 android:background="@drawable/bg_ombre_recent_activity"
                 android:orientation="vertical"
                 android:paddingTop="16dp"
@@ -557,171 +609,16 @@
                     android:paddingEnd="8dp" />
             </LinearLayout>
 
-            <!-- Flash Sale Section -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/flFlashSaleContainer"
+            <!-- Flash Sale V2 — flexible layout (no fixed bg image) -->
+            <include
+                android:id="@+id/flashsale_v2_section"
+                layout="@layout/home_flashsale_v2_section"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/ivFlashsaleBg"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/homepage_flashsale_bg"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:contentDescription="@null" />
-
-                <!-- The cards container -->
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintWidth_percent="0.85"
-                    app:layout_constraintHeight_percent="0.51"
-                    app:layout_constraintVertical_bias="0.59"
-                    android:layout_marginTop="85dp"
-                    android:layout_marginRight="4dp"
-                    android:layout_gravity="center_horizontal"
-                    app:layout_constraintTop_toTopOf="@id/ivFlashsaleBg"
-                    app:layout_constraintBottom_toBottomOf="@id/ivFlashsaleBg"
-                    app:layout_constraintStart_toStartOf="@id/ivFlashsaleBg"
-                    app:layout_constraintEnd_toEndOf="@id/ivFlashsaleBg"
-                    android:clipChildren="false">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvFlashSale"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clipToPadding="false"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="4dp" />
-                </FrameLayout>
-
-                <!-- Countdown and text -->
-                <LinearLayout
-                    android:id="@+id/llFlashSaleFooter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintVertical_bias="0.93"
-                    app:layout_constraintTop_toTopOf="@id/ivFlashsaleBg"
-                    app:layout_constraintBottom_toBottomOf="@id/ivFlashsaleBg"
-                    app:layout_constraintStart_toStartOf="@id/ivFlashsaleBg"
-                    app:layout_constraintEnd_toEndOf="@id/ivFlashsaleBg"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <!-- Timer boxes -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tvFlashHour"
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:background="@drawable/bg_white_rounded_4dp"
-                                android:fontFamily="@font/be_vietnam_pro_bold"
-                                android:gravity="center"
-                                android:text="00"
-                                android:textColor="#3E4D44"
-                                android:textSize="10sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/be_vietnam_pro_regular"
-                                android:text="Giờ"
-                                android:textColor="@color/white"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="2dp"
-                            android:layout_marginBottom="8dp"
-                            android:fontFamily="@font/be_vietnam_pro_bold"
-                            android:text=":"
-                            android:textColor="@color/white"
-                            android:textSize="12sp" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tvFlashMinute"
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:background="@drawable/bg_white_rounded_4dp"
-                                android:fontFamily="@font/be_vietnam_pro_bold"
-                                android:gravity="center"
-                                android:text="00"
-                                android:textColor="#3E4D44"
-                                android:textSize="10sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="0dp"
-                                android:fontFamily="@font/be_vietnam_pro_regular"
-                                android:text="Phút"
-                                android:textColor="@color/white"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="2dp"
-                            android:layout_marginBottom="8dp"
-                            android:fontFamily="@font/be_vietnam_pro_bold"
-                            android:text=":"
-                            android:textColor="@color/white"
-                            android:textSize="12sp" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tvFlashSecond"
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:background="@drawable/bg_white_rounded_4dp"
-                                android:fontFamily="@font/be_vietnam_pro_bold"
-                                android:gravity="center"
-                                android:text="00"
-                                android:textColor="#3E4D44"
-                                android:textSize="10sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/be_vietnam_pro_regular"
-                                android:text="Giây"
-                                android:textColor="@color/white"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
+                android:clipChildren="false"
+                android:clipToPadding="false" />
 
             <!-- Lotus Essence Promo -->
             <androidx.cardview.widget.CardView
@@ -729,7 +626,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 app:cardBackgroundColor="@color/neutral"
                 app:cardElevation="0dp">
 
@@ -737,7 +634,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingVertical="26dp"
+                    android:paddingVertical="16dp"
                     android:paddingHorizontal="16dp"
                     android:gravity="center"
                     android:baselineAligned="false">
@@ -823,45 +720,35 @@
             </androidx.cardview.widget.CardView>
 
             <!-- Categories -->
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
+                android:orientation="vertical"
                 android:paddingHorizontal="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
                     android:text="@string/home_categories"
-                    android:textColor="#28362E"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textColor="#1B3E2D"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/be_vietnam_pro_bold" />
 
-                <TextView
-                    android:id="@+id/tvCategoriesSeeAll"
-                    android:layout_width="wrap_content"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCategories"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/home_see_all"
-                    android:textColor="@color/secondary"
-                    android:textSize="12sp" />
-            </RelativeLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCategories"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false" />
+                    android:layout_marginTop="12dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false" />
+            </LinearLayout>
 
             <!-- Bestsellers & Top Search -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp">
 
@@ -875,29 +762,14 @@
                     android:padding="12dp"
                     android:orientation="vertical">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/home_bestsellers"
-                            android:textColor="#1B3E2D"
-                            android:textSize="17sp"
-                            android:fontFamily="@font/be_vietnam_pro_bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:text="Xem tất cả >"
-                            android:textColor="#7A8B7B"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/be_vietnam_pro_regular" />
-                    </RelativeLayout>
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/home_bestsellers"
+                        android:textColor="#1B3E2D"
+                        android:textSize="17sp"
+                        android:fontFamily="@font/be_vietnam_pro_bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvBestsellers"
@@ -921,29 +793,14 @@
                     android:padding="12dp"
                     android:orientation="vertical">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/home_top_search"
-                            android:textColor="#4A564A"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/be_vietnam_pro_bolditalic" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:text="Xem tất cả >"
-                            android:textColor="#7A8B7B"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/be_vietnam_pro_regular" />
-                    </RelativeLayout>
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/home_top_search"
+                        android:textColor="#4A564A"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/be_vietnam_pro_bolditalic" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvTopSearch"
@@ -958,61 +815,76 @@
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:contentDescription="@null"
                     android:scaleType="centerCrop"
                     android:src="@drawable/about_us_home" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:orientation="vertical"
-                    android:padding="20dp"
-                    android:gravity="center_vertical">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro"
                         android:text="Về chúng tôi"
                         android:textColor="@color/primary"
                         android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/be_vietnam_pro" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:lineSpacingExtra="4dp"
                         android:text="Tìm hiểu hành trình và giá trị\nmà chúng tôi theo đuổi."
                         android:textColor="@color/tertiary"
                         android:textSize="13sp"
-                        android:textStyle="italic|normal"
-                        android:fontFamily="@font/be_vietnam_pro"
-                        android:lineSpacingExtra="4dp" />
+                        android:textStyle="italic" />
 
-                    <TextView
+                    <LinearLayout
                         android:id="@+id/btn_discover_about_us"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:layout_gravity="start"
+                        android:layout_marginTop="@dimen/home_section_spacing"
                         android:background="@drawable/bg_pill_dark_olive"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="8dp"
-                        android:text="Tìm Hiểu ngay  "
-                        android:textColor="@color/white"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/be_vietnam_pro"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center"
-                        app:drawableEndCompat="@drawable/ic_arrow_back_thin"
-                        app:drawableTint="@color/white" />
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:includeFontPadding="false"
+                            android:text="Tìm hiểu ngay"
+                            android:textColor="@color/white"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_marginStart="6dp"
+                            android:contentDescription="@null"
+                            android:scaleX="-1"
+                            android:src="@drawable/ic_arrow_back_thin"
+                            app:tint="@color/white" />
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -1020,7 +892,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
                 android:paddingHorizontal="16dp">
 
                 <TextView
@@ -1048,7 +920,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="12dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="0dp"
                 android:background="@drawable/bg_pill_green"
                 android:gravity="center"
                 android:orientation="horizontal"

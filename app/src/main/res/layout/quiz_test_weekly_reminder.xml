@@ -95,17 +95,4 @@
         android:textSize="11sp"
         android:textStyle="bold" />
 
-    <!-- Dismiss Button -->
-    <ImageView
-        android:id="@+id/quiz_test_btn_dismiss_reminder"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="5dp"
-        android:src="@drawable/ic_cancel"
-        app:tint="#B3FFFFFF" />
-
 </LinearLayout>

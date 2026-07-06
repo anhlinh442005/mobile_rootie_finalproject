@@ -63,7 +63,7 @@ import java.util.UUID;
                 StoreEntity.class,
                 UserProductExpiryEntity.class
         },
-        version = 37 // bumped after entity/schema changes
+        version = 38 // bumped after entity/schema changes
 )
 
 @TypeConverters({ProductConverters.class})

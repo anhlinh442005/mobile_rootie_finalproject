@@ -10,8 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clHeader"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@drawable/bg_points_card_gradient"
+        android:layout_height="52dp"
+        android:background="@drawable/bg_gradient_header"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
@@ -196,21 +196,6 @@
                     android:textColor="@color/primary"
                     android:textSize="14sp" />
 
-                <!-- Note input -->
-                <EditText
-                    android:id="@+id/etNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_card_white"
-                    android:hint="Thêm ghi chú..."
-                    android:padding="12dp"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/be_vietnam_pro_regular"
-                    android:textColorHint="@color/gray_dark"
-                    android:textColor="@color/primary"
-                    android:maxLines="3"
-                    android:inputType="textMultiLine" />
             </LinearLayout>
 
             <!-- 2b. Guest Checkout Form (only visible when buyer is not logged in) -->
@@ -420,6 +405,41 @@
                     android:text="Vui lòng chọn cửa hàng để tiếp tục"
                     android:textColor="@color/gray_dark"
                     android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Ghi chú đơn hàng -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Ghi chú đơn hàng"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/etNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_card_white"
+                    android:hint="Thêm ghi chú cho đơn hàng (ví dụ: giao giờ hành chính...)"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:textColorHint="@color/gray_dark"
+                    android:textColor="@color/primary"
+                    android:maxLines="3"
+                    android:inputType="textMultiLine" />
             </LinearLayout>
 
             <!-- 3. Yêu cầu xuất hóa đơn điện tử -->

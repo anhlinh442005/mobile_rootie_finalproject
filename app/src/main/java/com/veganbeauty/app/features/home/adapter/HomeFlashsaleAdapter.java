@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -28,6 +29,7 @@ public class HomeFlashsaleAdapter extends ListAdapter<ProductEntity, HomeFlashsa
             @Override public void onProductClick(ProductEntity product) {}
             @Override public void onQuickAddToCart(ProductEntity product, View cartButton, android.widget.ImageView productImage) {}
             @Override public void onCartLongPress(ProductEntity product) {}
+            @Override public void onBuyNow(ProductEntity product) {}
         };
     }
 
@@ -60,18 +62,33 @@ public class HomeFlashsaleAdapter extends ListAdapter<ProductEntity, HomeFlashsa
             binding.tvFlashPrice.setOnClickListener(openDetail);
             binding.tvFlashOriginalPrice.setOnClickListener(openDetail);
 
-            binding.btnFlashBuy.setOnClickListener(v ->
-                    listener.onQuickAddToCart(product, binding.btnFlashBuy, binding.ivFlashProduct));
+            binding.btnFlashBuy.setOnClickListener(v -> listener.onBuyNow(product));
             binding.btnFlashBuy.setOnLongClickListener(v -> {
                 listener.onCartLongPress(product);
                 return true;
             });
 
             binding.tvFlashProductName.setText(product.getName());
+            binding.tvFlashStockRemaining.setText(
+                    binding.getRoot().getContext().getString(
+                            com.veganbeauty.app.R.string.home_product_stock_remaining,
+                            product.getStock()
+                    )
+            );
 
             Random random = new Random((long) product.getId().hashCode());
             int discount = random.nextInt(31) + 20;
             binding.tvFlashDiscountBadge.setText("-" + discount + "%");
+
+            int urgencyProgress = random.nextInt(36) + 55;
+            LinearLayout.LayoutParams fillParams =
+                    (LinearLayout.LayoutParams) binding.vFlashUrgencyFill.getLayoutParams();
+            LinearLayout.LayoutParams spacerParams =
+                    (LinearLayout.LayoutParams) binding.vFlashUrgencySpacer.getLayoutParams();
+            fillParams.weight = urgencyProgress;
+            spacerParams.weight = 100 - urgencyProgress;
+            binding.vFlashUrgencyFill.setLayoutParams(fillParams);
+            binding.vFlashUrgencySpacer.setLayoutParams(spacerParams);
 
             long originalPrice = product.getPrice();
             double salePrice = originalPrice * (100 - discount) / 100.0;

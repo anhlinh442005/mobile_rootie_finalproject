@@ -181,10 +181,15 @@ public class ShopOrderSuccessFragment extends RootieFragment {
                             binding.cvNotificationBanner.animate()
                                     .translationY(-300f)
                                     .setDuration(800)
-                                    .withEndAction(() -> binding.cvNotificationBanner.setVisibility(View.GONE))
+                                    .withEndAction(() -> {
+                                        if (binding != null) {
+                                            binding.cvNotificationBanner.setVisibility(View.GONE);
+                                        }
+                                    })
                                     .start();
                         }
                     }, 2500)).start();
+
         }
     }
 

@@ -322,6 +322,53 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- Card 4b: Ghi chú đơn hàng (Note Card) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutNoteCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_white"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/ivNoteIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_clipboard_outline"
+                    app:tint="@color/primary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvNoteTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Ghi chú đơn hàng"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/ivNoteIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/ivNoteIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/ivNoteIcon" />
+
+                <TextView
+                    android:id="@+id/tvOrderNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/tvNoteTitle"
+                    tools:text="Giao giờ hành chính, gọi trước khi giao." />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <!-- Card 5: Payment Summary (Invoice details) -->
             <LinearLayout
                 android:id="@+id/layoutInvoiceCard"

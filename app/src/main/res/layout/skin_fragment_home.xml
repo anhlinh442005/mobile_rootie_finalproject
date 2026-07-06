@@ -453,38 +453,37 @@
 
 
                 <!-- Tiêu đề section + xem tất cả -->
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
                     android:layout_marginBottom="12dp">
 
                     <TextView
                         android:id="@+id/skin_store_section_title"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/be_vietnam_pro"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
                         android:includeFontPadding="false"
                         android:text="Đặt lịch soi da tại cửa hàng"
-                        android:textColor="#28362E"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textColor="#1B3E2D"
+                        android:textSize="17sp" />
 
                     <TextView
                         android:id="@+id/skin_store_see_all"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:clickable="true"
                         android:focusable="true"
-                        android:fontFamily="@font/be_vietnam_pro"
+                        android:fontFamily="@font/be_vietnam_pro_regular"
                         android:includeFontPadding="false"
-                        android:text="Xem tất cả ›"
-                        android:textColor="@color/secondary"
+                        android:text="Xem tất cả >"
+                        android:textColor="#7A8B7B"
                         android:textSize="12sp" />
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_skin_stores"

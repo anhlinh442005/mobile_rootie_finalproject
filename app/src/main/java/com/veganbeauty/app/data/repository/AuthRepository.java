@@ -9,15 +9,11 @@ import android.content.Context;
 
 import java.security.MessageDigest;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
 
 public class AuthRepository {
 
     private final UserDao userDao;
     private final Context appContext;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public AuthRepository(UserDao userDao, Context context) {
         this.userDao = userDao;
@@ -103,30 +99,38 @@ public class AuthRepository {
 
     // Making this synchronous for Java compatibility, you should call this in a background thread
     public Object register(String fullName, String email, String phone, String password) throws Exception {
-        UserEntity existingUserByEmail = !email.isEmpty() ? userDao.getUserByEmailSync(email) : null;
+        String normalizedEmail = email != null ? email.trim() : "";
+        String normalizedPhone = phone != null ? phone.trim() : "";
+
+        UserEntity existingUserByEmail = !normalizedEmail.isEmpty() ? userDao.getUserByEmailSync(normalizedEmail) : null;
         if (existingUserByEmail != null) {
             throw new Exception("Email đã tồn tại.");
         }
-        UserEntity existingUserByPhone = !phone.isEmpty() ? userDao.getUserByPhoneSync(phone) : null;
+        UserEntity existingUserByPhone = !normalizedPhone.isEmpty() ? userDao.getUserByPhoneSync(normalizedPhone) : null;
         if (existingUserByPhone != null) {
             throw new Exception("Số điện thoại đã tồn tại.");
         }
 
-        String userId = "test@example.com".equals(email) ? "test_001" : UUID.randomUUID().toString();
+        FirestoreService firestoreService = new FirestoreService();
+        if (!normalizedEmail.isEmpty() && firestoreService.userExistsByEmail(normalizedEmail)) {
+            throw new Exception("Email đã tồn tại.");
+        }
+        if (!normalizedPhone.isEmpty() && firestoreService.userExistsByPhone(normalizedPhone)) {
+            throw new Exception("Số điện thoại đã tồn tại.");
+        }
+
+        String userId = "test@example.com".equals(normalizedEmail) ? "test_001" : UUID.randomUUID().toString();
         String hashedPassword = hashPassword(password);
 
-        UserEntity newUser = new UserEntity(userId, fullName, fullName, email, phone, hashedPassword);
+        UserEntity newUser = new UserEntity(userId, fullName.trim(), fullName.trim(), normalizedEmail, normalizedPhone, hashedPassword);
+
+        boolean savedToFirebase = firestoreService.saveUser(newUser);
+        if (!savedToFirebase) {
+            throw new Exception("Không thể lưu tài khoản lên Firebase. Vui lòng thử lại.");
+        }
 
         userDao.insertUserSync(newUser);
-        
-        executor.execute(() -> {
-            try {
-                new FirestoreService().saveUser(newUser);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        
-        return newUser; // Using Object return type to mimic Kotlin's Result wrapping if needed, but returning UserEntity directly here
+
+        return newUser;
     }
 }

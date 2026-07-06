@@ -8,29 +8,7 @@ import java.util.Random;
 
 public class ProductReviewHelper {
 
-    public static class ProductReview {
-        private final String reviewerName;
-        private final int rating;
-        private final String comment;
 
-        public ProductReview(String reviewerName, int rating, String comment) {
-            this.reviewerName = reviewerName;
-            this.rating = rating;
-            this.comment = comment;
-        }
-
-        public String getReviewerName() {
-            return reviewerName;
-        }
-
-        public int getRating() {
-            return rating;
-        }
-
-        public String getComment() {
-            return comment;
-        }
-    }
 
     private static final List<String> REVIEWERS = Arrays.asList(
             "Bảo Nguyên", "Minh Thư", "Hoàng Nam", "Khánh Linh", "Thanh Trúc",
