@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="#F0F8EC"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="8dp"
+    app:strokeColor="#C5D3B8"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingVertical="8dp">
+
+        <TextView
+            android:id="@+id/tvSaveVideo"
+            android:layout_width="wrap_content"
+            android:minWidth="160dp"
+            android:layout_height="wrap_content"
+            android:text="Lưu video"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#D1DCC6" />
+
+        <TextView
+            android:id="@+id/tvViewSaved"
+            android:layout_width="wrap_content"
+            android:minWidth="160dp"
+            android:layout_height="wrap_content"
+            android:text="Xem video đã lưu"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

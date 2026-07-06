@@ -241,32 +241,7 @@ public class CommunityEditProfileFragment extends Fragment {
         ProfileSession.setBio(ctx, newBio);
 
         if (selectedAvatarUri != null) {
-            isSaving = true;
-            setSaveEnabled(false);
-            Toast.makeText(ctx, "Đang tải ảnh đại diện lên cloud...", Toast.LENGTH_LONG).show();
-
-            final String finalUname = newUname;
-            SyncDataHelper.uploadAndSyncAvatar(ctx, selectedAvatarUri, (success, secureUrl, errorMessage) -> {
-                isSaving = false;
-                if (isAdded()) {
-                    setSaveEnabled(true);
-                }
-
-                Context toastCtx = ctx.getApplicationContext();
-                if (success && secureUrl != null) {
-                    persistProfileChanges(ctx, userId, newName, finalUname, newBio, secureUrl);
-                    Toast.makeText(toastCtx, "Cập nhật avatar thành công!", Toast.LENGTH_LONG).show();
-                    if (errorMessage != null && !errorMessage.isEmpty()) {
-                        Toast.makeText(toastCtx, errorMessage, Toast.LENGTH_LONG).show();
-                    }
-                    if (isAdded()) {
-                        getParentFragmentManager().popBackStack();
-                    }
-                } else {
-                    String message = errorMessage != null ? errorMessage : "Không thể cập nhật avatar. Vui lòng thử lại.";
-                    Toast.makeText(toastCtx, message, Toast.LENGTH_LONG).show();
-                }
-            });
+            finishSave(ctx, userId, newName, newUname, newBio, selectedAvatarUri.toString());
             return;
         }
 
@@ -313,10 +288,6 @@ public class CommunityEditProfileFragment extends Fragment {
     }
 
     private void persistProfileChanges(Context ctx, String userId, String fullName, String username, String bio, String avatar) {
-        if (!SyncDataHelper.isRemoteAvatarUrl(avatar)) {
-            avatar = resolveRemoteAvatarForSave(ctx);
-        }
-
         final String avatarToPersist = avatar;
         new Thread(() -> {
             try {
@@ -336,7 +307,7 @@ public class CommunityEditProfileFragment extends Fragment {
                 } else {
                     user.setFull_name(fullName);
                     user.setUsername(username.replace("@", "").trim());
-                    if (SyncDataHelper.isRemoteAvatarUrl(avatarToPersist)) {
+                    if (avatarToPersist != null && !avatarToPersist.trim().isEmpty()) {
                         user.setAvatar(avatarToPersist);
                     }
                     user.setBio(bio);
@@ -351,7 +322,6 @@ public class CommunityEditProfileFragment extends Fragment {
                 RootieDatabase.getDatabase(ctx).communityDao().insertUsers(
                         java.util.Collections.singletonList(user)
                 );
-                new FirestoreService().saveUser(user);
                 ProfileUpdateNotifier.notifyUpdated();
             } catch (Exception e) {
                 e.printStackTrace();

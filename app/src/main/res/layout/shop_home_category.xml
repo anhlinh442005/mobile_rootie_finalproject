@@ -3,59 +3,101 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="105dp"
+    android:layout_height="wrap_content"
     android:layout_margin="6dp"
-    app:cardBackgroundColor="@android:color/white"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/home_category_card_bg"
     app:cardCornerRadius="16dp"
-    app:cardElevation="0dp"
-    app:strokeColor="#EAEAEA"
+    app:cardElevation="3dp"
+    app:strokeColor="@color/home_category_card_stroke"
     app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp">
+        android:paddingHorizontal="6dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="10dp">
+
+        <ImageView
+            android:id="@+id/ivLeafDecorLeft"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:alpha="0.12"
+            android:contentDescription="@null"
+            android:rotation="-25"
+            android:src="@drawable/ic_flower"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/home_category_icon" />
+
+        <ImageView
+            android:id="@+id/ivLeafDecorRight"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:alpha="0.14"
+            android:contentDescription="@null"
+            android:rotation="18"
+            android:src="@drawable/ic_flower"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/home_category_icon" />
+
+        <View
+            android:id="@+id/vIconBlob"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_home_category_icon_blob"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/ivCategoryIcon"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_camera" />
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:contentDescription="@null"
+            app:layout_constraintBottom_toBottomOf="@id/vIconBlob"
+            app:layout_constraintEnd_toEndOf="@id/vIconBlob"
+            app:layout_constraintStart_toStartOf="@id/vIconBlob"
+            app:layout_constraintTop_toTopOf="@id/vIconBlob"
+            app:tint="@color/home_category_icon"
+            tools:src="@drawable/ic_gift" />
 
         <TextView
             android:id="@+id/tvCategoryName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="@font/be_vietnam_pro_semibold"
-            android:gravity="center"
-            android:maxLines="2"
             android:ellipsize="end"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:gravity="center"
+            android:lineSpacingExtra="1dp"
+            android:maxLines="2"
             android:textColor="@color/primary"
-            android:textSize="15sp"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivCategoryIcon"
-            tools:text="Chăm sóc da" />
+            app:layout_constraintTop_toBottomOf="@id/vIconBlob"
+            tools:text="Combo &amp; Bộ sản phẩm" />
 
         <TextView
             android:id="@+id/tvProductCount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:gravity="center"
             android:fontFamily="@font/be_vietnam_pro_regular"
             android:maxLines="1"
-            android:textColor="#434843"
+            android:textColor="#747C74"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvCategoryName"
-            tools:text="46 sản phẩm" />
+            tools:text="14 sản phẩm" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

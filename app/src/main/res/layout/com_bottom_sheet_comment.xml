@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:minHeight="400dp"
     android:orientation="vertical"
     android:background="@drawable/com_bg_post"
     app:behavior_hideable="true"
@@ -117,16 +118,15 @@
                     android:src="@drawable/img_avatar" />
             </androidx.cardview.widget.CardView>
 
-            <EditText
-                android:id="@+id/etComment"
+            <TextView
+                android:id="@+id/tvFakeCommentInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="12dp"
                 android:background="@drawable/com_bg_post_edit_text"
-                android:hint="Bạn nghĩ gì về nội dung này?"
-                android:textColorHint="#999999"
-                android:textColor="@color/primary"
+                android:text="Bạn nghĩ gì về nội dung này?"
+                android:textColor="#999999"
                 android:textSize="14sp"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="10dp" />
