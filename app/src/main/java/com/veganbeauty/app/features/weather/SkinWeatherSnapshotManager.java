@@ -3,18 +3,10 @@ package com.veganbeauty.app.features.weather;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.veganbeauty.app.data.local.ProfileSession;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-/** Lưu local + đồng bộ Firestore snapshot thời tiết hiện tại của user. */
+/** Lưu local snapshot thời tiết hiện tại của user (SharedPreferences). */
 public final class SkinWeatherSnapshotManager {
 
     private static final String PREFS = "RootieQuizPrefs";
-    private static final String DOC_ID = "current_weather";
 
     private SkinWeatherSnapshotManager() {
     }
@@ -118,96 +110,12 @@ public final class SkinWeatherSnapshotManager {
 
     public static void saveAndSync(Context context, Snapshot snapshot) {
         saveLocal(context, snapshot);
-        syncToFirestore(context, snapshot);
-    }
-
-    public static void syncToFirestore(Context context, Snapshot snapshot) {
-        try {
-            String userId = ProfileSession.getCurrentUserId(context);
-            if (userId == null || userId.trim().isEmpty() || "guest_user".equals(userId)) {
-                return;
-            }
-
-            Map<String, Object> data = new HashMap<>();
-            data.put("updatedAt", snapshot.updatedAt);
-            data.put("temperature", snapshot.temp);
-            data.put("humidity", snapshot.humidity);
-            data.put("uv", snapshot.uv);
-            data.put("pm25", snapshot.hasPm25 ? snapshot.pm25 : null);
-            data.put("usAqi", snapshot.usAqi > 0 ? snapshot.usAqi : null);
-            data.put("lat", snapshot.lat);
-            data.put("lng", snapshot.lng);
-            data.put("weatherCode", snapshot.weatherCode);
-            data.put("weatherSuccess", snapshot.weatherSuccess);
-            data.put("city", snapshot.city);
-            data.put("condition", snapshot.condition);
-            data.put("pm25Source", snapshot.pm25Source);
-            data.put("pm25Station", snapshot.pm25Station);
-
-            FirebaseFirestore.getInstance()
-                    .collection("users").document(userId)
-                    .collection("profile_data").document(DOC_ID)
-                    .set(data);
-        } catch (Exception e) {
-            android.util.Log.w("SkinWeatherSnapshot", "syncToFirestore failed", e);
-        }
     }
 
     public static void loadFromFirestore(Context context, OnSnapshotLoadedListener listener) {
-        try {
-            String userId = ProfileSession.getCurrentUserId(context);
-            if (userId == null || userId.trim().isEmpty() || "guest_user".equals(userId)) {
-                Snapshot local = loadLocal(context);
-                if (local != null) listener.onLoaded(local);
-                return;
-            }
-
-            FirebaseFirestore.getInstance()
-                    .collection("users").document(userId)
-                    .collection("profile_data").document(DOC_ID)
-                    .get()
-                    .addOnSuccessListener(document -> {
-                        if (!document.exists()) {
-                            Snapshot local = loadLocal(context);
-                            if (local != null) listener.onLoaded(local);
-                            return;
-                        }
-                        long remoteUpdatedAt = document.getLong("updatedAt") != null ? document.getLong("updatedAt") : 0L;
-                        Snapshot local = loadLocal(context);
-                        if (local != null && local.updatedAt >= remoteUpdatedAt) {
-                            listener.onLoaded(local);
-                            return;
-                        }
-
-                        Double pm25 = document.getDouble("pm25");
-                        Long usAqi = document.getLong("usAqi");
-                        Snapshot remote = new Snapshot(
-                                document.getDouble("temperature") != null ? document.getDouble("temperature") : 0,
-                                document.getLong("humidity") != null ? document.getLong("humidity").intValue() : 0,
-                                document.getDouble("uv") != null ? document.getDouble("uv") : 0,
-                                pm25 != null ? pm25 : -1,
-                                usAqi != null ? usAqi.intValue() : -1,
-                                document.getDouble("lat") != null ? document.getDouble("lat") : 0,
-                                document.getDouble("lng") != null ? document.getDouble("lng") : 0,
-                                document.getLong("weatherCode") != null ? document.getLong("weatherCode").intValue() : -1,
-                                document.getBoolean("weatherSuccess") != null && document.getBoolean("weatherSuccess"),
-                                pm25 != null,
-                                document.getString("city") != null ? document.getString("city") : "",
-                                document.getString("condition") != null ? document.getString("condition") : "",
-                                document.getString("pm25Source") != null ? document.getString("pm25Source") : "",
-                                document.getString("pm25Station") != null ? document.getString("pm25Station") : "",
-                                remoteUpdatedAt
-                        );
-                        saveLocal(context, remote);
-                        listener.onLoaded(remote);
-                    })
-                    .addOnFailureListener(e -> {
-                        Snapshot local = loadLocal(context);
-                        if (local != null) listener.onLoaded(local);
-                    });
-        } catch (Exception e) {
-            Snapshot local = loadLocal(context);
-            if (local != null) listener.onLoaded(local);
+        Snapshot local = loadLocal(context);
+        if (local != null) {
+            listener.onLoaded(local);
         }
     }
 

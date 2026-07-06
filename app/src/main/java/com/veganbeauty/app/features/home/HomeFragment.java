@@ -27,10 +27,10 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.VoucherEntity;
-import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.ProductRepository;
 import com.veganbeauty.app.databinding.HomeFragmentBinding;
 import com.veganbeauty.app.features.account.reward.AccountRewardFragment;
@@ -401,14 +401,12 @@ public class HomeFragment extends RootieFragment {
 
     private void setupVouchers() {
         binding.tvVoucherSeeAll.setOnClickListener(v -> navigateTo(new AccountVoucherFragment()));
-        loadVouchersFromFirebase();
+        loadVouchersFromLocal();
     }
 
-    private void loadVouchersFromFirebase() {
-        new FirestoreService().fetchVouchers(vouchers -> {
-            if (!isAdded() || binding == null) return;
-            bindVouchers(vouchers);
-        });
+    private void loadVouchersFromLocal() {
+        List<VoucherEntity> vouchers = new LocalJsonReader(requireContext()).getVouchers();
+        bindVouchers(vouchers);
     }
 
     private void bindVouchers(List<VoucherEntity> vouchers) {
@@ -733,7 +731,7 @@ public class HomeFragment extends RootieFragment {
         setupStreakWidget();
         setupQuizReminder();
         AccountSyncHelper.sync(requireContext(), null);
-        loadVouchersFromFirebase();
+        loadVouchersFromLocal();
     }
 
     @Override

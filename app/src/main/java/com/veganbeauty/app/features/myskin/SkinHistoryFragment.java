@@ -26,7 +26,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
-import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.databinding.SkinFragmentHistoryBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 
@@ -72,15 +72,15 @@ public class SkinHistoryFragment extends RootieFragment {
         setupListeners();
         setupFilters();
 
-        loadDataFromFirestore();
+        loadDataFromLocal();
     }
 
-    private void loadDataFromFirestore() {
+    private void loadDataFromLocal() {
         new Thread(() -> {
             try {
                 String currentUserId = ProfileSession.getUserId(requireContext());
-                FirestoreService firestoreService = new FirestoreService();
-                allHistory = firestoreService.getSkinHistory(currentUserId);
+                String email = ProfileSession.getEmail(requireContext());
+                allHistory = SkinHistoryLocalStore.getHistory(requireContext(), currentUserId, email);
                 currentHistory = allHistory;
 
                 if (getActivity() != null) {

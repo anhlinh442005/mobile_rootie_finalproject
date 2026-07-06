@@ -38,7 +38,7 @@ import java.util.Set;
 import kotlinx.coroutines.BuildersKt;
 import kotlinx.coroutines.Dispatchers;
 import androidx.lifecycle.LifecycleOwnerKt;
-import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.data.local.ProfileSession;
 
 public class SkinAllergyProfileFragment extends RootieFragment {
@@ -428,12 +428,12 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         
         LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) -> 
             BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
-                FirestoreService firestoreService = new FirestoreService();
-                JSONArray historyArrayFromFirestore = firestoreService.getSkinHistory(email);
+                JSONArray historyArrayFromLocal = SkinHistoryLocalStore.getHistory(
+                        requireContext(), ProfileSession.INSTANCE.getUserId(requireContext()), email);
                 
                 return BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
                     try {
-                        JSONArray historyArray = historyArrayFromFirestore;
+                        JSONArray historyArray = historyArrayFromLocal;
                         if (historyArray.length() == 0) {
                             String historyStr = prefs.getString("QUIZ_HISTORY_LIST", "[]");
                             if (historyStr == null) historyStr = "[]";

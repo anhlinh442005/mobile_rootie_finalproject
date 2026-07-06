@@ -25,7 +25,7 @@ import com.veganbeauty.app.databinding.QuizTestResultBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
-import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 
 import org.json.JSONArray;
@@ -698,10 +698,10 @@ public class QuizTestResultFragment extends RootieFragment {
             historyArray.put(newLog);
             prefs.edit().putString("QUIZ_HISTORY_LIST", historyArray.toString()).apply();
 
-            FirestoreService firestoreService = new FirestoreService();
             String email = ProfileSession.INSTANCE.getEmail(requireContext());
+            String userId = ProfileSession.INSTANCE.getUserId(requireContext());
             if (email != null && !email.isEmpty()) {
-                firestoreService.addSkinHistory(email, newLog);
+                SkinHistoryLocalStore.save(requireContext(), newLog, userId, email);
             }
         } catch (Exception e) { e.printStackTrace(); }
 

@@ -18,6 +18,7 @@ import com.veganbeauty.app.data.local.dao.CommunityDao;
 import com.veganbeauty.app.data.local.dao.OrderDao;
 import com.veganbeauty.app.data.local.dao.ProductDao;
 import com.veganbeauty.app.data.local.dao.RewardPointDao;
+import com.veganbeauty.app.data.local.dao.SkinHistoryDao;
 import com.veganbeauty.app.data.local.dao.StoreDao;
 import com.veganbeauty.app.data.local.dao.UserDao;
 import com.veganbeauty.app.data.local.dao.UserGiftDao;
@@ -32,6 +33,7 @@ import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.ReelEntity;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
+import com.veganbeauty.app.data.local.entities.SkinHistoryEntity;
 import com.veganbeauty.app.data.local.entities.StoreEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.entities.UserGiftEntity;
@@ -61,9 +63,10 @@ import java.util.UUID;
                 UserGiftEntity.class,
                 CartItemEntity.class,
                 StoreEntity.class,
-                UserProductExpiryEntity.class
+                UserProductExpiryEntity.class,
+                SkinHistoryEntity.class
         },
-        version = 38 // bumped after entity/schema changes
+        version = 39
 )
 
 @TypeConverters({ProductConverters.class})
@@ -78,6 +81,7 @@ public abstract class RootieDatabase extends RoomDatabase {
     public abstract UserDao userDao();
     public abstract StoreDao storeDao();
     public abstract UserProductExpiryDao userProductExpiryDao();
+    public abstract SkinHistoryDao skinHistoryDao();
 
     private static final String TAG = "RootieDatabase";
 

@@ -2,7 +2,6 @@ package com.veganbeauty.app.data.local;
 
 import android.content.Context;
 
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 
 import org.json.JSONArray;
@@ -131,17 +130,6 @@ public class UserMemoryManager {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(jsonString.getBytes(StandardCharsets.UTF_8));
             }
-            
-            executor.execute(() -> {
-                try {
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    java.util.Map<String, Object> data = new java.util.HashMap<>();
-                    data.put("handbookData", jsonString);
-                    db.collection("user_handbooks").document("test_001").set(data);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
         } catch (Exception e) {
             e.printStackTrace();
         }

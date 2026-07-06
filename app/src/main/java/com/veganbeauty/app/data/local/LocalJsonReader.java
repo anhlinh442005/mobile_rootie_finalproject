@@ -160,6 +160,91 @@ public class LocalJsonReader {
         }
     }
 
+    public List<com.veganbeauty.app.data.local.entities.VoucherEntity> getVouchers() {
+        List<com.veganbeauty.app.data.local.entities.VoucherEntity> vouchers = new ArrayList<>();
+        try {
+            String json = readAssetFile("vouchers.json");
+            if (json == null || json.trim().isEmpty()) {
+                return vouchers;
+            }
+            org.json.JSONArray array = new org.json.JSONArray(json);
+            for (int i = 0; i < array.length(); i++) {
+                org.json.JSONObject obj = array.getJSONObject(i);
+                String title = firstNonEmpty(obj, "title", "name", "tieu_de");
+                String code = firstNonEmpty(obj, "code", "voucherCode", "ma", "voucher_code");
+                if (title.isEmpty() || code.isEmpty()) {
+                    continue;
+                }
+                String type = firstNonEmpty(obj, "type");
+                if (type.isEmpty()) {
+                    type = "discount";
+                }
+                String category = firstNonEmpty(obj, "category", "loai");
+                if (category.isEmpty()) {
+                    category = mapVoucherTypeToCategory(type);
+                }
+                String expiryDate = firstNonEmpty(obj, "hsd", "expiryDate", "expiration");
+                String offerType = firstNonEmpty(obj, "offerType", "offer_type");
+                if (offerType.isEmpty()) {
+                    offerType = "fixed_amount";
+                }
+                long discountValue = obj.optLong("discountValue", obj.optLong("discount_value", obj.optLong("discount", 0)));
+                long minOrderValue = obj.optLong("minOrderValue", obj.optLong("min_order_value", obj.optLong("minOrder", 0)));
+                boolean active = !obj.has("isActive") || obj.optBoolean("isActive", obj.optBoolean("is_active", obj.optBoolean("active", true)));
+                if (!active) {
+                    continue;
+                }
+                Integer quantity = obj.has("quantity") && !obj.isNull("quantity") ? obj.optInt("quantity") : null;
+                vouchers.add(new com.veganbeauty.app.data.local.entities.VoucherEntity(
+                        firstNonEmpty(obj, "id", "_id"),
+                        title,
+                        firstNonEmpty(obj, "description", "content", "mo_ta"),
+                        code,
+                        category,
+                        type,
+                        obj.has("badge") && !obj.isNull("badge") ? obj.optString("badge") : null,
+                        expiryDate,
+                        offerType,
+                        discountValue,
+                        minOrderValue,
+                        true,
+                        obj.optInt("sortOrder", obj.optInt("sort_order", i)),
+                        quantity
+                ));
+            }
+            vouchers.sort((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return vouchers;
+    }
+
+    private static String firstNonEmpty(org.json.JSONObject obj, String... keys) {
+        for (String key : keys) {
+            String value = obj.optString(key, "");
+            if (value != null && !value.trim().isEmpty()) {
+                return value.trim();
+            }
+        }
+        return "";
+    }
+
+    private static String mapVoucherTypeToCategory(String type) {
+        if (type == null) {
+            return "Giảm giá";
+        }
+        switch (type.toLowerCase(Locale.ROOT)) {
+            case "freeship":
+            case "free_ship":
+            case "shipping":
+                return "Freeship";
+            case "gift":
+                return "Quà tặng";
+            default:
+                return "Giảm giá";
+        }
+    }
+
     public String getRawSkinBookingsJson() {
         return readAssetFile("skin_bookings.json");
     }

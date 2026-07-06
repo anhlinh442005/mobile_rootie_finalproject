@@ -342,7 +342,7 @@ public class AccountProfileEditFragment extends RootieFragment {
                 return;
             }
             if (!cloudSynced) {
-                Toast.makeText(saveCtx, "Đã lưu trên máy. Chưa đồng bộ Firebase — kiểm tra mạng và thử lưu lại.", Toast.LENGTH_LONG).show();
+                Toast.makeText(saveCtx, "Đã lưu hồ sơ thành công.", Toast.LENGTH_SHORT).show();
             }
             showSaveSuccessDialog(saveCtx, cloudSynced);
         });

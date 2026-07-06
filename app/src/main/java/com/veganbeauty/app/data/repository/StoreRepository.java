@@ -30,28 +30,14 @@ public class StoreRepository {
     }
 
     public void refreshStores() {
-        // Translation for suspend function logic.
         new Thread(() -> {
             try {
-                List<StoreEntity> remoteStores = firestoreService.fetchAllStores();
-                if (remoteStores != null && !remoteStores.isEmpty()) {
-                    storeDao.insertStores(remoteStores);
-                } else {
-                    List<StoreEntity> localStores = localJsonReader.getAllStores();
-                    if (localStores != null && !localStores.isEmpty()) {
-                        storeDao.insertStores(localStores);
-                    }
+                List<StoreEntity> localStores = localJsonReader.getAllStores();
+                if (localStores != null && !localStores.isEmpty()) {
+                    storeDao.insertStores(localStores);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                try {
-                    List<StoreEntity> localStores = localJsonReader.getAllStores();
-                    if (localStores != null && !localStores.isEmpty()) {
-                        storeDao.insertStores(localStores);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
             }
         }).start();
     }

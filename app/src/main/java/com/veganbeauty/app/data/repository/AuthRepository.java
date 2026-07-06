@@ -3,7 +3,6 @@ package com.veganbeauty.app.data.repository;
 import com.veganbeauty.app.data.local.dao.UserDao;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.LocalJsonReader;
-import com.veganbeauty.app.data.remote.FirestoreService;
 
 import android.content.Context;
 
@@ -30,16 +29,14 @@ public class AuthRepository {
             }
             return sb.toString();
         } catch (Exception e) {
-            return password; // Fallback, not secure but to keep it running if digest fails
+            return password;
         }
     }
 
-    // Making this synchronous for Java compatibility, you should call this in a background thread
     public UserEntity login(String emailOrPhone, String password) throws Exception {
         String hashedPassword = hashPassword(password);
         boolean isEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(emailOrPhone).matches();
 
-        // 1) Local Room trước — nhanh, hoạt động cả khi mạng chậm/offline
         UserEntity localUser = isEmail
                 ? userDao.getUserByEmailAndPasswordSync(emailOrPhone, hashedPassword)
                 : userDao.getUserByPhoneAndPasswordSync(emailOrPhone, hashedPassword);
@@ -62,22 +59,6 @@ public class AuthRepository {
             return assetUser;
         }
 
-        // 2) Firestore — fallback khi local chưa có hoặc mật khẩu đổi trên cloud
-        try {
-            FirestoreService firestoreService = new FirestoreService();
-            UserEntity firebaseUser = firestoreService.authenticateUser(emailOrPhone, hashedPassword, password, isEmail);
-            if (firebaseUser != null) {
-                try {
-                    userDao.insertUserSync(firebaseUser);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return firebaseUser;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         return null;
     }
 
@@ -97,7 +78,6 @@ public class AuthRepository {
         return null;
     }
 
-    // Making this synchronous for Java compatibility, you should call this in a background thread
     public Object register(String fullName, String email, String phone, String password) throws Exception {
         String normalizedEmail = email != null ? email.trim() : "";
         String normalizedPhone = phone != null ? phone.trim() : "";
@@ -111,26 +91,11 @@ public class AuthRepository {
             throw new Exception("Số điện thoại đã tồn tại.");
         }
 
-        FirestoreService firestoreService = new FirestoreService();
-        if (!normalizedEmail.isEmpty() && firestoreService.userExistsByEmail(normalizedEmail)) {
-            throw new Exception("Email đã tồn tại.");
-        }
-        if (!normalizedPhone.isEmpty() && firestoreService.userExistsByPhone(normalizedPhone)) {
-            throw new Exception("Số điện thoại đã tồn tại.");
-        }
-
         String userId = "test@example.com".equals(normalizedEmail) ? "test_001" : UUID.randomUUID().toString();
         String hashedPassword = hashPassword(password);
 
         UserEntity newUser = new UserEntity(userId, fullName.trim(), fullName.trim(), normalizedEmail, normalizedPhone, hashedPassword);
-
-        boolean savedToFirebase = firestoreService.saveUser(newUser);
-        if (!savedToFirebase) {
-            throw new Exception("Không thể lưu tài khoản lên Firebase. Vui lòng thử lại.");
-        }
-
         userDao.insertUserSync(newUser);
-
         return newUser;
     }
 }

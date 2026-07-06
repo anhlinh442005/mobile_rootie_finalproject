@@ -106,7 +106,7 @@ public class BookingFragment extends RootieFragment {
                 showBranchPicker();
             }
         });
-        loadBranchesFromFirebase();
+        loadBranchesFromLocal();
 
         List<BookingService> mockServices = Arrays.asList(
                 new BookingService("1", "Soi da cơ bản", "30 phút * Miễn phí", "30 phút"),
@@ -154,19 +154,18 @@ public class BookingFragment extends RootieFragment {
         });
     }
 
-    private void loadBranchesFromFirebase() {
+    private void loadBranchesFromLocal() {
         executor.execute(() -> {
-            List<StoreEntity> stores = new FirestoreService().fetchAllStores();
-            mainHandler.post(() -> {
-                branchList = stores != null ? stores : new ArrayList<>();
-            });
+            List<StoreEntity> stores = new LocalJsonReader(requireContext()).getAllStores();
+            List<StoreEntity> finalStores = stores != null ? stores : new ArrayList<>();
+            mainHandler.post(() -> branchList = finalStores);
         });
     }
 
     private void showBranchPicker() {
         if (branchList.isEmpty()) {
             Toast.makeText(getContext(), "Đang tải danh sách chi nhánh...", Toast.LENGTH_SHORT).show();
-            loadBranchesFromFirebase();
+            loadBranchesFromLocal();
             return;
         }
 

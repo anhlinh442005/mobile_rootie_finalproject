@@ -32,12 +32,12 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import android.view.ScaleGestureDetector;
 import android.view.MotionEvent;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.veganbeauty.app.BuildConfig;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.databinding.SkinFragmentScanResultBinding;
 import com.veganbeauty.app.utils.SkinHistoryIdHelper;
 
@@ -190,10 +190,10 @@ public class SkinScanResultFragment extends RootieFragment {
             Toast.makeText(requireContext(), "Lỗi khi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             return;
         }
-        executorService.execute(() -> saveToFirestore(userId, snapshot));
+        executorService.execute(() -> saveToLocal(userId, snapshot));
     }
 
-    private void saveToFirestore(String userId, JSONObject historyObj) {
+    private void saveToLocal(String userId, JSONObject historyObj) {
         try {
             String id = historyObj.optString("id", SkinHistoryIdHelper.generateId());
             historyObj.put("id", id);
@@ -202,18 +202,13 @@ public class SkinScanResultFragment extends RootieFragment {
                 historyObj.put("scanType", "Quét AI");
             }
 
-            FirebaseFirestore.getInstance().collection("skin_history").document(id)
-                    .set(toMapDeep(historyObj))
-                    .addOnSuccessListener(aVoid -> mainHandler.post(() -> {
-                        if (binding == null) return;
-                        binding.skinResultBtnSave.setEnabled(true);
-                        Toast.makeText(requireContext(), "Đã lưu kết quả phân tích vào Lịch sử!", Toast.LENGTH_SHORT).show();
-                    }))
-                    .addOnFailureListener(e -> mainHandler.post(() -> {
-                        if (binding == null) return;
-                        binding.skinResultBtnSave.setEnabled(true);
-                        Toast.makeText(requireContext(), "Lỗi khi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }));
+            String email = ProfileSession.getEmail(requireContext());
+            SkinHistoryLocalStore.save(requireContext(), historyObj, userId, email);
+            mainHandler.post(() -> {
+                if (binding == null) return;
+                binding.skinResultBtnSave.setEnabled(true);
+                Toast.makeText(requireContext(), "Đã lưu kết quả phân tích vào Lịch sử!", Toast.LENGTH_SHORT).show();
+            });
         } catch (Exception e) {
             e.printStackTrace();
             mainHandler.post(() -> {
@@ -222,36 +217,6 @@ public class SkinScanResultFragment extends RootieFragment {
                 Toast.makeText(requireContext(), "Lỗi khi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
         }
-    }
-
-    private Map<String, Object> toMapDeep(JSONObject json) throws org.json.JSONException {
-        Map<String, Object> map = new HashMap<>();
-        java.util.Iterator<String> keys = json.keys();
-        while(keys.hasNext()) {
-            String key = keys.next();
-            Object value = json.get(key);
-            if(value instanceof JSONObject) {
-                value = toMapDeep((JSONObject) value);
-            } else if(value instanceof JSONArray) {
-                value = toListDeep((JSONArray) value);
-            }
-            map.put(key, value);
-        }
-        return map;
-    }
-
-    private List<Object> toListDeep(JSONArray array) throws org.json.JSONException {
-        List<Object> list = new ArrayList<>();
-        for(int i = 0; i < array.length(); i++) {
-            Object value = array.get(i);
-            if(value instanceof JSONObject) {
-                value = toMapDeep((JSONObject) value);
-            } else if(value instanceof JSONArray) {
-                value = toListDeep((JSONArray) value);
-            }
-            list.add(value);
-        }
-        return list;
     }
 
     private void loadData() {

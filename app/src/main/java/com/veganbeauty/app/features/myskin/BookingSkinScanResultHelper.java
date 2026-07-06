@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 
@@ -34,18 +35,10 @@ final class BookingSkinScanResultHelper {
         String userId = ProfileSession.getUserId(context);
         String email = ProfileSession.getEmail(context);
 
-        JSONObject fromRemoteHistory = findInHistory(
-                new FirestoreService().getSkinHistory(userId), booking);
-        if (isValidScanResult(fromRemoteHistory)) {
-            return fromRemoteHistory;
-        }
-
-        if (!TextUtils.isEmpty(email) && !email.equals(userId)) {
-            JSONObject fromEmailHistory = findInHistory(
-                    new FirestoreService().getSkinHistory(email), booking);
-            if (isValidScanResult(fromEmailHistory)) {
-                return fromEmailHistory;
-            }
+        JSONObject fromLocalDbHistory = findInHistory(
+                SkinHistoryLocalStore.getHistory(context, userId, email), booking);
+        if (isValidScanResult(fromLocalDbHistory)) {
+            return fromLocalDbHistory;
         }
 
         JSONObject fromLocalHistory = findInHistory(
