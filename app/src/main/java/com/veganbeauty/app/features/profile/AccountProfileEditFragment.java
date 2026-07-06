@@ -532,7 +532,7 @@ public class AccountProfileEditFragment extends RootieFragment {
             ProfileSession.setAvatar(requireContext(), fileUri);
             loadAvatarImage(fileUri);
             ProfileUpdateNotifier.notifyUpdated();
-            uploadAvatarToCloud(Uri.parse(fileUri));
+            Toast.makeText(requireContext(), "Cập nhật ảnh đại diện thành công (Local)", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show();
         }
@@ -545,65 +545,13 @@ public class AccountProfileEditFragment extends RootieFragment {
             ProfileSession.setAvatar(requireContext(), fileUri);
             loadAvatarImage(fileUri);
             ProfileUpdateNotifier.notifyUpdated();
-            uploadAvatarToCloud(Uri.parse(fileUri));
+            Toast.makeText(requireContext(), "Cập nhật ảnh đại diện thành công (Local)", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void uploadAvatarToCloud(Uri fileUri) {
-        Context context = requireContext();
-        Toast.makeText(context, "Đang tải ảnh đại diện lên cloud...", Toast.LENGTH_LONG).show();
 
-        avatarUploadFinished = false;
-        if (avatarUploadTimeoutRunnable != null) {
-            mainHandler.removeCallbacks(avatarUploadTimeoutRunnable);
-        }
-        avatarUploadTimeoutRunnable = () -> {
-            if (!avatarUploadFinished) {
-                Toast.makeText(
-                        context.getApplicationContext(),
-                        "Upload avatar quá lâu (60 giây). Kiểm tra Wi‑Fi và thử lại.",
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        };
-        mainHandler.postDelayed(avatarUploadTimeoutRunnable, 60_000);
-
-        SyncDataHelper.uploadAndSyncAvatar(
-                context,
-                fileUri,
-                (success, secureUrl, errorMessage) -> {
-                    avatarUploadFinished = true;
-                    if (avatarUploadTimeoutRunnable != null) {
-                        mainHandler.removeCallbacks(avatarUploadTimeoutRunnable);
-                    }
-                    notifyAvatarUploadResult(context, success, secureUrl, errorMessage);
-                });
-    }
-
-    private void notifyAvatarUploadResult(
-            Context context, boolean success, @Nullable String secureUrl, @Nullable String errorMessage) {
-        Context toastCtx = context.getApplicationContext();
-        if (success && secureUrl != null) {
-            ProfileSession.setAvatar(context, secureUrl);
-            if (binding != null && isAdded()) {
-                loadAvatarImage(secureUrl);
-            }
-            Toast.makeText(toastCtx, "Cập nhật avatar thành công!", Toast.LENGTH_LONG).show();
-            if (errorMessage != null && !errorMessage.isEmpty()) {
-                Toast.makeText(toastCtx, errorMessage, Toast.LENGTH_LONG).show();
-            }
-        } else {
-            String message = errorMessage != null && !errorMessage.isEmpty()
-                    ? errorMessage
-                    : "Không thể tải avatar lên cloud. Ảnh vẫn được lưu trên máy.";
-            Toast.makeText(toastCtx, message, Toast.LENGTH_LONG).show();
-            if (binding != null && isAdded()) {
-                loadAvatarImage(ProfileSessionHelper.getAccountProfileAvatarUrl(context));
-            }
-        }
-    }
 
     @Override
     public void onResume() {

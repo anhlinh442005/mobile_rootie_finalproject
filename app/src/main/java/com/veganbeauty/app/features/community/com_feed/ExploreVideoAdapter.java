@@ -63,6 +63,14 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
         currentPosition = position;
     }
 
+    public void setSavedVideoIds(Set<String> ids) {
+        savedVideoIds.clear();
+        if (ids != null) {
+            savedVideoIds.addAll(ids);
+        }
+        notifyDataSetChanged();
+    }
+
     public void updateData(List<YtVideoEntity> newVideos) {
         this.videos.clear();
         if (newVideos != null) {
@@ -161,7 +169,9 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
         private final TextView tvSaveCount;
         private final TextView tvShareCount;
         private final ImageView ivLike;
+        private final ImageView ivComment;
         private final ImageView ivBigHeart;
+        private final ImageView ivShare;
 
         private final Handler doubleTapHandler = new Handler(Looper.getMainLooper());
         private boolean isDoubleTapping = false;
@@ -185,7 +195,9 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             tvSaveCount = itemView.findViewById(R.id.tvBookmarkCount);
             tvShareCount = itemView.findViewById(R.id.tvShareCount);
             ivLike = itemView.findViewById(R.id.ivLike);
+            ivComment = itemView.findViewById(R.id.ivComment);
             ivBigHeart = itemView.findViewById(R.id.ivBigHeart);
+            ivShare = itemView.findViewById(R.id.ivShare);
         }
 
         public void bind(YtVideoEntity video, boolean autoPlay) {
@@ -350,13 +362,62 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             boolean isLiked = likedVideoIds.contains(video.getId());
             boolean isSaved = savedVideoIds.contains(video.getId());
 
-            int displayLikes = video.getLikesCount() + (isLiked ? 1 : 0);
-            int displaySaves = (video.getLikesCount() / 5) + (isSaved ? 1 : 0);
+            int displayLikes = (isLiked ? 1 : 0);
+            int displayComments = getRealCommentCount(video.getId());
+            int displaySaves = (isSaved ? 1 : 0);
+            int displayShares = 0;
 
-            tvLikeCount.setText(formatCount(displayLikes));
-            tvCommentCount.setText(formatCount(video.getLikesCount() / 10));
-            tvSaveCount.setText(formatCount(displaySaves));
-            tvShareCount.setText(formatCount(video.getLikesCount() / 20));
+            tvLikeCount.setText(String.valueOf(displayLikes));
+            tvCommentCount.setText(String.valueOf(displayComments));
+            tvSaveCount.setText(String.valueOf(displaySaves));
+            tvShareCount.setText(String.valueOf(displayShares));
+
+            // Update icon states
+            if (ivLike != null) {
+                ivLike.setImageResource(R.drawable.ic_heart_filled);
+                if (isLiked) {
+                    ivLike.setColorFilter(android.graphics.Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
+                } else {
+                    ivLike.clearColorFilter();
+                }
+            }
+            ImageView ivSave = itemView.findViewById(R.id.ivSave);
+            if (ivSave != null) {
+                ivSave.setImageResource(R.drawable.ic_save_full);
+                if (isSaved) {
+                    ivSave.setColorFilter(android.graphics.Color.parseColor("#EEDB5B"), android.graphics.PorterDuff.Mode.SRC_IN);
+                } else {
+                    ivSave.clearColorFilter();
+                }
+            }
+        }
+
+        private int getRealCommentCount(String videoId) {
+            try {
+                java.io.File file = new java.io.File(itemView.getContext().getFilesDir(), "local_comments.json");
+                if (!file.exists()) return 0;
+                
+                StringBuilder sb = new StringBuilder();
+                java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+                br.close();
+                
+                org.json.JSONArray allComments = new org.json.JSONArray(sb.toString());
+                int count = 0;
+                for (int i = 0; i < allComments.length(); i++) {
+                    org.json.JSONObject comment = allComments.getJSONObject(i);
+                    if (videoId.equals(comment.optString("post_id"))) {
+                        count++;
+                    }
+                }
+                return count;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return 0;
         }
 
         private String formatCount(int count) {
@@ -370,20 +431,180 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
         }
 
         private void setupInteractions(YtVideoEntity video) {
-            if (clickZone == null) return;
-            clickZone.setOnClickListener(v -> {
-                if (isDoubleTapping) {
-                    handleDoubleTap(video);
-                    isDoubleTapping = false;
-                    doubleTapHandler.removeCallbacksAndMessages(null);
-                } else {
-                    isDoubleTapping = true;
-                    doubleTapHandler.postDelayed(() -> {
+            if (ivShare != null) {
+                ivShare.setOnClickListener(v -> {
+                    android.content.Context ctx = itemView.getContext();
+                    if (ctx instanceof androidx.appcompat.app.AppCompatActivity) {
+                        androidx.appcompat.app.AppCompatActivity activity = (androidx.appcompat.app.AppCompatActivity) ctx;
+                        CommunityShareBottomSheet shareSheet = CommunityShareBottomSheet.newInstance(video.getId(), video.getUrl());
+                        shareSheet.show(activity.getSupportFragmentManager(), CommunityShareBottomSheet.TAG);
+                    }
+                });
+
+                ivShare.setOnLongClickListener(v -> {
+                    android.content.Context ctx = itemView.getContext();
+                    View popupView = LayoutInflater.from(ctx).inflate(R.layout.com_popup_share_video, null);
+                    android.widget.PopupWindow popupWindow = new android.widget.PopupWindow(popupView,
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                    popupWindow.setElevation(10f);
+                    popupWindow.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+                    TextView tvRepostVideo = popupView.findViewById(R.id.tvRepostVideo);
+                    TextView tvViewReposts = popupView.findViewById(R.id.tvViewReposts);
+
+                    tvRepostVideo.setOnClickListener(v1 -> {
+                        popupWindow.dismiss();
+                        if (listener != null) listener.onShareClick(video);
+                        android.widget.Toast.makeText(ctx, "Đã đăng lại video", android.widget.Toast.LENGTH_SHORT).show();
+                    });
+
+                    tvViewReposts.setOnClickListener(v2 -> {
+                        popupWindow.dismiss();
+                        if (itemView.getContext() instanceof androidx.fragment.app.FragmentActivity) {
+                            androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView.getContext();
+                            ExploreSearchFragment fragment = new ExploreSearchFragment();
+                            android.os.Bundle args = new android.os.Bundle();
+                            args.putBoolean("SAVED_MODE", true);
+                            fragment.setArguments(args);
+                            activity.getSupportFragmentManager().beginTransaction()
+                                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                                    .replace(R.id.main_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    });
+
+                    popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                    int popupWidth = popupView.getMeasuredWidth();
+                    int xOffset = -(popupWidth - ivShare.getWidth()); 
+                    int yOffset = 0; 
+                    popupWindow.showAsDropDown(ivShare, xOffset, yOffset);
+
+                    return true;
+                });
+            }
+
+            if (ivLike != null) {
+                ivLike.setOnClickListener(v -> {
+                    boolean isLiked = likedVideoIds.contains(video.getId());
+                    if (isLiked) {
+                        likedVideoIds.remove(video.getId());
+                    } else {
+                        likedVideoIds.add(video.getId());
+                        if (ivBigHeart != null) {
+                            ivBigHeart.setVisibility(View.VISIBLE);
+                            ivBigHeart.setAlpha(1f);
+                            ivBigHeart.animate().alpha(0f).setDuration(600).withEndAction(() ->
+                                    ivBigHeart.setVisibility(View.INVISIBLE)).start();
+                        }
+                    }
+                    setupEngagementStats(video);
+                    if (listener != null) listener.onLikeClick(video, !isLiked);
+                });
+            }
+
+            if (clickZone != null) {
+                clickZone.setOnClickListener(v -> {
+                    if (isDoubleTapping) {
+                        handleDoubleTap(video);
                         isDoubleTapping = false;
-                        togglePlayPause();
-                    }, 300);
-                }
-            });
+                        doubleTapHandler.removeCallbacksAndMessages(null);
+                    } else {
+                        isDoubleTapping = true;
+                        doubleTapHandler.postDelayed(() -> {
+                            isDoubleTapping = false;
+                            togglePlayPause();
+                        }, 300);
+                    }
+                });
+            }
+
+            if (ivComment != null) {
+                ivComment.setOnClickListener(v -> {
+                    if (itemView.getContext() instanceof androidx.fragment.app.FragmentActivity) {
+                        androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView.getContext();
+                        CommunityCommentBottomSheet bottomSheet = CommunityCommentBottomSheet.newInstance(video.getId(), getRealCommentCount(video.getId()));
+                        bottomSheet.setOnDismissListener(() -> {
+                            setupEngagementStats(video);
+                        });
+                        bottomSheet.show(activity.getSupportFragmentManager(), CommunityCommentBottomSheet.TAG);
+                    }
+                    if (listener != null) listener.onCommentClick(video);
+                });
+            }
+
+            ImageView ivSave = itemView.findViewById(R.id.ivSave);
+            if (ivSave != null) {
+                ivSave.setOnClickListener(v -> {
+                    boolean isSaved = savedVideoIds.contains(video.getId());
+                    if (isSaved) {
+                        savedVideoIds.remove(video.getId());
+                    } else {
+                        savedVideoIds.add(video.getId());
+                    }
+                    setupEngagementStats(video);
+                    if (listener != null) listener.onSaveClick(video, !isSaved);
+                });
+
+                ivSave.setOnLongClickListener(v -> {
+                    android.content.Context ctx = itemView.getContext();
+                    View popupView = LayoutInflater.from(ctx).inflate(R.layout.com_popup_save_video, null);
+                    android.widget.PopupWindow popupWindow = new android.widget.PopupWindow(popupView,
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                    // To make elevation/shadow work
+                    popupWindow.setElevation(10f);
+                    popupWindow.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+                    TextView tvSaveVideo = popupView.findViewById(R.id.tvSaveVideo);
+                    TextView tvViewSaved = popupView.findViewById(R.id.tvViewSaved);
+
+                    if (savedVideoIds.contains(video.getId())) {
+                        tvSaveVideo.setText("Bỏ lưu video");
+                    } else {
+                        tvSaveVideo.setText("Lưu video");
+                    }
+
+                    tvSaveVideo.setOnClickListener(v1 -> {
+                        popupWindow.dismiss();
+                        boolean isSaved = savedVideoIds.contains(video.getId());
+                        if (isSaved) {
+                            savedVideoIds.remove(video.getId());
+                            if (listener != null) listener.onSaveClick(video, false);
+                        } else {
+                            savedVideoIds.add(video.getId());
+                            if (listener != null) listener.onSaveClick(video, true);
+                        }
+                        setupEngagementStats(video);
+                    });
+
+                    tvViewSaved.setOnClickListener(v2 -> {
+                        popupWindow.dismiss();
+                        if (itemView.getContext() instanceof androidx.fragment.app.FragmentActivity) {
+                            androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) itemView.getContext();
+                            ExploreSearchFragment fragment = new ExploreSearchFragment();
+                            android.os.Bundle args = new android.os.Bundle();
+                            args.putBoolean("SAVED_MODE", true);
+                            fragment.setArguments(args);
+                            activity.getSupportFragmentManager().beginTransaction()
+                                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                                    .replace(R.id.main_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    });
+
+                    // Show it below the icon
+                    popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                    int popupWidth = popupView.getMeasuredWidth();
+                    int xOffset = -(popupWidth - ivSave.getWidth()); // align right edge roughly
+                    int yOffset = 0; // show below
+                    popupWindow.showAsDropDown(ivSave, xOffset, yOffset);
+
+                    return true;
+                });
+            }
         }
 
         private void handleDoubleTap(YtVideoEntity video) {

@@ -136,15 +136,15 @@
         android:layout_marginBottom="76dp">
 
         <FrameLayout
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginBottom="16dp">
 
             <androidx.cardview.widget.CardView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="end|top"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@android:color/white">
 
@@ -161,8 +161,8 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="start|bottom"
-                android:layout_marginStart="10dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="4dp"
                 android:src="@drawable/ic_add"
                 app:tint="@android:color/white"
                 android:background="@drawable/com_bg_add_circle"
@@ -172,15 +172,15 @@
         <!-- Like -->
         <ImageView
             android:id="@+id/ivLike"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_heart"
-            app:tint="@android:color/white" />
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/ic_heart_filled"
+            app:tint="#EAF0E6" />
         <TextView
             android:id="@+id/tvLikesCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="#EAF0E6"
             android:textSize="12sp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp"
@@ -188,15 +188,16 @@
 
         <!-- Comment -->
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_comment"
-            app:tint="@android:color/white" />
+            android:id="@+id/ivComment"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/ic_chat"
+            app:tint="#EAF0E6" />
         <TextView
             android:id="@+id/tvCommentsCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="#EAF0E6"
             android:textSize="12sp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp"
@@ -204,15 +205,16 @@
 
         <!-- Bookmark -->
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_save"
-            app:tint="@android:color/white" />
+            android:id="@+id/ivSave"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/ic_save_full"
+            app:tint="#EAF0E6" />
         <TextView
             android:id="@+id/tvBookmarkCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="#EAF0E6"
             android:textSize="12sp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp"
@@ -220,15 +222,16 @@
 
         <!-- Share -->
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_plane"
-            app:tint="@android:color/white" />
+            android:id="@+id/ivShare"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/ic_plane_full"
+            app:tint="#EAF0E6" />
         <TextView
             android:id="@+id/tvShareCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="#EAF0E6"
             android:textSize="12sp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="24dp"
@@ -237,9 +240,9 @@
         <!-- Rotating Disc -->
         <androidx.cardview.widget.CardView
             android:id="@+id/ivDiscContainer"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="20dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
             app:cardBackgroundColor="@color/nav_icon_color"
             app:cardElevation="0dp">
 
@@ -247,7 +250,7 @@
                 android:id="@+id/ivDisc"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="8dp"
+                android:layout_margin="6dp"
                 android:scaleType="centerCrop"
                 app:tint="@color/primary"
                 android:src="@drawable/logo" />

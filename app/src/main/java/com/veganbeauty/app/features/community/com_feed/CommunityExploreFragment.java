@@ -62,7 +62,81 @@ public class CommunityExploreFragment extends RootieFragment {
 
     private CommunityViewModel viewModel;
 
-    private ExploreVideoAdapter exploreAdapter = new ExploreVideoAdapter(new ArrayList<>(), null);
+    private ExploreVideoAdapter exploreAdapter = new ExploreVideoAdapter(new ArrayList<>(), new ExploreVideoAdapter.OnVideoInteractionListener() {
+
+        @Override
+        public void onCommentClick(YtVideoEntity video) {
+            // Handled internally by ExploreVideoAdapter to avoid full adapter refresh
+        }
+
+        @Override
+        public void onShareClick(YtVideoEntity video) {
+            saveToLocalPrefs(video, true, "reposted_videos_prefs", "reposted_videos");
+        }
+
+        @Override
+        public void onLikeClick(YtVideoEntity video, boolean isLiked) {
+            saveToLocalPrefs(video, isLiked, "liked_videos_prefs", "liked_videos");
+        }
+
+        private void saveToLocalPrefs(YtVideoEntity video, boolean isAdd, String prefName, String keyName) {
+            if (video == null || video.getId() == null) return;
+            try {
+                android.content.SharedPreferences prefs = requireContext().getSharedPreferences(prefName, android.content.Context.MODE_PRIVATE);
+                org.json.JSONArray savedArray;
+                String savedData = prefs.getString(keyName, "[]");
+                savedArray = new org.json.JSONArray(savedData);
+                
+                if (isAdd) {
+                    boolean exists = false;
+                    for (int i = 0; i < savedArray.length(); i++) {
+                        org.json.JSONObject obj = savedArray.getJSONObject(i);
+                        if (video.getId().equals(obj.optString("id"))) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        org.json.JSONObject newVideo = new org.json.JSONObject();
+                        newVideo.put("id", video.getId());
+                        newVideo.put("url", video.getUrl());
+                        newVideo.put("title", video.getTitle());
+                        newVideo.put("description", video.getDescription());
+                        newVideo.put("avatar_url", video.getAvatarUrl());
+                        newVideo.put("username", video.getUsername());
+                        newVideo.put("type", video.getType());
+                        newVideo.put("likes_count", video.getLikesCount());
+                        newVideo.put("comments_count", video.getCommentsCount());
+                        newVideo.put("share_count", video.getShareCount());
+                        savedArray.put(newVideo);
+                    }
+                } else {
+                    org.json.JSONArray newArray = new org.json.JSONArray();
+                    for (int i = 0; i < savedArray.length(); i++) {
+                        org.json.JSONObject obj = savedArray.getJSONObject(i);
+                        if (!video.getId().equals(obj.optString("id"))) {
+                            newArray.put(obj);
+                        }
+                    }
+                    savedArray = newArray;
+                }
+                prefs.edit().putString(keyName, savedArray.toString()).apply();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onSaveClick(YtVideoEntity video, boolean isSaved) {
+            saveToLocalPrefs(video, isSaved, "saved_videos_prefs", "saved_videos");
+        }
+
+        @Override
+        public void onProfileClick(String username) {}
+
+        @Override
+        public void onProductClick(YtVideoEntity video) {}
+    });
 
 
 
@@ -219,19 +293,25 @@ public class CommunityExploreFragment extends RootieFragment {
 
 
     @Override
-
     protected void setupUI(@NonNull View view) {
-
         int navMargin = getResources().getDimensionPixelSize(R.dimen.com_content_padding_bottom);
-
         int compactMargin = getResources().getDimensionPixelSize(R.dimen.com_explore_content_margin_bottom_compact);
-
         exploreAdapter.setBottomMargins(navMargin, compactMargin);
 
-
+        // Load saved videos
+        try {
+            android.content.SharedPreferences prefs = requireContext().getSharedPreferences("saved_videos_prefs", android.content.Context.MODE_PRIVATE);
+            org.json.JSONArray savedArray = new org.json.JSONArray(prefs.getString("saved_videos", "[]"));
+            java.util.Set<String> savedIds = new java.util.HashSet<>();
+            for (int i = 0; i < savedArray.length(); i++) {
+                savedIds.add(savedArray.getJSONObject(i).optString("id"));
+            }
+            exploreAdapter.setSavedVideoIds(savedIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         _binding.viewPagerExplore.setAdapter(exploreAdapter);
-
         _binding.viewPagerExplore.setOffscreenPageLimit(1);
 
 

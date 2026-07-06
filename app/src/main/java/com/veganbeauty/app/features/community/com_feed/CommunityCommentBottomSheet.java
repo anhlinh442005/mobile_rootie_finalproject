@@ -118,6 +118,23 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
     private static final String ARG_COMMENTS_COUNT = "comments_count";
     private static final String ARG_TARGET_COMMENT_ID = "target_comment_id";
 
+    public interface OnBottomSheetDismissListener {
+        void onDismiss();
+    }
+    private OnBottomSheetDismissListener dismissListener;
+
+    public void setOnDismissListener(OnBottomSheetDismissListener listener) {
+        this.dismissListener = listener;
+    }
+
+    @Override
+    public void onDismiss(@NonNull android.content.DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (dismissListener != null) {
+            dismissListener.onDismiss();
+        }
+    }
+
     public static CommunityCommentBottomSheet newInstance(String postId, int commentsCount) {
         return newInstance(postId, commentsCount, null);
     }
@@ -141,6 +158,21 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
+    @NonNull
+    @Override
+    public android.app.Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        android.app.Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.setOnShowListener(dialogInterface -> {
+            com.google.android.material.bottomsheet.BottomSheetDialog d = (com.google.android.material.bottomsheet.BottomSheetDialog) dialogInterface;
+            View bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                com.google.android.material.bottomsheet.BottomSheetBehavior<?> behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(bottomSheet);
+                d.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+            }
+        });
+        return dialog;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -150,6 +182,21 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        view.post(() -> {
+            View parent = (View) view.getParent();
+            ViewGroup.LayoutParams layoutParams = parent.getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            parent.setLayoutParams(layoutParams);
+
+            com.google.android.material.bottomsheet.BottomSheetBehavior<?> behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(parent);
+            int targetHeight = (int) (getResources().getDisplayMetrics().heightPixels * 0.65);
+            try {
+                behavior.setMaxHeight(targetHeight);
+            } catch (Exception e) {}
+            behavior.setPeekHeight(targetHeight);
+            behavior.setState(com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED);
+        });
 
         RecyclerView rvComments = view.findViewById(R.id.rvComments);
         rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -167,20 +214,22 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
             com.bumptech.glide.Glide.with(context).load(myAvatar).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(ivMyAvatar);
         }
 
+        TextView tvFakeCommentInput = view.findViewById(R.id.tvFakeCommentInput);
+
+        Runnable[] refreshCommentsHolder = new Runnable[1];
+
         OnCommentReplyListener replyListener = (commentId, userId, username) -> {
             replyingToCommentId = commentId;
             replyingToUserId = userId;
             replyingToUsername = username;
-            if (etComment != null) {
-                etComment.setText("@" + username + " ");
-                etComment.setSelection(etComment.getText().length());
-                etComment.requestFocus();
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm != null) {
-                    imm.showSoftInput(etComment, InputMethodManager.SHOW_IMPLICIT);
-                }
-            }
+            showInputOverlay(context, "@" + username + " ", refreshCommentsHolder[0]);
         };
+
+        if (tvFakeCommentInput != null) {
+            tvFakeCommentInput.setOnClickListener(v -> {
+                showInputOverlay(context, "", refreshCommentsHolder[0]);
+            });
+        }
 
         Runnable refreshComments = () -> {
             List<CommentItem> refreshed = loadCommentsList(context);
@@ -198,9 +247,11 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                 } else {
                     rvComments.getAdapter().notifyDataSetChanged();
                 }
+                rvComments.scrollToPosition(commentsList.size() - 1);
                 if (tvCommentCount != null) tvCommentCount.setText(commentsList.size() + " bình luận");
             }
         };
+        refreshCommentsHolder[0] = refreshComments;
 
         if (commentsList.isEmpty()) {
             if (tvEmptyComments != null) tvEmptyComments.setVisibility(View.VISIBLE);
@@ -236,28 +287,60 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
             }
         }
 
-        int[] emojiIds = {R.id.tvEmoji1, R.id.tvEmoji2, R.id.tvEmoji3, R.id.tvEmoji4, R.id.tvEmoji5, R.id.tvEmoji6, R.id.tvEmoji7, R.id.tvEmoji8};
-        for (int emojiId : emojiIds) {
-            TextView emojiView = view.findViewById(emojiId);
-            if (emojiView != null) {
-                emojiView.setOnClickListener(v -> {
-                    if (etComment != null) {
-                        etComment.append(emojiView.getText());
-                        etComment.requestFocus();
-                    }
-                });
-            }
-        }
-
         ImageView ivSendComment = view.findViewById(R.id.ivSendComment);
         if (ivSendComment != null) {
             ivSendComment.setOnClickListener(v -> dismiss());
         }
+    }
 
-        ImageView ivSubmitComment = view.findViewById(R.id.ivSubmitComment);
+    private void showInputOverlay(Context context, String initialText, Runnable refreshComments) {
+        android.app.Dialog dialog = new android.app.Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
+        dialog.setContentView(R.layout.com_dialog_comment_input);
+        
+        android.view.Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+
+        View viewDismiss = dialog.findViewById(R.id.viewDismiss);
+        EditText etComment = dialog.findViewById(R.id.etComment);
+        ImageView ivMyAvatar = dialog.findViewById(R.id.ivMyAvatar);
+        ImageView ivSubmitComment = dialog.findViewById(R.id.ivSubmitComment);
+
+        String myAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(context);
+        if (ivMyAvatar != null) {
+            com.bumptech.glide.Glide.with(context).load(myAvatar).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(ivMyAvatar);
+        }
+
+        if (initialText != null && !initialText.isEmpty()) {
+            etComment.setText(initialText);
+            etComment.setSelection(initialText.length());
+        }
+
+        if (viewDismiss != null) {
+            viewDismiss.setOnClickListener(v -> {
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(etComment.getWindowToken(), 0);
+                }
+                dialog.dismiss();
+            });
+        }
+
+        int[] emojiIds = {R.id.tvEmoji1, R.id.tvEmoji2, R.id.tvEmoji3, R.id.tvEmoji4, R.id.tvEmoji5, R.id.tvEmoji6, R.id.tvEmoji7, R.id.tvEmoji8};
+        for (int emojiId : emojiIds) {
+            TextView emojiView = dialog.findViewById(emojiId);
+            if (emojiView != null) {
+                emojiView.setOnClickListener(v -> {
+                    etComment.append(emojiView.getText());
+                    etComment.requestFocus();
+                });
+            }
+        }
 
         View.OnClickListener submitAction = v -> {
-            String text = etComment != null ? etComment.getText().toString().trim() : "";
+            String text = etComment.getText().toString().trim();
             if (text.isEmpty() || postId == null) {
                 return;
             }
@@ -299,15 +382,12 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
             replyingToCommentId = null;
             replyingToUserId = null;
             replyingToUsername = null;
-            if (etComment != null) {
-                etComment.setText("");
-                etComment.setHint("Bạn nghĩ gì về nội dung này?");
-            }
-
+            
             InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null && etComment != null) {
+            if (imm != null) {
                 imm.hideSoftInputFromWindow(etComment.getWindowToken(), 0);
             }
+            dialog.dismiss();
 
             new Thread(() -> {
                 try {
@@ -351,26 +431,26 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(refreshComments);
-                }
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(refreshComments);
             }).start();
         };
 
-        if (etComment != null) {
-            etComment.setOnEditorActionListener((v, actionId, event) -> {
-                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND ||
-                        (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    submitAction.onClick(v);
-                    return true;
-                }
-                return false;
-            });
-        }
+        etComment.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND ||
+                    (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                submitAction.onClick(v);
+                return true;
+            }
+            return false;
+        });
 
         if (ivSubmitComment != null) {
             ivSubmitComment.setOnClickListener(submitAction);
         }
+        
+        dialog.show();
+        
+        etComment.requestFocus();
     }
 
     private List<CommentItem> loadCommentsList(Context context) {
