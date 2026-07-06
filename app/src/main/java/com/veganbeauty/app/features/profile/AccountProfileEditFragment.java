@@ -13,6 +13,8 @@ import android.text.TextWatcher;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -54,6 +56,10 @@ public class AccountProfileEditFragment extends RootieFragment {
     private AccountProfileEditBinding binding;
     private boolean isSavingProfile;
     private boolean hasUnsavedChanges;
+    private boolean avatarUploadFinished;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    @Nullable
+    private Runnable avatarUploadTimeoutRunnable;
 
     private final ProfileUpdateNotifier.Listener profileUpdateListener = () -> {
         if (binding != null && isAdded() && !hasUnsavedChanges) {
@@ -333,13 +339,13 @@ public class AccountProfileEditFragment extends RootieFragment {
                 return;
             }
             if (!cloudSynced) {
-                Toast.makeText(saveCtx, "Đã lưu hồ sơ. Đồng bộ cloud sẽ thử lại khi có mạng.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(saveCtx, "Đã lưu trên máy. Chưa đồng bộ Firebase — kiểm tra mạng và thử lưu lại.", Toast.LENGTH_LONG).show();
             }
-            showSaveSuccessDialog(saveCtx);
+            showSaveSuccessDialog(saveCtx, cloudSynced);
         });
     }
 
-    private void showSaveSuccessDialog(Context saveCtx) {
+    private void showSaveSuccessDialog(Context saveCtx, boolean cloudSynced) {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_save_profile_success, null);
         AlertDialog dialog = new AlertDialog.Builder(saveCtx)
                 .setView(dialogView)
@@ -553,25 +559,54 @@ public class AccountProfileEditFragment extends RootieFragment {
 
         Toast.makeText(context, "Đang tải ảnh đại diện lên Cloudinary...", Toast.LENGTH_LONG).show();
 
+        avatarUploadFinished = false;
+        if (avatarUploadTimeoutRunnable != null) {
+            mainHandler.removeCallbacks(avatarUploadTimeoutRunnable);
+        }
+        avatarUploadTimeoutRunnable = () -> {
+            if (!avatarUploadFinished) {
+                Toast.makeText(
+                        context.getApplicationContext(),
+                        "Upload avatar quá lâu (60 giây). Kiểm tra Wi‑Fi và thử lại.",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        };
+        mainHandler.postDelayed(avatarUploadTimeoutRunnable, 60_000);
+
         SyncDataHelper.uploadAndSyncAvatar(
                 context,
                 fileUri,
                 (success, secureUrl, errorMessage) -> {
-                    if (!isAdded() || getActivity() == null) {
-                        return;
+                    avatarUploadFinished = true;
+                    if (avatarUploadTimeoutRunnable != null) {
+                        mainHandler.removeCallbacks(avatarUploadTimeoutRunnable);
                     }
-                    if (success && secureUrl != null) {
-                        loadAvatarImage(secureUrl);
-                        Toast.makeText(context, "Cập nhật avatar thành công!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        String message =
-                                errorMessage != null
-                                        ? errorMessage
-                                        : "Không thể tải avatar lên cloud. Ảnh vẫn được lưu trên máy.";
-                        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-                        loadAvatarImage(ProfileSessionHelper.getAccountProfileAvatarUrl(context));
-                    }
+                    notifyAvatarUploadResult(context, success, secureUrl, errorMessage);
                 });
+    }
+
+    private void notifyAvatarUploadResult(
+            Context context, boolean success, @Nullable String secureUrl, @Nullable String errorMessage) {
+        Context toastCtx = context.getApplicationContext();
+        if (success && secureUrl != null) {
+            ProfileSession.setAvatar(context, secureUrl);
+            if (binding != null && isAdded()) {
+                loadAvatarImage(secureUrl);
+            }
+            Toast.makeText(toastCtx, "Cập nhật avatar thành công!", Toast.LENGTH_LONG).show();
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                Toast.makeText(toastCtx, errorMessage, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            String message = errorMessage != null && !errorMessage.isEmpty()
+                    ? errorMessage
+                    : "Không thể tải avatar lên cloud. Ảnh vẫn được lưu trên máy.";
+            Toast.makeText(toastCtx, message, Toast.LENGTH_LONG).show();
+            if (binding != null && isAdded()) {
+                loadAvatarImage(ProfileSessionHelper.getAccountProfileAvatarUrl(context));
+            }
+        }
     }
 
     @Override
@@ -586,6 +621,9 @@ public class AccountProfileEditFragment extends RootieFragment {
 
     @Override
     public void onDestroyView() {
+        if (avatarUploadTimeoutRunnable != null) {
+            mainHandler.removeCallbacks(avatarUploadTimeoutRunnable);
+        }
         ProfileUpdateNotifier.removeListener(profileUpdateListener);
         super.onDestroyView();
         binding = null;

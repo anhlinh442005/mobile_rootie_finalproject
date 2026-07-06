@@ -96,15 +96,19 @@ public final class SideMenuHelper {
 
         String displayName = ProfileSession.getFullName(context);
         String username = ProfileSession.getUsername(context);
-        String avatarUrl = ProfileSessionHelper.resolveEffectiveAvatarUrl(context);
+        String avatarUrl = ProfileSessionHelper.getAccountProfileAvatarUrl(context);
 
-        if (user != null) {
-            if (user.getFull_name() != null && !user.getFull_name().trim().isEmpty()) {
+        if (displayName == null || displayName.trim().isEmpty()) {
+            if (user != null && user.getFull_name() != null && !user.getFull_name().trim().isEmpty()) {
                 displayName = user.getFull_name().trim();
             }
-            if (user.getUsername() != null && !user.getUsername().trim().isEmpty()) {
+        }
+        if (username == null || username.trim().isEmpty()) {
+            if (user != null && user.getUsername() != null && !user.getUsername().trim().isEmpty()) {
                 username = user.getUsername().trim();
             }
+        }
+        if (!ProfileSessionHelper.isUsableAvatarUrl(avatarUrl) && user != null) {
             avatarUrl = ProfileSessionHelper.resolveEffectiveAvatarUrl(context, user);
         }
 

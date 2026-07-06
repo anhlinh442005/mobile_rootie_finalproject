@@ -45,6 +45,8 @@ import com.veganbeauty.app.features.community.notification.CommunityNotification
 import com.veganbeauty.app.utils.ComBottomNavHelper;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.utils.SideMenuHelper;
+import com.veganbeauty.app.utils.SyncDataHelper;
+import com.veganbeauty.app.utils.ProfileUpdateNotifier;
 import com.veganbeauty.app.utils.TimeFormatter;
 
 import org.json.JSONArray;
@@ -83,6 +85,12 @@ public class CommunityProfileFragment extends RootieFragment {
     private boolean isFollowing = false;
     private int currentFollowersCount = 0;
     private int currentFollowingCount = 0;
+
+    private final ProfileUpdateNotifier.Listener profileUpdateListener = () -> {
+        if (binding != null && isAdded()) {
+            refreshOwnProfileFromSession(requireContext());
+        }
+    };
 
     public static CommunityProfileFragment newInstance(String userId) {
         CommunityProfileFragment fragment = new CommunityProfileFragment();
@@ -280,22 +288,7 @@ public class CommunityProfileFragment extends RootieFragment {
                 : finalAvatarUrl;
         com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, effectiveAvatarUrl);
 
-        if (isOwnProfile) {
-            new Thread(() -> {
-                UserEntity savedUser = ProfileSessionHelper.findCurrentUser(ctx);
-                String resolvedAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx, savedUser);
-                if (getActivity() == null) {
-                    return;
-                }
-                getActivity().runOnUiThread(() -> {
-                    if (!isAdded() || binding == null) {
-                        return;
-                    }
-                    ProfileSession.setAvatar(ctx, resolvedAvatar);
-                    com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, resolvedAvatar);
-                });
-            }).start();
-        }
+        ProfileUpdateNotifier.addListener(profileUpdateListener);
 
         if (isOwnProfile) {
             binding.btnEditProfile.setText("Chỉnh sửa");
@@ -652,25 +645,67 @@ public class CommunityProfileFragment extends RootieFragment {
         });
     }
 
+    private void refreshOwnProfileFromSession(Context ctx) {
+        if (binding == null || profileUserId == null || !profileUserId.equals(ownUserId)) {
+            return;
+        }
+        String fullName = ProfileSession.getFullName(ctx);
+        if (fullName != null && !fullName.isEmpty()) {
+            binding.tvName.setText(fullName);
+        }
+        String uname = ProfileSession.getUsername(ctx);
+        if (uname != null && !uname.isEmpty()) {
+            binding.tvUsername.setText(uname.startsWith("@") ? uname : "@" + uname);
+        }
+        String bio = ProfileSession.getBio(ctx);
+        if (bio != null && !bio.isEmpty()) {
+            binding.tvBio.setText(bio);
+        }
+        String avatar = ProfileSessionHelper.getAccountProfileAvatarUrl(ctx);
+        com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, avatar);
+        if (avatar != null && !avatar.isEmpty()) {
+            com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivHighlight1, avatar);
+            com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivHighlight2, avatar);
+        }
+        NavigationView nav = binding.getRoot().findViewById(R.id.navView);
+        if (nav != null) {
+            SideMenuHelper.bindCurrentUser(nav);
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        if (binding != null) {
-            NavigationView navView = binding.getRoot().findViewById(R.id.navView);
-            if (navView != null) {
-                SideMenuHelper.bindCurrentUser(navView);
+        if (binding == null) {
+            return;
+        }
+        NavigationView navView = binding.getRoot().findViewById(R.id.navView);
+        if (navView != null) {
+            SideMenuHelper.bindCurrentUser(navView);
+        }
+        if (profileUserId != null && profileUserId.equals(ownUserId)
+                && ProfileSession.isLoggedIn(requireContext())) {
+            Context ctx = requireContext();
+            refreshOwnProfileFromSession(ctx);
+            if (!ProfileSession.hasLocalProfileEdits(ctx)) {
+                SyncDataHelper.syncUserProfileFromFirestore(ctx, () -> {
+                    if (binding != null && isAdded()) {
+                        refreshOwnProfileFromSession(requireContext());
+                    }
+                });
             }
         }
     }
 
     @Override
-    protected Flow<Integer> getUnreadCountFlow(Context context) {
-        return CommunityNotificationRepository.getInstance(context).getUnreadCount();
+    public void onDestroyView() {
+        ProfileUpdateNotifier.removeListener(profileUpdateListener);
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    protected Flow<Integer> getUnreadCountFlow(Context context) {
+        return CommunityNotificationRepository.getInstance(context).getUnreadCount();
     }
 }

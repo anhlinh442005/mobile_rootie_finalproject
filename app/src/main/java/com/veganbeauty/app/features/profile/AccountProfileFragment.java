@@ -470,10 +470,25 @@ public class AccountProfileFragment extends RootieFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (binding != null && ProfileSession.isLoggedIn(requireContext())) {
-            ProfileSessionHelper.restoreLocalAvatarIfPresent(requireContext());
+        if (binding == null) {
+            return;
         }
-        refreshProfileUiFromSession();
+        if (ProfileSession.isLoggedIn(requireContext())) {
+            Context ctx = requireContext();
+            refreshProfileUiFromSession();
+            bindProfileAvatar(ctx);
+            if (!ProfileSession.hasLocalProfileEdits(ctx)) {
+                SyncDataHelper.syncUserProfileFromFirestore(ctx, () -> {
+                    if (binding == null || !isAdded()) {
+                        return;
+                    }
+                    bindProfileAvatar(ctx);
+                    refreshProfileUiFromSession();
+                });
+            }
+        } else {
+            refreshProfileUiFromSession();
+        }
     }
 
     @Override

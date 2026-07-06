@@ -104,11 +104,14 @@ public final class ProfileSessionHelper {
     }
 
     public static String resolveEffectiveAvatarUrl(Context context) {
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
+        if (isRemoteAvatarUrl(sessionAvatar)) {
+            return sessionAvatar.trim();
+        }
         String localAvatar = getLocalAvatarFileUri(context);
         if (localAvatar != null) {
             return localAvatar;
         }
-        String sessionAvatar = ProfileSession.getAvatarStored(context);
         if (isUsableAvatarUrl(sessionAvatar)) {
             return sessionAvatar.trim();
         }
@@ -209,11 +212,14 @@ public final class ProfileSessionHelper {
 
     /** Giống Community profile: ưu tiên session trước, load UI ngay không cần chờ background. */
     public static String getAccountProfileAvatarUrl(Context context) {
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
+        if (isRemoteAvatarUrl(sessionAvatar)) {
+            return sessionAvatar.trim();
+        }
         String localAvatar = getLocalAvatarFileUri(context);
         if (localAvatar != null) {
             return localAvatar;
         }
-        String sessionAvatar = ProfileSession.getAvatarStored(context);
         if (isUsableAvatarUrl(sessionAvatar)) {
             return sessionAvatar.trim();
         }

@@ -29,6 +29,12 @@ import java.util.concurrent.Executors;
 public class SyncDataHelper {
 
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+    /** Tách riêng — tránh avatar upload bị kẹt sau job sync Firebase nặng trên EXECUTOR. */
+    private static final ExecutorService AVATAR_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "rootie-avatar-upload");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     public interface SyncCallback {
         void onComplete(boolean success);
@@ -39,7 +45,7 @@ public class SyncDataHelper {
     }
 
     public interface UploadCallback {
-        void onResult(@Nullable String secureUrl);
+        void onResult(@Nullable String secureUrl, @Nullable String errorMessage);
     }
 
     public interface AvatarSyncCallback {
@@ -83,103 +89,131 @@ public class SyncDataHelper {
                 return;
             }
 
-            String avatar = doc.getString("avatar");
-            if (avatar == null) {
-                avatar = doc.getString("avatar_url");
+            // Chưa đồng bộ cloud xong — giữ tên/avatar vừa sửa (vd. meomeomeo).
+            if (ProfileSession.hasLocalProfileEdits(context)) {
+                return;
             }
 
-            boolean keepLocalIdentity = ProfileSession.hasLocalProfileEdits(context);
-            String localAvatarFile = ProfileSessionHelper.getLocalAvatarFileUri(context);
-            if (localAvatarFile != null) {
-                ProfileSession.setAvatar(context, localAvatarFile);
-            }
-
+            applyFirestoreProfileDocument(context, doc);
             UserEntity user = ProfileSessionHelper.findCurrentUser(context);
             if (user == null) {
-                String initialAvatar = localAvatarFile != null
-                        ? localAvatarFile
-                        : (isRemoteAvatarUrl(avatar) ? avatar.trim() : "");
-                user = new UserEntity(
-                        doc.getId(),
-                        doc.getString("username") != null ? doc.getString("username") : "",
-                        doc.getString("full_name") != null ? doc.getString("full_name") : "",
-                        doc.getString("email") != null ? doc.getString("email") : "",
-                        doc.getString("phone") != null ? doc.getString("phone") : "",
-                        "",
-                        initialAvatar,
-                        doc.getString("primary_image")
-                );
-                if (doc.getString("bio") != null && !doc.getString("bio").trim().isEmpty()) {
-                    user.setBio(doc.getString("bio").trim());
-                }
-            } else {
-                if (keepLocalIdentity) {
-                    user.setFull_name(ProfileSession.getFullName(context));
-                    user.setUsername(normalizeUsernameForStorage(ProfileSession.getUsername(context)));
-                    user.setEmail(ProfileSession.getEmail(context));
-                    user.setPhone(ProfileSession.getPhone(context));
-                } else {
-                    if (doc.getString("full_name") != null && !doc.getString("full_name").trim().isEmpty()) {
-                        user.setFull_name(doc.getString("full_name").trim());
-                    }
-                    if (doc.getString("username") != null && !doc.getString("username").trim().isEmpty()) {
-                        user.setUsername(doc.getString("username").trim());
-                    }
-                    if (doc.getString("phone") != null && !doc.getString("phone").trim().isEmpty()) {
-                        user.setPhone(doc.getString("phone").trim());
-                    }
-                }
-                if (doc.getString("bio") != null && !doc.getString("bio").trim().isEmpty()) {
-                    user.setBio(doc.getString("bio").trim());
-                }
-                if (doc.getString("primary_image") != null && !doc.getString("primary_image").trim().isEmpty()) {
-                    user.setPrimary_image(doc.getString("primary_image").trim());
-                }
-                if (localAvatarFile != null) {
-                    user.setAvatar(localAvatarFile);
-                } else if (!keepLocalIdentity && isRemoteAvatarUrl(avatar)) {
-                    user.setAvatar(avatar.trim());
-                } else if (keepLocalIdentity) {
-                    String sessionAvatar = ProfileSession.getAvatarStored(context);
-                    if (ProfileSessionHelper.isUsableAvatarUrl(sessionAvatar)) {
-                        user.setAvatar(sessionAvatar);
-                    }
-                }
+                return;
             }
-
-            if (keepLocalIdentity) {
-                String localEmail = ProfileSession.getEmail(context);
-                if (localEmail != null && !localEmail.trim().isEmpty()) {
-                    user.setEmail(localEmail.trim());
-                }
-            } else if (doc.getString("email") != null && !doc.getString("email").trim().isEmpty()) {
-                user.setEmail(doc.getString("email").trim());
-            }
-
-            String dob = doc.getString("dob");
-            if (!keepLocalIdentity && dob != null && !dob.trim().isEmpty()) {
-                ProfileSession.setDob(context, dob.trim());
-            }
-            String gender = doc.getString("gender");
-            if (!keepLocalIdentity && gender != null && !gender.trim().isEmpty()) {
-                ProfileSession.setGender(context, gender.trim());
-            }
-            String cccd = doc.getString("cccd");
-            if (!keepLocalIdentity && cccd != null && !cccd.trim().isEmpty()) {
-                ProfileSession.setCCCD(context, cccd.trim());
-            }
-            String address = doc.getString("address");
-            if (!keepLocalIdentity && address != null && !address.trim().isEmpty()) {
-                ProfileSession.setAddress(context, address.trim());
-            }
-
-            boolean preserveAvatar = localAvatarFile != null || keepLocalIdentity;
-            ProfileSessionHelper.syncSessionFromUser(context, user, preserveAvatar);
             RootieDatabase.getDatabase(context).userDao().insertUserSync(user);
             pullSkincareHistoryFromFirestoreBlocking(context, userId.trim());
             seedJune2026SkincareHistoryIfNeeded(context);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /** Firestore là nguồn đúng khi pull — máy khác cùng tài khoản nhận tên/avatar mới. */
+    private static void applyFirestoreProfileDocument(Context context, DocumentSnapshot doc) {
+        String remoteAvatar = doc.getString("avatar");
+        if (remoteAvatar == null) {
+            remoteAvatar = doc.getString("avatar_url");
+        }
+        if (remoteAvatar == null) {
+            remoteAvatar = "";
+        }
+
+        String resolvedAvatar;
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
+        if (sessionAvatar != null
+                && sessionAvatar.trim().startsWith("file://")
+                && ProfileSessionHelper.isUsableAvatarUrl(sessionAvatar)) {
+            // Ảnh vừa chọn/crop, chờ upload Cloudinary — không ghi đè bằng avatar cũ trên Firestore.
+            resolvedAvatar = sessionAvatar.trim();
+        } else if (isRemoteAvatarUrl(remoteAvatar)) {
+            resolvedAvatar = remoteAvatar.trim();
+        } else {
+            String localAvatarFile = ProfileSessionHelper.getLocalAvatarFileUri(context);
+            resolvedAvatar = localAvatarFile != null ? localAvatarFile : "";
+        }
+
+        String fullName = doc.getString("full_name") != null ? doc.getString("full_name").trim() : "";
+        String username = doc.getString("username") != null ? doc.getString("username").trim() : "";
+        String email = doc.getString("email") != null ? doc.getString("email").trim() : "";
+        String phone = doc.getString("phone") != null ? doc.getString("phone").trim() : "";
+        String bio = doc.getString("bio") != null ? doc.getString("bio").trim() : "";
+        String primaryImage = doc.getString("primary_image");
+        String dob = doc.getString("dob") != null ? doc.getString("dob").trim() : "";
+        String gender = doc.getString("gender") != null ? doc.getString("gender").trim() : "";
+        String cccd = doc.getString("cccd") != null ? doc.getString("cccd").trim() : "";
+        String address = doc.getString("address") != null ? doc.getString("address").trim() : "";
+
+        if (!fullName.isEmpty()) {
+            ProfileSession.setFullName(context, fullName);
+        }
+        if (!username.isEmpty()) {
+            String normalized = username.startsWith("@") ? username : "@" + username.replace(" ", "");
+            ProfileSession.setUsername(context, normalized);
+        }
+        if (!email.isEmpty()) {
+            ProfileSession.setEmail(context, email);
+        }
+        if (!phone.isEmpty()) {
+            ProfileSession.setPhone(context, phone);
+        }
+        if (!bio.isEmpty()) {
+            ProfileSession.setBio(context, bio);
+        }
+        if (!dob.isEmpty()) {
+            ProfileSession.setDob(context, dob);
+        }
+        if (!gender.isEmpty()) {
+            ProfileSession.setGender(context, gender);
+        }
+        if (!cccd.isEmpty()) {
+            ProfileSession.setCCCD(context, cccd);
+        }
+        if (!address.isEmpty()) {
+            ProfileSession.setAddress(context, address);
+        }
+        if (!resolvedAvatar.isEmpty()) {
+            ProfileSession.setAvatar(context, resolvedAvatar);
+        }
+
+        UserEntity user = ProfileSessionHelper.findCurrentUser(context);
+        if (user == null) {
+            user = new UserEntity(
+                    doc.getId(),
+                    username,
+                    fullName,
+                    email,
+                    phone,
+                    "",
+                    resolvedAvatar,
+                    primaryImage
+            );
+            if (!bio.isEmpty()) {
+                user.setBio(bio);
+            }
+            RootieDatabase.getDatabase(context).userDao().insertUserSync(user);
+            return;
+        }
+
+        user.setUser_id(doc.getId());
+        if (!fullName.isEmpty()) {
+            user.setFull_name(fullName);
+        }
+        if (!username.isEmpty()) {
+            user.setUsername(username);
+        }
+        if (!email.isEmpty()) {
+            user.setEmail(email);
+        }
+        if (!phone.isEmpty()) {
+            user.setPhone(phone);
+        }
+        if (!resolvedAvatar.isEmpty()) {
+            user.setAvatar(resolvedAvatar);
+        }
+        if (primaryImage != null && !primaryImage.trim().isEmpty()) {
+            user.setPrimary_image(primaryImage.trim());
+        }
+        if (!bio.isEmpty()) {
+            user.setBio(bio);
         }
     }
 
@@ -358,15 +392,19 @@ public class SyncDataHelper {
             if (userEntity == null) {
                 return false;
             }
-            String preservedAvatar = preserveAvatarForProfileSave(context, userEntity);
-            if (preservedAvatar != null && !preservedAvatar.isEmpty()) {
-                userEntity.setAvatar(preservedAvatar);
+            String avatarForCloud = resolveRemoteAvatarForSync(context);
+            if (!avatarForCloud.isEmpty()) {
+                userEntity.setAvatar(avatarForCloud);
             }
             String dob = ProfileSession.getDob(context) != null ? ProfileSession.getDob(context) : "";
             String gender = ProfileSession.getGender(context) != null ? ProfileSession.getGender(context) : "";
             String cccd = ProfileSession.getCCCD(context) != null ? ProfileSession.getCCCD(context) : "";
             String address = ProfileSession.getAddress(context) != null ? ProfileSession.getAddress(context) : "";
-            return new FirestoreService().saveUser(userEntity, dob, gender, cccd, address);
+            boolean saved = new FirestoreService().saveUser(userEntity, dob, gender, cccd, address);
+            if (saved) {
+                ProfileSession.clearLocalProfileEdits(context);
+            }
+            return saved;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -410,7 +448,7 @@ public class SyncDataHelper {
     }
 
     private static String resolveRemoteAvatarForSync(Context context) {
-        String sessionAvatar = ProfileSession.getAvatar(context);
+        String sessionAvatar = ProfileSession.getAvatarStored(context);
         if (isRemoteAvatarUrl(sessionAvatar)) {
             return sessionAvatar.trim();
         }
@@ -425,108 +463,143 @@ public class SyncDataHelper {
     public static void uploadAvatarToCloudinary(Context context, Uri fileUri, UploadCallback callback) {
         if (fileUri == null) {
             if (callback != null) {
-                callback.onResult(null);
+                runOnMainThread(() -> callback.onResult(null, "Uri ảnh null"));
             }
             return;
         }
         if (!CloudinaryConfig.isConfigured()) {
             if (callback != null) {
-                callback.onResult(null);
+                runOnMainThread(() -> callback.onResult(null, "Chưa cấu hình Cloudinary"));
             }
             return;
         }
 
-        EXECUTOR.execute(() -> {
+        AVATAR_EXECUTOR.execute(() -> {
             String secureUrl = null;
+            String errorMessage = null;
             try {
-                String userId = resolveCurrentUserId(context);
+                Context appCtx = context.getApplicationContext();
+                String userId = resolveCurrentUserId(appCtx);
                 if (userId == null || userId.trim().isEmpty()) {
-                    if (callback != null) {
-                        callback.onResult(null);
-                    }
-                    return;
+                    errorMessage = "Thiếu user_id — hãy đăng nhập lại";
+                } else {
+                    File imageFile = CloudinaryUploadHelper.resolveImageFile(appCtx, fileUri);
+                    secureUrl = CloudinaryUploadHelper.uploadAvatarFile(imageFile, userId.trim());
                 }
-                File imageFile = CloudinaryUploadHelper.resolveImageFile(context, fileUri);
-                secureUrl = CloudinaryUploadHelper.uploadAvatarFile(imageFile, userId.trim());
             } catch (Exception e) {
                 e.printStackTrace();
+                errorMessage = e.getMessage() != null ? e.getMessage() : "Lỗi upload Cloudinary";
             }
-            if (callback != null) {
-                callback.onResult(secureUrl);
-            }
+            final String url = secureUrl;
+            final String err = errorMessage;
+            runOnMainThread(() -> {
+                if (callback != null) {
+                    callback.onResult(url, err);
+                }
+            });
         });
+    }
+
+    /** Sau khi có secure_url: cập nhật ProfileSession, Room và Firestore field avatar (blocking). */
+    private static boolean applyAvatarSecureUrlBlocking(Context context, String secureUrl) {
+        try {
+            if (!isRemoteAvatarUrl(secureUrl)) {
+                return false;
+            }
+
+            Context appCtx = context.getApplicationContext();
+            String userId = resolveCurrentUserId(appCtx);
+            if (userId == null || userId.trim().isEmpty()) {
+                return false;
+            }
+
+            String remoteUrl = secureUrl.trim();
+            ProfileSession.setAvatar(appCtx, remoteUrl);
+
+            UserEntity user = ProfileSessionHelper.findCurrentUser(appCtx);
+            if (user == null) {
+                user = new UserEntity(
+                        userId,
+                        ProfileSession.getUsername(appCtx) != null ? ProfileSession.getUsername(appCtx) : "",
+                        ProfileSession.getFullName(appCtx) != null ? ProfileSession.getFullName(appCtx) : "",
+                        ProfileSession.getEmail(appCtx) != null ? ProfileSession.getEmail(appCtx) : "",
+                        ProfileSession.getPhone(appCtx) != null ? ProfileSession.getPhone(appCtx) : "",
+                        "",
+                        remoteUrl,
+                        ProfileSession.getPrimaryImage(appCtx)
+                );
+            } else {
+                user.setAvatar(remoteUrl);
+            }
+
+            RootieDatabase.getDatabase(appCtx).userDao().insertUserSync(user);
+            boolean firestoreOk = new FirestoreService().updateUserAvatar(userId, remoteUrl);
+            if (firestoreOk) {
+                propagateAvatarToCommunityBlocking(appCtx, remoteUrl);
+                ProfileUpdateNotifier.notifyUpdated();
+            }
+            return firestoreOk;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /** Sau khi có secure_url: cập nhật ProfileSession, Room và Firestore field avatar. */
     public static void applyAvatarSecureUrl(Context context, String secureUrl, SyncCallback callback) {
-        EXECUTOR.execute(() -> {
-            boolean success = false;
-            try {
-                if (!isRemoteAvatarUrl(secureUrl)) {
-                    if (callback != null) {
-                        boolean finalSuccess = false;
-                        runOnMainThread(() -> callback.onComplete(finalSuccess));
-                    }
-                    return;
-                }
-
-                String userId = resolveCurrentUserId(context);
-                if (userId == null || userId.trim().isEmpty()) {
-                    if (callback != null) {
-                        runOnMainThread(() -> callback.onComplete(false));
-                    }
-                    return;
-                }
-
-                String remoteUrl = secureUrl.trim();
-                ProfileSession.setAvatar(context, remoteUrl);
-
-                UserEntity user = ProfileSessionHelper.findCurrentUser(context);
-                if (user == null) {
-                    user = new UserEntity(
-                            userId,
-                            ProfileSession.getUsername(context) != null ? ProfileSession.getUsername(context) : "",
-                            ProfileSession.getFullName(context) != null ? ProfileSession.getFullName(context) : "",
-                            ProfileSession.getEmail(context) != null ? ProfileSession.getEmail(context) : "",
-                            ProfileSession.getPhone(context) != null ? ProfileSession.getPhone(context) : "",
-                            "",
-                            remoteUrl,
-                            ProfileSession.getPrimaryImage(context)
-                    );
-                } else {
-                    user.setAvatar(remoteUrl);
-                }
-
-                RootieDatabase.getDatabase(context).userDao().insertUserSync(user);
-                success = new FirestoreService().updateUserAvatar(userId, remoteUrl);
-                if (success) {
-                    propagateAvatarToCommunityBlocking(context, remoteUrl);
-                    ProfileUpdateNotifier.notifyUpdated();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            boolean finalSuccess = success;
+        AVATAR_EXECUTOR.execute(() -> {
+            boolean success = applyAvatarSecureUrlBlocking(context, secureUrl);
             if (callback != null) {
-                runOnMainThread(() -> callback.onComplete(finalSuccess));
+                runOnMainThread(() -> callback.onComplete(success));
             }
         });
     }
 
-    /** Upload Cloudinary rồi đồng bộ session/Room/Firestore. */
+    /** Upload Cloudinary rồi đồng bộ session/Room/Firestore — luồng gộp, không xếp hàng sau sync nặng. */
     public static void uploadAndSyncAvatar(Context context, Uri fileUri, AvatarSyncCallback callback) {
-        uploadAvatarToCloudinary(context, fileUri, secureUrl -> {
-            if (secureUrl == null) {
-                if (callback != null) {
-                    runOnMainThread(() -> callback.onComplete(false, null, "Upload Cloudinary thất bại"));
+        Context appCtx = context.getApplicationContext();
+        AVATAR_EXECUTOR.execute(() -> {
+            String secureUrl = null;
+            String uploadError = null;
+            try {
+                if (fileUri == null) {
+                    uploadError = "Uri ảnh null";
+                } else if (!CloudinaryConfig.isConfigured()) {
+                    uploadError = "Chưa cấu hình Cloudinary";
+                } else {
+                    String userId = resolveCurrentUserId(appCtx);
+                    if (userId == null || userId.trim().isEmpty()) {
+                        uploadError = "Thiếu user_id — hãy đăng nhập lại";
+                    } else {
+                        File imageFile = CloudinaryUploadHelper.resolveImageFile(appCtx, fileUri);
+                        secureUrl = CloudinaryUploadHelper.uploadAvatarFile(imageFile, userId.trim());
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                uploadError = e.getMessage() != null ? e.getMessage() : "Lỗi upload Cloudinary";
+            }
+
+            if (secureUrl == null) {
+                final String err = uploadError != null && !uploadError.isEmpty()
+                        ? uploadError
+                        : "Upload Cloudinary thất bại. Kiểm tra mạng và upload preset.";
+                runOnMainThread(() -> {
+                    if (callback != null) {
+                        callback.onComplete(false, null, err);
+                    }
+                });
                 return;
             }
-            applyAvatarSecureUrl(context, secureUrl, success -> {
+
+            boolean firestoreOk = applyAvatarSecureUrlBlocking(appCtx, secureUrl);
+            final String url = secureUrl;
+            final String warning = firestoreOk
+                    ? null
+                    : "Ảnh đã lên Cloudinary; Firebase chưa cập nhật — thử lại khi có mạng.";
+            runOnMainThread(() -> {
                 if (callback != null) {
-                    String message = success ? null : "Cập nhật Firestore thất bại";
-                    callback.onComplete(success, secureUrl, message);
+                    callback.onComplete(true, url, warning);
                 }
             });
         });
@@ -534,7 +607,9 @@ public class SyncDataHelper {
 
     public static void uploadAvatarToFirebase(Context context, android.net.Uri fileUri, UploadCallback callback) {
         if (fileUri == null) {
-            if (callback != null) callback.onResult(null);
+            if (callback != null) {
+                callback.onResult(null, "Uri ảnh null");
+            }
             return;
         }
 
@@ -561,14 +636,23 @@ public class SyncDataHelper {
                             if (task.isSuccessful() && task.getResult() != null) {
                                 String downloadUrl = task.getResult().toString();
                                 ProfileSession.INSTANCE.setAvatar(context, downloadUrl);
-                                if (callback != null) callback.onResult(downloadUrl);
+                                if (callback != null) {
+                                    callback.onResult(downloadUrl, null);
+                                }
                             } else {
-                                if (callback != null) callback.onResult(null);
+                                String err = task.getException() != null
+                                        ? task.getException().getMessage()
+                                        : "Upload Firebase Storage thất bại";
+                                if (callback != null) {
+                                    callback.onResult(null, err);
+                                }
                             }
                         });
             } catch (Exception e) {
                 e.printStackTrace();
-                if (callback != null) callback.onResult(null);
+                if (callback != null) {
+                    callback.onResult(null, e.getMessage());
+                }
             }
         });
     }

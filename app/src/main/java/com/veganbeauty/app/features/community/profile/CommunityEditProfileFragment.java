@@ -252,19 +252,24 @@ public class CommunityEditProfileFragment extends Fragment {
 
             final String finalUname = newUname;
             SyncDataHelper.uploadAndSyncAvatar(ctx, selectedAvatarUri, (success, secureUrl, errorMessage) -> {
-                if (!isAdded()) {
-                    return;
-                }
                 isSaving = false;
-                setSaveEnabled(true);
+                if (isAdded()) {
+                    setSaveEnabled(true);
+                }
 
+                Context toastCtx = ctx.getApplicationContext();
                 if (success && secureUrl != null) {
                     persistProfileChanges(ctx, userId, newName, finalUname, newBio, secureUrl);
-                    Toast.makeText(ctx, "Cập nhật avatar thành công!", Toast.LENGTH_SHORT).show();
-                    getParentFragmentManager().popBackStack();
+                    Toast.makeText(toastCtx, "Cập nhật avatar thành công!", Toast.LENGTH_LONG).show();
+                    if (errorMessage != null && !errorMessage.isEmpty()) {
+                        Toast.makeText(toastCtx, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                    if (isAdded()) {
+                        getParentFragmentManager().popBackStack();
+                    }
                 } else {
                     String message = errorMessage != null ? errorMessage : "Không thể cập nhật avatar. Vui lòng thử lại.";
-                    Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(toastCtx, message, Toast.LENGTH_LONG).show();
                 }
             });
             return;

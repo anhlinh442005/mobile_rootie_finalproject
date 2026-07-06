@@ -363,7 +363,11 @@ public class FirestoreService {
         try {
             Map<String, Object> userMap = new HashMap<>();
             userMap.put("avatar", avatarUrl.trim());
-            Tasks.await(db.collection("users").document(userId.trim()).set(userMap, com.google.firebase.firestore.SetOptions.merge()));
+            Tasks.await(
+                    db.collection("users").document(userId.trim()).set(userMap, com.google.firebase.firestore.SetOptions.merge()),
+                    8,
+                    java.util.concurrent.TimeUnit.SECONDS
+            );
             return true;
         } catch (Exception e) {
             e.printStackTrace();

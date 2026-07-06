@@ -94,10 +94,18 @@ public final class CloudinaryUploadHelper {
     }
     String uriString = fileUri.toString();
     if (uriString.startsWith("file://")) {
-      File file = new File(Uri.parse(uriString).getPath());
-      if (file.exists()) {
-        return file;
+      String path = Uri.parse(uriString).getPath();
+      if (path != null) {
+        File file = new File(path);
+        if (file.exists() && file.length() > 0) {
+          return file;
+        }
       }
+      File direct = new File(uriString.replace("file://", ""));
+      if (direct.exists() && direct.length() > 0) {
+        return direct;
+      }
+      throw new IllegalArgumentException("Không tìm thấy file ảnh local: " + uriString);
     }
     File dest = new File(context.getCacheDir(), "cloudinary_upload_" + System.currentTimeMillis() + ".jpg");
     try (InputStream in = context.getContentResolver().openInputStream(fileUri);
