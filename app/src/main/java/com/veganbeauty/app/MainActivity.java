@@ -87,6 +87,23 @@ public class MainActivity extends AppCompatActivity {
                 productRepository.seedProductsFromAssets();
                 productRepository.refreshProducts(true);
 
+                // Seed user product expiry so it's not empty in SQLite Studio
+                String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(getApplicationContext());
+                if (currentUserId != null && !currentUserId.isEmpty()) {
+                    productRepository.seedExpiryProductsIfEmpty(currentUserId);
+                    // Force seed skin history
+                    com.veganbeauty.app.data.local.SkinHistoryLocalStore.getHistory(getApplicationContext(), currentUserId, "");
+                }
+
+                // Seed community posts, reels, videos, ingredients
+                com.veganbeauty.app.data.repository.CommunityRepository communityRepo =
+                        new com.veganbeauty.app.data.repository.CommunityRepository(
+                                db.communityDao(),
+                                new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()),
+                                new com.veganbeauty.app.data.remote.FirestoreService()
+                        );
+                communityRepo.seedFromAssetsIfNeeded();
+
                 com.veganbeauty.app.data.repository.OrderRepository orderRepository =
                         new com.veganbeauty.app.data.repository.OrderRepository(
                                 db.orderDao(),
@@ -96,13 +113,12 @@ public class MainActivity extends AppCompatActivity {
                         );
                 orderRepository.seedOrdersFromAssetsIfNeeded();
 
-                com.veganbeauty.app.data.repository.CommunityRepository communityRepository =
-                        new com.veganbeauty.app.data.repository.CommunityRepository(
-                                db.communityDao(),
-                                new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()),
-                                new com.veganbeauty.app.data.remote.FirestoreService()
+                com.veganbeauty.app.data.repository.StoreRepository storeRepository =
+                        new com.veganbeauty.app.data.repository.StoreRepository(
+                                db.storeDao(),
+                                new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext())
                         );
-                communityRepository.seedFromAssetsIfNeeded();
+                storeRepository.refreshStores();
             } catch (Exception e) {
                 e.printStackTrace();
             }
