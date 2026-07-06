@@ -32,6 +32,7 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.local.entities.VoucherEntity;
 import com.veganbeauty.app.data.repository.ProductRepository;
+import com.veganbeauty.app.data.repository.VoucherRepository;
 import com.veganbeauty.app.databinding.HomeFragmentBinding;
 import com.veganbeauty.app.features.account.reward.AccountRewardFragment;
 import com.veganbeauty.app.features.profile.AccountVoucherFragment;
@@ -405,8 +406,10 @@ public class HomeFragment extends RootieFragment {
     }
 
     private void loadVouchersFromLocal() {
-        List<VoucherEntity> vouchers = new LocalJsonReader(requireContext()).getVouchers();
-        bindVouchers(vouchers);
+        VoucherRepository.loadActiveVouchers(requireContext(), entities -> {
+            if (!isAdded()) return;
+            bindVouchers(entities);
+        });
     }
 
     private void bindVouchers(List<VoucherEntity> vouchers) {

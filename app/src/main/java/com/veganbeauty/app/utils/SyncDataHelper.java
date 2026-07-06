@@ -570,6 +570,11 @@ public class SyncDataHelper {
                     firestoreService.forceSyncCollection("stores", storesJson, "ma_cua_hang", null);
                 }
 
+                String vouchersJson = reader.readAsset("vouchers.json");
+                if (vouchersJson != null && firestoreService.isCollectionEmpty("vouchers")) {
+                    firestoreService.seedVouchersFromJson(vouchersJson);
+                }
+
                 String socialJson = reader.readAsset("User_com_friend.json");
                 if (socialJson != null) {
                     firestoreService.syncUserSocialFromJson(socialJson);

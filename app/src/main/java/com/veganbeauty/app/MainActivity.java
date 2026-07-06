@@ -119,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
                                 new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext())
                         );
                 storeRepository.refreshStores();
+
+                com.veganbeauty.app.data.repository.VoucherRepository.seedToFirestoreIfEmpty(getApplicationContext());
             } catch (Exception e) {
                 e.printStackTrace();
             }

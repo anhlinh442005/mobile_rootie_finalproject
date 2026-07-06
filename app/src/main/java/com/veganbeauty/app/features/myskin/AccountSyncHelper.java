@@ -51,13 +51,39 @@ public final class AccountSyncHelper {
     }
 
     private static void syncBookings(Context appContext) {
-        String userEmail = ProfileSession.getEmail(appContext);
-        if (userEmail == null || userEmail.trim().isEmpty()) {
-            return;
+        FirestoreService firestoreService = new FirestoreService();
+        java.util.LinkedHashMap<String, BookingHistoryEntity> merged = new java.util.LinkedHashMap<>();
+
+        if (ProfileSession.isLoggedIn(appContext)) {
+            String userId = ProfileSessionHelper.getEffectiveUserId(appContext);
+            if (userId != null && !userId.trim().isEmpty()) {
+                List<BookingHistoryEntity> byUserId =
+                        firestoreService.fetchBookingsForUserByUserId(userId.trim());
+                if (byUserId != null) {
+                    for (BookingHistoryEntity booking : byUserId) {
+                        if (booking != null && booking.getId() != null) {
+                            merged.put(booking.getId(), booking);
+                        }
+                    }
+                }
+            }
         }
-        List<BookingHistoryEntity> remote = new FirestoreService().getUserBookingHistory(userEmail.trim());
-        if (remote != null && !remote.isEmpty()) {
-            new LocalJsonReader(appContext).mergeBookingsFromRemote(remote);
+
+        String userEmail = ProfileSession.getEmail(appContext);
+        if (userEmail != null && !userEmail.trim().isEmpty()) {
+            List<BookingHistoryEntity> byEmail =
+                    firestoreService.fetchBookingsForUser(userEmail.trim());
+            if (byEmail != null) {
+                for (BookingHistoryEntity booking : byEmail) {
+                    if (booking != null && booking.getId() != null) {
+                        merged.put(booking.getId(), booking);
+                    }
+                }
+            }
+        }
+
+        if (!merged.isEmpty()) {
+            new LocalJsonReader(appContext).mergeBookingsFromRemote(new java.util.ArrayList<>(merged.values()));
         }
     }
 
@@ -83,8 +109,6 @@ public final class AccountSyncHelper {
                 db.userGiftDao(),
                 new LocalJsonReader(appContext)
         );
-        if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            orderRepository.startListeningToOrders(safeUserId, safePhone);
-        }
+        orderRepository.startListeningToOrders(safeUserId, safePhone);
     }
 }

@@ -22,6 +22,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.repository.OrderRepository;
+import com.veganbeauty.app.data.repository.VoucherRepository;
 import com.veganbeauty.app.databinding.AccountVoucherBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
@@ -94,7 +95,12 @@ public class AccountVoucherFragment extends RootieFragment {
                 .addToBackStack(null)
                 .commit());
 
-        systemVouchers = loadVouchersFromAssets(context);
+        systemVouchers = new ArrayList<>();
+        VoucherRepository.loadActiveVouchers(context, entities -> {
+            if (!isAdded()) return;
+            systemVouchers = VoucherRepository.toListAdapterItems(entities);
+            refreshVoucherList();
+        });
 
         adapter = new VoucherListAdapter(new ArrayList<>());
         adapter.setOnDeleteClickListener(voucher -> {

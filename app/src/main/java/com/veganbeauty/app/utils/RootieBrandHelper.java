@@ -31,14 +31,6 @@ public final class RootieBrandHelper {
         return lower.contains("rootie vietnam") || lower.contains("rootie viet nam");
     }
 
-    public static boolean isAdminUser(String userId) {
-        if (userId == null) return false;
-        java.util.Set<String> adminIds = new java.util.HashSet<>(java.util.Arrays.asList(
-            "test_001", "39751498", "87962440", "68751659", "85097162", "48228004"
-        ));
-        return adminIds.contains(userId.trim());
-    }
-
     public static String resolveAvatar(String userId, String avatarUrl) {
         if (isRootieUser(userId)) {
             return AVATAR_URL;
