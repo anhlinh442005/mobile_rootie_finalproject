@@ -1971,6 +1971,7 @@ public class FirestoreService {
                                 String orderId = null;
                                 String voucherCode = null;
                                 String iconResName = "ic_bell";
+                                String stableId = id;
 
                                 if ("ORDER_SUCCESS".equalsIgnoreCase(type)) {
                                     if (title == null || title.trim().isEmpty()) title = "Đơn hàng đặt thành công! \uD83D\uDED2";
@@ -1980,6 +1981,9 @@ public class FirestoreService {
                                     orderId = doc.getString("postId");
                                     if (orderId == null || orderId.trim().isEmpty()) {
                                         orderId = doc.getString("orderId");
+                                    }
+                                    if (orderId != null && !orderId.trim().isEmpty()) {
+                                        stableId = "order_placed_" + orderId.trim();
                                     }
                                     iconResName = "ic_bell";
                                 } else if ("PROMOTION".equalsIgnoreCase(type) || "VOUCHER".equalsIgnoreCase(type)) {
@@ -2001,21 +2005,15 @@ public class FirestoreService {
                                 }
 
                                 // Check duplicate locally
-                                boolean exists = false;
-                                com.veganbeauty.app.data.repository.NotificationRepository repo = com.veganbeauty.app.data.repository.NotificationRepository.getInstance(context);
-                                if (repo.notifications.getValue() != null) {
-                                    for (com.veganbeauty.app.data.local.entities.NotificationItem item : repo.notifications.getValue()) {
-                                        if (item.getId().equals(id)) {
-                                            exists = true;
-                                            break;
-                                        }
-                                    }
-                                }
+                                com.veganbeauty.app.data.repository.NotificationRepository repo =
+                                        com.veganbeauty.app.data.repository.NotificationRepository.getInstance(context);
+                                boolean exists = repo.hasNotificationId(stableId)
+                                        || (!stableId.equals(id) && repo.hasNotificationId(id));
 
                                 if (!exists) {
                                     String currentDate = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(new java.util.Date());
                                     com.veganbeauty.app.data.local.entities.NotificationItem item = new com.veganbeauty.app.data.local.entities.NotificationItem(
-                                            id,
+                                            stableId,
                                             title,
                                             content,
                                             currentDate,
@@ -2035,7 +2033,7 @@ public class FirestoreService {
 
                                     com.veganbeauty.app.features.account.notification.NotificationPushHelper.sendPushNotification(
                                             context,
-                                            id,
+                                            stableId,
                                             title,
                                             content,
                                             notificationType,

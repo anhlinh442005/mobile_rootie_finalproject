@@ -264,6 +264,7 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/dividerDiagnosticProducts"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/gray_light"
@@ -271,6 +272,7 @@
 
         <!-- Section: Lộ trình 7 ngày -->
         <RelativeLayout
+            android:id="@+id/layoutDiagnosticRoutineHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp">

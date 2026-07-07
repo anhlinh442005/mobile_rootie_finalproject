@@ -283,87 +283,9 @@ public class BookingHistoryFragment extends RootieFragment {
         List<BookingHistoryEntity> list = new LocalJsonReader(requireContext()).getUserBookingHistory(userEmail);
         allBookings.clear();
         if (list != null) {
-            java.util.Calendar now = java.util.Calendar.getInstance();
-            for (BookingHistoryEntity b : list) {
-                if ("Sắp diễn ra".equals(b.getStatus()) || "Chờ xác nhận".equals(b.getStatus()) || "pending".equalsIgnoreCase(b.getStatus())) {
-                    String existingReason = b.getCancelReason();
-                    if (existingReason != null && existingReason.startsWith("Hệ thống tự động")) {
-                        continue;
-                    }
-                    java.util.Calendar bookingTime = parseBookingTime(b);
-                    if (bookingTime != null && bookingTime.before(now)) {
-                        String oldStatus = b.getStatus();
-                        b.setStatus("Đã huỷ");
-                        if ("Chờ xác nhận".equals(oldStatus) || "pending".equalsIgnoreCase(oldStatus)) {
-                            b.setCancelReason("Hệ thống tự động huỷ do quá thời gian hẹn nhưng chưa được Admin xác nhận lịch.");
-                        } else {
-                            b.setCancelReason("Hệ thống tự động huỷ do đã quá thời gian hẹn mà khách không đến Spa.");
-                        }
-
-                        final String finalId = b.getId();
-                        final String finalReason = b.getCancelReason();
-                        final android.content.Context ctx = requireContext().getApplicationContext();
-                        ioExecutor.execute(() -> {
-                            FirestoreService firestoreService = new FirestoreService();
-                            if (firestoreService.updateBookingStatus(finalId, "Đã huỷ", finalReason)) {
-                                new LocalJsonReader(ctx).updateBookingStatus(finalId, "Đã huỷ", finalReason);
-                            }
-                        });
-                    }
-                }
-            }
             allBookings.addAll(list);
         }
         filterBookings();
-    }
-
-    private java.util.Calendar parseBookingTime(BookingHistoryEntity b) {
-        try {
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            int currentYear = cal.get(java.util.Calendar.YEAR);
-            
-            String dateDisplay = b.getDateDisplay();
-            String time = b.getTime();
-            
-            int day = 1;
-            int month = cal.get(java.util.Calendar.MONTH);
-            int year = currentYear;
-            
-            if (dateDisplay != null && !dateDisplay.isEmpty()) {
-                if (dateDisplay.contains("/")) {
-                    String[] parts = dateDisplay.split("/");
-                    if (parts.length >= 1) day = Integer.parseInt(parts[0].trim());
-                    if (parts.length >= 2) month = Integer.parseInt(parts[1].trim()) - 1;
-                    if (parts.length >= 3) year = Integer.parseInt(parts[2].trim());
-                } else {
-                    day = Integer.parseInt(dateDisplay.trim().split(" ")[0]);
-                    String monthDisplay = b.getMonthDisplay();
-                    if (monthDisplay != null && monthDisplay.contains("Tháng")) {
-                        String firstLine = monthDisplay.split("\n")[0];
-                        String mStr = firstLine.replaceAll("[^0-9]", "");
-                        if (!mStr.isEmpty()) {
-                            month = Integer.parseInt(mStr) - 1;
-                        }
-                    }
-                }
-            }
-            
-            int hour = 0;
-            int min = 0;
-            if (time != null && !time.isEmpty()) {
-                String startTime = time.split("-")[0].trim();
-                String[] tParts = startTime.split(":");
-                if (tParts.length >= 2) {
-                    hour = Integer.parseInt(tParts[0].trim());
-                    min = Integer.parseInt(tParts[1].trim());
-                }
-            }
-            
-            cal.set(year, month, day, hour, min, 0);
-            return cal;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private void openBookingDetail(BookingHistoryEntity booking) {

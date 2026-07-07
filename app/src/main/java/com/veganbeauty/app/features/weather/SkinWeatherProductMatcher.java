@@ -9,8 +9,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class SkinWeatherProductMatcher {
 
@@ -50,6 +53,11 @@ public class SkinWeatherProductMatcher {
     }
 
     public static Map<String, ProductMatch> matchProductsForWeatherAndSkin(Context context, double temp, int humidity, String skinType) {
+        return matchProductsForWeatherAndSkin(context, temp, humidity, skinType, new HashSet<>());
+    }
+
+    public static Map<String, ProductMatch> matchProductsForWeatherAndSkin(
+            Context context, double temp, int humidity, String skinType, Set<String> flaggedGroups) {
         Map<String, ProductMatch> result = new HashMap<>();
 
         try {
@@ -114,13 +122,15 @@ public class SkinWeatherProductMatcher {
             }
             JSONArray productsArray = new JSONObject(productsJsonStr.toString()).getJSONArray("products");
 
+            Set<String> avoidChemicals = buildAvoidChemicals(context, flaggedGroups);
+
             List<JSONObject> matchedProducts = new ArrayList<>();
             for (int i = 0; i < productsArray.length(); i++) {
                 JSONObject product = productsArray.getJSONObject(i);
                 String pId = product.getString("id");
-                if (productScoreMap.containsKey(pId)) {
-                    matchedProducts.add(product);
-                }
+                if (!productScoreMap.containsKey(pId)) continue;
+                if (containsAvoidedIngredient(product, avoidChemicals)) continue;
+                matchedProducts.add(product);
             }
 
             List<JSONObject> cleansers = new ArrayList<>();
@@ -287,5 +297,54 @@ public class SkinWeatherProductMatcher {
             );
         }
         return null;
+    }
+
+    private static Set<String> buildAvoidChemicals(Context context, Set<String> flaggedGroups) {
+        Set<String> avoidChemicals = new HashSet<>();
+        if (flaggedGroups == null || flaggedGroups.isEmpty()) {
+            return avoidChemicals;
+        }
+        try {
+            StringBuilder jsonStr = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(context.getAssets().open("quiz_thanhphan.json")))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonStr.append(line);
+                }
+            }
+            JSONArray ingredients = new JSONObject(jsonStr.toString()).getJSONArray("ingredients");
+            for (int i = 0; i < ingredients.length(); i++) {
+                JSONObject ing = ingredients.getJSONObject(i);
+                if (!flaggedGroups.contains(ing.getString("category"))) continue;
+                if ("avoid".equals(ing.optString("risk", ""))) {
+                    avoidChemicals.add(ing.getString("name").toLowerCase(Locale.ROOT));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return avoidChemicals;
+    }
+
+    private static boolean containsAvoidedIngredient(JSONObject product, Set<String> avoidChemicals) {
+        if (avoidChemicals.isEmpty()) return false;
+        try {
+            if (product.has("detailedIngredients")) {
+                JSONArray detailed = product.getJSONArray("detailedIngredients");
+                for (int i = 0; i < detailed.length(); i++) {
+                    String ing = detailed.getString(i).toLowerCase(Locale.ROOT);
+                    for (String chem : avoidChemicals) {
+                        if (ing.contains(chem)) return true;
+                    }
+                }
+            }
+            String allergyInfo = product.optString("allergyInformation", "").toLowerCase(Locale.ROOT);
+            for (String chem : avoidChemicals) {
+                if (allergyInfo.contains(chem)) return true;
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 }

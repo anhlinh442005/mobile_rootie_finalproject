@@ -21,6 +21,7 @@ import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.databinding.FragmentSkinAllergyProfileBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 import com.veganbeauty.app.features.quiz.QuizTestIntroFragment;
 import com.veganbeauty.app.features.quiz.QuizTestResultFragment;
 import com.veganbeauty.app.features.routine.SkinReminderFragment;
@@ -44,6 +45,7 @@ import com.veganbeauty.app.data.local.ProfileSession;
 public class SkinAllergyProfileFragment extends RootieFragment {
 
     private FragmentSkinAllergyProfileBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
 
     @Nullable
     @Override
@@ -93,7 +95,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         setupSkinComparison(prefs, hydration, sebum, sensitivity, elasticity);
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.btnNotification.setOnClickListener(v ->
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                         .addToBackStack(null).commit());
@@ -135,6 +137,18 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         BottomNavHelper.setup(this, binding.getRoot(), R.id.nav_account, tabId -> {
             BottomNavHelper.navigate(this, tabId);
         });
+
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        int bottomPadding = (int) requireContext().getResources().getDimension(R.dimen.home_nav_bar_height);
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.rlHeader,
+                binding.skinAllergyScroll,
+                bottomPadding
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.skinAllergyScroll);
     }
 
     private void addPill(ViewGroup container, String text, int backgroundResId, String textColorStr) {

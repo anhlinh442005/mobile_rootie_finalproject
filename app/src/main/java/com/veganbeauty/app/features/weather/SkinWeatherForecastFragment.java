@@ -279,9 +279,10 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         AvatarLoader.loadAvatar(getBinding().ivAvatar, avatarUrl);
     }
 
-    private void updateRoutineLabels(String skinType, double temp, int humidity, double uv, int pm25) {
+    private void updateRoutineLabels(SkinWeatherProfileHelper.UserSkinProfile skinProfile, double temp, int humidity, double uv, int pm25) {
         if (!isAdded() || _binding == null) return;
         try {
+        String skinType = skinProfile.skinType;
         String skinLower = skinType.toLowerCase();
         boolean isOily = skinLower.contains("dầu");
         boolean isSensitive = skinLower.contains("nhạy cảm") || skinLower.contains("kích ứng");
@@ -290,7 +291,9 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         boolean isAging = skinLower.contains("lão hóa");
         boolean isDehydrated = skinLower.contains("mất nước");
 
-        Map<String, SkinWeatherProductMatcher.ProductMatch> matchedProducts = SkinWeatherProductMatcher.matchProductsForWeatherAndSkin(requireContext(), temp, humidity, skinType);
+        Map<String, SkinWeatherProductMatcher.ProductMatch> matchedProducts =
+                SkinWeatherProductMatcher.matchProductsForWeatherAndSkin(
+                        requireContext(), temp, humidity, skinType, skinProfile.flaggedGroups);
 
         // 1. Cleanser
         SkinWeatherProductMatcher.ProductMatch matchedCleanser = matchedProducts.get("Cleanser");
@@ -791,7 +794,7 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         getBinding().tvHydrationImpact.setText(hydrationImpact);
         getBinding().tvDustImpact.setText(dustImpact);
 
-        updateRoutineLabels(skinType, temp, humidity, uv, pm25Val);
+        updateRoutineLabels(skinProfile, temp, humidity, uv, pm25Val);
         fetchGeminiAdvice(skinProfile, todayMetrics, temp, humidity, uv, pm25Val, hasPm25, cityName);
         } catch (Exception e) {
             android.util.Log.e("SkinWeatherForecast", "Failed to render weather UI", e);
@@ -828,6 +831,8 @@ public class SkinWeatherForecastFragment extends RootieFragment {
         final String prompt = SkinWeatherProfileHelper.buildGeminiPrompt(
                 skinProfile, todayMetrics, temp, humidity, uv, pm25, hasPm25, cityName);
         final SharedPreferences prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
+        final String adviceCacheKey = com.veganbeauty.app.features.ai.SkinAiAssistantHelper.buildAdviceCacheKey(
+                skinProfile, temp, humidity, uv, pm25, cityName);
 
         new Thread(() -> {
             String textResult = null;
@@ -882,7 +887,10 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                         JSONArray parts = content.getJSONArray("parts");
                         if (parts.length() > 0) {
                             textResult = parts.getJSONObject(0).getString("text").trim();
-                            prefs.edit().putString("SAVED_CACHED_AI_INSIGHT", textResult).apply();
+                            prefs.edit()
+                                    .putString("SAVED_CACHED_AI_INSIGHT", textResult)
+                                    .putString("SAVED_CACHED_AI_INSIGHT_CONTEXT", adviceCacheKey)
+                                    .apply();
                         }
                     }
                 }
@@ -900,7 +908,9 @@ public class SkinWeatherForecastFragment extends RootieFragment {
                             resolved, skinProfile, todayMetrics, temp, humidity, uv, pm25, hasPm25, cityName);
                 } else {
                     String cached = prefs.getString("SAVED_CACHED_AI_INSIGHT", null);
-                    if (cached != null && !cached.trim().isEmpty()) {
+                    String cachedKey = prefs.getString("SAVED_CACHED_AI_INSIGHT_CONTEXT", "");
+                    if (cached != null && !cached.trim().isEmpty()
+                            && adviceCacheKey.equals(cachedKey)) {
                         advice = SkinWeatherProfileHelper.parseGeminiAdvice(
                                 cached, skinProfile, todayMetrics, temp, humidity, uv, pm25, hasPm25, cityName);
                     } else {

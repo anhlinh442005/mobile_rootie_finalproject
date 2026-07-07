@@ -65,11 +65,13 @@ public class AccountProfilePersonalInfoFragment extends RootieFragment {
                         .addToBackStack(null)
                         .commit());
 
-        SyncDataHelper.syncUserProfileFromFirestore(context, () -> {
-            if (binding != null && isAdded()) {
-                loadFieldsFromSession(requireContext());
-            }
-        });
+        if (!ProfileSession.hasLocalProfileEdits(context)) {
+            SyncDataHelper.syncUserProfileFromFirestore(context, () -> {
+                if (binding != null && isAdded()) {
+                    loadFieldsFromSession(requireContext());
+                }
+            });
+        }
     }
 
     private void loadFieldsFromSession(Context context) {

@@ -5,70 +5,19 @@
     android:layout_height="match_parent"
     android:background="#FEFBF4">
 
-    <!-- Top Header -->
-    <RelativeLayout
-        android:id="@+id/rl_header"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@drawable/bg_points_card_gradient"
-        android:elevation="2dp">
-
-        <!-- Back Button -->
-        <ImageView
-            android:id="@+id/btn_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#02542D" />
-
-        <!-- Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:fontFamily="@font/be_vietnam_pro"
-            android:text="Hồ sơ da &amp; Dị ứng"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <!-- Notification Button -->
-        <FrameLayout
-            android:id="@+id/btn_notification"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_bell" />
-        </FrameLayout>
-    </RelativeLayout>
-
     <!-- Scrollable Content -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/skin_allergy_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_below="@id/rl_header"
+        android:layout_alignParentTop="true"
+        android:clipChildren="false"
         android:clipToPadding="false"
         android:fillViewport="true"
+        android:paddingTop="56dp"
         android:paddingBottom="@dimen/home_nav_bar_height"
-        android:clipChildren="false">
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -1013,7 +962,7 @@
                 </FrameLayout>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Bottom Navigation Bar -->
     <include
@@ -1025,5 +974,52 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:elevation="16dp" />
+
+    <!-- Top Header (overlay) -->
+    <RelativeLayout
+        android:id="@+id/rl_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bg_gradient_header"
+        android:elevation="6dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Quay lại"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginHorizontal="56dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:maxLines="1"
+            android:text="Hồ sơ da &amp; Dị ứng"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <include
+            android:id="@+id/layoutNotification"
+            layout="@layout/include_notification_bell"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp" />
+    </RelativeLayout>
 
 </RelativeLayout>

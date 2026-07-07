@@ -9,6 +9,7 @@ import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.data.repository.OrderRepository;
+import com.veganbeauty.app.data.repository.OrderStatusNotifier;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import java.util.List;
@@ -82,9 +83,11 @@ public final class AccountSyncHelper {
             }
         }
 
+        LocalJsonReader localJsonReader = new LocalJsonReader(appContext);
         if (!merged.isEmpty()) {
-            new LocalJsonReader(appContext).mergeBookingsFromRemote(new java.util.ArrayList<>(merged.values()));
+            localJsonReader.mergeBookingsFromRemote(new java.util.ArrayList<>(merged.values()));
         }
+        BookingExpiryHelper.expireOverdueBookings(appContext);
     }
 
     private static void syncOrders(Context appContext) {
@@ -110,5 +113,16 @@ public final class AccountSyncHelper {
                 new LocalJsonReader(appContext)
         );
         orderRepository.startListeningToOrders(safeUserId, safePhone);
+        OrderStatusNotifier.backfillMissedOrderStatusNotifications(
+                appContext,
+                db.orderDao(),
+                safeUserId,
+                safePhone
+        );
+        OrderStatusNotifier.backfillPendingOrderNotifications(
+                appContext,
+                db.orderDao(),
+                safeUserId
+        );
     }
 }

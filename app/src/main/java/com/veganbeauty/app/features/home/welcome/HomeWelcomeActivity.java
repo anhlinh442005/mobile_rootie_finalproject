@@ -239,13 +239,13 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                         (int) (24 * getResources().getDisplayMetrics().density) + bottomSystemInset);
             }
             if (loginBinding != null) {
-                android.view.View container = ((android.view.ViewGroup) loginBinding.getRoot()).getChildAt(0);
+                android.view.View container = loginBinding.homeLoginContent;
                 if (container != null) {
                     container.setPadding(
                             container.getPaddingLeft(),
                             container.getPaddingTop(),
                             container.getPaddingRight(),
-                            (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset);
+                            (int) (28 * getResources().getDisplayMetrics().density) + bottomSystemInset);
                 }
             }
             if (registerBinding != null) {
@@ -257,6 +257,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             container.getPaddingRight(),
                             (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset);
                 }
+            }
+            if (forgotPasswordBinding != null && forgotPasswordBinding.homeForgotContent != null) {
+                android.view.View container = forgotPasswordBinding.homeForgotContent;
+                container.setPadding(
+                        container.getPaddingLeft(),
+                        container.getPaddingTop(),
+                        container.getPaddingRight(),
+                        (int) (28 * getResources().getDisplayMetrics().density) + bottomSystemInset);
             }
             return insets;
         });
@@ -281,6 +289,9 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                         }
                         if (phase == FlowPhase.LOGIN && loginBinding != null) {
                             loginBinding.homeLoginForm.setVisibility(View.VISIBLE);
+                        }
+                        if (phase == FlowPhase.REGISTER && registerBinding != null) {
+                            registerBinding.homeRegisterScroll.scrollTo(0, 0);
                         }
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
@@ -461,6 +472,15 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 .setInterpolator(new DecelerateInterpolator())
                 .withEndAction(onEnd)
                 .start();
+    }
+
+    /** Login/register sheets need full height — avoids clipped form and scroll glitches. */
+    private void expandAuthSheet() {
+        if (phase != FlowPhase.LOGIN && phase != FlowPhase.REGISTER) {
+            return;
+        }
+        sheetBehavior.setSkipCollapsed(true);
+        bottomSheet.post(() -> sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
     }
 
     private void inflateWelcomeSheet() {
@@ -682,8 +702,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     bottomSheet.setVisibility(View.VISIBLE);
                     updateSheetCorners(0f);
                     if (loginBinding != null) {
-                        animateSlideUpFromBottom(loginBinding.getRoot(), () -> {
-                        });
+                        loginBinding.homeLoginScroll.scrollTo(0, 0);
+                        animateSlideUpFromBottom(loginBinding.getRoot(), this::expandAuthSheet);
                     }
                 })
                 .start();
@@ -700,13 +720,13 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 sheetContent,
                 true);
 
-        android.view.View loginContainer = ((android.view.ViewGroup) loginBinding.getRoot()).getChildAt(0);
+        android.view.View loginContainer = loginBinding.homeLoginContent;
         if (loginContainer != null) {
             loginContainer.setPadding(
                     loginContainer.getPaddingLeft(),
                     loginContainer.getPaddingTop(),
                     loginContainer.getPaddingRight(),
-                    (int) (32 * getResources().getDisplayMetrics().density) + bottomSystemInset);
+                    (int) (28 * getResources().getDisplayMetrics().density) + bottomSystemInset);
         }
 
         String registerText = getString(R.string.home_no_account) + " " + getString(R.string.home_register);
@@ -726,7 +746,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             super.updateDrawState(ds);
                             ds.setUnderlineText(false);
                             ds.setTypeface(Typeface.DEFAULT_BOLD);
-                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.white));
+                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.primary_light));
                         }
                     },
                     start,
@@ -764,6 +784,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
 
     private void transitionToRegister() {
         phase = FlowPhase.REGISTER;
+        welcomeSheetLockedExpanded = false;
+        sheetBehavior.setSkipCollapsed(false);
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         splashContent.setVisibility(View.VISIBLE);
@@ -782,8 +804,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                     bottomSheet.setVisibility(View.VISIBLE);
                     updateSheetCorners(0f);
                     if (registerBinding != null) {
-                        animateSlideUpFromBottom(registerBinding.getRoot(), () -> {
-                        });
+                        registerBinding.homeRegisterScroll.scrollTo(0, 0);
+                        animateSlideUpFromBottom(registerBinding.getRoot(), this::expandAuthSheet);
                     }
                 })
                 .start();
@@ -826,7 +848,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             super.updateDrawState(ds);
                             ds.setUnderlineText(false);
                             ds.setTypeface(Typeface.DEFAULT_BOLD);
-                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.white));
+                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.primary_light));
                         }
                     },
                     start,
@@ -854,7 +876,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             super.updateDrawState(ds);
                             ds.setUnderlineText(false);
                             ds.setTypeface(Typeface.DEFAULT_BOLD);
-                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.neutral));
+                            ds.setColor(ContextCompat.getColor(HomeWelcomeActivity.this, R.color.primary_light));
                         }
                     },
                     termsStart,
@@ -1021,6 +1043,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 LayoutInflater.from(this),
                 sheetContent,
                 true);
+
+        if (forgotPasswordBinding.homeForgotContent != null) {
+            forgotPasswordBinding.homeForgotContent.setPadding(
+                    forgotPasswordBinding.homeForgotContent.getPaddingLeft(),
+                    forgotPasswordBinding.homeForgotContent.getPaddingTop(),
+                    forgotPasswordBinding.homeForgotContent.getPaddingRight(),
+                    (int) (28 * getResources().getDisplayMetrics().density) + bottomSystemInset);
+        }
 
         // Bước 0: Chọn phương thức
         forgotPasswordBinding.fpBtnChooseEmail.setOnClickListener(v -> {

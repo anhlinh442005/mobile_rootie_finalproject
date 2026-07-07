@@ -101,6 +101,10 @@ public final class SkinWeatherProfileHelper {
         );
     }
 
+    public static TodaySkinMetrics metricsFromProfile(UserSkinProfile profile) {
+        return new TodaySkinMetrics(profile.sebum, profile.hydration, profile.sensitivity);
+    }
+
     /** Chỉ số hôm nay = hồ sơ da đã lưu + điều chỉnh theo thời tiết thực tế. */
     public static TodaySkinMetrics computeTodayMetrics(UserSkinProfile profile,
                                                         double temp, int humidity, double uv,

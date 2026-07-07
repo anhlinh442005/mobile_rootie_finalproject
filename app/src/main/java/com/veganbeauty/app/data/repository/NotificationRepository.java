@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.NotificationItem;
+import com.veganbeauty.app.features.account.notification.NotificationDateHelper;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import org.json.JSONArray;
@@ -21,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import androidx.annotation.Nullable;
 
 import kotlinx.coroutines.flow.MutableStateFlow;
 import kotlinx.coroutines.flow.StateFlow;
@@ -92,10 +95,13 @@ public class NotificationRepository {
     }
 
     private void updateUnreadCount(List<NotificationItem> list) {
+        _unreadCount.setValue(countUnreadNotifications(list));
+    }
+
+    public static int countUnreadNotifications(@Nullable List<NotificationItem> list) {
         int count = 0;
         if (list != null) {
             for (NotificationItem item : list) {
-                // Account bell only counts non-community notifications
                 String type = item.getNotificationType() != null ? item.getNotificationType() : "";
                 boolean isCommunity = "POST".equals(type) || "INTERACTION".equals(type);
                 if (!isCommunity && !item.isRead()) {
@@ -103,7 +109,60 @@ public class NotificationRepository {
                 }
             }
         }
-        _unreadCount.setValue(count);
+        return count;
+    }
+
+    private Map<String, Boolean> captureReadStates() {
+        Map<String, Boolean> readStateById = new HashMap<>();
+        List<NotificationItem> current = _notifications.getValue();
+        if (current != null) {
+            for (NotificationItem item : current) {
+                readStateById.put(item.getId(), item.isRead());
+            }
+        }
+        return readStateById;
+    }
+
+    private NotificationItem applyReadState(NotificationItem item, Map<String, Boolean> readStateById) {
+        if (item == null || readStateById == null) {
+            return item;
+        }
+        Boolean read = readStateById.get(item.getId());
+        if (read == null || read == item.isRead()) {
+            return item;
+        }
+        return new NotificationItem(
+                item.getId(),
+                item.getTitle(),
+                item.getContent(),
+                item.getTime(),
+                item.getCategory(),
+                item.getTag(),
+                item.getVoucherCode(),
+                item.getActionText(),
+                read,
+                item.getSection(),
+                item.getIconResName(),
+                item.getNotificationType(),
+                item.getOrderId(),
+                item.getScheduleId()
+        );
+    }
+
+    public boolean hasNotificationId(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            return false;
+        }
+        List<NotificationItem> current = _notifications.getValue();
+        if (current == null) {
+            return false;
+        }
+        for (NotificationItem item : current) {
+            if (id.equals(item.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void refreshNotifications() {
@@ -112,6 +171,8 @@ public class NotificationRepository {
             _unreadCount.setValue(0);
             return;
         }
+
+        Map<String, Boolean> readStateById = captureReadStates();
 
         List<NotificationItem> assetList = localJsonReader.getAllNotifications();
         Set<String> deletedIds = getDeletedNotificationIds();
@@ -135,7 +196,10 @@ public class NotificationRepository {
 
         List<NotificationItem> finalList;
         if (localList.isEmpty()) {
-            finalList = assetList;
+            finalList = new ArrayList<>();
+            for (NotificationItem item : assetList) {
+                finalList.add(applyReadState(normalizeNotificationItem(item), readStateById));
+            }
         } else {
             Map<String, NotificationItem> assetMap = new HashMap<>();
             for (NotificationItem item : assetList) {
@@ -146,22 +210,35 @@ public class NotificationRepository {
             for (NotificationItem localItem : localList) {
                 NotificationItem assetItem = assetMap.get(localItem.getId());
                 if (assetItem != null) {
-                    updatedList.add(new NotificationItem(
-                            assetItem.getId(), assetItem.getTitle(), assetItem.getContent(), assetItem.getTime(),
-                            assetItem.getCategory(), assetItem.getTag(), assetItem.getVoucherCode(),
-                            assetItem.getActionText(), localItem.isRead(), assetItem.getSection(),
-                            assetItem.getIconResName(), assetItem.getNotificationType(),
-                            assetItem.getOrderId(), assetItem.getScheduleId()
-                    ));
+                    updatedList.add(applyReadState(normalizeNotificationItem(new NotificationItem(
+                            assetItem.getId(),
+                            assetItem.getTitle(),
+                            assetItem.getContent(),
+                            localItem.getTime(),
+                            assetItem.getCategory(),
+                            assetItem.getTag(),
+                            assetItem.getVoucherCode(),
+                            assetItem.getActionText(),
+                            localItem.isRead(),
+                            localItem.getSection(),
+                            assetItem.getIconResName(),
+                            assetItem.getNotificationType() != null ? assetItem.getNotificationType() : localItem.getNotificationType(),
+                            assetItem.getOrderId() != null ? assetItem.getOrderId() : localItem.getOrderId(),
+                            assetItem.getScheduleId() != null ? assetItem.getScheduleId() : localItem.getScheduleId()
+                    )), readStateById));
                 } else {
-                    updatedList.add(localItem);
+                    updatedList.add(applyReadState(normalizeNotificationItem(localItem), readStateById));
                 }
             }
 
             Set<String> localIds = new HashSet<>();
-            for (NotificationItem item : localList) localIds.add(item.getId());
+            for (NotificationItem item : localList) {
+                localIds.add(item.getId());
+            }
             for (NotificationItem assetItem : assetList) {
-                if (!localIds.contains(assetItem.getId())) updatedList.add(assetItem);
+                if (!localIds.contains(assetItem.getId())) {
+                    updatedList.add(applyReadState(normalizeNotificationItem(assetItem), readStateById));
+                }
             }
             finalList = updatedList;
         }
@@ -244,10 +321,18 @@ public class NotificationRepository {
 
     public void markAsRead(String id) {
         List<NotificationItem> currentList = _notifications.getValue();
+        if (currentList == null || currentList.isEmpty()) {
+            return;
+        }
+
+        boolean changed = false;
         List<NotificationItem> updatedList = new ArrayList<>();
 
         for (NotificationItem item : currentList) {
             if (item.getId().equals(id)) {
+                if (!item.isRead()) {
+                    changed = true;
+                }
                 updatedList.add(new NotificationItem(
                         item.getId(), item.getTitle(), item.getContent(), item.getTime(), item.getCategory(),
                         item.getTag(), item.getVoucherCode(), item.getActionText(), true, item.getSection(),
@@ -257,6 +342,11 @@ public class NotificationRepository {
                 updatedList.add(item);
             }
         }
+
+        if (!changed) {
+            return;
+        }
+
         _notifications.setValue(updatedList);
         updateUnreadCount(updatedList);
         saveNotificationsToLocal(updatedList);
@@ -302,12 +392,56 @@ public class NotificationRepository {
 
     public void addNotification(NotificationItem item) {
         if (isGuest()) return;
+        NotificationItem normalized = normalizeNotificationItem(item);
         List<NotificationItem> currentList = new ArrayList<>(_notifications.getValue());
-        currentList.removeIf(it -> it.getId().equals(item.getId()));
-        currentList.add(0, item);
+        currentList.removeIf(it -> it.getId().equals(normalized.getId()));
+        currentList.add(0, normalized);
         _notifications.setValue(currentList);
         updateUnreadCount(currentList);
         saveNotificationsToLocal(currentList);
+    }
+
+    private NotificationItem normalizeNotificationItem(NotificationItem item) {
+        if (item == null) {
+            return item;
+        }
+
+        String orderId = extractOrderId(item);
+        String time = item.getTime() != null ? item.getTime() : "";
+        String section = NotificationDateHelper.getSectionFromTime(time);
+        return new NotificationItem(
+                item.getId(),
+                item.getTitle(),
+                item.getContent(),
+                time,
+                item.getCategory(),
+                item.getTag(),
+                item.getVoucherCode(),
+                item.getActionText(),
+                item.isRead(),
+                section,
+                item.getIconResName(),
+                item.getNotificationType(),
+                orderId != null ? orderId : item.getOrderId(),
+                item.getScheduleId()
+        );
+    }
+
+    private String extractOrderId(NotificationItem item) {
+        if (item.getOrderId() != null && !item.getOrderId().trim().isEmpty()) {
+            return item.getOrderId().trim();
+        }
+        String content = item.getContent();
+        if (content == null || content.isEmpty()) {
+            return null;
+        }
+        java.util.regex.Matcher matcher = java.util.regex.Pattern
+                .compile("#(ORD-\\d+)", java.util.regex.Pattern.CASE_INSENSITIVE)
+                .matcher(content);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
     }
 
     private static volatile NotificationRepository INSTANCE;

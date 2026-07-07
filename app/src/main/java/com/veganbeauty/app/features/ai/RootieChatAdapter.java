@@ -243,6 +243,8 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private final TextView tvBarrierVal;
         private final TextView tvWhyContent;
         private final LinearLayout layoutProducts;
+        private final View productSectionDivider;
+        private final View routineHeader;
         private final View btnAddToCartAll;
         private final ImageView ivAvatar;
 
@@ -255,6 +257,8 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             tvBarrierVal = view.findViewById(R.id.tvMetricBarrierVal);
             tvWhyContent = view.findViewById(R.id.tvWhyContent);
             layoutProducts = view.findViewById(R.id.layoutDiagnosticProducts);
+            productSectionDivider = view.findViewById(R.id.dividerDiagnosticProducts);
+            routineHeader = view.findViewById(R.id.layoutDiagnosticRoutineHeader);
             btnAddToCartAll = view.findViewById(R.id.btnAddToCartAll);
             ivAvatar = view.findViewById(R.id.ivAiAvatar);
         }
@@ -272,6 +276,7 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             tvWhyContent.setText(data.whyExplanation);
 
             layoutProducts.removeAllViews();
+            btnAddToCartAll.setOnClickListener(null);
 
             List<ProductEntity> productsToRecommend = new ArrayList<>();
 
@@ -296,7 +301,11 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     TextView tvName = pView.findViewById(R.id.tvProductName);
                     TextView tvReason = pView.findViewById(R.id.tvExpertReason);
 
-                    com.bumptech.glide.Glide.with(ivProdImage.getContext()).load(product.getMainImage()).placeholder(android.R.color.darker_gray).into(ivProdImage);
+                    com.bumptech.glide.Glide.with(ivProdImage.getContext())
+                            .load(product.getMainImage())
+                            .placeholder(R.drawable.myphamxanh)
+                            .error(R.drawable.myphamxanh)
+                            .into(ivProdImage);
 
                     tvPhase.setText(idx < data.productPhases.size() ? data.productPhases.get(idx) : "GIAI ĐOẠN " + (idx + 1));
 
@@ -314,6 +323,17 @@ public class RootieChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                     layoutProducts.addView(pView);
                 }
+            }
+
+            boolean hasProducts = !productsToRecommend.isEmpty();
+            int productSectionVisibility = hasProducts ? View.VISIBLE : View.GONE;
+            layoutProducts.setVisibility(productSectionVisibility);
+            btnAddToCartAll.setVisibility(productSectionVisibility);
+            if (productSectionDivider != null) {
+                productSectionDivider.setVisibility(productSectionVisibility);
+            }
+            if (routineHeader != null) {
+                routineHeader.setVisibility(productSectionVisibility);
             }
 
             btnAddToCartAll.setOnClickListener(v -> {

@@ -20,6 +20,10 @@ import com.veganbeauty.app.features.ai.RootieChatAdapter.RootieChatItem;
 public class ChatHistoryHelper {
 
     private static final String FILE_NAME = "rootie_chat_history.json";
+    private static final String PREFS = "RootieQuizPrefs";
+    private static final String VERSION_KEY = "rootie_chat_history_version";
+    /** Tăng version khi đổi format / logic AI chat để xóa lịch sử mock cũ. */
+    private static final int CHAT_HISTORY_VERSION = 4;
 
     public static void saveChatHistory(Context context, List<RootieChatItem> chatList) {
         try {
@@ -63,12 +67,23 @@ public class ChatHistoryHelper {
             try (FileOutputStream fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE)) {
                 fos.write(jsonArray.toString().getBytes(StandardCharsets.UTF_8));
             }
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                    .edit()
+                    .putInt(VERSION_KEY, CHAT_HISTORY_VERSION)
+                    .apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static List<RootieChatItem> loadChatHistory(Context context) {
+        int savedVersion = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getInt(VERSION_KEY, 0);
+        if (savedVersion < CHAT_HISTORY_VERSION) {
+            clearChatHistory(context);
+            return new ArrayList<>();
+        }
+
         List<RootieChatItem> list = new ArrayList<>();
         File file = new File(context.getFilesDir(), FILE_NAME);
         if (!file.exists()) return list;

@@ -1,22 +1,13 @@
 package com.veganbeauty.app.features.weather;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.core.app.NotificationCompat;
-
 import com.veganbeauty.app.BuildConfig;
-import com.veganbeauty.app.MainActivity;
-import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.ProfileSession;
 
 import org.json.JSONArray;
@@ -39,8 +30,8 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
 
         boolean enabled = ProfileSession.isSkinWeatherNotiEnabled(appContext);
         boolean notiAllowed = ProfileSession.isNotiEnabled(appContext);
-        if (!enabled || !notiAllowed) {
-            Log.d("DailySkinWeatherReceiver", "Daily skin weather notification is disabled or general notifications are disabled. Rescheduling and returning.");
+        if (!enabled || !notiAllowed || !com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.canPost(appContext)) {
+            Log.d("DailySkinWeatherReceiver", "Daily skin weather notification is disabled or cannot be posted. Rescheduling and returning.");
             DailySkinWeatherScheduler.scheduleDailyNotification(appContext);
             pendingResult.finish();
             return;
@@ -197,52 +188,16 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
                     }
                 }
 
-                String channelId = "skin_weather_daily_channel";
-                int notificationId = 2001;
-                NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    NotificationChannel channel = new NotificationChannel(
-                            channelId,
-                            "Đánh giá thời tiết & Da hàng ngày",
-                            NotificationManager.IMPORTANCE_HIGH
-                    );
-                    channel.setDescription("Kênh gửi thông báo phân tích da theo thời tiết mỗi sáng lúc 6h30");
-                    if (notificationManager != null) notificationManager.createNotificationChannel(channel);
-                }
-
-                Intent mainIntent = new Intent(appContext, MainActivity.class);
-                mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                mainIntent.putExtra("NAVIGATE_TO", "WEATHER_FORECAST");
-
-                PendingIntent pendingIntent = PendingIntent.getActivity(
+                com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.dispatch(
                         appContext,
-                        notificationId,
-                        mainIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                        com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.dailyStableId("weather_daily"),
+                        "ROOTIE • Thời tiết & Da hôm nay ☀️",
+                        advice,
+                        "Khác",
+                        "skin care",
+                        "WEATHER_FORECAST",
+                        "XEM NGAY"
                 );
-
-                Bitmap appIconBitmap = null;
-                try {
-                    appIconBitmap = BitmapFactory.decodeResource(appContext.getResources(), R.mipmap.ic_launcher);
-                } catch (Exception e) {
-                    // Ignore
-                }
-
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, channelId)
-                        .setSmallIcon(R.drawable.ic_bell)
-                        .setContentTitle("ROOTIE • Thời tiết & Da hôm nay ☀️")
-                        .setContentText(advice)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(advice))
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setAutoCancel(true)
-                        .setContentIntent(pendingIntent);
-
-                if (appIconBitmap != null) {
-                    builder.setLargeIcon(appIconBitmap);
-                }
-
-                if (notificationManager != null) notificationManager.notify(notificationId, builder.build());
                 Log.d("DailySkinWeatherReceiver", "Daily notification posted: " + advice);
 
             } catch (Exception e) {

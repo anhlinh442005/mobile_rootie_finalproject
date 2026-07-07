@@ -149,7 +149,7 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
 
             binding.tvTitle.setText(item.getTitle());
             binding.tvContent.setText(truncateWords(item.getContent(), MAX_CONTENT_WORDS));
-            binding.tvTime.setText(item.getTime());
+            binding.tvTime.setText(NotificationDateHelper.getDisplayTime(item.getTime()));
 
             binding.viewUnreadDot.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
             binding.cardNotification.setCardBackgroundColor(

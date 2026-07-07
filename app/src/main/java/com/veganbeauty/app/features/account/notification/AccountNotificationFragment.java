@@ -378,7 +378,15 @@ public class AccountNotificationFragment extends RootieFragment {
                     .addToBackStack(null)
                     .commit();
 
-        } else if (type.equals("skin care") || title.contains("dưỡng da") || title.contains("chăm sóc da") || content.contains("dưỡng da") || content.contains("chăm sóc da")) {
+        } else if (type.equals("promotion") || title.contains("ưu đãi gần bạn")) {
+            com.veganbeauty.app.features.shop.store.ShopStoreSystemFragment fragment =
+                    new com.veganbeauty.app.features.shop.store.ShopStoreSystemFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+
+        } else if (type.equals("skin care") || title.contains("dưỡng da") || title.contains("chăm sóc da") || content.contains("dưỡng da") || content.contains("chăm sóc da") || title.contains("thời tiết")) {
             SkinReminderFragment fragment = new SkinReminderFragment();
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, fragment)

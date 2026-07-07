@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.veganbeauty.app.R;
 import androidx.fragment.app.DialogFragment;
-import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.features.weather.SkinWeatherProfileHelper;
 import com.veganbeauty.app.databinding.SkinAiChatBinding;
 import com.veganbeauty.app.features.ai.RootieChatAdapter.RootieChatItem;
 
@@ -30,9 +30,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 public class SkinAiChatFragment extends DialogFragment {
 
+    private static final String GEMINI_API_KEY = com.veganbeauty.app.BuildConfig.GEMINI_API_KEY;
+
     private SkinAiChatBinding binding;
     private RootieChatAdapter chatAdapter;
     private boolean isFullScreen = false;
+    private int chatRequestId = 0;
 
     private final ActivityResultLauncher<String> pickFileLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(), uri -> {
@@ -252,24 +255,18 @@ public class SkinAiChatFragment extends DialogFragment {
         binding.chipWeatherAdvice.setOnClickListener(v -> handleUserMessage("Cho mình xin lời khuyên dưỡng da theo thời tiết hôm nay."));
         binding.chipWeatherRoutine.setOnClickListener(v -> handleUserMessage("Routine chăm sóc da phù hợp với thời tiết này là gì?"));
         binding.chipMatchProducts.setOnClickListener(v -> handleUserMessage("Sản phẩm nào phù hợp với làn da của mình?"));
-        binding.chipSkinDiagnosis.setOnClickListener(v -> handleUserMessage("Mình muốn xem phác đồ chẩn đoán da."));
+        binding.chipSkinDiagnosis.setOnClickListener(v -> sendDiagnosticCard());
     }
 
-    private void sendInitialGreeting() {
-        String skinType = ProfileSession.getSavedUserSkinType(requireContext());
+    private void sendDiagnosticCard() {
+        SkinWeatherProfileHelper.UserSkinProfile profile =
+                SkinWeatherProfileHelper.load(requireContext());
+        SkinAiAssistantHelper.WeatherContext weather =
+                SkinAiAssistantHelper.loadWeatherContext(requireContext());
         String timeStr = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
-        RootieChatItem greetingItem = new RootieChatItem(
-                UUID.randomUUID().toString(),
-                RootieChatItem.Sender.AI,
-                "Chào bạn! Mình là Rootie AI, chuyên gia tư vấn da liễu của bạn. Dựa trên thông tin của bạn (" + skinType + "), mình đã có một số đánh giá ban đầu.",
-                timeStr,
-                RootieChatItem.ItemType.TEXT,
-                null
-        );
-        chatAdapter.addMessage(greetingItem);
-
-        RootieChatItem.DiagnosticData diagnosticData = generateRuleBasedDiagnostic(skinType);
+        RootieChatItem.DiagnosticData diagnosticData =
+                SkinAiAssistantHelper.buildDiagnostic(requireContext(), profile, weather);
         RootieChatItem diagnosticItem = new RootieChatItem(
                 UUID.randomUUID().toString(),
                 RootieChatItem.Sender.AI,
@@ -279,7 +276,37 @@ public class SkinAiChatFragment extends DialogFragment {
                 diagnosticData
         );
         chatAdapter.addMessage(diagnosticItem);
-        
+        binding.rvChatList.scrollToPosition(chatAdapter.getItemCount() - 1);
+        saveChatHistory();
+    }
+
+    private void sendInitialGreeting() {
+        SkinWeatherProfileHelper.UserSkinProfile profile =
+                SkinWeatherProfileHelper.load(requireContext());
+        SkinAiAssistantHelper.WeatherContext weather =
+                SkinAiAssistantHelper.loadWeatherContext(requireContext());
+        String timeStr = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        String name = com.veganbeauty.app.data.local.ProfileSession.getFullName(requireContext());
+
+        String greetingText;
+        if (profile.hasSavedProfile) {
+            greetingText = "Chào " + (name.isEmpty() ? "bạn" : name) + "! Mình là Rootie AI — "
+                    + "đã đọc hồ sơ " + profile.skinType + " của bạn"
+                    + (weather.available ? " và thời tiết tại " + weather.city : "")
+                    + ". Hỏi mình về routine, sản phẩm, đơn hàng, lịch soi da hoặc bấm chip bên dưới nhé.";
+        } else {
+            greetingText = "Chào " + (name.isEmpty() ? "bạn" : name) + "! Mình là Rootie AI. "
+                    + "Làm bài test da trước để mình tư vấn chính xác theo làn da của bạn nhé.";
+        }
+
+        chatAdapter.addMessage(new RootieChatItem(
+                UUID.randomUUID().toString(),
+                RootieChatItem.Sender.AI,
+                greetingText,
+                timeStr,
+                RootieChatItem.ItemType.TEXT,
+                null
+        ));
         saveChatHistory();
     }
 
@@ -296,70 +323,76 @@ public class SkinAiChatFragment extends DialogFragment {
         chatAdapter.addMessage(userMsg);
         binding.rvChatList.scrollToPosition(chatAdapter.getItemCount() - 1);
 
-        // Simulate AI Response
-        binding.rvChatList.postDelayed(() -> {
-            RootieChatItem thinkingMsg = new RootieChatItem(
-                    UUID.randomUUID().toString(),
-                    RootieChatItem.Sender.AI,
-                    "Đang phân tích câu hỏi của bạn...",
-                    timeStr,
-                    RootieChatItem.ItemType.TEXT,
-                    null
-            );
-            chatAdapter.addMessage(thinkingMsg);
-            
-            binding.rvChatList.postDelayed(() -> {
-                if (chatAdapter.getItemCount() > 0) {
-                    chatAdapter.removeMessageAt(chatAdapter.getItemCount() - 1);
+        final int requestId = ++chatRequestId;
+        final int thinkingIndex = chatAdapter.getItemCount();
+        RootieChatItem thinkingMsg = new RootieChatItem(
+                UUID.randomUUID().toString(),
+                RootieChatItem.Sender.AI,
+                "Đang phân tích câu hỏi của bạn...",
+                timeStr,
+                RootieChatItem.ItemType.TEXT,
+                null
+        );
+        chatAdapter.addMessage(thinkingMsg);
+        binding.rvChatList.scrollToPosition(chatAdapter.getItemCount() - 1);
+
+        new Thread(() -> {
+            SkinWeatherProfileHelper.UserSkinProfile profile =
+                    SkinWeatherProfileHelper.load(requireContext());
+            SkinAiAssistantHelper.WeatherContext weather =
+                    SkinAiAssistantHelper.loadWeatherContext(requireContext());
+            SkinWeatherProfileHelper.TodaySkinMetrics metrics =
+                    SkinAiAssistantHelper.computeTodayMetrics(profile, weather);
+
+            String reply;
+            if (SkinAiAssistantHelper.isGeminiConfigured(GEMINI_API_KEY)) {
+                try {
+                    String userTurn = SkinAiAssistantHelper.buildChatUserTurn(
+                            requireContext(), profile, metrics, weather, text);
+                    reply = SkinAiAssistantHelper.requestChatReply(
+                            GEMINI_API_KEY, chatAdapter.getItems(), userTurn);
+                } catch (Exception e) {
+                    reply = null;
+                }
+            } else {
+                reply = null;
+            }
+
+            if (reply == null || reply.trim().isEmpty()) {
+                reply = SkinAiAssistantHelper.buildRuleBasedReply(
+                        requireContext(), profile, metrics, weather, text);
+            } else {
+                reply = SkinAiTextHelper.sanitizeAiReply(reply);
+            }
+
+            final String finalReply = reply;
+            final boolean attachDiagnostic = SkinAiAssistantHelper.shouldAttachDiagnosticCard(text);
+            if (!isAdded() || binding == null) return;
+            requireActivity().runOnUiThread(() -> {
+                if (requestId != chatRequestId) return;
+                if (thinkingIndex >= 0 && thinkingIndex < chatAdapter.getItemCount()) {
+                    chatAdapter.removeMessageAt(thinkingIndex);
                 }
                 RootieChatItem responseMsg = new RootieChatItem(
                         UUID.randomUUID().toString(),
                         RootieChatItem.Sender.AI,
-                        "Cảm ơn bạn đã hỏi. Đối với vấn đề '" + text + "', mình khuyên bạn nên tập trung vào việc cấp ẩm và phục hồi hàng rào bảo vệ da.",
+                        finalReply,
                         timeStr,
                         RootieChatItem.ItemType.TEXT,
                         null
                 );
                 chatAdapter.addMessage(responseMsg);
+                if (attachDiagnostic) {
+                    sendDiagnosticCard();
+                }
                 binding.rvChatList.scrollToPosition(chatAdapter.getItemCount() - 1);
                 saveChatHistory();
-            }, 2000);
-        }, 500);
+            });
+        }).start();
     }
 
     private void saveChatHistory() {
         ChatHistoryHelper.saveChatHistory(requireContext(), chatAdapter.getItems());
-    }
-
-    private RootieChatItem.DiagnosticData generateRuleBasedDiagnostic(String skinType) {
-        List<String> products = new ArrayList<>();
-        products.add("0b8fadbc1bd44562f75704e6");
-        products.add("dd23909f6a123054c8cf62f4");
-
-        List<String> phases = new ArrayList<>();
-        phases.add("Làm sạch");
-        phases.add("Dưỡng ẩm");
-
-        List<String> subcats = new ArrayList<>();
-        subcats.add("Tẩy trang");
-        subcats.add("Kem dưỡng");
-
-        List<String> reasons = new ArrayList<>();
-        reasons.add("Dịu nhẹ cho da");
-        reasons.add("Cấp ẩm sâu");
-
-        return new RootieChatItem.DiagnosticData(
-                "Tình trạng da: " + skinType,
-                "Da bạn đang gặp vấn đề về độ ẩm và cần được chăm sóc kỹ lưỡng hơn.",
-                "35%",
-                "Nhạy cảm nhẹ",
-                "Cần phục hồi",
-                "Do tác động từ môi trường và quy trình làm sạch chưa tối ưu.",
-                products,
-                phases,
-                subcats,
-                reasons
-        );
     }
 
     @Override

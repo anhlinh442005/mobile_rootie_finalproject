@@ -31,6 +31,12 @@ public interface RewardPointDao {
     @Query("SELECT * FROM user_coin ORDER BY timestamp DESC")
     List<RewardPointEntity> getAllRewardHistoryList();
 
+    @Query("SELECT COALESCE(SUM(points), 0) FROM user_coin WHERE timestamp >= :sinceMs")
+    int getPointsEarnedSince(long sinceMs);
+
+    @Query("SELECT * FROM user_coin WHERE timestamp >= :sinceMs ORDER BY timestamp DESC")
+    List<RewardPointEntity> getHistorySince(long sinceMs);
+
     @Query("SELECT EXISTS(SELECT 1 FROM user_coin WHERE orderId = :orderId AND reason LIKE '%Đánh giá%')")
     boolean hasReceivedPointsForOrder(String orderId);
 }

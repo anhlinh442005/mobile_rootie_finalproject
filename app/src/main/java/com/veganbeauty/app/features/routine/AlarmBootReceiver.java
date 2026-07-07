@@ -26,7 +26,9 @@ public class AlarmBootReceiver extends BroadcastReceiver {
 
             try {
                 // 2. Reschedule Daily Skin/Weather notification
-                DailySkinWeatherScheduler.scheduleDailyNotification(context);
+                if (com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(context)) {
+                    DailySkinWeatherScheduler.scheduleDailyNotification(context);
+                }
                 Log.d(TAG, "Rescheduled daily weather alarm successfully");
             } catch (Exception e) {
                 Log.e(TAG, "Failed to reschedule daily weather alarm", e);

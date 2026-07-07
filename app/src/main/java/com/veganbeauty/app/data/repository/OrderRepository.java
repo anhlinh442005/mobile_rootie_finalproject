@@ -116,6 +116,15 @@ public class OrderRepository {
         }
     }
 
+    private static boolean isPendingOrderStatus(@Nullable String status) {
+        if (status == null) {
+            return false;
+        }
+        String normalized = status.trim();
+        return "Chờ xác nhận".equalsIgnoreCase(normalized)
+                || "Pending".equalsIgnoreCase(normalized);
+    }
+
     private void handleOrderSnapshot(com.google.firebase.firestore.QuerySnapshot snapshot) {
         List<OrderEntity> orders = new ArrayList<>();
         Gson gson = new Gson();
@@ -126,24 +135,21 @@ public class OrderRepository {
                 if (map == null) continue;
                 JsonElement jsonTree = gson.toJsonTree(map);
                 OrderEntity order = gson.fromJson(jsonTree, OrderEntity.class);
-                if (order == null || order.getId() == null) continue;
+                if (order == null) {
+                    continue;
+                }
+                if (order.getId() == null || order.getId().trim().isEmpty()) {
+                    order.setId(doc.getId());
+                }
+                if (order.getId() == null || order.getId().trim().isEmpty()) {
+                    continue;
+                }
                 enrichCreatedAt(order, doc);
                 normalizeOrderForRoom(order);
 
-                OrderEntity existing = orderDao.getOrderByIdSync(order.getId());
-                String previousStatus = existing != null ? existing.getStatus() : null;
-                String newStatus = order.getStatus();
                 orders.add(order);
-
-                if (existing != null
-                        && newStatus != null
-                        && !newStatus.equals(previousStatus)) {
-                    OrderStatusNotifier.notifyIfStatusChanged(
-                            appContext,
-                            order,
-                            previousStatus,
-                            newStatus
-                    );
+                if (appContext != null) {
+                    OrderStatusNotifier.ensureStatusNotification(appContext, order);
                 }
             } catch (Exception ex) {
                 Log.e("OrderRepository", "Error parsing order", ex);

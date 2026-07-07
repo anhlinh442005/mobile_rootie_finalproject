@@ -32,4 +32,10 @@ public interface CartDao {
 
     @Query("DELETE FROM cart_items")
     int clearCart();
+
+    @Query("SELECT COUNT(*) FROM cart_items")
+    int getCartItemCount();
+
+    @Query("SELECT * FROM cart_items LIMIT 6")
+    List<CartItemEntity> getCartItemsSync();
 }

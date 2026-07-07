@@ -69,4 +69,10 @@ public interface OrderDao {
     @androidx.annotation.Nullable
     @Query("SELECT * FROM orders WHERE id = :orderId")
     OrderEntity getOrderByIdSync(String orderId);
+
+    @Query("SELECT * FROM orders WHERE userId = :userId AND status = 'Chờ xác nhận'")
+    List<OrderEntity> getPendingOrdersForUserSync(String userId);
+
+    @Query("SELECT * FROM orders WHERE userId = :userId OR shippingPhone = :phone OR REPLACE(shippingPhone, ' ', '') = REPLACE(:phone, ' ', '')")
+    List<OrderEntity> getOrdersForBuyerIdentitySync(String userId, String phone);
 }

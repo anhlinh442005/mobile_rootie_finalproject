@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/home_login_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home_bg_sheet"
-    android:fillViewport="true">
+    android:background="@drawable/home_bg_auth_sheet"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    android:scrollbars="none">
 
     <LinearLayout
+        android:id="@+id/home_login_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingHorizontal="24dp"
-        android:paddingBottom="32dp">
+        android:paddingBottom="28dp">
 
         <View
             android:layout_width="48dp"
             android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/com_bg_post"
-            android:backgroundTint="@color/neutral" />
+            android:layout_marginBottom="14dp"
+            android:alpha="0.75"
+            android:background="@drawable/home_sheet_handle" />
 
         <TextView
             android:id="@+id/home_login_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
             android:gravity="center"
             android:text="@string/home_login_title"
-            android:fontFamily="@font/be_vietnam_pro"
-            android:textColor="@color/neutral"
+            android:textColor="@color/home_auth_text"
             android:textSize="25sp"
             android:textStyle="bold" />
 
@@ -38,53 +43,54 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:fontFamily="@font/be_vietnam_pro"
             android:gravity="center"
             android:text="@string/home_login_subtitle"
-            android:textAppearance="@style/TextAppearance.Rootie.Content"
-            android:textColor="@color/neutral"
+            android:textColor="@color/home_auth_text_soft"
             android:textSize="14sp" />
 
         <LinearLayout
             android:id="@+id/home_login_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="22dp"
             android:orientation="vertical"
             android:visibility="gone">
 
             <EditText
                 android:id="@+id/home_input_email"
-               android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/home_bg_input"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/home_bg_auth_input"
                 android:fontFamily="@font/be_vietnam_pro"
-                android:hint="Nhập email hoặc số điện thoại"
+                android:hint="@string/home_hint_email"
                 android:importantForAutofill="no"
-                android:inputType="textVisiblePassword"
+                android:inputType="textEmailAddress"
                 android:paddingHorizontal="16dp"
                 android:textColor="@color/primary"
-                android:textColorHint="@color/primary"
+                android:textColorHint="@color/home_auth_hint"
                 android:textSize="14sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hintEnabled="false"
+                android:layout_marginTop="10dp"
                 app:boxBackgroundMode="none"
                 app:endIconMode="password_toggle"
-                app:endIconTint="@color/content"
-                android:layout_marginTop="12dp">
+                app:endIconTint="@color/tertiary"
+                app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/home_input_password"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:background="@drawable/home_bg_input"
-                    android:hint="Mật khẩu"
+                    android:layout_height="50dp"
+                    android:background="@drawable/home_bg_auth_input"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:hint="@string/home_hint_password"
                     android:inputType="textPassword"
                     android:paddingHorizontal="16dp"
                     android:textColor="@color/primary"
-                    android:textColorHint="@color/primary"
+                    android:textColorHint="@color/home_auth_hint"
                     android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -95,30 +101,32 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/be_vietnam_pro"
                 android:text="@string/home_forgot_password"
-                android:textColor="@color/neutral"
+                android:textColor="@color/home_auth_text_soft"
                 android:textSize="13sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/home_btn_login"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/primary"
+                android:backgroundTint="@color/home_auth_button"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:text="@string/home_btn_login"
-                android:textColor="@color/neutral"
-                android:textSize="14sp"
+                android:textColor="@color/home_auth_text"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 app:cornerRadius="16dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
                 android:text="@string/home_or_login_with"
-                android:textColor="@color/neutral"
+                android:textColor="@color/home_auth_text_soft"
                 android:textSize="13sp" />
 
             <LinearLayout
@@ -130,15 +138,17 @@
 
                 <ImageView
                     android:id="@+id/home_login_google"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_google" />
 
                 <ImageView
                     android:id="@+id/home_login_facebook"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:layout_marginStart="16dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_facebook" />
 
             </LinearLayout>
@@ -147,20 +157,34 @@
                 android:id="@+id/home_register_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
-                android:textColor="@color/neutral"
+                android:textColor="@color/home_auth_text_soft"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/home_guest_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
                 android:text="@string/home_guest_continue"
-                android:textColor="@color/neutral"
+                android:textColor="@color/home_auth_text_soft"
                 android:textSize="13sp" />
+
+            <ImageView
+                android:id="@+id/home_login_mascot"
+                android:layout_width="208dp"
+                android:layout_height="208dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
+                android:alpha="0.92"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/mascot_hello" />
 
         </LinearLayout>
 

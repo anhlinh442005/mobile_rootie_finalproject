@@ -39,6 +39,7 @@ import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
+import com.veganbeauty.app.data.repository.OrderStatusNotifier;
 import com.veganbeauty.app.databinding.ShopFragmentCheckoutBinding;
 import com.veganbeauty.app.utils.AffiliateTrackingHelper;
 import com.veganbeauty.app.features.shop.store.ShopStoreSelectionFragment;
@@ -1056,6 +1057,7 @@ public class ShopCheckoutFragment extends RootieFragment {
                 
                 AffiliateTrackingHelper.recordAffiliateSideEffects(appContext, order);
                 AffiliateTrackingHelper.clearAttributionForItems(appContext, checkoutItems);
+                OrderStatusNotifier.notifyOrderPlaced(appContext, order);
             } catch (Exception e) {
                 Log.e(TAG, "persistOrderSync local DB write failed", e);
             }

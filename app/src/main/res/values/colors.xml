@@ -44,8 +44,15 @@
     <color name="status_cancelled_bg">#FFEBEE</color>
     <color name="status_cancelled_text">#C62828</color>
     <color name="home_sheet_bg">@color/secondary</color>
-    <color name="home_login_button">#2C2C2C</color>
-    <color name="home_input_bg">#EDEBE5</color>
+    <color name="home_login_button">@color/primary</color>
+    <color name="home_input_bg">@color/neutral</color>
+    <color name="home_auth_sheet_top">@color/secondary</color>
+    <color name="home_auth_sheet_bottom">@color/primary</color>
+    <color name="home_auth_text">@color/neutral</color>
+    <color name="home_auth_text_soft">@color/nav_icon_color</color>
+    <color name="home_auth_hint">@color/tertiary</color>
+    <color name="home_auth_input_bg">@color/neutral</color>
+    <color name="home_auth_button">@color/primary</color>
     <color name="home_overlay_dark">#66000000</color>
     <!-- ~70% neutral — hiệu ứng kính mờ trên ảnh peek -->
     <color name="home_peek_overlay">#B3FEFBF4</color>
@@ -90,5 +97,13 @@
     <color name="reward_icon_pending_bg">#F4F7ED</color>
     <color name="reward_gold">#C4A035</color>
     <color name="reward_gold_weekly">#B8972E</color>
+
+    <!-- Register sheet — dùng chung tone auth -->
+    <color name="home_register_sheet_bg">@color/primary</color>
+    <color name="home_register_sheet_top">@color/secondary</color>
+    <color name="home_register_text_primary">@color/neutral</color>
+    <color name="home_register_text_secondary">@color/nav_icon_color</color>
+    <color name="home_register_input_stroke">@color/gray_dark</color>
+    <color name="home_register_hint">@color/tertiary</color>
 </resources>
 

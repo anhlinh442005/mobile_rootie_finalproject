@@ -60,31 +60,42 @@ public final class ProfileSessionHelper {
             return;
         }
         ProfileSession.setUserId(context, user.getUser_id());
-        ProfileSession.setFullName(context, user.getFull_name());
-        ProfileSession.setEmail(context, user.getEmail());
-        ProfileSession.setPhone(context, user.getPhone());
-        String username = user.getUsername();
-        if (username != null && !username.trim().isEmpty()) {
-            String normalized = username.trim();
-            if (!normalized.startsWith("@")) {
-                normalized = "@" + normalized;
+
+        boolean hasLocalEdits = ProfileSession.hasLocalProfileEdits(context);
+        if (!hasLocalEdits) {
+            ProfileSession.setFullName(context, user.getFull_name());
+            ProfileSession.setEmail(context, user.getEmail());
+            ProfileSession.setPhone(context, user.getPhone());
+            String username = user.getUsername();
+            if (username != null && !username.trim().isEmpty()) {
+                String normalized = username.trim();
+                if (!normalized.startsWith("@")) {
+                    normalized = "@" + normalized;
+                }
+                ProfileSession.setUsername(context, normalized);
             }
-            ProfileSession.setUsername(context, normalized);
         }
 
         if (!preserveSessionAvatar) {
-            String avatarUrl = resolveAvatarUrl(user);
-            String sessionAvatar = ProfileSession.getAvatarStored(context);
-            if (isRemoteAvatarUrl(sessionAvatar) && !isRemoteAvatarUrl(avatarUrl)) {
-                // Giữ avatar https (Cloudinary/Firestore) trong session, không ghi đè bằng content:// local.
-            } else if (isUsableAvatarUrl(avatarUrl)) {
-                ProfileSession.setAvatar(context, avatarUrl.trim());
+            String localFileUri = getLocalAvatarFileUri(context);
+            if (localFileUri != null) {
+                ProfileSession.setAvatar(context, localFileUri);
+            } else {
+                String avatarUrl = resolveAvatarUrl(user);
+                String sessionAvatar = ProfileSession.getAvatarStored(context);
+                if (isRemoteAvatarUrl(sessionAvatar) && !isRemoteAvatarUrl(avatarUrl)) {
+                    // Giữ avatar https (Cloudinary/Firestore) trong session, không ghi đè bằng content:// local.
+                } else if (isUsableAvatarUrl(avatarUrl)) {
+                    ProfileSession.setAvatar(context, avatarUrl.trim());
+                }
             }
-            if (user.getPrimary_image() != null && !user.getPrimary_image().trim().isEmpty()) {
+            if (!hasLocalEdits
+                    && user.getPrimary_image() != null
+                    && !user.getPrimary_image().trim().isEmpty()) {
                 ProfileSession.setPrimaryImage(context, user.getPrimary_image().trim());
             }
         }
-        if (user.getBio() != null && !user.getBio().trim().isEmpty()) {
+        if (!hasLocalEdits && user.getBio() != null && !user.getBio().trim().isEmpty()) {
             ProfileSession.setBio(context, user.getBio().trim());
         }
     }

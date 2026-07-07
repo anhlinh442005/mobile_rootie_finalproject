@@ -78,6 +78,10 @@ public class SyncDataHelper {
             if (!ProfileSession.isLoggedIn(context)) {
                 return;
             }
+            if (ProfileSession.hasLocalProfileEdits(context)) {
+                persistProfileLocallyBlocking(context);
+                return;
+            }
             UserEntity user = ProfileSessionHelper.findCurrentUser(context);
             if (user != null) {
                 ProfileSessionHelper.syncSessionFromUser(context, user, false);

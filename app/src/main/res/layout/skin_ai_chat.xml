@@ -110,7 +110,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="8dp"
+        android:paddingBottom="12dp"
         android:clipToPadding="false"
+        android:scrollbars="vertical"
         app:layout_constraintTop_toBottomOf="@id/layoutHeader"
         app:layout_constraintBottom_toTopOf="@id/layoutQuickPrompts" />
 

@@ -2,8 +2,6 @@ package com.veganbeauty.app.features.shop.store;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,7 +9,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,7 +25,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.lifecycle.FlowLiveDataConversions;
@@ -525,8 +521,8 @@ public class ShopStoreSystemFragment extends RootieFragment {
     private void showDealNotifications(StoreEntity store) {
         Context ctx = getContext();
         if (ctx == null) return;
-        String titleText = "Ưu đãi gần bạn!";
         String messageText = "Bạn đang ở gần cửa hàng " + store.getTenCuaHang() + ", vào săn deal ngay!";
+        StoreProximityHelper.notifyNearStore(ctx, store);
 
         if (_binding != null) {
             getBinding().tvNotiMessage.setText(messageText);
@@ -552,41 +548,6 @@ public class ShopStoreSystemFragment extends RootieFragment {
                             .start();
                 }
             }, 5000);
-        }
-
-        try {
-            String channelId = "proximity_deal_channel";
-            String channelName = "Ưu đãi gần bạn";
-            NotificationManager notiManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-                channel.setDescription("Thông báo khi bạn ở gần cửa hàng Rootie");
-                if (notiManager != null) {
-                    notiManager.createNotificationChannel(channel);
-                }
-            }
-
-            Uri mapUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + store.getLat() + "," + store.getLng());
-            Intent intent = new Intent(Intent.ACTION_VIEW, mapUri);
-            android.app.PendingIntent pendingIntent = android.app.PendingIntent.getActivity(
-                    ctx, 0, intent,
-                    android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
-            );
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, channelId)
-                    .setSmallIcon(R.drawable.ic_bell)
-                    .setContentTitle(titleText)
-                    .setContentText(messageText)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true);
-
-            if (notiManager != null) {
-                notiManager.notify(101, builder.build());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

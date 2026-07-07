@@ -1,6 +1,8 @@
 package com.veganbeauty.app.features.profile;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -29,6 +31,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointBackward;
@@ -91,6 +94,16 @@ public class AccountProfileEditFragment extends RootieFragment {
             new ActivityResultContracts.TakePicturePreview(), bitmap -> {
                 if (bitmap != null) {
                     showCropperDialog(bitmap);
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<String> requestCameraPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    launchCameraPreview();
+                } else {
+                    Toast.makeText(requireContext(), "Cần cấp quyền camera để chụp ảnh", Toast.LENGTH_SHORT).show();
                 }
             }
     );
@@ -341,6 +354,8 @@ public class AccountProfileEditFragment extends RootieFragment {
                 Toast.makeText(saveCtx, "Không thể lưu hồ sơ. Vui lòng thử lại.", Toast.LENGTH_LONG).show();
                 return;
             }
+            hasUnsavedChanges = false;
+            reloadProfileFields(saveCtx);
             if (!cloudSynced) {
                 Toast.makeText(saveCtx, "Đã lưu hồ sơ thành công.", Toast.LENGTH_SHORT).show();
             }
@@ -389,12 +404,7 @@ public class AccountProfileEditFragment extends RootieFragment {
 
         dialogView.findViewById(R.id.btn_pick_camera).setOnClickListener(v -> {
             dialog.dismiss();
-            try {
-                takePhotoLauncher.launch(null);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(getContext(), "Không thể mở camera", Toast.LENGTH_SHORT).show();
-            }
+            openCameraWithPermission();
         });
 
         dialogView.findViewById(R.id.btn_pick_gallery).setOnClickListener(v -> {
@@ -410,6 +420,24 @@ public class AccountProfileEditFragment extends RootieFragment {
         dialogView.findViewById(R.id.btn_picker_cancel).setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+
+    private void openCameraWithPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            launchCameraPreview();
+        } else {
+            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void launchCameraPreview() {
+        try {
+            takePhotoLauncher.launch(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Không thể mở camera", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private float startX = 0f;
@@ -540,15 +568,36 @@ public class AccountProfileEditFragment extends RootieFragment {
 
     private void handleAvatarTaken(Bitmap bitmap) {
         String path = saveAvatarBitmapToInternalStorage(bitmap);
-        if (path != null) {
-            String fileUri = "file://" + path;
-            ProfileSession.setAvatar(requireContext(), fileUri);
-            loadAvatarImage(fileUri);
-            ProfileUpdateNotifier.notifyUpdated();
-            Toast.makeText(requireContext(), "Cập nhật ảnh đại diện thành công (Local)", Toast.LENGTH_SHORT).show();
-        } else {
+        if (path == null) {
             Toast.makeText(getContext(), "Lỗi khi lưu ảnh", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        Context ctx = requireContext();
+        String fileUri = "file://" + path;
+        ProfileSession.setAvatar(ctx, fileUri);
+        ProfileSession.markLocalProfileEdited(ctx);
+        hasUnsavedChanges = true;
+        loadAvatarImage(fileUri);
+        ProfileUpdateNotifier.notifyUpdated();
+        Toast.makeText(ctx, "Đang tải ảnh lên...", Toast.LENGTH_SHORT).show();
+
+        SyncDataHelper.uploadAndSyncAvatar(ctx, Uri.parse(fileUri), (success, url, error) -> {
+            if (binding == null || !isAdded()) {
+                return;
+            }
+            if (success && url != null) {
+                loadAvatarImage(url);
+                ProfileUpdateNotifier.notifyUpdated();
+                Toast.makeText(ctx, "Cập nhật ảnh đại diện thành công", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(
+                        ctx,
+                        error != null ? error : "Đã lưu trên máy; upload cloud sẽ thử lại sau",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
     }
 
 

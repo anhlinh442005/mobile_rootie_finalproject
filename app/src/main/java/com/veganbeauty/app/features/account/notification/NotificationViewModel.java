@@ -14,13 +14,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class NotificationViewModel extends RootieViewModel {
 
     private final NotificationRepository repository;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final MutableLiveData<String> _selectedTab = new MutableLiveData<>("Tất cả");
     public final LiveData<String> selectedTab = _selectedTab;
@@ -80,11 +77,16 @@ public class NotificationViewModel extends RootieViewModel {
             }
         }
 
+        filteredByQuery.sort((a, b) -> Long.compare(
+                NotificationDateHelper.getTimeMillis(b.getTime()),
+                NotificationDateHelper.getTimeMillis(a.getTime())
+        ));
+
         List<NotificationListItem> flatList = new ArrayList<>();
         Map<String, List<NotificationItem>> grouped = new LinkedHashMap<>();
-        
+
         for (NotificationItem item : filteredByQuery) {
-            String section = item.getSection();
+            String section = NotificationDateHelper.getSectionFromTime(item.getTime());
             if (!grouped.containsKey(section)) {
                 grouped.put(section, new ArrayList<>());
             }
@@ -128,42 +130,18 @@ public class NotificationViewModel extends RootieViewModel {
     }
 
     public void markAsRead(String id) {
-        executor.execute(() -> {
-            try {
-                repository.markAsRead(id);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        repository.markAsRead(id);
     }
 
     public void markAllAsRead() {
-        executor.execute(() -> {
-            try {
-                repository.markAllAsRead();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        repository.markAllAsRead();
     }
 
     public void deleteNotification(String id) {
-        executor.execute(() -> {
-            try {
-                repository.deleteNotification(id);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        repository.deleteNotification(id);
     }
 
     public void deleteAllNotifications() {
-        executor.execute(() -> {
-            try {
-                repository.deleteAllNotifications();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        repository.deleteAllNotifications();
     }
 }
