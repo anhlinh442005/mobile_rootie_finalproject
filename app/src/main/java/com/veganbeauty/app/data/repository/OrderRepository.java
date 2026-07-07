@@ -2,10 +2,11 @@ package com.veganbeauty.app.data.repository;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.veganbeauty.app.data.local.LocalJsonReader;
@@ -19,9 +20,12 @@ import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.repository.OrderStatusNotifier;
 import com.veganbeauty.app.utils.SyncDataHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,7 +36,8 @@ import kotlinx.coroutines.flow.Flow;
 public class OrderRepository {
 
     private static final String TAG = "OrderRepository";
-    private static final int ADMIN_ORDERS_LIMIT = 100;
+
+    private static volatile int listenerGeneration = 0;
 
     private final OrderDao orderDao;
     private final RewardPointDao rewardPointDao;
@@ -70,11 +75,6 @@ public class OrderRepository {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
 
-        if (com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            Log.d(TAG, "Skipping global orders listener for admin; use startAdminOrdersListener on order screen");
-            return;
-        }
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         com.google.firebase.firestore.Query query = null;
 
@@ -87,22 +87,8 @@ public class OrderRepository {
         attachOrderListener(query);
     }
 
-    /** Admin-only: recent orders realtime — call from order list screen resume. */
-    public void startAdminOrdersListener(String userId) {
-        String safeUserId = userId != null ? userId.trim() : "";
-        if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            return;
-        }
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        com.google.firebase.firestore.Query query = db.collection("orders")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .limit(ADMIN_ORDERS_LIMIT);
-        attachOrderListener(query);
-        Log.d(TAG, "Admin orders listener started (limit " + ADMIN_ORDERS_LIMIT + ", orderBy createdAt desc)");
-    }
-
     public void stopListeningToOrders() {
+        listenerGeneration++;
         if (orderListener != null) {
             orderListener.remove();
             orderListener = null;
@@ -175,18 +161,13 @@ public class OrderRepository {
     public Flow<List<OrderEntity>> getOrdersForBuyer(String userId, String phone) {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
-        if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            startListeningToOrders(safeUserId, safePhone);
-        }
+        startListeningToOrders(safeUserId, safePhone);
         return observeOrdersForBuyer(safeUserId, safePhone);
     }
 
     public Flow<List<OrderEntity>> observeOrdersForBuyer(String userId, String phone) {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
-        if (com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            return orderDao.getAllOrders();
-        }
         if (!safeUserId.isEmpty()) {
             if (!safePhone.isEmpty()) {
                 return orderDao.getOrdersForBuyerIdentity(safeUserId, safePhone);
@@ -195,14 +176,38 @@ public class OrderRepository {
         } else if (!safePhone.isEmpty()) {
             return orderDao.getOrdersForGuestPhone(safePhone);
         } else {
-            return orderDao.getAllOrders();
+            return orderDao.getOrdersForUser("__no_user__");
+        }
+    }
+
+    public void syncOrdersFromFirebaseBlocking(@Nullable String userId, @Nullable String phone) {
+        String safeUserId = userId != null ? userId.trim() : "";
+        String safePhone = phone != null ? phone.trim() : "";
+        if (safeUserId.isEmpty() && safePhone.isEmpty()) {
+            return;
+        }
+
+        try {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            com.google.firebase.firestore.Query query = null;
+            if (!safeUserId.isEmpty()) {
+                query = db.collection("orders").whereEqualTo("userId", safeUserId);
+            } else if (!safePhone.isEmpty()) {
+                query = db.collection("orders").whereEqualTo("billingPhone", safePhone);
+            }
+            if (query != null) {
+                QuerySnapshot snapshot = Tasks.await(query.get());
+                handleOrderSnapshot(snapshot);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "syncOrdersFromFirebase failed", e);
         }
     }
 
     public void refreshOrders(String userId, String phone) {
         new Thread(() -> {
             try {
-                syncOrdersFromAssetsBlocking();
+                syncOrdersFromFirebaseBlocking(userId, phone);
 
                 if (rewardPointDao.getAllRewardHistoryList().isEmpty()) {
                     rewardPointDao.insertRewardPoints(new RewardPointEntity(
@@ -229,10 +234,7 @@ public class OrderRepository {
                     userGiftDao.insertUserGifts(initGifts);
                 }
 
-                String safeUserId = userId != null ? userId.trim() : "";
-                if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-                    startListeningToOrders(userId, phone);
-                }
+                startListeningToOrders(userId, phone);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -305,10 +307,13 @@ public class OrderRepository {
 
             if (qualifiesForCoins) {
                 if (!rewardPointDao.hasReceivedPointsForOrder(orderId)) {
-                    rewardPointDao.insertRewardPoints(new RewardPointEntity(
-                            0, orderId, 200, "Đánh giá đơn hàng " + orderId + " kèm hình ảnh", System.currentTimeMillis()
-                    ));
-                    SyncDataHelper.syncRewardPointsToFirestore(localJsonReader.getContext());
+                    com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                            localJsonReader.getAppContext(),
+                            orderId,
+                            200,
+                            "Đánh giá đơn hàng " + orderId + " kèm hình ảnh",
+                            "từ đánh giá đơn hàng"
+                    );
                     return true;
                 }
             }
@@ -325,13 +330,16 @@ public class OrderRepository {
             try {
                 OrderEntity existing = orderDao.getOrderByIdSync(orderId);
                 String previousStatus = existing != null ? existing.getStatus() : null;
+                if ("Đã hủy".equals(previousStatus)) {
+                    return;
+                }
+                Tasks.await(FirebaseFirestore.getInstance().collection("orders").document(orderId)
+                        .update("status", "Đã hủy"));
                 orderDao.updateOrderStatus(orderId, "Đã hủy");
                 if (existing != null) {
                     existing.setStatus("Đã hủy");
                     OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, "Đã hủy");
                 }
-                FirebaseFirestore.getInstance().collection("orders").document(orderId)
-                        .update("status", "Đã hủy");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -454,8 +462,39 @@ public class OrderRepository {
             }
         }
         if (order.getCreatedAt() <= 0L) {
-            order.setCreatedAt(createdAtFromOrderId(order.getId()));
+            long fromId = createdAtFromOrderId(order.getId());
+            if (fromId > 0L) {
+                order.setCreatedAt(fromId);
+                return;
+            }
+            if (doc != null) {
+                order.setCreatedAt(createdAtFromOrderFields(
+                        doc.getString("orderDate"),
+                        doc.getString("orderTime")
+                ));
+            }
         }
+    }
+
+    private static long resolveCreatedAtForFirestore(DocumentSnapshot doc) {
+        if (doc == null) {
+            return 0L;
+        }
+        Long existing = doc.contains("createdAt") ? doc.getLong("createdAt") : null;
+        if (existing != null && existing > 0L) {
+            return existing;
+        }
+
+        String orderId = doc.getString("id");
+        if (orderId == null || orderId.trim().isEmpty()) {
+            orderId = doc.getId();
+        }
+
+        long fromId = createdAtFromOrderId(orderId);
+        if (fromId > 0L) {
+            return fromId;
+        }
+        return createdAtFromOrderFields(doc.getString("orderDate"), doc.getString("orderTime"));
     }
 
     private static long createdAtFromOrderId(@Nullable String orderId) {
@@ -467,8 +506,31 @@ public class OrderRepository {
             return 0L;
         }
         try {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US);
-            java.util.Date parsed = sdf.parse(matcher.group(1));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+            Date parsed = sdf.parse(matcher.group(1));
+            return parsed != null ? parsed.getTime() : 0L;
+        } catch (Exception e) {
+            return 0L;
+        }
+    }
+
+    private static long createdAtFromOrderFields(@Nullable String orderDate, @Nullable String orderTime) {
+        if (orderDate == null || orderDate.trim().isEmpty()) {
+            return 0L;
+        }
+        try {
+            String datePart = orderDate.trim();
+            String timePart = orderTime != null ? orderTime.trim() : "";
+            SimpleDateFormat sdf;
+            String raw;
+            if (!timePart.isEmpty()) {
+                sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US);
+                raw = datePart + " " + timePart;
+            } else {
+                sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+                raw = datePart;
+            }
+            Date parsed = sdf.parse(raw);
             return parsed != null ? parsed.getTime() : 0L;
         } catch (Exception e) {
             return 0L;
@@ -501,13 +563,16 @@ public class OrderRepository {
             try {
                 OrderEntity existing = orderDao.getOrderByIdSync(orderId);
                 String previousStatus = existing != null ? existing.getStatus() : null;
+                if (status != null && status.equals(previousStatus)) {
+                    return;
+                }
+                Tasks.await(FirebaseFirestore.getInstance().collection("orders").document(orderId)
+                        .update("status", status));
                 orderDao.updateOrderStatus(orderId, status);
                 if (existing != null) {
                     existing.setStatus(status);
                     OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, status);
                 }
-                FirebaseFirestore.getInstance().collection("orders").document(orderId)
-                        .update("status", status);
             } catch (Exception e) {
                 e.printStackTrace();
             }

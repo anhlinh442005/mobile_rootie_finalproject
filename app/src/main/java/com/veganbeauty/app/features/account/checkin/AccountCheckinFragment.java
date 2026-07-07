@@ -32,9 +32,7 @@ import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.AccountCheckinFragmentBinding;
 import com.veganbeauty.app.databinding.ItemCalendarDayBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
-import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
-import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -399,14 +397,13 @@ public class AccountCheckinFragment extends RootieFragment {
         new Thread(() -> {
             try {
                 SimpleDateFormat reasonSdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                        0,
+                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        requireContext(),
                         "DAILY_CHECKIN",
                         pointsAwarded,
                         "Điểm danh hàng ngày (" + reasonSdf.format(new Date()) + ")",
-                        System.currentTimeMillis()
-                ));
-                SyncDataHelper.syncRewardPointsToFirestore(requireContext());
+                        "từ điểm danh hàng ngày"
+                );
 
                 SharedPreferences prefs = requireContext().getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE);
                 Set<String> savedDates = prefs.getStringSet("checked_in_dates", new HashSet<>());
@@ -416,7 +413,6 @@ public class AccountCheckinFragment extends RootieFragment {
 
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        showSuccessDialog(pointsAwarded);
                         refreshUI();
                     });
                 }
@@ -424,10 +420,6 @@ public class AccountCheckinFragment extends RootieFragment {
                 e.printStackTrace();
             }
         }).start();
-    }
-
-    private void showSuccessDialog(int points) {
-        CoinRewardDialogHelper.show(this, points, "từ điểm danh hàng ngày");
     }
 
     @Override

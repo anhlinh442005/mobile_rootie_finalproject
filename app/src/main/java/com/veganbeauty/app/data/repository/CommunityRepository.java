@@ -1,5 +1,7 @@
 package com.veganbeauty.app.data.repository;
 
+import android.util.Log;
+
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.dao.CommunityDao;
 import com.veganbeauty.app.data.local.entities.CommunityBlogEntity;
@@ -15,6 +17,8 @@ import java.util.List;
 import kotlinx.coroutines.flow.Flow;
 
 public class CommunityRepository {
+
+    private static final String TAG = "CommunityRepository";
 
     private final CommunityDao communityDao;
     private final LocalJsonReader localJsonReader;
@@ -52,6 +56,24 @@ public class CommunityRepository {
 
     public void seedFromAssetsSync() {
         seedFromAssets();
+    }
+
+    /** Load JSON seed data when local community tables are still empty. */
+    public void seedFromAssetsIfNeeded() {
+        try {
+            int ingredientCount = communityDao.countIngredientsSync();
+            int postCount = communityDao.countPostsSync();
+            if (ingredientCount > 0 && postCount > 0) {
+                Log.d(TAG, "Community seed skipped (ingredients=" + ingredientCount + ", posts=" + postCount + ")");
+                return;
+            }
+            Log.d(TAG, "Community seed starting (ingredients=" + ingredientCount + ", posts=" + postCount + ")");
+            seedFromAssets();
+            Log.d(TAG, "Community seed done (ingredients=" + communityDao.countIngredientsSync()
+                    + ", posts=" + communityDao.countPostsSync() + ")");
+        } catch (Exception e) {
+            Log.e(TAG, "Community seed failed", e);
+        }
     }
 
     public void refreshCommunityData() {

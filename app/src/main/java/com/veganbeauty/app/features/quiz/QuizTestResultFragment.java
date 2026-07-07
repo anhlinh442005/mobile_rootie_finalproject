@@ -706,15 +706,17 @@ public class QuizTestResultFragment extends RootieFragment {
         } catch (Exception e) { e.printStackTrace(); }
 
         if (isEligibleForReward) {
-            RootieDatabase db = RootieDatabase.getDatabase(requireContext());
             LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
                     BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
                         try {
-                            db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                                    0, "SYSTEM_WEEKLY_QUIZ", QUIZ_REWARD_POINTS,
-                                    "Cập nhật làn da định kỳ hàng tuần (+" + QUIZ_REWARD_POINTS + " xu)", currentTime
-                            ));
-                            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(requireContext());
+                            com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                                    requireContext(),
+                                    "SYSTEM_WEEKLY_QUIZ",
+                                    QUIZ_REWARD_POINTS,
+                                    "Cập nhật làn da định kỳ hàng tuần (+" + QUIZ_REWARD_POINTS + " xu)",
+                                    "từ quiz cập nhật chỉ số da",
+                                    false
+                            );
                         } catch (Exception e) { e.printStackTrace(); }
 
                         if (listener != null && isAdded()) {
@@ -744,7 +746,8 @@ public class QuizTestResultFragment extends RootieFragment {
                     getParentFragmentManager().clearFragmentResultListener(CoinRewardDialogHelper.RESULT_DISMISSED);
                     if (onDismiss != null) onDismiss.run();
                 });
-        CoinRewardDialogHelper.show(this, rewardPoints, source);
+        int total = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
+        CoinRewardDialogHelper.show(getParentFragmentManager(), rewardPoints, total, source);
     }
 
     private void popBackStackIfAdded() {

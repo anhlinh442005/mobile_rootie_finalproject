@@ -382,19 +382,20 @@ public class SkinReminderFragment extends RootieFragment {
             return;
         }
 
-        RootieDatabase db = RootieDatabase.getDatabase(ctx);
         final int rewardPoints = 10;
         new Thread(() -> {
             try {
-                db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                        0, "SOCIAL_TASK", rewardPoints, "Kết nối bạn bè (Social Task)", System.currentTimeMillis()
-                ));
-                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx);
+                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        ctx,
+                        "SOCIAL_TASK",
+                        rewardPoints,
+                        "Kết nối bạn bè (Social Task)",
+                        "từ nhiệm vụ kết nối bạn bè"
+                );
                 ProfileSession.addSkinSocialCompletedDate(ctx, todayStr);
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         Toast.makeText(ctx, "Kết nối thành công!", Toast.LENGTH_SHORT).show();
-                        CoinRewardDialogHelper.show(SkinReminderFragment.this, rewardPoints, "từ nhiệm vụ kết nối bạn bè");
                         refreshUI();
                     });
                 }

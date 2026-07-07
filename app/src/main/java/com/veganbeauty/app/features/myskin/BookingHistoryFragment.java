@@ -55,6 +55,7 @@ public class BookingHistoryFragment extends RootieFragment {
 
     private ListenerRegistration bookingsListener;
     private ListenerRegistration bookingsListenerByEmail;
+    private ListenerRegistration bookingsListenerByUserId;
     private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
 
     @Nullable
@@ -112,24 +113,39 @@ public class BookingHistoryFragment extends RootieFragment {
     private void startRealtimeListener() {
         stopRealtimeListener();
         String userEmail = ProfileSession.getEmail(requireContext());
-        if (userEmail == null || userEmail.trim().isEmpty()) return;
+        String userId = ProfileSession.getUserId(requireContext());
+        if ((userEmail == null || userEmail.trim().isEmpty())
+                && (userId == null || userId.trim().isEmpty())) {
+            return;
+        }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String normalizedEmail = userEmail.trim();
 
-        bookingsListener = db.collection("bookings")
-                .whereEqualTo("userEmail", normalizedEmail)
-                .addSnapshotListener((snapshots, error) -> {
-                    if (error != null || snapshots == null || !isAdded()) return;
-                    onBookingsSnapshotChanged(snapshots.getDocuments());
-                });
+        if (userEmail != null && !userEmail.trim().isEmpty()) {
+            String normalizedEmail = userEmail.trim();
+            bookingsListener = db.collection("bookings")
+                    .whereEqualTo("userEmail", normalizedEmail)
+                    .addSnapshotListener((snapshots, error) -> {
+                        if (error != null || snapshots == null || !isAdded()) return;
+                        onBookingsSnapshotChanged(snapshots.getDocuments());
+                    });
 
-        bookingsListenerByEmail = db.collection("bookings")
-                .whereEqualTo("email", normalizedEmail)
-                .addSnapshotListener((snapshots, error) -> {
-                    if (error != null || snapshots == null || !isAdded()) return;
-                    onBookingsSnapshotChanged(snapshots.getDocuments());
-                });
+            bookingsListenerByEmail = db.collection("bookings")
+                    .whereEqualTo("email", normalizedEmail)
+                    .addSnapshotListener((snapshots, error) -> {
+                        if (error != null || snapshots == null || !isAdded()) return;
+                        onBookingsSnapshotChanged(snapshots.getDocuments());
+                    });
+        }
+
+        if (userId != null && !userId.trim().isEmpty()) {
+            bookingsListenerByUserId = db.collection("bookings")
+                    .whereEqualTo("userId", userId.trim())
+                    .addSnapshotListener((snapshots, error) -> {
+                        if (error != null || snapshots == null || !isAdded()) return;
+                        onBookingsSnapshotChanged(snapshots.getDocuments());
+                    });
+        }
     }
 
     private void onBookingsSnapshotChanged(List<DocumentSnapshot> docs) {
@@ -226,6 +242,10 @@ public class BookingHistoryFragment extends RootieFragment {
             bookingsListenerByEmail.remove();
             bookingsListenerByEmail = null;
         }
+        if (bookingsListenerByUserId != null) {
+            bookingsListenerByUserId.remove();
+            bookingsListenerByUserId = null;
+        }
     }
 
     private void syncBookingsFromRemote() {
@@ -266,6 +286,10 @@ public class BookingHistoryFragment extends RootieFragment {
             java.util.Calendar now = java.util.Calendar.getInstance();
             for (BookingHistoryEntity b : list) {
                 if ("Sắp diễn ra".equals(b.getStatus()) || "Chờ xác nhận".equals(b.getStatus()) || "pending".equalsIgnoreCase(b.getStatus())) {
+                    String existingReason = b.getCancelReason();
+                    if (existingReason != null && existingReason.startsWith("Hệ thống tự động")) {
+                        continue;
+                    }
                     java.util.Calendar bookingTime = parseBookingTime(b);
                     if (bookingTime != null && bookingTime.before(now)) {
                         String oldStatus = b.getStatus();
@@ -275,14 +299,16 @@ public class BookingHistoryFragment extends RootieFragment {
                         } else {
                             b.setCancelReason("Hệ thống tự động huỷ do đã quá thời gian hẹn mà khách không đến Spa.");
                         }
-                        
+
                         final String finalId = b.getId();
                         final String finalReason = b.getCancelReason();
                         final android.content.Context ctx = requireContext().getApplicationContext();
-                        new Thread(() -> {
-                            new LocalJsonReader(ctx).updateBookingStatus(finalId, "Đã huỷ", finalReason);
-                            new com.veganbeauty.app.data.remote.FirestoreService().updateBookingStatus(finalId, "Đã huỷ", finalReason);
-                        }).start();
+                        ioExecutor.execute(() -> {
+                            FirestoreService firestoreService = new FirestoreService();
+                            if (firestoreService.updateBookingStatus(finalId, "Đã huỷ", finalReason)) {
+                                new LocalJsonReader(ctx).updateBookingStatus(finalId, "Đã huỷ", finalReason);
+                            }
+                        });
                     }
                 }
             }
@@ -433,8 +459,12 @@ public class BookingHistoryFragment extends RootieFragment {
 
                 final String bookingId = data.getId();
                 android.content.Context appContext = requireContext().getApplicationContext();
-                new LocalJsonReader(appContext).updateBookingStatus(bookingId, "Đã huỷ", finalReason);
-                ioExecutor.execute(() -> new FirestoreService().updateBookingStatus(bookingId, "Đã huỷ", finalReason));
+                ioExecutor.execute(() -> {
+                    FirestoreService firestoreService = new FirestoreService();
+                    if (firestoreService.updateBookingStatus(bookingId, "Đã huỷ", finalReason)) {
+                        new LocalJsonReader(appContext).updateBookingStatus(bookingId, "Đã huỷ", finalReason);
+                    }
+                });
 
                 Toast.makeText(requireContext(), "Huỷ lịch thành công", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
