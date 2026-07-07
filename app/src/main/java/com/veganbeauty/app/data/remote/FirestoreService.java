@@ -11,7 +11,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -180,6 +182,59 @@ public class FirestoreService {
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    public boolean isCollectionEmpty(String collectionName) {
+        try {
+            QuerySnapshot snapshot = Tasks.await(db.collection(collectionName).limit(1).get());
+            return snapshot.isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    public void seedVouchersFromJson(String json) {
+        if (json == null || json.trim().isEmpty()) {
+            return;
+        }
+        try {
+            org.json.JSONArray array = new org.json.JSONArray(json);
+            for (int i = 0; i < array.length(); i++) {
+                org.json.JSONObject obj = array.getJSONObject(i);
+                String id = obj.optString("id", "");
+                if (id.isEmpty()) {
+                    id = UUID.randomUUID().toString();
+                }
+                Map<String, Object> map = jsonObjectToMap(obj);
+                map.put("id", id);
+                if (!map.containsKey("isActive")) {
+                    map.put("isActive", obj.optBoolean("isActive", true));
+                }
+                Tasks.await(db.collection("vouchers").document(id).set(map, SetOptions.merge()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void notifyAdminNewBooking(BookingHistoryEntity booking) {
+        if (booking == null) {
+            return;
+        }
+        try {
+            Map<String, Object> notification = new HashMap<>();
+            notification.put("title", "Có lịch đặt Spa mới!");
+            notification.put("message", booking.getUserName() + " đặt " + booking.getServiceName()
+                    + " tại " + booking.getStoreName() + " — " + booking.getDateDisplay() + " " + booking.getTime());
+            notification.put("type", "NEW_BOOKING");
+            notification.put("isRead", false);
+            notification.put("createdAt", System.currentTimeMillis());
+            notification.put("bookingId", booking.getId());
+            Tasks.await(db.collection("notification_admin").add(notification));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

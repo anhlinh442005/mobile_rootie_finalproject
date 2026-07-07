@@ -332,8 +332,11 @@ public class BookingFragment extends RootieFragment {
         final android.content.Context appContext = requireContext().getApplicationContext();
         final BookingHistoryEntity bookingFinal = booking;
         executor.execute(() -> {
-            new LocalJsonReader(appContext).addBooking(bookingFinal);
-            new FirestoreService().uploadBooking(bookingFinal);
+            FirestoreService firestoreService = new FirestoreService();
+            if (firestoreService.uploadBooking(bookingFinal)) {
+                new LocalJsonReader(appContext).addBooking(bookingFinal);
+                firestoreService.notifyAdminNewBooking(bookingFinal);
+            }
         });
 
         BookingSuccessFragment successFragment = BookingSuccessFragment.newInstance(bookingId, storeNameStr, dateTime, specialist, service);

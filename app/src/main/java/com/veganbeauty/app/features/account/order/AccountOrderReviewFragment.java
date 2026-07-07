@@ -323,12 +323,12 @@ public class AccountOrderReviewFragment extends RootieFragment {
                 
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        new MaterialAlertDialogBuilder(requireContext())
-                                .setTitle("Thành công!")
-                                .setMessage("Đánh giá của bạn đã được ghi nhận. Bạn nhận được +200 xu thưởng vào tài khoản!")
-                                .setPositiveButton("Tuyệt vời", (dialog, which) -> getParentFragmentManager().popBackStack())
-                                .setCancelable(false)
-                                .show();
+                        if (success) {
+                            getParentFragmentManager().popBackStack();
+                        } else {
+                            Toast.makeText(requireContext(), "Đã lưu đánh giá thành công!", Toast.LENGTH_SHORT).show();
+                            getParentFragmentManager().popBackStack();
+                        }
                     });
                 }
                         

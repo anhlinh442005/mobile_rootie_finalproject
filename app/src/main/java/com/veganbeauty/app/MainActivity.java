@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        com.veganbeauty.app.utils.CoinRewardDialogHelper.registerHost(this);
 
         // Schedule daily weather & skin advice notification at 6:30 AM
         try {
@@ -120,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
                         );
                 storeRepository.refreshStores();
 
+                com.veganbeauty.app.data.repository.VoucherRepository.seedFromAssetsIfNeeded(getApplicationContext());
+
                 // === Seed ALL 27 json files into raw_json_assets table ===
                 com.veganbeauty.app.data.local.dao.RawJsonAssetDao rawJsonDao = db.rawJsonAssetDao();
                 String[] allAssets = getAssets().list("");
@@ -148,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-                
+
                 // === Add a mock entry to user_memory table so it isn't empty ===
                 com.veganbeauty.app.data.local.dao.CommunityDao communityDao = db.communityDao();
                 com.veganbeauty.app.data.local.entities.UserMemoryEntity mockMemory = new com.veganbeauty.app.data.local.entities.UserMemoryEntity(
@@ -161,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                         System.currentTimeMillis()
                 );
                 communityDao.insertUserMemory(mockMemory);
-                
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -891,6 +894,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        com.veganbeauty.app.utils.CoinRewardDialogHelper.unregisterHost(this);
         super.onDestroy();
         try {
             String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getCurrentUserId(this);

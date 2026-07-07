@@ -28,6 +28,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.repository.OrderRepository;
+import com.veganbeauty.app.data.repository.VoucherRepository;
 import com.veganbeauty.app.databinding.ShopFragmentVoucherBinding;
 import com.veganbeauty.app.features.profile.AccountVoucherFragment;
 import com.veganbeauty.app.features.profile.VoucherItem;
@@ -93,6 +94,11 @@ public class ShopVoucherFragment extends RootieFragment {
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         setupRecyclerView();
         setupListeners();
+        VoucherRepository.loadActiveVouchers(requireContext(), entities -> {
+            if (!isAdded()) return;
+            cachedSystemVouchers = VoucherRepository.toParcelableItems(entities);
+            loadVouchers();
+        });
         loadVouchers();
     }
 
@@ -176,6 +182,8 @@ public class ShopVoucherFragment extends RootieFragment {
         if (imm != null) imm.hideSoftInputFromWindow(binding.etCouponCode.getWindowToken(), 0);
     }
 
+    private List<VoucherItem> cachedSystemVouchers = new ArrayList<>();
+
     private void loadVouchers() {
         Context context = requireContext();
         RootieDatabase db = RootieDatabase.getDatabase(context);
@@ -184,7 +192,9 @@ public class ShopVoucherFragment extends RootieFragment {
         FlowLiveDataConversions.asLiveData(repository.getAllUserGifts())
             .observe(getViewLifecycleOwner(), dbGifts -> {
                 if (dbGifts == null) return;
-                List<VoucherItem> systemVouchers = loadVouchersFromAssets(context);
+                List<VoucherItem> systemVouchers = cachedSystemVouchers.isEmpty()
+                        ? loadVouchersFromAssets(context)
+                        : cachedSystemVouchers;
                 List<VoucherItem> mappedDbVouchers = new ArrayList<>();
 
                 for (UserGiftEntity gift : dbGifts) {

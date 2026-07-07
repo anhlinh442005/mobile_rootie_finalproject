@@ -6,9 +6,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.WriteBatch;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.veganbeauty.app.data.local.LocalJsonReader;
@@ -38,9 +36,6 @@ import kotlinx.coroutines.flow.Flow;
 public class OrderRepository {
 
     private static final String TAG = "OrderRepository";
-    private static final int ADMIN_ORDERS_LIMIT = 100;
-    private static final String ORDER_PREFS = "rootie_order_prefs";
-    private static final String PREF_ORDERS_CREATED_AT_BACKFILL = "orders_created_at_backfill_v1";
 
     private static volatile int listenerGeneration = 0;
 
@@ -80,11 +75,6 @@ public class OrderRepository {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
 
-        if (com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            Log.d(TAG, "Skipping global orders listener for admin; use startAdminOrdersListener on order screen");
-            return;
-        }
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         com.google.firebase.firestore.Query query = null;
 
@@ -97,84 +87,12 @@ public class OrderRepository {
         attachOrderListener(query);
     }
 
-    /** Admin-only: recent orders realtime — call from order list screen resume. */
-    public void startAdminOrdersListener(String userId) {
-        String safeUserId = userId != null ? userId.trim() : "";
-        if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            return;
-        }
-
-        final int generation = ++listenerGeneration;
-        ioExecutor.execute(() -> {
-            backfillFirestoreOrdersCreatedAtBlocking();
-            if (generation != listenerGeneration) {
-                return;
-            }
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            Query query = db.collection("orders")
-                    .orderBy("createdAt", Query.Direction.DESCENDING)
-                    .limit(ADMIN_ORDERS_LIMIT);
-            attachOrderListener(query);
-            Log.d(TAG, "Admin orders listener started (limit " + ADMIN_ORDERS_LIMIT + ", orderBy createdAt desc)");
-        });
-    }
-
     public void stopListeningToOrders() {
         listenerGeneration++;
         if (orderListener != null) {
             orderListener.remove();
             orderListener = null;
             Log.d(TAG, "Orders listener removed");
-        }
-    }
-
-    /** One-time: set createdAt on legacy Firestore orders so admin query can include them. */
-    private void backfillFirestoreOrdersCreatedAtBlocking() {
-        android.content.Context ctx = localJsonReader.getAppContext();
-        android.content.SharedPreferences prefs =
-                ctx.getSharedPreferences(ORDER_PREFS, android.content.Context.MODE_PRIVATE);
-        if (prefs.getBoolean(PREF_ORDERS_CREATED_AT_BACKFILL, false)) {
-            return;
-        }
-
-        try {
-            QuerySnapshot snapshot = Tasks.await(
-                    FirebaseFirestore.getInstance().collection("orders").get()
-            );
-            WriteBatch batch = FirebaseFirestore.getInstance().batch();
-            int pending = 0;
-            int updated = 0;
-
-            for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                Long existing = doc.contains("createdAt") ? doc.getLong("createdAt") : null;
-                if (existing != null && existing > 0L) {
-                    continue;
-                }
-
-                long createdAt = resolveCreatedAtForFirestore(doc);
-                if (createdAt <= 0L) {
-                    Log.w(TAG, "Skip backfill createdAt for order " + doc.getId());
-                    continue;
-                }
-
-                batch.update(doc.getReference(), "createdAt", createdAt);
-                pending++;
-                updated++;
-                if (pending >= 400) {
-                    Tasks.await(batch.commit());
-                    batch = FirebaseFirestore.getInstance().batch();
-                    pending = 0;
-                }
-            }
-
-            if (pending > 0) {
-                Tasks.await(batch.commit());
-            }
-
-            prefs.edit().putBoolean(PREF_ORDERS_CREATED_AT_BACKFILL, true).apply();
-            Log.d(TAG, "Backfilled createdAt on " + updated + " Firestore order(s)");
-        } catch (Exception e) {
-            Log.e(TAG, "Orders createdAt backfill failed; will retry on next admin order screen", e);
         }
     }
 
@@ -243,18 +161,13 @@ public class OrderRepository {
     public Flow<List<OrderEntity>> getOrdersForBuyer(String userId, String phone) {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
-        if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            startListeningToOrders(safeUserId, safePhone);
-        }
+        startListeningToOrders(safeUserId, safePhone);
         return observeOrdersForBuyer(safeUserId, safePhone);
     }
 
     public Flow<List<OrderEntity>> observeOrdersForBuyer(String userId, String phone) {
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = phone != null ? phone.trim() : "";
-        if (com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-            return orderDao.getAllOrders();
-        }
         if (!safeUserId.isEmpty()) {
             if (!safePhone.isEmpty()) {
                 return orderDao.getOrdersForBuyerIdentity(safeUserId, safePhone);
@@ -263,14 +176,38 @@ public class OrderRepository {
         } else if (!safePhone.isEmpty()) {
             return orderDao.getOrdersForGuestPhone(safePhone);
         } else {
-            return orderDao.getAllOrders();
+            return orderDao.getOrdersForUser("__no_user__");
+        }
+    }
+
+    public void syncOrdersFromFirebaseBlocking(@Nullable String userId, @Nullable String phone) {
+        String safeUserId = userId != null ? userId.trim() : "";
+        String safePhone = phone != null ? phone.trim() : "";
+        if (safeUserId.isEmpty() && safePhone.isEmpty()) {
+            return;
+        }
+
+        try {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            com.google.firebase.firestore.Query query = null;
+            if (!safeUserId.isEmpty()) {
+                query = db.collection("orders").whereEqualTo("userId", safeUserId);
+            } else if (!safePhone.isEmpty()) {
+                query = db.collection("orders").whereEqualTo("billingPhone", safePhone);
+            }
+            if (query != null) {
+                QuerySnapshot snapshot = Tasks.await(query.get());
+                handleOrderSnapshot(snapshot);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "syncOrdersFromFirebase failed", e);
         }
     }
 
     public void refreshOrders(String userId, String phone) {
         new Thread(() -> {
             try {
-                syncOrdersFromAssetsBlocking();
+                syncOrdersFromFirebaseBlocking(userId, phone);
 
                 if (rewardPointDao.getAllRewardHistoryList().isEmpty()) {
                     rewardPointDao.insertRewardPoints(new RewardPointEntity(
@@ -297,10 +234,7 @@ public class OrderRepository {
                     userGiftDao.insertUserGifts(initGifts);
                 }
 
-                String safeUserId = userId != null ? userId.trim() : "";
-                if (!com.veganbeauty.app.utils.RootieBrandHelper.isAdminUser(safeUserId)) {
-                    startListeningToOrders(userId, phone);
-                }
+                startListeningToOrders(userId, phone);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -373,10 +307,13 @@ public class OrderRepository {
 
             if (qualifiesForCoins) {
                 if (!rewardPointDao.hasReceivedPointsForOrder(orderId)) {
-                    rewardPointDao.insertRewardPoints(new RewardPointEntity(
-                            0, orderId, 200, "Đánh giá đơn hàng " + orderId + " kèm hình ảnh", System.currentTimeMillis()
-                    ));
-                    SyncDataHelper.syncRewardPointsToFirestore(localJsonReader.getContext());
+                    com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                            localJsonReader.getAppContext(),
+                            orderId,
+                            200,
+                            "Đánh giá đơn hàng " + orderId + " kèm hình ảnh",
+                            "từ đánh giá đơn hàng"
+                    );
                     return true;
                 }
             }
@@ -393,13 +330,16 @@ public class OrderRepository {
             try {
                 OrderEntity existing = orderDao.getOrderByIdSync(orderId);
                 String previousStatus = existing != null ? existing.getStatus() : null;
+                if ("Đã hủy".equals(previousStatus)) {
+                    return;
+                }
+                Tasks.await(FirebaseFirestore.getInstance().collection("orders").document(orderId)
+                        .update("status", "Đã hủy"));
                 orderDao.updateOrderStatus(orderId, "Đã hủy");
                 if (existing != null) {
                     existing.setStatus("Đã hủy");
                     OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, "Đã hủy");
                 }
-                FirebaseFirestore.getInstance().collection("orders").document(orderId)
-                        .update("status", "Đã hủy");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -623,13 +563,16 @@ public class OrderRepository {
             try {
                 OrderEntity existing = orderDao.getOrderByIdSync(orderId);
                 String previousStatus = existing != null ? existing.getStatus() : null;
+                if (status != null && status.equals(previousStatus)) {
+                    return;
+                }
+                Tasks.await(FirebaseFirestore.getInstance().collection("orders").document(orderId)
+                        .update("status", status));
                 orderDao.updateOrderStatus(orderId, status);
                 if (existing != null) {
                     existing.setStatus(status);
                     OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, status);
                 }
-                FirebaseFirestore.getInstance().collection("orders").document(orderId)
-                        .update("status", status);
             } catch (Exception e) {
                 e.printStackTrace();
             }

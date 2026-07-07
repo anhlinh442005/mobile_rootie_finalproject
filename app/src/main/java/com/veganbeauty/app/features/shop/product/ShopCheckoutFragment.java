@@ -775,8 +775,12 @@ public class ShopCheckoutFragment extends RootieFragment {
             int maxIdNum = 1460;
             try {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                QuerySnapshot snapshot = com.google.android.gms.tasks.Tasks.await(db.collection("orders").get());
-                for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                com.google.firebase.firestore.QuerySnapshot snapshot = com.google.android.gms.tasks.Tasks.await(
+                        db.collection("orders")
+                                .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                                .limit(100)
+                                .get());
+                for (com.google.firebase.firestore.DocumentSnapshot doc : snapshot.getDocuments()) {
                     String idStr = doc.getId();
                     if (idStr.startsWith("ORD-")) {
                         try {
@@ -996,8 +1000,21 @@ public class ShopCheckoutFragment extends RootieFragment {
         new Thread(() -> {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             try {
+                Map<String, Object> orderMap = new Gson().fromJson(new Gson().toJsonTree(order), Map.class);
+                if (order.getCreatedAt() > 0L) {
+                    orderMap.put("createdAt", order.getCreatedAt());
+                } else {
+                    orderMap.put("createdAt", System.currentTimeMillis());
+                }
+                com.google.android.gms.tasks.Tasks.await(db.collection("orders").document(order.getId()).set(orderMap));
+            } catch (Exception e) {
+                Log.e(TAG, "Firebase sync failed — order not cached locally", e);
+                return;
+            }
+
+            try {
                 database.orderDao().insertOrder(order);
-                
+
                 // Update local product stock and remote stock in Firestore using atomic decrement
                 FirestoreService firestore = new FirestoreService();
                 for (OrderItem item : order.getItems()) {
@@ -1044,14 +1061,6 @@ public class ShopCheckoutFragment extends RootieFragment {
             }
 
             try {
-                Map<String, Object> orderMap = new Gson().fromJson(new Gson().toJsonTree(order), Map.class);
-                if (order.getCreatedAt() > 0L) {
-                    orderMap.put("createdAt", order.getCreatedAt());
-                } else {
-                    orderMap.put("createdAt", System.currentTimeMillis());
-                }
-                com.google.android.gms.tasks.Tasks.await(db.collection("orders").document(order.getId()).set(orderMap));
-
                 if (order.getUserId() != null && !order.getUserId().trim().isEmpty()) {
                     new com.veganbeauty.app.data.remote.FirestoreService().sendCommunityNotificationEvent(
                             order.getUserId(),
@@ -1076,7 +1085,7 @@ public class ShopCheckoutFragment extends RootieFragment {
                 com.google.android.gms.tasks.Tasks.await(db.collection("notification_admin").add(newNotification));
                 Log.d(TAG, "Firebase sync success for order " + order.getId());
             } catch (Exception e) {
-                Log.e(TAG, "Firebase sync failed", e);
+                Log.e(TAG, "Post-order notifications failed", e);
             }
         }).start();
     }

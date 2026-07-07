@@ -1,8 +1,6 @@
 package com.veganbeauty.app.features.account.order;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.lifecycle.LiveData;
@@ -14,7 +12,6 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
-import com.veganbeauty.app.utils.RootieBrandHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +25,6 @@ public class OrderListViewModel extends RootieViewModel {
     private final OrderRepository repository;
     private final Context appContext;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private final MutableLiveData<String> _selectedStatus = new MutableLiveData<>("Tất cả");
     public final LiveData<String> selectedStatus = _selectedStatus;
@@ -79,13 +75,9 @@ public class OrderListViewModel extends RootieViewModel {
     }
 
     private void loadOrders() {
-        executor.execute(() -> {
-            repository.syncOrdersFromAssetsBlocking();
-            BuyerIdentity identity = resolveBuyerIdentity();
-            mainHandler.post(() -> {
-                attachRoomSourceIfNeeded(identity.userId, identity.phone);
-            });
-        });
+        BuyerIdentity identity = resolveBuyerIdentity();
+        attachRoomSourceIfNeeded(identity.userId, identity.phone);
+        executor.execute(() -> repository.syncOrdersFromFirebaseBlocking(identity.userId, identity.phone));
     }
 
     private void applyOrders(List<OrderEntity> orders) {
@@ -136,7 +128,8 @@ public class OrderListViewModel extends RootieViewModel {
     }
 
     public void refreshOrders() {
-        loadOrders();
+        BuyerIdentity identity = resolveBuyerIdentity();
+        executor.execute(() -> repository.syncOrdersFromFirebaseBlocking(identity.userId, identity.phone));
     }
 
     public void setFilter(String status) {
@@ -157,11 +150,7 @@ public class OrderListViewModel extends RootieViewModel {
     /** Start Firestore realtime sync while order list screen is visible. */
     public void resumeOrderRealtimeSync() {
         BuyerIdentity identity = resolveBuyerIdentity();
-        if (RootieBrandHelper.isAdminUser(identity.userId)) {
-            repository.startAdminOrdersListener(identity.userId);
-        } else {
-            repository.startListeningToOrders(identity.userId, identity.phone);
-        }
+        repository.startListeningToOrders(identity.userId, identity.phone);
     }
 
     /** Stop Firestore realtime sync when leaving order list screen. */

@@ -11,8 +11,11 @@ import java.util.List;
 
 @Dao
 public interface VoucherDao {
-    @Query("SELECT * FROM vouchers")
-    List<VoucherEntity> getAllVouchers();
+    @Query("SELECT * FROM vouchers WHERE active = 1 ORDER BY sortOrder ASC")
+    List<VoucherEntity> getActiveVouchers();
+
+    @Query("SELECT COUNT(*) FROM vouchers")
+    int countAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<VoucherEntity> vouchers);

@@ -162,21 +162,19 @@ public class SkinTimeRoutineFragment extends RootieFragment {
                 LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
                         BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
                             try {
-                                db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                                        0, "morning".equals(routineType) ? "MORNING_ROUTINE" : "EVENING_ROUTINE", rewardPoints,
-                                        "morning".equals(routineType) ? "Hoàn thành Routine Sáng" : "Hoàn thành Routine Tối", System.currentTimeMillis()
-                                ));
-                                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx);
-                                if (getActivity() != null) {
-                                    getActivity().runOnUiThread(() -> {
-                                        String source = "morning".equals(routineType)
-                                                ? "từ Routine Sáng"
-                                                : "từ Routine Tối";
-                                        com.veganbeauty.app.utils.CoinRewardDialogHelper.show(
-                                                SkinTimeRoutineFragment.this, rewardPoints, source
-                                        );
-                                    });
-                                }
+                                String source = "morning".equals(routineType)
+                                        ? "từ Routine Sáng"
+                                        : "từ Routine Tối";
+                                String reason = "morning".equals(routineType)
+                                        ? "Hoàn thành Routine Sáng"
+                                        : "Hoàn thành Routine Tối";
+                                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                                        ctx,
+                                        "morning".equals(routineType) ? "MORNING_ROUTINE" : "EVENING_ROUTINE",
+                                        rewardPoints,
+                                        reason,
+                                        source
+                                );
                                 checkStreakAndUpdateAsync(routineType);
                             } catch (Exception e) { e.printStackTrace(); }
                             return kotlin.Unit.INSTANCE;
@@ -419,17 +417,13 @@ public class SkinTimeRoutineFragment extends RootieFragment {
 
             RootieDatabase db = RootieDatabase.getDatabase(ctx);
             if (newStreak > 0 && newStreak % 30 == 0) {
-                db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                        0, "MONTHLY_STREAK", 200, "Thưởng chuỗi 30 ngày chăm da", System.currentTimeMillis()
-                ));
-                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx);
-                Toast.makeText(ctx, "Tuyệt vời! Đạt chuỗi 30 ngày chăm da +200 xu!", Toast.LENGTH_LONG).show();
+                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        ctx, "MONTHLY_STREAK", 200, "Thưởng chuỗi 30 ngày chăm da", "từ chuỗi 30 ngày chăm da"
+                );
             } else if (newStreak > 0 && newStreak % 7 == 0) {
-                db.rewardPointDao().insertRewardPoints(new RewardPointEntity(
-                        0, "WEEKLY_STREAK", 50, "Thưởng chuỗi 7 ngày chăm da", System.currentTimeMillis()
-                ));
-                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsToFirestore(ctx);
-                Toast.makeText(ctx, "Tuyệt vời! Đạt chuỗi 7 ngày chăm da +50 xu!", Toast.LENGTH_LONG).show();
+                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        ctx, "WEEKLY_STREAK", 50, "Thưởng chuỗi 7 ngày chăm da", "từ chuỗi 7 ngày chăm da"
+                );
             }
         }
     }
