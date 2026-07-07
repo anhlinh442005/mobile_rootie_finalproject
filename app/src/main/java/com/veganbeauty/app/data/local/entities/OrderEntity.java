@@ -52,14 +52,20 @@ public class OrderEntity {
     
     private boolean hasReview;
     private int reviewStars;
+    @Nullable
     private String reviewText;
+    @Nullable
     private String reviewImage;
     private boolean isAnonymous;
     private boolean recommendToFriends;
     
+    @Nullable
     private String billingName;
+    @Nullable
     private String billingPhone;
+    @Nullable
     private String billingEmail;
+    @Nullable
     private String orderNote;
 
     /** Firestore sort key — not persisted in Room. */
@@ -168,11 +174,13 @@ public class OrderEntity {
     public int getReviewStars() { return reviewStars; }
     public void setReviewStars(int reviewStars) { this.reviewStars = reviewStars; }
 
+    @Nullable
     public String getReviewText() { return reviewText; }
-    public void setReviewText(String reviewText) { this.reviewText = reviewText; }
+    public void setReviewText(@Nullable String reviewText) { this.reviewText = reviewText; }
 
+    @Nullable
     public String getReviewImage() { return reviewImage; }
-    public void setReviewImage(String reviewImage) { this.reviewImage = reviewImage; }
+    public void setReviewImage(@Nullable String reviewImage) { this.reviewImage = reviewImage; }
 
     public boolean isAnonymous() { return isAnonymous; }
     public void setAnonymous(boolean anonymous) { this.isAnonymous = anonymous; }
@@ -180,19 +188,33 @@ public class OrderEntity {
     public boolean isRecommendToFriends() { return recommendToFriends; }
     public void setRecommendToFriends(boolean recommendToFriends) { this.recommendToFriends = recommendToFriends; }
 
+    @Nullable
     public String getBillingName() { return billingName; }
-    public void setBillingName(String billingName) { this.billingName = billingName; }
+    public void setBillingName(@Nullable String billingName) { this.billingName = billingName; }
 
+    @Nullable
     public String getBillingPhone() { return billingPhone; }
-    public void setBillingPhone(String billingPhone) { this.billingPhone = billingPhone; }
+    public void setBillingPhone(@Nullable String billingPhone) { this.billingPhone = billingPhone; }
 
+    @Nullable
     public String getBillingEmail() { return billingEmail; }
-    public void setBillingEmail(String billingEmail) { this.billingEmail = billingEmail; }
+    public void setBillingEmail(@Nullable String billingEmail) { this.billingEmail = billingEmail; }
 
+    @Nullable
     public String getOrderNote() { return orderNote; }
-    public void setOrderNote(String orderNote) { this.orderNote = orderNote; }
+    public void setOrderNote(@Nullable String orderNote) { this.orderNote = orderNote; }
 
-    public long getCreatedAt() { return createdAt; }
+    public long getCreatedAt() {
+        if (createdAt > 0) return createdAt;
+        if (orderDate != null && orderTime != null) {
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.US);
+                java.util.Date d = sdf.parse(orderDate + " " + orderTime);
+                if (d != null) return d.getTime();
+            } catch (Exception ignored) {}
+        }
+        return 0L;
+    }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
 
     @Override

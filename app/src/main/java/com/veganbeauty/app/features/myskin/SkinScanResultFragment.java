@@ -67,7 +67,7 @@ public class SkinScanResultFragment extends RootieFragment {
 
     private SkinFragmentScanResultBinding binding;
     private JSONObject currentData = null;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ExecutorService executorService;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private long loadingStartMs = 0L;
@@ -92,6 +92,9 @@ public class SkinScanResultFragment extends RootieFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = SkinFragmentScanResultBinding.inflate(inflater, container, false);
+        if (executorService == null || executorService.isShutdown()) {
+            executorService = Executors.newSingleThreadExecutor();
+        }
         return binding.getRoot();
     }
 

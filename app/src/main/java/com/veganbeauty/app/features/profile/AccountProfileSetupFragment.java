@@ -57,14 +57,14 @@ public class AccountProfileSetupFragment extends RootieFragment {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new AccountProfileSecurityFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         _binding.btnAddress.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new AccountProfileAddressFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         _binding.btnBankAccount.setOnClickListener(v -> Toast.makeText(context, "Tài khoản / Thẻ ngân hàng (Đang phát triển)", Toast.LENGTH_SHORT).show());
@@ -81,7 +81,7 @@ public class AccountProfileSetupFragment extends RootieFragment {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new AccountProfileNotiSettingFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         updateSwitchUI(_binding.switchPrivacyContainer, _binding.switchPrivacyThumb, isPrivateModeEnabled(context));
@@ -122,13 +122,13 @@ public class AccountProfileSetupFragment extends RootieFragment {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new CommunityGuidelinesFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
         _binding.btnTerms.setOnClickListener(v -> {
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new HomePolicyFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
         final boolean[] isRatingExpanded = {false};

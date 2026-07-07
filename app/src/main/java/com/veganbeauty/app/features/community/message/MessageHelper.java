@@ -372,6 +372,11 @@ public class MessageHelper {
         if (templateJson == null || templateJson.trim().isEmpty() || userId == null || userId.isEmpty()) {
             return new ArrayList<>();
         }
+        // Skip official accounts to prevent duplicate key exceptions in Gson when {{USER_ID}} is replaced with their own ID
+        if (userId.equals("rootie_vn") || userId.equals("72400102") || userId.equals("86237409") || 
+            userId.equals("75675216") || userId.equals("39751498")) {
+            return new ArrayList<>();
+        }
         String safeName = userName != null ? userName.replace("\"", "\\\"") : "Bạn";
         String safeAvatar = userAvatar != null ? userAvatar.replace("\"", "\\\"") : "";
         String personalizedJson = templateJson

@@ -291,6 +291,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             CommunityPostEntity post = ((CommunityFeedItem.Post) item).post;
 
             String authorName = post.getAuthorDisplayName() != null && !post.getAuthorDisplayName().isEmpty() ? post.getAuthorDisplayName() : post.getAuthorUsername();
+            authorName = com.veganbeauty.app.utils.IdentityMapper.mapName(holder.itemView.getContext(), post.getAuthorId(), authorName);
             postHolder.binding.tvAuthorName.setText(authorName);
 
             if ("rootie_official".equals(post.getAuthorId()) || "rootie_vn".equals(post.getAuthorId())) {
@@ -348,9 +349,10 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             postHolder.binding.tvComments.setText(String.valueOf(post.getCommentsCount()));
             postHolder.binding.tvContent.setText(post.getContent());
 
-            if (post.getAuthorAvatarUrl() != null && !post.getAuthorAvatarUrl().isEmpty()) {
+            String mappedAvatar = com.veganbeauty.app.utils.IdentityMapper.mapAvatar(holder.itemView.getContext(), post.getAuthorId(), post.getAuthorAvatarUrl());
+            if (mappedAvatar != null && !mappedAvatar.isEmpty()) {
                 String avatarUrl = com.veganbeauty.app.utils.RootieBrandHelper.resolveAvatar(
-                        post.getAuthorId(), post.getAuthorAvatarUrl());
+                        post.getAuthorId(), mappedAvatar);
                 com.bumptech.glide.Glide.with(postHolder.binding.ivAuthorAvatar.getContext()).load(avatarUrl).placeholder(android.R.color.darker_gray).error(R.drawable.img_avatar).into(postHolder.binding.ivAuthorAvatar);
             } else if (com.veganbeauty.app.utils.RootieBrandHelper.isRootieUser(post.getAuthorId(), post.getAuthorDisplayName())) {
                 com.bumptech.glide.Glide.with(postHolder.binding.ivAuthorAvatar.getContext()).load(com.veganbeauty.app.utils.RootieBrandHelper.AVATAR_URL).placeholder(android.R.color.darker_gray).error(R.drawable.img_avatar).into(postHolder.binding.ivAuthorAvatar);
@@ -495,11 +497,12 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
 
+            final String finalAuthorName = authorName;
             View.OnClickListener onProfileClick = v -> ComProfileNavigator.openProfile(
                     context,
                     post.getAuthorId(),
                     post.getAuthorAvatarUrl(),
-                    authorName
+                    finalAuthorName
             );
 
             String ownUserId = getOwnUserId(context);

@@ -144,6 +144,7 @@ public class CommunityProfileFragment extends RootieFragment {
                 public void onDrawerOpened(@NonNull View drawerView) {
                     if (binding != null && binding.navView != null) {
                         SideMenuHelper.bindCurrentUser(binding.navView);
+                        SideMenuHelper.setupMenuNavigation(binding.navView, getParentFragmentManager(), binding.drawerLayout);
                     }
                 }
             });
@@ -160,6 +161,7 @@ public class CommunityProfileFragment extends RootieFragment {
                 llLogout.setOnClickListener(v -> showLogoutDialog());
             }
             SideMenuHelper.bindCurrentUser(navView);
+            SideMenuHelper.setupMenuNavigation(navView, getParentFragmentManager(), binding.drawerLayout);
         }
 
         String passedUserId = null;

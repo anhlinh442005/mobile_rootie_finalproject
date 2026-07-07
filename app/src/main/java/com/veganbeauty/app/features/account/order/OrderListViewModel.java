@@ -82,9 +82,7 @@ public class OrderListViewModel extends RootieViewModel {
         executor.execute(() -> {
             repository.syncOrdersFromAssetsBlocking();
             BuyerIdentity identity = resolveBuyerIdentity();
-            List<OrderEntity> assetOrders = repository.filterBuyerOrdersFromAssets(identity.userId, identity.phone);
             mainHandler.post(() -> {
-                applyOrders(assetOrders);
                 attachRoomSourceIfNeeded(identity.userId, identity.phone);
             });
         });
@@ -124,6 +122,7 @@ public class OrderListViewModel extends RootieViewModel {
                 }
             }
         }
+        java.util.Collections.sort(filtered, (o1, o2) -> Long.compare(o2.getCreatedAt(), o1.getCreatedAt()));
         _filteredOrders.setValue(filtered);
 
         int total = orders.size();
