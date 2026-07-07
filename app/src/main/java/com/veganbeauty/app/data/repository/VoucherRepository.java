@@ -5,8 +5,9 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.veganbeauty.app.data.local.LocalJsonReader;
+import com.veganbeauty.app.data.local.RootieDatabase;
+import com.veganbeauty.app.data.local.dao.VoucherDao;
 import com.veganbeauty.app.data.local.entities.VoucherEntity;
-import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.features.profile.VoucherListAdapter;
 
 import java.text.SimpleDateFormat;
@@ -29,29 +30,41 @@ public final class VoucherRepository {
     private VoucherRepository() {
     }
 
-    public static void seedToFirestoreIfEmpty(Context context) {
-        EXECUTOR.execute(() -> {
-            try {
-                FirestoreService firestore = new FirestoreService();
-                if (firestore.isCollectionEmpty("vouchers")) {
-                    String json = new LocalJsonReader(context.getApplicationContext()).readAsset("vouchers.json");
-                    if (json != null) {
-                        firestore.seedVouchersFromJson(json);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+    /** Seed vouchers từ assets/vouchers.json vào SQLite nếu bảng đang trống. */
+    public static void seedFromAssetsIfNeeded(Context context) {
+        EXECUTOR.execute(() -> seedFromAssetsIfNeededBlocking(context));
+    }
+
+    public static void seedFromAssetsIfNeededBlocking(Context context) {
+        try {
+            Context appCtx = context.getApplicationContext();
+            VoucherDao voucherDao = RootieDatabase.getDatabase(appCtx).voucherDao();
+            if (voucherDao.countAll() > 0) {
+                return;
             }
-        });
+            List<VoucherEntity> fromAssets = new LocalJsonReader(appCtx).getVouchers();
+            if (!fromAssets.isEmpty()) {
+                voucherDao.insertAll(fromAssets);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static List<VoucherEntity> loadActiveVouchersBlocking(Context context) {
-        FirestoreService firestore = new FirestoreService();
-        List<VoucherEntity> remote = firestore.fetchAllVouchers();
-        if (!remote.isEmpty()) {
-            return remote;
+        try {
+            Context appCtx = context.getApplicationContext();
+            VoucherDao voucherDao = RootieDatabase.getDatabase(appCtx).voucherDao();
+            seedFromAssetsIfNeededBlocking(appCtx);
+            List<VoucherEntity> local = voucherDao.getActiveVouchers();
+            if (!local.isEmpty()) {
+                return local;
+            }
+            return new LocalJsonReader(appCtx).getVouchers();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new LocalJsonReader(context.getApplicationContext()).getVouchers();
         }
-        return new LocalJsonReader(context.getApplicationContext()).getVouchers();
     }
 
     public static void loadActiveVouchers(Context context, VoucherCallback callback) {

@@ -19,12 +19,14 @@ import com.veganbeauty.app.R;
 public class CoinRewardDialogFragment extends DialogFragment {
 
     private static final String ARG_COINS = "arg_coins";
+    private static final String ARG_TOTAL_BALANCE = "arg_total_balance";
     private static final String ARG_SOURCE = "arg_source";
 
-    public static CoinRewardDialogFragment newInstance(int coins, @Nullable String source) {
+    public static CoinRewardDialogFragment newInstance(int coins, int totalBalance, @Nullable String source) {
         CoinRewardDialogFragment fragment = new CoinRewardDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COINS, coins);
+        args.putInt(ARG_TOTAL_BALANCE, totalBalance);
         args.putString(ARG_SOURCE, source);
         fragment.setArguments(args);
         return fragment;
@@ -63,6 +65,7 @@ public class CoinRewardDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         int coins = getArguments() != null ? getArguments().getInt(ARG_COINS, 0) : 0;
+        int totalBalance = getArguments() != null ? getArguments().getInt(ARG_TOTAL_BALANCE, 0) : 0;
         String source = getArguments() != null ? getArguments().getString(ARG_SOURCE) : null;
 
         TextView tvCoinAmount = view.findViewById(R.id.tvCoinAmount);
@@ -70,13 +73,21 @@ public class CoinRewardDialogFragment extends DialogFragment {
         TextView tvRewardSource = view.findViewById(R.id.tvRewardSource);
         View layoutRewardContent = view.findViewById(R.id.layoutRewardContent);
 
-        String amountLabel = CoinRewardDialogHelper.formatAmountLabel(coins);
-        String badgeLabel = CoinRewardDialogHelper.formatBadgeLabel(coins);
-        tvCoinAmount.setText(amountLabel);
-        tvCoinBadge.setText(badgeLabel);
+        tvCoinAmount.setText(CoinRewardDialogHelper.formatAmountLabel(coins));
+        tvCoinBadge.setText(CoinRewardDialogHelper.formatBadgeLabel(coins));
 
+        StringBuilder subtitle = new StringBuilder();
         if (source != null && !source.trim().isEmpty()) {
-            tvRewardSource.setText(source.trim());
+            subtitle.append(source.trim());
+        }
+        if (totalBalance > 0) {
+            if (subtitle.length() > 0) {
+                subtitle.append("\n");
+            }
+            subtitle.append(CoinRewardDialogHelper.formatBalanceSubtitle(totalBalance));
+        }
+        if (subtitle.length() > 0) {
+            tvRewardSource.setText(subtitle.toString());
             tvRewardSource.setVisibility(View.VISIBLE);
         } else {
             tvRewardSource.setVisibility(View.GONE);

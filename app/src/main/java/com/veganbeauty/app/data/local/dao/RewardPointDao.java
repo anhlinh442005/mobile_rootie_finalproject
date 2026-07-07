@@ -22,6 +22,9 @@ public interface RewardPointDao {
     @Query("SELECT COALESCE(SUM(points), 0) as total FROM user_coin")
     Flow<List<TotalPoints>> getTotalPointsFlow();
 
+    @Query("SELECT COALESCE(SUM(points), 0) FROM user_coin")
+    int getTotalPointsSync();
+
     @Query("SELECT * FROM user_coin ORDER BY timestamp DESC")
     Flow<List<RewardPointEntity>> getAllRewardHistory();
 

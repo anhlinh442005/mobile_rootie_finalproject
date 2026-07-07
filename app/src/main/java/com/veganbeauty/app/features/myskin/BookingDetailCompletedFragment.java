@@ -450,19 +450,30 @@ public class BookingDetailCompletedFragment extends RootieFragment {
 
         final int finalEarnedPoints = earnedPoints;
         final int finalTotalPoints = totalPoints;
-        ioExecutor.execute(() -> {
-            LocalJsonReader localJsonReader = new LocalJsonReader(requireContext());
-            localJsonReader.updateBookingReview(
-                    updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
-            new FirestoreService().updateBookingReview(
-                    updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
-        });
-
         if (isFirstReview) {
-            Toast.makeText(requireContext(),
-                    "Cảm ơn bạn! Bạn nhận được +" + REVIEW_BONUS_POINTS + " Rootie Points.",
-                    Toast.LENGTH_LONG).show();
+            final String bookingId = updated.getId();
+            ioExecutor.execute(() -> {
+                LocalJsonReader localJsonReader = new LocalJsonReader(requireContext());
+                localJsonReader.updateBookingReview(
+                        updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
+                new FirestoreService().updateBookingReview(
+                        updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
+                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        requireContext(),
+                        "BOOKING_REVIEW_" + bookingId,
+                        REVIEW_BONUS_POINTS,
+                        "Đánh giá lịch hẹn " + bookingId,
+                        "từ đánh giá lịch hẹn"
+                );
+            });
         } else {
+            ioExecutor.execute(() -> {
+                LocalJsonReader localJsonReader = new LocalJsonReader(requireContext());
+                localJsonReader.updateBookingReview(
+                        updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
+                new FirestoreService().updateBookingReview(
+                        updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
+            });
             Toast.makeText(requireContext(), "Đã cập nhật đánh giá", Toast.LENGTH_SHORT).show();
         }
     }

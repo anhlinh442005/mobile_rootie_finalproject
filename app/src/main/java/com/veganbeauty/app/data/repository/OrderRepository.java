@@ -307,10 +307,13 @@ public class OrderRepository {
 
             if (qualifiesForCoins) {
                 if (!rewardPointDao.hasReceivedPointsForOrder(orderId)) {
-                    rewardPointDao.insertRewardPoints(new RewardPointEntity(
-                            0, orderId, 200, "Đánh giá đơn hàng " + orderId + " kèm hình ảnh", System.currentTimeMillis()
-                    ));
-                    SyncDataHelper.syncRewardPointsToFirestore(localJsonReader.getContext());
+                    com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                            localJsonReader.getAppContext(),
+                            orderId,
+                            200,
+                            "Đánh giá đơn hàng " + orderId + " kèm hình ảnh",
+                            "từ đánh giá đơn hàng"
+                    );
                     return true;
                 }
             }
