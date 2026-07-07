@@ -120,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
                         );
                 storeRepository.refreshStores();
 
+                // Seed Vouchers
+                java.util.List<com.veganbeauty.app.data.local.entities.VoucherEntity> localVouchers = new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()).getVouchers();
+                if (localVouchers != null && !localVouchers.isEmpty()) {
+                    db.voucherDao().insertAll(localVouchers);
+                }
+
                 // === Seed ALL 27 json files into raw_json_assets table ===
                 com.veganbeauty.app.data.local.dao.RawJsonAssetDao rawJsonDao = db.rawJsonAssetDao();
                 String[] allAssets = getAssets().list("");
