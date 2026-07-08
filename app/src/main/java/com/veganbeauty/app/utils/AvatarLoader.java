@@ -22,6 +22,18 @@ public class AvatarLoader {
         }
 
         String finalUrl;
+        if (SampleAvatarCatalog.isSampleAvatarRef(avatarUrl)) {
+            int drawableRes = SampleAvatarCatalog.resolveDrawableRes(avatarUrl);
+            if (drawableRes != 0) {
+                com.bumptech.glide.Glide.with(imageView.getContext())
+                        .load(drawableRes)
+                        .placeholder(android.R.color.darker_gray)
+                        .error(com.veganbeauty.app.R.drawable.img_avatar)
+                        .circleCrop()
+                        .into(imageView);
+                return;
+            }
+        }
         if (avatarUrl.startsWith("file://")) {
             String path = avatarUrl.substring(7);
             File file = new File(path);

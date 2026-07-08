@@ -5,10 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,6 +29,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointBackward;
@@ -41,10 +40,12 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.AccountProfileEditBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.utils.AvatarCropHelper;
 import com.veganbeauty.app.utils.AvatarLoader;
 import com.veganbeauty.app.utils.NavAppUtils;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.utils.ProfileUpdateNotifier;
+import com.veganbeauty.app.utils.SampleAvatarCatalog;
 import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.io.File;
@@ -417,9 +418,88 @@ public class AccountProfileEditFragment extends RootieFragment {
             }
         });
 
+        dialogView.findViewById(R.id.btn_pick_sample).setOnClickListener(v -> {
+            dialog.dismiss();
+            showSampleAvatarPicker();
+        });
+
         dialogView.findViewById(R.id.btn_picker_cancel).setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+
+    private void showSampleAvatarPicker() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_avatar_sample_picker, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        ImageView ivPreview = dialogView.findViewById(R.id.ivPreviewAvatar);
+        TextView tvPreviewLabel = dialogView.findViewById(R.id.tvPreviewLabel);
+        RecyclerView recyclerView = dialogView.findViewById(R.id.rvSampleAvatars);
+        View btnCancel = dialogView.findViewById(R.id.btnSampleCancel);
+        View btnConfirm = dialogView.findViewById(R.id.btnSampleConfirm);
+
+        SampleAvatarPickerAdapter adapter = new SampleAvatarPickerAdapter(
+                SampleAvatarCatalog.getAll(),
+                item -> {
+                    ivPreview.setImageResource(item.drawableRes);
+                    tvPreviewLabel.setText(item.label);
+                }
+        );
+        recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 3));
+        recyclerView.setAdapter(adapter);
+
+        SampleAvatarCatalog.Item initial = adapter.getSelectedItem();
+        if (initial != null) {
+            ivPreview.setImageResource(initial.drawableRes);
+            tvPreviewLabel.setText(initial.label);
+        }
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            SampleAvatarCatalog.Item selected = adapter.getSelectedItem();
+            if (selected == null) {
+                Toast.makeText(getContext(), "Vui lòng chọn một avatar mẫu", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            dialog.dismiss();
+            applySampleAvatar(selected);
+        });
+
+        dialog.show();
+    }
+
+    private void applySampleAvatar(@NonNull SampleAvatarCatalog.Item item) {
+        Context ctx = requireContext();
+        ProfileSession.setAvatar(ctx, SampleAvatarCatalog.toAvatarRef(item));
+        ProfileSession.markLocalProfileEdited(ctx);
+        hasUnsavedChanges = true;
+        loadAvatarImage(SampleAvatarCatalog.toAvatarRef(item));
+        ProfileUpdateNotifier.notifyUpdated();
+        Toast.makeText(ctx, "Đang lưu avatar mẫu...", Toast.LENGTH_SHORT).show();
+
+        SyncDataHelper.applySampleAvatar(ctx, item.id, (success, url, error) -> {
+            if (binding == null || !isAdded()) {
+                return;
+            }
+            if (success && url != null) {
+                loadAvatarImage(url);
+                ProfileUpdateNotifier.notifyUpdated();
+                Toast.makeText(ctx, "Đã chọn avatar mẫu thành công", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(
+                        ctx,
+                        error != null ? error : "Đã lưu trên máy; đồng bộ cloud sẽ thử lại sau",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
     }
 
     private void openCameraWithPermission() {
@@ -460,43 +540,54 @@ public class AccountProfileEditFragment extends RootieFragment {
         View btnConfirm = dialogView.findViewById(R.id.btn_crop_confirm);
 
         ivCropSource.setScaleType(ImageView.ScaleType.MATRIX);
+        ivCropSource.setImageBitmap(sourceBitmap);
+
+        final float[] cropState = new float[3];
+        final boolean[] cropReady = {false};
+        final float[] zoomBaseState = new float[3];
 
         ivCropSource.post(() -> {
             float viewWidth = ivCropSource.getWidth();
             float viewHeight = ivCropSource.getHeight();
-            if (viewWidth <= 0 || viewHeight <= 0) return;
+            if (viewWidth <= 0 || viewHeight <= 0) {
+                return;
+            }
 
-            float imgWidth = sourceBitmap.getWidth();
-            float imgHeight = sourceBitmap.getHeight();
+            float imageWidth = sourceBitmap.getWidth();
+            float imageHeight = sourceBitmap.getHeight();
 
-            float scaleX = viewWidth / imgWidth;
-            float scaleY = viewHeight / imgHeight;
-            float initialScale = Math.max(scaleX, scaleY);
-
-            float transX = (viewWidth - imgWidth * initialScale) / 2f;
-            float transY = (viewHeight - imgHeight * initialScale) / 2f;
-
-            Matrix matrix = new Matrix();
-            matrix.postScale(initialScale, initialScale);
-            matrix.postTranslate(transX, transY);
-            ivCropSource.setImageMatrix(matrix);
-            ivCropSource.setImageBitmap(sourceBitmap);
-
-            Matrix savedMatrix = new Matrix();
+            AvatarCropHelper.initializeCropState(
+                    cropState,
+                    imageWidth,
+                    imageHeight,
+                    viewWidth,
+                    viewHeight
+            );
+            AvatarCropHelper.applyMatrix(ivCropSource, cropState);
+            cropReady[0] = true;
 
             ivCropSource.setOnTouchListener((v, event) -> {
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
-                        savedMatrix.set(ivCropSource.getImageMatrix());
+                        zoomBaseState[0] = cropState[0];
+                        zoomBaseState[1] = cropState[1];
+                        zoomBaseState[2] = cropState[2];
                         startX = event.getX();
                         startY = event.getY();
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        float dx = event.getX() - startX;
-                        float dy = event.getY() - startY;
-                        Matrix newMatrix = new Matrix(savedMatrix);
-                        newMatrix.postTranslate(dx, dy);
-                        ivCropSource.setImageMatrix(newMatrix);
+                        cropState[1] = zoomBaseState[1] + (event.getX() - startX);
+                        cropState[2] = zoomBaseState[2] + (event.getY() - startY);
+                        AvatarCropHelper.clampTranslation(
+                                cropState,
+                                imageWidth,
+                                imageHeight,
+                                viewWidth,
+                                viewHeight
+                        );
+                        AvatarCropHelper.applyMatrix(ivCropSource, cropState);
+                        break;
+                    default:
                         break;
                 }
                 return true;
@@ -505,21 +596,34 @@ public class AccountProfileEditFragment extends RootieFragment {
             sbZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) {
-                        float zoomFactor = 1f + (progress / 100f) * 3.5f;
-                        Matrix newMatrix = new Matrix(savedMatrix);
-                        newMatrix.postScale(zoomFactor, zoomFactor, viewWidth / 2f, viewHeight / 2f);
-                        ivCropSource.setImageMatrix(newMatrix);
+                    if (!fromUser) {
+                        return;
                     }
+                    float zoomFactor = 1f + (progress / 100f) * 3.5f;
+                    AvatarCropHelper.zoomAroundCenter(
+                            cropState,
+                            zoomBaseState[0],
+                            zoomBaseState[1],
+                            zoomBaseState[2],
+                            zoomFactor,
+                            imageWidth,
+                            imageHeight,
+                            viewWidth,
+                            viewHeight
+                    );
+                    AvatarCropHelper.applyMatrix(ivCropSource, cropState);
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    savedMatrix.set(ivCropSource.getImageMatrix());
+                    zoomBaseState[0] = cropState[0];
+                    zoomBaseState[1] = cropState[1];
+                    zoomBaseState[2] = cropState[2];
                 }
 
                 @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {}
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                }
             });
         });
 
@@ -528,21 +632,19 @@ public class AccountProfileEditFragment extends RootieFragment {
         btnConfirm.setOnClickListener(v -> {
             dialog.dismiss();
             try {
-                int viewSize = ivCropSource.getWidth();
-                if (viewSize <= 0) return;
+                float viewWidth = ivCropSource.getWidth();
+                float viewHeight = ivCropSource.getHeight();
+                if (!cropReady[0] || viewWidth <= 0 || viewHeight <= 0) {
+                    return;
+                }
 
-                int targetSize = 500;
-                Bitmap croppedBitmap = Bitmap.createBitmap(targetSize, targetSize, Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(croppedBitmap);
-
-                Matrix currentMatrix = ivCropSource.getImageMatrix();
-                Matrix drawMatrix = new Matrix(currentMatrix);
-
-                float scale = (float) targetSize / viewSize;
-                drawMatrix.postScale(scale, scale, 0f, 0f);
-
-                canvas.drawBitmap(sourceBitmap, drawMatrix, new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG));
-
+                Bitmap croppedBitmap = AvatarCropHelper.cropCircularBitmap(
+                        sourceBitmap,
+                        cropState,
+                        viewWidth,
+                        viewHeight,
+                        500
+                );
                 handleAvatarTaken(croppedBitmap);
             } catch (Exception e) {
                 e.printStackTrace();

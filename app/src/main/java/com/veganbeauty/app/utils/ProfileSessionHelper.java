@@ -171,6 +171,9 @@ public final class ProfileSessionHelper {
             return false;
         }
         String value = url.trim();
+        if (SampleAvatarCatalog.isSampleAvatarRef(value)) {
+            return SampleAvatarCatalog.resolveDrawableRes(value) != 0;
+        }
         if (value.startsWith("file://")) {
             try {
                 String path = Uri.parse(value).getPath();

@@ -75,7 +75,7 @@
             android:gravity="center_vertical"
             android:background="@drawable/bg_dialog_btn_cancel"
             android:paddingHorizontal="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             android:clickable="true"
             android:focusable="true">
 
@@ -91,6 +91,36 @@
                 android:layout_marginStart="14dp"
                 android:text="Chọn từ thư viện"
                 android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/lexend" />
+        </LinearLayout>
+
+        <!-- Option: Sample avatars -->
+        <LinearLayout
+            android:id="@+id/btn_pick_sample"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_dialog_btn_confirm"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_circle_account"
+                app:tint="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:text="Chọn avatar mẫu Rootie"
+                android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/lexend" />

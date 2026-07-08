@@ -54,7 +54,7 @@ public class CircleCropOverlayView extends View {
 
         float centerX = getWidth() / 2f;
         float centerY = getHeight() / 2f;
-        float radius = (Math.min(getWidth(), getHeight()) / 2f) * 0.9f;
+        float radius = AvatarCropHelper.getCropRadius(getWidth(), getHeight());
         
         canvas.drawCircle(centerX, centerY, radius, circlePaint);
         canvas.drawCircle(centerX, centerY, radius, borderPaint);
