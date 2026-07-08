@@ -25,6 +25,7 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.databinding.ShopBottomSheetCartBinding;
+import com.veganbeauty.app.features.home.BottomNavHelper;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (!ProfileSession.isLoggedIn(requireContext())) {
-            Toast.makeText(requireContext(), "Vui lòng đăng nhập để xem giỏ hàng", Toast.LENGTH_SHORT).show();
+            BottomNavHelper.showLoginRequiredDialog(requireContext());
             dismiss();
             return null;
         }
