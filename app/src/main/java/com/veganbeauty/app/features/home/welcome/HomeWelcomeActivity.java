@@ -897,7 +897,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
             }
             
             generatedRegOtp = String.format(Locale.US, "%06d", new Random().nextInt(1000000));
-            sendSmsNotification(generatedRegOtp);
+            sendSmsNotification(generatedRegOtp, "Mã OTP tạo tài khoản của bạn là: " + generatedRegOtp
+                    + ". Không chia sẻ mã này cho bất kỳ ai.");
             android.widget.Toast.makeText(this, "Đã gửi OTP qua tin nhắn SMS", android.widget.Toast.LENGTH_SHORT).show();
             
             registerBinding.homeInputOtpReg.setVisibility(View.VISIBLE);
@@ -1123,7 +1124,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                         });
                     } else {
                         // Gửi SMS qua Notification
-                        sendSmsNotification(generatedOtp);
+                        sendSmsNotification(generatedOtp, "Mã OTP khôi phục mật khẩu của bạn là: " + generatedOtp
+                                + ". Không chia sẻ mã này cho bất kỳ ai.");
                         android.widget.Toast.makeText(this, "Đã gửi OTP qua tin nhắn SMS", android.widget.Toast.LENGTH_SHORT).show();
                     }
 
@@ -1213,7 +1215,7 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         forgotPasswordBinding.fpBtnGoLogin.setOnClickListener(v -> transitionToLogin());
     }
 
-    private void sendSmsNotification(String otp) {
+    private void sendSmsNotification(String otp, String message) {
         String channelId = "sms_otp_channel";
         android.app.NotificationManager notificationManager = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
         
@@ -1229,7 +1231,8 @@ public class HomeWelcomeActivity extends AppCompatActivity {
         androidx.core.app.NotificationCompat.Builder builder = new androidx.core.app.NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.mipmap.ic_launcher) // Fallback icon if not available
                 .setContentTitle("Tin nhắn từ Rootie")
-                .setContentText("Mã OTP khôi phục mật khẩu của bạn là: " + otp + ". Không chia sẻ mã này cho bất kỳ ai.")
+                .setContentText(message)
+                .setStyle(new androidx.core.app.NotificationCompat.BigTextStyle().bigText(message))
                 .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 
@@ -1239,14 +1242,14 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
                     androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
                     // Still show toast as fallback if permission is not granted yet
-                    android.widget.Toast.makeText(this, "[SMS] Mã OTP của bạn là: " + otp, android.widget.Toast.LENGTH_LONG).show();
+                    android.widget.Toast.makeText(this, "[SMS] " + message, android.widget.Toast.LENGTH_LONG).show();
                     return;
                 }
             }
             notificationManager.notify(new Random().nextInt(1000), builder.build());
         } catch (Exception e) {
             e.printStackTrace();
-            android.widget.Toast.makeText(this, "[SMS] Mã OTP của bạn là: " + otp, android.widget.Toast.LENGTH_LONG).show();
+            android.widget.Toast.makeText(this, "[SMS] " + message, android.widget.Toast.LENGTH_LONG).show();
         }
     }
 
