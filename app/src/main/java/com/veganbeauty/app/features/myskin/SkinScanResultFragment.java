@@ -207,6 +207,7 @@ public class SkinScanResultFragment extends RootieFragment {
 
             String email = ProfileSession.getEmail(requireContext());
             SkinHistoryLocalStore.save(requireContext(), historyObj, userId, email);
+            ProfileSession.applySkinProfileFromPayload(requireContext(), historyObj);
             mainHandler.post(() -> {
                 if (binding == null) return;
                 binding.skinResultBtnSave.setEnabled(true);
@@ -539,6 +540,7 @@ public class SkinScanResultFragment extends RootieFragment {
     private void bindData(JSONObject data) {
         if (binding == null) return;
         currentData = data;
+        ProfileSession.applySkinProfileFromPayload(requireContext(), data);
         try {
             int score = data.getInt("score");
             binding.skinResultScoreVal.setText(String.valueOf(score));

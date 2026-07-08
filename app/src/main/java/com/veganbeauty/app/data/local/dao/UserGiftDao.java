@@ -25,6 +25,9 @@ public interface UserGiftDao {
     @Query("SELECT COUNT(*) FROM user_gifts")
     int getUserGiftCount();
 
+    @Query("SELECT * FROM user_gifts ORDER BY acquiredTimestamp DESC")
+    List<UserGiftEntity> getAllUserGiftsSync();
+
     @Query("DELETE FROM user_gifts WHERE id = :id")
     int deleteUserGiftById(int id);
 

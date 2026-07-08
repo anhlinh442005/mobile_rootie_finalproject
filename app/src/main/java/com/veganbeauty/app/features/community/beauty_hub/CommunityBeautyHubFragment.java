@@ -28,6 +28,7 @@ import com.veganbeauty.app.data.repository.CommunityNotificationRepository;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentBeautyHubBinding;
 import com.veganbeauty.app.features.community.blog.CommunityBlogFragment;
+import com.veganbeauty.app.features.community.com_feed.CommunityBootstrap;
 import com.veganbeauty.app.features.community.com_feed.CommunityExploreFragment;
 import com.veganbeauty.app.features.community.com_feed.CommunityFeedFragment;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
@@ -84,6 +85,8 @@ public class CommunityBeautyHubFragment extends RootieFragment {
 
     @Override
     public void setupUI(View view) {
+        CommunityBootstrap.ensureLoaded(requireContext());
+
         ingredientAdapter = new IngredientAdapter(new ArrayList<>());
         blogAdapter = new LatestKnowledgeAdapter(new ArrayList<>());
         notebookAdapter = new NotebookVideoAdapter(new ArrayList<>());
@@ -278,7 +281,7 @@ public class CommunityBeautyHubFragment extends RootieFragment {
     @Override
     public void observeViewModel() {
         viewModel.getIngredients().observe(getViewLifecycleOwner(), items -> {
-            if (items != null) {
+            if (items != null && !items.isEmpty()) {
                 ingredientAdapter.updateData(items.subList(0, Math.min(10, items.size())));
             }
         });

@@ -328,7 +328,7 @@ public class SkinAiChatFragment extends DialogFragment {
         RootieChatItem thinkingMsg = new RootieChatItem(
                 UUID.randomUUID().toString(),
                 RootieChatItem.Sender.AI,
-                "Đang phân tích câu hỏi của bạn...",
+                "Đang tra cứu dữ liệu...",
                 timeStr,
                 RootieChatItem.ItemType.TEXT,
                 null
@@ -344,28 +344,11 @@ public class SkinAiChatFragment extends DialogFragment {
             SkinWeatherProfileHelper.TodaySkinMetrics metrics =
                     SkinAiAssistantHelper.computeTodayMetrics(profile, weather);
 
-            String reply;
-            if (SkinAiAssistantHelper.isGeminiConfigured(GEMINI_API_KEY)) {
-                try {
-                    String userTurn = SkinAiAssistantHelper.buildChatUserTurn(
-                            requireContext(), profile, metrics, weather, text);
-                    reply = SkinAiAssistantHelper.requestChatReply(
-                            GEMINI_API_KEY, chatAdapter.getItems(), userTurn);
-                } catch (Exception e) {
-                    reply = null;
-                }
-            } else {
-                reply = null;
-            }
+            String reply = SkinAiAssistantHelper.replyForChat(
+                    requireContext(), profile, metrics, weather, text,
+                    GEMINI_API_KEY, chatAdapter.getItems());
 
-            if (reply == null || reply.trim().isEmpty()) {
-                reply = SkinAiAssistantHelper.buildRuleBasedReply(
-                        requireContext(), profile, metrics, weather, text);
-            } else {
-                reply = SkinAiTextHelper.sanitizeAiReply(reply);
-            }
-
-            final String finalReply = reply;
+            final String finalReply = SkinAiTextHelper.sanitizeAiReply(reply);
             final boolean attachDiagnostic = SkinAiAssistantHelper.shouldAttachDiagnosticCard(text);
             if (!isAdded() || binding == null) return;
             requireActivity().runOnUiThread(() -> {

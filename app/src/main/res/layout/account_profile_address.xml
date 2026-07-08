@@ -7,64 +7,26 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <!-- HEADER BAR -->
-    <RelativeLayout
-        android:id="@+id/header_bar"
-        android:layout_width="match_parent"
-        android:layout_height="66dp"
-        android:background="@drawable/bg_points_card_gradient">
-
-        <!-- Back Button -->
-        <ImageView
-            android:id="@+id/btn_back"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="11dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#02542D" />
-
-        <!-- Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:fontFamily="@font/lexend"
-            android:text="Địa chỉ của tôi"
-            android:textColor="@color/primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <!-- Notification Bell -->
-        <ImageView
-            android:id="@+id/btn_notification"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="11dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="7dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_bell" />
-    </RelativeLayout>
-
-    <!-- CONTENT BODY -->
-    <LinearLayout
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
-        android:layout_below="@id/header_bar"
+        android:clipChildren="false"
         android:clipToPadding="false"
-        android:orientation="vertical"
-        android:paddingBottom="120dp"
-        android:paddingHorizontal="20dp">
+        android:fillViewport="true"
+        android:paddingTop="56dp"
+        android:paddingBottom="132dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp">
 
         <!-- Subtitle -->
         <TextView
@@ -77,12 +39,6 @@
             android:textColor="@color/primary"
             android:textSize="14sp"
             android:lineSpacingExtra="4dp" />
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -486,16 +442,15 @@
                     </LinearLayout>
                 </RelativeLayout>
             </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- BUTTON: ADD NEW ADDRESS -->
     <RelativeLayout
         android:id="@+id/btn_add_address_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="56dp"
+        android:layout_above="@id/bottom_nav"
         android:background="@color/neutral"
         android:elevation="8dp"
         android:paddingHorizontal="20dp"
@@ -546,4 +501,51 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:elevation="16dp" />
+
+    <!-- Top Header (overlay) -->
+    <RelativeLayout
+        android:id="@+id/rl_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bg_gradient_header"
+        android:elevation="6dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Quay lại"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginHorizontal="56dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:maxLines="1"
+            android:text="Địa chỉ của tôi"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <include
+            android:id="@+id/layoutNotification"
+            layout="@layout/include_notification_bell"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp" />
+    </RelativeLayout>
 </RelativeLayout>

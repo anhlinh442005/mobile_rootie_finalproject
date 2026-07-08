@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.databinding.FragmentSkinAllergyProfileBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
+import com.veganbeauty.app.features.weather.SkinWeatherProfileHelper;
 import com.veganbeauty.app.features.quiz.QuizTestIntroFragment;
 import com.veganbeauty.app.features.quiz.QuizTestResultFragment;
 import com.veganbeauty.app.features.routine.SkinReminderFragment;
@@ -39,8 +41,8 @@ import java.util.Set;
 import kotlinx.coroutines.BuildersKt;
 import kotlinx.coroutines.Dispatchers;
 import androidx.lifecycle.LifecycleOwnerKt;
-import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.data.local.SkinProfileMetricsHelper;
 
 public class SkinAllergyProfileFragment extends RootieFragment {
 
@@ -57,42 +59,53 @@ public class SkinAllergyProfileFragment extends RootieFragment {
     @Override
     public void setupUI(View view) {
         Context ctx = requireContext();
-        SharedPreferences prefs = ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
-        String skinTypeRaw = prefs.getString("SAVED_USER_SKIN_TYPE", "Da hỗn hợp thiên dầu");
+        SkinWeatherProfileHelper.UserSkinProfile profile = SkinWeatherProfileHelper.load(ctx);
+        String skinTypeRaw = profile.skinType;
         final String skinType = skinTypeRaw != null ? skinTypeRaw : "Da hỗn hợp thiên dầu";
         
-        String recRaw = prefs.getString("SAVED_RECOMMENDATION", "Hãy duy trì thói quen chăm sóc da lành tính hàng ngày...");
-        final String recommendation = recRaw != null ? recRaw : "Hãy duy trì thói quen chăm sóc da lành tính hàng ngày...";
+        String recRaw = profile.recommendation;
+        final String recommendation = recRaw != null && !recRaw.isEmpty() ? recRaw : "Hãy duy trì thói quen chăm sóc da lành tính hàng ngày...";
         
-        Set<String> flaggedRaw = prefs.getStringSet("SAVED_FLAGGED_GROUPS", new HashSet<>());
+        Set<String> flaggedRaw = profile.flaggedGroups;
         final Set<String> flaggedSet = flaggedRaw != null ? flaggedRaw : new HashSet<>();
 
-        binding.tvSkinTypeResult.setText(skinType);
         binding.tvRecommendation.setText(recommendation);
-        binding.tvSkinTypeDesc.setText(getSkinTypeDesc(skinType));
 
-        int savedSens = prefs.getInt("SAVED_SENSITIVITY", -1);
-        int sensitivity = savedSens != -1 ? savedSens : getDerivedSensitivity(skinType);
-        
-        int savedHydr = prefs.getInt("SAVED_HYDRATION", -1);
-        int hydration = savedHydr != -1 ? savedHydr : getDerivedHydration(skinType);
-        
-        int savedElas = prefs.getInt("SAVED_ELASTICITY", -1);
-        int elasticity = savedElas != -1 ? savedElas : getDerivedElasticity(skinType);
-        
-        int savedSebum = prefs.getInt("SAVED_SEBUM", -1);
-        int sebum = savedSebum != -1 ? savedSebum : getDerivedSebum(skinType);
-        
-        String skinAreasRaw = prefs.getString("SAVED_SKIN_AREAS", null);
-        final String skinAreas = skinAreasRaw != null ? skinAreasRaw : getDerivedSkinAreas(skinType);
+        int sensitivity = profile.sensitivity;
+        int hydration = profile.hydration;
+        int elasticity = profile.elasticity;
+        int sebum = profile.sebum;
+        final String skinAreas = profile.skinAreas != null && !profile.skinAreas.isEmpty()
+                ? profile.skinAreas
+                : getDerivedSkinAreas(skinType);
 
-        binding.pbSensitivity.setProgress(sensitivity); binding.tvSensitivityVal.setText(sensitivity + "%");
-        binding.pbHydration.setProgress(hydration); binding.tvHydrationVal.setText(hydration + "%");
-        binding.pbElasticity.setProgress(elasticity); binding.tvElasticityVal.setText(elasticity + "%");
-        binding.pbSebum.setProgress(sebum); binding.tvSebumVal.setText(sebum + "%");
-        binding.tvSkinAreasDesc.setText(skinAreas);
+        if (!profile.hasSavedProfile) {
+            binding.tvSkinTypeResult.setText("Chưa có hồ sơ da");
+            binding.tvSkinTypeDesc.setText("Làm bài quiz hoặc quét da bằng AI để xem loại da, chỉ số và hiện trạng vùng da.");
+            binding.pbSensitivity.setProgress(0);
+            binding.tvSensitivityVal.setText("—");
+            binding.pbHydration.setProgress(0);
+            binding.tvHydrationVal.setText("—");
+            binding.pbElasticity.setProgress(0);
+            binding.tvElasticityVal.setText("—");
+            binding.pbSebum.setProgress(0);
+            binding.tvSebumVal.setText("—");
+            binding.tvSkinAreasDesc.setText("—");
+        } else {
+            binding.tvSkinTypeResult.setText(skinType);
+            binding.tvSkinTypeDesc.setText(getSkinTypeDesc(skinType));
+            binding.pbSensitivity.setProgress(sensitivity);
+            binding.tvSensitivityVal.setText(sensitivity + "%");
+            binding.pbHydration.setProgress(hydration);
+            binding.tvHydrationVal.setText(hydration + "%");
+            binding.pbElasticity.setProgress(elasticity);
+            binding.tvElasticityVal.setText(elasticity + "%");
+            binding.pbSebum.setProgress(sebum);
+            binding.tvSebumVal.setText(sebum + "%");
+            binding.tvSkinAreasDesc.setText(skinAreas);
+        }
 
-        setupSkinComparison(prefs, hydration, sebum, sensitivity, elasticity);
+        setupSkinComparison();
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         binding.layoutNotification.getRoot().setOnClickListener(v ->
@@ -105,21 +118,9 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         int finalElasticity = elasticity;
         int finalSebum = sebum;
 
-        binding.btnViewSkinReport.setOnClickListener(v -> {
-            prefs.edit()
-                    .putString("SKIN_TYPE_RESULT", skinType)
-                    .putString("RECOMMENDATION", recommendation)
-                    .putStringSet("FLAGGED_GROUPS", flaggedSet)
-                    .putInt("SENSITIVITY_PERCENT", finalSensitivity)
-                    .putInt("HYDRATION_PERCENT", finalHydration)
-                    .putInt("ELASTICITY_PERCENT", finalElasticity)
-                    .putInt("SEBUM_PERCENT", finalSebum)
-                    .putString("SKIN_AREAS_DESC", skinAreas)
-                    .apply();
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new QuizTestResultFragment())
-                    .addToBackStack(null).commit();
-        });
+        binding.btnViewSkinReport.setOnClickListener(v -> openPersonalSkinReport(
+                ctx, profile.hasSavedProfile, skinType, recommendation, flaggedSet,
+                finalSensitivity, finalHydration, finalElasticity, finalSebum, skinAreas));
 
         binding.btnSetupRoutine.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
@@ -139,6 +140,52 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         });
 
         setupScrollHideHeader();
+    }
+
+    private void openPersonalSkinReport(Context ctx, boolean hasSavedProfile, String skinType,
+                                        String recommendation, Set<String> flaggedSet,
+                                        int sensitivity, int hydration, int elasticity, int sebum,
+                                        String skinAreas) {
+        if (!hasSavedProfile) {
+            Toast.makeText(ctx, "Hãy làm quiz hoặc quét da bằng AI trước để xem báo cáo", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Set<String> flaggedCopy = flaggedSet != null ? new HashSet<>(flaggedSet) : new HashSet<>();
+        ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
+                .edit()
+                .putString("SKIN_TYPE_RESULT", skinType)
+                .putString("RECOMMENDATION", recommendation)
+                .putStringSet("FLAGGED_GROUPS", flaggedCopy)
+                .putInt("SENSITIVITY_PERCENT", sensitivity)
+                .putInt("HYDRATION_PERCENT", hydration)
+                .putInt("ELASTICITY_PERCENT", elasticity)
+                .putInt("SEBUM_PERCENT", sebum)
+                .putString("SKIN_AREAS_DESC", skinAreas)
+                .commit();
+
+        Bundle args = new Bundle();
+        args.putBoolean(QuizTestResultFragment.ARG_FROM_SKIN_PROFILE, true);
+        args.putString(QuizTestResultFragment.ARG_SKIN_TYPE, skinType);
+        args.putString(QuizTestResultFragment.ARG_RECOMMENDATION, recommendation);
+        args.putStringArrayList(QuizTestResultFragment.ARG_FLAGGED_GROUPS, new ArrayList<>(flaggedCopy));
+        args.putInt(QuizTestResultFragment.ARG_SENSITIVITY, sensitivity);
+        args.putInt(QuizTestResultFragment.ARG_HYDRATION, hydration);
+        args.putInt(QuizTestResultFragment.ARG_ELASTICITY, elasticity);
+        args.putInt(QuizTestResultFragment.ARG_SEBUM, sebum);
+        args.putString(QuizTestResultFragment.ARG_SKIN_AREAS, skinAreas);
+
+        QuizTestResultFragment fragment = new QuizTestResultFragment();
+        fragment.setArguments(args);
+
+        var transaction = getParentFragmentManager().beginTransaction()
+                .replace(R.id.main_container, fragment)
+                .addToBackStack(null);
+        if (getParentFragmentManager().isStateSaved()) {
+            transaction.commitAllowingStateLoss();
+        } else {
+            transaction.commit();
+        }
     }
 
     private void setupScrollHideHeader() {
@@ -167,38 +214,6 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         if (lower.contains("dầu")) return "Làn da tiết nhiều bã nhờn toàn mặt hoặc vùng chữ T, dễ bít tắc lỗ chân lông gây mụn. Cần tập trung làm sạch sâu và cấp ẩm dạng gel mỏng nhẹ.";
         if (lower.contains("khô")) return "Làn da thiếu hụt dầu tự nhiên, bề mặt thô ráp, xuất hiện các nếp nhăn li ti. Cần được bổ sung độ ẩm và khóa ẩm bằng các loại kem dưỡng đậm đặc.";
         return "Làn da của bạn ở trạng thái tương đối cân bằng, tuy nhiên cần chăm sóc đều đặn để duy trì độ ẩm và bảo vệ da trước các tác nhân ô nhiễm môi trường.";
-    }
-
-    private int getDerivedSensitivity(String skinType) {
-        String lower = skinType.toLowerCase();
-        if (lower.contains("nhạy cảm") || lower.contains("kích ứng")) return 85;
-        if (lower.contains("mụn")) return 65;
-        if (lower.contains("dầu") || lower.contains("khô")) return 45;
-        return 15;
-    }
-
-    private int getDerivedHydration(String skinType) {
-        String lower = skinType.toLowerCase();
-        if (lower.contains("mất nước")) return 25;
-        if (lower.contains("khô")) return 35;
-        if (lower.contains("dầu")) return 60;
-        if (lower.contains("thường")) return 85;
-        return 55;
-    }
-
-    private int getDerivedElasticity(String skinType) {
-        String lower = skinType.toLowerCase();
-        if (lower.contains("lão hóa")) return 40;
-        if (lower.contains("thường")) return 92;
-        return 75;
-    }
-
-    private int getDerivedSebum(String skinType) {
-        String lower = skinType.toLowerCase();
-        if (lower.contains("dầu")) return 90;
-        if (lower.contains("hỗn hợp")) return 70;
-        if (lower.contains("khô") || lower.contains("mất nước")) return 20;
-        return 50;
     }
 
     private String getDerivedSkinAreas(String skinType) {
@@ -359,7 +374,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                     }
                 }
 
-                View itemView = LayoutInflater.from(getContext()).inflate(R.layout.quiz_item_product_recommendation, binding.llProductsInUseContainer, false);
+                View itemView = LayoutInflater.from(getContext()).inflate(R.layout.skin_item_product_in_use, binding.llProductsInUseContainer, false);
                 TextView tvProdName = itemView.findViewById(R.id.tv_product_name);
                 TextView tvProdDesc = itemView.findViewById(R.id.tv_product_desc);
                 TextView tvBadge = itemView.findViewById(R.id.tv_compatibility_badge);
@@ -381,7 +396,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                     tvBadge.setTextColor(Color.parseColor("#F04758"));
                     Set<String> uniqueAvoids = new HashSet<>(triggeredAvoids);
                     String avoidStr = String.join(", ", uniqueAvoids);
-                    tvProdDesc.setText("Sản phẩm có chứa " + avoidStr + " không phù hợp với loại da nhạy cảm của bạn, dễ gây dị ứng hoặc kích ứng đỏ rát.");
+                    tvProdDesc.setText("Chứa " + avoidStr + " — không phù hợp da nhạy cảm.");
                 } else if (!triggeredCautions.isEmpty()) {
                     ivBadgeIcon.setImageResource(R.drawable.ic_warning_triangle);
                     ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#EAAA08")));
@@ -389,13 +404,13 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                     tvBadge.setTextColor(Color.parseColor("#EAAA08"));
                     Set<String> uniqueCautions = new HashSet<>(triggeredCautions);
                     String cautionStr = String.join(", ", uniqueCautions);
-                    tvProdDesc.setText("Sản phẩm chứa " + cautionStr + ". Cần theo dõi sát sao biểu hiện của da khi sử dụng sản phẩm này.");
+                    tvProdDesc.setText("Chứa " + cautionStr + " — cần theo dõi khi dùng.");
                 } else {
                     ivBadgeIcon.setImageResource(R.drawable.quiz_ic_wavy_check);
                     ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#12B76A")));
                     tvBadge.setText("Phù hợp");
                     tvBadge.setTextColor(Color.parseColor("#12B76A"));
-                    tvProdDesc.setText("Bảng thành phần cực kỳ lành tính và hoàn toàn phù hợp với nền da hiện tại của bạn.");
+                    tvProdDesc.setText("Thành phần lành tính, phù hợp nền da hiện tại.");
                 }
 
                 binding.llProductsInUseContainer.addView(itemView);
@@ -436,136 +451,144 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         cell.setBackgroundTintList(ColorStateList.valueOf(improved ? COMPARE_BG_IMPROVED : COMPARE_BG_DEFAULT));
     }
 
-    private void setupSkinComparison(SharedPreferences prefs, int currentHydration, int currentSebum, int currentSensitivity, int currentElasticity) {
-        if (getContext() == null) return;
-        String email = ProfileSession.INSTANCE.getEmail(requireContext());
-        
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) -> 
+    private void setupSkinComparison() {
+        if (binding == null || getContext() == null) return;
+        binding.skinComparisonSection.setVisibility(View.GONE);
+
+        Context appContext = requireContext().getApplicationContext();
+        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
             BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
-                JSONArray historyArrayFromLocal = SkinHistoryLocalStore.getHistory(
-                        requireContext(), ProfileSession.INSTANCE.getUserId(requireContext()), email);
-                
+                String userId = ProfileSession.getUserId(appContext);
+                String email = ProfileSession.getEmail(appContext);
+                List<SkinProfileMetricsHelper.Snapshot> snapshots =
+                        SkinProfileMetricsHelper.loadComparableSnapshots(appContext, userId, email);
+
                 return BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
+                    if (binding == null) {
+                        return kotlin.Unit.INSTANCE;
+                    }
                     try {
-                        JSONArray historyArray = historyArrayFromLocal;
-                        if (historyArray.length() == 0) {
-                            String historyStr = prefs.getString("QUIZ_HISTORY_LIST", "[]");
-                            if (historyStr == null) historyStr = "[]";
-                            historyArray = new JSONArray(historyStr);
+                        if (snapshots.size() < 2) {
+                            binding.skinComparisonSection.setVisibility(View.GONE);
+                            return kotlin.Unit.INSTANCE;
                         }
 
-            int oldHydration, oldSebum, oldSensitivity, oldElasticity;
-            boolean isComparedToStartProfile;
+                        SkinProfileMetricsHelper.Snapshot newer = snapshots.get(0);
+                        SkinProfileMetricsHelper.Snapshot older = snapshots.get(1);
 
-            if (historyArray.length() >= 2) {
-                JSONObject oldRecord = historyArray.getJSONObject(historyArray.length() - 2);
-                String oldSkinType = oldRecord.optString("skinType", "Da hỗn hợp");
-                oldHydration = oldRecord.optInt("hydration", getDerivedHydration(oldSkinType));
-                oldSebum = oldRecord.optInt("sebum", getDerivedSebum(oldSkinType));
-                oldSensitivity = oldRecord.optInt("sensitivity", getDerivedSensitivity(oldSkinType));
-                oldElasticity = oldRecord.optInt("elasticity", getDerivedElasticity(oldSkinType));
-                isComparedToStartProfile = false;
-            } else {
-                oldHydration = Math.max(0, Math.min(100, currentHydration - 10));
-                oldSebum = Math.max(0, Math.min(100, currentSebum + 12));
-                oldSensitivity = Math.max(0, Math.min(100, currentSensitivity + 8));
-                oldElasticity = Math.max(0, Math.min(100, currentElasticity - 5));
-                isComparedToStartProfile = true;
-            }
+                        binding.skinComparisonSection.setVisibility(View.VISIBLE);
 
-            binding.skinCompareHydrationOld.setText(oldHydration + "%");
-            binding.skinCompareHydrationNew.setText(currentHydration + "%");
-            int hydDiff = currentHydration - oldHydration;
-            if (hydDiff > 0) {
-                binding.skinCompareHydrationDiff.setText("+" + hydDiff + "% (Cải thiện \uD83D\uDCC8)");
-                binding.skinCompareHydrationDiff.setTextColor(Color.parseColor("#12B76A"));
-            } else if (hydDiff < 0) {
-                binding.skinCompareHydrationDiff.setText(hydDiff + "% (Kém đi \uD83D\uDCC9)");
-                binding.skinCompareHydrationDiff.setTextColor(Color.parseColor("#F04758"));
-            } else {
-                binding.skinCompareHydrationDiff.setText("0% (Duy trì)");
-                binding.skinCompareHydrationDiff.setTextColor(Color.parseColor("#7E8A83"));
-            }
-            setCompareCellBackground(binding.skinCompareHydrationCell, hydDiff > 0);
-
-            binding.skinCompareSebumOld.setText(oldSebum + "%");
-            binding.skinCompareSebumNew.setText(currentSebum + "%");
-            int sebDiff = currentSebum - oldSebum;
-            if (sebDiff < 0) {
-                binding.skinCompareSebumDiff.setText(sebDiff + "% (Cải thiện \uD83D\uDCC9)");
-                binding.skinCompareSebumDiff.setTextColor(Color.parseColor("#12B76A"));
-            } else if (sebDiff > 0) {
-                binding.skinCompareSebumDiff.setText("+" + sebDiff + "% (Tăng dầu \uD83D\uDCC8)");
-                binding.skinCompareSebumDiff.setTextColor(Color.parseColor("#F04758"));
-            } else {
-                binding.skinCompareSebumDiff.setText("0% (Duy trì)");
-                binding.skinCompareSebumDiff.setTextColor(Color.parseColor("#7E8A83"));
-            }
-            setCompareCellBackground(binding.skinCompareSebumCell, sebDiff < 0);
-
-            binding.skinCompareSensitivityOld.setText(oldSensitivity + "%");
-            binding.skinCompareSensitivityNew.setText(currentSensitivity + "%");
-            int sensDiff = currentSensitivity - oldSensitivity;
-            if (sensDiff < 0) {
-                binding.skinCompareSensitivityDiff.setText(sensDiff + "% (Cải thiện \uD83D\uDCC9)");
-                binding.skinCompareSensitivityDiff.setTextColor(Color.parseColor("#12B76A"));
-            } else if (sensDiff > 0) {
-                binding.skinCompareSensitivityDiff.setText("+" + sensDiff + "% (Tăng nhạy cảm \uD83D\uDCC8)");
-                binding.skinCompareSensitivityDiff.setTextColor(Color.parseColor("#F04758"));
-            } else {
-                binding.skinCompareSensitivityDiff.setText("0% (Duy trì)");
-                binding.skinCompareSensitivityDiff.setTextColor(Color.parseColor("#7E8A83"));
-            }
-            setCompareCellBackground(binding.skinCompareSensitivityCell, sensDiff < 0);
-
-            binding.skinCompareElasticityOld.setText(oldElasticity + "%");
-            binding.skinCompareElasticityNew.setText(currentElasticity + "%");
-            int elastDiff = currentElasticity - oldElasticity;
-            if (elastDiff > 0) {
-                binding.skinCompareElasticityDiff.setText("+" + elastDiff + "% (Cải thiện \uD83D\uDCC8)");
-                binding.skinCompareElasticityDiff.setTextColor(Color.parseColor("#12B76A"));
-            } else if (elastDiff < 0) {
-                binding.skinCompareElasticityDiff.setText(elastDiff + "% (Giảm đàn hồi \uD83D\uDCC9)");
-                binding.skinCompareElasticityDiff.setTextColor(Color.parseColor("#F04758"));
-            } else {
-                binding.skinCompareElasticityDiff.setText("0% (Duy trì)");
-                binding.skinCompareElasticityDiff.setTextColor(Color.parseColor("#7E8A83"));
-            }
-            setCompareCellBackground(binding.skinCompareElasticityCell, elastDiff > 0);
-
-            float temp = prefs.getFloat("SAVED_WEATHER_TEMP", -100f);
-            int humidityVal = prefs.getInt("SAVED_WEATHER_HUMIDITY", -1);
-            float uv = prefs.getFloat("SAVED_WEATHER_UV", -1f);
-            float pm25 = prefs.getFloat("SAVED_WEATHER_PM25", -1f);
-            if (pm25 < 0f) {
-                int pm25Legacy = prefs.getInt("SAVED_WEATHER_PM25", -1);
-                if (pm25Legacy >= 0) pm25 = pm25Legacy;
-            }
-            String city = prefs.getString("SAVED_WEATHER_CITY", "");
-            String weatherCondition = prefs.getString("SAVED_WEATHER_CONDITION", "");
-
-            StringBuilder sb = new StringBuilder();
-            if (hydDiff > 0) sb.append("• Cấp ẩm tốt hơn (+").append(hydDiff).append("%)\n");
-            if (sebDiff < 0) sb.append("• Kiểm soát bã nhờn ổn định (").append(sebDiff).append("%)\n");
-            if (sensDiff < 0) sb.append("• Giảm nhạy cảm kích ứng (").append(sensDiff).append("%)\n");
-            if (elastDiff > 0) sb.append("• Tăng độ đàn hồi săn chắc (+").append(elastDiff).append("%)\n");
-            if (sb.length() == 0) sb.append("• Chỉ số da duy trì ở mức ổn định.\n");
-            
-            sb.append("\n=> Các sản phẩm thuần chay bạn đang dùng cho thấy sự tương thích tốt. Hãy tiếp tục duy trì routine này.");
-
-            if (binding != null) {
-                binding.skinTvProductEfficacyAnalysis.setText(sb.toString());
-            }
-
+                        bindHydrationComparison(older.hydration, newer.hydration);
+                        bindSebumComparison(older.sebum, newer.sebum);
+                        bindSensitivityComparison(older.sensitivity, newer.sensitivity);
+                        bindElasticityComparison(older.elasticity, newer.elasticity);
+                        binding.skinTvProductEfficacyAnalysis.setText(
+                                buildEfficacyAnalysis(older, newer));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        if (binding != null) {
-                            binding.skinTvProductEfficacyAnalysis.setText("Đã có lỗi xảy ra khi xử lý biểu đồ so sánh.");
-                        }
+                        binding.skinComparisonSection.setVisibility(View.GONE);
                     }
                     return kotlin.Unit.INSTANCE;
                 }, c2);
             }, cont));
+    }
+
+    private void bindHydrationComparison(int oldVal, int newVal) {
+        binding.skinCompareHydrationOld.setText(oldVal + "%");
+        binding.skinCompareHydrationNew.setText(newVal + "%");
+        int diff = newVal - oldVal;
+        if (diff > 0) {
+            binding.skinCompareHydrationDiff.setText("+" + diff + "% (Cải thiện \uD83D\uDCC8)");
+            binding.skinCompareHydrationDiff.setTextColor(Color.parseColor("#12B76A"));
+        } else if (diff < 0) {
+            binding.skinCompareHydrationDiff.setText(diff + "% (Kém đi \uD83D\uDCC9)");
+            binding.skinCompareHydrationDiff.setTextColor(Color.parseColor("#F04758"));
+        } else {
+            binding.skinCompareHydrationDiff.setText("0% (Duy trì)");
+            binding.skinCompareHydrationDiff.setTextColor(Color.parseColor("#7E8A83"));
+        }
+        setCompareCellBackground(binding.skinCompareHydrationCell, diff > 0);
+    }
+
+    private void bindSebumComparison(int oldVal, int newVal) {
+        binding.skinCompareSebumOld.setText(oldVal + "%");
+        binding.skinCompareSebumNew.setText(newVal + "%");
+        int diff = newVal - oldVal;
+        if (diff < 0) {
+            binding.skinCompareSebumDiff.setText(diff + "% (Cải thiện \uD83D\uDCC9)");
+            binding.skinCompareSebumDiff.setTextColor(Color.parseColor("#12B76A"));
+        } else if (diff > 0) {
+            binding.skinCompareSebumDiff.setText("+" + diff + "% (Tăng dầu \uD83D\uDCC8)");
+            binding.skinCompareSebumDiff.setTextColor(Color.parseColor("#F04758"));
+        } else {
+            binding.skinCompareSebumDiff.setText("0% (Duy trì)");
+            binding.skinCompareSebumDiff.setTextColor(Color.parseColor("#7E8A83"));
+        }
+        setCompareCellBackground(binding.skinCompareSebumCell, diff < 0);
+    }
+
+    private void bindSensitivityComparison(int oldVal, int newVal) {
+        binding.skinCompareSensitivityOld.setText(oldVal + "%");
+        binding.skinCompareSensitivityNew.setText(newVal + "%");
+        int diff = newVal - oldVal;
+        if (diff < 0) {
+            binding.skinCompareSensitivityDiff.setText(diff + "% (Cải thiện \uD83D\uDCC9)");
+            binding.skinCompareSensitivityDiff.setTextColor(Color.parseColor("#12B76A"));
+        } else if (diff > 0) {
+            binding.skinCompareSensitivityDiff.setText("+" + diff + "% (Tăng nhạy cảm \uD83D\uDCC8)");
+            binding.skinCompareSensitivityDiff.setTextColor(Color.parseColor("#F04758"));
+        } else {
+            binding.skinCompareSensitivityDiff.setText("0% (Duy trì)");
+            binding.skinCompareSensitivityDiff.setTextColor(Color.parseColor("#7E8A83"));
+        }
+        setCompareCellBackground(binding.skinCompareSensitivityCell, diff < 0);
+    }
+
+    private void bindElasticityComparison(int oldVal, int newVal) {
+        binding.skinCompareElasticityOld.setText(oldVal + "%");
+        binding.skinCompareElasticityNew.setText(newVal + "%");
+        int diff = newVal - oldVal;
+        if (diff > 0) {
+            binding.skinCompareElasticityDiff.setText("+" + diff + "% (Cải thiện \uD83D\uDCC8)");
+            binding.skinCompareElasticityDiff.setTextColor(Color.parseColor("#12B76A"));
+        } else if (diff < 0) {
+            binding.skinCompareElasticityDiff.setText(diff + "% (Giảm đàn hồi \uD83D\uDCC9)");
+            binding.skinCompareElasticityDiff.setTextColor(Color.parseColor("#F04758"));
+        } else {
+            binding.skinCompareElasticityDiff.setText("0% (Duy trì)");
+            binding.skinCompareElasticityDiff.setTextColor(Color.parseColor("#7E8A83"));
+        }
+        setCompareCellBackground(binding.skinCompareElasticityCell, diff > 0);
+    }
+
+    @NonNull
+    private String buildEfficacyAnalysis(SkinProfileMetricsHelper.Snapshot older,
+                                         SkinProfileMetricsHelper.Snapshot newer) {
+        int hydDiff = newer.hydration - older.hydration;
+        int sebDiff = newer.sebum - older.sebum;
+        int sensDiff = newer.sensitivity - older.sensitivity;
+        int elastDiff = newer.elasticity - older.elasticity;
+
+        StringBuilder sb = new StringBuilder();
+        if (older.dateLabel != null && newer.dateLabel != null) {
+            sb.append("So sánh từ ").append(older.dateLabel)
+                    .append(" → ").append(newer.dateLabel).append(":\n\n");
+        }
+
+        int changeCount = 0;
+        if (hydDiff > 0) { sb.append("• Cấp ẩm tốt hơn (+").append(hydDiff).append("%)\n"); changeCount++; }
+        if (sebDiff < 0) { sb.append("• Kiểm soát bã nhờn ổn định (").append(sebDiff).append("%)\n"); changeCount++; }
+        if (sensDiff < 0) { sb.append("• Giảm nhạy cảm kích ứng (").append(sensDiff).append("%)\n"); changeCount++; }
+        if (elastDiff > 0) { sb.append("• Tăng độ đàn hồi săn chắc (+").append(elastDiff).append("%)\n"); changeCount++; }
+        if (hydDiff < 0) { sb.append("• Độ ẩm giảm (").append(hydDiff).append("%)\n"); changeCount++; }
+        if (sebDiff > 0) { sb.append("• Bã nhờn tăng (+").append(sebDiff).append("%)\n"); changeCount++; }
+        if (sensDiff > 0) { sb.append("• Nhạy cảm tăng (+").append(sensDiff).append("%)\n"); changeCount++; }
+        if (elastDiff < 0) { sb.append("• Đàn hồi giảm (").append(elastDiff).append("%)\n"); changeCount++; }
+        if (changeCount == 0) {
+            sb.append("• Chỉ số da duy trì ở mức ổn định.\n");
+        }
+        sb.append("\n=> Tiếp tục theo dõi routine chăm sóc da để đánh giá hiệu quả lâu dài.");
+        return sb.toString();
     }
 
     @Override

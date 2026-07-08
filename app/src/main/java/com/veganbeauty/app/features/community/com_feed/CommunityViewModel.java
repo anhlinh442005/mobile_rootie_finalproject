@@ -31,8 +31,6 @@ public class CommunityViewModel extends ViewModel {
         this.exploreVideos = androidx.lifecycle.FlowLiveDataConversions.asLiveData(repository.getExploreVideos());
         this.ingredients = androidx.lifecycle.FlowLiveDataConversions.asLiveData(repository.getAllIngredients());
         this.blogs = androidx.lifecycle.FlowLiveDataConversions.asLiveData(repository.getAllBlogs());
-        
-        refreshData();
     }
 
     public void refreshData() {

@@ -21,7 +21,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.features.community.beauty_hub.CommunityBeautyHubFragment;
-import com.veganbeauty.app.features.community.com_feed.ComLoadingFragment;
+import com.veganbeauty.app.features.community.com_feed.CommunityFeedFragment;
 import com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity;
 import com.veganbeauty.app.features.myskin.MySkinFragment;
 import com.veganbeauty.app.features.profile.AccountProfileFragment;
@@ -217,7 +217,8 @@ public class BottomNavHelper {
         } else if (tabId == R.id.nav_myskin) {
             target = new MySkinFragment();
         } else if (tabId == R.id.nav_community) {
-            target = isLoggedIn ? new ComLoadingFragment() : new CommunityBeautyHubFragment();
+            target = isLoggedIn ? new com.veganbeauty.app.features.community.com_feed.ComLoadingFragment()
+                    : new CommunityBeautyHubFragment();
         } else if (tabId == R.id.nav_account) {
             target = new AccountProfileFragment();
         }

@@ -785,7 +785,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/lexend"
-                            android:text="Thông báo đánh giá da (06:30)"
+                            android:text="Thông báo đánh giá da (07:00)"
                             android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -821,6 +821,21 @@
                     </FrameLayout>
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/btn_test_weather_noti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/lexend"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:text="Gửi thử ngay →"
+                android:textColor="@color/secondary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <!-- 6. Routine đề xuất hôm nay Card Section -->
             <RelativeLayout

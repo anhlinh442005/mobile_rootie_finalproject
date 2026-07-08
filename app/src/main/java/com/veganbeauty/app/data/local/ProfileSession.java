@@ -615,6 +615,122 @@ public class ProfileSession {
                 .apply();
     }
 
+    private static final String KEY_SKIN_PROFILE_FROM_SCAN = "SKIN_PROFILE_FROM_SCAN";
+
+    /** True khi user đã làm quiz hoặc đã có kết quả soi da / lịch sử được đồng bộ vào prefs. */
+    public static boolean hasSavedSkinProfile(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE);
+        if (getLastSkinTestTime(context) > 0L) {
+            return true;
+        }
+        if (prefs.getBoolean(KEY_SKIN_PROFILE_FROM_SCAN, false)) {
+            return true;
+        }
+        return prefs.contains(KEY_SAVED_USER_SKIN_TYPE)
+                && (prefs.contains(KEY_SAVED_SENSITIVITY) || prefs.contains(KEY_SAVED_HYDRATION));
+    }
+
+    /**
+     * Đồng bộ hồ sơ da từ payload quiz hoặc kết quả quét AI vào prefs — dùng chung cho mọi AI recommend.
+     */
+    public static void applySkinProfileFromPayload(Context context, JSONObject obj) {
+        if (context == null || obj == null) {
+            return;
+        }
+        try {
+            SharedPreferences.Editor editor = context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE).edit();
+            boolean fromScan = false;
+
+            JSONObject skinCondition = obj.optJSONObject("skinCondition");
+            JSONObject detailed = obj.optJSONObject("detailedEvaluation");
+
+            String skinType = obj.optString("skinType", "");
+            if (skinType.isEmpty() && skinCondition != null) {
+                skinType = skinCondition.optString("skinType", "");
+            }
+            if (!skinType.isEmpty()) {
+                editor.putString(KEY_SAVED_USER_SKIN_TYPE, skinType);
+            }
+
+            if (detailed != null) {
+                fromScan = true;
+                putEvalScore(editor, detailed, "moisture", KEY_SAVED_HYDRATION);
+                putEvalScore(editor, detailed, "oil", KEY_SAVED_SEBUM);
+                putEvalScore(editor, detailed, "sensitivity", KEY_SAVED_SENSITIVITY);
+            }
+            if (obj.has("hydration")) {
+                editor.putInt(KEY_SAVED_HYDRATION, obj.optInt("hydration"));
+            }
+            if (obj.has("sebum")) {
+                editor.putInt(KEY_SAVED_SEBUM, obj.optInt("sebum"));
+            }
+            if (obj.has("sensitivity")) {
+                editor.putInt(KEY_SAVED_SENSITIVITY, obj.optInt("sensitivity"));
+            }
+            if (obj.has("elasticity")) {
+                editor.putInt(KEY_SAVED_ELASTICITY, obj.optInt("elasticity"));
+            }
+
+            String recommendation = obj.optString("recommendation", "");
+            if (recommendation.isEmpty()) {
+                recommendation = obj.optString("summaryText", "");
+            }
+            if (recommendation.isEmpty()) {
+                JSONArray suggestions = obj.optJSONArray("suggestions");
+                if (suggestions != null && suggestions.length() > 0) {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < suggestions.length(); i++) {
+                        if (i > 0) sb.append(' ');
+                        sb.append(suggestions.optString(i, "").trim());
+                    }
+                    recommendation = sb.toString().trim();
+                }
+            }
+            if (!recommendation.isEmpty()) {
+                editor.putString(KEY_SAVED_RECOMMENDATION, recommendation);
+            }
+
+            if (skinCondition != null) {
+                fromScan = true;
+                StringBuilder areas = new StringBuilder();
+                appendSkinArea(areas, "Mụn", skinCondition.optString("acne", ""));
+                appendSkinArea(areas, "Sắc tố", skinCondition.optString("pigmentationStatus", ""));
+                appendSkinArea(areas, "Nếp nhăn", skinCondition.optString("wrinkles", ""));
+                appendSkinArea(areas, "Đều màu", skinCondition.optString("evenness", ""));
+                if (areas.length() > 0) {
+                    editor.putString(KEY_SAVED_SKIN_AREAS, areas.toString().trim());
+                }
+            } else if (obj.has("skinAreas")) {
+                editor.putString(KEY_SAVED_SKIN_AREAS, obj.optString("skinAreas", ""));
+            }
+
+            if (fromScan) {
+                editor.putBoolean(KEY_SKIN_PROFILE_FROM_SCAN, true);
+            }
+            editor.apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void putEvalScore(SharedPreferences.Editor editor, JSONObject detailed,
+                                     String evalKey, String prefKey) {
+        JSONObject node = detailed.optJSONObject(evalKey);
+        if (node != null && node.has("score")) {
+            editor.putInt(prefKey, node.optInt("score", 50));
+        }
+    }
+
+    private static void appendSkinArea(StringBuilder sb, String label, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return;
+        }
+        if (sb.length() > 0) {
+            sb.append(". ");
+        }
+        sb.append(label).append(": ").append(value.trim());
+    }
+
     private static final String KEY_LAST_SKIN_TEST_TIME = "KEY_LAST_SKIN_TEST_TIME";
     private static final String KEY_HIDE_QUIZ_REMINDER_WEEKLY = "KEY_HIDE_QUIZ_REMINDER_WEEKLY";
 

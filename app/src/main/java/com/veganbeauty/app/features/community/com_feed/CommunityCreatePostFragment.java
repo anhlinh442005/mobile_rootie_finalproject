@@ -48,8 +48,6 @@ import com.veganbeauty.app.data.local.dao.CommunityDao;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.databinding.ComFragmentCreatePostBinding;
-import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
-import com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import org.json.JSONArray;
@@ -126,16 +124,17 @@ public class CommunityCreatePostFragment extends RootieFragment {
 
                             ImageView ivClose = new ImageView(requireContext());
                             FrameLayout.LayoutParams closeLp = new FrameLayout.LayoutParams(
-                                    (int) (24 * density),
-                                    (int) (24 * density)
+                                    (int) (16 * density),
+                                    (int) (16 * density)
                             );
                             closeLp.gravity = Gravity.TOP | Gravity.END;
-                            closeLp.topMargin = (int) (4 * density);
-                            closeLp.setMarginEnd((int) (4 * density));
+                            closeLp.topMargin = (int) (3 * density);
+                            closeLp.setMarginEnd((int) (3 * density));
                             ivClose.setLayoutParams(closeLp);
                             ivClose.setImageResource(R.drawable.ic_cancel);
-                            ivClose.setBackgroundResource(R.drawable.com_bg_post);
-                            int pad = (int)(6 * density);
+                            ivClose.setBackgroundResource(R.drawable.com_bg_image_remove_btn);
+                            ivClose.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            int pad = (int) (2 * density);
                             ivClose.setPadding(pad, pad, pad, pad);
                             ivClose.setOnClickListener(v -> {
                                 if (container.getParent() instanceof ViewGroup) {
@@ -735,28 +734,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
 
                 Toast.makeText(requireContext(), "Đã đăng bài viết thành công", Toast.LENGTH_SHORT).show();
 
-                androidx.fragment.app.FragmentManager fm = getParentFragmentManager();
-                fm.popBackStackImmediate();
-
-                fm.beginTransaction()
-                        .replace(R.id.main_container, CommunityProfileFragment.newInstance(loggedUserId))
-                        .addToBackStack(null)
-                        .commit();
-                fm.executePendingTransactions();
-
-                fm.beginTransaction()
-                        .setCustomAnimations(
-                                android.R.anim.fade_in,
-                                android.R.anim.fade_out,
-                                android.R.anim.fade_in,
-                                android.R.anim.fade_out
-                        )
-                        .replace(
-                                R.id.main_container,
-                                ProfilePostDetailFragment.newInstance(loggedUserId, 0, 0, postId)
-                        )
-                        .addToBackStack(null)
-                        .commit();
+                getParentFragmentManager().popBackStackImmediate();
             });
         }).start();
     }

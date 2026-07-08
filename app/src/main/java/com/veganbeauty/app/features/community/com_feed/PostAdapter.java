@@ -353,7 +353,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (mappedAvatar != null && !mappedAvatar.isEmpty()) {
                 String avatarUrl = com.veganbeauty.app.utils.RootieBrandHelper.resolveAvatar(
                         post.getAuthorId(), mappedAvatar);
-                com.bumptech.glide.Glide.with(postHolder.binding.ivAuthorAvatar.getContext()).load(avatarUrl).placeholder(android.R.color.darker_gray).error(R.drawable.img_avatar).into(postHolder.binding.ivAuthorAvatar);
+                com.veganbeauty.app.utils.AvatarLoader.loadAvatar(postHolder.binding.ivAuthorAvatar, avatarUrl);
             } else if (com.veganbeauty.app.utils.RootieBrandHelper.isRootieUser(post.getAuthorId(), post.getAuthorDisplayName())) {
                 com.bumptech.glide.Glide.with(postHolder.binding.ivAuthorAvatar.getContext()).load(com.veganbeauty.app.utils.RootieBrandHelper.AVATAR_URL).placeholder(android.R.color.darker_gray).error(R.drawable.img_avatar).into(postHolder.binding.ivAuthorAvatar);
             } else {
@@ -884,13 +884,20 @@ class ReelAdapter extends RecyclerView.Adapter<ReelAdapter.ReelViewHolder> {
     public ReelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ComItemReelBinding binding = ComItemReelBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         if (isGrid) {
-            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) binding.getRoot().getLayoutParams();
-            lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int marginInPx = (int) (1 * parent.getContext().getResources().getDisplayMetrics().density);
-            lp.setMargins(marginInPx, marginInPx, marginInPx, marginInPx);
-            lp.setMarginStart(marginInPx);
-            lp.setMarginEnd(marginInPx);
-            binding.getRoot().setLayoutParams(lp);
+            ViewGroup.LayoutParams lp = binding.getRoot().getLayoutParams();
+            if (lp == null) {
+                lp = new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+            }
+            if (lp instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginLp = (ViewGroup.MarginLayoutParams) lp;
+                marginLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                int marginInPx = (int) (1 * parent.getContext().getResources().getDisplayMetrics().density);
+                marginLp.setMargins(marginInPx, marginInPx, marginInPx, marginInPx);
+                binding.getRoot().setLayoutParams(marginLp);
+            }
         }
         return new ReelViewHolder(binding);
     }

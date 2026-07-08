@@ -78,6 +78,8 @@ public class CommunityFeedFragment extends RootieFragment {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private List<UserEntity> lastStoryUsers = new ArrayList<>();
+    private boolean feedUpdatePending = false;
+    private boolean feedUpdateRunning = false;
 
     private final ProfileUpdateNotifier.Listener profileUpdateListener = () -> {
         if (binding != null && isAdded()) {
@@ -104,10 +106,14 @@ public class CommunityFeedFragment extends RootieFragment {
 
     @Override
     public void setupUI(@NonNull View view) {
+        CommunityBootstrap.ensureLoaded(requireContext());
+
+        binding.rvStories.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.rvStories.setAdapter(storyAdapter);
+        binding.rvPosts.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvPosts.setAdapter(postAdapter);
         ProfileUpdateNotifier.addListener(profileUpdateListener);
-        refreshFollowingState();
+        refreshFollowingStateAsync();
         postAdapter.setOnFollowStateChangedListener(this::onFollowStateChanged);
 
         binding.ivHome.setOnClickListener(v -> ComBottomNavHelper.navigateToAppHome(this));
@@ -188,16 +194,18 @@ public class CommunityFeedFragment extends RootieFragment {
                     .commit();
         });
 
-        ComBottomNavHelper.setup(this, binding.comBottomNav.getRoot(), ComBottomNavHelper.TAB_FEED, tabId -> {
-            if (tabId == ComBottomNavHelper.TAB_FEED) {
-                binding.nsvFeed.smoothScrollTo(0, 0);
-                mainHandler.postDelayed(() -> {
-                    if (isAdded()) updateFeedData(true);
-                }, 800);
-                return ComBottomNavHelper.INTERCEPT_CONSUME;
-            }
-            return ComBottomNavHelper.INTERCEPT_NOT_HANDLED;
-        });
+        if (binding.comBottomNav != null) {
+            ComBottomNavHelper.setup(this, binding.comBottomNav.getRoot(), ComBottomNavHelper.TAB_FEED, tabId -> {
+                if (tabId == ComBottomNavHelper.TAB_FEED && binding.nsvFeed != null) {
+                    binding.nsvFeed.smoothScrollTo(0, 0);
+                    mainHandler.postDelayed(() -> {
+                        if (isAdded()) scheduleFeedUpdate(true);
+                    }, 800);
+                    return ComBottomNavHelper.INTERCEPT_CONSUME;
+                }
+                return ComBottomNavHelper.INTERCEPT_NOT_HANDLED;
+            });
+        }
 
         binding.nsvFeed.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             int dy = scrollY - oldScrollY;
@@ -211,6 +219,7 @@ public class CommunityFeedFragment extends RootieFragment {
                 if (!isLoadingMore && currentPage * postsPerPage < allFilteredPosts.size()) {
                     isLoadingMore = true;
                     currentPage++;
+                    feedUpdateRunning = true;
                     updateFeedData(false);
                 }
             }
@@ -222,7 +231,7 @@ public class CommunityFeedFragment extends RootieFragment {
         binding.swipeRefreshLayout.setOnRefreshListener(() -> {
             mainHandler.postDelayed(() -> {
                 if (isAdded()) {
-                    updateFeedData(true);
+                    scheduleFeedUpdate(true);
                     binding.swipeRefreshLayout.setRefreshing(false);
                 }
             }, 800);
@@ -242,6 +251,14 @@ public class CommunityFeedFragment extends RootieFragment {
         if (binding != null && binding.navView != null) {
             SideMenuHelper.bindCurrentUser(binding.navView);
         }
+        if (binding != null && binding.nsvFeed != null && !FeedDataCache.getPinnedPosts().isEmpty()) {
+            scheduleFeedUpdate(true);
+            binding.nsvFeed.post(() -> {
+                if (binding != null && binding.nsvFeed != null) {
+                    binding.nsvFeed.smoothScrollTo(0, 0);
+                }
+            });
+        }
     }
 
     @Override
@@ -250,7 +267,7 @@ public class CommunityFeedFragment extends RootieFragment {
     }
 
     private void hideBottomNavigation() {
-        if (!isNavVisible) return;
+        if (!isNavVisible || binding == null || binding.comBottomNav == null) return;
         isNavVisible = false;
         binding.comBottomNav.getRoot().animate()
                 .translationY(binding.comBottomNav.getRoot().getHeight())
@@ -266,7 +283,7 @@ public class CommunityFeedFragment extends RootieFragment {
     }
 
     private void showBottomNavigation() {
-        if (isNavVisible) return;
+        if (isNavVisible || binding == null || binding.comBottomNav == null) return;
         isNavVisible = true;
         binding.comBottomNav.getRoot().animate()
                 .translationY(0f)
@@ -299,23 +316,56 @@ public class CommunityFeedFragment extends RootieFragment {
 
                 String text = textView.getText().toString();
                 currentFilter = "Dành cho bạn".equals(text) ? "Tất cả" : text;
-                updateFeedData(true);
+                scheduleFeedUpdate(true);
             });
         }
     }
 
-    private void refreshFollowingState() {
+    private void refreshFollowingStateAsync() {
         Context ctx = getContext();
         if (ctx == null) return;
-        String userId = ProfileSessionHelper.getEffectiveUserId(ctx);
-        if (userId == null || userId.isEmpty()) {
-            userId = CommunitySocialHelper.resolveUserId(ctx);
+        final Context appContext = ctx.getApplicationContext();
+        executor.execute(() -> {
+            String userId = ProfileSessionHelper.getEffectiveUserId(appContext);
+            if (userId == null || userId.isEmpty()) {
+                userId = CommunitySocialHelper.resolveUserId(appContext);
+            }
+            LocalJsonReader reader = new LocalJsonReader(appContext);
+            Map<String, List<String>> socialData = reader.getSocialDataForUser(userId);
+            List<String> following = socialData.get("following");
+            Set<String> followingIds = following != null ? new HashSet<>(following) : new HashSet<>();
+            mainHandler.post(() -> {
+                if (!isAdded() || binding == null) return;
+                FeedDataCache.mySocialData = socialData;
+                postAdapter.setFollowingUserIds(followingIds);
+            });
+        });
+    }
+
+    private void refreshFollowingState() {
+        refreshFollowingStateAsync();
+    }
+
+    private void scheduleFeedUpdate(boolean resetData) {
+        if (viewModel == null || binding == null || !isAdded()) return;
+        if (!CommunityBootstrap.isLocalSeedReady()) {
+            mainHandler.postDelayed(() -> scheduleFeedUpdate(resetData), 200);
+            return;
         }
-        LocalJsonReader reader = new LocalJsonReader(ctx);
-        Map<String, List<String>> socialData = reader.getSocialDataForUser(userId);
-        FeedDataCache.mySocialData = socialData;
-        List<String> following = socialData.get("following");
-        postAdapter.setFollowingUserIds(following != null ? new HashSet<>(following) : new HashSet<>());
+        if (feedUpdateRunning) {
+            feedUpdatePending = true;
+            return;
+        }
+        feedUpdateRunning = true;
+        updateFeedData(resetData);
+    }
+
+    private void finishFeedUpdate() {
+        feedUpdateRunning = false;
+        if (feedUpdatePending) {
+            feedUpdatePending = false;
+            scheduleFeedUpdate(true);
+        }
     }
 
     private void onFollowStateChanged(String targetUserId, boolean isFollowing) {
@@ -344,7 +394,10 @@ public class CommunityFeedFragment extends RootieFragment {
     }
 
     private void updateFeedData(boolean resetData) {
-        if (viewModel == null) return;
+        if (viewModel == null || binding == null || !isAdded()) {
+            finishFeedUpdate();
+            return;
+        }
         List<CommunityPostEntity> postsList = viewModel.getPosts().getValue();
         if (postsList == null) postsList = new ArrayList<>();
         List<UserEntity> usersList = viewModel.getUsers().getValue();
@@ -359,6 +412,7 @@ public class CommunityFeedFragment extends RootieFragment {
             binding.rvPosts.setClipToPadding(false);
             ReelAdapter reelAdapter = new ReelAdapter(reelsList, true);
             binding.rvPosts.setAdapter(reelAdapter);
+            finishFeedUpdate();
         } else {
             binding.rvPosts.setPadding(0, 0, 0, 0);
             binding.rvPosts.setClipToPadding(true);
@@ -500,6 +554,7 @@ public class CommunityFeedFragment extends RootieFragment {
                                 }
                             }
                             isLoadingMore = false;
+                            finishFeedUpdate();
                         });
                     });
                 });
@@ -531,12 +586,15 @@ public class CommunityFeedFragment extends RootieFragment {
                     if (!isAdded()) return;
                     List<UserEntity> safeUsers = users != null ? users : Collections.emptyList();
                     bindStories(safeUsers, myFriendsIds, currentUserId);
-                    updateFeedData(true);
                 });
             });
         });
 
-        viewModel.getPosts().observe(getViewLifecycleOwner(), posts -> {});
+        viewModel.getPosts().observe(getViewLifecycleOwner(), posts -> mainHandler.post(() -> {
+            if (binding != null && isAdded()) {
+                scheduleFeedUpdate(true);
+            }
+        }));
         viewModel.getReels().observe(getViewLifecycleOwner(), reels -> {});
     }
 

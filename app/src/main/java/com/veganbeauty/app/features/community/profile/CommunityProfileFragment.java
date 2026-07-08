@@ -173,18 +173,24 @@ public class CommunityProfileFragment extends RootieFragment {
         }
 
         String loggedInEmail = ProfileSession.INSTANCE.getEmail(ctx);
-        try {
-            String usersJsonStr = jsonReader.getRawUsersJson();
-            JSONArray usersJsonArray = new JSONArray(usersJsonStr);
-            for (int i = 0; i < usersJsonArray.length(); i++) {
-                JSONObject obj = usersJsonArray.getJSONObject(i);
-                if (obj.optString("email").equals(loggedInEmail)) {
-                    ownUserId = obj.optString("user_id", "test_001");
-                    break;
+        ownUserId = ProfileSessionHelper.getEffectiveUserId(ctx);
+        if (ownUserId == null || ownUserId.isEmpty()) {
+            try {
+                String usersJsonStr = jsonReader.getRawUsersJson();
+                JSONArray usersJsonArray = new JSONArray(usersJsonStr);
+                for (int i = 0; i < usersJsonArray.length(); i++) {
+                    JSONObject obj = usersJsonArray.getJSONObject(i);
+                    if (obj.optString("email").equals(loggedInEmail)) {
+                        ownUserId = obj.optString("user_id", "test_001");
+                        break;
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        if (ownUserId == null || ownUserId.isEmpty()) {
+            ownUserId = "test_001";
         }
 
         currentUserId = (passedUserId != null) ? passedUserId : ownUserId;

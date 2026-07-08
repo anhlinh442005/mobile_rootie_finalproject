@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.veganbeauty.app.data.local.ProfileSession;
+
 import com.veganbeauty.app.data.local.dao.SkinHistoryDao;
 import com.veganbeauty.app.data.local.entities.SkinHistoryEntity;
 import com.veganbeauty.app.utils.SkinHistoryIdHelper;
@@ -121,6 +123,36 @@ public final class SkinHistoryLocalStore {
             dao.insertAll(toInsert);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Nullable
+    public static JSONObject getLatestPayload(@NonNull Context context,
+                                              @Nullable String userId,
+                                              @Nullable String email) {
+        JSONArray history = getHistory(context, userId, email);
+        if (history.length() == 0) {
+            return null;
+        }
+        try {
+            return history.getJSONObject(0);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** Nạp hồ sơ da từ lịch sử local (quiz / quét AI) nếu prefs chưa có. */
+    public static void hydrateProfileFromHistoryIfNeeded(@NonNull Context context) {
+        if (ProfileSession.hasSavedSkinProfile(context)) {
+            return;
+        }
+        JSONObject latest = getLatestPayload(
+                context,
+                ProfileSession.getUserId(context),
+                ProfileSession.getEmail(context)
+        );
+        if (latest != null) {
+            ProfileSession.applySkinProfileFromPayload(context, latest);
         }
     }
 

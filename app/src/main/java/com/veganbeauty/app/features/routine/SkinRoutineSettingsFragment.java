@@ -3,7 +3,6 @@ package com.veganbeauty.app.features.routine;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,7 +26,6 @@ import com.veganbeauty.app.databinding.SkinRoutineSettingsBinding;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -350,48 +348,9 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         ProfileSession.setMorningSteps(ctx, morningRaw);
         ProfileSession.setEveningSteps(ctx, eveningRaw);
 
-        if (isMorningReminderEnabled) {
-            String[] mParts = morningTime.split(":");
-            int mHour = 6, mMin = 30;
-            try { if(mParts.length>0) mHour = Integer.parseInt(mParts[0]); if(mParts.length>1) mMin = Integer.parseInt(mParts[1]); } catch(Exception ignored){}
-            if (isLeadReminderEnabled) {
-                Calendar cal = Calendar.getInstance(); cal.set(Calendar.HOUR_OF_DAY, mHour); cal.set(Calendar.MINUTE, mMin);
-                cal.add(Calendar.MINUTE, -15);
-                mHour = cal.get(Calendar.HOUR_OF_DAY); mMin = cal.get(Calendar.MINUTE);
-            }
-            RoutineAlarmScheduler.scheduleRoutineAlarm(ctx, "MORNING", mHour, mMin, isLeadReminderEnabled);
-        } else {
-            RoutineAlarmScheduler.cancelRoutineAlarm(ctx, "MORNING");
-        }
+        RoutineAlarmScheduler.rescheduleAlarms(ctx);
 
-        if (isEveningReminderEnabled) {
-            String[] eParts = eveningTime.split(":");
-            int eHour = 21, eMin = 45;
-            try { if(eParts.length>0) eHour = Integer.parseInt(eParts[0]); if(eParts.length>1) eMin = Integer.parseInt(eParts[1]); } catch(Exception ignored){}
-            if (isLeadReminderEnabled) {
-                Calendar cal = Calendar.getInstance(); cal.set(Calendar.HOUR_OF_DAY, eHour); cal.set(Calendar.MINUTE, eMin);
-                cal.add(Calendar.MINUTE, -15);
-                eHour = cal.get(Calendar.HOUR_OF_DAY); eMin = cal.get(Calendar.MINUTE);
-            }
-            RoutineAlarmScheduler.scheduleRoutineAlarm(ctx, "EVENING", eHour, eMin, isLeadReminderEnabled);
-        } else {
-            RoutineAlarmScheduler.cancelRoutineAlarm(ctx, "EVENING");
-        }
-
-        if (isMorningReminderEnabled) {
-            Intent testIntent = new Intent(ctx, RoutineAlarmReceiver.class);
-            testIntent.putExtra("REMINDER_TYPE", "MORNING");
-            testIntent.putExtra("IS_LEAD_REMINDER", isLeadReminderEnabled);
-            ctx.sendBroadcast(testIntent);
-        }
-        if (isEveningReminderEnabled) {
-            Intent testIntent = new Intent(ctx, RoutineAlarmReceiver.class);
-            testIntent.putExtra("REMINDER_TYPE", "EVENING");
-            testIntent.putExtra("IS_LEAD_REMINDER", isLeadReminderEnabled);
-            ctx.sendBroadcast(testIntent);
-        }
-
-        Toast.makeText(ctx, "Đã lưu cấu hình routine và gửi thông báo xem thử thành công!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ctx, "Đã lưu cấu hình routine. Nhắc nhở sẽ đến đúng giờ bạn đã chọn.", Toast.LENGTH_SHORT).show();
         getParentFragmentManager().popBackStack();
     }
 

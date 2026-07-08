@@ -13,12 +13,16 @@ import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import kotlinx.coroutines.flow.Flow;
 
 public class CommunityRepository {
 
     private static final String TAG = "CommunityRepository";
+    private static final Object DATA_LOCK = new Object();
+    private static final ExecutorService REFRESH_EXECUTOR = Executors.newSingleThreadExecutor();
 
     private final CommunityDao communityDao;
     private final LocalJsonReader localJsonReader;
@@ -55,31 +59,39 @@ public class CommunityRepository {
     }
 
     public void seedFromAssetsSync() {
-        seedFromAssets();
+        synchronized (DATA_LOCK) {
+            seedFromAssets();
+        }
     }
 
     /** Load JSON seed data when local community tables are still empty. */
     public void seedFromAssetsIfNeeded() {
-        try {
-            int ingredientCount = communityDao.countIngredientsSync();
-            int postCount = communityDao.countPostsSync();
-            if (ingredientCount > 0 && postCount > 0) {
-                Log.d(TAG, "Community seed skipped (ingredients=" + ingredientCount + ", posts=" + postCount + ")");
-                return;
+        synchronized (DATA_LOCK) {
+            try {
+                int ingredientCount = communityDao.countIngredientsSync();
+                int postCount = communityDao.countPostsSync();
+                if (ingredientCount > 0 && postCount > 0) {
+                    Log.d(TAG, "Community seed skipped (ingredients=" + ingredientCount + ", posts=" + postCount + ")");
+                    return;
+                }
+                Log.d(TAG, "Community seed starting (ingredients=" + ingredientCount + ", posts=" + postCount + ")");
+                seedFromAssets();
+                Log.d(TAG, "Community seed done (ingredients=" + communityDao.countIngredientsSync()
+                        + ", posts=" + communityDao.countPostsSync() + ")");
+            } catch (Exception e) {
+                Log.e(TAG, "Community seed failed", e);
             }
-            Log.d(TAG, "Community seed starting (ingredients=" + ingredientCount + ", posts=" + postCount + ")");
-            seedFromAssets();
-            Log.d(TAG, "Community seed done (ingredients=" + communityDao.countIngredientsSync()
-                    + ", posts=" + communityDao.countPostsSync() + ")");
-        } catch (Exception e) {
-            Log.e(TAG, "Community seed failed", e);
         }
     }
 
     public void refreshCommunityData() {
-        new Thread(() -> {
+        REFRESH_EXECUTOR.execute(this::refreshCommunityDataBlocking);
+    }
+
+    public void refreshCommunityDataBlocking() {
+        synchronized (DATA_LOCK) {
             try {
-                seedFromAssets();
+                seedFromAssetsIfNeeded();
 
                 List<CommunityPostEntity> remotePosts = firestoreService.fetchAllCommunityPosts();
                 if (remotePosts != null && !remotePosts.isEmpty()) {
@@ -106,12 +118,12 @@ public class CommunityRepository {
                     communityDao.insertIngredients(remoteIngredients);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "refreshCommunityData failed", e);
             }
-        }).start();
+        }
     }
 
-    private void seedFromAssets() {
+    private void seedFromAssetsUnlocked() {
         try {
             List<CommunityPostEntity> posts = localJsonReader.getCommunityPosts();
             if (posts != null && !posts.isEmpty()) {
@@ -146,5 +158,9 @@ public class CommunityRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void seedFromAssets() {
+        seedFromAssetsUnlocked();
     }
 }

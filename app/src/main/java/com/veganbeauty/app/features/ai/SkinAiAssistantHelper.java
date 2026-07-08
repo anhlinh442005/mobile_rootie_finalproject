@@ -217,6 +217,10 @@ public final class SkinAiAssistantHelper {
             sb.append("\n(Lịch sử chat gần đây được gửi riêng qua multi-turn API.)\n");
         }
 
+        SkinAiIntentHelper.Intent intent = SkinAiIntentHelper.detect(userMessage);
+        sb.append("\n[Ý ĐỊNH CÂU HỎI: ").append(intent.name()).append("]\n");
+        sb.append(SkinAiIntentHelper.intentHint(intent)).append('\n');
+
         sb.append("\nCâu hỏi mới: ").append(userMessage).append('\n');
         sb.append("\nTrả lời dựa trên TOÀN BỘ ngữ cảnh trên. Tiếng Việt chuẩn, 2-5 câu.");
         return sb.toString();
@@ -229,6 +233,43 @@ public final class SkinAiAssistantHelper {
             WeatherContext weather,
             String userMessage) {
         return buildChatPrompt(context, profile, metrics, weather, userMessage, null);
+    }
+
+    /**
+     * Trả lời chat: ưu tiên nhận diện ý định → dữ liệu app (nhanh, chính xác).
+     * Chỉ gọi Gemini khi không xác định được ý định.
+     */
+    public static String replyForChat(
+            Context context,
+            SkinWeatherProfileHelper.UserSkinProfile profile,
+            SkinWeatherProfileHelper.TodaySkinMetrics metrics,
+            WeatherContext weather,
+            String userMessage,
+            String apiKey,
+            List<RootieChatItem> recentMessages) {
+
+        SkinAiAppDataSnapshot data = SkinAiAppDataLoader.load(context);
+        SkinAiIntentHelper.Intent intent = SkinAiIntentHelper.detect(userMessage);
+        if (SkinAiIntentHelper.usesAppData(intent)) {
+            return SkinAiDataResponder.respond(data, intent, context, profile, metrics, weather, userMessage);
+        }
+
+        if (isGeminiConfigured(apiKey)) {
+            try {
+                StringBuilder prompt = new StringBuilder();
+                prompt.append(SkinAiFieldCatalog.describe()).append('\n');
+                prompt.append(SkinAiSnapshotFormatter.toCompact(data));
+                prompt.append("\nCâu hỏi: ").append(userMessage);
+                String gemini = requestChatReply(apiKey, null, prompt.toString());
+                if (gemini != null && !gemini.trim().isEmpty()) {
+                    return SkinAiTextHelper.sanitizeAiReply(gemini);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        return SkinAiDataResponder.respond(data, SkinAiIntentHelper.Intent.UNKNOWN,
+                context, profile, metrics, weather, userMessage);
     }
 
     /** @deprecated dùng {@link #buildChatPrompt(Context, ...)} */
@@ -258,8 +299,8 @@ public final class SkinAiAssistantHelper {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json");
-        connection.setConnectTimeout(12000);
-        connection.setReadTimeout(12000);
+        connection.setConnectTimeout(8000);
+        connection.setReadTimeout(8000);
         connection.setDoOutput(true);
 
         JSONObject requestJson = new JSONObject();
@@ -279,8 +320,8 @@ public final class SkinAiAssistantHelper {
         requestJson.put("systemInstruction", systemInstruction);
 
         JSONObject generationConfig = new JSONObject();
-        generationConfig.put("temperature", 0.55);
-        generationConfig.put("maxOutputTokens", 600);
+        generationConfig.put("temperature", 0.42);
+        generationConfig.put("maxOutputTokens", 750);
         requestJson.put("generationConfig", generationConfig);
 
         try (OutputStream os = connection.getOutputStream()) {
@@ -339,53 +380,17 @@ public final class SkinAiAssistantHelper {
             Context context,
             SkinWeatherProfileHelper.UserSkinProfile profile,
             SkinWeatherProfileHelper.TodaySkinMetrics metrics,
-            WeatherContext weather,
+            SkinAiAssistantHelper.WeatherContext weather,
             String userMessage) {
 
-        String lower = userMessage.toLowerCase(Locale.getDefault()).trim();
-
-        if (isGreeting(lower)) {
-            return buildGreetingReply(context, profile);
-        }
-
-        if (isCoinsQuestion(lower)) {
-            return buildCoinsReply(context);
-        }
-
-        if (isDiagnosticRequest(lower)) {
-            return buildDiagnosticTextReply(profile, metrics);
-        }
-
-        if (isBookingQuestion(lower)) {
-            return buildBookingReply(context);
-        }
-
-        if (isOrderOrCartQuestion(lower)) {
-            return buildOrderCartReply(context);
-        }
-
-        if (isRoutineQuestion(lower)) {
-            return buildRoutineReply(context, profile);
-        }
-
-        if (isProductQuestion(lower)) {
-            return buildProductReply(context, profile, metrics, weather);
-        }
-
-        if (isWeatherOrRoutineQuestion(lower)) {
-            return buildWeatherRoutineReply(profile, metrics, weather);
-        }
-
-        if (!profile.hasSavedProfile) {
-            return "Bạn chưa có hồ sơ da. Hãy làm bài test da trong app trước — Rootie sẽ tư vấn chính xác theo loại da và thành phần cần tránh của bạn.";
-        }
-
-        return buildGeneralSkinReply(profile, metrics);
+        SkinAiAppDataSnapshot data = SkinAiAppDataLoader.load(context);
+        SkinAiIntentHelper.Intent intent = SkinAiIntentHelper.detect(userMessage);
+        return SkinAiDataResponder.respond(data, intent, context, profile, metrics, weather, userMessage);
     }
 
     /** Có nên kèm card phác đồ chẩn đoán sau câu trả lời text. */
     public static boolean shouldAttachDiagnosticCard(String userMessage) {
-        return isDiagnosticRequest(userMessage.toLowerCase(Locale.getDefault()).trim());
+        return SkinAiIntentHelper.detect(userMessage) == SkinAiIntentHelper.Intent.DIAGNOSTIC;
     }
 
     private static String buildGreetingReply(Context context, SkinWeatherProfileHelper.UserSkinProfile profile) {
@@ -396,7 +401,185 @@ public final class SkinAiAssistantHelper {
         }
         return "Chào " + who + "! Hồ sơ da: " + profile.skinType
                 + " (ẩm " + profile.hydration + "%, nhạy cảm " + profile.sensitivity + "%). "
-                + "Bạn có thể hỏi: xu hôm nay, thời tiết & da, sản phẩm phù hợp, phác đồ da, lịch soi da.";
+                + "Hỏi mình: xu, voucher, đơn hàng, routine, sản phẩm, thành phần tránh, phác đồ da, cửa hàng, thông báo.";
+    }
+
+    private static String buildProfileReply(
+            SkinWeatherProfileHelper.UserSkinProfile profile,
+            SkinWeatherProfileHelper.TodaySkinMetrics metrics) {
+        if (!profile.hasSavedProfile) {
+            return "Bạn chưa làm bài test da. Vào My Skin → Bài test da để Rootie phân tích loại da và chỉ số cho bạn nhé.";
+        }
+        return profile.skinType + " — cấp ẩm " + profile.hydration + "%, bã nhờn "
+                + profile.sebum + "%, nhạy cảm " + profile.sensitivity + "%, đàn hồi "
+                + profile.elasticity + "%. Ước tính hôm nay: ẩm " + metrics.hydrationPercent
+                + "%, dầu " + metrics.oilyPercent + "%, nhạy cảm " + metrics.sensitivityPercent + "%.";
+    }
+
+    private static String buildIngredientReply(SkinWeatherProfileHelper.UserSkinProfile profile) {
+        if (!profile.hasSavedProfile) {
+            return "Làm quiz da trước — Rootie sẽ liệt kê thành phần nên tránh theo kết quả của bạn.";
+        }
+        String avoid = profile.flaggedGroups.isEmpty()
+                ? "cồn, hương liệu, sulfate (nếu da nhạy cảm)"
+                : String.join(", ", profile.flaggedGroups);
+        return "Với " + profile.skinType + ", nên tránh/thận trọng: " + avoid
+                + ". Ưu tiên sản phẩm thuần chay, dịu, không hương liệu nếu nhạy cảm "
+                + profile.sensitivity + "%.";
+    }
+
+    private static String buildGiftReply(Context context) {
+        try {
+            List<com.veganbeauty.app.data.local.entities.UserGiftEntity> gifts =
+                    RootieDatabase.getDatabase(context).userGiftDao().getAllUserGiftsSync();
+            if (gifts == null || gifts.isEmpty()) {
+                return "Bạn chưa đổi quà nào. Vào Tài khoản → Đổi quà — dùng "
+                        + formatPoints(RewardPointsHelper.getTotalPoints(context))
+                        + " xu hiện có để đổi nhé.";
+            }
+            StringBuilder sb = new StringBuilder("Quà của bạn:\n");
+            int limit = Math.min(4, gifts.size());
+            for (int i = 0; i < limit; i++) {
+                com.veganbeauty.app.data.local.entities.UserGiftEntity g = gifts.get(i);
+                sb.append("• ").append(g.getTitle())
+                        .append(" (").append(g.getStatus()).append(")\n");
+            }
+            sb.append("Xem thêm tại Tài khoản → Đổi quà / Voucher.");
+            return sb.toString().trim();
+        } catch (Exception e) {
+            return "Xem quà tại Tài khoản → Đổi quà.";
+        }
+    }
+
+    private static String buildStoreReply(Context context) {
+        try {
+            List<com.veganbeauty.app.data.local.entities.StoreEntity> stores =
+                    new LocalJsonReader(context).getAllStores();
+            if (stores == null || stores.isEmpty()) {
+                return "Xem hệ thống cửa hàng tại Cửa hàng → Hệ thống cửa hàng.";
+            }
+            StringBuilder sb = new StringBuilder("Cửa hàng Rootie:\n");
+            int limit = Math.min(3, stores.size());
+            for (int i = 0; i < limit; i++) {
+                com.veganbeauty.app.data.local.entities.StoreEntity s = stores.get(i);
+                sb.append("• ").append(s.getStoreName())
+                        .append(" — ").append(s.getAddress())
+                        .append(" (").append(s.getOpenHours()).append(")\n");
+            }
+            sb.append("Đặt lịch soi da: My Skin → Đặt lịch.");
+            return sb.toString().trim();
+        } catch (Exception e) {
+            return "Xem cửa hàng tại Cửa hàng → Hệ thống cửa hàng.";
+        }
+    }
+
+    private static String buildNotificationReply(Context context) {
+        try {
+            List<com.veganbeauty.app.data.local.entities.NotificationItem> items =
+                    new LocalJsonReader(context).getAllNotifications();
+            if (items == null || items.isEmpty()) {
+                return "Chưa có thông báo. Bấm chuông góc phải để xem khi có tin mới.";
+            }
+            int unread = 0;
+            for (com.veganbeauty.app.data.local.entities.NotificationItem item : items) {
+                if (!item.isRead()) unread++;
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append("Bạn có ").append(unread).append(" thông báo chưa đọc.\n");
+            int limit = Math.min(3, items.size());
+            for (int i = 0; i < limit; i++) {
+                sb.append("• ").append(items.get(i).getTitle())
+                        .append(items.get(i).isRead() ? "" : " (mới)").append('\n');
+            }
+            sb.append("Xem đầy đủ: chuông thông báo → Tài khoản.");
+            return sb.toString().trim();
+        } catch (Exception e) {
+            return "Xem thông báo tại biểu tượng chuông góc phải màn hình.";
+        }
+    }
+
+    private static String buildHowToReply(Context context, String userMessage) {
+        String lower = userMessage.toLowerCase(Locale.getDefault());
+        if (lower.contains("quiz") || lower.contains("test da") || lower.contains("bài test")) {
+            return "Làm bài test da: My Skin → Bài test da → làm quiz → xem loại da và routine gợi ý AI.";
+        }
+        if (lower.contains("đổi quà") || lower.contains("xu")) {
+            return "Đổi quà: Tài khoản → Đổi quà. Số dư: "
+                    + formatPoints(RewardPointsHelper.getTotalPoints(context)) + " xu.";
+        }
+        if (lower.contains("voucher")) {
+            return "Xem voucher: Tài khoản → Voucher hoặc Cửa hàng → Voucher khi thanh toán.";
+        }
+        if (lower.contains("routine") || lower.contains("nhắc")) {
+            return "Thiết lập routine: sau quiz bấm Áp dụng routine, hoặc My Skin → Routine → cài nhắc sáng/tối.";
+        }
+        if (lower.contains("thời tiết")) {
+            return "Cập nhật thời tiết: mở mục Da × Thời tiết trên thanh điều hướng.";
+        }
+        return SkinAiTrainingExamples.getAppNavigationMap().replace('\n', ' ').trim();
+    }
+
+    private static String buildVoucherReply(Context context) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            List<com.veganbeauty.app.data.local.entities.UserGiftEntity> gifts =
+                    RootieDatabase.getDatabase(context).userGiftDao().getAllUserGiftsSync();
+            List<com.veganbeauty.app.data.local.entities.VoucherEntity> system =
+                    RootieDatabase.getDatabase(context).voucherDao().getActiveVouchers();
+            if (system == null || system.isEmpty()) {
+                system = new LocalJsonReader(context).getVouchers();
+            }
+
+            int activeUserCount = 0;
+            if (gifts != null) {
+                for (com.veganbeauty.app.data.local.entities.UserGiftEntity gift : gifts) {
+                    if (!"voucher_discount".equals(gift.getGiftType())
+                            && !"voucher_freeship".equals(gift.getGiftType())) {
+                        continue;
+                    }
+                    String status = gift.getStatus();
+                    if (status != null && status.toLowerCase(Locale.getDefault()).contains("hết hạn")) {
+                        continue;
+                    }
+                    if (activeUserCount == 0) {
+                        sb.append("Voucher trong ví của bạn:\n");
+                    }
+                    activeUserCount++;
+                    sb.append("• ").append(gift.getTitle())
+                            .append(" — mã ").append(gift.getCode())
+                            .append(" (").append(gift.getStatus())
+                            .append(", HSD ").append(gift.getExpiryDate()).append(")\n");
+                    if (activeUserCount >= 5) break;
+                }
+            }
+
+            if (activeUserCount == 0) {
+                sb.append("Bạn chưa có voucher còn hạn trong ví. ");
+            }
+
+            if (system != null && !system.isEmpty()) {
+                sb.append("Khuyến mãi hệ thống đang có: ");
+                int limit = Math.min(4, system.size());
+                for (int i = 0; i < limit; i++) {
+                    com.veganbeauty.app.data.local.entities.VoucherEntity v = system.get(i);
+                    if (i > 0) sb.append("; ");
+                    sb.append(v.getTitle()).append(" (mã ").append(v.getCode()).append(")");
+                }
+                sb.append(". ");
+            }
+
+            sb.append("Xem chi tiết tại Tài khoản → Voucher hoặc Cửa hàng → Voucher.");
+            return sb.toString().trim();
+        } catch (Exception e) {
+            return "Xem voucher tại Tài khoản → Voucher hoặc Cửa hàng → Voucher.";
+        }
+    }
+
+    private static String buildHelpfulFallback() {
+        return "Mình chưa chắc bạn đang hỏi về chủ đề gì. Thử hỏi cụ thể: "
+                + "xu hôm nay, voucher đang có, loại da của tôi, thành phần nên tránh, "
+                + "routine sáng/tối, sản phẩm phù hợp, đơn hàng, giỏ hàng, quà đã đổi, "
+                + "cửa hàng Rootie, thông báo, thời tiết & da, phác đồ da, lịch soi da.";
     }
 
     private static String buildCoinsReply(Context context) {
@@ -554,15 +737,31 @@ public final class SkinAiAssistantHelper {
     }
 
     private static String buildRoutineReply(Context context, SkinWeatherProfileHelper.UserSkinProfile profile) {
-        Set<String> morning = ProfileSession.getMorningSteps(context);
-        Set<String> evening = ProfileSession.getEveningSteps(context);
-        StringBuilder sb = new StringBuilder();
-        if (!profile.hasSavedProfile) {
-            sb.append("Làm quiz da để routine phù hợp hơn. ");
+        try {
+            int hydration = profile.hasSavedProfile ? profile.hydration : 50;
+            int sebum = profile.hasSavedProfile ? profile.sebum : 50;
+            int sensitivity = profile.hasSavedProfile ? profile.sensitivity : 50;
+            int elasticity = profile.hasSavedProfile ? profile.elasticity : 75;
+            String skinType = profile.hasSavedProfile ? profile.skinType : "Da thường";
+
+            SkinAiRoutineRecommender.RoutinePlan plan = SkinAiRoutineRecommender.recommend(
+                    context, skinType, hydration, sebum, sensitivity, elasticity,
+                    profile.flaggedGroups, "");
+
+            return "Routine sáng: " + SkinAiRoutineRecommender.formatRoutineForChat(plan, true)
+                    + "\nRoutine tối: " + SkinAiRoutineRecommender.formatRoutineForChat(plan, false)
+                    + "\n" + plan.assessment;
+        } catch (Exception e) {
+            Set<String> morning = ProfileSession.getMorningSteps(context);
+            Set<String> evening = ProfileSession.getEveningSteps(context);
+            StringBuilder sb = new StringBuilder();
+            if (!profile.hasSavedProfile) {
+                sb.append("Làm quiz da để routine phù hợp hơn. ");
+            }
+            sb.append("Routine sáng: ").append(formatRoutineSteps(morning))
+                    .append(". Routine tối: ").append(formatRoutineSteps(evening)).append('.');
+            return sb.toString();
         }
-        sb.append("Routine sáng: ").append(formatRoutineSteps(morning))
-                .append(". Routine tối: ").append(formatRoutineSteps(evening)).append('.');
-        return sb.toString();
     }
 
     private static String formatRoutineSteps(Set<String> steps) {
@@ -586,59 +785,11 @@ public final class SkinAiAssistantHelper {
                 metrics.oilyPercent >= 65 ? "làm sạch kiềm dầu nhẹ và chống nắng mỏng" :
                         "duy trì routine cân bằng")
                 + ". Nhạy cảm ~" + metrics.sensitivityPercent + "%. "
-                + "Bạn có thể hỏi cụ thể: xu hôm nay, thời tiết, sản phẩm, phác đồ da, lịch soi da.";
+                + "Bạn có thể hỏi cụ thể: xu hôm nay, voucher, thời tiết, sản phẩm, phác đồ da, lịch soi da.";
     }
 
     private static String formatPoints(int points) {
         return String.format(Locale.getDefault(), "%,d", points).replace(',', '.');
-    }
-
-    private static boolean isCoinsQuestion(String lower) {
-        return lower.contains("xu") || lower.contains("coin") || lower.contains("điểm thưởng")
-                || lower.contains("tích điểm") || lower.contains("thưởng")
-                || (lower.contains("cộng") && lower.contains("xu"));
-    }
-
-    private static boolean isDiagnosticRequest(String lower) {
-        return lower.contains("phác đồ") || lower.contains("chẩn đoán")
-                || lower.contains("phân tích da") || lower.contains("bản phân tích");
-    }
-
-    private static boolean isWeatherOrRoutineQuestion(String lower) {
-        if (isCoinsQuestion(lower) || isDiagnosticRequest(lower)) return false;
-        return lower.contains("thời tiết") || lower.contains("routine")
-                || lower.contains("chu trình") || lower.contains(" uv")
-                || lower.startsWith("uv") || lower.contains("nắng")
-                || lower.contains("độ ẩm không khí")
-                || (lower.contains("hôm nay") && (lower.contains("da") || lower.contains("dưỡng")
-                || lower.contains("thời tiết") || lower.contains("routine") || lower.contains("nắng")))
-                || lower.contains("thời tiết & da") || lower.contains("thời tiết và da");
-    }
-
-    private static boolean isProductQuestion(String lower) {
-        return lower.contains("sản phẩm") || lower.contains("phù hợp") || lower.contains("mua gì")
-                || lower.contains("dùng gì") || lower.contains("kem") && lower.contains("nào");
-    }
-
-    private static boolean isRoutineQuestion(String lower) {
-        return lower.contains("routine") || lower.contains("chu trình")
-                || (lower.contains("sáng") && (lower.contains("bước") || lower.contains("làm gì")))
-                || (lower.contains("tối") && (lower.contains("bước") || lower.contains("làm gì")));
-    }
-
-    private static boolean isOrderOrCartQuestion(String lower) {
-        return lower.contains("đơn hàng") || lower.contains("giỏ hàng") || lower.contains("giỏ ");
-    }
-
-    private static boolean isBookingQuestion(String lower) {
-        return lower.contains("đặt lịch") || lower.contains("booking")
-                || lower.contains("lịch soi") || lower.contains("spa")
-                || (lower.contains("lịch") && !lower.contains("lịch sử quiz"));
-    }
-
-    private static boolean isGreeting(String lower) {
-        return lower.equals("hello") || lower.equals("hi") || lower.equals("chào")
-                || lower.startsWith("chào ") || lower.contains("xin chào");
     }
 
     public static String buildAdviceCacheKey(

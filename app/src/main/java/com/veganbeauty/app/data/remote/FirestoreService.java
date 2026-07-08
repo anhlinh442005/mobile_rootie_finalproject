@@ -684,7 +684,8 @@ public class FirestoreService {
             Map<String, Object> userMap = new HashMap<>();
             userMap.put("username", user.getUsername());
             String avatar = user.getAvatar() != null ? user.getAvatar().trim() : "";
-            if (avatar.startsWith("https://") || avatar.startsWith("http://")) {
+            if (avatar.startsWith("https://") || avatar.startsWith("http://")
+                    || com.veganbeauty.app.utils.SampleAvatarCatalog.isSampleAvatarRef(avatar)) {
                 userMap.put("avatar", avatar);
             }
             userMap.put("email", user.getEmail());

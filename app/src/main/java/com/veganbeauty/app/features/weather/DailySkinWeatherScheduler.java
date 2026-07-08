@@ -1,28 +1,23 @@
 package com.veganbeauty.app.features.weather;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
+
+import com.veganbeauty.app.features.account.notification.NotificationScheduleHelper;
 
 import java.util.Calendar;
 
 public class DailySkinWeatherScheduler {
     private static final int ALARM_REQ_CODE = 2001;
+    private static final String TAG = "DailySkinWeatherScheduler";
+    public static final String EXTRA_FORCE_DELIVERY = "force_delivery";
 
     public static void scheduleDailyNotification(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, DailySkinWeatherReceiver.class);
-        
-        int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQ_CODE, intent, flags);
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 6);
-        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
+        calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
@@ -30,29 +25,58 @@ public class DailySkinWeatherScheduler {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
 
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-                } else {
-                    alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-                }
-            } else {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-            }
-            Log.d("DailySkinWeatherScheduler", "Scheduled daily skin weather alarm. Next: " + calendar.getTime());
-        } catch (SecurityException e) {
-            Log.e("DailySkinWeatherScheduler", "Failed to schedule exact alarm due to permission constraints, falling back to inexact alarm", e);
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }
+        NotificationScheduleHelper.scheduleBroadcastAlarm(
+                context,
+                ALARM_REQ_CODE,
+                DailySkinWeatherReceiver.class,
+                null,
+                calendar.getTimeInMillis(),
+                "WEATHER_FORECAST"
+        );
+        Log.d(TAG, "Scheduled daily skin weather alarm. Next: " + calendar.getTime());
     }
 
     public static void cancelDailyNotification(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, DailySkinWeatherReceiver.class);
-        int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ALARM_REQ_CODE, intent, flags);
-        alarmManager.cancel(pendingIntent);
-        Log.d("DailySkinWeatherScheduler", "Cancelled daily skin weather alarm.");
+        NotificationScheduleHelper.cancelBroadcastAlarm(
+                context, ALARM_REQ_CODE, DailySkinWeatherReceiver.class);
+        Log.d(TAG, "Cancelled daily skin weather alarm.");
+    }
+
+    public static void enableAndSync(Context context) {
+        scheduleDailyNotification(context);
+        NotificationScheduleHelper.remindExactAlarmIfNeeded(context);
+    }
+
+    /** Chỉ đặt lịch 7:00 — không gửi thông báo ngay. */
+    public static void scheduleOnly(Context context) {
+        scheduleDailyNotification(context);
+    }
+
+    /** Gửi ngay thông báo thời tiết & da (dùng cho gửi thử / bù trong ngày). */
+    public static void triggerNow(Context context) {
+        triggerNow(context, false);
+    }
+
+    /** @param force true = gửi thử ngay, không bị chặn bởi bản ghi đã gửi hôm nay */
+    public static void triggerNow(Context context, boolean force) {
+        if (context == null) {
+            return;
+        }
+        Context app = context.getApplicationContext();
+        Intent intent = new Intent(app, DailySkinWeatherReceiver.class);
+        if (force) {
+            intent.putExtra(EXTRA_FORCE_DELIVERY, true);
+        }
+        sendReceiverBroadcast(app, intent);
+        Log.d(TAG, "triggerNow force=" + force);
+    }
+
+    private static void sendReceiverBroadcast(Context app, Intent intent) {
+        try {
+            intent.setPackage(app.getPackageName());
+            app.sendBroadcast(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "sendBroadcast failed", e);
+        }
     }
 }

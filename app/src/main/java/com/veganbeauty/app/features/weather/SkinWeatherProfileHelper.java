@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -66,8 +67,10 @@ public final class SkinWeatherProfileHelper {
     }
 
     public static UserSkinProfile load(Context context) {
+        SkinHistoryLocalStore.hydrateProfileFromHistoryIfNeeded(context);
+
         SharedPreferences prefs = context.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
-        boolean hasSavedProfile = ProfileSession.getLastSkinTestTime(context) > 0;
+        boolean hasSavedProfile = ProfileSession.hasSavedSkinProfile(context);
 
         String skinType = ProfileSession.getSavedUserSkinType(context);
         if (skinType == null || skinType.trim().isEmpty()) {
@@ -86,6 +89,12 @@ public final class SkinWeatherProfileHelper {
         }
 
         Set<String> flagged = prefs.getStringSet("SAVED_FLAGGED_GROUPS", null);
+        if (flagged == null || flagged.isEmpty()) {
+            Set<String> tempFlagged = prefs.getStringSet("FLAGGED_GROUPS", null);
+            if (tempFlagged != null && !tempFlagged.isEmpty()) {
+                flagged = new HashSet<>(tempFlagged);
+            }
+        }
         if (flagged == null) flagged = new HashSet<>();
 
         return new UserSkinProfile(
@@ -108,7 +117,7 @@ public final class SkinWeatherProfileHelper {
     /** Chỉ số hôm nay = hồ sơ da đã lưu + điều chỉnh theo thời tiết thực tế. */
     public static TodaySkinMetrics computeTodayMetrics(UserSkinProfile profile,
                                                         double temp, int humidity, double uv,
-                                                        int pm25, boolean hasPm25) {
+                                                        double pm25, boolean hasPm25) {
         int oily = profile.sebum;
         oily += temp >= 33 ? 12 : temp >= 28 ? 6 : temp < 22 ? -4 : 0;
         if (humidity > 75 && profile.sebum >= 55) oily += 4;
@@ -147,7 +156,7 @@ public final class SkinWeatherProfileHelper {
 
     public static PersonalizedAdvice buildRuleBasedAdvice(UserSkinProfile profile, TodaySkinMetrics metrics,
                                                           double temp, int humidity, double uv,
-                                                          int pm25, boolean hasPm25, String cityName) {
+                                                          double pm25, boolean hasPm25, String cityName) {
         String skin = profile.skinType;
         String headline;
         String subtext;
@@ -168,7 +177,7 @@ public final class SkinWeatherProfileHelper {
                     + profile.sebum + "%). Dùng sản phẩm mỏng nhẹ, tránh bít tắc lỗ chân lông.";
         } else if (hasPm25 && pm25 > 55) {
             headline = "Không khí kém — " + skin + " cần làm sạch kỹ khi về nhà.";
-            subtext = "PM2.5 ~" + pm25 + " µg/m³. Với độ nhạy cảm " + metrics.sensitivityPercent
+            subtext = "PM2.5 ~" + String.format(Locale.US, "%.0f", pm25) + " µg/m³. Với độ nhạy cảm " + metrics.sensitivityPercent
                     + "%, hạn chế tiếp xúc bụi và rửa mặt dịu nhẹ ngay sau khi ra ngoài.";
         } else if (uv >= 5) {
             headline = skin + " cần chống nắng và phục hồi da hôm nay.";
@@ -188,8 +197,8 @@ public final class SkinWeatherProfileHelper {
 
     public static String buildGeminiPrompt(UserSkinProfile profile, TodaySkinMetrics metrics,
                                            double temp, int humidity, double uv,
-                                           int pm25, boolean hasPm25, String cityName) {
-        String pm25Text = hasPm25 ? pm25 + " µg/m³" : "không có dữ liệu";
+                                           double pm25, boolean hasPm25, String cityName) {
+        String pm25Text = hasPm25 ? String.format(Locale.US, "%.0f", pm25) + " µg/m³" : "không có dữ liệu";
         String flagged = profile.flaggedGroups.isEmpty() ? "không" : String.join(", ", profile.flaggedGroups);
         return "Hồ sơ da đã lưu của người dùng:\n"
                 + "- Loại da: " + profile.skinType + "\n"
@@ -215,7 +224,7 @@ public final class SkinWeatherProfileHelper {
 
     public static PersonalizedAdvice parseGeminiAdvice(String raw, UserSkinProfile profile,
                                                      TodaySkinMetrics metrics, double temp, int humidity,
-                                                     double uv, int pm25, boolean hasPm25, String cityName) {
+                                                     double uv, double pm25, boolean hasPm25, String cityName) {
         if (raw == null || raw.trim().isEmpty()) {
             return buildRuleBasedAdvice(profile, metrics, temp, humidity, uv, pm25, hasPm25, cityName);
         }
@@ -245,7 +254,7 @@ public final class SkinWeatherProfileHelper {
 
     private static String buildInsightBody(UserSkinProfile profile, TodaySkinMetrics metrics,
                                            double temp, int humidity, double uv,
-                                           int pm25, boolean hasPm25) {
+                                           double pm25, boolean hasPm25) {
         String skin = profile.skinType;
         if (uv >= 8) {
             return "Với " + skin + " (nhạy cảm " + metrics.sensitivityPercent + "%), UV "
@@ -258,7 +267,7 @@ public final class SkinWeatherProfileHelper {
             return "Bã nhờn hôm nay có thể tăng (~" + metrics.oilyPercent + "%). Với " + skin + ", chọn sữa rửa mặt kiềm dầu dịu và gel dưỡng mỏng nhẹ, tránh sản phẩm dày gây bí da.";
         }
         if (hasPm25 && pm25 > 55) {
-            return "PM2.5 cao (" + pm25 + " µg/m³) dễ kích thích " + skin + ". Làm sạch nhẹ khi về nhà và tăng cường hàng rào bảo vệ da.";
+            return "PM2.5 cao (" + String.format(Locale.US, "%.0f", pm25) + " µg/m³) dễ kích thích " + skin + ". Làm sạch nhẹ khi về nhà và tăng cường hàng rào bảo vệ da.";
         }
         if (!profile.recommendation.isEmpty()) {
             return profile.recommendation + " Hôm nay tiếp tục duy trì routine này và bôi kem chống nắng nếu ra ngoài.";

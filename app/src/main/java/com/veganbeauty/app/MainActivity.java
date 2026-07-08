@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -22,10 +23,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         com.veganbeauty.app.utils.CoinRewardDialogHelper.registerHost(this);
 
-        // Schedule daily weather & skin advice notification at 6:30 AM
+        // Schedule daily weather & skin advice notification at 07:00
         try {
             if (com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(getApplicationContext())) {
-                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(getApplicationContext());
+                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.enableAndSync(getApplicationContext());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -33,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Schedule skincare routine notifications
         try {
-            com.veganbeauty.app.features.routine.RoutineAlarmScheduler.rescheduleAlarms(getApplicationContext());
+            if (com.veganbeauty.app.data.local.ProfileSession.isNotiEnabled(getApplicationContext())) {
+                com.veganbeauty.app.features.routine.RoutineAlarmScheduler.rescheduleAlarms(getApplicationContext());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
                         new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()),
                         new com.veganbeauty.app.data.remote.FirestoreService());
                 communityRepo.seedFromAssetsIfNeeded();
+                com.veganbeauty.app.features.community.com_feed.CommunityBootstrap.markLocalSeedReady();
 
                 com.veganbeauty.app.data.repository.OrderRepository orderRepository = new com.veganbeauty.app.data.repository.OrderRepository(
                         db.orderDao(),
@@ -378,19 +382,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101
+                && grantResults.length > 0
+                && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            try {
+                if (com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(getApplicationContext())) {
+                    com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.enableAndSync(getApplicationContext());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         try {
             if (com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(getApplicationContext())) {
-                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleDailyNotification(getApplicationContext());
+                com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleOnly(getApplicationContext());
             }
-            com.veganbeauty.app.features.routine.RoutineAlarmScheduler.rescheduleAlarms(getApplicationContext());
+            if (com.veganbeauty.app.data.local.ProfileSession.isNotiEnabled(getApplicationContext())) {
+                com.veganbeauty.app.features.routine.RoutineAlarmScheduler.rescheduleAlarms(getApplicationContext());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        new Thread(() -> com.veganbeauty.app.features.shop.store.StoreProximityHelper.checkIfNearStore(getApplicationContext()))
-                .start();
+        if (com.veganbeauty.app.data.local.ProfileSession.isPromotionEnabled(getApplicationContext())) {
+            new Thread(() -> com.veganbeauty.app.features.shop.store.StoreProximityHelper.checkIfNearStore(getApplicationContext()))
+                    .start();
+        }
     }
 
     private View bubbleAi;

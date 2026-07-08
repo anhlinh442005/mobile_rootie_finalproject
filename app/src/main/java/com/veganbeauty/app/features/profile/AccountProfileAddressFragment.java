@@ -21,10 +21,13 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.AccountProfileAddressBinding;
+import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 public class AccountProfileAddressFragment extends RootieFragment {
 
     private AccountProfileAddressBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
 
     private static final String PREFS_NAME = "rootie_profile_prefs";
     
@@ -51,7 +54,11 @@ public class AccountProfileAddressFragment extends RootieFragment {
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        binding.btnNotification.setOnClickListener(v -> Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show());
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                        .addToBackStack(null)
+                        .commit());
 
         loadAddressData();
 
@@ -154,7 +161,19 @@ public class AccountProfileAddressFragment extends RootieFragment {
             });
         });
 
-        com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
+        BottomNavHelper.setup(this, view, R.id.nav_account, tabId -> BottomNavHelper.navigate(this, tabId));
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        float density = getResources().getDisplayMetrics().density;
+        int bottomPadding = (int) (getResources().getDimension(R.dimen.home_nav_bar_height) + (76f * density));
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.rlHeader,
+                binding.scrollContent,
+                bottomPadding
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.scrollContent);
     }
 
     private void loadAddressData() {

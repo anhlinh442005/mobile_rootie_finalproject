@@ -12,6 +12,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -27,10 +28,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
@@ -145,6 +147,18 @@ public class SkinWeatherForecastFragment extends RootieFragment {
             }
     );
 
+    private final ActivityResultLauncher<String> requestNotiPermLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            granted -> {
+                if (!isAdded()) return;
+                if (granted) {
+                    sendWeatherNotificationPreview(true);
+                } else {
+                    Toast.makeText(requireContext(), "Cần bật quyền thông báo để nhận lời khuyên thời tiết & da", Toast.LENGTH_LONG).show();
+                }
+            }
+    );
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -185,18 +199,68 @@ public class SkinWeatherForecastFragment extends RootieFragment {
 
         getBinding().btnToggleSkinWeatherNoti.setOnClickListener(v -> {
             boolean nextState = !ProfileSession.isSkinWeatherNotiEnabled(context);
+            if (nextState && !areNotificationsAllowed(context)) {
+                requestNotificationPermissionThenPreview();
+                ProfileSession.setSkinWeatherNotiEnabled(context, true);
+                updateSwitchUI(getBinding().switchSkinWeatherForecast, getBinding().switchSkinWeatherForecastThumb, true);
+                DailySkinWeatherScheduler.enableAndSync(context);
+                return;
+            }
             ProfileSession.setSkinWeatherNotiEnabled(context, nextState);
             updateSwitchUI(getBinding().switchSkinWeatherForecast, getBinding().switchSkinWeatherForecastThumb, nextState);
             if (nextState) {
-                DailySkinWeatherScheduler.scheduleDailyNotification(context);
-                Toast.makeText(context, "Đã bật thông báo thời tiết và da lúc 06:30 sáng", Toast.LENGTH_SHORT).show();
-                Intent testIntent = new Intent(context, DailySkinWeatherReceiver.class);
-                context.sendBroadcast(testIntent);
+                DailySkinWeatherScheduler.enableAndSync(context);
+                Toast.makeText(context, "Đã bật thông báo thời tiết & da lúc 07:00 sáng mỗi ngày", Toast.LENGTH_SHORT).show();
             } else {
                 DailySkinWeatherScheduler.cancelDailyNotification(context);
                 Toast.makeText(context, "Đã tắt thông báo thời tiết và da hàng ngày", Toast.LENGTH_SHORT).show();
             }
         });
+
+        getBinding().btnTestWeatherNoti.setOnClickListener(v -> {
+            if (!ProfileSession.isSkinWeatherNotiEnabled(context)) {
+                Toast.makeText(context, "Hãy bật thông báo thời tiết & da trước", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            requestNotificationPermissionThenPreview();
+        });
+    }
+
+    private void requestNotificationPermissionThenPreview() {
+        Context context = requireContext();
+        if (!ProfileSession.isNotiEnabled(context)) {
+            Toast.makeText(context, "Hãy bật thông báo trong Cài đặt tài khoản trước", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (areNotificationsAllowed(context)) {
+            sendWeatherNotificationPreview(true);
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotiPermLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        } else {
+            Toast.makeText(context, "Vui lòng bật thông báo cho Rootie trong Cài đặt hệ thống", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean areNotificationsAllowed(Context context) {
+        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+            return false;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+        return true;
+    }
+
+    private void sendWeatherNotificationPreview(boolean force) {
+        Context context = requireContext();
+        if (!areNotificationsAllowed(context)) {
+            return;
+        }
+        Toast.makeText(context, "Đang gửi thông báo thử...", Toast.LENGTH_SHORT).show();
+        DailySkinWeatherScheduler.triggerNow(context, force);
     }
 
     private void updateSwitchUI(FrameLayout container, ImageView thumb, boolean enabled) {
@@ -221,7 +285,8 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     public void onResume() {
         super.onResume();
         if (_binding != null) {
-            boolean isEnabled = ProfileSession.isSkinWeatherNotiEnabled(requireContext());
+            Context context = requireContext();
+            boolean isEnabled = ProfileSession.isSkinWeatherNotiEnabled(context);
             updateSwitchUI(getBinding().switchSkinWeatherForecast, getBinding().switchSkinWeatherForecastThumb, isEnabled);
             loadUserProfileData();
         }

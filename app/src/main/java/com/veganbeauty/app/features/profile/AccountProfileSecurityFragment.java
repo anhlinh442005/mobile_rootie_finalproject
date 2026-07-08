@@ -23,10 +23,13 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.AccountProfileSecurityBinding;
+import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 public class AccountProfileSecurityFragment extends RootieFragment {
 
     private AccountProfileSecurityBinding _binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
 
     private boolean fastLoginState;
     private boolean floatingChatState;
@@ -44,7 +47,11 @@ public class AccountProfileSecurityFragment extends RootieFragment {
 
         _binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        _binding.btnNotification.setOnClickListener(v -> Toast.makeText(context, "Không có thông báo mới", Toast.LENGTH_SHORT).show());
+        _binding.layoutNotification.getRoot().setOnClickListener(v ->
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
+                        .addToBackStack(null)
+                        .commit());
 
         String username = ProfileSession.getUsername(context);
         String phone = ProfileSession.getPhone(context);
@@ -140,7 +147,18 @@ public class AccountProfileSecurityFragment extends RootieFragment {
 
         _binding.btnManageDevices.setOnClickListener(v -> Toast.makeText(context, "Quản lý thiết bị đăng nhập (Đang phát triển)", Toast.LENGTH_SHORT).show());
 
-        com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
+        BottomNavHelper.setup(this, view, R.id.nav_account, tabId -> BottomNavHelper.navigate(this, tabId));
+        setupScrollHideHeader();
+    }
+
+    private void setupScrollHideHeader() {
+        int bottomPadding = (int) requireContext().getResources().getDimension(R.dimen.home_nav_bar_height);
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                _binding.rlHeader,
+                _binding.scrollContent,
+                bottomPadding
+        );
+        headerScrollHelper.attachToNestedScrollView(_binding.scrollContent);
     }
 
     private void updateSwitchUI(boolean enabled) {

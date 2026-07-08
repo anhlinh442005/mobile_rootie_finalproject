@@ -126,6 +126,7 @@ dependencies {
     implementation("com.sun.mail:android-mail:1.6.7")
 
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)

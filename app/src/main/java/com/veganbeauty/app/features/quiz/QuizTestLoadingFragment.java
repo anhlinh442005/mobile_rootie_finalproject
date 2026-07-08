@@ -64,7 +64,7 @@ public class QuizTestLoadingFragment extends RootieFragment {
                 if (isAdded()) {
                     QuizTestResultFragment resultFragment = new QuizTestResultFragment();
                     Bundle args = new Bundle();
-                    args.putBoolean("IS_FIRST_TEST", true);
+                    args.putBoolean(QuizTestResultFragment.ARG_IS_FIRST_TEST, true);
                     resultFragment.setArguments(args);
                     
                     getParentFragmentManager().beginTransaction()

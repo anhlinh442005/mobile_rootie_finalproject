@@ -1,4 +1,4 @@
- [
+[
   {
     "_id": {
       "$oid": "6991980ed34a9bfc0c7e1209"
@@ -6887,8 +6887,8 @@
       "dia_chi_day_du": "544 Võ Văn Kiệt, Phường 1, Quận Thốt Nốt, Cần Thơ"
     },
     "toa_do": {
-      "lat": 10.8767,
-      "lng": 106.7868
+      "lat": 10.0384,
+      "lng": 105.7903
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -6989,8 +6989,8 @@
       "dia_chi_day_du": "479 Nguyễn Thị Minh Khai, Phường 5, Quận Bình Thủy, Cần Thơ"
     },
     "toa_do": {
-      "lat": 15.1944,
-      "lng": 102.4206
+      "lat": 10.0291,
+      "lng": 105.7828
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7096,8 +7096,8 @@
       "dia_chi_day_du": "909 Trần Phú, Phường 15, Quận Ninh Kiều, Cần Thơ"
     },
     "toa_do": {
-      "lat": 9.6466,
-      "lng": 106.132
+      "lat": 9.9853,
+      "lng": 105.7647
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7203,8 +7203,8 @@
       "dia_chi_day_du": "564 Điện Biên Phủ, Phường 14, Quận Ninh Kiều, Cần Thơ"
     },
     "toa_do": {
-      "lat": 12.1241,
-      "lng": 102.4703
+      "lat": 9.9865,
+      "lng": 105.7662
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7309,8 +7309,8 @@
       "dia_chi_day_du": "614 Nguyễn Huệ, Phường 14, Quận Thốt Nốt, Cần Thơ"
     },
     "toa_do": {
-      "lat": 15.049,
-      "lng": 104.7025
+      "lat": 10.0228,
+      "lng": 105.7963
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7411,8 +7411,8 @@
       "dia_chi_day_du": "758 Lý Thái Tổ, Phường 1, Quận Bình Thủy, Cần Thơ"
     },
     "toa_do": {
-      "lat": 20.9346,
-      "lng": 108.5613
+      "lat": 10.0339,
+      "lng": 105.7888
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7515,8 +7515,8 @@
       "dia_chi_day_du": "784 Lê Lợi, TT. Xã Bình Hưng, Thành phố Biên Hòa, Biên Hòa"
     },
     "toa_do": {
-      "lat": 14.4692,
-      "lng": 104.9211
+      "lat": 10.948799,
+      "lng": 106.843676
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7617,8 +7617,8 @@
       "dia_chi_day_du": "797 Lạc Long Quân, TT. Xã An Lợi, Thị xã Long Khánh, Biên Hòa"
     },
     "toa_do": {
-      "lat": 18.2652,
-      "lng": 104.3553
+      "lat": 10.941845,
+      "lng": 107.248477
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7724,8 +7724,8 @@
       "dia_chi_day_du": "494 Nguyễn Văn Linh, TT. Xã Tân Hưng, Thành phố Biên Hòa, Biên Hòa"
     },
     "toa_do": {
-      "lat": 10.0566,
-      "lng": 105.7747
+      "lat": 10.950178,
+      "lng": 106.842343
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7827,8 +7827,8 @@
       "dia_chi_day_du": "909 Lý Thái Tổ, TT. Xã An Lợi, Thành phố Biên Hòa, Biên Hòa"
     },
     "toa_do": {
-      "lat": 16.8,
-      "lng": 105.2717
+      "lat": 10.955395,
+      "lng": 106.85713
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -7929,8 +7929,8 @@
       "dia_chi_day_du": "871 Điện Biên Phủ, TT. Xã An Thịnh, Thành phố Biên Hòa, Biên Hòa"
     },
     "toa_do": {
-      "lat": 16.0158,
-      "lng": 108.0472
+      "lat": 10.948715,
+      "lng": 106.826641
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -10321,8 +10321,8 @@
       "dia_chi_day_du": "896 Hùng Vương, TT. Xã An Thịnh, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 15.3998,
-      "lng": 108.9664
+      "lat": 20.4277,
+      "lng": 106.1722
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -10425,8 +10425,8 @@
       "dia_chi_day_du": "167 Hai Bà Trưng, TT. Xã Thuận Phú, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 10.7493,
-      "lng": 106.6592
+      "lat": 20.4288,
+      "lng": 106.1736
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -34468,8 +34468,8 @@
       "dia_chi_day_du": "749 Cách Mạng Tháng 8, Phường Hòa Hòa, Thị xã Long Khánh, Đồng Nai"
     },
     "toa_do": {
-      "lat": 19.6712,
-      "lng": 102.3211
+      "lat": 10.938249,
+      "lng": 107.228917
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -34571,8 +34571,8 @@
       "dia_chi_day_du": "56 Ngô Quyền, Phường Phú An, Thị xã Long Khánh, Đồng Nai"
     },
     "toa_do": {
-      "lat": 17.2276,
-      "lng": 106.4911
+      "lat": 10.927455,
+      "lng": 107.242567
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -34674,8 +34674,8 @@
       "dia_chi_day_du": "795 Nguyễn Huệ, Phường Hòa Phú, Thành phố Biên Hòa, Đồng Nai"
     },
     "toa_do": {
-      "lat": 13.1448,
-      "lng": 102.2797
+      "lat": 10.960388,
+      "lng": 106.840547
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -34773,8 +34773,8 @@
       "dia_chi_day_du": "158 Ngô Quyền, Phường Bình Phú, Thành phố Biên Hòa, Đồng Nai"
     },
     "toa_do": {
-      "lat": 18.0946,
-      "lng": 108.5639
+      "lat": 10.963224,
+      "lng": 106.856576
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -34876,8 +34876,8 @@
       "dia_chi_day_du": "672 Trần Quốc Toản, Xã Xã An Thịnh, Huyện Long Thành, Đồng Nai"
     },
     "toa_do": {
-      "lat": 10.2786,
-      "lng": 104.8549
+      "lat": 10.774852,
+      "lng": 106.965628
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -34977,8 +34977,8 @@
       "dia_chi_day_du": "971 Nguyễn Đình Chiểu, Xã Xã Phú Lợi, Huyện Nhơn Trạch, Đồng Nai"
     },
     "toa_do": {
-      "lat": 13.3944,
-      "lng": 104.1352
+      "lat": 10.712746,
+      "lng": 106.927096
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35078,8 +35078,8 @@
       "dia_chi_day_du": "901 Bà Triệu, Xã Xã Bình Hưng, Huyện Nhơn Trạch, Đồng Nai"
     },
     "toa_do": {
-      "lat": 9.6696,
-      "lng": 102.7513
+      "lat": 10.709551,
+      "lng": 106.946774
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35184,8 +35184,8 @@
       "dia_chi_day_du": "88 Alexandre de Rhodes, Xã Xã Thanh Lợi, Huyện Long Thành, Đồng Nai"
     },
     "toa_do": {
-      "lat": 14.824,
-      "lng": 104.763
+      "lat": 10.782763,
+      "lng": 106.946053
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35293,8 +35293,8 @@
       "dia_chi_day_du": "81 Phan Đình Phùng, Xã Xã An Lợi, Huyện Nhơn Trạch, Đồng Nai"
     },
     "toa_do": {
-      "lat": 9.3569,
-      "lng": 105.397
+      "lat": 10.727716,
+      "lng": 106.947616
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35399,8 +35399,8 @@
       "dia_chi_day_du": "410 Đinh Tiên Hoàng, Phường Thịnh Bình, Thành phố Biên Hòa, Đồng Nai"
     },
     "toa_do": {
-      "lat": 14.2396,
-      "lng": 105.9621
+      "lat": 10.957983,
+      "lng": 106.848249
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35504,8 +35504,8 @@
       "dia_chi_day_du": "418 Điện Biên Phủ, Phường Phú Hòa, Thành phố Biên Hòa, Đồng Nai"
     },
     "toa_do": {
-      "lat": 10.6112,
-      "lng": 104.3785
+      "lat": 10.956196,
+      "lng": 106.844724
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35606,8 +35606,8 @@
       "dia_chi_day_du": "686 Lý Tự Trọng, Xã Xã Hưng Thịnh, Huyện Nhơn Trạch, Đồng Nai"
     },
     "toa_do": {
-      "lat": 11.0747,
-      "lng": 104.6342
+      "lat": 10.701982,
+      "lng": 106.942873
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35712,8 +35712,8 @@
       "dia_chi_day_du": "348 Lê Duẩn, Phường Thanh Phú, Thành phố Biên Hòa, Đồng Nai"
     },
     "toa_do": {
-      "lat": 14.7337,
-      "lng": 102.9902
+      "lat": 10.960317,
+      "lng": 106.840361
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35817,8 +35817,8 @@
       "dia_chi_day_du": "122 Phan Chu Trinh, Phường Bình Phú, Thị xã Long Khánh, Đồng Nai"
     },
     "toa_do": {
-      "lat": 22.662,
-      "lng": 104.2099
+      "lat": 10.94613,
+      "lng": 107.234917
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -35922,8 +35922,8 @@
       "dia_chi_day_du": "956 Nguyễn Trãi, Xã Xã Hòa Thịnh, Huyện Long Thành, Đồng Nai"
     },
     "toa_do": {
-      "lat": 20.0888,
-      "lng": 109.1234
+      "lat": 10.775921,
+      "lng": 106.954394
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36021,8 +36021,8 @@
       "dia_chi_day_du": "640 Nam Kỳ Khởi Nghĩa, Xã Xã Tân Hưng, Huyện Long Thành, Đồng Nai"
     },
     "toa_do": {
-      "lat": 13.3564,
-      "lng": 107.912
+      "lat": 10.766774,
+      "lng": 106.974631
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36123,8 +36123,8 @@
       "dia_chi_day_du": "511 Nguyễn Trãi, Xã Xã Lợi Phú, Huyện Nhơn Trạch, Đồng Nai"
     },
     "toa_do": {
-      "lat": 14.2815,
-      "lng": 104.4959
+      "lat": 10.719857,
+      "lng": 106.927737
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36227,8 +36227,8 @@
       "dia_chi_day_du": "377 Xô Viết Nghệ Tĩnh, Xã Xã Thanh Lợi, Huyện Long Thành, Đồng Nai"
     },
     "toa_do": {
-      "lat": 18.5976,
-      "lng": 106.8311
+      "lat": 10.776703,
+      "lng": 106.955318
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36329,8 +36329,8 @@
       "dia_chi_day_du": "456 Nam Kỳ Khởi Nghĩa, Xã Xã Thuận Thịnh, Huyện Long Thành, Đồng Nai"
     },
     "toa_do": {
-      "lat": 20.7014,
-      "lng": 102.3427
+      "lat": 10.778422,
+      "lng": 106.94832
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36432,8 +36432,8 @@
       "dia_chi_day_du": "490 Trần Nhân Tông, Phường Thanh Bình, Thị xã Long Khánh, Đồng Nai"
     },
     "toa_do": {
-      "lat": 16.7692,
-      "lng": 102.2031
+      "lat": 10.9326,
+      "lng": 107.258041
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36538,8 +36538,8 @@
       "dia_chi_day_du": "800 Trường Chinh, Xã Xã Hưng Thịnh, Huyện Nhơn Trạch, Đồng Nai"
     },
     "toa_do": {
-      "lat": 15.4096,
-      "lng": 106.7662
+      "lat": 10.72633,
+      "lng": 106.938322
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36642,8 +36642,8 @@
       "dia_chi_day_du": "506 Phạm Ngũ Lão, Phường Hưng An, Thành phố Biên Hòa, Đồng Nai"
     },
     "toa_do": {
-      "lat": 11.3301,
-      "lng": 102.3331
+      "lat": 10.974327,
+      "lng": 106.845331
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36741,8 +36741,8 @@
       "dia_chi_day_du": "184 Trần Nhân Tông, Xã Xã Lợi Phú, Huyện Nhơn Trạch, Đồng Nai"
     },
     "toa_do": {
-      "lat": 12.0556,
-      "lng": 104.0197
+      "lat": 10.708179,
+      "lng": 106.948972
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36843,8 +36843,8 @@
       "dia_chi_day_du": "208 Hoàng Văn Thụ, Phường Phú Hòa, Thị xã Long Khánh, Đồng Nai"
     },
     "toa_do": {
-      "lat": 15.9672,
-      "lng": 103.0588
+      "lat": 10.929737,
+      "lng": 107.236561
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -36947,8 +36947,8 @@
       "dia_chi_day_du": "146 Hai Bà Trưng, Xã Xã Lợi Phú, Huyện Nhơn Trạch, Đồng Nai"
     },
     "toa_do": {
-      "lat": 19.6948,
-      "lng": 105.0818
+      "lat": 10.70677,
+      "lng": 106.951164
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -40955,8 +40955,8 @@
       "dia_chi_day_du": "926 Cách Mạng Tháng 8, Phường Thịnh Phú, Thị xã Phú Mỹ, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 14.6089,
-      "lng": 105.8579
+      "lat": 10.3438,
+      "lng": 107.0854
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41060,8 +41060,8 @@
       "dia_chi_day_du": "836 Trần Phú, Phường Tân Hòa, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 13.8843,
-      "lng": 104.9834
+      "lat": 10.3449,
+      "lng": 107.0868
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41165,8 +41165,8 @@
       "dia_chi_day_du": "731 Võ Thị Sáu, Phường Bình Phú, Thị xã Phú Mỹ, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 14.8191,
-      "lng": 105.8535
+      "lat": 10.346,
+      "lng": 107.0882
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41368,8 +41368,8 @@
       "dia_chi_day_du": "728 Nguyễn Thái Học, Phường An Phú, Thành phố Bà Rịa, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 14.0809,
-      "lng": 102.4074
+      "lat": 10.3482,
+      "lng": 107.091
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41472,8 +41472,8 @@
       "dia_chi_day_du": "350 Hoàng Văn Thụ, Phường Thuận An, Thành phố Bà Rịa, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 15.4809,
-      "lng": 107.2257
+      "lat": 10.3493,
+      "lng": 107.0924
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41577,8 +41577,8 @@
       "dia_chi_day_du": "148 Cách Mạng Tháng 8, Phường Thịnh Phú, Thành phố Bà Rịa, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 18.3439,
-      "lng": 107.8637
+      "lat": 10.3504,
+      "lng": 107.0756
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41680,8 +41680,8 @@
       "dia_chi_day_du": "735 Võ Văn Kiết, Phường Tân Hòa, Thành phố Bà Rịa, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 16.9657,
-      "lng": 105.9492
+      "lat": 10.3515,
+      "lng": 107.077
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41783,8 +41783,8 @@
       "dia_chi_day_du": "200 Võ Văn Kiết, Phường Thanh Hòa, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 10.6584,
-      "lng": 106.4675
+      "lat": 10.3526,
+      "lng": 107.0784
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41887,8 +41887,8 @@
       "dia_chi_day_du": "595 Võ Thị Sáu, Phường Thịnh Phú, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 22.2478,
-      "lng": 105.3192
+      "lat": 10.3537,
+      "lng": 107.0798
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -41987,8 +41987,8 @@
       "dia_chi_day_du": "66 Trường Chinh, Phường Bình Bình, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 11.9287,
-      "lng": 104.1205
+      "lat": 10.3548,
+      "lng": 107.0812
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42093,8 +42093,8 @@
       "dia_chi_day_du": "363 Hồ Tùng Mậu, Phường Lợi Phú, Thành phố Bà Rịa, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 13.6959,
-      "lng": 103.2393
+      "lat": 10.3372,
+      "lng": 107.0826
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42200,8 +42200,8 @@
       "dia_chi_day_du": "804 Yersin, Phường An Bình, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 8.8214,
-      "lng": 102.424
+      "lat": 10.3383,
+      "lng": 107.084
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42303,8 +42303,8 @@
       "dia_chi_day_du": "562 Trần Nhân Tông, Phường Hưng Phú, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 22.3553,
-      "lng": 103.6421
+      "lat": 10.3394,
+      "lng": 107.0854
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42405,8 +42405,8 @@
       "dia_chi_day_du": "50 Yersin, Phường Tân Hòa, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 18.5362,
-      "lng": 105.889
+      "lat": 10.3405,
+      "lng": 107.0868
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42504,8 +42504,8 @@
       "dia_chi_day_du": "51 Nguyễn Huệ, Phường Thuận An, Thành phố Bà Rịa, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 13.9182,
-      "lng": 105.308
+      "lat": 10.3416,
+      "lng": 107.0882
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42609,8 +42609,8 @@
       "dia_chi_day_du": "819 Nguyễn Huệ, Phường Thanh An, Thành phố Vũng Tàu, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 19.7371,
-      "lng": 105.9274
+      "lat": 10.3427,
+      "lng": 107.0896
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42714,8 +42714,8 @@
       "dia_chi_day_du": "170 Hồ Tùng Mậu, Phường Hòa Hòa, Thành phố Bà Rịa, Bà Rịa - Vũng Tàu"
     },
     "toa_do": {
-      "lat": 17.6961,
-      "lng": 102.0029
+      "lat": 10.3438,
+      "lng": 107.091
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42819,8 +42819,8 @@
       "dia_chi_day_du": "353 Yersin, Phường An An, Thành phố Thủ Dầu Một, Bình Dương"
     },
     "toa_do": {
-      "lat": 13.0019,
-      "lng": 106.2613
+      "lat": 10.988224,
+      "lng": 106.648184
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -42923,8 +42923,8 @@
       "dia_chi_day_du": "536 Yersin, Phường Bình An, Thành phố Thuận An, Bình Dương"
     },
     "toa_do": {
-      "lat": 19.9919,
-      "lng": 108.0779
+      "lat": 10.927532,
+      "lng": 106.708967
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43030,8 +43030,8 @@
       "dia_chi_day_du": "875 Phan Chu Trinh, Xã Xã Hòa Hưng, Huyện Bến Cát, Bình Dương"
     },
     "toa_do": {
-      "lat": 16.6581,
-      "lng": 106.1339
+      "lat": 11.164324,
+      "lng": 106.592284
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43132,8 +43132,8 @@
       "dia_chi_day_du": "852 Tôn Đức Thắng, Phường Hòa An, Thành phố Thủ Dầu Một, Bình Dương"
     },
     "toa_do": {
-      "lat": 15.3179,
-      "lng": 104.9134
+      "lat": 10.976092,
+      "lng": 106.639845
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43240,8 +43240,8 @@
       "dia_chi_day_du": "946 Hồ Tùng Mậu, Xã Xã An Phú, Huyện Bến Cát, Bình Dương"
     },
     "toa_do": {
-      "lat": 16.3422,
-      "lng": 105.0338
+      "lat": 11.146404,
+      "lng": 106.607122
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43344,8 +43344,8 @@
       "dia_chi_day_du": "969 Trần Phú, Phường Thịnh Phú, Thành phố Thủ Dầu Một, Bình Dương"
     },
     "toa_do": {
-      "lat": 13.7918,
-      "lng": 107.4684
+      "lat": 10.980645,
+      "lng": 106.654273
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43449,8 +43449,8 @@
       "dia_chi_day_du": "737 Alexandre de Rhodes, Phường Bình Phú, Thành phố Thuận An, Bình Dương"
     },
     "toa_do": {
-      "lat": 16.3823,
-      "lng": 104.7344
+      "lat": 10.925209,
+      "lng": 106.69748
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43552,8 +43552,8 @@
       "dia_chi_day_du": "433 Trần Nhân Tông, Phường Hưng Hòa, Thành phố Thủ Dầu Một, Bình Dương"
     },
     "toa_do": {
-      "lat": 14.5816,
-      "lng": 108.2978
+      "lat": 10.987461,
+      "lng": 106.639929
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43658,8 +43658,8 @@
       "dia_chi_day_du": "138 Tôn Đức Thắng, Xã Xã Tân Hưng, Huyện Bến Cát, Bình Dương"
     },
     "toa_do": {
-      "lat": 16.8529,
-      "lng": 108.3539
+      "lat": 11.148793,
+      "lng": 106.595853
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43758,8 +43758,8 @@
       "dia_chi_day_du": "420 Lý Thái Tổ, Phường Thịnh An, Thành phố Dĩ An, Bình Dương"
     },
     "toa_do": {
-      "lat": 23.3541,
-      "lng": 104.373
+      "lat": 10.90287,
+      "lng": 106.771618
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43861,8 +43861,8 @@
       "dia_chi_day_du": "692 Nguyễn Văn Linh, Xã Xã Thuận Hưng, Huyện Bến Cát, Bình Dương"
     },
     "toa_do": {
-      "lat": 10.3063,
-      "lng": 108.1774
+      "lat": 11.144599,
+      "lng": 106.587075
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -43963,8 +43963,8 @@
       "dia_chi_day_du": "255 Nguyễn Văn Linh, Phường Tân Phú, Thành phố Dĩ An, Bình Dương"
     },
     "toa_do": {
-      "lat": 8.7887,
-      "lng": 109.1035
+      "lat": 11.090725,
+      "lng": 106.68643
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44067,8 +44067,8 @@
       "dia_chi_day_du": "585 Alexandre de Rhodes, Phường Hưng An, Thành phố Thuận An, Bình Dương"
     },
     "toa_do": {
-      "lat": 17.3347,
-      "lng": 107.59
+      "lat": 10.934207,
+      "lng": 106.715142
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44170,8 +44170,8 @@
       "dia_chi_day_du": "922 Bà Triệu, Phường Thuận Phú, Thành phố Thuận An, Bình Dương"
     },
     "toa_do": {
-      "lat": 18.1804,
-      "lng": 105.8792
+      "lat": 10.927427,
+      "lng": 106.714572
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44272,8 +44272,8 @@
       "dia_chi_day_du": "177 Phạm Ngũ Lão, Phường Thịnh Hòa, Thành phố Dĩ An, Bình Dương"
     },
     "toa_do": {
-      "lat": 19.7318,
-      "lng": 109.1159
+      "lat": 10.90102,
+      "lng": 106.752306
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44374,8 +44374,8 @@
       "dia_chi_day_du": "641 Quang Trung, Phường Hòa An, Thành phố Thủ Dầu Một, Bình Dương"
     },
     "toa_do": {
-      "lat": 14.3777,
-      "lng": 105.8628
+      "lat": 10.982708,
+      "lng": 106.648663
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44476,8 +44476,8 @@
       "dia_chi_day_du": "219 Nguyễn Huệ, Phường Lợi Phú, Thành phố Dĩ An, Bình Dương"
     },
     "toa_do": {
-      "lat": 13.316,
-      "lng": 106.9592
+      "lat": 10.909354,
+      "lng": 106.756018
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44581,8 +44581,8 @@
       "dia_chi_day_du": "34 Cách Mạng Tháng 8, Phường Bình Bình, Thành phố Dĩ An, Bình Dương"
     },
     "toa_do": {
-      "lat": 22.2398,
-      "lng": 104.4135
+      "lat": 10.902696,
+      "lng": 106.770758
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44681,8 +44681,8 @@
       "dia_chi_day_du": "793 Hùng Vương, Xã Xã Bình Hưng, Huyện Bến Cát, Bình Dương"
     },
     "toa_do": {
-      "lat": 17.7019,
-      "lng": 104.8003
+      "lat": 11.151476,
+      "lng": 106.606586
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44787,8 +44787,8 @@
       "dia_chi_day_du": "222 Trần Nhân Tông, Xã Xã Hưng Thịnh, Huyện Bến Cát, Bình Dương"
     },
     "toa_do": {
-      "lat": 20.986,
-      "lng": 104.7592
+      "lat": 11.156641,
+      "lng": 106.591455
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44889,8 +44889,8 @@
       "dia_chi_day_du": "697 Hai Bà Trưng, Phường Thịnh Hòa, Thành phố Thuận An, Bình Dương"
     },
     "toa_do": {
-      "lat": 22.1928,
-      "lng": 104.0832
+      "lat": 10.939258,
+      "lng": 106.706144
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -44994,8 +44994,8 @@
       "dia_chi_day_du": "518 Nguyễn Văn Cừ, Phường Hòa Bình, Thành phố Thủ Dầu Một, Bình Dương"
     },
     "toa_do": {
-      "lat": 17.7311,
-      "lng": 106.5263
+      "lat": 10.981567,
+      "lng": 106.634896
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -51248,8 +51248,8 @@
       "dia_chi_day_du": "365 Cách Mạng Tháng 8, Phường Hưng Hòa, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 8.855,
-      "lng": 106.1551
+      "lat": 20.4156,
+      "lng": 106.1638
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -51352,8 +51352,8 @@
       "dia_chi_day_du": "551 Lý Tự Trọng, Xã Xã Lợi Hưng, Huyện Mỹ Lộc, Nam Định"
     },
     "toa_do": {
-      "lat": 23.2987,
-      "lng": 104.7567
+      "lat": 20.4167,
+      "lng": 106.1652
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -51455,8 +51455,8 @@
       "dia_chi_day_du": "526 Yersin, Phường Lợi Phú, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 23.1002,
-      "lng": 106.7883
+      "lat": 20.4178,
+      "lng": 106.1666
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -51558,8 +51558,8 @@
       "dia_chi_day_du": "715 Lạc Long Quân, Phường Thuận Hòa, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 17.6305,
-      "lng": 108.0198
+      "lat": 20.4189,
+      "lng": 106.168
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -51660,8 +51660,8 @@
       "dia_chi_day_du": "33 Nguyễn Thái Học, Phường Phú Phú, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 16.6895,
-      "lng": 108.4527
+      "lat": 20.42,
+      "lng": 106.1694
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -51763,8 +51763,8 @@
       "dia_chi_day_du": "89 Trần Nhân Tông, Phường Lợi Phú, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 17.1367,
-      "lng": 105.9162
+      "lat": 20.4211,
+      "lng": 106.1708
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -51864,8 +51864,8 @@
       "dia_chi_day_du": "243 Nguyễn Trãi, Phường Hưng Bình, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 13.8348,
-      "lng": 108.8256
+      "lat": 20.4222,
+      "lng": 106.1722
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -51968,8 +51968,8 @@
       "dia_chi_day_du": "317 Điện Biên Phủ, Phường Thuận Bình, Thành phố Nam Định, Nam Định"
     },
     "toa_do": {
-      "lat": 13.9955,
-      "lng": 107.6916
+      "lat": 20.4233,
+      "lng": 106.1736
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -52071,8 +52071,8 @@
       "dia_chi_day_du": "906 Hùng Vương, Xã Xã An Phú, Huyện Mỹ Lộc, Nam Định"
     },
     "toa_do": {
-      "lat": 15.9676,
-      "lng": 103.0174
+      "lat": 20.4244,
+      "lng": 106.175
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -52171,8 +52171,8 @@
       "dia_chi_day_du": "549 Phan Chu Trinh, Xã Xã Tân Phú, Huyện Mỹ Lộc, Nam Định"
     },
     "toa_do": {
-      "lat": 9.6708,
-      "lng": 102.5192
+      "lat": 20.4255,
+      "lng": 106.1764
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -56798,8 +56798,8 @@
       "dia_chi_day_du": "771 Võ Thị Sáu, Xã Xã Tân Lợi, Huyện Đức Hòa, Long An"
     },
     "toa_do": {
-      "lat": 11.2541,
-      "lng": 108.4843
+      "lat": 10.894606,
+      "lng": 106.447234
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -56901,8 +56901,8 @@
       "dia_chi_day_du": "890 Lý Tự Trọng, Phường Hòa Bình, Thành phố Tân An, Long An"
     },
     "toa_do": {
-      "lat": 14.9223,
-      "lng": 102.1339
+      "lat": 10.544933,
+      "lng": 106.416229
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57005,8 +57005,8 @@
       "dia_chi_day_du": "354 Trần Quốc Toản, Phường An An, Thành phố Tân An, Long An"
     },
     "toa_do": {
-      "lat": 13.7511,
-      "lng": 102.6132
+      "lat": 10.530448,
+      "lng": 106.410854
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57108,8 +57108,8 @@
       "dia_chi_day_du": "901 Lạc Long Quân, Xã Xã Lợi Hưng, Huyện Đức Hòa, Long An"
     },
     "toa_do": {
-      "lat": 8.6665,
-      "lng": 102.4289
+      "lat": 10.887307,
+      "lng": 106.435955
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57212,8 +57212,8 @@
       "dia_chi_day_du": "357 Lê Lợi, Xã Xã An Thịnh, Huyện Đức Hòa, Long An"
     },
     "toa_do": {
-      "lat": 17.9936,
-      "lng": 106.0108
+      "lat": 10.881403,
+      "lng": 106.428775
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57314,8 +57314,8 @@
       "dia_chi_day_du": "712 Phan Chu Trinh, Xã Xã Hòa Thịnh, Huyện Đức Hòa, Long An"
     },
     "toa_do": {
-      "lat": 12.1571,
-      "lng": 103.44
+      "lat": 10.870709,
+      "lng": 106.431345
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57414,8 +57414,8 @@
       "dia_chi_day_du": "314 Trần Quốc Toản, Phường Hòa Bình, Thành phố Tân An, Long An"
     },
     "toa_do": {
-      "lat": 9.9605,
-      "lng": 103.5694
+      "lat": 10.535235,
+      "lng": 106.416583
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57518,8 +57518,8 @@
       "dia_chi_day_du": "178 Trần Hưng Đạo, Xã Xã Hòa Thịnh, Huyện Đức Hòa, Long An"
     },
     "toa_do": {
-      "lat": 13.9659,
-      "lng": 105.9139
+      "lat": 10.881642,
+      "lng": 106.422189
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57620,8 +57620,8 @@
       "dia_chi_day_du": "65 Xô Viết Nghệ Tĩnh, Phường Hòa An, Thành phố Tân An, Long An"
     },
     "toa_do": {
-      "lat": 9.372,
-      "lng": 102.1881
+      "lat": 10.532806,
+      "lng": 106.404188
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57726,8 +57726,8 @@
       "dia_chi_day_du": "971 Phạm Ngũ Lão, Xã Xã Phú Lợi, Huyện Đức Hòa, Long An"
     },
     "toa_do": {
-      "lat": 19.5503,
-      "lng": 104.6137
+      "lat": 10.878831,
+      "lng": 106.451886
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57831,8 +57831,8 @@
       "dia_chi_day_du": "491 Nguyễn Thái Học, Phường Phú Hòa, Thành phố Mỹ Tho, Tiền Giang"
     },
     "toa_do": {
-      "lat": 13.0116,
-      "lng": 103.043
+      "lat": 10.3452,
+      "lng": 106.3584
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -57932,8 +57932,8 @@
       "dia_chi_day_du": "508 Võ Thị Sáu, Phường Lợi Hòa, Thị xã Gò Công, Tiền Giang"
     },
     "toa_do": {
-      "lat": 8.9624,
-      "lng": 109.2595
+      "lat": 10.3813,
+      "lng": 106.6788
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58035,8 +58035,8 @@
       "dia_chi_day_du": "172 Xô Viết Nghệ Tĩnh, Phường Bình Phú, Thành phố Mỹ Tho, Tiền Giang"
     },
     "toa_do": {
-      "lat": 21.6955,
-      "lng": 103.0379
+      "lat": 10.3474,
+      "lng": 106.3612
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58137,8 +58137,8 @@
       "dia_chi_day_du": "543 Trần Nhân Tông, Phường Hòa Bình, Thành phố Mỹ Tho, Tiền Giang"
     },
     "toa_do": {
-      "lat": 22.6656,
-      "lng": 109.4323
+      "lat": 10.3485,
+      "lng": 106.3626
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58240,8 +58240,8 @@
       "dia_chi_day_du": "181 Trần Hưng Đạo, Phường An Hòa, Thị xã Gò Công, Tiền Giang"
     },
     "toa_do": {
-      "lat": 10.952,
-      "lng": 106.9129
+      "lat": 10.3846,
+      "lng": 106.683
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58341,8 +58341,8 @@
       "dia_chi_day_du": "369 Trần Nhân Tông, Phường Lợi Hòa, Thành phố Mỹ Tho, Tiền Giang"
     },
     "toa_do": {
-      "lat": 12.7043,
-      "lng": 102.391
+      "lat": 10.3507,
+      "lng": 106.3654
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58445,8 +58445,8 @@
       "dia_chi_day_du": "47 Trần Phú, Phường Lợi Phú, Thành phố Mỹ Tho, Tiền Giang"
     },
     "toa_do": {
-      "lat": 23.3906,
-      "lng": 108.0432
+      "lat": 10.3518,
+      "lng": 106.3668
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58549,8 +58549,8 @@
       "dia_chi_day_du": "881 Phan Đình Phùng, Phường Hưng Bình, Thị xã Gò Công, Tiền Giang"
     },
     "toa_do": {
-      "lat": 16.3032,
-      "lng": 106.8725
+      "lat": 10.3879,
+      "lng": 106.6872
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58651,8 +58651,8 @@
       "dia_chi_day_du": "936 Lê Lợi, Phường Thịnh Phú, Thành phố Mỹ Tho, Tiền Giang"
     },
     "toa_do": {
-      "lat": 14.4341,
-      "lng": 102.4644
+      "lat": 10.354,
+      "lng": 106.3696
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58757,8 +58757,8 @@
       "dia_chi_day_du": "519 Bà Triệu, Phường An An, Thị xã Gò Công, Tiền Giang"
     },
     "toa_do": {
-      "lat": 10.478,
-      "lng": 105.6149
+      "lat": 10.3901,
+      "lng": 106.69
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58858,8 +58858,8 @@
       "dia_chi_day_du": "108 Yersin, Phường Thuận Bình, Thành phố Châu Đốc, An Giang"
     },
     "toa_do": {
-      "lat": 9.0094,
-      "lng": 105.9197
+      "lat": 10.7072,
+      "lng": 105.1254
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -58961,8 +58961,8 @@
       "dia_chi_day_du": "754 Tôn Đức Thắng, Phường Thịnh An, Thành phố Châu Đốc, An Giang"
     },
     "toa_do": {
-      "lat": 19.7432,
-      "lng": 109.431
+      "lat": 10.7083,
+      "lng": 105.1086
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -59064,8 +59064,8 @@
       "dia_chi_day_du": "811 Võ Thị Sáu, Phường Bình Hòa, Thành phố Long Xuyên, An Giang"
     },
     "toa_do": {
-      "lat": 15.2483,
-      "lng": 106.6256
+      "lat": 10.7094,
+      "lng": 105.11
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -59163,8 +59163,8 @@
       "dia_chi_day_du": "641 Hồ Tùng Mậu, Phường Phú An, Thành phố Long Xuyên, An Giang"
     },
     "toa_do": {
-      "lat": 12.6208,
-      "lng": 108.4764
+      "lat": 10.7105,
+      "lng": 105.1114
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -59262,8 +59262,8 @@
       "dia_chi_day_du": "69 Lý Thái Tổ, Phường Tân Phú, Thành phố Châu Đốc, An Giang"
     },
     "toa_do": {
-      "lat": 17.6848,
-      "lng": 105.0447
+      "lat": 10.7116,
+      "lng": 105.1128
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -59365,8 +59365,8 @@
       "dia_chi_day_du": "577 Tôn Đức Thắng, Phường Bình Hòa, Thành phố Long Xuyên, An Giang"
     },
     "toa_do": {
-      "lat": 22.9813,
-      "lng": 103.5256
+      "lat": 10.7127,
+      "lng": 105.1142
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -59468,8 +59468,8 @@
       "dia_chi_day_du": "910 Phan Đình Phùng, Phường An Hòa, Thành phố Châu Đốc, An Giang"
     },
     "toa_do": {
-      "lat": 13.1584,
-      "lng": 108.5877
+      "lat": 10.7138,
+      "lng": 105.1156
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -59571,8 +59571,8 @@
       "dia_chi_day_du": "406 Nguyễn Huệ, Phường An Phú, Thành phố Châu Đốc, An Giang"
     },
     "toa_do": {
-      "lat": 10.6018,
-      "lng": 106.5681
+      "lat": 10.6962,
+      "lng": 105.117
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -59672,8 +59672,8 @@
       "dia_chi_day_du": "758 Nguyễn Đình Chiểu, Phường Lợi Hòa, Thành phố Châu Đốc, An Giang"
     },
     "toa_do": {
-      "lat": 15.5662,
-      "lng": 105.2666
+      "lat": 10.6973,
+      "lng": 105.1184
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [
@@ -59772,8 +59772,8 @@
       "dia_chi_day_du": "772 Phan Đình Phùng, Phường Thuận Phú, Thành phố Châu Đốc, An Giang"
     },
     "toa_do": {
-      "lat": 12.1655,
-      "lng": 103.6368
+      "lat": 10.6984,
+      "lng": 105.1198
     },
     "thong_tin_lien_he": {
       "so_dien_thoai": [

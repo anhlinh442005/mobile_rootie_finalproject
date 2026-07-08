@@ -61,6 +61,20 @@ public final class LocalSystemNotificationHelper {
             String navigateTo,
             String actionText
     ) {
+        dispatch(context, stableId, title, content, category, notificationType, navigateTo, actionText, false);
+    }
+
+    public static void dispatch(
+            Context context,
+            String stableId,
+            String title,
+            String content,
+            String category,
+            String notificationType,
+            String navigateTo,
+            String actionText,
+            boolean allowDuplicateToday
+    ) {
         if (context == null || stableId == null || stableId.trim().isEmpty()) {
             return;
         }
@@ -71,7 +85,7 @@ public final class LocalSystemNotificationHelper {
         }
 
         NotificationRepository repository = NotificationRepository.getInstance(appContext);
-        if (repository.hasNotificationId(stableId)) {
+        if (!allowDuplicateToday && repository.hasNotificationId(stableId)) {
             Log.d(TAG, "Notification already recorded today: " + stableId);
             return;
         }

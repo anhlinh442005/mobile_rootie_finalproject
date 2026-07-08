@@ -29,6 +29,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
+import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
@@ -936,7 +937,7 @@ public class ShopDetailFragment extends RootieFragment {
         Context ctx = getContext();
         if (ctx == null) return;
         SharedPreferences prefs = ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
-        boolean hasQuiz = prefs.contains("SAVED_USER_SKIN_TYPE");
+        boolean hasQuiz = ProfileSession.hasSavedSkinProfile(ctx);
 
         if (!hasQuiz) {
             binding.cvSkinCompatibility.setVisibility(View.VISIBLE);

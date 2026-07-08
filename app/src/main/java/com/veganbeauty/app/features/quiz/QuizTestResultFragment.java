@@ -19,26 +19,21 @@ import androidx.lifecycle.LifecycleOwnerKt;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
-import com.veganbeauty.app.data.local.RootieDatabase;
-import com.veganbeauty.app.data.local.entities.RewardPointEntity;
-import com.veganbeauty.app.databinding.QuizTestResultBinding;
-import com.veganbeauty.app.features.home.BottomNavHelper;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
-import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
+import com.veganbeauty.app.databinding.QuizTestResultBinding;
+import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.ai.SkinAiRoutineRecommender;
+import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
+import com.veganbeauty.app.features.weather.SkinWeatherProfileHelper;
 import com.veganbeauty.app.utils.CoinRewardDialogHelper;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +46,16 @@ import kotlinx.coroutines.Dispatchers;
 public class QuizTestResultFragment extends RootieFragment {
 
     private static final int QUIZ_REWARD_POINTS = 100;
+    public static final String ARG_FROM_SKIN_PROFILE = "FROM_SKIN_PROFILE";
+    public static final String ARG_IS_FIRST_TEST = "IS_FIRST_TEST";
+    public static final String ARG_SKIN_TYPE = "SKIN_TYPE_RESULT";
+    public static final String ARG_RECOMMENDATION = "RECOMMENDATION";
+    public static final String ARG_FLAGGED_GROUPS = "FLAGGED_GROUPS";
+    public static final String ARG_SENSITIVITY = "SENSITIVITY_PERCENT";
+    public static final String ARG_HYDRATION = "HYDRATION_PERCENT";
+    public static final String ARG_ELASTICITY = "ELASTICITY_PERCENT";
+    public static final String ARG_SEBUM = "SEBUM_PERCENT";
+    public static final String ARG_SKIN_AREAS = "SKIN_AREAS_DESC";
 
     private interface OnSkinProfileSavedListener {
         void onSaved(boolean rewardGranted, int rewardPoints);
@@ -72,33 +77,26 @@ public class QuizTestResultFragment extends RootieFragment {
 
     @Override
     public void setupUI(View view) {
-        SharedPreferences prefs = requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
-        String skinType = prefs.getString("SKIN_TYPE_RESULT", "Da thường");
-        String recommendation = prefs.getString("RECOMMENDATION", "Duy trì chế độ dưỡng ẩm cân bằng và làm sạch da dịu nhẹ hàng ngày.");
-        Set<String> flaggedSet = prefs.getStringSet("FLAGGED_GROUPS", new HashSet<>());
-        int sensitivity = prefs.getInt("SENSITIVITY_PERCENT", 50);
-        int hydration = prefs.getInt("HYDRATION_PERCENT", 50);
-        int elasticity = prefs.getInt("ELASTICITY_PERCENT", 75);
-        int sebum = prefs.getInt("SEBUM_PERCENT", 50);
+        if (binding == null) return;
+
+        Context ctx = requireContext();
+        SharedPreferences prefs = ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
+        Bundle args = getArguments();
+        boolean fromSkinProfile = args != null && args.getBoolean(ARG_FROM_SKIN_PROFILE, false);
+        boolean isFirstTest = args != null && args.getBoolean(ARG_IS_FIRST_TEST, false);
+
+        ReportSnapshot snapshot = resolveReportSnapshot(ctx, prefs, args, fromSkinProfile);
+        String skinType = snapshot.skinType;
+        String recommendation = snapshot.recommendation;
+        Set<String> flaggedSet = snapshot.flaggedGroups;
+        int sensitivity = snapshot.sensitivity;
+        int hydration = snapshot.hydration;
+        int elasticity = snapshot.elasticity;
+        int sebum = snapshot.sebum;
 
         binding.tvSkinTypeResult.setText(skinType);
         binding.tvRecommendation.setText(recommendation);
-
-        String skinDesc;
-        switch (skinType) {
-            case "Da dầu nhạy cảm": skinDesc = "Làn da của bạn có xu hướng tiết nhiều dầu ở vùng chữ T nhưng dễ dàng bị kích ứng, đỏ rát bởi các tác nhân môi trường hoặc mỹ phẩm mạnh."; break;
-            case "Da mụn": skinDesc = "Nền da dễ bị bít tắc lỗ chân lông, sinh nhân mụn đầu đen, mụn ẩn hoặc mụn viêm. Cần chú trọng làm sạch dịu nhẹ và kháng khuẩn."; break;
-            case "Da nhạy cảm": skinDesc = "Làn da có hàng rào bảo vệ mỏng yếu, dễ đỏ rát, châm chích khi thay đổi thời tiết hoặc sử dụng sản phẩm có cồn/hương liệu."; break;
-            case "Da khô": skinDesc = "Làn da thiếu hụt độ ẩm tự nhiên, thường xuyên có cảm giác căng chặt, bong tróc vảy nhỏ và dễ hình thành nếp nhăn sớm."; break;
-            case "Da dầu": skinDesc = "Lượng bã nhờn hoạt động quá mức gây bóng loáng toàn mặt, lỗ chân lông to và dễ bám bụi bẩn hình thành mụn."; break;
-            case "Da hỗn hợp": skinDesc = "Vùng chữ T (trán, mũi, cằm) tiết nhiều dầu nhờn, trong khi vùng chữ U (hai bên má) lại khô hoặc bình thường."; break;
-            case "Da thường": skinDesc = "Làn da lý tưởng với độ ẩm cân bằng, lỗ chân lông nhỏ, da mịn màng khỏe mạnh và ít khi gặp các vấn đề kích ứng."; break;
-            case "Da lão hóa": skinDesc = "Làn da bắt đầu xuất hiện các nếp nhăn nông sâu, độ đàn hồi kém, có thể có sạm nám và cần bổ sung chất chống oxy hóa mạnh."; break;
-            case "Da mất nước": skinDesc = "Da có thể tiết dầu nhưng bề mặt vẫn căng khô, thô ráp do thiếu hụt lượng nước trong tế bào biểu bì."; break;
-            case "Da dễ kích ứng": skinDesc = "Hàng rào bảo vệ da bị tổn thương nghiêm trọng, phản ứng tức thì với hầu hết các thành phần hoạt tính mạnh."; break;
-            default: skinDesc = "Làn da cần được chăm sóc cân bằng và bảo vệ hàng ngày với các sản phẩm phù hợp."; break;
-        }
-        binding.tvSkinTypeDesc.setText(skinDesc);
+        binding.tvSkinTypeDesc.setText(getSkinTypeDesc(skinType));
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
@@ -108,34 +106,48 @@ public class QuizTestResultFragment extends RootieFragment {
                         .addToBackStack(null)
                         .commit());
 
-        boolean canRetakeQuiz = ProfileSession.isQuizRewardEligible(requireContext());
-        binding.btnDone.setVisibility(canRetakeQuiz ? View.VISIBLE : View.GONE);
-        if (canRetakeQuiz) {
-            binding.btnDone.setOnClickListener(v ->
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, new QuizTestIntroFragment())
-                            .commit());
-        }
-
         String finalSkinType = skinType;
         String finalRecommendation = recommendation;
         Set<String> finalFlaggedSet = flaggedSet;
-        binding.btnSaveProfile.setOnClickListener(v ->
-                saveSkinProfile(prefs, finalSkinType, finalRecommendation, finalFlaggedSet, sensitivity, hydration, elasticity, sebum,
-                        this::onSaveProfileFinished));
 
-        boolean isFirstTest = getArguments() != null && getArguments().getBoolean("IS_FIRST_TEST", false);
-        if (isFirstTest) {
-            binding.llAiRoutineSection.setVisibility(View.VISIBLE);
+        binding.llAiRoutineSection.setVisibility(View.VISIBLE);
+        setupAiRoutineListeners(prefs, finalSkinType, finalRecommendation, finalFlaggedSet,
+                sensitivity, hydration, elasticity, sebum, fromSkinProfile);
+
+        if (fromSkinProfile) {
             binding.llFooterButtons.setVisibility(View.GONE);
-            setupAiRoutineListeners(prefs, finalSkinType, finalRecommendation, finalFlaggedSet, sensitivity, hydration, elasticity, sebum);
-            loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity);
+            binding.btnApplyRoutine.setVisibility(View.GONE);
+            binding.btnDone.setVisibility(View.GONE);
+        } else if (isFirstTest) {
+            binding.llFooterButtons.setVisibility(View.GONE);
+            binding.btnApplyRoutine.setVisibility(View.VISIBLE);
         } else {
-            binding.llAiRoutineSection.setVisibility(View.GONE);
+            boolean canRetakeQuiz = ProfileSession.isQuizRewardEligible(ctx);
             binding.llFooterButtons.setVisibility(View.VISIBLE);
-            binding.btnSaveProfile.setVisibility(View.GONE);
-            binding.btnSuggestRoutine.setVisibility(View.GONE);
+            binding.btnSaveProfile.setVisibility(View.VISIBLE);
+            binding.btnSuggestRoutine.setVisibility(View.VISIBLE);
+            binding.btnApplyRoutine.setVisibility(View.GONE);
+            binding.btnDone.setVisibility(canRetakeQuiz ? View.VISIBLE : View.GONE);
+            if (canRetakeQuiz) {
+                binding.btnDone.setOnClickListener(v ->
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.main_container, new QuizTestIntroFragment())
+                                .commit());
+            }
+            binding.btnSaveProfile.setOnClickListener(v ->
+                    saveSkinProfile(prefs, finalSkinType, finalRecommendation, finalFlaggedSet,
+                            sensitivity, hydration, elasticity, sebum, this::onSaveProfileFinished));
+            binding.btnSuggestRoutine.setOnClickListener(v -> {
+                if (binding.quizScroll != null && binding.llAiRoutineSection != null) {
+                    binding.quizScroll.smoothScrollTo(0, binding.llAiRoutineSection.getTop());
+                }
+                if (morningSteps.isEmpty() && eveningSteps.isEmpty()) {
+                    loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity, finalFlaggedSet);
+                }
+            });
         }
+
+        loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity, finalFlaggedSet);
 
         binding.cardAiAdvice.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
@@ -150,6 +162,137 @@ public class QuizTestResultFragment extends RootieFragment {
         });
 
         setupScrollHideHeader();
+    }
+
+    private static final class ReportSnapshot {
+        final String skinType;
+        final String recommendation;
+        final Set<String> flaggedGroups;
+        final int sensitivity;
+        final int hydration;
+        final int elasticity;
+        final int sebum;
+
+        ReportSnapshot(String skinType, String recommendation, Set<String> flaggedGroups,
+                       int sensitivity, int hydration, int elasticity, int sebum) {
+            this.skinType = skinType;
+            this.recommendation = recommendation;
+            this.flaggedGroups = flaggedGroups;
+            this.sensitivity = sensitivity;
+            this.hydration = hydration;
+            this.elasticity = elasticity;
+            this.sebum = sebum;
+        }
+    }
+
+    @NonNull
+    private ReportSnapshot resolveReportSnapshot(@NonNull Context ctx,
+                                                 @NonNull SharedPreferences prefs,
+                                                 @Nullable Bundle args,
+                                                 boolean fromSkinProfile) {
+        if (args != null && args.containsKey(ARG_SKIN_TYPE)) {
+            return snapshotFromArgs(args);
+        }
+        if (fromSkinProfile || ProfileSession.hasSavedSkinProfile(ctx)) {
+            return snapshotFromSavedProfile(ctx);
+        }
+        return snapshotFromQuizPrefs(prefs);
+    }
+
+    @NonNull
+    private ReportSnapshot snapshotFromArgs(@NonNull Bundle args) {
+        String skinType = args.getString(ARG_SKIN_TYPE, "Da thường");
+        String recommendation = args.getString(ARG_RECOMMENDATION,
+                "Duy trì chế độ dưỡng ẩm cân bằng và làm sạch da dịu nhẹ hàng ngày.");
+        ArrayList<String> flaggedList = args.getStringArrayList(ARG_FLAGGED_GROUPS);
+        Set<String> flaggedGroups = flaggedList != null ? new HashSet<>(flaggedList) : new HashSet<>();
+        return new ReportSnapshot(
+                skinType,
+                recommendation,
+                flaggedGroups,
+                args.getInt(ARG_SENSITIVITY, 50),
+                args.getInt(ARG_HYDRATION, 50),
+                args.getInt(ARG_ELASTICITY, 75),
+                args.getInt(ARG_SEBUM, 50)
+        );
+    }
+
+    @NonNull
+    private ReportSnapshot snapshotFromSavedProfile(@NonNull Context ctx) {
+        SkinWeatherProfileHelper.UserSkinProfile profile = SkinWeatherProfileHelper.load(ctx);
+        Set<String> flaggedGroups = profile.flaggedGroups != null
+                ? new HashSet<>(profile.flaggedGroups)
+                : new HashSet<>();
+        String skinType = profile.skinType != null && !profile.skinType.trim().isEmpty()
+                ? profile.skinType
+                : "Da thường";
+        String recommendation = profile.recommendation != null && !profile.recommendation.isEmpty()
+                ? profile.recommendation
+                : "Duy trì chế độ dưỡng ẩm cân bằng và làm sạch da dịu nhẹ hàng ngày.";
+        return new ReportSnapshot(
+                skinType,
+                recommendation,
+                flaggedGroups,
+                profile.sensitivity,
+                profile.hydration,
+                profile.elasticity,
+                profile.sebum
+        );
+    }
+
+    @NonNull
+    private ReportSnapshot snapshotFromQuizPrefs(@NonNull SharedPreferences prefs) {
+        Set<String> storedFlagged = prefs.getStringSet("FLAGGED_GROUPS", null);
+        Set<String> flaggedGroups = storedFlagged != null ? new HashSet<>(storedFlagged) : new HashSet<>();
+        return new ReportSnapshot(
+                prefs.getString("SKIN_TYPE_RESULT", "Da thường"),
+                prefs.getString("RECOMMENDATION",
+                        "Duy trì chế độ dưỡng ẩm cân bằng và làm sạch da dịu nhẹ hàng ngày."),
+                flaggedGroups,
+                prefs.getInt("SENSITIVITY_PERCENT", 50),
+                prefs.getInt("HYDRATION_PERCENT", 50),
+                prefs.getInt("ELASTICITY_PERCENT", 75),
+                prefs.getInt("SEBUM_PERCENT", 50)
+        );
+    }
+
+    @NonNull
+    private String getSkinTypeDesc(@Nullable String skinType) {
+        if (skinType == null || skinType.trim().isEmpty()) {
+            return "Làn da cần được chăm sóc cân bằng và bảo vệ hàng ngày với các sản phẩm phù hợp.";
+        }
+        String lower = skinType.toLowerCase(Locale.getDefault());
+        if (lower.contains("dầu") && lower.contains("nhạy cảm")) {
+            return "Làn da của bạn tiết nhiều dầu nhờn, lỗ chân lông to và rất dễ bị kích ứng, đỏ rát hoặc nổi mẩn khi gặp thành phần hoạt chất mạnh hoặc thay đổi thời tiết.";
+        }
+        if (lower.contains("khô") && lower.contains("nhạy cảm")) {
+            return "Làn da thiếu ẩm, thường xuyên bong tróc, căng rát và có hàng rào bảo vệ da yếu, cực kỳ nhạy cảm với cồn khô và hương liệu.";
+        }
+        if (lower.contains("mụn")) {
+            return "Nền da dễ bị bít tắc lỗ chân lông, sinh nhân mụn đầu đen, mụn ẩn hoặc mụn viêm. Cần chú trọng làm sạch dịu nhẹ và kháng khuẩn.";
+        }
+        if (lower.contains("mất nước")) {
+            return "Da có thể tiết dầu nhưng bề mặt vẫn căng khô, thô ráp do thiếu hụt lượng nước trong tế bào biểu bì.";
+        }
+        if (lower.contains("nhạy cảm") || lower.contains("kích ứng")) {
+            return "Làn da có hàng rào bảo vệ mỏng yếu, dễ đỏ rát, châm chích khi thay đổi thời tiết hoặc sử dụng sản phẩm có cồn/hương liệu.";
+        }
+        if (lower.contains("lão hóa")) {
+            return "Làn da bắt đầu xuất hiện các nếp nhăn nông sâu, độ đàn hồi kém, có thể có sạm nám và cần bổ sung chất chống oxy hóa mạnh.";
+        }
+        if (lower.contains("khô")) {
+            return "Làn da thiếu hụt độ ẩm tự nhiên, thường xuyên có cảm giác căng chặt, bong tróc vảy nhỏ và dễ hình thành nếp nhăn sớm.";
+        }
+        if (lower.contains("dầu")) {
+            return "Lượng bã nhờn hoạt động quá mức gây bóng loáng toàn mặt, lỗ chân lông to và dễ bám bụi bẩn hình thành mụn.";
+        }
+        if (lower.contains("hỗn hợp")) {
+            return "Vùng chữ T (trán, mũi, cằm) tiết nhiều dầu nhờn, trong khi vùng chữ U (hai bên má) lại khô hoặc bình thường.";
+        }
+        if (lower.contains("thường")) {
+            return "Làn da lý tưởng với độ ẩm cân bằng, lỗ chân lông nhỏ, da mịn màng khỏe mạnh và ít khi gặp các vấn đề kích ứng.";
+        }
+        return "Làn da cần được chăm sóc cân bằng và bảo vệ hàng ngày với các sản phẩm phù hợp.";
     }
 
     private void setupScrollHideHeader() {
@@ -359,7 +502,9 @@ public class QuizTestResultFragment extends RootieFragment {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void setupAiRoutineListeners(SharedPreferences prefs, String skinType, String recommendation, Set<String> flaggedSet, int sensitivity, int hydration, int elasticity, int sebum) {
+    private void setupAiRoutineListeners(SharedPreferences prefs, String skinType, String recommendation,
+                                         Set<String> flaggedSet, int sensitivity, int hydration,
+                                         int elasticity, int sebum, boolean fromSkinProfile) {
         binding.tabMorning.setOnClickListener(v -> {
             if (!isMorningTab) {
                 isMorningTab = true;
@@ -374,7 +519,12 @@ public class QuizTestResultFragment extends RootieFragment {
                 populateSteps();
             }
         });
-        binding.btnApplyRoutine.setOnClickListener(v -> saveSelectedStepsToProfile(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum));
+        binding.btnApplyRoutine.setOnClickListener(v ->
+                saveSelectedStepsToProfile(prefs, skinType, recommendation, flaggedSet, sensitivity, hydration, elasticity, sebum));
+        if (fromSkinProfile) {
+            binding.tvRetakeQuizInline.setVisibility(View.GONE);
+            return;
+        }
         boolean canRetakeQuiz = ProfileSession.isQuizRewardEligible(requireContext());
         binding.tvRetakeQuizInline.setVisibility(canRetakeQuiz ? View.VISIBLE : View.GONE);
         if (canRetakeQuiz) {
@@ -403,220 +553,66 @@ public class QuizTestResultFragment extends RootieFragment {
         }
     }
 
-    private void loadAiRoutine(String skinType, int hydration, int sebum, int sensitivity, int elasticity) {
-        if (GEMINI_API_KEY.trim().isEmpty() || GEMINI_API_KEY.equals("YOUR_GEMINI_API_KEY_HERE")) {
-            generateRuleBasedRoutine(skinType, hydration, sebum, sensitivity, elasticity);
-        } else {
-            fetchRoutineFromAi(skinType, hydration, sebum, sensitivity, elasticity);
-        }
-    }
-
-    private void fetchRoutineFromAi(String skinType, int hydration, int sebum, int sensitivity, int elasticity) {
+    private void loadAiRoutine(String skinType, int hydration, int sebum, int sensitivity, int elasticity, Set<String> flaggedSet) {
+        if (binding == null) return;
+        showRoutineLoading(true);
+        Context appContext = requireContext().getApplicationContext();
         LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
                 BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
+                    SkinAiRoutineRecommender.RoutinePlan plan = null;
                     try {
-                        String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY;
-                        URL url = new URL(urlString);
-                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                        connection.setRequestMethod("POST");
-                        connection.setRequestProperty("Content-Type", "application/json");
-                        connection.setConnectTimeout(12000);
-                        connection.setReadTimeout(12000);
-                        connection.setDoOutput(true);
-
-                        String prompt = "Bạn là trợ lý Rootie AI chuyên thiết kế chu trình dưỡng da thuần chay (skincare routine) phù hợp nhất với các chỉ số da người dùng.\n" +
-                                "Hãy phân tích chi tiết làn da người dùng có các chỉ số sau:\n" +
-                                "- Loại da: " + skinType + "\n" +
-                                "- Độ ẩm da: " + hydration + "%\n" +
-                                "- Chỉ số bã nhờn: " + sebum + "%\n" +
-                                "- Độ nhạy cảm da: " + sensitivity + "%\n" +
-                                "- Độ đàn hồi: " + elasticity + "%\n" +
-                                "\n" +
-                                "Hãy đề xuất một routine buổi sáng và routine buổi tối phù hợp nhất sử dụng các sản phẩm thuần chay (Ví dụ: Gel rửa mặt bí đao, Tinh chất bí đao, Thạch bí đao, Thạch hoa hồng dưỡng ẩm, Sữa rửa mặt nghệ Hưng Yên, Nước hoa hồng Cao Bằng, Nước tẩy trang sen Hậu Giang, Sữa chống nắng bí đao...).\n" +
-                                "Lưu ý: Giải thích lý do vì sao mỗi sản phẩm/bước dưỡng lại hoàn hảo cho các chỉ số cụ thể của làn da này.\n" +
-                                "\n" +
-                                "Trả về cấu trúc JSON chính xác như sau và KHÔNG kèm bất cứ ký tự nào khác ngoài JSON:\n" +
-                                "{\n" +
-                                "  \"assessment\": \"Một đoạn phân tích chi tiết, khoa học và ấm áp về tình trạng da của người dùng dựa trên độ ẩm, dầu nhờn và độ nhạy cảm.\",\n" +
-                                "  \"morning_steps\": [\n" +
-                                "    {\n" +
-                                "      \"name\": \"Tên bước (ví dụ: Sữa rửa mặt)\",\n" +
-                                "      \"product\": \"Tên sản phẩm thuần chay (ví dụ: Gel rửa mặt bí đao)\",\n" +
-                                "      \"reason\": \"Giải thích chi tiết tại sao phù hợp (ví dụ: Giúp làm sạch sâu bã nhờn ở mức " + sebum + "% nhưng giữ ẩm nhẹ nhàng cho da nhạy cảm)\"\n" +
-                                "    }\n" +
-                                "  ],\n" +
-                                "  \"evening_steps\": [\n" +
-                                "    {\n" +
-                                "      \"name\": \"Tên bước\",\n" +
-                                "      \"product\": \"Tên sản phẩm\",\n" +
-                                "      \"reason\": \"Giải thích chi tiết tại sao phù hợp\"\n" +
-                                "    }\n" +
-                                "  ]\n" +
-                                "}";
-
-                        JSONObject requestJson = new JSONObject();
-                        JSONArray partsArray = new JSONArray();
-                        partsArray.put(new JSONObject().put("text", prompt));
-                        JSONArray contentsArray = new JSONArray();
-                        contentsArray.put(new JSONObject().put("parts", partsArray));
-                        requestJson.put("contents", contentsArray);
-
-                        JSONObject systemInstruction = new JSONObject();
-                        JSONArray systemParts = new JSONArray();
-                        systemParts.put(new JSONObject().put("text", "Bạn chỉ trả về duy nhất chuỗi JSON hợp lệ theo cấu trúc được yêu cầu."));
-                        systemInstruction.put("parts", systemParts);
-                        requestJson.put("systemInstruction", systemInstruction);
-
-                        JSONObject generationConfig = new JSONObject();
-                        generationConfig.put("temperature", 0.3);
-                        generationConfig.put("maxOutputTokens", 2000);
-                        requestJson.put("generationConfig", generationConfig);
-
-                        try (OutputStream os = connection.getOutputStream()) {
-                            byte[] input = requestJson.toString().getBytes("UTF-8");
-                            os.write(input, 0, input.length);
-                        }
-
-                        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                            StringBuilder responseStr = new StringBuilder(); String line;
-                            while ((line = br.readLine()) != null) responseStr.append(line);
-                            br.close();
-
-                            JSONObject json = new JSONObject(responseStr.toString());
-                            JSONArray candidates = json.getJSONArray("candidates");
-                            if (candidates.length() > 0) {
-                                JSONObject content = candidates.getJSONObject(0).getJSONObject("content");
-                                JSONArray parts = content.getJSONArray("parts");
-                                if (parts.length() > 0) {
-                                    String textResult = parts.getJSONObject(0).getString("text").trim();
-
-                                    String cleanJson = textResult;
-                                    if (textResult.startsWith("```json")) cleanJson = textResult.substring(7, textResult.lastIndexOf("```")).trim();
-                                    else if (textResult.startsWith("```")) cleanJson = textResult.substring(3, textResult.lastIndexOf("```")).trim();
-
-                                    JSONObject routineObj = new JSONObject(cleanJson);
-                                    String assessmentStr = routineObj.optString("assessment", "");
-                                    JSONArray morningJson = routineObj.getJSONArray("morning_steps");
-                                    JSONArray eveningJson = routineObj.getJSONArray("evening_steps");
-
-                                    BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
-                                        try {
-                                            morningSteps.clear();
-                                            for (int i = 0; i < morningJson.length(); i++) {
-                                                JSONObject step = morningJson.getJSONObject(i);
-                                                morningSteps.add(new AiSkincareStep(i, step.getString("name"), step.getString("product"), step.getString("reason"), true));
-                                            }
-
-                                            eveningSteps.clear();
-                                            for (int i = 0; i < eveningJson.length(); i++) {
-                                                JSONObject step = eveningJson.getJSONObject(i);
-                                                eveningSteps.add(new AiSkincareStep(i, step.getString("name"), step.getString("product"), step.getString("reason"), true));
-                                            }
-
-                                            if (!assessmentStr.isEmpty()) {
-                                                binding.tvRecommendation.setText(assessmentStr);
-                                                requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
-                                                        .edit().putString("RECOMMENDATION", assessmentStr).apply();
-                                            }
-
-                                            populateSteps();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            generateRuleBasedRoutine(skinType, hydration, sebum, sensitivity, elasticity);
-                                        }
-                                        return kotlin.Unit.INSTANCE;
-                                    }, c2);
-                                    return kotlin.Unit.INSTANCE;
-                                }
-                            }
-                        }
-
-                        BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
-                            generateRuleBasedRoutine(skinType, hydration, sebum, sensitivity, elasticity);
-                            return kotlin.Unit.INSTANCE;
-                        }, c2);
+                        plan = SkinAiRoutineRecommender.recommend(
+                                appContext, skinType, hydration, sebum, sensitivity, elasticity,
+                                flaggedSet, GEMINI_API_KEY);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
-                            generateRuleBasedRoutine(skinType, hydration, sebum, sensitivity, elasticity);
-                            return kotlin.Unit.INSTANCE;
-                        }, c2);
                     }
+                    SkinAiRoutineRecommender.RoutinePlan finalPlan = plan;
+                    BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
+                        if (!isAdded() || binding == null) return kotlin.Unit.INSTANCE;
+                        showRoutineLoading(false);
+                        if (finalPlan != null) {
+                            applyRoutinePlan(finalPlan);
+                        }
+                        return kotlin.Unit.INSTANCE;
+                    }, c2);
                     return kotlin.Unit.INSTANCE;
                 }, cont));
     }
 
-    private void generateRuleBasedRoutine(String skinType, int hydration, int sebum, int sensitivity, int elasticity) {
-        String lowerSkinType = skinType.toLowerCase();
+    private void showRoutineLoading(boolean loading) {
+        if (binding == null) return;
+        if (!loading) return;
+        binding.llAiRoutineStepsContainer.removeAllViews();
+        TextView loadingView = new TextView(requireContext());
+        loadingView.setText("Rootie đang phân tích da và gợi ý routine phù hợp...");
+        loadingView.setTextColor(Color.parseColor("#677559"));
+        loadingView.setTextSize(14f);
+        loadingView.setPadding(0, 24, 0, 24);
+        binding.llAiRoutineStepsContainer.addView(loadingView);
+    }
+
+    private void applyRoutinePlan(SkinAiRoutineRecommender.RoutinePlan plan) {
+        if (plan == null || binding == null) return;
+
         morningSteps.clear();
-        eveningSteps.clear();
-
-        if (lowerSkinType.contains("dầu") || lowerSkinType.contains("mụn") || lowerSkinType.contains("hỗn hợp thiên dầu")) {
-            morningSteps.addAll(Arrays.asList(
-                    new AiSkincareStep(0, "Sữa rửa mặt", "Gel rửa mặt Bí đao", "Loại bỏ dầu thừa (" + sebum + "%) nhẹ nhàng mà không làm khô căng da.", true),
-                    new AiSkincareStep(1, "Nước cân bằng", "Nước bí đao cân bằng da", "Làm sạch sâu bã nhờn vùng chữ T và kháng viêm ngừa mụn.", true),
-                    new AiSkincareStep(2, "Tinh chất", "Tinh chất bí đao", "Chứa 7% Niacinamide giúp kiềm dầu tối đa và thu nhỏ lỗ chân lông.", true),
-                    new AiSkincareStep(3, "Gel dưỡng ẩm", "Thạch bí đao dưỡng ẩm", "Cấp ẩm mỏng nhẹ dạng gel-cream, không gây bít tắc nang lông.", true),
-                    new AiSkincareStep(4, "Chống nắng", "Sữa chống nắng bí đao", "Bảo vệ tối ưu khỏi tia UV với màng lọc kiềm dầu thoáng nhẹ.", true)
-            ));
-
-            eveningSteps.addAll(Arrays.asList(
-                    new AiSkincareStep(0, "Tẩy trang", "Nước tẩy trang bí đao", "Hòa tan dầu thừa, bụi bẩn PM2.5 và kem chống nắng sâu trong lỗ chân lông.", true),
-                    new AiSkincareStep(1, "Sữa rửa mặt", "Gel rửa mặt bí đao", "Làm sạch sâu da mặt để chuẩn bị cho các bước dưỡng tiếp theo.", true),
-                    new AiSkincareStep(2, "Nước cân bằng", "Nước bí đao cân bằng da", "Cân bằng lại pH da và làm dịu nhanh các nốt mụn sưng đỏ.", true),
-                    new AiSkincareStep(3, "Tinh chất", "Tinh chất bí đao", "Tập trung điều trị mụn ẩn và làm mờ thâm mụn ban đêm.", true),
-                    new AiSkincareStep(4, "Dưỡng ẩm khóa nước", "Thạch bí đao dưỡng ẩm", "Giữ nước khóa ẩm dịu nhẹ giúp da phục hồi lúc ngủ.", true)
-            ));
-        } else if (lowerSkinType.contains("khô")) {
-            morningSteps.addAll(Arrays.asList(
-                    new AiSkincareStep(0, "Sữa rửa mặt", "Sữa rửa mặt nghệ Hưng Yên", "Làm sạch dịu nhẹ không bọt, bổ sung beta-carotene dưỡng ẩm.", true),
-                    new AiSkincareStep(1, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Cấp nước bù ẩm tức thì cho lớp sừng khô ráp.", true),
-                    new AiSkincareStep(2, "Tinh chất dưỡng sáng", "Tinh chất nghệ Hưng Yên", "Cung cấp vitamin C và curcumin chống oxy hóa, sáng da mặt.", true),
-                    new AiSkincareStep(3, "Kem dưỡng ẩm", "Thạch hoa hồng dưỡng ẩm", "Nuôi dưỡng làn da căng mướt suốt 24 giờ liên tục.", true),
-                    new AiSkincareStep(4, "Chống nắng", "Sữa chống nắng bí đao", "Bảo vệ màng ẩm của da khô khỏi ánh nắng trực tiếp.", true)
-            ));
-
-            eveningSteps.addAll(Arrays.asList(
-                    new AiSkincareStep(0, "Tẩy trang", "Nước tẩy trang hoa hồng Cao Bằng", "Tẩy trang dịu nhẹ đồng thời cấp ẩm sâu cho da không bị khô ráp.", true),
-                    new AiSkincareStep(1, "Sữa rửa mặt", "Sữa rửa mặt nghệ Hưng Yên", "Làm sạch sâu bụi bẩn mà vẫn giữ lại độ ẩm tự nhiên cho da.", true),
-                    new AiSkincareStep(2, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Cân bằng độ pH và bù nước tức thì sau khi rửa mặt.", true),
-                    new AiSkincareStep(3, "Tinh chất phục hồi", "Tinh chất hoa hồng Cao Bằng", "Bổ sung acid amin nuôi dưỡng sâu các tế bào da mất nước.", true),
-                    new AiSkincareStep(4, "Kem dưỡng đêm", "Thạch hoa hồng dưỡng ẩm", "Khóa dưỡng chất ban đêm giúp da mướt mịn căng tràn vào sáng hôm sau.", true)
-            ));
-        } else if (lowerSkinType.contains("nhạy cảm") || lowerSkinType.contains("dễ kích ứng")) {
-            morningSteps.addAll(Arrays.asList(
-                    new AiSkincareStep(0, "Sữa rửa mặt", "Sữa rửa mặt sen Hậu Giang", "Bảo vệ màng lipid nhạy cảm (" + sensitivity + "%), làm sạch không sulfate.", true),
-                    new AiSkincareStep(1, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Làm dịu nhanh cảm giác châm chích và đỏ rát.", true),
-                    new AiSkincareStep(2, "Tinh chất phục hồi", "Tinh chất rau má", "Kích thích sinh collagen, phục hồi hàng rào bảo vệ bị suy yếu.", true),
-                    new AiSkincareStep(3, "Dưỡng ẩm làm dịu", "Thạch bí đao dưỡng ẩm", "Làm mát và dưỡng ẩm dịu nhẹ cho da nhạy cảm cực kỳ an toàn.", true),
-                    new AiSkincareStep(4, "Chống nắng vật lý", "Sữa chống nắng bí đao", "Bảo vệ da dịu nhẹ nhất khỏi tia UV mà không gây bí hay ngứa.", true)
-            ));
-
-            eveningSteps.addAll(Arrays.asList(
-                    new AiSkincareStep(0, "Tẩy trang", "Nước tẩy trang sen Hậu Giang", "Công thức Micellar làm sạch nhẹ nhàng không gây rát da.", true),
-                    new AiSkincareStep(1, "Sữa rửa mặt", "Sữa rửa mặt sen Hậu Giang", "Sạch sâu dịu nhẹ bảo vệ da khỏi kích ứng.", true),
-                    new AiSkincareStep(2, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Bù ẩm và cân bằng lại trạng thái ổn định cho da.", true),
-                    new AiSkincareStep(3, "Tinh chất", "Tinh chất rau má", "Hỗ trợ làm lành nhanh các tổn thương của biểu bì nhạy cảm ban đêm.", true),
-                    new AiSkincareStep(4, "Khóa ẩm dịu mát", "Thạch bí đao dưỡng ẩm", "Khóa ẩm dịu nhẹ không cồn, không hương liệu cho da nhạy cảm.", true)
-            ));
-        } else {
-            morningSteps.addAll(Arrays.asList(
-                    new AiSkincareStep(0, "Sữa rửa mặt", "Gel rửa mặt cà phê", "Rửa mặt sảng khoái với hạt cà phê siêu mịn khơi dậy năng lượng da.", true),
-                    new AiSkincareStep(1, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Cấp ẩm dị mọc và cân bằng độ pH lý tưởng.", true),
-                    new AiSkincareStep(2, "Tinh chất dưỡng sáng", "Tinh chất nghệ Hưng Yên", "Làm đều màu da, mờ thâm mụn, chống oxy hóa.", true),
-                    new AiSkincareStep(3, "Dưỡng ẩm", "Thạch hoa hồng dưỡng ẩm", "Dưỡng da căng mướt mịn màng tự nhiên.", true),
-                    new AiSkincareStep(4, "Chống nắng", "Sữa chống nắng bí đao", "Bảo vệ da tối ưu dưới tia UV gay gắt.", true)
-            ));
-
-            eveningSteps.addAll(Arrays.asList(
-                    new AiSkincareStep(0, "Tẩy trang", "Nước tẩy trang sen Hậu Giang", "Sạch thoáng bụi bẩn bã nhờn sau ngày dài.", true),
-                    new AiSkincareStep(1, "Sữa rửa mặt", "Gel rửa mặt cà phê", "Làm sạch sâu lỗ chân lông nhẹ nhàng.", true),
-                    new AiSkincareStep(2, "Nước cân bằng", "Nước hoa hồng Cao Bằng", "Khôi phục lại màng ẩm sau khi rửa mặt.", true),
-                    new AiSkincareStep(3, "Tinh chất dưỡng sáng", "Tinh chất nghệ Hưng Yên", "Làm mờ thâm mụn sạm màu hiệu quả ban đêm.", true),
-                    new AiSkincareStep(4, "Dưỡng ẩm ban đêm", "Thạch hoa hồng dưỡng ẩm", "Khóa ẩm giúp da mềm mịn và rạng rỡ vào sáng hôm sau.", true)
-            ));
+        for (int i = 0; i < plan.morningSteps.size(); i++) {
+            SkinAiRoutineRecommender.RoutineStep step = plan.morningSteps.get(i);
+            morningSteps.add(new AiSkincareStep(i, step.stepName, step.productName, step.reason, true));
         }
+
+        eveningSteps.clear();
+        for (int i = 0; i < plan.eveningSteps.size(); i++) {
+            SkinAiRoutineRecommender.RoutineStep step = plan.eveningSteps.get(i);
+            eveningSteps.add(new AiSkincareStep(i, step.stepName, step.productName, step.reason, true));
+        }
+
+        if (plan.assessment != null && !plan.assessment.trim().isEmpty()) {
+            binding.tvRecommendation.setText(plan.assessment);
+            requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
+                    .edit().putString("RECOMMENDATION", plan.assessment).apply();
+        }
+
         populateSteps();
     }
 

@@ -37,7 +37,8 @@ import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.AccountProfileNotiSettingBinding;
-import com.veganbeauty.app.features.weather.DailySkinWeatherReceiver;
+import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 import com.veganbeauty.app.features.weather.DailySkinWeatherScheduler;
 
 import java.util.Arrays;
@@ -46,6 +47,7 @@ import java.util.List;
 public class AccountProfileNotiSettingFragment extends RootieFragment {
 
     private AccountProfileNotiSettingBinding binding;
+    private SkinDetailHeaderScrollHelper headerScrollHelper;
     private ActivityResultLauncher<String> requestNotiPermLauncher;
 
     @Override
@@ -79,7 +81,7 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
     public void setupUI(View view) {
         Context ctx = requireContext();
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.btnNotification.setOnClickListener(v ->
+        binding.layoutNotification.getRoot().setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                         .addToBackStack(null).commit());
@@ -112,8 +114,19 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
 
         loadSwitchesState();
         setupSwitchListeners();
-        highlightBottomTab(view);
+        BottomNavHelper.setup(this, view, R.id.nav_account, tabId -> BottomNavHelper.navigate(this, tabId));
+        setupScrollHideHeader();
         syncAllSettingsEnabledState();
+    }
+
+    private void setupScrollHideHeader() {
+        int bottomPadding = (int) requireContext().getResources().getDimension(R.dimen.home_nav_bar_height);
+        headerScrollHelper = new SkinDetailHeaderScrollHelper(
+                binding.rlHeader,
+                binding.scrollContent,
+                bottomPadding
+        );
+        headerScrollHelper.attachToNestedScrollView(binding.scrollContent);
     }
 
     private void loadSwitchesState() {
@@ -166,7 +179,10 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
             boolean next = !ProfileSession.isSkinWeatherNotiEnabled(ctx);
             ProfileSession.setSkinWeatherNotiEnabled(ctx, next);
             updateSwitchUI(binding.switchSkinWeatherContainer, binding.switchSkinWeatherThumb, next);
-            if (next) { DailySkinWeatherScheduler.scheduleDailyNotification(ctx); ctx.sendBroadcast(new Intent(ctx, DailySkinWeatherReceiver.class)); }
+            if (next) {
+                DailySkinWeatherScheduler.enableAndSync(ctx);
+                Toast.makeText(ctx, "Đã bật nhắc thời tiết & da (07:00 mỗi sáng)", Toast.LENGTH_SHORT).show();
+            }
             else DailySkinWeatherScheduler.cancelDailyNotification(ctx);
         });
         setupSimpleSwitch(binding.switchExpiryNotiContainer, binding.switchExpiryNotiThumb, () -> ProfileSession.isNotiExpiryEnabled(ctx), val -> {
@@ -290,14 +306,19 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
         try { nm.notify(101, builder.build()); } catch (SecurityException e) { e.printStackTrace(); }
     }
 
-    private void highlightBottomTab(View view) {
-        com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        if (binding != null) { loadSwitchesState(); syncAllSettingsEnabledState(); }
+        if (binding != null) {
+            loadSwitchesState();
+            syncAllSettingsEnabledState();
+        }
+        Context ctx = getContext();
+        if (ctx != null
+                && ProfileSession.isNotiEnabled(ctx)
+                && ProfileSession.isSkinWeatherNotiEnabled(ctx)) {
+            DailySkinWeatherScheduler.scheduleOnly(ctx);
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Tasks;
@@ -281,7 +282,7 @@ public class SyncDataHelper {
     }
 
     private static void propagateAvatarToCommunityBlocking(Context context, String avatarUrl) {
-        if (!isRemoteAvatarUrl(avatarUrl)) {
+        if (!isRemoteAvatarUrl(avatarUrl) && !SampleAvatarCatalog.isSampleAvatarRef(avatarUrl)) {
             return;
         }
         try {
@@ -376,14 +377,45 @@ public class SyncDataHelper {
                 return false;
             }
 
+            return applyStoredAvatarRefBlocking(context, secureUrl.trim());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /** Lưu avatar mẫu (rootie_sample:*) — không upload Firebase Storage. */
+    public static void applySampleAvatar(Context context, @NonNull String sampleId, AvatarSyncCallback callback) {
+        Context appCtx = context.getApplicationContext();
+        String avatarRef = SampleAvatarCatalog.toAvatarRef(sampleId);
+        AVATAR_EXECUTOR.execute(() -> {
+            boolean ok = applyStoredAvatarRefBlocking(appCtx, avatarRef);
+            final String message = ok ? null : "Không thể lưu avatar mẫu";
+            runOnMainThread(() -> {
+                if (callback != null) {
+                    callback.onComplete(ok, ok ? avatarRef : null, message);
+                }
+            });
+        });
+    }
+
+    private static boolean applyStoredAvatarRefBlocking(Context context, String avatarRef) {
+        try {
+            if (avatarRef == null || avatarRef.trim().isEmpty()) {
+                return false;
+            }
+            if (!isRemoteAvatarUrl(avatarRef) && !SampleAvatarCatalog.isSampleAvatarRef(avatarRef)) {
+                return false;
+            }
+
             Context appCtx = context.getApplicationContext();
             String userId = resolveCurrentUserId(appCtx);
             if (userId == null || userId.trim().isEmpty()) {
                 return false;
             }
 
-            String remoteUrl = secureUrl.trim();
-            ProfileSession.setAvatar(appCtx, remoteUrl);
+            String storedRef = avatarRef.trim();
+            ProfileSession.setAvatar(appCtx, storedRef);
 
             UserEntity user = ProfileSessionHelper.findCurrentUser(appCtx);
             if (user == null) {
@@ -394,17 +426,23 @@ public class SyncDataHelper {
                         ProfileSession.getEmail(appCtx) != null ? ProfileSession.getEmail(appCtx) : "",
                         ProfileSession.getPhone(appCtx) != null ? ProfileSession.getPhone(appCtx) : "",
                         "",
-                        remoteUrl,
+                        storedRef,
                         ProfileSession.getPrimaryImage(appCtx)
                 );
             } else {
-                user.setAvatar(remoteUrl);
+                user.setAvatar(storedRef);
             }
 
             RootieDatabase.getDatabase(appCtx).userDao().insertUserSync(user);
             propagateCurrentUserToCommunityUsersBlocking(appCtx, user);
-            propagateAvatarToCommunityBlocking(appCtx, remoteUrl);
+            propagateAvatarToCommunityBlocking(appCtx, storedRef);
             ProfileUpdateNotifier.notifyUpdated();
+
+            try {
+                new FirestoreService().updateUserAvatar(userId.trim(), storedRef);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();

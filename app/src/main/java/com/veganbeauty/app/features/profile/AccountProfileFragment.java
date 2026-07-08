@@ -1,10 +1,13 @@
 package com.veganbeauty.app.features.profile;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.FlowLiveDataConversions;
 import androidx.lifecycle.LifecycleOwnerKt;
 
@@ -25,6 +31,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
+import com.veganbeauty.app.data.local.entities.StoreEntity;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.databinding.AccountProfileBinding;
 import com.veganbeauty.app.features.account.checkin.AccountCheckinFragment;
@@ -37,12 +44,15 @@ import com.veganbeauty.app.features.home.welcome.HomeWelcomeActivity;
 import com.veganbeauty.app.features.myskin.BookingHistoryFragment;
 import com.veganbeauty.app.features.quiz.QuizTestIntroFragment;
 import com.veganbeauty.app.features.routine.SkinReminderFragment;
+import com.veganbeauty.app.features.shop.store.ShopStoreDetailFragment;
+import com.veganbeauty.app.features.shop.store.StoreProximityHelper;
 import com.veganbeauty.app.features.weather.SkinWeatherForecastFragment;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.utils.AvatarLoader;
 import com.veganbeauty.app.utils.NavAppUtils;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.utils.ProfileUpdateNotifier;
+import com.veganbeauty.app.utils.RootieLocationHelper;
 import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.util.List;
@@ -56,6 +66,22 @@ public class AccountProfileFragment extends RootieFragment {
 
     private AccountProfileBinding binding;
     private OrderRepository orderRepository;
+    @Nullable
+    private StoreEntity nearestStore;
+    @Nullable
+    private Location latestUserLocation;
+
+    private final ActivityResultLauncher<String[]> requestLocationLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
+                Boolean fineGranted = permissions.get(Manifest.permission.ACCESS_FINE_LOCATION);
+                Boolean coarseGranted = permissions.get(Manifest.permission.ACCESS_COARSE_LOCATION);
+                if (Boolean.TRUE.equals(fineGranted) || Boolean.TRUE.equals(coarseGranted)) {
+                    startNearestStoreLocationUpdates();
+                } else if (binding != null && isAdded()) {
+                    binding.tvNearestStoreHint.setText("Vui lòng cho phép định vị để biết chi nhánh gần bạn nhất");
+                }
+            }
+    );
 
     private final ProfileUpdateNotifier.Listener profileUpdateListener = () -> refreshProfileUiFromSession();
 
@@ -201,8 +227,10 @@ public class AccountProfileFragment extends RootieFragment {
 
         View pinParent = (View) view.findViewById(R.id.iv_pin).getParent();
         if (pinParent != null) {
-            pinParent.setOnClickListener(v -> Toast.makeText(getContext(), "Chọn địa chỉ giao hàng", Toast.LENGTH_SHORT).show());
+            pinParent.setOnClickListener(v -> openNearestStoreDetail());
         }
+
+        updateNearestStoreAreaHint();
 
         NavAppUtils.setupNavApp(this, view, R.id.nav_account);
         ProfileUpdateNotifier.addListener(profileUpdateListener);
@@ -476,6 +504,7 @@ public class AccountProfileFragment extends RootieFragment {
         if (binding == null) {
             return;
         }
+        startNearestStoreLocationUpdates();
         if (ProfileSession.isLoggedIn(requireContext())) {
             Context ctx = requireContext();
             refreshProfileUiFromSession();
@@ -495,7 +524,129 @@ public class AccountProfileFragment extends RootieFragment {
     }
 
     @Override
+    public void onPause() {
+        stopNearestStoreLocationUpdates();
+        super.onPause();
+    }
+
+    private void updateNearestStoreAreaHint() {
+        if (binding == null || !isAdded()) {
+            return;
+        }
+        Context ctx = requireContext();
+        if (!StoreProximityHelper.hasLocationPermission(ctx)) {
+            binding.tvNearestStoreHint.setText("Vui lòng cho phép định vị để biết chi nhánh gần bạn nhất");
+            requestLocationPermissionIfNeeded();
+            return;
+        }
+        if (!RootieLocationHelper.isLocationEnabled(ctx)) {
+            binding.tvNearestStoreHint.setText("Vui lòng bật GPS để định vị chính xác hơn");
+            return;
+        }
+        binding.tvNearestStoreHint.setText("Đang định vị chính xác (GPS)...");
+        Location cached = RootieLocationHelper.getBestAvailableLocation(ctx);
+        if (cached != null) {
+            resolveNearestStoreFromLocation(cached);
+        }
+        RootieLocationHelper.requestAccurateLocation(ctx, this::resolveNearestStoreFromLocation);
+    }
+
+    private void requestLocationPermissionIfNeeded() {
+        if (!isAdded()) {
+            return;
+        }
+        Context ctx = requireContext();
+        if (StoreProximityHelper.hasLocationPermission(ctx)) {
+            return;
+        }
+        int finePermission = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION);
+        int coarsePermission = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (finePermission != PackageManager.PERMISSION_GRANTED
+                && coarsePermission != PackageManager.PERMISSION_GRANTED) {
+            requestLocationLauncher.launch(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
+        }
+    }
+
+    private void startNearestStoreLocationUpdates() {
+        if (binding == null || !isAdded()) {
+            return;
+        }
+        Context ctx = requireContext();
+        if (!StoreProximityHelper.hasLocationPermission(ctx)) {
+            requestLocationPermissionIfNeeded();
+            updateNearestStoreAreaHint();
+            return;
+        }
+        updateNearestStoreAreaHint();
+        RootieLocationHelper.startHighAccuracyUpdates(ctx, this::resolveNearestStoreFromLocation);
+    }
+
+    private void stopNearestStoreLocationUpdates() {
+        if (!isAdded()) {
+            return;
+        }
+        RootieLocationHelper.stopHighAccuracyUpdates(requireContext().getApplicationContext());
+    }
+
+    private void resolveNearestStoreFromLocation(@Nullable Location location) {
+        if (binding == null || !isAdded()) {
+            return;
+        }
+        if (location == null) {
+            latestUserLocation = null;
+            nearestStore = null;
+            binding.tvNearestStoreHint.setText(
+                    "Không xác định được vị trí. Hãy bật GPS và thử lại"
+            );
+            return;
+        }
+        latestUserLocation = location;
+        Context appContext = requireContext().getApplicationContext();
+        new Thread(() -> {
+            StoreProximityHelper.NearestStoreResult result =
+                    StoreProximityHelper.findNearestStore(appContext, location);
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(() -> {
+                if (binding == null || !isAdded()) {
+                    return;
+                }
+                if (result != null && result.store != null) {
+                    nearestStore = result.store;
+                    binding.tvNearestStoreHint.setText(
+                            StoreProximityHelper.formatNearestAreaLabel(result, location)
+                    );
+                } else {
+                    nearestStore = null;
+                    binding.tvNearestStoreHint.setText(
+                            "Không xác định được chi nhánh gần bạn. Vui lòng thử lại"
+                    );
+                }
+            });
+        }).start();
+    }
+
+    private void openNearestStoreDetail() {
+        if (nearestStore == null) {
+            Toast.makeText(getContext(), "Đang xác định chi nhánh gần bạn...", Toast.LENGTH_SHORT).show();
+            updateNearestStoreAreaHint();
+            return;
+        }
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.main_container, ShopStoreDetailFragment.newInstance(nearestStore))
+                .addToBackStack(null)
+                .commitAllowingStateLoss();
+    }
+
+    @Override
     public void onDestroyView() {
+        nearestStore = null;
+        latestUserLocation = null;
+        stopNearestStoreLocationUpdates();
         ProfileUpdateNotifier.removeListener(profileUpdateListener);
         super.onDestroyView();
         binding = null;

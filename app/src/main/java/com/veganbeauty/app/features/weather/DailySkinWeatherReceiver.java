@@ -4,11 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.util.Log;
 
 import com.veganbeauty.app.BuildConfig;
 import com.veganbeauty.app.data.local.ProfileSession;
+import com.veganbeauty.app.features.weather.SkinWeatherProfileHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,18 +30,36 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
 
         boolean enabled = ProfileSession.isSkinWeatherNotiEnabled(appContext);
         boolean notiAllowed = ProfileSession.isNotiEnabled(appContext);
-        if (!enabled || !notiAllowed || !com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.canPost(appContext)) {
-            Log.d("DailySkinWeatherReceiver", "Daily skin weather notification is disabled or cannot be posted. Rescheduling and returning.");
+        if (!enabled) {
+            Log.d("DailySkinWeatherReceiver", "Skin weather notification disabled — cancelling alarm.");
+            DailySkinWeatherScheduler.cancelDailyNotification(appContext);
+            pendingResult.finish();
+            return;
+        }
+        if (!notiAllowed || !com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.canPost(appContext)) {
+            Log.d("DailySkinWeatherReceiver", "Cannot post now — will retry tomorrow at 07:00.");
+            DailySkinWeatherScheduler.scheduleDailyNotification(appContext);
+            pendingResult.finish();
+            return;
+        }
+
+        final boolean forceDelivery = intent != null
+                && intent.getBooleanExtra(DailySkinWeatherScheduler.EXTRA_FORCE_DELIVERY, false);
+
+        if (!WeatherNotificationGuard.tryBeginDelivery(appContext, forceDelivery)) {
+            Log.d("DailySkinWeatherReceiver", "Weather notification already sent today — skip.");
             DailySkinWeatherScheduler.scheduleDailyNotification(appContext);
             pendingResult.finish();
             return;
         }
 
         new Thread(() -> {
+            boolean delivered = false;
             try {
                 SharedPreferences prefs = appContext.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
-                String skinType = prefs.getString("SAVED_USER_SKIN_TYPE", "Da dầu nhạy cảm");
-                if (skinType == null) skinType = "Da dầu nhạy cảm";
+                SkinWeatherProfileHelper.UserSkinProfile skinProfile =
+                        SkinWeatherProfileHelper.load(appContext);
+                String skinType = skinProfile.skinType;
 
                 double lat = prefs.getFloat("SAVED_WEATHER_LAT", 10.8231f);
                 double lng = prefs.getFloat("SAVED_WEATHER_LNG", 106.6297f);
@@ -112,6 +130,12 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
 
                 String apiKey = BuildConfig.GEMINI_API_KEY;
                 String advice = "";
+                SkinWeatherProfileHelper.TodaySkinMetrics metrics =
+                        SkinWeatherProfileHelper.computeTodayMetrics(
+                                skinProfile, temp, humidity, uv, pm25, hasPm25);
+                SkinWeatherProfileHelper.PersonalizedAdvice ruleAdvice =
+                        SkinWeatherProfileHelper.buildRuleBasedAdvice(
+                                skinProfile, metrics, temp, humidity, uv, pm25, hasPm25, cityName);
                 String pm25Text = "không có dữ liệu";
                 if (hasPm25) {
                     WeatherDisplayHelper.Pm25Display pm25Display =
@@ -132,7 +156,8 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
 
                         JSONObject requestJson = new JSONObject();
                         JSONArray partsArray = new JSONArray();
-                        String prompt = "Làn da: " + skinType + ". Thời tiết hôm nay: " + temp + "°C, độ ẩm " + humidity + "%, UV " + uv + ", PM2.5 " + pm25Text + ". Đưa ra 1 câu khuyên bảo vệ da theo cấu trúc mẫu: 'Nhiệt độ hôm nay khá cao (" + temp + "°C), UV đạt mức " + uv + ". Da " + skinType + " của bạn có nguy cơ [tình trạng], hãy nhớ [lời khuyên] nhé!'";
+                        String prompt = SkinWeatherProfileHelper.buildGeminiPrompt(
+                                skinProfile, metrics, temp, humidity, uv, pm25, hasPm25, cityName);
                         partsArray.put(new JSONObject().put("text", prompt));
 
                         JSONArray contentsArray = new JSONArray();
@@ -172,37 +197,40 @@ public class DailySkinWeatherReceiver extends BroadcastReceiver {
                 }
 
                 if (advice.isEmpty()) {
-                    String lowerSkinType = skinType.toLowerCase();
-                    if (lowerSkinType.contains("nhạy cảm") || lowerSkinType.contains("dầu nhạy cảm")) {
-                        if (uv >= 8) advice = "Nhiệt độ hôm nay khá cao (" + temp + "°C), UV đạt mức " + uv + ". Da nhạy cảm của bạn có nguy cơ kích ứng đỏ ửng, hãy nhớ thoa kem chống nắng vật lý dịu nhẹ và che chắn kỹ nhé!";
-                        else advice = "Nhiệt độ hôm nay khoảng " + temp + "°C, độ ẩm " + humidity + "%. Da nhạy cảm của bạn có nguy cơ mất nước, hãy nhớ thoa kem dưỡng ẩm phục hồi B5 nhé!";
-                    } else if (lowerSkinType.contains("dầu")) {
-                        if (temp >= 32) advice = "Nhiệt độ hôm nay khá cao (" + temp + "°C), UV đạt mức " + uv + ". Da dầu của bạn có nguy cơ bóng nhờn bít tắc, hãy nhớ dùng sữa rửa mặt dịu nhẹ và bôi kem chống nắng kiềm dầu nhé!";
-                        else advice = "Nhiệt độ hôm nay khoảng " + temp + "°C, độ ẩm " + humidity + "%. Da dầu của bạn hoạt động ổn định, hãy nhớ bôi kem dưỡng dạng gel mỏng nhẹ nhé!";
-                    } else if (lowerSkinType.contains("khô")) {
-                        if (humidity < 55) advice = "Nhiệt độ hôm nay khá cao (" + temp + "°C), UV đạt mức " + uv + ". Da khô của bạn có nguy cơ căng rát, hãy nhớ thoa kem chống nắng phổ rộng và cấp ẩm phục hồi nhé!";
-                        else advice = "Nhiệt độ hôm nay khoảng " + temp + "°C, độ ẩm " + humidity + "%. Da khô của bạn cần giữ nước, hãy nhớ cấp ẩm serum HA và kem dưỡng ẩm khóa sâu nhé!";
+                    if (skinProfile.hasSavedProfile) {
+                        advice = ruleAdvice.headline + " " + ruleAdvice.subtext;
                     } else {
-                        if (uv >= 7) advice = "Nhiệt độ hôm nay khá cao (" + temp + "°C), UV đạt mức " + uv + ". Làn da của bạn có nguy cơ sạm nám đen sạm, hãy nhớ bôi kem chống nắng phổ rộng trước khi ra ngoài nhé!";
-                        else advice = "Nhiệt độ hôm nay khoảng " + temp + "°C, độ ẩm " + humidity + "%. Làn da của bạn đang trong trạng thái tốt, hãy nhớ bôi kem chống nắng mỏng nhẹ để bảo vệ nhé!";
+                        advice = "Làm bài test da hoặc quét AI để Rootie tư vấn chính xác theo làn da của bạn. "
+                                + "Hôm nay UV " + uv + ", nhiệt độ " + temp + "°C — nhớ chống nắng khi ra ngoài nhé!";
                     }
                 }
 
+                String stableId = forceDelivery
+                        ? com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper
+                                .dailyStableId("weather_daily_preview")
+                        : com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper
+                                .dailyStableId("weather_daily");
                 com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.dispatch(
                         appContext,
-                        com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.dailyStableId("weather_daily"),
+                        stableId,
                         "ROOTIE • Thời tiết & Da hôm nay ☀️",
                         advice,
                         "Khác",
                         "skin care",
                         "WEATHER_FORECAST",
-                        "XEM NGAY"
+                        "XEM NGAY",
+                        forceDelivery
                 );
+                delivered = !forceDelivery;
                 Log.d("DailySkinWeatherReceiver", "Daily notification posted: " + advice);
 
             } catch (Exception e) {
                 Log.e("DailySkinWeatherReceiver", "Error processing daily notification", e);
             } finally {
+                if (delivered) {
+                    WeatherNotificationGuard.markDeliveredToday(appContext);
+                }
+                WeatherNotificationGuard.endDelivery();
                 DailySkinWeatherScheduler.scheduleDailyNotification(appContext);
                 pendingResult.finish();
             }
