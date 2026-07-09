@@ -158,7 +158,7 @@ public class ShopAddressSelectionFragment extends RootieFragment {
             displayedItems = combined;
             filterDisplayedList(query);
         } else {
-            _binding.clStep1.setBackgroundResource(android.R.color.transparent);
+            _binding.clStep1.setBackgroundResource(0);
             _binding.tvStep1Text.setText(selectedProvince);
             _binding.tvStep1Change.setVisibility(View.VISIBLE);
             _binding.viewStep1Dot.setBackgroundResource(R.drawable.bg_circle_grey);

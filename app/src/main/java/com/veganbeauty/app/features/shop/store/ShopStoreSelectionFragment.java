@@ -232,24 +232,15 @@ public class ShopStoreSelectionFragment extends RootieFragment {
     }
 
     private void loadAndSyncStores() {
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    repository.getAllStores().collect(new FlowCollector<List<StoreEntity>>() {
-                        @Nullable
-                        @Override
-                        public Object emit(List<StoreEntity> stores, @NonNull kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
-                            allStoresList = stores;
-                            filterStores();
-                            return kotlin.Unit.INSTANCE;
-                        }
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+        androidx.lifecycle.FlowLiveDataConversions.asLiveData(repository.getAllStores())
+            .observe(getViewLifecycleOwner(), stores -> {
+                if (stores != null) {
+                    allStoresList = stores;
+                    filterStores();
+                }
+            });
 
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) -> {
-            repository.refreshStores();
-            return kotlin.Unit.INSTANCE;
-        });
+        repository.refreshStores();
     }
 
     private void filterStores() {
