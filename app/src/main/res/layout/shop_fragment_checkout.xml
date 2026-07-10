@@ -575,7 +575,7 @@
                         android:layout_weight="1"
                         android:layout_marginStart="8dp"
                         android:fontFamily="@font/be_vietnam_pro_medium"
-                        android:text="Đổi 2400 điểm (≈ 2400đ)"
+                        android:text="Bạn có 0 xu"
                         android:textColor="@color/primary"
                         android:textSize="14sp" />
 

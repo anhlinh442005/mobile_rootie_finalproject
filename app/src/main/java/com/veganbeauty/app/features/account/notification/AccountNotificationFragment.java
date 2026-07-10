@@ -103,7 +103,13 @@ public class AccountNotificationFragment extends RootieFragment {
                     viewModel.markAsRead(item.getId());
                 },
                 item -> {
-                    viewModel.deleteNotification(item.getId());
+                    new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                            .setTitle("Xóa thông báo")
+                            .setMessage("Bạn có chắc muốn xóa thông báo này?")
+                            .setPositiveButton("Xóa", (dialog, which) ->
+                                    viewModel.deleteNotification(item.getId()))
+                            .setNegativeButton("Hủy", null)
+                            .show();
                 }
         );
 

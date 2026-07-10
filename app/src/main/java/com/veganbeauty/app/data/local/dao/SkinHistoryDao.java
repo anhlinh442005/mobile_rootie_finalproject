@@ -28,4 +28,7 @@ public interface SkinHistoryDao {
 
     @Query("DELETE FROM skin_history WHERE id = :id")
     void deleteById(String id);
+
+    @Query("DELETE FROM skin_history WHERE userId = :userId OR email = :email")
+    void deleteByUser(String userId, String email);
 }

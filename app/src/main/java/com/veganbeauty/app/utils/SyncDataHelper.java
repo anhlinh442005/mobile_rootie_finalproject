@@ -17,6 +17,7 @@ import com.google.firebase.storage.StorageReference;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
+import com.veganbeauty.app.features.auth.FreshDemoAccountSeeder;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.local.entities.ReelEntity;
@@ -77,6 +78,11 @@ public class SyncDataHelper {
     private static void pullUserProfileFromLocal(Context context) {
         try {
             if (!ProfileSession.isLoggedIn(context)) {
+                return;
+            }
+            if (FreshDemoAccountSeeder.isDemoAccount(
+                    ProfileSessionHelper.getEffectiveUserId(context),
+                    ProfileSession.getEmail(context))) {
                 return;
             }
             if (ProfileSession.hasLocalProfileEdits(context)) {
@@ -663,6 +669,9 @@ public class SyncDataHelper {
             }
             String userId = resolveCurrentUserId(context);
             if (userId == null || userId.trim().isEmpty()) {
+                return;
+            }
+            if (!ProfileSession.isDemoTeamUser(userId)) {
                 return;
             }
 

@@ -152,6 +152,12 @@ public class NotificationListAdapter extends ListAdapter<NotificationListItem, R
             binding.tvTime.setText(NotificationDateHelper.getDisplayTime(item.getTime()));
 
             binding.viewUnreadDot.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
+            // Đã đọc → làm mờ, giữ lại trong danh sách (không xóa)
+            float contentAlpha = item.isRead() ? 0.55f : 1f;
+            binding.tvTitle.setAlpha(contentAlpha);
+            binding.tvContent.setAlpha(contentAlpha);
+            binding.tvTime.setAlpha(contentAlpha);
+            binding.ivIcon.setAlpha(contentAlpha);
             binding.cardNotification.setCardBackgroundColor(
                     item.isRead()
                             ? ContextCompat.getColor(context, R.color.white)

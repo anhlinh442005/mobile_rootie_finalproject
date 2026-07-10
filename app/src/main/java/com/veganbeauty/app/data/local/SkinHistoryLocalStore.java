@@ -5,8 +5,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.veganbeauty.app.data.local.ProfileSession;
-
 import com.veganbeauty.app.data.local.dao.SkinHistoryDao;
 import com.veganbeauty.app.data.local.entities.SkinHistoryEntity;
 import com.veganbeauty.app.utils.SkinHistoryIdHelper;
@@ -17,10 +15,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /** Lưu lịch sử soi da / quiz trên Room — không cần Firebase. */
 public final class SkinHistoryLocalStore {
+
+    private static final ExecutorService SAVE_EXECUTOR = Executors.newSingleThreadExecutor();
 
     private SkinHistoryLocalStore() {
     }
@@ -33,6 +34,7 @@ public final class SkinHistoryLocalStore {
         List<SkinHistoryEntity> rows = dao.getByUser(safeUserId, safeEmail);
         if (rows.isEmpty()) {
             seedFromAssetsIfNeeded(context, dao, safeUserId, safeEmail);
+            migrateQuizPrefsIfNeeded(context, dao, safeUserId, safeEmail);
             rows = dao.getByUser(safeUserId, safeEmail);
         }
         JSONArray array = new JSONArray();
@@ -49,44 +51,109 @@ public final class SkinHistoryLocalStore {
         return array;
     }
 
+    /**
+     * Lưu lịch sử da. Room luôn chạy trên background thread để tránh crash
+     * {@code Cannot access database on the main thread}.
+     */
     public static void save(@NonNull Context context, @NonNull JSONObject historyObj,
                             @Nullable String userId, @Nullable String email) {
         try {
-            String id = historyObj.optString("id", SkinHistoryIdHelper.generateId());
-            historyObj.put("id", id);
-            if (userId != null && !userId.trim().isEmpty()) {
-                historyObj.put("userId", userId.trim());
+            Context appContext = context.getApplicationContext();
+            JSONObject copy = new JSONObject(historyObj.toString());
+            String safeUserId = userId != null ? userId.trim() : "";
+            String safeEmail = email != null ? email.trim() : "";
+
+            String id = copy.optString("id", SkinHistoryIdHelper.generateId());
+            copy.put("id", id);
+            if (!safeUserId.isEmpty()) {
+                copy.put("userId", safeUserId);
             }
-            if (email != null && !email.trim().isEmpty()) {
-                historyObj.put("email", email.trim());
+            if (!safeEmail.isEmpty()) {
+                copy.put("email", safeEmail);
             }
-            if (!historyObj.has("scanType")) {
-                historyObj.put("scanType", "Quét AI");
+            if (!copy.has("scanType") || copy.optString("scanType").trim().isEmpty()) {
+                copy.put("scanType", "Quét AI");
             }
 
-            String date = historyObj.optString("date", "");
-            String time = historyObj.optString("time", "");
-            if (date.isEmpty()) {
-                String combined = historyObj.optString("date", "");
-                if (combined.contains(" ")) {
-                    String[] parts = combined.split(" ", 2);
-                    date = parts[0];
-                    if (time.isEmpty() && parts.length > 1) {
-                        time = parts[1];
-                    }
-                }
+            String date = copy.optString("date", "");
+            String time = copy.optString("time", "");
+            if (date.contains(" ") && time.isEmpty()) {
+                String[] parts = date.split(" ", 2);
+                date = parts[0];
+                time = parts.length > 1 ? parts[1] : "";
+                copy.put("date", date);
+                copy.put("time", time);
             }
 
             SkinHistoryEntity entity = new SkinHistoryEntity(
                     id,
-                    userId != null ? userId.trim() : "",
-                    email != null ? email.trim() : "",
-                    historyObj.toString(),
+                    safeUserId,
+                    safeEmail,
+                    copy.toString(),
                     date,
                     time,
-                    historyObj.optString("scanType", "Quét AI")
+                    copy.optString("scanType", "Quét AI")
             );
-            RootieDatabase.getDatabase(context).skinHistoryDao().insert(entity);
+            SAVE_EXECUTOR.execute(() -> {
+                try {
+                    RootieDatabase.getDatabase(appContext).skinHistoryDao().insert(entity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** Đưa các bản ghi quiz trong SharedPreferences vào Room nếu DB còn trống. */
+    private static void migrateQuizPrefsIfNeeded(Context context, SkinHistoryDao dao,
+                                                 String userId, String email) {
+        try {
+            String historyStr = ProfileSession.getQuizHistoryList(context);
+            if (historyStr == null || historyStr.trim().isEmpty() || "[]".equals(historyStr.trim())) {
+                return;
+            }
+            JSONArray quizHistory = new JSONArray(historyStr);
+            if (quizHistory.length() == 0) {
+                return;
+            }
+            List<SkinHistoryEntity> toInsert = new ArrayList<>();
+            for (int i = 0; i < quizHistory.length(); i++) {
+                JSONObject obj = quizHistory.getJSONObject(i);
+                String id = obj.optString("id", SkinHistoryIdHelper.generateId());
+                obj.put("id", id);
+                if (!userId.isEmpty()) {
+                    obj.put("userId", userId);
+                }
+                if (!email.isEmpty()) {
+                    obj.put("email", email);
+                }
+                if (!obj.has("scanType") || obj.optString("scanType").trim().isEmpty()) {
+                    obj.put("scanType", "Test da");
+                }
+                String date = obj.optString("date", "");
+                String time = obj.optString("time", "");
+                if (date.contains(" ") && time.isEmpty()) {
+                    String[] parts = date.split(" ", 2);
+                    date = parts[0];
+                    time = parts.length > 1 ? parts[1] : "";
+                    obj.put("date", date);
+                    obj.put("time", time);
+                }
+                toInsert.add(new SkinHistoryEntity(
+                        id,
+                        userId,
+                        email,
+                        obj.toString(),
+                        date,
+                        time,
+                        obj.optString("scanType", "Test da")
+                ));
+            }
+            if (!toInsert.isEmpty()) {
+                dao.insertAll(toInsert);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,6 +161,9 @@ public final class SkinHistoryLocalStore {
 
     private static void seedFromAssetsIfNeeded(Context context, SkinHistoryDao dao,
                                                String userId, String email) {
+        if (!ProfileSession.isDemoTeamUser(userId)) {
+            return;
+        }
         try {
             JSONArray assetHistory = new LocalJsonReader(context).getSkinHistory();
             if (assetHistory.length() == 0) {

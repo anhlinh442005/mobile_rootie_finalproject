@@ -105,7 +105,7 @@ import java.util.UUID;
                 WeathersEntity.class,
                 VoucherEntity.class
         },
-        version = 43
+        version = 44
 )
 
 @TypeConverters({ProductConverters.class})

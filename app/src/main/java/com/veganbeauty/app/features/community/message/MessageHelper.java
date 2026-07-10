@@ -23,12 +23,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.firebase.firestore.SetOptions;
 
 public class MessageHelper {
     private static final String FILE_NAME = "community_message.json";
@@ -60,6 +64,7 @@ public class MessageHelper {
     }
 
     public static void listenToConversation(Context context, String conversationId, Runnable onUpdate) {
+        removeConversationListener(conversationId);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         ListenerRegistration listener = db.collection("community_message").document(conversationId)
                 .addSnapshotListener((snapshot, e) -> {
@@ -79,10 +84,12 @@ public class MessageHelper {
                                     break;
                                 }
                             }
+                            ConversationEntity local = index != -1 ? data.get(index) : null;
+                            ConversationEntity merged = mergeConversations(local, conv);
                             if (index != -1) {
-                                data.set(index, conv);
+                                data.set(index, merged);
                             } else {
-                                data.add(conv);
+                                data.add(merged);
                             }
                             writeData(context, data);
                             if (onUpdate != null) onUpdate.run();
@@ -124,10 +131,12 @@ public class MessageHelper {
                                         break;
                                     }
                                 }
+                                ConversationEntity local = index != -1 ? data.get(index) : null;
+                                ConversationEntity merged = mergeConversations(local, conv);
                                 if (index != -1) {
-                                    data.set(index, conv);
+                                    data.set(index, merged);
                                 } else {
-                                    data.add(conv);
+                                    data.add(merged);
                                 }
                                 changed = true;
                             }
@@ -283,7 +292,7 @@ public class MessageHelper {
             if (existing == null) {
                 merged.put(conversation.getId(), conversation);
             } else {
-                merged.put(conversation.getId(), pickNewerConversation(existing, conversation));
+                merged.put(conversation.getId(), mergeConversations(existing, conversation));
             }
         }
 
@@ -322,7 +331,7 @@ public class MessageHelper {
                                 continue;
                             }
                             ConversationEntity existing = merged.get(conv.getId());
-                            merged.put(conv.getId(), existing == null ? conv : pickNewerConversation(existing, conv));
+                            merged.put(conv.getId(), existing == null ? conv : mergeConversations(existing, conv));
                         }
                         List<ConversationEntity> result = new ArrayList<>(merged.values());
                         for (ConversationEntity conversation : result) {
@@ -394,6 +403,116 @@ public class MessageHelper {
         return secondUpdatedAt.compareTo(firstUpdatedAt) >= 0 ? second : first;
     }
 
+    private static ConversationEntity mergeConversations(ConversationEntity first, ConversationEntity second) {
+        if (first == null) {
+            return second;
+        }
+        if (second == null) {
+            return first;
+        }
+
+        ConversationEntity base = pickNewerConversation(first, second);
+        ConversationEntity other = base == first ? second : first;
+
+        ConversationEntity merged = new ConversationEntity();
+        merged.setId(base.getId());
+        merged.setChatType(base.getChatType() != null ? base.getChatType() : other.getChatType());
+        merged.setMembers(base.getMembers() != null ? base.getMembers() : other.getMembers());
+
+        Map<String, MemberInfoEntity> memberInfo = new HashMap<>();
+        if (other.getMemberInfo() != null) {
+            memberInfo.putAll(other.getMemberInfo());
+        }
+        if (base.getMemberInfo() != null) {
+            memberInfo.putAll(base.getMemberInfo());
+        }
+        merged.setMemberInfo(memberInfo);
+        merged.setActiveBy(mergeStringLists(first.getActiveBy(), second.getActiveBy()));
+        merged.setTypingBy(mergeStringLists(first.getTypingBy(), second.getTypingBy()));
+        merged.setUnreadBy(mergeStringLists(first.getUnreadBy(), second.getUnreadBy()));
+        merged.setCreatedAt(earliestTimestamp(first.getCreatedAt(), second.getCreatedAt()));
+
+        List<ChatMessageEntity> mergedMessages = mergeMessages(first.getMessages(), second.getMessages());
+        merged.setMessages(mergedMessages);
+        if (!mergedMessages.isEmpty()) {
+            ChatMessageEntity last = mergedMessages.get(mergedMessages.size() - 1);
+            merged.setLastMessage(last.getText());
+            merged.setLastMessageAt(last.getSentAt());
+            merged.setUpdatedAt(last.getSentAt());
+        } else {
+            merged.setLastMessage(base.getLastMessage() != null ? base.getLastMessage() : other.getLastMessage());
+            merged.setLastMessageAt(base.getLastMessageAt() != null ? base.getLastMessageAt() : other.getLastMessageAt());
+            merged.setUpdatedAt(base.getUpdatedAt() != null ? base.getUpdatedAt() : other.getUpdatedAt());
+        }
+        return merged;
+    }
+
+    private static List<String> mergeStringLists(List<String> first, List<String> second) {
+        LinkedHashSet<String> values = new LinkedHashSet<>();
+        if (first != null) {
+            values.addAll(first);
+        }
+        if (second != null) {
+            values.addAll(second);
+        }
+        return new ArrayList<>(values);
+    }
+
+    private static List<ChatMessageEntity> mergeMessages(List<ChatMessageEntity> first, List<ChatMessageEntity> second) {
+        Map<String, ChatMessageEntity> byId = new LinkedHashMap<>();
+        if (first != null) {
+            for (ChatMessageEntity message : first) {
+                if (message.getId() != null) {
+                    byId.put(message.getId(), message);
+                }
+            }
+        }
+        if (second != null) {
+            for (ChatMessageEntity message : second) {
+                if (message.getId() == null) {
+                    continue;
+                }
+                ChatMessageEntity existing = byId.get(message.getId());
+                byId.put(message.getId(), existing == null ? message : preferMessage(existing, message));
+            }
+        }
+        List<ChatMessageEntity> merged = new ArrayList<>(byId.values());
+        merged.sort((left, right) -> {
+            String leftSentAt = left.getSentAt() != null ? left.getSentAt() : "";
+            String rightSentAt = right.getSentAt() != null ? right.getSentAt() : "";
+            return leftSentAt.compareTo(rightSentAt);
+        });
+        return merged;
+    }
+
+    private static ChatMessageEntity preferMessage(ChatMessageEntity first, ChatMessageEntity second) {
+        String firstSentAt = first.getSentAt() != null ? first.getSentAt() : "";
+        String secondSentAt = second.getSentAt() != null ? second.getSentAt() : "";
+        if (secondSentAt.compareTo(firstSentAt) > 0) {
+            return second;
+        }
+        if (firstSentAt.compareTo(secondSentAt) > 0) {
+            return first;
+        }
+        if (first.getSeenAt() != null && second.getSeenAt() == null) {
+            return first;
+        }
+        if (second.getSeenAt() != null && first.getSeenAt() == null) {
+            return second;
+        }
+        return second;
+    }
+
+    private static String earliestTimestamp(String first, String second) {
+        if (first == null || first.isEmpty()) {
+            return second;
+        }
+        if (second == null || second.isEmpty()) {
+            return first;
+        }
+        return first.compareTo(second) <= 0 ? first : second;
+    }
+
     private static void normalizeBrandAvatars(ConversationEntity conversation) {
         if (conversation == null || conversation.getMemberInfo() == null) {
             return;
@@ -445,7 +564,7 @@ public class MessageHelper {
             updates.put("unread_by", FieldValue.arrayUnion(receiverId));
             updates.put("messages", FieldValue.arrayUnion(msgMap));
             
-            docRef.update(updates);
+            docRef.set(updates, SetOptions.merge());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -575,7 +694,7 @@ public class MessageHelper {
             
             data.set(index, conv);
             writeData(context, data);
-            pushMessageToFirebase(conversationId, newMsg, receiverId, text, timeStr);
+            pushToFirebase(conv);
         }
     }
 

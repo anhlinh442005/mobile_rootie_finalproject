@@ -7,7 +7,6 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_content"
         android:layout_width="match_parent"
@@ -28,424 +27,64 @@
             android:paddingHorizontal="20dp"
             android:paddingBottom="16dp">
 
-        <!-- Subtitle -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="@font/lexend"
-            android:text="Quản lý các địa chỉ giao hàng của bạn để thanh toán nhanh chóng hơn."
-            android:textColor="@color/primary"
-            android:textSize="14sp"
-            android:lineSpacingExtra="4dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="21dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/lexend"
+                android:lineSpacingExtra="4dp"
+                android:text="Quản lý các địa chỉ giao hàng của bạn để thanh toán nhanh chóng hơn."
+                android:textColor="@color/primary"
+                android:textSize="14sp" />
 
+            <!-- Empty state -->
             <LinearLayout
+                android:id="@+id/layout_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingVertical="48dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_address_location_add"
+                    app:tint="@color/secondary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/lexend"
+                    android:text="Chưa có địa chỉ"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/lexend"
+                    android:gravity="center"
+                    android:text="Thêm địa chỉ giao hàng để thanh toán nhanh hơn."
+                    android:textColor="@color/secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Dynamic address list -->
+            <LinearLayout
+                android:id="@+id/ll_address_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="16dp">
-
-                <!-- CARD 1: NHÀ RIÊNG -->
-                <RelativeLayout
-                    android:id="@+id/card_home"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/bg_card_white"
-                    android:elevation="2dp"
-                    android:padding="16dp">
-
-                    <!-- Header Row inside Card -->
-                    <RelativeLayout
-                        android:id="@+id/card_home_header"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical">
-
-                        <!-- Icon Home Frame -->
-                        <FrameLayout
-                            android:id="@+id/frame_home_icon"
-                            android:layout_width="29dp"
-                            android:layout_height="29dp"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
-                            android:background="@drawable/bg_circle_light_green">
-
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="17dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_home"
-                                app:tint="#02542D" />
-                        </FrameLayout>
-
-                        <!-- Title -->
-                        <TextView
-                            android:id="@+id/tv_home_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="8dp"
-                            android:layout_toEndOf="@id/frame_home_icon"
-                            android:fontFamily="@font/lexend"
-                            android:text="Nhà riêng"
-                            android:textColor="@color/primary"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <!-- Default Badge (Active / Green Background) -->
-                        <TextView
-                            android:id="@+id/badge_home_default"
-                            android:layout_width="wrap_content"
-                            android:layout_height="23dp"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="8dp"
-                            android:layout_toEndOf="@id/tv_home_title"
-                            android:background="@drawable/bg_dialog_btn_confirm"
-                            android:fontFamily="@font/lexend"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="10dp"
-                            android:text="MẶC ĐỊNH"
-                            android:textColor="@color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <!-- Action Buttons -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:orientation="horizontal">
-
-                            <!-- Edit Button -->
-                            <FrameLayout
-                                android:id="@+id/btn_home_edit"
-                                android:layout_width="29dp"
-                                android:layout_height="29dp"
-                                android:layout_marginEnd="8dp"
-                                android:background="@drawable/bg_circle_light_green"
-                                android:clickable="true"
-                                android:focusable="true">
-
-                                <ImageView
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_edit"
-                                    app:tint="#02542D" />
-                            </FrameLayout>
-
-                            <!-- Delete Button -->
-                            <FrameLayout
-                                android:id="@+id/btn_home_delete"
-                                android:layout_width="29dp"
-                                android:layout_height="29dp"
-                                android:background="@drawable/bg_circle_edit_button"
-                                android:backgroundTint="#D73B35"
-                                android:clickable="true"
-                                android:focusable="true">
-
-                                <ImageView
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_bin"
-                                    app:tint="@color/white" />
-                            </FrameLayout>
-                        </LinearLayout>
-                    </RelativeLayout>
-
-                    <!-- Info Rows -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/card_home_header"
-                        android:layout_marginTop="12dp"
-                        android:orientation="vertical">
-
-                        <!-- Recipient Name -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@drawable/ic_account_outline"
-                                app:tint="@color/secondary" />
-
-                            <TextView
-                                android:id="@+id/tv_home_name"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="Ánh Linh"
-                                android:textColor="@color/primary"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <!-- Phone Number -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@drawable/ic_phone"
-                                app:tint="@color/secondary" />
-
-                            <TextView
-                                android:id="@+id/tv_home_phone"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="0999 999 999"
-                                android:textColor="@color/primary"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <!-- Address detail -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="top"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginTop="2dp"
-                                android:src="@drawable/ic_address_location_pin"
-                                app:tint="@color/secondary" />
-
-                            <TextView
-                                android:id="@+id/tv_home_address"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="123 Đường Bến Nghé, Phường Bến Nghé, TP.Hồ Chí Minh"
-                                android:textColor="@color/primary"
-                                android:textSize="14sp"
-                                android:lineSpacingExtra="2dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </RelativeLayout>
-
-                <!-- CARD 2: VĂN PHÒNG -->
-                <RelativeLayout
-                    android:id="@+id/card_office"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/bg_card_white"
-                    android:elevation="2dp"
-                    android:padding="16dp">
-
-                    <!-- Header Row inside Card -->
-                    <RelativeLayout
-                        android:id="@+id/card_office_header"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical">
-
-                        <!-- Icon Office Frame -->
-                        <FrameLayout
-                            android:id="@+id/frame_office_icon"
-                            android:layout_width="29dp"
-                            android:layout_height="29dp"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
-                            android:background="@drawable/bg_circle_edit_button"
-                            android:backgroundTint="#B3B3B3">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="16dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_address_office" />
-                        </FrameLayout>
-
-                        <!-- Title -->
-                        <TextView
-                            android:id="@+id/tv_office_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="8dp"
-                            android:layout_toEndOf="@id/frame_office_icon"
-                            android:fontFamily="@font/lexend"
-                            android:text="Văn phòng"
-                            android:textColor="@color/primary"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <!-- Default Badge (Inactive / White Background with Black Border) -->
-                        <TextView
-                            android:id="@+id/badge_office_default"
-                            android:layout_width="wrap_content"
-                            android:layout_height="23dp"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="8dp"
-                            android:layout_toEndOf="@id/tv_office_title"
-                            android:background="@drawable/tab_inactive_bg"
-                            android:fontFamily="@font/lexend"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="10dp"
-                            android:text="MẶC ĐỊNH"
-                            android:textColor="@color/primary"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <!-- Action Buttons -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:orientation="horizontal">
-
-                            <!-- Edit Button -->
-                            <FrameLayout
-                                android:id="@+id/btn_office_edit"
-                                android:layout_width="29dp"
-                                android:layout_height="29dp"
-                                android:layout_marginEnd="8dp"
-                                android:background="@drawable/bg_circle_light_green"
-                                android:clickable="true"
-                                android:focusable="true">
-
-                                <ImageView
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_edit"
-                                    app:tint="#02542D" />
-                            </FrameLayout>
-
-                            <!-- Delete Button -->
-                            <FrameLayout
-                                android:id="@+id/btn_office_delete"
-                                android:layout_width="29dp"
-                                android:layout_height="29dp"
-                                android:background="@drawable/bg_circle_edit_button"
-                                android:backgroundTint="#D73B35"
-                                android:clickable="true"
-                                android:focusable="true">
-
-                                <ImageView
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_bin"
-                                    app:tint="@color/white" />
-                            </FrameLayout>
-                        </LinearLayout>
-                    </RelativeLayout>
-
-                    <!-- Info Rows -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/card_office_header"
-                        android:layout_marginTop="12dp"
-                        android:orientation="vertical">
-
-                        <!-- Recipient Name -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@drawable/ic_account_outline"
-                                app:tint="@color/secondary" />
-
-                            <TextView
-                                android:id="@+id/tv_office_name"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="Khánh Xuân"
-                                android:textColor="@color/primary"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <!-- Phone Number -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@drawable/ic_phone"
-                                app:tint="@color/secondary" />
-
-                            <TextView
-                                android:id="@+id/tv_office_phone"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="0868 888 888"
-                                android:textColor="@color/primary"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <!-- Address detail -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="top"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginTop="2dp"
-                                android:src="@drawable/ic_address_location_pin"
-                                app:tint="@color/secondary" />
-
-                            <TextView
-                                android:id="@+id/tv_office_address"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:fontFamily="@font/lexend"
-                                android:text="Bitexco Financial Tower, 2 Hải Triều, Phường Bến Nghé, TP.Hồ Chí Minh"
-                                android:textColor="@color/primary"
-                                android:textSize="14sp"
-                                android:lineSpacingExtra="2dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </RelativeLayout>
-            </LinearLayout>
+                android:paddingBottom="16dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- BUTTON: ADD NEW ADDRESS -->
     <RelativeLayout
         android:id="@+id/btn_add_address_container"
         android:layout_width="match_parent"
@@ -491,7 +130,6 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <!-- Shared Bottom Navigation Bar -->
     <include
         android:id="@+id/bottom_nav"
         layout="@layout/home_navapp"
@@ -502,7 +140,6 @@
         android:clipToPadding="false"
         android:elevation="16dp" />
 
-    <!-- Top Header (overlay) -->
     <RelativeLayout
         android:id="@+id/rl_header"
         android:layout_width="match_parent"

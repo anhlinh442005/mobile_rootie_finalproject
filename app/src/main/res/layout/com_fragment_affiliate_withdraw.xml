@@ -90,11 +90,12 @@
                     </LinearLayout>
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/ic_wallet" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_coin_outline" />
                 </RelativeLayout>
 
                 <View
@@ -461,7 +462,8 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_coin"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_coin_outline"
                 app:tint="#6E846A" />
 
             <TextView

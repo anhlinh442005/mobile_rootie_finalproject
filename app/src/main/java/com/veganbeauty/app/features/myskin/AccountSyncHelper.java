@@ -10,6 +10,7 @@ import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.data.repository.OrderStatusNotifier;
+import com.veganbeauty.app.features.auth.FreshDemoAccountSeeder;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import java.util.List;
@@ -38,6 +39,12 @@ public final class AccountSyncHelper {
         Context appContext = context.getApplicationContext();
         EXECUTOR.execute(() -> {
             try {
+                if (ProfileSession.isLoggedIn(appContext)
+                        && FreshDemoAccountSeeder.isDemoAccount(
+                                ProfileSessionHelper.getEffectiveUserId(appContext),
+                                ProfileSession.getEmail(appContext))) {
+                    return;
+                }
                 syncBookings(appContext);
                 syncOrders(appContext);
                 NotificationRepository.getInstance(appContext).refreshNotifications();

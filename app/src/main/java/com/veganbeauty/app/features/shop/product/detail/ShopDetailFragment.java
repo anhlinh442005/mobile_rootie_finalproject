@@ -103,7 +103,8 @@ public class ShopDetailFragment extends RootieFragment {
     public void onResume() {
         super.onResume();
         // Refresh product stock from Firestore whenever fragment resumes (e.g., after checkout)
-        if (pendingProductId != null && !pendingProductId.isEmpty()) {
+        if (pendingProductId != null && !pendingProductId.isEmpty()
+                && !com.veganbeauty.app.data.remote.OpenProductFactsService.isExternalProductId(pendingProductId)) {
             refreshProductStockFromFirestore(pendingProductId);
         }
     }
@@ -242,6 +243,10 @@ public class ShopDetailFragment extends RootieFragment {
         });
 
         binding.btnFindStore.setOnClickListener(v -> {
+            if (product != null && com.veganbeauty.app.data.remote.OpenProductFactsService.isExternalProductId(product.getId())) {
+                Toast.makeText(requireContext(), "Sản phẩm tham khảo online, chưa có trong hệ thống cửa hàng Rootie", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (product != null && product.getStock() <= 0) {
                 Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
                 return;
@@ -323,18 +328,29 @@ public class ShopDetailFragment extends RootieFragment {
             if (product.getId() != null) {
                 pendingProductId = product.getId();
             }
+            // Show scanned/passed-in product immediately; refresh in background below.
+            bindProductSafely(product);
         }
         if (pendingProductId == null || pendingProductId.isEmpty()) {
-            if (product != null) {
-                bindProductSafely(product);
-            } else {
+            if (product == null) {
                 showProductNotFound();
             }
             return;
         }
 
-        binding.tvProductName.setText("Đang tải sản phẩm...");
+        // External Open*Facts products are not in Firestore/Room — keep the mapped entity.
+        if (com.veganbeauty.app.data.remote.OpenProductFactsService.isExternalProductId(pendingProductId)) {
+            if (product == null) {
+                showProductNotFound();
+            }
+            return;
+        }
 
+        if (product == null) {
+            binding.tvProductName.setText("Đang tải sản phẩm...");
+        }
+
+        final ProductEntity alreadyLoaded = product;
         new Thread(() -> {
             ProductEntity resolved = null;
             try {
@@ -352,7 +368,7 @@ public class ShopDetailFragment extends RootieFragment {
                 e.printStackTrace();
             }
 
-            ProductEntity finalProduct = resolved;
+            ProductEntity finalProduct = resolved != null ? resolved : alreadyLoaded;
             if (getActivity() == null) return;
             getActivity().runOnUiThread(() -> {
                 if (!isAdded() || binding == null) return;
@@ -435,8 +451,13 @@ public class ShopDetailFragment extends RootieFragment {
                 }
             });
 
+            final String giftUserId;
+            {
+                String uid = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(ctx);
+                giftUserId = uid != null ? uid : "";
+            }
             FlowLiveDataConversions.asLiveData(
-                    RootieDatabase.getDatabase(ctx).userGiftDao().getAllUserGiftsFlow()
+                    RootieDatabase.getDatabase(ctx).userGiftDao().getAllUserGiftsFlow(giftUserId)
             ).observe(getViewLifecycleOwner(), dbGifts -> {
                 try {
                     List<com.veganbeauty.app.data.local.entities.UserGiftEntity> activeVouchers = new ArrayList<>();
@@ -453,17 +474,17 @@ public class ShopDetailFragment extends RootieFragment {
                     }
                     if (activeVouchers.isEmpty()) {
                         activeVouchers.add(new com.veganbeauty.app.data.local.entities.UserGiftEntity(
-                                0, "voucher_50k", "Voucher Giảm 50K", "Áp dụng cho đơn hàng từ 300K, sản phẩm nguyên giá.",
+                                0, giftUserId, "voucher_50k", "Voucher Giảm 50K", "Áp dụng cho đơn hàng từ 300K, sản phẩm nguyên giá.",
                                 500, "2026-12-30 23:59:59", "Còn hạn", "voucher_discount", "SAVE50K",
                                 300000, "Chăm Sóc Da Mặt", "fixed_amount", null, 50000, 1775831400000L
                         ));
                         activeVouchers.add(new com.veganbeauty.app.data.local.entities.UserGiftEntity(
-                                0, "gift_freeship", "Freeship Đơn 150K", "Miễn phí vận chuyển toàn quốc cho đơn hàng từ 150K.",
+                                0, giftUserId, "gift_freeship", "Freeship Đơn 150K", "Miễn phí vận chuyển toàn quốc cho đơn hàng từ 150K.",
                                 200, "2026-12-31 23:59:59", "Còn hạn", "voucher_freeship", "FREESHIP",
                                 150000, "Tất cả sản phẩm", "percentage", null, 100, 1772698500000L
                         ));
                         activeVouchers.add(new com.veganbeauty.app.data.local.entities.UserGiftEntity(
-                                0, "voucher_10_percent", "Giảm 10% Cho Bạn Mới", "Áp dụng cho tất cả các sản phẩm trên Rootie.",
+                                0, giftUserId, "voucher_10_percent", "Giảm 10% Cho Bạn Mới", "Áp dụng cho tất cả các sản phẩm trên Rootie.",
                                 300, "2026-12-31 23:59:59", "Còn hạn", "voucher_discount", "ROOTIE10",
                                 0, "Tất cả sản phẩm", "percentage", null, 10, 1767261600000L
                         ));
@@ -526,22 +547,33 @@ public class ShopDetailFragment extends RootieFragment {
 
         binding.tvProductName.setText(safeStr(product.getName()));
 
-        if (product.getStock() <= 0) {
+        if (com.veganbeauty.app.data.remote.OpenProductFactsService.isExternalProductId(product.getId())) {
+            binding.tvStockStatus.setText("Tham khảo online");
+            binding.tvStockStatus.setTextColor(Color.parseColor("#5C6BC0"));
+            binding.viewStockIndicator.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#5C6BC0")));
+            binding.tvPrice.setText("Chưa bán trên Rootie");
+            binding.tvOriginalPrice.setVisibility(View.GONE);
+        } else if (product.getStock() <= 0) {
             binding.tvStockStatus.setText("Hết hàng");
             binding.tvStockStatus.setTextColor(Color.parseColor("#888888"));
             binding.viewStockIndicator.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#888888")));
+            NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            binding.tvPrice.setText(formatter.format(product.getPrice()));
+            long originalPrice = (long) (product.getPrice() * 1.2);
+            binding.tvOriginalPrice.setVisibility(View.VISIBLE);
+            binding.tvOriginalPrice.setText(formatter.format(originalPrice));
+            binding.tvOriginalPrice.setPaintFlags(binding.tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             binding.tvStockStatus.setText("Còn hàng (Tồn kho: " + product.getStock() + ")");
             binding.tvStockStatus.setTextColor(ContextCompat.getColor(ctx, R.color.content));
             binding.viewStockIndicator.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
+            NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            binding.tvPrice.setText(formatter.format(product.getPrice()));
+            long originalPrice = (long) (product.getPrice() * 1.2);
+            binding.tvOriginalPrice.setVisibility(View.VISIBLE);
+            binding.tvOriginalPrice.setText(formatter.format(originalPrice));
+            binding.tvOriginalPrice.setPaintFlags(binding.tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
-
-        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        binding.tvPrice.setText(formatter.format(product.getPrice()));
-
-        long originalPrice = (long) (product.getPrice() * 1.2);
-        binding.tvOriginalPrice.setText(formatter.format(originalPrice));
-        binding.tvOriginalPrice.setPaintFlags(binding.tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
         List<String> album = safeList(product.getAlbum());
         String mainImage = safeStr(product.getMainImage());
@@ -1203,6 +1235,10 @@ public class ShopDetailFragment extends RootieFragment {
 
     private void showChooseQuantityBottomSheet(ProductEntity prod) {
         if (prod == null) return;
+        if (com.veganbeauty.app.data.remote.OpenProductFactsService.isExternalProductId(prod.getId())) {
+            Toast.makeText(requireContext(), "Sản phẩm tham khảo từ Open Facts, chưa bán trên Rootie", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (prod.getStock() <= 0) {
             Toast.makeText(requireContext(), "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
             return;

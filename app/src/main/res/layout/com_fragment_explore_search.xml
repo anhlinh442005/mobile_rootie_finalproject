@@ -25,22 +25,45 @@
             android:src="@drawable/ic_arrow_back"
             app:tint="#3E4D44" />
 
-        <EditText
-            android:id="@+id/etSearch"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clSearchBar"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="40dp"
+            android:layout_weight="1"
             android:layout_marginStart="12dp"
-            android:background="@drawable/bg_white_rounded_corner_border"
-            android:hint="Tìm kiếm cẩm nang, chăm da..."
-            android:paddingHorizontal="12dp"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="8dp"
-            android:textColorHint="#888888"
-            android:textSize="14sp"
-            android:fontFamily="@font/be_vietnam_pro"
-            android:imeOptions="actionSearch"
-            android:inputType="text"/>
+            android:background="@drawable/bg_white_rounded_corner_border">
+
+            <ImageView
+                android:id="@+id/ivSearchIcon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_search"
+                app:tint="#888888"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="Tìm kiếm cẩm nang, chăm da..."
+                android:paddingStart="8dp"
+                android:paddingEnd="12dp"
+                android:textColor="#3E4D44"
+                android:textColorHint="#888888"
+                android:textSize="14sp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:singleLine="true"
+                app:layout_constraintStart_toEndOf="@id/ivSearchIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
             
         <TextView
             android:id="@+id/tvSearchBtn"

@@ -8,29 +8,50 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <!-- Header Row -->
+    <TextView
+        android:id="@+id/tv_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/lexend"
+        android:text="Thêm địa chỉ mới"
+        android:textColor="#02542D"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
-    <RelativeLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/lexend"
+        android:text="Loại địa chỉ"
+        android:textColor="#677559"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp">
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="8dp"
+        app:selectionRequired="true"
+        app:singleSelection="true" />
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tv_dialog_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:fontFamily="@font/lexend"
-            android:text="Chỉnh sửa địa chỉ"
-            android:textColor="#02542D"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+    <EditText
+        android:id="@+id/et_dialog_label"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_dialog_input"
+        android:fontFamily="@font/lexend"
+        android:hint="Nhập loại địa chỉ (VD: Nhà bố mẹ)"
+        android:inputType="text"
+        android:paddingHorizontal="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#9E9E9E"
+        android:textSize="14sp"
+        android:visibility="gone" />
 
-        <!-- Close Button (X) - Top Right & Smaller & Aligned to Top with micro-offset -->
-    </RelativeLayout>
-
-    <!-- Recipient Name Label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,7 +61,6 @@
         android:textSize="13sp"
         android:textStyle="bold" />
 
-    <!-- Recipient Name Input -->
     <EditText
         android:id="@+id/et_dialog_name"
         android:layout_width="match_parent"
@@ -54,7 +74,6 @@
         android:textColor="#000000"
         android:textSize="14sp" />
 
-    <!-- Phone Label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,7 +83,6 @@
         android:textSize="13sp"
         android:textStyle="bold" />
 
-    <!-- Phone Input -->
     <EditText
         android:id="@+id/et_dialog_phone"
         android:layout_width="match_parent"
@@ -78,7 +96,6 @@
         android:textColor="#000000"
         android:textSize="14sp" />
 
-    <!-- Address Label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -88,7 +105,6 @@
         android:textSize="13sp"
         android:textStyle="bold" />
 
-    <!-- Address Input -->
     <EditText
         android:id="@+id/et_dialog_address"
         android:layout_width="match_parent"
@@ -104,13 +120,11 @@
         android:textColor="#000000"
         android:textSize="14sp" />
 
-    <!-- Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!-- Cancel Button -->
         <FrameLayout
             android:id="@+id/btn_dialog_cancel"
             android:layout_width="0dp"
@@ -132,7 +146,6 @@
                 android:textStyle="bold" />
         </FrameLayout>
 
-        <!-- Save Button -->
         <FrameLayout
             android:id="@+id/btn_dialog_save"
             android:layout_width="0dp"
@@ -154,5 +167,4 @@
                 android:textStyle="bold" />
         </FrameLayout>
     </LinearLayout>
-
 </LinearLayout>

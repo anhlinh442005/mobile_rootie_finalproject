@@ -19,18 +19,24 @@ public interface UserGiftDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertUserGifts(List<UserGiftEntity> gifts);
 
-    @Query("SELECT * FROM user_gifts ORDER BY acquiredTimestamp DESC")
-    Flow<List<UserGiftEntity>> getAllUserGiftsFlow();
+    @Query("SELECT * FROM user_gifts WHERE userId = :userId ORDER BY acquiredTimestamp DESC")
+    Flow<List<UserGiftEntity>> getAllUserGiftsFlow(String userId);
 
-    @Query("SELECT COUNT(*) FROM user_gifts")
-    int getUserGiftCount();
+    @Query("SELECT COUNT(*) FROM user_gifts WHERE userId = :userId")
+    int getUserGiftCount(String userId);
 
-    @Query("SELECT * FROM user_gifts ORDER BY acquiredTimestamp DESC")
-    List<UserGiftEntity> getAllUserGiftsSync();
+    @Query("SELECT * FROM user_gifts WHERE userId = :userId ORDER BY acquiredTimestamp DESC")
+    List<UserGiftEntity> getAllUserGiftsSync(String userId);
 
     @Query("DELETE FROM user_gifts WHERE id = :id")
     int deleteUserGiftById(int id);
 
     @Update
     int updateUserGift(UserGiftEntity gift);
+
+    @Query("DELETE FROM user_gifts WHERE userId = :userId")
+    void deleteByUserId(String userId);
+
+    @Query("DELETE FROM user_gifts")
+    void clearAllSync();
 }

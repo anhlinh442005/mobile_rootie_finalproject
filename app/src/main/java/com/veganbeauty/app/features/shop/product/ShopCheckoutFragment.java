@@ -1,7 +1,6 @@
 package com.veganbeauty.app.features.shop.product;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -41,11 +40,9 @@ import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.data.repository.OrderStatusNotifier;
 import com.veganbeauty.app.databinding.ShopFragmentCheckoutBinding;
+import com.veganbeauty.app.utils.AddressBookHelper;
 import com.veganbeauty.app.utils.AffiliateTrackingHelper;
 import com.veganbeauty.app.features.shop.store.ShopStoreSelectionFragment;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -86,9 +83,9 @@ public class ShopCheckoutFragment extends RootieFragment {
     private String selectedStoreName = "Cửa hàng mỹ phẩm Rootie - Cơ sở 1";
     private String selectedStoreAddress = "235 Nguyễn Thị Minh Khai, P. Nguyễn Cư Trinh, Q.1, TP.HCM";
 
-    private String recipientName = "Bảo Nguyên";
-    private String recipientPhone = "0123456789";
-    private String recipientAddress = "123 Lê Lợi, phường 5, quận 1, Hồ Chí Minh";
+    private String recipientName = "";
+    private String recipientPhone = "";
+    private String recipientAddress = "";
     private String paymentMethod = "Thanh toán tiền mặt khi nhận hàng";
     private boolean isVoucherApplied = false;
     private long voucherDiscountAmount = 0L;
@@ -98,12 +95,16 @@ public class ShopCheckoutFragment extends RootieFragment {
     private boolean isHideProductInfoChecked = false;
 
     private static class CheckoutAddress {
+        String id;
+        String label;
         String name;
         String phone;
         String details;
         boolean isDefault;
 
-        CheckoutAddress(String name, String phone, String details, boolean isDefault) {
+        CheckoutAddress(String id, String label, String name, String phone, String details, boolean isDefault) {
+            this.id = id;
+            this.label = label;
             this.name = name;
             this.phone = phone;
             this.details = details;
@@ -125,7 +126,11 @@ public class ShopCheckoutFragment extends RootieFragment {
         }
     }
 
-    public static ShopCheckoutFragment newInstance(ArrayList<CartItemEntity> items, String initialVoucherCode, long initialVoucherDiscount) {
+    public static ShopCheckoutFragment newInstance(
+            ArrayList<CartItemEntity> items,
+            String initialVoucherCode,
+            long initialVoucherDiscount
+    ) {
         ShopCheckoutFragment fragment = new ShopCheckoutFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_CHECKOUT_ITEMS, items);
@@ -190,13 +195,18 @@ public class ShopCheckoutFragment extends RootieFragment {
             binding.llMemberAddress.setVisibility(View.VISIBLE);
             binding.btnChangeAddress.setVisibility(View.VISIBLE);
             binding.llPointsRow.setVisibility(View.VISIBLE);
+            refreshPointsRow();
 
             String name = ProfileSession.getFullName(requireContext());
-            if (!name.isEmpty()) recipientName = name;
+            recipientName = name != null ? name.trim() : "";
             String phone = ProfileSession.getPhone(requireContext());
-            if (!phone.isEmpty()) recipientPhone = phone;
+            recipientPhone = phone != null ? phone.trim() : "";
             String savedAddress = ProfileSession.getAddress(requireContext());
-            if (!savedAddress.isEmpty()) recipientAddress = savedAddress;
+            if (savedAddress != null && !savedAddress.trim().isEmpty()) {
+                recipientAddress = savedAddress.trim();
+            } else if (memberAddresses == null || memberAddresses.isEmpty()) {
+                recipientAddress = "";
+            }
         } else {
             binding.llGuestForm.setVisibility(View.VISIBLE);
             if (deliveryType.equals("Nhận tại cửa hàng")) {
@@ -216,67 +226,38 @@ public class ShopCheckoutFragment extends RootieFragment {
     }
 
     private ArrayList<CheckoutAddress> loadSavedAddresses() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("rootie_profile_prefs", Context.MODE_PRIVATE);
-        String jsonStr = prefs.getString("saved_addresses_list_json", null);
+        AddressBookHelper.ensureLoadedForCurrentUser(requireContext());
         ArrayList<CheckoutAddress> list = new ArrayList<>();
-
-        if (jsonStr != null && !jsonStr.trim().isEmpty()) {
-            try {
-                JSONArray array = new JSONArray(jsonStr);
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject obj = array.getJSONObject(i);
-                    list.add(new CheckoutAddress(
-                            obj.getString("name"),
-                            obj.getString("phone"),
-                            obj.getString("address"),
-                            obj.optBoolean("isDefault", false)
-                    ));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (list.isEmpty()) {
-            String homeName = prefs.getString("addr_home_name", "Ánh Linh");
-            String homePhone = prefs.getString("addr_home_phone", "0999 999 999");
-            String homeAddr = prefs.getString("addr_home_addr", "123 Đường Bến Nghé, Phường Bến Nghé, TP.Hồ Chí Minh");
-            String defaultType = prefs.getString("addr_default_type", "HOME");
-
-            list.add(new CheckoutAddress(homeName, homePhone, homeAddr, "HOME".equals(defaultType)));
-
-            String officeName = prefs.getString("addr_office_name", "Khánh Xuân");
-            String officePhone = prefs.getString("addr_office_phone", "0868 888 888");
-            String officeAddr = prefs.getString("addr_office_addr", "Bitexco Financial Tower, 2 Hải Triều, Phường Bến Nghé, TP.Hồ Chí Minh");
-
-            list.add(new CheckoutAddress(officeName, officePhone, officeAddr, "OFFICE".equals(defaultType)));
-            saveAddressesList(list);
+        for (AddressBookHelper.AddressEntry entry : AddressBookHelper.getSessionAddresses(requireContext())) {
+            list.add(new CheckoutAddress(
+                    entry.id, entry.label, entry.name, entry.phone, entry.address, entry.isDefault
+            ));
         }
         return list;
     }
 
     private void saveAddressesList(List<CheckoutAddress> list) {
-        SharedPreferences prefs = requireContext().getSharedPreferences("rootie_profile_prefs", Context.MODE_PRIVATE);
-        try {
-            JSONArray array = new JSONArray();
-            CheckoutAddress defaultAddr = null;
+        ArrayList<AddressBookHelper.AddressEntry> entries = new ArrayList<>();
+        if (list != null) {
             for (CheckoutAddress addr : list) {
-                JSONObject obj = new JSONObject();
-                obj.put("name", addr.name);
-                obj.put("phone", addr.phone);
-                obj.put("address", addr.details);
-                obj.put("isDefault", addr.isDefault);
-                array.put(obj);
-                if (addr.isDefault && defaultAddr == null) defaultAddr = addr;
+                if (addr == null || addr.details == null || addr.details.trim().isEmpty()) continue;
+                String id = addr.id != null && !addr.id.trim().isEmpty()
+                        ? addr.id
+                        : java.util.UUID.randomUUID().toString();
+                String label = addr.label != null && !addr.label.trim().isEmpty()
+                        ? addr.label.trim()
+                        : "Địa chỉ";
+                entries.add(new AddressBookHelper.AddressEntry(
+                        id,
+                        label,
+                        addr.name != null ? addr.name : "",
+                        addr.phone != null ? addr.phone : "",
+                        addr.details.trim(),
+                        addr.isDefault
+                ));
             }
-            prefs.edit().putString("saved_addresses_list_json", array.toString()).apply();
-            if (defaultAddr == null && !list.isEmpty()) defaultAddr = list.get(0);
-            if (defaultAddr != null) {
-                ProfileSession.setAddress(requireContext(), defaultAddr.details);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        AddressBookHelper.saveSessionAddresses(requireContext(), entries);
     }
 
     private void syncMemberAddressIntoSelectionSheet() {
@@ -289,11 +270,19 @@ public class ShopCheckoutFragment extends RootieFragment {
         }
         selectedAddressIndex = defaultIdx;
 
-        if (selectedAddressIndex < memberAddresses.size()) {
+        if (!memberAddresses.isEmpty() && selectedAddressIndex < memberAddresses.size()) {
             CheckoutAddress active = memberAddresses.get(selectedAddressIndex);
             recipientName = active.name;
             recipientPhone = active.phone;
             recipientAddress = active.details;
+        } else {
+            // Tài khoản mới: chỉ lấy tên/SĐT từ profile đã import, địa chỉ để trống
+            String name = ProfileSession.getFullName(requireContext());
+            String phone = ProfileSession.getPhone(requireContext());
+            recipientName = name != null ? name.trim() : "";
+            recipientPhone = phone != null ? phone.trim() : "";
+            recipientAddress = "";
+            ProfileSession.setAddress(requireContext(), "");
         }
         updateDeliveryUI();
     }
@@ -374,11 +363,7 @@ public class ShopCheckoutFragment extends RootieFragment {
             calculatePrices();
         });
 
-        binding.switchPoints.setOnClickListener(v -> {
-            isPointsChecked = !isPointsChecked;
-            updateSwitchUI(binding.switchPoints, binding.switchPointsThumb, isPointsChecked);
-            calculatePrices();
-        });
+        binding.switchPoints.setOnClickListener(v -> refreshPointsRow());
 
         binding.switchInvoice.setOnClickListener(v -> {
             isInvoiceChecked = !isInvoiceChecked;
@@ -408,8 +393,20 @@ public class ShopCheckoutFragment extends RootieFragment {
                     active = memberAddresses.get(selectedAddressIndex);
                 }
                 binding.tvDefaultBadge.setVisibility((active != null && active.isDefault) ? View.VISIBLE : View.GONE);
-                binding.tvRecipientNamePhone.setText((active != null) ? (active.name + " - " + active.phone) : (recipientName + " - " + recipientPhone));
-                binding.tvRecipientAddress.setText((active != null) ? active.details : recipientAddress);
+                if (active != null) {
+                    binding.tvRecipientNamePhone.setText(active.name + " - " + active.phone);
+                    binding.tvRecipientAddress.setText(active.details);
+                } else {
+                    String namePhone = (recipientName == null || recipientName.isEmpty())
+                            ? "Chưa có người nhận"
+                            : (recipientName + (recipientPhone.isEmpty() ? "" : " - " + recipientPhone));
+                    binding.tvRecipientNamePhone.setText(namePhone);
+                    binding.tvRecipientAddress.setText(
+                            (recipientAddress == null || recipientAddress.trim().isEmpty())
+                                    ? "Chưa có địa chỉ giao hàng. Nhấn để thêm."
+                                    : recipientAddress
+                    );
+                }
             } else {
                 binding.tvDefaultBadge.setVisibility(View.GONE);
                 binding.tvRecipientNamePhone.setText(recipientName + " - " + recipientPhone);
@@ -471,10 +468,6 @@ public class ShopCheckoutFragment extends RootieFragment {
 
         long directDiscount = originalPriceSum - finalPriceSum;
         long pointsDiscount = 0L;
-        if (isPointsChecked && finalPriceSum > 2400) {
-            pointsDiscount = 2400L;
-            finalPriceSum -= pointsDiscount;
-        }
 
         if (isVoucherApplied && finalPriceSum > voucherDiscountAmount) {
             finalPriceSum -= voucherDiscountAmount;
@@ -556,7 +549,10 @@ public class ShopCheckoutFragment extends RootieFragment {
                     ImageView ivRadioAddress = itemView.findViewById(R.id.ivRadioAddress);
                     TextView tvEditAddress = itemView.findViewById(R.id.tvEditAddress);
 
-                    tvNamePhone.setText(addr.name + " | " + addr.phone);
+                    tvNamePhone.setText(
+                            (addr.label != null && !addr.label.isEmpty() ? ("[" + addr.label + "] ") : "")
+                                    + addr.name + " | " + addr.phone
+                    );
                     tvAddressDetails.setText(addr.details);
                     tvTagDefault.setVisibility(addr.isDefault ? View.VISIBLE : View.GONE);
 
@@ -668,24 +664,23 @@ public class ShopCheckoutFragment extends RootieFragment {
     }
 
     private void showAddAddressForm(Runnable onUpdated) {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.shop_dialog_edit_address, null);
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.account_dialog_edit_address, null);
         TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
+        com.google.android.material.chip.ChipGroup chipGroup = dialogView.findViewById(R.id.chip_group_label);
+        EditText etLabel = dialogView.findViewById(R.id.et_dialog_label);
         EditText etName = dialogView.findViewById(R.id.et_dialog_name);
         EditText etPhone = dialogView.findViewById(R.id.et_dialog_phone);
         EditText etAddress = dialogView.findViewById(R.id.et_dialog_address);
-        FrameLayout switchDefault = dialogView.findViewById(R.id.switch_dialog_default);
-        ImageView switchDefaultThumb = dialogView.findViewById(R.id.switch_dialog_default_thumb);
         View btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
         View btnSave = dialogView.findViewById(R.id.btn_dialog_save);
 
         tvTitle.setText("Thêm địa chỉ mới");
-        final boolean[] isDefaultChecked = {false};
-        updateSwitchUI(switchDefault, switchDefaultThumb, isDefaultChecked[0]);
+        setupCheckoutLabelChips(chipGroup, etLabel, "Nhà riêng");
 
-        switchDefault.setOnClickListener(v -> {
-            isDefaultChecked[0] = !isDefaultChecked[0];
-            updateSwitchUI(switchDefault, switchDefaultThumb, isDefaultChecked[0]);
-        });
+        String sessionName = ProfileSession.getFullName(requireContext());
+        String sessionPhone = ProfileSession.getPhone(requireContext());
+        if (sessionName != null && !sessionName.trim().isEmpty()) etName.setText(sessionName.trim());
+        if (sessionPhone != null && !sessionPhone.trim().isEmpty()) etPhone.setText(sessionPhone.trim());
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setView(dialogView)
@@ -696,18 +691,23 @@ public class ShopCheckoutFragment extends RootieFragment {
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         btnSave.setOnClickListener(v -> {
+            String label = resolveCheckoutLabel(chipGroup, etLabel);
             String name = etName.getText().toString().trim();
             String phone = etPhone.getText().toString().trim();
             String addr = etAddress.getText().toString().trim();
-            if (!name.isEmpty() && !phone.isEmpty() && !addr.isEmpty()) {
-                CheckoutAddress newAddr = new CheckoutAddress(name, phone, addr, isDefaultChecked[0]);
-
-                if (isDefaultChecked[0]) {
-                    for (CheckoutAddress a : memberAddresses) a.isDefault = false;
+            if (!label.isEmpty() && !name.isEmpty() && !phone.isEmpty() && !addr.isEmpty()) {
+                AddressBookHelper.AddressEntry saved = AddressBookHelper.addAddress(
+                        requireContext(), label, name, phone, addr, memberAddresses.isEmpty()
+                );
+                memberAddresses = loadSavedAddresses();
+                // Chọn địa chỉ vừa thêm
+                for (int i = 0; i < memberAddresses.size(); i++) {
+                    if (saved.id.equals(memberAddresses.get(i).id)) {
+                        selectedAddressIndex = i;
+                        tempSelectedIndex = i;
+                        break;
+                    }
                 }
-
-                memberAddresses.add(newAddr);
-                saveAddressesList(memberAddresses);
                 onUpdated.run();
                 dialog.dismiss();
             } else {
@@ -716,6 +716,65 @@ public class ShopCheckoutFragment extends RootieFragment {
         });
 
         dialog.show();
+    }
+
+    private void setupCheckoutLabelChips(com.google.android.material.chip.ChipGroup chipGroup,
+                                         EditText etCustom, String currentLabel) {
+        chipGroup.removeAllViews();
+        boolean matched = false;
+        for (String suggested : AddressBookHelper.SUGGESTED_LABELS) {
+            com.google.android.material.chip.Chip chip = new com.google.android.material.chip.Chip(requireContext());
+            chip.setText(suggested);
+            chip.setCheckable(true);
+            chip.setClickable(true);
+            chipGroup.addView(chip);
+            if (suggested.equalsIgnoreCase(currentLabel)) {
+                chip.setChecked(true);
+                matched = true;
+            }
+        }
+        if (!matched) {
+            for (int i = 0; i < chipGroup.getChildCount(); i++) {
+                com.google.android.material.chip.Chip chip =
+                        (com.google.android.material.chip.Chip) chipGroup.getChildAt(i);
+                if ("Khác".equals(chip.getText().toString())) {
+                    chip.setChecked(true);
+                    break;
+                }
+            }
+            etCustom.setVisibility(View.VISIBLE);
+            etCustom.setText(currentLabel);
+        } else {
+            etCustom.setVisibility(View.GONE);
+        }
+        chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            com.google.android.material.chip.Chip selected = group.findViewById(checkedIds.get(0));
+            if (selected != null && "Khác".equals(selected.getText().toString())) {
+                etCustom.setVisibility(View.VISIBLE);
+                etCustom.requestFocus();
+            } else {
+                etCustom.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    @NonNull
+    private String resolveCheckoutLabel(com.google.android.material.chip.ChipGroup chipGroup, EditText etCustom) {
+        int checkedId = chipGroup.getCheckedChipId();
+        if (checkedId != View.NO_ID) {
+            com.google.android.material.chip.Chip chip = chipGroup.findViewById(checkedId);
+            if (chip != null) {
+                String text = chip.getText().toString();
+                if ("Khác".equals(text)) {
+                    String custom = etCustom.getText().toString().trim();
+                    return custom.isEmpty() ? "Khác" : custom;
+                }
+                return text;
+            }
+        }
+        String custom = etCustom.getText().toString().trim();
+        return custom.isEmpty() ? "Địa chỉ" : custom;
     }
 
     private void showPaymentMethodBottomSheet() {
@@ -815,6 +874,27 @@ public class ShopCheckoutFragment extends RootieFragment {
 
     private BuyerInfo collectAndValidateBuyerInfo() {
         if (isLoggedIn) {
+            if ("Nhận tại cửa hàng".equals(deliveryType)) {
+                if (selectedStoreId.trim().isEmpty() || "Chưa chọn cửa hàng".equals(selectedStoreName)) {
+                    Toast.makeText(requireContext(), "Vui lòng chọn cửa hàng để nhận hàng.", Toast.LENGTH_SHORT).show();
+                    return null;
+                }
+            } else {
+                if (recipientAddress == null || recipientAddress.trim().isEmpty()
+                        || memberAddresses == null || memberAddresses.isEmpty()) {
+                    Toast.makeText(requireContext(), "Vui lòng thêm địa chỉ giao hàng trước khi đặt hàng.", Toast.LENGTH_SHORT).show();
+                    showAddressSelectionBottomSheet();
+                    return null;
+                }
+            }
+            if (recipientName == null || recipientName.trim().isEmpty()) {
+                Toast.makeText(requireContext(), "Thiếu tên người nhận. Vui lòng cập nhật hồ sơ hoặc địa chỉ.", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+            if (recipientPhone == null || recipientPhone.trim().isEmpty()) {
+                Toast.makeText(requireContext(), "Thiếu số điện thoại. Vui lòng cập nhật hồ sơ hoặc địa chỉ.", Toast.LENGTH_SHORT).show();
+                return null;
+            }
             String email = ProfileSession.getEmail(requireContext());
             if (email.trim().isEmpty()) email = null;
             return new BuyerInfo(recipientName, recipientPhone, email, recipientAddress);
@@ -1140,10 +1220,18 @@ public class ShopCheckoutFragment extends RootieFragment {
     private long calculateFinalTotal() {
         long finalPriceSum = 0;
         for (CartItemEntity ci : checkoutItems) finalPriceSum += ci.getPrice() * ci.getQuantity();
-        long pointsDiscount = (isPointsChecked && finalPriceSum > 2400) ? 2400L : 0L;
-        finalPriceSum -= pointsDiscount;
         if (isVoucherApplied && finalPriceSum > voucherDiscountAmount) finalPriceSum -= voucherDiscountAmount;
         return finalPriceSum;
+    }
+
+    /** Hiển thị số xu của tài khoản đang đăng nhập. */
+    private void refreshPointsRow() {
+        if (binding == null || !isLoggedIn) return;
+        int balance = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
+        String balanceText = String.format(Locale.getDefault(), "%,d", balance).replace(',', '.');
+        binding.tvPointsText.setText("Bạn có " + balanceText + " xu");
+        isPointsChecked = false;
+        updateSwitchUI(binding.switchPoints, binding.switchPointsThumb, false);
     }
 
     @Override

@@ -323,7 +323,8 @@
                             <ImageView
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
-                                android:src="@drawable/ic_coin"
+                                android:src="@drawable/ic_cash"
+                                android:contentDescription="@null"
                                 app:tint="#FFB800" />
                                 
                             <TextView android:fontFamily="@font/be_vietnam_pro"

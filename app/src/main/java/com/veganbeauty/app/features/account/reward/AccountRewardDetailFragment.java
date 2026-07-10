@@ -220,7 +220,9 @@ public class AccountRewardDetailFragment extends RootieFragment {
     @Override
     public void observeViewModel() {
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-        androidx.lifecycle.FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+        String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext());
+        if (userId == null) userId = "";
+        androidx.lifecycle.FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow(userId))
             .observe(getViewLifecycleOwner(), ptsList -> {
                 int pointsVal = (ptsList != null && !ptsList.isEmpty()) ? ptsList.get(0).total : 0;
                 currentPoints = pointsVal;

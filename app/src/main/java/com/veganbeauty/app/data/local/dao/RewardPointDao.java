@@ -19,24 +19,33 @@ public interface RewardPointDao {
         public int total;
     }
 
-    @Query("SELECT COALESCE(SUM(points), 0) as total FROM user_coin")
-    Flow<List<TotalPoints>> getTotalPointsFlow();
+    @Query("SELECT COALESCE(SUM(points), 0) as total FROM user_coin WHERE userId = :userId")
+    Flow<List<TotalPoints>> getTotalPointsFlow(String userId);
 
-    @Query("SELECT COALESCE(SUM(points), 0) FROM user_coin")
-    int getTotalPointsSync();
+    @Query("SELECT COALESCE(SUM(points), 0) FROM user_coin WHERE userId = :userId")
+    int getTotalPointsSync(String userId);
 
-    @Query("SELECT * FROM user_coin ORDER BY timestamp DESC")
-    Flow<List<RewardPointEntity>> getAllRewardHistory();
+    @Query("SELECT * FROM user_coin WHERE userId = :userId ORDER BY timestamp DESC")
+    Flow<List<RewardPointEntity>> getAllRewardHistory(String userId);
 
-    @Query("SELECT * FROM user_coin ORDER BY timestamp DESC")
-    List<RewardPointEntity> getAllRewardHistoryList();
+    @Query("SELECT * FROM user_coin WHERE userId = :userId ORDER BY timestamp DESC")
+    List<RewardPointEntity> getAllRewardHistoryList(String userId);
 
-    @Query("SELECT COALESCE(SUM(points), 0) FROM user_coin WHERE timestamp >= :sinceMs")
-    int getPointsEarnedSince(long sinceMs);
+    @Query("SELECT COALESCE(SUM(points), 0) FROM user_coin WHERE userId = :userId AND timestamp >= :sinceMs AND points > 0")
+    int getPointsEarnedSince(String userId, long sinceMs);
 
-    @Query("SELECT * FROM user_coin WHERE timestamp >= :sinceMs ORDER BY timestamp DESC")
-    List<RewardPointEntity> getHistorySince(long sinceMs);
+    @Query("SELECT * FROM user_coin WHERE userId = :userId AND timestamp >= :sinceMs ORDER BY timestamp DESC")
+    List<RewardPointEntity> getHistorySince(String userId, long sinceMs);
 
-    @Query("SELECT EXISTS(SELECT 1 FROM user_coin WHERE orderId = :orderId AND reason LIKE '%Đánh giá%')")
-    boolean hasReceivedPointsForOrder(String orderId);
+    @Query("SELECT EXISTS(SELECT 1 FROM user_coin WHERE userId = :userId AND orderId = :orderId AND reason LIKE '%Đánh giá%')")
+    boolean hasReceivedPointsForOrder(String userId, String orderId);
+
+    @Query("DELETE FROM user_coin WHERE userId = :userId AND orderId = :orderId AND timestamp >= :sinceMs")
+    int deleteRewardsByOrderIdSince(String userId, String orderId, long sinceMs);
+
+    @Query("DELETE FROM user_coin WHERE userId = :userId")
+    void deleteByUserId(String userId);
+
+    @Query("DELETE FROM user_coin")
+    void clearAllSync();
 }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.veganbeauty.app.R;
 
@@ -115,8 +116,17 @@ public class CoinRewardDialogFragment extends DialogFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (getParentFragmentManager() != null) {
-            getParentFragmentManager().setFragmentResult(CoinRewardDialogHelper.RESULT_DISMISSED, new Bundle());
+        try {
+            androidx.fragment.app.FragmentManager fm = getParentFragmentManager();
+            if (fm != null) {
+                fm.setFragmentResult(CoinRewardDialogHelper.RESULT_DISMISSED, new Bundle());
+            }
+            FragmentActivity activity = getActivity();
+            if (activity != null) {
+                activity.getSupportFragmentManager()
+                        .setFragmentResult(CoinRewardDialogHelper.RESULT_DISMISSED, new Bundle());
+            }
+        } catch (Exception ignored) {
         }
     }
 }

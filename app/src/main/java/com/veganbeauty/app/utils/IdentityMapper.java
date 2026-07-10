@@ -29,7 +29,7 @@ public class IdentityMapper {
             return originalAvatar;
         String currentUserId = ProfileSession.getCurrentUserId(context);
         if (currentUserId != null && currentUserId.equals(originalId)) {
-            String localAvatar = ProfileSessionHelper.getDisplayAvatarUrl(context);
+            String localAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(context);
             if (localAvatar != null && !localAvatar.trim().isEmpty()) {
                 return localAvatar;
             }

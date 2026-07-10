@@ -1,7 +1,6 @@
 package com.veganbeauty.app.features.account.checkin;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -19,10 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.veganbeauty.app.R;
@@ -32,7 +29,9 @@ import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.AccountCheckinFragmentBinding;
 import com.veganbeauty.app.databinding.ItemCalendarDayBinding;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
+import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
+import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,9 +48,6 @@ public class AccountCheckinFragment extends RootieFragment {
 
     private AccountCheckinFragmentBinding binding;
     private SkinDetailHeaderScrollHelper headerScrollHelper;
-    private int bottomNavInsetPx;
-    private static final int BOTTOM_NAV_BAR_DP = 56;
-    private static final int BOTTOM_BUTTON_AREA_DP = 68;
     private RootieDatabase db;
     private Calendar calendarInstance = Calendar.getInstance();
     private Set<String> checkedInDates = new HashSet<>();
@@ -87,65 +83,33 @@ public class AccountCheckinFragment extends RootieFragment {
         binding.btnBannerCheckin.setOnClickListener(onCheckInClick);
         binding.btnBottomCheckin.setOnClickListener(onCheckInClick);
 
+        BottomNavHelper.setup(
+                this,
+                binding.getRoot(),
+                R.id.nav_account,
+                tabId -> BottomNavHelper.navigate(this, tabId)
+        );
+
         setupScrollHideHeader();
-        setupBottomInsets();
         refreshUI();
     }
 
-    private void setupBottomInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (view, insets) -> {
-            Insets navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
-            bottomNavInsetPx = navBars.bottom;
-            applyBottomSpacing();
-            return insets;
-        });
-        ViewCompat.requestApplyInsets(binding.getRoot());
-    }
-
-    private void applyBottomSpacing() {
-        if (binding == null) {
-            return;
-        }
-        float density = getResources().getDisplayMetrics().density;
-        int navBarPx = (int) (BOTTOM_NAV_BAR_DP * density);
-        int buttonAreaPx = (int) (BOTTOM_BUTTON_AREA_DP * density);
-
-        ViewGroup.MarginLayoutParams buttonParams =
-                (ViewGroup.MarginLayoutParams) binding.layoutBottomButton.getLayoutParams();
-        buttonParams.bottomMargin = navBarPx + bottomNavInsetPx;
-        binding.layoutBottomButton.setLayoutParams(buttonParams);
-
-        updateScrollBottomPadding(navBarPx, buttonAreaPx);
-    }
-
-    private void updateScrollBottomPadding(int navBarPx, int buttonAreaPx) {
-        int bottomPadding = navBarPx + bottomNavInsetPx + (int) (16 * getResources().getDisplayMetrics().density);
-        if (binding.layoutBottomButton.getVisibility() == View.VISIBLE) {
-            bottomPadding += buttonAreaPx;
-        }
-        binding.checkinScroll.setPadding(
-                binding.checkinScroll.getPaddingLeft(),
-                binding.checkinScroll.getPaddingTop(),
-                binding.checkinScroll.getPaddingRight(),
-                bottomPadding
-        );
-        if (headerScrollHelper != null) {
-            headerScrollHelper.setBottomPaddingPx(bottomPadding);
-        }
-    }
-
     private void setupScrollHideHeader() {
+        // Keep in sync with account_checkin_fragment.xml paddingBottom (nav bar + FAB overhang).
+        int bottomPadding = (int) (120 * getResources().getDisplayMetrics().density);
         headerScrollHelper = new SkinDetailHeaderScrollHelper(
                 binding.topBar,
                 binding.checkinScroll,
-                0
+                bottomPadding
         );
         headerScrollHelper.attachToNestedScrollView(binding.checkinScroll);
     }
 
     @Override
     protected void observeViewModel() {
-        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getAllRewardHistory())
+        String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext());
+        if (userId == null) userId = "";
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getAllRewardHistory(userId))
                 .observe(getViewLifecycleOwner(), this::updateFromHistory);
     }
 
@@ -153,18 +117,14 @@ public class AccountCheckinFragment extends RootieFragment {
         if (binding == null || !isAdded()) return;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Set<String> newCheckedInDates = new HashSet<>();
+        // Chỉ lấy từ lịch sử xu của user hiện tại — không merge prefs chung máy
+        // (prefs cũ từng làm tài khoản mới hiện ngày điểm danh của người trước).
         if (allHistory != null) {
             for (RewardPointEntity item : allHistory) {
                 if (item.getReason() != null && item.getReason().contains("Điểm danh")) {
                     newCheckedInDates.add(sdf.format(new Date(item.getTimestamp())));
                 }
             }
-        }
-
-        SharedPreferences prefs = requireContext().getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE);
-        Set<String> savedDates = prefs.getStringSet("checked_in_dates", new HashSet<>());
-        if (savedDates != null) {
-            newCheckedInDates.addAll(savedDates);
         }
 
         checkedInDates.clear();
@@ -202,7 +162,6 @@ public class AccountCheckinFragment extends RootieFragment {
             binding.tvBannerCompletedText.setVisibility(View.VISIBLE);
 
             binding.layoutBottomButton.setVisibility(View.GONE);
-            applyBottomSpacing();
         } else {
             binding.ivBannerIcon.setImageResource(R.drawable.ic_warning_outline);
             binding.ivBannerIcon.setColorFilter(Color.parseColor("#8A9A3D"));
@@ -217,7 +176,6 @@ public class AccountCheckinFragment extends RootieFragment {
             binding.btnBottomCheckin.setBackgroundResource(R.drawable.skin_bg_btn_green);
             binding.btnBottomCheckin.setTextColor(Color.WHITE);
             applyCheckinButtonIcon(binding.btnBottomCheckin, R.drawable.ic_hand_tap);
-            applyBottomSpacing();
         }
     }
 
@@ -385,7 +343,7 @@ public class AccountCheckinFragment extends RootieFragment {
         int currentStreak = calculateStreak(checkedInDates);
         int newStreak = isYesterdayChecked ? currentStreak + 1 : 1;
 
-        int pointsAwarded;
+        final int pointsAwarded;
         if (newStreak % 7 == 0) {
             pointsAwarded = 200;
         } else if (newStreak % 7 == 3) {
@@ -394,26 +352,37 @@ public class AccountCheckinFragment extends RootieFragment {
             pointsAwarded = 10;
         }
 
+        if (!isAdded()) {
+            return;
+        }
+        final FragmentActivity hostActivity = getActivity();
+        final Context appCtx = requireContext().getApplicationContext();
         new Thread(() -> {
             try {
                 SimpleDateFormat reasonSdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
-                        requireContext(),
+                int totalBalance = com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        appCtx,
                         "DAILY_CHECKIN",
                         pointsAwarded,
                         "Điểm danh hàng ngày (" + reasonSdf.format(new Date()) + ")",
-                        "từ điểm danh hàng ngày"
+                        "từ điểm danh hàng ngày",
+                        false
                 );
 
-                SharedPreferences prefs = requireContext().getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE);
-                Set<String> savedDates = prefs.getStringSet("checked_in_dates", new HashSet<>());
-                Set<String> dates = new HashSet<>(savedDates != null ? savedDates : new HashSet<>());
-                dates.add(todayStr);
-                prefs.edit().putStringSet("checked_in_dates", dates).apply();
-
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        refreshUI();
+                if (hostActivity != null) {
+                    final int coins = pointsAwarded;
+                    hostActivity.runOnUiThread(() -> {
+                        if (!isAdded()) {
+                            return;
+                        }
+                        checkedInDates.add(todayStr);
+                        CoinRewardDialogHelper.showWithDismissCallback(
+                                this,
+                                coins,
+                                totalBalance,
+                                "từ điểm danh hàng ngày",
+                                this::refreshUI
+                        );
                     });
                 }
             } catch (Exception e) {

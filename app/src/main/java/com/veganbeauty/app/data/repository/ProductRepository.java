@@ -162,6 +162,13 @@ public class ProductRepository {
 
         if (userProductExpiryDao == null) return;
 
+        // Tài khoản mới/thường bắt đầu trống — chỉ demo-team mới có sản phẩm HSD mẫu
+        if (userId == null || userId.trim().isEmpty()
+                || !com.veganbeauty.app.data.local.ProfileSession.isDemoTeamUser(userId)
+                || com.veganbeauty.app.features.auth.FreshDemoAccountSeeder.isDemoAccount(userId, null)) {
+            return;
+        }
+
         if (userProductExpiryDao.getProductCountByUserId(userId) == 0) {
 
             List<UserProductExpiryEntity> mockList = new ArrayList<>();
@@ -304,17 +311,43 @@ public class ProductRepository {
 
                 productDao.insertProducts(list);
 
-            }
+                return remote;
 
-            return remote;
+            }
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
-            return null;
-
         }
+
+        // Fallback: assets (demo barcodes) when Room is empty / Firestore miss
+        try {
+            List<ProductEntity> fromAssets = localJsonReader.getAllProducts();
+            if (fromAssets != null) {
+                for (ProductEntity p : fromAssets) {
+                    if (p != null && normalized.equals(p.getBarcode() != null ? p.getBarcode().trim() : "")) {
+                        List<ProductEntity> list = new ArrayList<>();
+                        list.add(p);
+                        productDao.insertProducts(list);
+                        return p;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Fallback: Open Beauty Facts → Open Food Facts (không lưu vào catalog shop)
+        try {
+            ProductEntity external = com.veganbeauty.app.data.remote.OpenProductFactsService
+                    .fetchByBarcode(normalized);
+            if (external != null) return external;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
 
     }
 

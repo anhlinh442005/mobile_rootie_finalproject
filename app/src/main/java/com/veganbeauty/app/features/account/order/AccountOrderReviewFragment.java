@@ -28,6 +28,7 @@ import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderReviewFragmentBinding;
+import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -312,7 +313,7 @@ public class AccountOrderReviewFragment extends RootieFragment {
 
         new Thread(() -> {
             try {
-                boolean success = repository.updateOrderReview(
+                boolean coinsAwarded = repository.updateOrderReview(
                         orderId,
                         selectedStars,
                         text,
@@ -320,21 +321,34 @@ public class AccountOrderReviewFragment extends RootieFragment {
                         _binding.cbAnonymous.isChecked(),
                         _binding.cbRecommend.isChecked()
                 );
-                
+
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        if (success) {
-                            getParentFragmentManager().popBackStack();
+                        if (!isAdded()) {
+                            return;
+                        }
+                        if (coinsAwarded) {
+                            int total = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
+                            CoinRewardDialogHelper.showWithDismissCallback(
+                                    this,
+                                    200,
+                                    total,
+                                    "từ đánh giá đơn hàng",
+                                    () -> getParentFragmentManager().popBackStack()
+                            );
                         } else {
                             Toast.makeText(requireContext(), "Đã lưu đánh giá thành công!", Toast.LENGTH_SHORT).show();
                             getParentFragmentManager().popBackStack();
                         }
                     });
                 }
-                        
+
             } catch (Exception e) {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
+                        if (!isAdded()) {
+                            return;
+                        }
                         Toast.makeText(requireContext(), "Đã lưu đánh giá thành công!", Toast.LENGTH_SHORT).show();
                         getParentFragmentManager().popBackStack();
                     });

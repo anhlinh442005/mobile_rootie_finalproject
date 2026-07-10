@@ -9,14 +9,24 @@ public class RewardPointEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     @NonNull
+    private String userId;
+    @NonNull
     private String orderId;
     private int points;
     @NonNull
     private String reason;
     private long timestamp;
 
-    public RewardPointEntity(int id, @NonNull String orderId, int points, @NonNull String reason, long timestamp) {
+    public RewardPointEntity(
+            int id,
+            @NonNull String userId,
+            @NonNull String orderId,
+            int points,
+            @NonNull String reason,
+            long timestamp
+    ) {
         this.id = id;
+        this.userId = userId;
         this.orderId = orderId;
         this.points = points;
         this.reason = reason;
@@ -25,6 +35,10 @@ public class RewardPointEntity {
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    @NonNull
+    public String getUserId() { return userId; }
+    public void setUserId(@NonNull String userId) { this.userId = userId; }
 
     @NonNull
     public String getOrderId() { return orderId; }

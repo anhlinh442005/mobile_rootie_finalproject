@@ -49,6 +49,11 @@ public class SkinAllergyProfileFragment extends RootieFragment {
     private FragmentSkinAllergyProfileBinding binding;
     private SkinDetailHeaderScrollHelper headerScrollHelper;
 
+    @Override
+    protected boolean shouldSetupNotificationBell() {
+        return false;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -175,17 +180,23 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         args.putInt(QuizTestResultFragment.ARG_SEBUM, sebum);
         args.putString(QuizTestResultFragment.ARG_SKIN_AREAS, skinAreas);
 
+        if (!isAdded()) {
+            return;
+        }
+
         QuizTestResultFragment fragment = new QuizTestResultFragment();
         fragment.setArguments(args);
 
-        var transaction = getParentFragmentManager().beginTransaction()
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(
+                        android.R.anim.slide_in_left,
+                        android.R.anim.fade_out,
+                        android.R.anim.fade_in,
+                        android.R.anim.slide_out_right
+                )
                 .replace(R.id.main_container, fragment)
-                .addToBackStack(null);
-        if (getParentFragmentManager().isStateSaved()) {
-            transaction.commitAllowingStateLoss();
-        } else {
-            transaction.commit();
-        }
+                .addToBackStack("skin_personal_report")
+                .commitAllowingStateLoss();
     }
 
     private void setupScrollHideHeader() {
@@ -318,7 +329,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 }
             }
 
-            String userId = ProfileSession.INSTANCE.getUserId(requireContext());
+            String userId = ProfileSession.getUserId(requireContext());
             Set<String> combinedIds = new HashSet<>();
             
             List<OrderEntity> orderList = new LocalJsonReader(requireContext()).getAllOrders();

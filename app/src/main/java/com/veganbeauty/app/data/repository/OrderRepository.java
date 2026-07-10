@@ -18,7 +18,6 @@ import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.repository.OrderStatusNotifier;
-import com.veganbeauty.app.utils.SyncDataHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -215,27 +214,39 @@ public class OrderRepository {
             try {
                 syncOrdersFromFirebaseBlocking(userId, phone);
 
-                if (rewardPointDao.getAllRewardHistoryList().isEmpty()) {
+                boolean isFreshDemo = com.veganbeauty.app.features.auth.FreshDemoAccountSeeder
+                        .isDemoAccount(userId, null)
+                        || com.veganbeauty.app.features.auth.FreshDemoAccountSeeder
+                        .isDemoAccount(null, com.veganbeauty.app.data.local.ProfileSession.getEmail(
+                                localJsonReader.getAppContext()));
+                boolean allowSampleData = !isFreshDemo
+                        && com.veganbeauty.app.data.local.ProfileSession.isDemoTeamUser(userId);
+
+                // Chỉ demo-team mới seed xu/quà mẫu. Tài khoản mới (vd. Nguyễn Thị Demo) = 0.
+                String safeSeedUserId = userId != null ? userId.trim() : "";
+                if (allowSampleData && !safeSeedUserId.isEmpty()
+                        && rewardPointDao.getAllRewardHistoryList(safeSeedUserId).isEmpty()) {
                     rewardPointDao.insertRewardPoints(new RewardPointEntity(
-                            0, "SYSTEM_INITIAL", 11200, "Tích điểm mua sắm", 1767261600000L
+                            0, safeSeedUserId, "SYSTEM_INITIAL", 11200, "Tích điểm mua sắm", 1767261600000L
                     ));
                     rewardPointDao.insertRewardPoints(new RewardPointEntity(
-                            0, "REDEEM_HIST_1", -2000, "Đổi quà: Sữa rửa mặt mini", 1772043600000L
+                            0, safeSeedUserId, "REDEEM_HIST_1", -2000, "Đổi quà: Sữa rửa mặt mini", 1772043600000L
                     ));
                     rewardPointDao.insertRewardPoints(new RewardPointEntity(
-                            0, "REDEEM_HIST_2", -200, "Đổi quà: Freeship Đơn 0Đ", 1772698500000L
+                            0, safeSeedUserId, "REDEEM_HIST_2", -200, "Đổi quà: Freeship Đơn 0Đ", 1772698500000L
                     ));
                     rewardPointDao.insertRewardPoints(new RewardPointEntity(
-                            0, "REDEEM_HIST_3", -500, "Đổi quà: Voucher Giảm 50K", 1775831400000L
+                            0, safeSeedUserId, "REDEEM_HIST_3", -500, "Đổi quà: Voucher Giảm 50K", 1775831400000L
                     ));
                 }
 
-                if (userGiftDao.getUserGiftCount() == 0) {
+                if (allowSampleData && !safeSeedUserId.isEmpty()
+                        && userGiftDao.getUserGiftCount(safeSeedUserId) == 0) {
                     List<UserGiftEntity> initGifts = Arrays.asList(
-                            new UserGiftEntity(0, "voucher_50k", "Voucher Giảm 50K", "Áp dụng cho đơn hàng từ 300K, sản phẩm nguyên giá.", 500, "2026-12-30 23:59:59", "Còn hạn", "voucher_discount", "SAVE50K", 300000, "Chăm Sóc Da Mặt", "fixed_amount", null, 50000, 1775831400000L),
-                            new UserGiftEntity(0, "gift_cleanser", "Quà tặng: Sữa rửa mặt", "Nhận miễn phí 1 tuýp sữa rửa mặt bí đao mini 15ml.", 1000, "2026-12-15 23:59:59", "Còn hạn", "product", "FREECLN", 0, "Sữa rửa mặt", "product_gift", "p003", 0, 1772043600000L),
-                            new UserGiftEntity(0, "gift_freeship", "Freeship Đơn 0Đ", "Miễn phí vận chuyển toàn quốc cho mọi đơn hàng.", 200, "2026-06-11 23:59:59", "Hôm nay", "voucher_freeship", "FREESHIP", 150000, "Tất cả sản phẩm", "percentage", null, 100, 1772698500000L),
-                            new UserGiftEntity(0, "voucher_10_percent", "Giảm 10% Cho Sản Phẩm Bưởi", "Áp dụng cho dòng sản phẩm tinh chất vỏ bưởi dưỡng tóc.", 300, "2026-10-31 23:59:59", "Hết hạn", "voucher_discount", "GRAPE10", 0, "Tinh chất bưởi", "percentage", null, 10, 1767261600000L)
+                            new UserGiftEntity(0, safeSeedUserId, "voucher_50k", "Voucher Giảm 50K", "Áp dụng cho đơn hàng từ 300K, sản phẩm nguyên giá.", 500, "2026-12-30 23:59:59", "Còn hạn", "voucher_discount", "SAVE50K", 300000, "Chăm Sóc Da Mặt", "fixed_amount", null, 50000, 1775831400000L),
+                            new UserGiftEntity(0, safeSeedUserId, "gift_cleanser", "Quà tặng: Sữa rửa mặt", "Nhận miễn phí 1 tuýp sữa rửa mặt bí đao mini 15ml.", 1000, "2026-12-15 23:59:59", "Còn hạn", "product", "FREECLN", 0, "Sữa rửa mặt", "product_gift", "p003", 0, 1772043600000L),
+                            new UserGiftEntity(0, safeSeedUserId, "gift_freeship", "Freeship Đơn 0Đ", "Miễn phí vận chuyển toàn quốc cho mọi đơn hàng.", 200, "2026-06-11 23:59:59", "Hôm nay", "voucher_freeship", "FREESHIP", 150000, "Tất cả sản phẩm", "percentage", null, 100, 1772698500000L),
+                            new UserGiftEntity(0, safeSeedUserId, "voucher_10_percent", "Giảm 10% Cho Sản Phẩm Bưởi", "Áp dụng cho dòng sản phẩm tinh chất vỏ bưởi dưỡng tóc.", 300, "2026-10-31 23:59:59", "Hết hạn", "voucher_discount", "GRAPE10", 0, "Tinh chất bưởi", "percentage", null, 10, 1767261600000L)
                     );
                     userGiftDao.insertUserGifts(initGifts);
                 }
@@ -263,12 +274,23 @@ public class OrderRepository {
             int discountValue
     ) {
         try {
-            rewardPointDao.insertRewardPoints(new RewardPointEntity(
-                    0, "REDEEM_" + giftId, -cost, "Đổi quà: " + title, System.currentTimeMillis()
-            ));
-            SyncDataHelper.syncRewardPointsToFirestore(localJsonReader.getContext());
+            android.content.Context ctx = localJsonReader.getContext();
+            String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(ctx);
+            if (userId == null || userId.trim().isEmpty()) {
+                return false;
+            }
+            userId = userId.trim();
+            int spent = com.veganbeauty.app.utils.RewardPointsHelper.spendPoints(
+                    ctx,
+                    "REDEEM_" + giftId,
+                    cost,
+                    "Đổi quà: " + title
+            );
+            if (spent < 0) {
+                return false;
+            }
             userGiftDao.insertUserGift(new UserGiftEntity(
-                    0, giftId, title, description, cost, expiryDate, "Còn hạn", giftType, code,
+                    0, userId, giftId, title, description, cost, expiryDate, "Còn hạn", giftType, code,
                     minOrderValue, applicableProducts, offerType, productId, discountValue, System.currentTimeMillis()
             ));
             return true;
@@ -279,7 +301,12 @@ public class OrderRepository {
     }
 
     public Flow<List<UserGiftEntity>> getAllUserGifts() {
-        return userGiftDao.getAllUserGiftsFlow();
+        android.content.Context ctx = localJsonReader.getContext();
+        String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(ctx);
+        if (userId == null) {
+            userId = "";
+        }
+        return userGiftDao.getAllUserGiftsFlow(userId.trim());
     }
 
     public boolean deleteUserGiftById(int id) {
@@ -312,13 +339,17 @@ public class OrderRepository {
             orderDao.updateOrderReviewStatus(orderId, true);
 
             if (qualifiesForCoins) {
-                if (!rewardPointDao.hasReceivedPointsForOrder(orderId)) {
+                if (!rewardPointDao.hasReceivedPointsForOrder(
+                        com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(
+                                localJsonReader.getAppContext()),
+                        orderId)) {
                     com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
                             localJsonReader.getAppContext(),
                             orderId,
                             200,
                             "Đánh giá đơn hàng " + orderId + " kèm hình ảnh",
-                            "từ đánh giá đơn hàng"
+                            "từ đánh giá đơn hàng",
+                            false
                     );
                     return true;
                 }
@@ -362,34 +393,44 @@ public class OrderRepository {
 
     public void syncOrdersFromAssetsBlocking() {
         try {
+            String currentUserId = com.veganbeauty.app.utils.ProfileSessionHelper
+                    .getEffectiveUserId(localJsonReader.getAppContext());
+            if (currentUserId == null || currentUserId.trim().isEmpty()) {
+                return;
+            }
+            // Chỉ tài khoản demo-team mới được seed đơn mẫu. Tài khoản mới/thường = 0 đơn từ asset.
+            if (com.veganbeauty.app.features.auth.FreshDemoAccountSeeder
+                    .isDemoAccount(currentUserId, null)
+                    || com.veganbeauty.app.features.auth.FreshDemoAccountSeeder
+                    .isDemoAccount(null, com.veganbeauty.app.data.local.ProfileSession.getEmail(
+                            localJsonReader.getAppContext()))
+                    || !com.veganbeauty.app.data.local.ProfileSession.isDemoTeamUser(currentUserId)) {
+                return;
+            }
+
             List<OrderEntity> mockOrders = localJsonReader.getAllOrders();
             if (mockOrders == null || mockOrders.isEmpty()) {
                 Log.w("OrderRepository", "No orders found in orders.json");
                 return;
             }
-            
-            String currentUserId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(localJsonReader.getAppContext());
-            if (currentUserId == null || currentUserId.trim().isEmpty()) {
-                currentUserId = "test_001";
-            }
-            
+
+            List<OrderEntity> toInsert = new ArrayList<>();
             for (OrderEntity order : mockOrders) {
                 normalizeOrderForRoom(order);
-                // Map the mock data to the current logged-in user so they can see the orders
-                if ("test_001".equals(order.getUserId())) {
-                    order.setUserId(currentUserId);
-                }
-                if (order.getAffiliate() != null && "test_001".equals(order.getAffiliate().getReferrerUserId())) {
-                    order.getAffiliate().setReferrerUserId(currentUserId);
+                // Giữ nguyên userId trong asset — không remap sang tài khoản đang đăng nhập
+                if (currentUserId.equals(order.getUserId())) {
+                    toInsert.add(order);
                 }
             }
-            
-            // Force replace existing orders without deleting user-created orders
+            if (toInsert.isEmpty()) {
+                return;
+            }
+
             try {
-                orderDao.insertOrders(mockOrders);
+                orderDao.insertOrders(toInsert);
             } catch (Exception batchError) {
                 Log.w("OrderRepository", "Batch insert failed, trying one-by-one", batchError);
-                for (OrderEntity order : mockOrders) {
+                for (OrderEntity order : toInsert) {
                     try {
                         orderDao.insertOrder(order);
                     } catch (Exception singleError) {
@@ -398,7 +439,7 @@ public class OrderRepository {
                 }
             }
             int count = orderDao.getOrderCount();
-            Log.d("OrderRepository", "Synced " + mockOrders.size() + " orders from assets, DB count=" + count);
+            Log.d("OrderRepository", "Synced " + toInsert.size() + " orders from assets, DB count=" + count);
         } catch (Exception e) {
             Log.e("OrderRepository", "syncOrdersFromAssets failed", e);
         }
@@ -409,16 +450,17 @@ public class OrderRepository {
         List<OrderEntity> matched = new ArrayList<>();
         String safeUserId = userId != null ? userId.trim() : "";
         String safePhone = normalizePhone(phone);
-        
-        String currentUserId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(localJsonReader.getAppContext());
-        if (currentUserId == null || currentUserId.trim().isEmpty()) {
-            currentUserId = "test_001";
+
+        if (com.veganbeauty.app.features.auth.FreshDemoAccountSeeder
+                .isDemoAccount(safeUserId, null)
+                || com.veganbeauty.app.features.auth.FreshDemoAccountSeeder
+                .isDemoAccount(null, com.veganbeauty.app.data.local.ProfileSession.getEmail(
+                        localJsonReader.getAppContext()))) {
+            return matched;
         }
 
         for (OrderEntity order : allOrders) {
-            if ("test_001".equals(order.getUserId())) {
-                order.setUserId(currentUserId);
-            }
+            // Không remap test_001 → user hiện tại; chỉ khớp đúng chủ đơn
             if (matchesBuyer(order, safeUserId, safePhone)) {
                 matched.add(order);
             }

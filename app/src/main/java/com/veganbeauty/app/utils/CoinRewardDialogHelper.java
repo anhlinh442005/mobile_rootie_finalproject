@@ -4,10 +4,12 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
@@ -141,9 +143,99 @@ public final class CoinRewardDialogHelper {
         if (fragmentManager == null || coins <= 0) {
             return;
         }
-        if (fragmentManager.findFragmentByTag(TAG) != null) {
+        Fragment existing = fragmentManager.findFragmentByTag(TAG);
+        if (existing instanceof androidx.fragment.app.DialogFragment) {
+            ((androidx.fragment.app.DialogFragment) existing).dismissAllowingStateLoss();
+        }
+        CoinRewardDialogFragment dialog = CoinRewardDialogFragment.newInstance(coins, totalBalance, sourceMessage);
+        try {
+            if (!fragmentManager.isStateSaved()) {
+                dialog.showNow(fragmentManager, TAG);
+            } else {
+                fragmentManager.beginTransaction()
+                        .add(dialog, TAG)
+                        .commitAllowingStateLoss();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                if (!fragmentManager.isStateSaved()) {
+                    dialog.show(fragmentManager, TAG);
+                } else {
+                    fragmentManager.beginTransaction()
+                            .add(dialog, TAG)
+                            .commitAllowingStateLoss();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /**
+     * Shows the coin reward popup and runs {@code onDismiss} after the user closes it.
+     */
+    public static void showWithDismissCallback(
+            @NonNull Fragment fragment,
+            int coins,
+            int totalBalance,
+            @Nullable String sourceMessage,
+            @Nullable Runnable onDismiss
+    ) {
+        if (!fragment.isAdded() || coins <= 0) {
+            if (onDismiss != null) {
+                onDismiss.run();
+            }
             return;
         }
-        CoinRewardDialogFragment.newInstance(coins, totalBalance, sourceMessage).show(fragmentManager, TAG);
+        FragmentManager fm = fragment.getParentFragmentManager();
+        LifecycleOwner lifecycleOwner = fragment.getViewLifecycleOwner();
+        fm.setFragmentResultListener(
+                RESULT_DISMISSED,
+                lifecycleOwner,
+                (requestKey, result) -> {
+                    fm.clearFragmentResultListener(RESULT_DISMISSED);
+                    if (onDismiss != null && fragment.isAdded()) {
+                        onDismiss.run();
+                    }
+                });
+        show(fm, coins, totalBalance, sourceMessage);
+    }
+
+    /**
+     * Shows the coin reward popup from an activity and runs {@code onDismiss} after close.
+     */
+    public static void showWithDismissCallback(
+            @NonNull FragmentActivity activity,
+            int coins,
+            int totalBalance,
+            @Nullable String sourceMessage,
+            @Nullable Runnable onDismiss
+    ) {
+        if (activity.isFinishing() || coins <= 0) {
+            if (onDismiss != null) {
+                onDismiss.run();
+            }
+            return;
+        }
+        try {
+            FragmentManager fm = activity.getSupportFragmentManager();
+            if (onDismiss != null) {
+                fm.setFragmentResultListener(
+                        RESULT_DISMISSED,
+                        activity,
+                        (requestKey, result) -> {
+                            fm.clearFragmentResultListener(RESULT_DISMISSED);
+                            if (!activity.isFinishing()) {
+                                onDismiss.run();
+                            }
+                        });
+            }
+            show(fm, coins, totalBalance, sourceMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (onDismiss != null) {
+                onDismiss.run();
+            }
+        }
     }
 }

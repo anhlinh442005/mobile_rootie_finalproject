@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,16 +71,7 @@ public class SkinReminderFragment extends RootieFragment {
                     .commit();
         });
 
-        binding.btnStartEveningRoutine.setOnClickListener(v -> {
-            SkinTimeRoutineFragment fragment = new SkinTimeRoutineFragment();
-            Bundle args = new Bundle();
-            args.putString("routine_type", "evening");
-            fragment.setArguments(args);
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        });
+        binding.btnStartEveningRoutine.setOnClickListener(v -> handleEveningRoutineClick());
 
         binding.btnSetupRoutine.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
@@ -250,9 +242,9 @@ public class SkinReminderFragment extends RootieFragment {
         if (isEveningSubmitted) {
             binding.tvEveningHeaderStatus.setText(hour < 2 ? "TỐI QUA • ĐÃ HOÀN THÀNH" : "TỐI NAY • ĐÃ HOÀN THÀNH");
             binding.tvEveningHeaderStatus.setTextColor(Color.parseColor("#677559"));
-            binding.btnStartEveningRoutine.setText("Đã hoàn thành");
+            binding.btnStartEveningRoutine.setText("Làm lại Routine");
             binding.btnStartEveningRoutine.setEnabled(true);
-            applyRoutineButtonIcon(binding.btnStartEveningRoutine, R.drawable.ic_check);
+            applyRoutineButtonIcon(binding.btnStartEveningRoutine, R.drawable.ic_leaf);
         } else {
             if (isEveningActive) {
                 String prefixStr = hour < 2 ? "TỐI QUA" : "TỐI NAY";
@@ -289,6 +281,40 @@ public class SkinReminderFragment extends RootieFragment {
                 currentStreak >= 30,
                 hasCompletedSocialToday
         );
+    }
+
+    private void handleEveningRoutineClick() {
+        Context ctx = requireContext();
+        String eveningDate = getRoutineDate("evening");
+        if (ProfileSession.isRoutineSubmitted(ctx, "evening", eveningDate)) {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Routine Tối đã hoàn thành")
+                    .setMessage("Làm lại routine tối nay để test popup cộng xu?\n\nTick đủ các bước rồi bấm Hoàn tất Routine.")
+                    .setPositiveButton("Làm lại", (dialog, which) -> {
+                        ProfileSession.resetRoutineSession(ctx, "evening", eveningDate);
+                        Toast.makeText(ctx, "Đã reset Routine Tối. Bắt đầu làm lại nhé!", Toast.LENGTH_SHORT).show();
+                        refreshUI();
+                        openEveningRoutine();
+                    })
+                    .setNegativeButton("Xem lại", (dialog, which) -> openEveningRoutine())
+                    .show();
+            return;
+        }
+        openEveningRoutine();
+    }
+
+    private void openEveningRoutine() {
+        if (!isAdded()) {
+            return;
+        }
+        SkinTimeRoutineFragment fragment = new SkinTimeRoutineFragment();
+        Bundle args = new Bundle();
+        args.putString("routine_type", "evening");
+        fragment.setArguments(args);
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.main_container, fragment)
+                .addToBackStack(null)
+                .commitAllowingStateLoss();
     }
 
     private String getRoutineDate(String type) {
@@ -382,21 +408,38 @@ public class SkinReminderFragment extends RootieFragment {
             return;
         }
 
+        if (!isAdded()) {
+            return;
+        }
+        final androidx.fragment.app.FragmentActivity hostActivity = getActivity();
+        final Context appCtx = ctx.getApplicationContext();
         final int rewardPoints = 10;
         new Thread(() -> {
             try {
-                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
-                        ctx,
+                int totalBalance = com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        appCtx,
                         "SOCIAL_TASK",
                         rewardPoints,
                         "Kết nối bạn bè (Social Task)",
-                        "từ nhiệm vụ kết nối bạn bè"
+                        "từ nhiệm vụ kết nối bạn bè",
+                        false
                 );
-                ProfileSession.addSkinSocialCompletedDate(ctx, todayStr);
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(ctx, "Kết nối thành công!", Toast.LENGTH_SHORT).show();
-                        refreshUI();
+                ProfileSession.addSkinSocialCompletedDate(appCtx, todayStr);
+                if (hostActivity != null) {
+                    hostActivity.runOnUiThread(() -> {
+                        if (!isAdded()) {
+                            return;
+                        }
+                        CoinRewardDialogHelper.showWithDismissCallback(
+                                this,
+                                rewardPoints,
+                                totalBalance,
+                                "từ nhiệm vụ kết nối bạn bè",
+                                () -> {
+                                    Toast.makeText(ctx, "Kết nối thành công!", Toast.LENGTH_SHORT).show();
+                                    refreshUI();
+                                }
+                        );
                     });
                 }
             } catch (Exception e) {
@@ -414,7 +457,9 @@ public class SkinReminderFragment extends RootieFragment {
     @Override
     public void observeViewModel() {
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+        String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext());
+        if (userId == null) userId = "";
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow(userId))
                 .observe(getViewLifecycleOwner(), points -> {
                     if (binding == null || !isAdded()) return;
                     int totalPoints = (points != null && !points.isEmpty()) ? points.get(0).total : 0;

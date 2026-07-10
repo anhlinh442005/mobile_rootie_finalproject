@@ -36,6 +36,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.databinding.SkinFragmentBookingDetailCompletedBinding;
+import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 
 import org.json.JSONObject;
@@ -452,19 +453,39 @@ public class BookingDetailCompletedFragment extends RootieFragment {
         final int finalTotalPoints = totalPoints;
         if (isFirstReview) {
             final String bookingId = updated.getId();
+            if (!isAdded()) {
+                return;
+            }
+            final androidx.fragment.app.FragmentActivity hostActivity = getActivity();
+            final Context appCtx = requireContext().getApplicationContext();
             ioExecutor.execute(() -> {
-                LocalJsonReader localJsonReader = new LocalJsonReader(requireContext());
+                LocalJsonReader localJsonReader = new LocalJsonReader(appCtx);
                 localJsonReader.updateBookingReview(
                         updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
                 new FirestoreService().updateBookingReview(
                         updated.getId(), rating, review, reviewDate, finalEarnedPoints, finalTotalPoints);
-                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
-                        requireContext(),
+                int totalBalance = com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        appCtx,
                         "BOOKING_REVIEW_" + bookingId,
                         REVIEW_BONUS_POINTS,
                         "Đánh giá lịch hẹn " + bookingId,
-                        "từ đánh giá lịch hẹn"
+                        "từ đánh giá lịch hẹn",
+                        false
                 );
+                if (hostActivity != null) {
+                    hostActivity.runOnUiThread(() -> {
+                        if (!isAdded()) {
+                            return;
+                        }
+                        CoinRewardDialogHelper.showWithDismissCallback(
+                                this,
+                                REVIEW_BONUS_POINTS,
+                                totalBalance,
+                                "từ đánh giá lịch hẹn",
+                                null
+                        );
+                    });
+                }
             });
         } else {
             ioExecutor.execute(() -> {

@@ -37,12 +37,15 @@
 
                 <ImageView
                     android:id="@+id/ivCloseSaveDialog"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_cancel"
-                    app:tint="#839276" />
+                    android:padding="7dp"
+                    android:src="@drawable/com_ic_close_handbook"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Đóng"
+                    android:scaleType="fitCenter" />
             </RelativeLayout>
 
             <androidx.recyclerview.widget.RecyclerView

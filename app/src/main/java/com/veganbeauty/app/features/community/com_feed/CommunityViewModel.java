@@ -37,6 +37,10 @@ public class CommunityViewModel extends ViewModel {
         repository.refreshCommunityData();
     }
 
+    public void createPost(CommunityPostEntity post) {
+        repository.createPost(post);
+    }
+
     public LiveData<List<CommunityPostEntity>> getPosts() { return posts; }
     public LiveData<List<UserEntity>> getUsers() { return users; }
     public LiveData<List<ReelEntity>> getReels() { return reels; }

@@ -9,6 +9,7 @@ import com.veganbeauty.app.data.local.entities.NotificationItem;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.features.account.notification.NotificationDateHelper;
 import com.veganbeauty.app.features.account.notification.NotificationPushHelper;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -126,6 +127,17 @@ public final class OrderStatusNotifier {
             return;
         }
 
+        String sessionUserId = ProfileSessionHelper.getEffectiveUserId(appContext);
+        String orderUserId = order.getUserId() != null ? order.getUserId().trim() : "";
+        if (sessionUserId == null || sessionUserId.trim().isEmpty()) {
+            return;
+        }
+        if (!orderUserId.isEmpty() && !sessionUserId.trim().equals(orderUserId)) {
+            Log.i(TAG, "Skip order-placed notification for " + order.getId()
+                    + " — owner " + orderUserId + " != session " + sessionUserId);
+            return;
+        }
+
         String orderId = order.getId().trim();
         String status = order.getStatus() != null ? order.getStatus() : "Chờ xác nhận";
         if (!OrderNotificationTracker.needsNotification(appContext, orderId, status)) {
@@ -181,6 +193,18 @@ public final class OrderStatusNotifier {
         if (!ProfileSession.isOrderStatusEnabled(appContext)) {
             return;
         }
+
+        String sessionUserId = ProfileSessionHelper.getEffectiveUserId(appContext);
+        String orderUserId = order.getUserId() != null ? order.getUserId().trim() : "";
+        if (sessionUserId == null || sessionUserId.trim().isEmpty()) {
+            return;
+        }
+        if (!orderUserId.isEmpty() && !sessionUserId.trim().equals(orderUserId)) {
+            Log.i(TAG, "Skip order notification for " + order.getId()
+                    + " — owner " + orderUserId + " != session " + sessionUserId);
+            return;
+        }
+
         if (!OrderNotificationTracker.needsNotification(appContext, order.getId(), newStatus)) {
             return;
         }

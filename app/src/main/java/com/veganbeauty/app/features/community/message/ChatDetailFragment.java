@@ -92,7 +92,15 @@ public class ChatDetailFragment extends RootieFragment {
         setupInputBarInsets();
         setupInputFocusBehavior();
 
+        final Context appContext = requireContext().getApplicationContext();
         loadConversation();
+        if (conversationId != null) {
+            MessageHelper.listenToConversation(appContext, conversationId, () -> {
+                if (isAdded() && getActivity() != null) {
+                    getActivity().runOnUiThread(() -> bindConversation(appContext));
+                }
+            });
+        }
     }
 
     private void setupInputBarInsets() {
@@ -162,29 +170,40 @@ public class ChatDetailFragment extends RootieFragment {
     private void loadConversation() {
         final Context context = getContext();
         if (context == null || conversationId == null) return;
+        final Context appContext = context.getApplicationContext();
 
         new Thread(() -> {
             try {
-                MessageHelper.syncConversationsFromAssets(context, currentUserId);
-                MessageHelper.markAsRead(context, conversationId, currentUserId);
-                ConversationEntity conv = MessageHelper.getConversationById(context, conversationId);
-                if (conv != null && isAdded() && getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        if (!isAdded() || binding == null) return;
-                        String partnerAvatarUrl = bindHeader(conv);
-                        adapter.setPartnerAvatarUrl(partnerAvatarUrl);
-                        if (conv.getMessages() != null && !conv.getMessages().isEmpty()) {
-                            adapter.submitList(conv.getMessages());
-                            binding.rvMessages.scrollToPosition(conv.getMessages().size() - 1);
-                        } else if (adapter != null) {
-                            adapter.submitList(new ArrayList<>());
-                        }
-                    });
-                }
+                MessageHelper.fetchAndMergeFirebaseConversations(appContext, currentUserId, () -> {
+                    if (!isAdded() || getActivity() == null) {
+                        return;
+                    }
+                    getActivity().runOnUiThread(() -> bindConversation(appContext));
+                });
+                bindConversation(appContext);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private void bindConversation(Context context) {
+        if (!isAdded() || binding == null || conversationId == null) {
+            return;
+        }
+        MessageHelper.markAsRead(context, conversationId, currentUserId);
+        ConversationEntity conv = MessageHelper.getConversationById(context, conversationId);
+        if (conv == null) {
+            return;
+        }
+        String partnerAvatarUrl = bindHeader(conv);
+        adapter.setPartnerAvatarUrl(partnerAvatarUrl);
+        if (conv.getMessages() != null && !conv.getMessages().isEmpty()) {
+            adapter.submitList(conv.getMessages());
+            binding.rvMessages.scrollToPosition(conv.getMessages().size() - 1);
+        } else {
+            adapter.submitList(new ArrayList<>());
+        }
     }
 
     private String bindHeader(ConversationEntity conv) {
@@ -243,12 +262,13 @@ public class ChatDetailFragment extends RootieFragment {
     private void sendMessage(String text) {
         final Context context = getContext();
         if (context == null || conversationId == null) return;
+        final Context appContext = context.getApplicationContext();
 
         new Thread(() -> {
             try {
-                MessageHelper.sendMessage(context, conversationId, currentUserId, text);
+                MessageHelper.sendMessage(appContext, conversationId, currentUserId, text);
                 if (isAdded() && getActivity() != null) {
-                    getActivity().runOnUiThread(this::loadConversation);
+                    getActivity().runOnUiThread(() -> bindConversation(appContext));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -258,6 +278,9 @@ public class ChatDetailFragment extends RootieFragment {
 
     @Override
     public void onDestroyView() {
+        if (conversationId != null) {
+            MessageHelper.removeConversationListener(conversationId);
+        }
         super.onDestroyView();
         binding = null;
     }

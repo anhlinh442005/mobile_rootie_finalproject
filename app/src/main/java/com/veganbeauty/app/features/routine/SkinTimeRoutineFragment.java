@@ -13,22 +13,20 @@ import android.widget.Toast;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.fragment.app.FragmentActivity;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
-import com.veganbeauty.app.data.local.RootieDatabase;
-import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
-import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.ItemTimeRoutineStepBinding;
 import com.veganbeauty.app.databinding.SkinTimeRoutineBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
+import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,9 +39,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.Dispatchers;
 
 public class SkinTimeRoutineFragment extends RootieFragment {
 
@@ -91,6 +86,10 @@ public class SkinTimeRoutineFragment extends RootieFragment {
                         .addToBackStack(null).commit());
 
         binding.btnCompleteRoutine.setOnClickListener(v -> completeRoutineAction());
+        binding.tvTitle.setOnLongClickListener(v -> {
+            showResetRoutineDialog();
+            return true;
+        });
 
         loadSteps();
 
@@ -152,55 +151,131 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         }
 
         if (totalCount > 0 && completedCount == totalCount) {
-            boolean isRewardGiven = "morning".equals(routineType) ? ProfileSession.isMorningRewardAwarded(ctx, targetDate) : ProfileSession.isEveningRewardAwarded(ctx, targetDate);
+            boolean isRewardGiven = "morning".equals(routineType)
+                    ? ProfileSession.isMorningRewardAwarded(ctx, targetDate)
+                    : ProfileSession.isEveningRewardAwarded(ctx, targetDate);
             if (!isRewardGiven) {
-                if ("morning".equals(routineType)) ProfileSession.setMorningRewardAwarded(ctx, targetDate, true);
-                else ProfileSession.setEveningRewardAwarded(ctx, targetDate, true);
-
-                RootieDatabase db = RootieDatabase.getDatabase(ctx);
                 final int rewardPoints = 10;
-                LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                        BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                            try {
-                                String source = "morning".equals(routineType)
-                                        ? "từ Routine Sáng"
-                                        : "từ Routine Tối";
-                                String reason = "morning".equals(routineType)
-                                        ? "Hoàn thành Routine Sáng"
-                                        : "Hoàn thành Routine Tối";
-                                com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
-                                        ctx,
-                                        "morning".equals(routineType) ? "MORNING_ROUTINE" : "EVENING_ROUTINE",
-                                        rewardPoints,
-                                        reason,
-                                        source
-                                );
-                                checkStreakAndUpdateAsync(routineType);
-                            } catch (Exception e) { e.printStackTrace(); }
-                            return kotlin.Unit.INSTANCE;
-                        }, cont));
+                final String source = "morning".equals(routineType) ? "từ Routine Sáng" : "từ Routine Tối";
+                final String reason = "morning".equals(routineType) ? "Hoàn thành Routine Sáng" : "Hoàn thành Routine Tối";
+                final String orderId = "morning".equals(routineType) ? "MORNING_ROUTINE" : "EVENING_ROUTINE";
+                awardRoutineRewardAsync(ctx, targetDate, orderId, rewardPoints, reason, source);
             } else {
                 Toast.makeText(ctx, "Routine đã được hoàn tất và nhận thưởng trước đó!", Toast.LENGTH_SHORT).show();
-                checkStreakAndUpdateAsync(routineType);
+                finishRoutineSessionAsync(routineType);
             }
         } else {
             Toast.makeText(ctx, "Đã chốt phiên Routine! Bạn chưa hoàn thành 100% các bước nên không được cộng xu.", Toast.LENGTH_LONG).show();
-            checkStreakAndUpdateAsync(routineType);
+            finishRoutineSessionAsync(routineType);
         }
     }
 
-    private void checkStreakAndUpdateAsync(String type) {
+    private void awardRoutineRewardAsync(
+            android.content.Context ctx,
+            String targetDate,
+            String orderId,
+            int rewardPoints,
+            String reason,
+            String source
+    ) {
+        if (!isAdded()) {
+            return;
+        }
+        final FragmentActivity hostActivity = getActivity();
+        if (hostActivity == null) {
+            return;
+        }
+        final android.content.Context appCtx = ctx.getApplicationContext();
+        new Thread(() -> {
+            boolean success = false;
+            int total = 0;
+            int streakBonus = 0;
+            try {
+                total = com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        appCtx, orderId, rewardPoints, reason, source, false
+                );
+                if ("morning".equals(routineType)) {
+                    ProfileSession.setMorningRewardAwarded(appCtx, targetDate, true);
+                } else {
+                    ProfileSession.setEveningRewardAwarded(appCtx, targetDate, true);
+                }
+                streakBonus = checkStreakAndUpdate(appCtx, routineType);
+                success = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final boolean awardSuccess = success;
+            final int totalBalance = total;
+            final int streakBonusFinal = streakBonus;
+            hostActivity.runOnUiThread(() -> {
+                if (!isAdded() || binding == null) {
+                    return;
+                }
+                if (!awardSuccess) {
+                    Toast.makeText(appCtx, "Không thể cộng xu. Vui lòng thử lại sau.", Toast.LENGTH_SHORT).show();
+                    popBackStackIfAdded();
+                    return;
+                }
+                showCoinRewardThen(() -> {
+                    if (streakBonusFinal > 0) {
+                        showStreakBonusDialog(streakBonusFinal);
+                    } else {
+                        popBackStackIfAdded();
+                    }
+                }, rewardPoints, source, totalBalance);
+            });
+        }).start();
+    }
+
+    private void showCoinRewardThen(Runnable onDismiss, int rewardPoints, String source, int totalBalance) {
+        if (!isAdded()) {
+            return;
+        }
+        CoinRewardDialogHelper.showWithDismissCallback(this, rewardPoints, totalBalance, source, onDismiss);
+    }
+
+    private void showStreakBonusDialog(int streakBonus) {
+        if (!isAdded()) {
+            return;
+        }
+        String source = streakBonus >= 200 ? "từ chuỗi 30 ngày chăm da" : "từ chuỗi 7 ngày chăm da";
+        int total = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
+        showCoinRewardThen(this::popBackStackIfAdded, streakBonus, source, total);
+    }
+
+    private void popBackStackIfAdded() {
+        if (!isAdded()) {
+            return;
+        }
+        try {
+            getParentFragmentManager().popBackStack();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void finishRoutineSessionAsync(String type) {
         android.content.Context ctx = getContext();
-        if (ctx == null) return;
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                    try {
-                        checkStreakAndUpdate(type);
-                        com.veganbeauty.app.utils.SyncDataHelper.pushSkincareHistoryToFirestore(ctx, getRoutineDate(type));
-                    } catch (Exception e) { e.printStackTrace(); }
-                    getParentFragmentManager().popBackStack();
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+        if (ctx == null || !isAdded()) {
+            return;
+        }
+        final FragmentActivity hostActivity = getActivity();
+        if (hostActivity == null) {
+            return;
+        }
+        final android.content.Context appCtx = ctx.getApplicationContext();
+        new Thread(() -> {
+            try {
+                checkStreakAndUpdate(appCtx, type);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            hostActivity.runOnUiThread(this::popBackStackIfAdded);
+        }).start();
+    }
+
+    private void checkStreakAndUpdateAsync(String type) {
+        finishRoutineSessionAsync(type);
     }
 
     private void loadSteps() {
@@ -307,14 +382,6 @@ public class SkinTimeRoutineFragment extends RootieFragment {
             ProfileSession.setCompletedEveningDates(ctx, set);
         }
 
-        if (isWithinTimeWindow(routineType)) {
-            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                    BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                        try { checkStreakAndUpdate(routineType); } catch(Exception e) { e.printStackTrace(); }
-                        return kotlin.Unit.INSTANCE;
-                    }, cont));
-        }
-
         populateStepsList();
         updateStatsAndProgress();
     }
@@ -344,11 +411,12 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         binding.progressBar.setProgress(percentage);
 
         if (isSubmitted) {
-            binding.btnCompleteRoutine.setText("Đã hoàn thành");
-            binding.btnCompleteRoutine.setEnabled(false);
+            binding.btnCompleteRoutine.setText("Làm lại Routine");
+            binding.btnCompleteRoutine.setEnabled(true);
             binding.btnCompleteRoutine.setBackgroundResource(R.drawable.skin_bg_btn_green);
             binding.btnCompleteRoutine.setTextColor(Color.WHITE);
-            applyCompleteButtonIcon(R.drawable.ic_check);
+            applyCompleteButtonIcon(R.drawable.ic_leaf);
+            binding.btnCompleteRoutine.setOnClickListener(v -> showResetRoutineDialog());
         } else if (!isWithinTimeWindow(routineType)) {
             int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
             if ("morning".equals(routineType)) {
@@ -359,13 +427,35 @@ public class SkinTimeRoutineFragment extends RootieFragment {
             binding.btnCompleteRoutine.setBackgroundResource(R.drawable.skin_bg_btn_disabled);
             binding.btnCompleteRoutine.setTextColor(Color.parseColor("#8E8E93"));
             applyCompleteButtonIcon(0);
+            binding.btnCompleteRoutine.setOnClickListener(null);
         } else {
             binding.btnCompleteRoutine.setText("Hoàn tất Routine");
             binding.btnCompleteRoutine.setEnabled(true);
             binding.btnCompleteRoutine.setBackgroundResource(R.drawable.skin_bg_btn_green);
             binding.btnCompleteRoutine.setTextColor(Color.WHITE);
             applyCompleteButtonIcon(0);
+            binding.btnCompleteRoutine.setOnClickListener(v -> completeRoutineAction());
         }
+    }
+
+    private void showResetRoutineDialog() {
+        android.content.Context ctx = requireContext();
+        String targetDate = getRoutineDate(routineType);
+        String routineLabel = "morning".equals(routineType) ? "Routine Sáng" : "Routine Tối";
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Làm lại " + routineLabel + "?")
+                .setMessage("Xóa trạng thái hoàn thành hôm nay để làm lại và nhận xu.")
+                .setPositiveButton("Làm lại", (dialog, which) -> {
+                    ProfileSession.resetRoutineSession(ctx, routineType, targetDate);
+                    Toast.makeText(
+                            ctx,
+                            "Đã reset " + routineLabel + ". Tick đủ bước rồi bấm Hoàn tất Routine.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    loadSteps();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void applyCompleteButtonIcon(@DrawableRes int iconRes) {
@@ -387,21 +477,24 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         binding.btnCompleteRoutine.setCompoundDrawablePadding((int) (6 * getResources().getDisplayMetrics().density));
     }
 
-    private void checkStreakAndUpdate(String type) throws Exception {
-        android.content.Context ctx = requireContext();
+    private int checkStreakAndUpdate(android.content.Context ctx, String type) throws Exception {
+        if (ctx == null) {
+            return 0;
+        }
+        android.content.Context appCtx = ctx.getApplicationContext();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String targetDate = getRoutineDate(type);
 
-        Set<String> completedMornings = ProfileSession.getCompletedMorningDates(ctx);
-        Set<String> completedEvenings = ProfileSession.getCompletedEveningDates(ctx);
+        Set<String> completedMornings = ProfileSession.getCompletedMorningDates(appCtx);
+        Set<String> completedEvenings = ProfileSession.getCompletedEveningDates(appCtx);
 
         if (completedMornings.contains(targetDate) && completedEvenings.contains(targetDate)) {
-            String lastCompletedStr = ProfileSession.getSkinLastCompletedDate(ctx);
-            if (lastCompletedStr.equals(targetDate)) return;
+            String lastCompletedStr = ProfileSession.getSkinLastCompletedDate(appCtx);
+            if (targetDate.equals(lastCompletedStr)) return 0;
 
-            int currentStreak = ProfileSession.getSkinStreak(ctx);
+            int currentStreak = ProfileSession.getSkinStreak(appCtx);
             int newStreak;
-            if (!lastCompletedStr.isEmpty()) {
+            if (lastCompletedStr != null && !lastCompletedStr.isEmpty()) {
                 Calendar lastCal = Calendar.getInstance();
                 Date d = sdf.parse(lastCompletedStr);
                 if (d != null) lastCal.setTime(d);
@@ -412,20 +505,22 @@ public class SkinTimeRoutineFragment extends RootieFragment {
                 newStreak = 1;
             }
 
-            ProfileSession.setSkinStreak(ctx, newStreak);
-            ProfileSession.setSkinLastCompletedDate(ctx, targetDate);
+            ProfileSession.setSkinStreak(appCtx, newStreak);
+            ProfileSession.setSkinLastCompletedDate(appCtx, targetDate);
 
-            RootieDatabase db = RootieDatabase.getDatabase(ctx);
             if (newStreak > 0 && newStreak % 30 == 0) {
                 com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
-                        ctx, "MONTHLY_STREAK", 200, "Thưởng chuỗi 30 ngày chăm da", "từ chuỗi 30 ngày chăm da"
+                        appCtx, "MONTHLY_STREAK", 200, "Thưởng chuỗi 30 ngày chăm da", "từ chuỗi 30 ngày chăm da", false
                 );
+                return 200;
             } else if (newStreak > 0 && newStreak % 7 == 0) {
                 com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
-                        ctx, "WEEKLY_STREAK", 50, "Thưởng chuỗi 7 ngày chăm da", "từ chuỗi 7 ngày chăm da"
+                        appCtx, "WEEKLY_STREAK", 50, "Thưởng chuỗi 7 ngày chăm da", "từ chuỗi 7 ngày chăm da", false
                 );
+                return 50;
             }
         }
+        return 0;
     }
 
     private String getStepTime(String name) {

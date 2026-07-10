@@ -149,6 +149,13 @@ public class ComNotificationAdapter extends ListAdapter<ComNotificationListItem,
 
             binding.viewUnreadDot.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
 
+            // Đã đọc → làm mờ, vẫn giữ thông báo trong list
+            float contentAlpha = item.isRead() ? 0.55f : 1f;
+            binding.tvContent.setAlpha(contentAlpha);
+            binding.tvTime.setAlpha(contentAlpha);
+            binding.ivAvatar.setAlpha(contentAlpha);
+            binding.ivTypeBadge.setAlpha(contentAlpha);
+
             binding.cardNotification.setCardBackgroundColor(
                     item.isRead()
                             ? ContextCompat.getColor(context, R.color.white)

@@ -48,6 +48,7 @@ import com.veganbeauty.app.features.shop.store.ShopStoreDetailFragment;
 import com.veganbeauty.app.features.shop.store.StoreProximityHelper;
 import com.veganbeauty.app.features.weather.SkinWeatherForecastFragment;
 import com.veganbeauty.app.data.repository.OrderRepository;
+import com.veganbeauty.app.features.auth.FreshDemoAccountSeeder;
 import com.veganbeauty.app.utils.AvatarLoader;
 import com.veganbeauty.app.utils.NavAppUtils;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
@@ -55,6 +56,7 @@ import com.veganbeauty.app.utils.ProfileUpdateNotifier;
 import com.veganbeauty.app.utils.RootieLocationHelper;
 import com.veganbeauty.app.utils.SyncDataHelper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -287,13 +289,20 @@ public class AccountProfileFragment extends RootieFragment {
             RootieDatabase db = RootieDatabase.getDatabase(requireContext());
             orderRepository = new OrderRepository(db.orderDao(), db.rewardPointDao(), db.userGiftDao(), new LocalJsonReader(requireContext()));
 
-            BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
-                orderRepository.refreshOrders(
-                        ProfileSessionHelper.getEffectiveUserId(ctx),
-                        ProfileSession.getPhone(ctx)
-                );
-                return Unit.INSTANCE;
-            });
+            if (!FreshDemoAccountSeeder.isDemoAccount(
+                    ProfileSessionHelper.getEffectiveUserId(ctx),
+                    ProfileSession.getEmail(ctx))) {
+                BuildersKt.launch(LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()), Dispatchers.getIO(), kotlinx.coroutines.CoroutineStart.DEFAULT, (coroutineScope, continuation) -> {
+                    orderRepository.refreshOrders(
+                            ProfileSessionHelper.getEffectiveUserId(ctx),
+                            ProfileSession.getPhone(ctx)
+                    );
+                    return Unit.INSTANCE;
+                });
+            } else {
+                binding.tvCoins.setText("0");
+                updateOrderBadges(Collections.emptyList());
+            }
         } else {
             binding.tvCoins.setText("0");
         }
@@ -351,7 +360,11 @@ public class AccountProfileFragment extends RootieFragment {
         Context ctx = requireContext();
         RootieDatabase db = RootieDatabase.getDatabase(ctx);
 
-        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+        String userId = ProfileSessionHelper.getEffectiveUserId(ctx);
+        String phone = ProfileSession.getPhone(ctx);
+        boolean isFreshDemo = FreshDemoAccountSeeder.isDemoAccount(userId, ProfileSession.getEmail(ctx));
+
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow(userId != null ? userId : ""))
                 .observe(getViewLifecycleOwner(), points -> {
                     if (binding == null || !isAdded()) return;
                     int total = (points != null && !points.isEmpty()) ? points.get(0).total : 0;
@@ -367,26 +380,24 @@ public class AccountProfileFragment extends RootieFragment {
             );
         }
 
-        String userId = ProfileSessionHelper.getEffectiveUserId(ctx);
-        String phone = ProfileSession.getPhone(ctx);
-
-        new Thread(() -> {
-            orderRepository.syncOrdersFromAssetsBlocking();
-            List<OrderEntity> orders = orderRepository.filterBuyerOrdersFromAssets(userId, phone);
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    if (binding == null || !isAdded()) return;
-                    updateOrderBadges(orders);
-                });
-            }
-        }).start();
-
+        // Tài khoản mới / thường: chỉ hiện đơn của chính họ trong Room (Firebase sync riêng).
+        // Không seed/remap đơn mẫu từ assets.
+        updateOrderBadges(Collections.emptyList());
         FlowLiveDataConversions.asLiveData(orderRepository.getOrdersForBuyer(userId, phone))
                 .observe(getViewLifecycleOwner(), roomOrders -> {
-                    if (roomOrders != null && !roomOrders.isEmpty()) {
-                        updateOrderBadges(roomOrders);
-                    }
+                    if (binding == null || !isAdded()) return;
+                    updateOrderBadges(roomOrders != null ? roomOrders : Collections.emptyList());
                 });
+
+        if (isFreshDemo) {
+            return;
+        }
+
+        if (ProfileSession.isDemoTeamUser(userId)) {
+            new Thread(() -> {
+                orderRepository.syncOrdersFromAssetsBlocking();
+            }).start();
+        }
     }
 
     private void refreshProfileUiFromSession() {
@@ -440,7 +451,12 @@ public class AccountProfileFragment extends RootieFragment {
                             new LocalJsonReader(ctx)
                     );
                 }
-                orderRepository.syncOrdersFromAssetsBlocking();
+                if (ProfileSession.isDemoTeamUser(ProfileSessionHelper.getEffectiveUserId(ctx))
+                        && !FreshDemoAccountSeeder.isDemoAccount(
+                        ProfileSessionHelper.getEffectiveUserId(ctx),
+                        ProfileSession.getEmail(ctx))) {
+                    orderRepository.syncOrdersFromAssetsBlocking();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

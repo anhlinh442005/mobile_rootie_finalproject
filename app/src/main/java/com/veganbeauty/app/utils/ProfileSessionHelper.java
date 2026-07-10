@@ -221,7 +221,7 @@ public final class ProfileSessionHelper {
     }
 
     public static String getDisplayAvatarUrl(Context context) {
-        return resolveEffectiveAvatarUrl(context, findCurrentUser(context));
+        return resolveEffectiveAvatarUrl(context);
     }
 
     /** Giống Community profile: ưu tiên session trước, load UI ngay không cần chờ background. */
@@ -237,7 +237,7 @@ public final class ProfileSessionHelper {
         if (isUsableAvatarUrl(sessionAvatar)) {
             return sessionAvatar.trim();
         }
-        return resolveEffectiveAvatarUrl(context, findCurrentUser(context));
+        return resolveEffectiveAvatarUrl(context);
     }
 
     private static final String LOCAL_AVATAR_FILENAME = "user_avatar.jpg";

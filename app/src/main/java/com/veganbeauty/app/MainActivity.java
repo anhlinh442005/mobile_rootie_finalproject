@@ -59,8 +59,13 @@ public class MainActivity extends AppCompatActivity {
         if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(this)) {
             com.veganbeauty.app.features.shop.product.CartHelper.clearCart(this);
         } else {
-            com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsFromFirestore(this);
-            com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(this, null);
+            String userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(this);
+            String email = com.veganbeauty.app.data.local.ProfileSession.getEmail(this);
+            com.veganbeauty.app.utils.AddressBookHelper.ensureLoadedForCurrentUser(this);
+            if (!com.veganbeauty.app.features.auth.FreshDemoAccountSeeder.isDemoAccount(userId, email)) {
+                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsFromFirestore(this);
+                com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(this, null);
+            }
         }
 
         // One-time wipe + re-upload canonical asset data to Firebase
@@ -74,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         com.veganbeauty.app.features.myskin.BookingSampleSeeder.seedIfNeeded(this);
+        com.veganbeauty.app.features.auth.FreshDemoAccountSeeder.seedIfNeeded(this);
         com.veganbeauty.app.features.community.UserSocialSeeder.seedIfNeeded(this);
         com.veganbeauty.app.features.community.CommunityMessageSeeder.seedIfNeeded(this);
 
@@ -94,7 +100,15 @@ public class MainActivity extends AppCompatActivity {
                 // Seed user product expiry so it's not empty in SQLite Studio
                 String currentUserId = com.veganbeauty.app.data.local.ProfileSession.INSTANCE
                         .getCurrentUserId(getApplicationContext());
-                if (currentUserId != null && !currentUserId.isEmpty()) {
+                String sessionUserId = com.veganbeauty.app.data.local.ProfileSession
+                        .getUserId(getApplicationContext());
+                String sessionEmail = com.veganbeauty.app.data.local.ProfileSession
+                        .getEmail(getApplicationContext());
+                boolean isFreshDemo = com.veganbeauty.app.features.auth.FreshDemoAccountSeeder
+                        .isDemoAccount(sessionUserId, sessionEmail);
+
+                if (!isFreshDemo && currentUserId != null && !currentUserId.isEmpty()
+                        && com.veganbeauty.app.data.local.ProfileSession.isDemoTeamUser(currentUserId)) {
                     productRepository.seedExpiryProductsIfEmpty(currentUserId);
                     // Force seed skin history
                     com.veganbeauty.app.data.local.SkinHistoryLocalStore.getHistory(getApplicationContext(),
@@ -109,12 +123,23 @@ public class MainActivity extends AppCompatActivity {
                 communityRepo.seedFromAssetsIfNeeded();
                 com.veganbeauty.app.features.community.com_feed.CommunityBootstrap.markLocalSeedReady();
 
-                com.veganbeauty.app.data.repository.OrderRepository orderRepository = new com.veganbeauty.app.data.repository.OrderRepository(
-                        db.orderDao(),
-                        db.rewardPointDao(),
-                        db.userGiftDao(),
-                        new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()));
-                orderRepository.seedOrdersFromAssetsIfNeeded();
+                if (!isFreshDemo
+                        && com.veganbeauty.app.data.local.ProfileSession.isDemoTeamUser(sessionUserId)) {
+                    com.veganbeauty.app.data.repository.OrderRepository orderRepository = new com.veganbeauty.app.data.repository.OrderRepository(
+                            db.orderDao(),
+                            db.rewardPointDao(),
+                            db.userGiftDao(),
+                            new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()));
+                    orderRepository.seedOrdersFromAssetsIfNeeded();
+                } else if (isFreshDemo) {
+                    // Đảm bảo account demo luôn 0 đơn / 0 xu — chỉ xóa data của demo
+                    String demoId = com.veganbeauty.app.features.auth.FreshDemoAccountSeeder.USER_ID;
+                    db.orderDao().deleteByUserIdentity(
+                            demoId,
+                            com.veganbeauty.app.features.auth.FreshDemoAccountSeeder.PHONE);
+                    db.rewardPointDao().deleteByUserId(demoId);
+                    db.userGiftDao().deleteByUserId(demoId);
+                }
 
                 com.veganbeauty.app.data.repository.StoreRepository storeRepository = new com.veganbeauty.app.data.repository.StoreRepository(
                         db.storeDao(),
@@ -401,6 +426,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         try {
+            com.veganbeauty.app.data.local.ProfileSession.touchSession(getApplicationContext());
             if (com.veganbeauty.app.data.local.ProfileSession.isSkinWeatherNotiEnabled(getApplicationContext())) {
                 com.veganbeauty.app.features.weather.DailySkinWeatherScheduler.scheduleOnly(getApplicationContext());
             }
@@ -821,7 +847,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             com.veganbeauty.app.data.local.RootieDatabase db = com.veganbeauty.app.data.local.RootieDatabase
                     .getDatabase(this);
-            androidx.lifecycle.FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+            String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(this);
+            if (userId == null) userId = "";
+            androidx.lifecycle.FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow(userId))
                     .observe(this, ptsList -> {
                         int pts = (ptsList != null && !ptsList.isEmpty()) ? ptsList.get(0).total : 0;
                         String newTier;

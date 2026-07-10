@@ -8,18 +8,7 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <!-- Bottom Navigation Bar -->
-    <include
-        android:id="@+id/bottomNavigation"
-        layout="@layout/home_navapp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:elevation="4dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <!-- Scrollable content area -->
+    <!-- Scrollable content — full height; bottom padding clears nav bar + center FAB -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/checkin_scroll"
         android:layout_width="match_parent"
@@ -28,7 +17,7 @@
         android:clipToPadding="false"
         android:fillViewport="true"
         android:paddingTop="56dp"
-        android:paddingBottom="132dp"
+        android:paddingBottom="120dp"
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -38,7 +27,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="16dp"
-            android:paddingBottom="16dp">
+            android:paddingBottom="8dp">
 
             <!-- Alert banner status layout -->
             <LinearLayout
@@ -539,43 +528,45 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Check-in CTA — inside scroll so it never overlays rewards / nav -->
+            <LinearLayout
+                android:id="@+id/layoutBottomButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnBottomCheckin"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/skin_bg_btn_green"
+                    android:backgroundTint="@null"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:text="Điểm danh ngay"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Big Action Button pinned above bottom navigation -->
-    <LinearLayout
-        android:id="@+id/layoutBottomButton"
+    <!-- Bottom nav drawn after scroll so it stays above content -->
+    <include
+        android:id="@+id/bottomNavigation"
+        layout="@layout/home_navapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/neutral"
-        android:elevation="20dp"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="12dp"
-        android:translationZ="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="64dp">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnBottomCheckin"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/skin_bg_btn_green"
-            android:backgroundTint="@null"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:text="Điểm danh ngay"
-            android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="16dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- Top App Bar (overlay) -->
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -104,7 +104,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 value.setText(fmt);
                 value.setTextColor(Color.parseColor("#E53E3E"));
-                status.setText("Đổi quà thành công");
+                String reason = item.getReason() != null ? item.getReason() : "";
+                if (reason.startsWith("Đổi quà")) {
+                    status.setText("Đổi quà thành công");
+                } else {
+                    status.setText("Đã dùng xu");
+                }
                 status.setTextColor(Color.parseColor("#C53030"));
                 status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FED7D7")));
             }

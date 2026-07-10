@@ -64,6 +64,8 @@ import com.veganbeauty.app.features.shop.ShopViewModel;
 import com.veganbeauty.app.features.shop.barcode.BarcodeScanFragment;
 import com.veganbeauty.app.features.shop.product.CartHelper;
 import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
+import com.veganbeauty.app.features.shop.home.ShopCategoryHelper;
+import com.veganbeauty.app.features.shop.home.models.CategoryUiModel;
 import com.veganbeauty.app.features.shop.product.list.ShopListFragment;
 import com.veganbeauty.app.features.shop.store.ShopStoreSystemFragment;
 import com.veganbeauty.app.features.weather.SkinWeatherForecastFragment;
@@ -132,6 +134,10 @@ public class HomeFragment extends RootieFragment {
     };
 
     private static boolean hasShownQuizPopupThisSession = false;
+
+    public static void resetQuizPopupSessionFlag() {
+        hasShownQuizPopupThisSession = false;
+    }
 
     @Nullable
     @Override
@@ -518,23 +524,9 @@ public class HomeFragment extends RootieFragment {
         bestsellerAdapter.submitList(sorted.subList(0, Math.min(3, sorted.size())));
         topSearchAdapter.submitList(products.subList(0, Math.min(3, products.size())));
 
-        List<String> catNames = new ArrayList<>();
         List<HomeCategoryItem> categories = new ArrayList<>();
-        for (ProductEntity p : products) {
-            String cat = p.getCategory();
-            if (cat != null && !cat.isBlank() && !cat.equals("Chăm Sóc Tóc") && !cat.equals("Chăm Sóc Mái Tóc") && !catNames.contains(cat)) {
-                catNames.add(cat);
-                int icon;
-                switch (cat) {
-                    case "Combo & Bộ Sản Phẩm": icon = R.drawable.ic_gift; break;
-                    case "Chăm sóc da": case "Chăm Sóc Da Mặt": icon = R.drawable.ic_flower; break;
-                    case "Tắm & Dưỡng Thể": case "Chăm Sóc Cơ Thể": icon = R.drawable.ic_water; break;
-                    case "Dưỡng Môi": case "Chăm Sóc Môi": icon = R.drawable.ic_lips; break;
-                    default: icon = R.drawable.ic_grid; break;
-                }
-                categories.add(new HomeCategoryItem(cat, icon));
-                if (categories.size() >= 4) break;
-            }
+        for (CategoryUiModel category : ShopCategoryHelper.buildHomeCategories(products)) {
+            categories.add(new HomeCategoryItem(category.getName(), category.getIconRes()));
         }
         categoryAdapter.submitList(categories);
     }
@@ -651,12 +643,71 @@ public class HomeFragment extends RootieFragment {
     private void setupQuizReminder() {
         if (getContext() == null) return;
         long lastTestTime = ProfileSession.getLastSkinTestTime(requireContext());
-        boolean needsWeeklyTest = ProfileSession.isQuizRewardEligible(requireContext());
+        boolean needsWeeklyTest = ProfileSession.isWeeklyQuizReminderDue(requireContext());
         boolean dismissed = ProfileSession.isQuizReminderDismissedWeekly(requireContext());
+        boolean isFirstTimeUser = lastTestTime == 0L;
+        boolean isLoggedIn = ProfileSession.isLoggedIn(requireContext());
 
-        if (needsWeeklyTest && !dismissed) {
-            binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.VISIBLE);
-            binding.quizTestWeeklyReminderLayout.getRoot().setOnClickListener(v -> navigateToQuizIntro());
+        View reminderBanner = binding.quizTestWeeklyReminderLayout.getRoot();
+        android.widget.TextView titleView = reminderBanner.findViewById(R.id.tv_quiz_reminder_title);
+        android.widget.TextView descView = reminderBanner.findViewById(R.id.tv_quiz_reminder_desc);
+
+        if (isFirstTimeUser && isLoggedIn) {
+            // User mới / chưa test da: luôn hiện banner; dialog hiện 1 lần mỗi phiên
+            if (titleView != null) titleView.setText("Khám phá làn da");
+            if (descView != null) descView.setText("Làm bài test da để nhận +100 Xu và routine riêng");
+            reminderBanner.setVisibility(View.VISIBLE);
+            reminderBanner.setOnClickListener(v -> navigateToQuizIntro());
+
+            if (!hasShownQuizPopupThisSession) {
+                hasShownQuizPopupThisSession = true;
+                binding.getRoot().postDelayed(() -> {
+                    if (!isAdded() || getContext() == null) return;
+                    View dv = LayoutInflater.from(getContext()).inflate(R.layout.dialog_quiz_test_new_user, null);
+                    android.app.Dialog dialog = new MaterialAlertDialogBuilder(requireContext()).setView(dv).create();
+                    dialog.setCancelable(true);
+                    dialog.setCanceledOnTouchOutside(true);
+                    if (dialog.getWindow() != null) {
+                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        dialog.getWindow().setDimAmount(0.65f);
+                    }
+                    Runnable keepBannerVisible = () -> {
+                        if (!isAdded() || binding == null) return;
+                        binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.VISIBLE);
+                    };
+                    dv.findViewById(R.id.btn_dialog_confirm).setOnClickListener(v -> {
+                        dialog.dismiss();
+                        keepBannerVisible.run();
+                        navigateToQuizIntro();
+                    });
+                    dv.findViewById(R.id.btn_dialog_cancel).setOnClickListener(v -> {
+                        dialog.dismiss();
+                        keepBannerVisible.run();
+                    });
+                    dialog.setOnCancelListener(d -> keepBannerVisible.run());
+                    dialog.show();
+
+                    ObjectAnimator sx = ObjectAnimator.ofFloat(dv, "scaleX", 0.7f, 1.05f, 1f);
+                    ObjectAnimator sy = ObjectAnimator.ofFloat(dv, "scaleY", 0.7f, 1.05f, 1f);
+                    AnimatorSet anim = new AnimatorSet(); anim.playTogether(sx, sy); anim.setDuration(500);
+                    anim.setInterpolator(new OvershootInterpolator(1.5f)); anim.start();
+
+                    View badge = dv.findViewById(R.id.layout_badge);
+                    if (badge != null) {
+                        ObjectAnimator bounce = ObjectAnimator.ofFloat(badge, "translationY", 0f, -20f, 0f);
+                        bounce.setDuration(1200); bounce.setRepeatCount(ObjectAnimator.INFINITE);
+                        bounce.setInterpolator(new AccelerateDecelerateInterpolator()); bounce.start();
+                    }
+                }, 3000);
+            }
+            return;
+        }
+
+        if (!isFirstTimeUser && needsWeeklyTest && !dismissed) {
+            if (titleView != null) titleView.setText("Test da định kỳ");
+            if (descView != null) descView.setText("Đã 7 ngày, kiểm tra da để tối ưu routine");
+            reminderBanner.setVisibility(View.VISIBLE);
+            reminderBanner.setOnClickListener(v -> navigateToQuizIntro());
 
             if (!hasShownQuizPopupThisSession) {
                 hasShownQuizPopupThisSession = true;
@@ -688,42 +739,11 @@ public class HomeFragment extends RootieFragment {
                 }, 3000);
             }
         } else {
-            binding.quizTestWeeklyReminderLayout.getRoot().setVisibility(View.GONE);
-            if (lastTestTime == 0L && !hasShownQuizPopupThisSession && !dismissed) {
-                hasShownQuizPopupThisSession = true;
-                binding.getRoot().postDelayed(() -> {
-                    if (!isAdded()) return;
-                    View dv = LayoutInflater.from(getContext()).inflate(R.layout.dialog_quiz_test_new_user, null);
-                    android.app.Dialog dialog = new MaterialAlertDialogBuilder(requireContext()).setView(dv).create();
-                    if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    dv.findViewById(R.id.btn_dialog_confirm).setOnClickListener(v -> { dialog.dismiss(); navigateToQuizIntro(); });
-                    dv.findViewById(R.id.btn_dialog_cancel).setOnClickListener(v -> dialog.dismiss());
-                    dialog.show();
-
-                    ObjectAnimator sx = ObjectAnimator.ofFloat(dv, "scaleX", 0.7f, 1.05f, 1f);
-                    ObjectAnimator sy = ObjectAnimator.ofFloat(dv, "scaleY", 0.7f, 1.05f, 1f);
-                    AnimatorSet anim = new AnimatorSet(); anim.playTogether(sx, sy); anim.setDuration(500);
-                    anim.setInterpolator(new OvershootInterpolator(1.5f)); anim.start();
-
-                    View badge = dv.findViewById(R.id.layout_badge);
-                    ObjectAnimator bounce = ObjectAnimator.ofFloat(badge, "translationY", 0f, -20f, 0f);
-                    bounce.setDuration(1200); bounce.setRepeatCount(ObjectAnimator.INFINITE);
-                    bounce.setInterpolator(new AccelerateDecelerateInterpolator()); bounce.start();
-                }, 5000);
-            }
+            reminderBanner.setVisibility(View.GONE);
         }
     }
 
     private void navigateToQuizIntro() {
-        if (!ProfileSession.isQuizRewardEligible(requireContext())) {
-            int daysLeft = ProfileSession.getDaysUntilQuizReward(requireContext());
-            Toast.makeText(
-                    requireContext(),
-                    "Bạn đã kiểm tra da gần đây. Vui lòng quay lại sau " + daysLeft + " ngày để nhận thưởng 100 xu.",
-                    Toast.LENGTH_LONG
-            ).show();
-            return;
-        }
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.main_container, new QuizTestIntroFragment()).addToBackStack(null).commit();
     }

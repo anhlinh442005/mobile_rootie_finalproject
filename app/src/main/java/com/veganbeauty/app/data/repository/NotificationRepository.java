@@ -165,6 +165,91 @@ public class NotificationRepository {
         return false;
     }
 
+    /**
+     * Chỉ loại seed đơn/lịch mẫu cũ — không xóa thông báo thật của user
+     * (kể cả id dạng noti_voucher_*, noti_checkin_*, …).
+     */
+    private static boolean isLegacyOrderOrScheduleSeed(NotificationItem item) {
+        if (item == null || item.getId() == null) {
+            return false;
+        }
+        String id = item.getId().trim();
+        if ("noti_order_1".equals(id) || "noti_schedule_1".equals(id)) {
+            return true;
+        }
+        String type = item.getNotificationType() != null
+                ? item.getNotificationType().trim().toLowerCase(java.util.Locale.ROOT)
+                : "";
+        // Seed mẫu gắn orderId/scheduleId cố định từ asset
+        if ("order".equals(type) && "ORD-1003".equals(
+                item.getOrderId() != null ? item.getOrderId().trim() : "")) {
+            return true;
+        }
+        if (("schedule date".equals(type) || "schedule".equals(type))
+                && "BK_NOTI_101".equals(
+                item.getScheduleId() != null ? item.getScheduleId().trim() : "")) {
+            return true;
+        }
+        return false;
+    }
+
+    /** One-time purge of polluted order/booking sample seeds from older builds. */
+    private void purgeStaleAssetInboxIfNeeded() {
+        if (isGuest() || currentUserId == null || currentUserId.isEmpty()) {
+            return;
+        }
+        android.content.SharedPreferences prefs =
+                context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE);
+        String flagKey = "asset_order_schedule_purged_v3_" + currentUserId;
+        if (prefs.getBoolean(flagKey, false)) {
+            return;
+        }
+
+        List<NotificationItem> localList = loadNotificationsFromLocal();
+        List<NotificationItem> cleaned = new ArrayList<>();
+        boolean changed = false;
+        for (NotificationItem item : localList) {
+            if (isLegacyOrderOrScheduleSeed(item)) {
+                changed = true;
+                continue;
+            }
+            cleaned.add(item);
+        }
+        if (changed) {
+            _notifications.setValue(cleaned);
+            updateUnreadCount(cleaned);
+            saveNotificationsToLocal(cleaned);
+        }
+        prefs.edit().putBoolean(flagKey, true).apply();
+    }
+
+    /**
+     * Wipes the per-user notification inbox (file + deleted-id prefs + in-memory state).
+     * Used when resetting the fresh demo account so leftover order/booking notifs cannot return.
+     */
+    public void clearInboxForUser(@Nullable String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            return;
+        }
+        String scopedId = userId.trim();
+        File file = new File(context.getFilesDir(), "local_account_notifications_" + scopedId + ".json");
+        if (file.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
+        }
+        android.content.SharedPreferences prefs =
+                context.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE);
+        prefs.edit().remove("deleted_ids_" + scopedId).apply();
+
+        if (scopedId.equals(currentUserId) || scopedId.equals(resolveUserId())) {
+            currentUserId = scopedId;
+            List<NotificationItem> empty = new ArrayList<>();
+            _notifications.setValue(empty);
+            _unreadCount.setValue(0);
+            saveNotificationsToLocal(empty);
+        }
+    }
+
     public void refreshNotifications() {
         if (isGuest()) {
             _notifications.setValue(new ArrayList<>());
@@ -172,75 +257,19 @@ public class NotificationRepository {
             return;
         }
 
+        purgeStaleAssetInboxIfNeeded();
+
         Map<String, Boolean> readStateById = captureReadStates();
-
-        List<NotificationItem> assetList = localJsonReader.getAllNotifications();
         Set<String> deletedIds = getDeletedNotificationIds();
-        
-        List<NotificationItem> filteredAssetList = new ArrayList<>();
-        for (NotificationItem item : assetList) {
-            if (!deletedIds.contains(item.getId())) {
-                filteredAssetList.add(item);
-            }
-        }
-        assetList = filteredAssetList;
 
+        // Chỉ dùng inbox local theo user — không merge asset mẫu, không xóa khi đọc.
         List<NotificationItem> localList = loadNotificationsFromLocal();
-        List<NotificationItem> filteredLocalList = new ArrayList<>();
+        List<NotificationItem> finalList = new ArrayList<>();
         for (NotificationItem item : localList) {
-            if (!deletedIds.contains(item.getId())) {
-                filteredLocalList.add(item);
+            if (deletedIds.contains(item.getId()) || isLegacyOrderOrScheduleSeed(item)) {
+                continue;
             }
-        }
-        localList = filteredLocalList;
-
-        List<NotificationItem> finalList;
-        if (localList.isEmpty()) {
-            finalList = new ArrayList<>();
-            for (NotificationItem item : assetList) {
-                finalList.add(applyReadState(normalizeNotificationItem(item), readStateById));
-            }
-        } else {
-            Map<String, NotificationItem> assetMap = new HashMap<>();
-            for (NotificationItem item : assetList) {
-                assetMap.put(item.getId(), item);
-            }
-
-            List<NotificationItem> updatedList = new ArrayList<>();
-            for (NotificationItem localItem : localList) {
-                NotificationItem assetItem = assetMap.get(localItem.getId());
-                if (assetItem != null) {
-                    updatedList.add(applyReadState(normalizeNotificationItem(new NotificationItem(
-                            assetItem.getId(),
-                            assetItem.getTitle(),
-                            assetItem.getContent(),
-                            localItem.getTime(),
-                            assetItem.getCategory(),
-                            assetItem.getTag(),
-                            assetItem.getVoucherCode(),
-                            assetItem.getActionText(),
-                            localItem.isRead(),
-                            localItem.getSection(),
-                            assetItem.getIconResName(),
-                            assetItem.getNotificationType() != null ? assetItem.getNotificationType() : localItem.getNotificationType(),
-                            assetItem.getOrderId() != null ? assetItem.getOrderId() : localItem.getOrderId(),
-                            assetItem.getScheduleId() != null ? assetItem.getScheduleId() : localItem.getScheduleId()
-                    )), readStateById));
-                } else {
-                    updatedList.add(applyReadState(normalizeNotificationItem(localItem), readStateById));
-                }
-            }
-
-            Set<String> localIds = new HashSet<>();
-            for (NotificationItem item : localList) {
-                localIds.add(item.getId());
-            }
-            for (NotificationItem assetItem : assetList) {
-                if (!localIds.contains(assetItem.getId())) {
-                    updatedList.add(applyReadState(normalizeNotificationItem(assetItem), readStateById));
-                }
-            }
-            finalList = updatedList;
+            finalList.add(applyReadState(normalizeNotificationItem(item), readStateById));
         }
 
         _notifications.setValue(finalList);

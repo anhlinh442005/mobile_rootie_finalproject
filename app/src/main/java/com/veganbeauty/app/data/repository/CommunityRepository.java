@@ -12,6 +12,7 @@ import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,6 +37,21 @@ public class CommunityRepository {
 
     public Flow<List<CommunityPostEntity>> getAllPosts() {
         return communityDao.getAllPosts();
+    }
+
+    /** Saves a new post to Room immediately, then uploads to Firestore in the background. */
+    public void createPost(CommunityPostEntity post) {
+        if (post == null) return;
+        synchronized (DATA_LOCK) {
+            communityDao.insertPosts(Collections.singletonList(post));
+        }
+        REFRESH_EXECUTOR.execute(() -> {
+            try {
+                firestoreService.uploadCommunityPost(post);
+            } catch (Exception e) {
+                Log.w(TAG, "Firestore upload skipped for post " + post.getPostId(), e);
+            }
+        });
     }
 
     public Flow<List<UserEntity>> getAllUsers() {

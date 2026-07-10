@@ -722,6 +722,32 @@ public class LocalJsonReader {
         return result;
     }
 
+    /** Xóa booking local của một user (dùng khi reset tài khoản demo). */
+    public synchronized void removeBookingsForUser(String userId, String email) {
+        List<BookingHistoryEntity> all = loadAllBookingsInternal();
+        if (all.isEmpty()) {
+            return;
+        }
+        String normalizedEmail = email != null ? email.trim().toLowerCase(Locale.ROOT) : "";
+        String normalizedUserId = userId != null ? userId.trim() : "";
+        List<BookingHistoryEntity> kept = new ArrayList<>();
+        for (BookingHistoryEntity booking : all) {
+            if (booking == null) {
+                continue;
+            }
+            boolean matchUserId = !normalizedUserId.isEmpty()
+                    && normalizedUserId.equalsIgnoreCase(booking.getUserId());
+            boolean matchEmail = !normalizedEmail.isEmpty()
+                    && matchesUserEmail(booking, normalizedEmail);
+            if (!matchUserId && !matchEmail) {
+                kept.add(booking);
+            }
+        }
+        if (kept.size() != all.size()) {
+            saveAllBookingsInternal(kept);
+        }
+    }
+
     public synchronized void addBooking(BookingHistoryEntity booking) {
         if (booking == null || booking.getId() == null || booking.getId().trim().isEmpty()) {
             return;

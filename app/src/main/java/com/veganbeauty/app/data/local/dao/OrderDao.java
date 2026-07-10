@@ -75,4 +75,7 @@ public interface OrderDao {
 
     @Query("SELECT * FROM orders WHERE userId = :userId OR shippingPhone = :phone OR REPLACE(shippingPhone, ' ', '') = REPLACE(:phone, ' ', '')")
     List<OrderEntity> getOrdersForBuyerIdentitySync(String userId, String phone);
+
+    @Query("DELETE FROM orders WHERE userId = :userId OR shippingPhone = :phone OR REPLACE(shippingPhone, ' ', '') = REPLACE(:phone, ' ', '')")
+    void deleteByUserIdentity(String userId, String phone);
 }

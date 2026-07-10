@@ -1,5 +1,6 @@
 package com.veganbeauty.app.features.ai;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -212,7 +213,14 @@ public class SkinChatFragment extends DialogFragment {
 
         loadConversationData();
 
-        MessageHelper.listenToConversation(requireContext(), conversationId, () -> {
+        Context appContext = requireContext().getApplicationContext();
+        MessageHelper.fetchAndMergeFirebaseConversations(appContext, currentUserId, () -> {
+            if (isAdded()) {
+                requireActivity().runOnUiThread(this::loadConversationData);
+            }
+        });
+
+        MessageHelper.listenToConversation(appContext, conversationId, () -> {
             if (isAdded()) {
                 loadConversationData();
             }

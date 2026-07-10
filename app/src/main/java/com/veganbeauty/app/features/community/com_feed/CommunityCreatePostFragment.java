@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -44,10 +45,11 @@ import coil.ImageLoader;
 import coil.request.ImageRequest;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
-import com.veganbeauty.app.data.local.dao.CommunityDao;
 import com.veganbeauty.app.data.local.entities.CommunityPostEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentCreatePostBinding;
+import com.veganbeauty.app.utils.CommunityPostNotifier;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import org.json.JSONArray;
@@ -70,12 +72,14 @@ import java.util.Date;
 
 public class CommunityCreatePostFragment extends RootieFragment {
 
+    private static final Boolean CHIP_SELECTED = Boolean.TRUE;
+
     private ComFragmentCreatePostBinding binding;
     private final List<String> selectedImageUris = new ArrayList<>();
     private final List<String> selectedProductIds = new ArrayList<>();
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private CommunityDao communityDao;
-    private final FirestoreService firestoreService = new FirestoreService();
+    private CommunityRepository communityRepository;
+    private CommunityViewModel communityViewModel;
 
     private String loggedUserId = "test_001";
     private String loggedUsername = "Test User";
@@ -123,19 +127,20 @@ public class CommunityCreatePostFragment extends RootieFragment {
                             iv.setImageURI(Uri.parse(originalUriStr));
 
                             ImageView ivClose = new ImageView(requireContext());
+                            int closeSize = (int) (20 * density);
                             FrameLayout.LayoutParams closeLp = new FrameLayout.LayoutParams(
-                                    (int) (16 * density),
-                                    (int) (16 * density)
+                                    closeSize,
+                                    closeSize
                             );
                             closeLp.gravity = Gravity.TOP | Gravity.END;
-                            closeLp.topMargin = (int) (3 * density);
-                            closeLp.setMarginEnd((int) (3 * density));
+                            closeLp.topMargin = (int) (4 * density);
+                            closeLp.setMarginEnd((int) (4 * density));
                             ivClose.setLayoutParams(closeLp);
-                            ivClose.setImageResource(R.drawable.ic_cancel);
-                            ivClose.setBackgroundResource(R.drawable.com_bg_image_remove_btn);
-                            ivClose.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                            int pad = (int) (2 * density);
-                            ivClose.setPadding(pad, pad, pad, pad);
+                            ivClose.setImageResource(R.drawable.com_ic_image_remove);
+                            ivClose.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                            ivClose.setBackground(null);
+                            ivClose.setPadding(0, 0, 0, 0);
+                            ivClose.setContentDescription("Xóa ảnh");
                             ivClose.setOnClickListener(v -> {
                                 if (container.getParent() instanceof ViewGroup) {
                                     ((ViewGroup) container.getParent()).removeView(container);
@@ -168,20 +173,39 @@ public class CommunityCreatePostFragment extends RootieFragment {
             if (child instanceof TextView) {
                 TextView tv = (TextView) child;
                 if ("+".equals(tv.getText().toString())) continue;
+                tv.setTag(null);
                 tv.setBackgroundResource(R.drawable.com_bg_chip_solid_normal);
                 tv.setTextColor(Color.parseColor("#4B6554"));
                 tv.setOnClickListener(v -> {
-                    boolean isSelected = tv.getCurrentTextColor() == Color.WHITE;
+                    boolean isSelected = CHIP_SELECTED.equals(tv.getTag());
                     if (isSelected) {
+                        tv.setTag(null);
                         tv.setBackgroundResource(R.drawable.com_bg_chip_solid_normal);
                         tv.setTextColor(Color.parseColor("#4B6554"));
                     } else {
+                        tv.setTag(CHIP_SELECTED);
                         tv.setBackgroundResource(R.drawable.bg_btn_buy);
                         tv.setTextColor(Color.WHITE);
                     }
                 });
             }
         }
+    }
+
+    private String getSelectedChipText(LinearLayout container) {
+        if (container == null) return "";
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View child = container.getChildAt(i);
+            if (child instanceof TextView) {
+                TextView tv = (TextView) child;
+                if ("+".equals(tv.getText().toString())) continue;
+                if (Boolean.TRUE.equals(tv.getTag())
+                        || tv.getCurrentTextColor() == Color.WHITE) {
+                    return tv.getText().toString();
+                }
+            }
+        }
+        return "";
     }
 
     private String copyUriToInternalStorage(Context context, Uri uri) {
@@ -272,8 +296,15 @@ public class CommunityCreatePostFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         setupHideKeyboard(binding.getRoot());
-        RootieDatabase db = RootieDatabase.getDatabase(requireContext());
-        communityDao = db.communityDao();
+        Context appContext = requireContext().getApplicationContext();
+        RootieDatabase db = RootieDatabase.getDatabase(appContext);
+        communityRepository = new CommunityRepository(
+                db.communityDao(),
+                new LocalJsonReader(appContext),
+                new FirestoreService()
+        );
+        CommunityViewModelFactory factory = new CommunityViewModelFactory(communityRepository);
+        communityViewModel = new ViewModelProvider(requireActivity(), factory).get(CommunityViewModel.class);
 
         loadCurrentUserInfo();
         if (binding.tvUserName != null) binding.tvUserName.setText(loggedDisplayName);
@@ -319,12 +350,15 @@ public class CommunityCreatePostFragment extends RootieFragment {
                                 params.setMarginEnd((int) (8 * getResources().getDisplayMetrics().density));
                                 newChip.setLayoutParams(params);
 
+                                newChip.setTag(CHIP_SELECTED);
                                 newChip.setOnClickListener(v1 -> {
-                                    boolean isSelected = newChip.getCurrentTextColor() == Color.WHITE;
+                                    boolean isSelected = CHIP_SELECTED.equals(newChip.getTag());
                                     if (isSelected) {
+                                        newChip.setTag(null);
                                         newChip.setBackgroundResource(R.drawable.com_bg_chip_solid_normal);
                                         newChip.setTextColor(Color.parseColor("#4B6554"));
                                     } else {
+                                        newChip.setTag(CHIP_SELECTED);
                                         newChip.setBackgroundResource(R.drawable.bg_btn_buy);
                                         newChip.setTextColor(Color.WHITE);
                                     }
@@ -365,12 +399,15 @@ public class CommunityCreatePostFragment extends RootieFragment {
                                 params.setMarginEnd((int) (8 * getResources().getDisplayMetrics().density));
                                 newChip.setLayoutParams(params);
 
+                                newChip.setTag(CHIP_SELECTED);
                                 newChip.setOnClickListener(v12 -> {
-                                    boolean isSelected = newChip.getCurrentTextColor() == Color.WHITE;
+                                    boolean isSelected = CHIP_SELECTED.equals(newChip.getTag());
                                     if (isSelected) {
+                                        newChip.setTag(null);
                                         newChip.setBackgroundResource(R.drawable.com_bg_chip_solid_normal);
                                         newChip.setTextColor(Color.parseColor("#4B6554"));
                                     } else {
+                                        newChip.setTag(CHIP_SELECTED);
                                         newChip.setBackgroundResource(R.drawable.bg_btn_buy);
                                         newChip.setTextColor(Color.WHITE);
                                     }
@@ -653,34 +690,8 @@ public class CommunityCreatePostFragment extends RootieFragment {
     }
 
     private void savePost(String content) {
-        String selectedTopic = "";
-        String selectedSkinIssue = "";
-
-        if (binding.llTopicsContainer != null) {
-            for (int i = 0; i < binding.llTopicsContainer.getChildCount(); i++) {
-                View child = binding.llTopicsContainer.getChildAt(i);
-                if (child instanceof TextView) {
-                    TextView tv = (TextView) child;
-                    if (tv.getCurrentTextColor() == Color.WHITE && !"+".equals(tv.getText().toString())) {
-                        selectedTopic = tv.getText().toString();
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (binding.llSkinIssuesContainer != null) {
-            for (int i = 0; i < binding.llSkinIssuesContainer.getChildCount(); i++) {
-                View child = binding.llSkinIssuesContainer.getChildAt(i);
-                if (child instanceof TextView) {
-                    TextView tv = (TextView) child;
-                    if (tv.getCurrentTextColor() == Color.WHITE && !"+".equals(tv.getText().toString())) {
-                        selectedSkinIssue = tv.getText().toString();
-                        break;
-                    }
-                }
-            }
-        }
+        String selectedTopic = getSelectedChipText(binding.llTopicsContainer);
+        String selectedSkinIssue = getSelectedChipText(binding.llSkinIssuesContainer);
 
         StringBuilder urisBuilder = new StringBuilder();
         for (int i = 0; i < selectedImageUris.size(); i++) {
@@ -698,7 +709,7 @@ public class CommunityCreatePostFragment extends RootieFragment {
         SimpleDateFormat createdAtFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         createdAtFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         final String createdAt = createdAtFormat.format(new Date());
-        CommunityPostEntity newPost = new CommunityPostEntity(
+        final CommunityPostEntity newPost = new CommunityPostEntity(
                 postId,
                 loggedUserId,
                 loggedUsername,
@@ -709,33 +720,59 @@ public class CommunityCreatePostFragment extends RootieFragment {
                 0,
                 0,
                 0,
-                selectedSkinIssue,
-                selectedTopic,
+                selectedSkinIssue.isEmpty() ? null : selectedSkinIssue,
+                null,
                 urisBuilder.toString(),
-                selectedTopic,
-                productsBuilder.toString()
+                selectedTopic.isEmpty() ? null : selectedTopic,
+                productsBuilder.length() > 0 ? productsBuilder.toString() : null
         );
 
         View flLoading = binding.getRoot().findViewById(R.id.flLoading);
         if (flLoading != null) flLoading.setVisibility(View.VISIBLE);
         if (binding.btnPost != null) binding.btnPost.setEnabled(false);
 
+        final Context appContext = requireContext().getApplicationContext();
         new Thread(() -> {
-            communityDao.insertPosts(java.util.Collections.singletonList(newPost));
-            firestoreService.uploadCommunityPost(newPost);
+            try {
+                if (communityViewModel != null) {
+                    communityViewModel.createPost(newPost);
+                } else if (communityRepository != null) {
+                    communityRepository.createPost(newPost);
+                } else {
+                    RootieDatabase.getDatabase(appContext).communityDao()
+                            .insertPosts(java.util.Collections.singletonList(newPost));
+                }
 
-            FragmentActivity activity = getActivity();
-            if (activity == null) return;
-            activity.runOnUiThread(() -> {
-                if (!isAdded() || binding == null) return;
-                FeedDataCache.addPinnedPost(newPost);
+                FragmentActivity activity = getActivity();
+                if (activity == null) return;
+                activity.runOnUiThread(() -> {
+                    if (!isAdded() || binding == null) return;
 
-                if (flLoading != null) flLoading.setVisibility(View.GONE);
+                    FeedDataCache.addPinnedPost(newPost);
+                    CommunityPostNotifier.notifyPostCreated(newPost);
 
-                Toast.makeText(requireContext(), "Đã đăng bài viết thành công", Toast.LENGTH_SHORT).show();
+                    if (flLoading != null) flLoading.setVisibility(View.GONE);
+                    if (binding.btnPost != null) binding.btnPost.setEnabled(true);
 
-                getParentFragmentManager().popBackStackImmediate();
-            });
+                    Toast.makeText(requireContext(), "Đã đăng bài viết thành công", Toast.LENGTH_SHORT).show();
+
+                    if (!getParentFragmentManager().popBackStackImmediate()) {
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.main_container, new CommunityFeedFragment())
+                                .commit();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                FragmentActivity activity = getActivity();
+                if (activity == null) return;
+                activity.runOnUiThread(() -> {
+                    if (!isAdded() || binding == null) return;
+                    if (flLoading != null) flLoading.setVisibility(View.GONE);
+                    if (binding.btnPost != null) binding.btnPost.setEnabled(true);
+                    Toast.makeText(requireContext(), "Không thể đăng bài. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                });
+            }
         }).start();
     }
 

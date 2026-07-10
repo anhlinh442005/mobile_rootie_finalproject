@@ -27,6 +27,7 @@ import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 import com.veganbeauty.app.features.weather.SkinWeatherProfileHelper;
 import com.veganbeauty.app.utils.CoinRewardDialogHelper;
+import com.veganbeauty.app.utils.SkinHistoryIdHelper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -67,6 +68,18 @@ public class QuizTestResultFragment extends RootieFragment {
     private final List<AiSkincareStep> morningSteps = new ArrayList<>();
     private final List<AiSkincareStep> eveningSteps = new ArrayList<>();
     private boolean isMorningTab = true;
+    /** Đã ghi lịch sử quiz trong lần mở màn hình kết quả này. */
+    private boolean historyLoggedThisOpen = false;
+    /** Đủ điều kiện thưởng (tính trước khi auto-save cập nhật lastTestTime). */
+    private boolean pendingQuizReward = false;
+    private boolean quizRewardGrantedThisOpen = false;
+    /** Chờ onResume rồi mới cộng xu — tránh show dialog khi fragment chưa ổn định (crash → ra Welcome). */
+    private boolean quizRewardPendingUntilResume = false;
+
+    @Override
+    protected boolean shouldSetupNotificationBell() {
+        return false;
+    }
 
     @Nullable
     @Override
@@ -79,6 +92,22 @@ public class QuizTestResultFragment extends RootieFragment {
     public void setupUI(View view) {
         if (binding == null) return;
 
+        try {
+            setupReportUi();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (isAdded()) {
+                android.widget.Toast.makeText(
+                        requireContext(),
+                        "Không thể mở báo cáo. Vui lòng thử lại.",
+                        android.widget.Toast.LENGTH_SHORT
+                ).show();
+                // Không popBackStack — tránh nhảy màn / mất session cảm giác "bị out"
+            }
+        }
+    }
+
+    private void setupReportUi() {
         Context ctx = requireContext();
         SharedPreferences prefs = ctx.getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE);
         Bundle args = getArguments();
@@ -98,70 +127,96 @@ public class QuizTestResultFragment extends RootieFragment {
         binding.tvRecommendation.setText(recommendation);
         binding.tvSkinTypeDesc.setText(getSkinTypeDesc(skinType));
 
+        // Lưu hồ sơ da ngay; cộng xu hoãn tới onResume để tránh crash khi show dialog sớm
+        if (!fromSkinProfile) {
+            ProfileSession.touchSession(ctx);
+            pendingQuizReward = ProfileSession.isQuizRewardEligible(ctx);
+            persistSkinProfileData(prefs, skinType, recommendation, flaggedSet,
+                    sensitivity, hydration, elasticity, sebum, true);
+            if (pendingQuizReward) {
+                quizRewardPendingUntilResume = true;
+            }
+        }
+
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new AccountNotificationFragment())
-                        .addToBackStack(null)
-                        .commit());
+        if (binding.layoutNotification != null) {
+            binding.layoutNotification.getRoot().setOnClickListener(v ->
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, new AccountNotificationFragment())
+                            .addToBackStack(null)
+                            .commitAllowingStateLoss());
+        }
 
         String finalSkinType = skinType;
         String finalRecommendation = recommendation;
         Set<String> finalFlaggedSet = flaggedSet;
 
-        binding.llAiRoutineSection.setVisibility(View.VISIBLE);
-        setupAiRoutineListeners(prefs, finalSkinType, finalRecommendation, finalFlaggedSet,
-                sensitivity, hydration, elasticity, sebum, fromSkinProfile);
-
         if (fromSkinProfile) {
+            binding.llAiRoutineSection.setVisibility(View.GONE);
             binding.llFooterButtons.setVisibility(View.GONE);
             binding.btnApplyRoutine.setVisibility(View.GONE);
             binding.btnDone.setVisibility(View.GONE);
-        } else if (isFirstTest) {
-            binding.llFooterButtons.setVisibility(View.GONE);
-            binding.btnApplyRoutine.setVisibility(View.VISIBLE);
+            populateReportSectionsDeferred(finalFlaggedSet);
         } else {
-            boolean canRetakeQuiz = ProfileSession.isQuizRewardEligible(ctx);
-            binding.llFooterButtons.setVisibility(View.VISIBLE);
-            binding.btnSaveProfile.setVisibility(View.VISIBLE);
-            binding.btnSuggestRoutine.setVisibility(View.VISIBLE);
-            binding.btnApplyRoutine.setVisibility(View.GONE);
-            binding.btnDone.setVisibility(canRetakeQuiz ? View.VISIBLE : View.GONE);
-            if (canRetakeQuiz) {
-                binding.btnDone.setOnClickListener(v ->
-                        getParentFragmentManager().beginTransaction()
-                                .replace(R.id.main_container, new QuizTestIntroFragment())
-                                .commit());
-            }
-            binding.btnSaveProfile.setOnClickListener(v ->
-                    saveSkinProfile(prefs, finalSkinType, finalRecommendation, finalFlaggedSet,
-                            sensitivity, hydration, elasticity, sebum, this::onSaveProfileFinished));
-            binding.btnSuggestRoutine.setOnClickListener(v -> {
-                if (binding.quizScroll != null && binding.llAiRoutineSection != null) {
-                    binding.quizScroll.smoothScrollTo(0, binding.llAiRoutineSection.getTop());
-                }
-                if (morningSteps.isEmpty() && eveningSteps.isEmpty()) {
-                    loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity, finalFlaggedSet);
-                }
-            });
-        }
+            binding.llAiRoutineSection.setVisibility(View.VISIBLE);
+            setupAiRoutineListeners(prefs, finalSkinType, finalRecommendation, finalFlaggedSet,
+                    sensitivity, hydration, elasticity, sebum, false);
 
-        loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity, finalFlaggedSet);
+            if (isFirstTest) {
+                binding.llFooterButtons.setVisibility(View.GONE);
+                binding.btnApplyRoutine.setVisibility(View.VISIBLE);
+            } else {
+                // Vừa hoàn thành quiz tuần này — không hiện nút làm lại trên màn kết quả
+                binding.llFooterButtons.setVisibility(View.VISIBLE);
+                binding.btnSaveProfile.setVisibility(View.VISIBLE);
+                binding.btnSuggestRoutine.setVisibility(View.VISIBLE);
+                binding.btnApplyRoutine.setVisibility(View.GONE);
+                binding.btnDone.setVisibility(View.GONE);
+                binding.btnSaveProfile.setOnClickListener(v ->
+                        saveSkinProfile(prefs, finalSkinType, finalRecommendation, finalFlaggedSet,
+                                sensitivity, hydration, elasticity, sebum, this::onSaveProfileFinished));
+                binding.btnSuggestRoutine.setOnClickListener(v -> {
+                    if (binding.quizScroll != null && binding.llAiRoutineSection != null) {
+                        binding.quizScroll.smoothScrollTo(0, binding.llAiRoutineSection.getTop());
+                    }
+                    if (morningSteps.isEmpty() && eveningSteps.isEmpty()) {
+                        loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity, finalFlaggedSet);
+                    }
+                });
+            }
+
+            loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity, finalFlaggedSet);
+            populateReportSectionsDeferred(finalFlaggedSet);
+        }
 
         binding.cardAiAdvice.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.ai.SkinAiChatFragment())
-                        .addToBackStack(null).commit());
-
-        processIngredients(finalFlaggedSet);
-        recommendProducts(finalFlaggedSet);
+                        .addToBackStack(null).commitAllowingStateLoss());
 
         BottomNavHelper.setup(this, binding.getRoot(), R.id.nav_myskin, tabId -> {
             BottomNavHelper.navigate(this, tabId);
         });
 
         setupScrollHideHeader();
+    }
+
+    private void populateReportSectionsDeferred(Set<String> flaggedGroups) {
+        if (binding == null) {
+            return;
+        }
+        binding.getRoot().post(() -> {
+            if (!isAdded() || binding == null) {
+                return;
+            }
+            try {
+                processIngredients(flaggedGroups);
+                recommendProducts(flaggedGroups);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private static final class ReportSnapshot {
@@ -193,7 +248,8 @@ public class QuizTestResultFragment extends RootieFragment {
         if (args != null && args.containsKey(ARG_SKIN_TYPE)) {
             return snapshotFromArgs(args);
         }
-        if (fromSkinProfile || ProfileSession.hasSavedSkinProfile(ctx)) {
+        // Màn kết quả sau quiz: luôn lấy prefs quiz vừa làm, không lấy hồ sơ cũ
+        if (fromSkinProfile) {
             return snapshotFromSavedProfile(ctx);
         }
         return snapshotFromQuizPrefs(prefs);
@@ -525,14 +581,8 @@ public class QuizTestResultFragment extends RootieFragment {
             binding.tvRetakeQuizInline.setVisibility(View.GONE);
             return;
         }
-        boolean canRetakeQuiz = ProfileSession.isQuizRewardEligible(requireContext());
-        binding.tvRetakeQuizInline.setVisibility(canRetakeQuiz ? View.VISIBLE : View.GONE);
-        if (canRetakeQuiz) {
-            binding.tvRetakeQuizInline.setOnClickListener(v ->
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, new QuizTestIntroFragment())
-                            .commit());
-        }
+        // Màn kết quả sau khi làm quiz — ẩn làm lại (cooldown 7 ngày)
+        binding.tvRetakeQuizInline.setVisibility(View.GONE);
     }
 
     private void updateTabUI() {
@@ -607,7 +657,7 @@ public class QuizTestResultFragment extends RootieFragment {
             eveningSteps.add(new AiSkincareStep(i, step.stepName, step.productName, step.reason, true));
         }
 
-        if (plan.assessment != null && !plan.assessment.trim().isEmpty()) {
+        if (plan.assessment != null && !plan.assessment.trim().isEmpty() && isAdded() && binding != null) {
             binding.tvRecommendation.setText(plan.assessment);
             requireContext().getSharedPreferences("RootieQuizPrefs", Context.MODE_PRIVATE)
                     .edit().putString("RECOMMENDATION", plan.assessment).apply();
@@ -656,13 +706,20 @@ public class QuizTestResultFragment extends RootieFragment {
         }
     }
 
-    private void saveSkinProfile(SharedPreferences prefs, String skinType, String recommendation, Set<String> flaggedSet, int sensitivity, int hydration, int elasticity, int sebum, @Nullable OnSkinProfileSavedListener listener) {
-        String skinAreas = prefs.getString("SKIN_AREAS_DESC", "Độ ẩm và bã nhờn phân bổ tương đối đồng đều trên các vùng da.");
-
-        long lastTestTime = ProfileSession.getLastSkinTestTime(requireContext());
+    private void persistSkinProfileData(
+            SharedPreferences prefs,
+            String skinType,
+            String recommendation,
+            Set<String> flaggedSet,
+            int sensitivity,
+            int hydration,
+            int elasticity,
+            int sebum,
+            boolean appendHistory
+    ) {
+        String skinAreas = prefs.getString("SKIN_AREAS_DESC",
+                "Độ ẩm và bã nhờn phân bổ tương đối đồng đều trên các vùng da.");
         long currentTime = System.currentTimeMillis();
-        long sevenDaysMs = 7L * 24 * 60 * 60 * 1000;
-        boolean isEligibleForReward = lastTestTime == 0L || (currentTime - lastTestTime >= sevenDaysMs);
 
         prefs.edit()
                 .putString("SAVED_USER_SKIN_TYPE", skinType)
@@ -675,54 +732,181 @@ public class QuizTestResultFragment extends RootieFragment {
                 .putString("SAVED_SKIN_AREAS", skinAreas)
                 .putLong("KEY_LAST_SKIN_TEST_TIME", currentTime)
                 .putBoolean("KEY_HIDE_QUIZ_REMINDER_WEEKLY", false)
-                .apply();
+                .commit();
+
+        if (!appendHistory || historyLoggedThisOpen) {
+            return;
+        }
+        historyLoggedThisOpen = true;
 
         try {
             String historyStr = prefs.getString("QUIZ_HISTORY_LIST", "[]");
             if (historyStr == null) historyStr = "[]";
             JSONArray historyArray = new JSONArray(historyStr);
 
+            Date now = new Date();
+            String dateStr = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(now);
+            String timeStr = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(now);
+
             JSONObject newLog = new JSONObject();
-            newLog.put("date", new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date()));
+            newLog.put("id", SkinHistoryIdHelper.generateId());
+            newLog.put("date", dateStr);
+            newLog.put("time", timeStr);
             newLog.put("skinType", skinType);
             newLog.put("recommendation", recommendation);
             newLog.put("sensitivity", sensitivity);
             newLog.put("hydration", hydration);
             newLog.put("elasticity", elasticity);
             newLog.put("sebum", sebum);
+            newLog.put("scanType", "Test da");
 
             historyArray.put(newLog);
             prefs.edit().putString("QUIZ_HISTORY_LIST", historyArray.toString()).apply();
 
-            String email = ProfileSession.INSTANCE.getEmail(requireContext());
-            String userId = ProfileSession.INSTANCE.getUserId(requireContext());
-            if (email != null && !email.isEmpty()) {
-                SkinHistoryLocalStore.save(requireContext(), newLog, userId, email);
+            Context appContext = requireContext().getApplicationContext();
+            String email = ProfileSession.getEmail(appContext);
+            String userId = ProfileSession.getUserId(appContext);
+            // Luôn lưu Room khi đã đăng nhập (có userId hoặc email)
+            if ((email != null && !email.trim().isEmpty())
+                    || (userId != null && !userId.trim().isEmpty())) {
+                SkinHistoryLocalStore.save(
+                        appContext,
+                        newLog,
+                        userId != null ? userId : "",
+                        email != null ? email : ""
+                );
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        if (isEligibleForReward) {
-            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                    BuildersKt.withContext(Dispatchers.getMain(), (s2, c2) -> {
-                        try {
-                            com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
-                                    requireContext(),
-                                    "SYSTEM_WEEKLY_QUIZ",
-                                    QUIZ_REWARD_POINTS,
-                                    "Cập nhật làn da định kỳ hàng tuần (+" + QUIZ_REWARD_POINTS + " xu)",
-                                    "từ quiz cập nhật chỉ số da",
-                                    false
-                            );
-                        } catch (Exception e) { e.printStackTrace(); }
+    private void saveSkinProfile(SharedPreferences prefs, String skinType, String recommendation, Set<String> flaggedSet, int sensitivity, int hydration, int elasticity, int sebum, @Nullable OnSkinProfileSavedListener listener) {
+        ProfileSession.touchSession(requireContext());
+        persistSkinProfileData(prefs, skinType, recommendation, flaggedSet,
+                sensitivity, hydration, elasticity, sebum, false);
 
-                        if (listener != null && isAdded()) {
-                            listener.onSaved(true, QUIZ_REWARD_POINTS);
-                        }
-                        return kotlin.Unit.INSTANCE;
-                    }, cont));
+        if (pendingQuizReward && !quizRewardGrantedThisOpen) {
+            // Chưa cộng lúc mở màn hình → cộng khi Lưu/Áp dụng
+            grantQuizRewardIfPending(false, listener);
         } else if (listener != null && isAdded()) {
+            // Đã cộng xu lúc mở kết quả, hoặc không đủ điều kiện
             listener.onSaved(false, 0);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!quizRewardPendingUntilResume || quizRewardGrantedThisOpen) {
+            return;
+        }
+        quizRewardPendingUntilResume = false;
+        // Đợi layout/fragment transaction xong rồi mới cộng xu + hiện popup
+        View root = getView();
+        if (root == null) {
+            grantQuizRewardIfPending(true, null);
+            return;
+        }
+        root.post(() -> {
+            if (!isAdded() || quizRewardGrantedThisOpen) {
+                return;
+            }
+            grantQuizRewardIfPending(true, null);
+        });
+    }
+
+    /**
+     * Cộng 100 xu quiz trên background thread (Room), rồi hiện dialog / callback trên UI.
+     * Dialog gắn vào Activity FragmentManager — tránh getViewLifecycleOwner khi view chưa sẵn sàng.
+     */
+    private void grantQuizRewardIfPending(boolean showDialogNow,
+                                          @Nullable OnSkinProfileSavedListener listener) {
+        if (!pendingQuizReward || quizRewardGrantedThisOpen || !isAdded()) {
+            if (listener != null && isAdded()) {
+                listener.onSaved(false, 0);
+            }
+            return;
+        }
+        quizRewardGrantedThisOpen = true;
+        pendingQuizReward = false;
+
+        final Context appContext = requireContext().getApplicationContext();
+        ProfileSession.touchSession(appContext);
+        final androidx.fragment.app.FragmentActivity hostActivity = getActivity();
+        if (hostActivity == null) {
+            quizRewardGrantedThisOpen = false;
+            pendingQuizReward = true;
+            if (listener != null) {
+                listener.onSaved(false, 0);
+            }
+            return;
+        }
+
+        new Thread(() -> {
+            boolean success = false;
+            int totalBalance = 0;
+            try {
+                // Phải có userId — nếu mất session thì không đánh dấu đã thưởng
+                String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(appContext);
+                if (userId == null || userId.trim().isEmpty()) {
+                    throw new IllegalStateException("Quiz reward skipped: user not logged in");
+                }
+                totalBalance = com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                        appContext,
+                        "SYSTEM_WEEKLY_QUIZ",
+                        QUIZ_REWARD_POINTS,
+                        "Cập nhật làn da định kỳ hàng tuần (+" + QUIZ_REWARD_POINTS + " xu)",
+                        "từ quiz cập nhật chỉ số da",
+                        false
+                );
+                ProfileSession.markQuizRewardGranted(appContext);
+                success = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final boolean awarded = success;
+            final int total = totalBalance;
+            hostActivity.runOnUiThread(() -> {
+                if (!isAdded()) {
+                    return;
+                }
+                if (!awarded) {
+                    quizRewardGrantedThisOpen = false;
+                    pendingQuizReward = true;
+                    if (listener != null) {
+                        listener.onSaved(false, 0);
+                    }
+                    return;
+                }
+                if (showDialogNow) {
+                    try {
+                        // Dùng Activity FM + delay nhẹ: tránh IllegalStateException / crash → Welcome
+                        hostActivity.getWindow().getDecorView().postDelayed(() -> {
+                            if (!isAdded() || hostActivity.isFinishing()) {
+                                return;
+                            }
+                            try {
+                                CoinRewardDialogHelper.showWithDismissCallback(
+                                        hostActivity,
+                                        QUIZ_REWARD_POINTS,
+                                        total,
+                                        "từ quiz cập nhật chỉ số da",
+                                        null
+                                );
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }, 350);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (listener != null) {
+                    listener.onSaved(true, QUIZ_REWARD_POINTS);
+                }
+            });
+        }).start();
     }
 
     private void onSaveProfileFinished(boolean rewardGranted, int rewardPoints) {
@@ -735,15 +919,9 @@ public class QuizTestResultFragment extends RootieFragment {
     }
 
     private void showCoinRewardThen(Runnable onDismiss, int rewardPoints, String source) {
-        getParentFragmentManager().setFragmentResultListener(
-                CoinRewardDialogHelper.RESULT_DISMISSED,
-                getViewLifecycleOwner(),
-                (requestKey, result) -> {
-                    getParentFragmentManager().clearFragmentResultListener(CoinRewardDialogHelper.RESULT_DISMISSED);
-                    if (onDismiss != null) onDismiss.run();
-                });
+        if (!isAdded()) return;
         int total = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
-        CoinRewardDialogHelper.show(getParentFragmentManager(), rewardPoints, total, source);
+        CoinRewardDialogHelper.showWithDismissCallback(this, rewardPoints, total, source, onDismiss);
     }
 
     private void popBackStackIfAdded() {

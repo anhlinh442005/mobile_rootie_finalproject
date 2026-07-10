@@ -8,7 +8,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ProfileSession {
@@ -31,6 +33,18 @@ public class ProfileSession {
     private static final String KEY_AVATAR = "avatar";
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_PROFILE_HAS_LOCAL_EDITS = "profile_has_local_edits";
+    private static final String KEY_LAST_ACTIVE_USER_ID = "last_active_user_id";
+
+    private static final Set<String> DEMO_TEAM_USER_IDS = new HashSet<>(Arrays.asList(
+            "test_001",
+            "39751498",
+            "87962440",
+            "68751659",
+            "85097162",
+            "48228004",
+            "rootie_vn",
+            "xuannk_001"
+    ));
 
     // Notification setting keys
     private static final String KEY_NOTI_ENABLED = "noti_enabled";
@@ -39,7 +53,7 @@ public class ProfileSession {
 
     public static String getUserId(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_USER_ID, "test_001");
+                .getString(KEY_USER_ID, "");
     }
 
     public static void setUserId(Context context, String userId) {
@@ -51,7 +65,7 @@ public class ProfileSession {
 
     public static String getUsername(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_USERNAME, "mrbeanintheworld");
+                .getString(KEY_USERNAME, "");
     }
 
     public static void setUsername(Context context, String username) {
@@ -63,7 +77,7 @@ public class ProfileSession {
 
     public static String getFullName(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_FULLNAME, "Test User");
+                .getString(KEY_FULLNAME, "");
     }
 
     public static void setFullName(Context context, String fullName) {
@@ -75,7 +89,7 @@ public class ProfileSession {
 
     public static String getPhone(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_PHONE, "097 795 4530");
+                .getString(KEY_PHONE, "");
     }
 
     public static void setPhone(Context context, String phone) {
@@ -99,7 +113,7 @@ public class ProfileSession {
 
     public static String getEmail(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_EMAIL, "test@example.com");
+                .getString(KEY_EMAIL, "");
     }
 
     public static void setEmail(Context context, String email) {
@@ -123,7 +137,7 @@ public class ProfileSession {
 
     public static String getCCCD(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_CCCD, "123456789999");
+                .getString(KEY_CCCD, "");
     }
 
     public static void setCCCD(Context context, String cccd) {
@@ -135,7 +149,7 @@ public class ProfileSession {
 
     public static String getAddress(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_ADDRESS, "Số 12 Đường 3, TP. Thủ Đức, TP. Hồ Chí Minh");
+                .getString(KEY_ADDRESS, "");
     }
 
     public static void setAddress(Context context, String address) {
@@ -147,10 +161,7 @@ public class ProfileSession {
 
     public static boolean isLoggedIn(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        boolean isLoggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false);
-        long lastLogin = prefs.getLong(KEY_LAST_LOGIN, 0L);
-        long oneHour = 60 * 60 * 1000L;
-        return isLoggedIn && (System.currentTimeMillis() - lastLogin < oneHour);
+        return prefs.getBoolean(KEY_IS_LOGGED_IN, false);
     }
 
     public static void setLoggedIn(Context context, boolean isLoggedIn) {
@@ -159,6 +170,16 @@ public class ProfileSession {
                 .putBoolean(KEY_IS_LOGGED_IN, isLoggedIn)
                 .putLong(KEY_LAST_LOGIN, System.currentTimeMillis())
                 .apply();
+    }
+
+    /** Gia hạn phiên khi app đang dùng — tránh bị coi là guest giữa chừng. */
+    public static void touchSession(Context context) {
+        if (context == null) return;
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (!prefs.getBoolean(KEY_IS_LOGGED_IN, false)) {
+            return;
+        }
+        prefs.edit().putLong(KEY_LAST_LOGIN, System.currentTimeMillis()).apply();
     }
 
     public static String getAvatar(Context context) {
@@ -495,6 +516,35 @@ public class ProfileSession {
                 .putBoolean(type + "_routine_submitted_" + date, submitted).apply();
     }
 
+    /** Clears submission, reward flag, and completed steps for one routine session on a date. */
+    public static void resetRoutineSession(Context context, String type, String date) {
+        if (context == null || type == null || date == null || date.trim().isEmpty()) {
+            return;
+        }
+        android.content.SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        android.content.SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(type + "_routine_submitted_" + date, false);
+        if ("morning".equals(type)) {
+            editor.putBoolean("morning_reward_awarded_" + date, false);
+            Set<String> mornings = new HashSet<>(getCompletedMorningDates(context));
+            mornings.remove(date);
+            editor.putStringSet(KEY_COMPLETED_MORNING_DATES, mornings);
+        } else {
+            editor.putBoolean("evening_reward_awarded_" + date, false);
+            Set<String> evenings = new HashSet<>(getCompletedEveningDates(context));
+            evenings.remove(date);
+            editor.putStringSet(KEY_COMPLETED_EVENING_DATES, evenings);
+        }
+        Set<String> steps = new HashSet<>(getCompletedStepIdsForDate(context, date));
+        String prefix = type + "_";
+        steps.removeIf(stepId -> stepId != null && stepId.startsWith(prefix));
+        editor.putStringSet("completed_steps_" + date, steps);
+        editor.apply();
+
+        String orderId = "morning".equals(type) ? "MORNING_ROUTINE" : "EVENING_ROUTINE";
+        com.veganbeauty.app.utils.RewardPointsHelper.removeRewardsByOrderIdToday(context, orderId);
+    }
+
     // --- Skincare Quiz & Skin Profile Storage ---
     private static final String QUIZ_PREFS_NAME = "RootieQuizPrefs";
     private static final String KEY_SAVED_USER_SKIN_TYPE = "SAVED_USER_SKIN_TYPE";
@@ -732,6 +782,7 @@ public class ProfileSession {
     }
 
     private static final String KEY_LAST_SKIN_TEST_TIME = "KEY_LAST_SKIN_TEST_TIME";
+    private static final String KEY_QUIZ_REWARD_FOR_TEST_TIME = "KEY_QUIZ_REWARD_FOR_TEST_TIME";
     private static final String KEY_HIDE_QUIZ_REMINDER_WEEKLY = "KEY_HIDE_QUIZ_REMINDER_WEEKLY";
 
     public static long getLastSkinTestTime(Context context) {
@@ -741,11 +792,34 @@ public class ProfileSession {
 
     public static final long QUIZ_REWARD_COOLDOWN_MS = 7L * 24 * 60 * 60 * 1000;
 
-    /** Lần đầu (chưa test) hoặc đã qua 7 ngày kể từ lần test trước. */
+    /**
+     * Đủ điều kiện cộng xu khi hoàn thành quiz.
+     * Cho phép làm lại + nhận xu mỗi lần hoàn thành (không khóa 7 ngày).
+     */
     public static boolean isQuizRewardEligible(Context context) {
+        return true;
+    }
+
+    /** Banner nhắc test định kỳ trên Home — vẫn theo chu kỳ 7 ngày. */
+    public static boolean isWeeklyQuizReminderDue(Context context) {
         long lastTestTime = getLastSkinTestTime(context);
-        return lastTestTime == 0L
-                || (System.currentTimeMillis() - lastTestTime >= QUIZ_REWARD_COOLDOWN_MS);
+        if (lastTestTime == 0L) {
+            return false;
+        }
+        return System.currentTimeMillis() - lastTestTime >= QUIZ_REWARD_COOLDOWN_MS;
+    }
+
+    /** Gọi sau khi cộng xu quiz thành công. */
+    public static void markQuizRewardGranted(Context context) {
+        if (context == null) return;
+        long lastTestTime = getLastSkinTestTime(context);
+        if (lastTestTime <= 0L) {
+            lastTestTime = System.currentTimeMillis();
+        }
+        context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putLong(KEY_QUIZ_REWARD_FOR_TEST_TIME, lastTestTime)
+                .apply();
     }
 
     public static int getDaysUntilQuizReward(Context context) {
@@ -932,6 +1006,114 @@ public class ProfileSession {
                 .edit()
                 .putBoolean("expiry_custom_week2_" + userId + "_" + productId, enabled)
                 .apply();
+    }
+
+    public static boolean isDemoTeamUser(@androidx.annotation.Nullable String userId) {
+        return userId != null && DEMO_TEAM_USER_IDS.contains(userId.trim());
+    }
+
+    /**
+     * Gọi khi đăng nhập thành công. Đổi user → xóa prefs da/quiz/routine cũ để tài khoản mới bắt đầu sạch.
+     * Xu/quà đã gắn userId nên giữ nguyên khi đổi tài khoản (mỗi user có lịch sử riêng).
+     */
+    public static void activateUserSession(Context context, String newUserId) {
+        if (context == null || newUserId == null || newUserId.trim().isEmpty()) {
+            return;
+        }
+        String trimmedUserId = newUserId.trim();
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String previousUserId = prefs.getString(KEY_LAST_ACTIVE_USER_ID, "");
+        if (!trimmedUserId.equals(previousUserId)) {
+            resetUserScopedData(context);
+            prefs.edit().putString(KEY_LAST_ACTIVE_USER_ID, trimmedUserId).apply();
+        }
+    }
+
+    /** Xóa hồ sơ da, quiz, routine và streak — không đụng flag seed app-level trong RootieQuizPrefs. */
+    public static void resetUserScopedData(Context context) {
+        if (context == null) {
+            return;
+        }
+        SharedPreferences quizPrefs = context.getSharedPreferences(QUIZ_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor quizEditor = quizPrefs.edit();
+        quizEditor
+                .remove(KEY_LAST_SKIN_TEST_TIME)
+                .remove(KEY_QUIZ_REWARD_FOR_TEST_TIME)
+                .remove(KEY_HIDE_QUIZ_REMINDER_WEEKLY)
+                .remove(KEY_SAVED_USER_SKIN_TYPE)
+                .remove(KEY_SAVED_RECOMMENDATION)
+                .remove(KEY_SAVED_SENSITIVITY)
+                .remove(KEY_SAVED_HYDRATION)
+                .remove(KEY_SAVED_ELASTICITY)
+                .remove(KEY_SAVED_SEBUM)
+                .remove(KEY_SAVED_SKIN_AREAS)
+                .remove(KEY_SAVED_FLAGGED_GROUPS)
+                .remove(KEY_QUIZ_HISTORY_LIST)
+                .remove("SKIN_TYPE_RESULT")
+                .remove("RECOMMENDATION")
+                .remove("FLAGGED_GROUPS")
+                .remove("SENSITIVITY_PERCENT")
+                .remove("HYDRATION_PERCENT")
+                .remove("ELASTICITY_PERCENT")
+                .remove("SEBUM_PERCENT")
+                .remove("SKIN_AREAS_DESC")
+                .remove(KEY_SKIN_PROFILE_FROM_SCAN);
+        for (String key : quizPrefs.getAll().keySet()) {
+            if (key.startsWith("skin_weather_snapshot_")) {
+                quizEditor.remove(key);
+            }
+        }
+        quizEditor.apply();
+
+        SharedPreferences profilePrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor profileEditor = profilePrefs.edit();
+        profileEditor
+                .remove(KEY_COMPLETED_MORNING_DATES)
+                .remove(KEY_COMPLETED_EVENING_DATES)
+                .remove(KEY_SKIN_SOCIAL_COMPLETED_DATES)
+                .putInt(KEY_SKIN_STREAK, 0)
+                .remove(KEY_SKIN_LAST_COMPLETED_DATE)
+                .remove("june_2026_seeded_v1")
+                .remove("skin_max_streak")
+                .putBoolean(KEY_PROFILE_HAS_LOCAL_EDITS, false);
+        clearSavedAddresses(profileEditor);
+        for (Map.Entry<String, ?> entry : profilePrefs.getAll().entrySet()) {
+            String key = entry.getKey();
+            if (key.startsWith("morning_reward_awarded_")
+                    || key.startsWith("evening_reward_awarded_")
+                    || key.startsWith("morning_routine_submitted_")
+                    || key.startsWith("evening_routine_submitted_")
+                    || key.startsWith("completed_steps_")) {
+                profileEditor.remove(key);
+            }
+        }
+        profileEditor.apply();
+
+        // Điểm danh từng lưu global (không theo user) — xóa để không dính sang tài khoản mới
+        context.getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply();
+    }
+
+    /** Xóa địa chỉ giao hàng đã lưu (Nhà/Văn phòng + list checkout). */
+    public static void clearSavedAddresses(Context context) {
+        if (context == null) return;
+        SharedPreferences.Editor editor = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit();
+        clearSavedAddresses(editor);
+        editor.apply();
+    }
+
+    private static void clearSavedAddresses(SharedPreferences.Editor editor) {
+        editor.remove(KEY_ADDRESS)
+                .remove("addr_home_name")
+                .remove("addr_home_phone")
+                .remove("addr_home_addr")
+                .remove("addr_office_name")
+                .remove("addr_office_phone")
+                .remove("addr_office_addr")
+                .remove("addr_default_type")
+                .remove("saved_addresses_list_json");
     }
 
     public static String getCurrentUserId(Context context) {

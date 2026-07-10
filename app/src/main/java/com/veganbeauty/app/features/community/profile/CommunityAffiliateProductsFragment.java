@@ -1,9 +1,12 @@
 package com.veganbeauty.app.features.community.profile;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -14,14 +17,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.features.community.affiliate.AffiliateProductsHelper;
-import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,6 +33,8 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -38,10 +42,60 @@ import java.util.Map;
 
 public class CommunityAffiliateProductsFragment extends Fragment {
 
+    private static final String FILTER_ALL = "ALL";
+    private static final String FILTER_SOLD = "SOLD";
+
+    private LinearLayout llProductsContainer;
+    private EditText etSearch;
+    private LinearLayout btnFilter;
+    private TextView tvFilterLabel;
+    private DecimalFormat format;
+    private String currentUserId;
+    private String searchQuery = "";
+    private String currentFilter = FILTER_ALL;
+    private final List<ProductEntry> productEntries = new ArrayList<>();
+
+    private static class ProductStats {
+        final String name;
+        int count;
+        long commission;
+        final String image;
+        final long price;
+
+        ProductStats(String name, int count, long commission, String image, long price) {
+            this.name = name;
+            this.count = count;
+            this.commission = commission;
+            this.image = image;
+            this.price = price;
+        }
+    }
+
+    private static class ProductEntry {
+        final String productId;
+        final ProductStats stats;
+
+        ProductEntry(String productId, ProductStats stats) {
+            this.productId = productId;
+            this.stats = stats;
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.com_fragment_affiliate_products, container, false);
+
+        llProductsContainer = view.findViewById(R.id.llProductsContainer);
+        etSearch = view.findViewById(R.id.etSearch);
+        btnFilter = view.findViewById(R.id.btnFilter);
+        if (btnFilter != null) {
+            tvFilterLabel = btnFilter.findViewById(R.id.tvFilterLabel);
+        }
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("vi", "VN"));
+        symbols.setGroupingSeparator('.');
+        format = new DecimalFormat("#,###đ", symbols);
 
         LinearLayout navOverview = view.findViewById(R.id.navOverview);
         if (navOverview != null) {
@@ -50,30 +104,78 @@ public class CommunityAffiliateProductsFragment extends Fragment {
 
         LinearLayout navOrders = view.findViewById(R.id.navOrders);
         if (navOrders != null) {
-            navOrders.setOnClickListener(v -> getParentFragmentManager().beginTransaction().replace(R.id.main_container, new CommunityAffiliateOrdersFragment()).commit());
+            navOrders.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, new CommunityAffiliateOrdersFragment())
+                    .commit());
         }
 
         LinearLayout navProducts = view.findViewById(R.id.navProducts);
         if (navProducts != null) {
-            navProducts.setOnClickListener(v -> getParentFragmentManager().beginTransaction().replace(R.id.main_container, new CommunityAffiliateProductsFragment()).commit());
+            navProducts.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, new CommunityAffiliateProductsFragment())
+                    .commit());
         }
 
         LinearLayout navWithdraw = view.findViewById(R.id.navWithdraw);
         if (navWithdraw != null) {
-            navWithdraw.setOnClickListener(v -> getParentFragmentManager().beginTransaction().replace(R.id.main_container, new CommunityAffiliateWithdrawFragment()).commit());
+            navWithdraw.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, new CommunityAffiliateWithdrawFragment())
+                    .commit());
         }
 
-        loadProductsData(view);
+        View btnAddProduct = view.findViewById(R.id.btnAddProduct);
+        if (btnAddProduct != null) {
+            btnAddProduct.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, new CommunityAddAffiliateProductsFragment())
+                    .addToBackStack(null)
+                    .commit());
+        }
+
+        setupSearch();
+        setupFilter();
+        loadProductsData();
+        renderProducts();
 
         return view;
     }
 
-    private void loadProductsData(View view) {
-        try {
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("vi", "VN"));
-            symbols.setGroupingSeparator('.');
-            DecimalFormat format = new DecimalFormat("#,###đ", symbols);
+    private void setupSearch() {
+        if (etSearch == null) {
+            return;
+        }
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchQuery = s != null ? s.toString().trim().toLowerCase(Locale.getDefault()) : "";
+                renderProducts();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    private void setupFilter() {
+        if (btnFilter == null) {
+            return;
+        }
+        btnFilter.setOnClickListener(v -> {
+            currentFilter = FILTER_ALL.equals(currentFilter) ? FILTER_SOLD : FILTER_ALL;
+            if (tvFilterLabel != null) {
+                tvFilterLabel.setText(FILTER_SOLD.equals(currentFilter) ? "Đã bán" : "Lọc");
+            }
+            renderProducts();
+        });
+    }
+
+    private void loadProductsData() {
+        productEntries.clear();
+        try {
             StringBuilder sb = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(requireContext().getAssets().open("products.json")))) {
                 String line;
@@ -87,42 +189,10 @@ public class CommunityAffiliateProductsFragment extends Fragment {
             if (productsArr == null) {
                 productsArr = new JSONArray(jsonProducts);
             }
-            Map<String, String> productImagesMap = new HashMap<>();
-            for (int i = 0; i < productsArr.length(); i++) {
-                JSONObject p = productsArr.optJSONObject(i);
-                if (p == null) continue;
-                JSONArray categoryIds = p.optJSONArray("categoryId");
-                String catId = (categoryIds != null && categoryIds.length() > 0) ? categoryIds.optString(0) : "";
-                String img = p.optString("mainImage", p.optString("image", ""));
-                if (!catId.isEmpty() && !img.isEmpty()) {
-                    productImagesMap.put(catId, img);
-                }
-
-                String id = p.optString("id", p.optString("_id"));
-                if (!id.isEmpty() && !img.isEmpty()) {
-                    productImagesMap.put(id, img);
-                }
-            }
-
-            class ProductStats {
-                final String name;
-                int count;
-                long commission;
-                final String image;
-                final long price;
-
-                ProductStats(String name, int count, long commission, String image, long price) {
-                    this.name = name;
-                    this.count = count;
-                    this.commission = commission;
-                    this.image = image;
-                    this.price = price;
-                }
-            }
 
             Map<String, ProductStats> productMap = new HashMap<>();
 
-            String currentUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
+            currentUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
             if (currentUserId == null || currentUserId.isEmpty()) {
                 currentUserId = "test_001";
             }
@@ -147,15 +217,13 @@ public class CommunityAffiliateProductsFragment extends Fragment {
             }
 
             List<OrderEntity> allOrders = jsonReader.getAllOrders();
-            List<OrderEntity> completedOrders = new ArrayList<>();
             for (OrderEntity order : allOrders) {
-                if ("Hoàn tất".equals(order.getStatus()) && order.getAffiliate() != null && finalUserId.equals(order.getAffiliate().getReferrerUserId())) {
-                    completedOrders.add(order);
+                if (!"Hoàn tất".equals(order.getStatus())
+                        || order.getAffiliate() == null
+                        || !finalUserId.equals(order.getAffiliate().getReferrerUserId())) {
+                    continue;
                 }
-            }
-
-            for (OrderEntity order : completedOrders) {
-                long commission = order.getAffiliate() != null ? order.getAffiliate().getCommissionAmount() : 0L;
+                long commission = order.getAffiliate().getCommissionAmount();
                 for (OrderEntity.OrderItem item : order.getItems()) {
                     String pId = item.getProductId();
                     long itemComm = !order.getItems().isEmpty() ? commission / order.getItems().size() : 0L;
@@ -167,83 +235,120 @@ public class CommunityAffiliateProductsFragment extends Fragment {
                 }
             }
 
-            LinearLayout llProductsContainer = view.findViewById(R.id.llProductsContainer);
-            if (llProductsContainer != null) {
-                llProductsContainer.removeAllViews();
-            }
-
             for (Map.Entry<String, ProductStats> entry : productMap.entrySet()) {
                 String prodId = entry.getKey();
-                ProductStats stats = entry.getValue();
-                
-                boolean isDisplayed = AffiliateProductsHelper.isProductDisplayed(requireContext(), finalUserId, prodId);
-                if (!isDisplayed) continue;
-
-                View prodView = LayoutInflater.from(getContext()).inflate(R.layout.com_item_affiliate_product_card, llProductsContainer, false);
-
-                ((TextView) prodView.findViewById(R.id.tvProductName)).setText(stats.name);
-                ((TextView) prodView.findViewById(R.id.tvProductSold)).setText("Đã bán\n" + stats.count);
-                TextView tvPrice = prodView.findViewById(R.id.tvProductPrice);
-                if (tvPrice != null) tvPrice.setText(format.format(stats.price));
-                TextView tvComm = prodView.findViewById(R.id.tvProductCommission);
-                if (tvComm != null) tvComm.setText("Hoa hồng: " + format.format(stats.commission));
-
-                ImageView ivProduct = prodView.findViewById(R.id.ivProductImage);
-                if (ivProduct != null && !stats.image.isEmpty()) {
-                    com.bumptech.glide.Glide.with(ivProduct.getContext()).load(stats.image).into(ivProduct);
+                if (!AffiliateProductsHelper.isProductDisplayed(requireContext(), finalUserId, prodId)) {
+                    continue;
                 }
-
-                prodView.setOnClickListener(v -> {
-                    ProductDetailLauncher.open(this, prodId);
-                });
-
-                Switch swDisplay = prodView.findViewById(R.id.swDisplay);
-                if (swDisplay != null) {
-                    swDisplay.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                        if (!isChecked) {
-                            View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_delete, null);
-                            AlertDialog dialog = new AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
-                                    .setView(dialogView)
-                                    .create();
-                            
-                            if (dialog.getWindow() != null) {
-                                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                            }
-                            dialog.setCancelable(false);
-
-                            dialogView.findViewById(R.id.btnCancel).setOnClickListener(v -> {
-                                swDisplay.setChecked(true);
-                                dialog.dismiss();
-                            });
-
-                            dialogView.findViewById(R.id.btnConfirm).setOnClickListener(v -> {
-                                if (llProductsContainer != null) {
-                                    llProductsContainer.removeView(prodView);
-                                }
-                                AffiliateProductsHelper.setProductDisplayed(requireContext(), finalUserId, prodId, false);
-                                dialog.dismiss();
-                            });
-
-                            dialog.show();
-                        }
-                    });
-                }
-
-                if (llProductsContainer != null) {
-                    llProductsContainer.addView(prodView);
-                }
+                productEntries.add(new ProductEntry(prodId, entry.getValue()));
             }
 
-            View btnAddProduct = view.findViewById(R.id.btnAddProduct);
-            if (btnAddProduct != null) {
-                btnAddProduct.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new CommunityAddAffiliateProductsFragment())
-                        .addToBackStack(null)
-                        .commit());
-            }
-
+            Collections.sort(productEntries, Comparator.comparing(
+                    e -> e.stats.name,
+                    String.CASE_INSENSITIVE_ORDER
+            ));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void renderProducts() {
+        if (llProductsContainer == null) {
+            return;
+        }
+        llProductsContainer.removeAllViews();
+
+        List<ProductEntry> visibleEntries = new ArrayList<>();
+        for (ProductEntry entry : productEntries) {
+            if (!matchesSearch(entry)) {
+                continue;
+            }
+            if (FILTER_SOLD.equals(currentFilter) && entry.stats.count <= 0) {
+                continue;
+            }
+            visibleEntries.add(entry);
+        }
+
+        if (visibleEntries.isEmpty()) {
+            TextView emptyView = new TextView(requireContext());
+            emptyView.setText(searchQuery.isEmpty()
+                    ? "Chưa có sản phẩm affiliate nào được hiển thị."
+                    : "Không tìm thấy sản phẩm phù hợp.");
+            emptyView.setTextColor(0xFF9E9E9E);
+            emptyView.setTextSize(14f);
+            emptyView.setPadding(0, 32, 0, 32);
+            emptyView.setGravity(android.view.Gravity.CENTER);
+            llProductsContainer.addView(emptyView);
+            return;
+        }
+
+        for (ProductEntry entry : visibleEntries) {
+            addProductCard(entry);
+        }
+    }
+
+    private boolean matchesSearch(ProductEntry entry) {
+        if (searchQuery.isEmpty()) {
+            return true;
+        }
+        return entry.stats.name.toLowerCase(Locale.getDefault()).contains(searchQuery);
+    }
+
+    private void addProductCard(ProductEntry entry) {
+        String prodId = entry.productId;
+        ProductStats stats = entry.stats;
+
+        View prodView = LayoutInflater.from(getContext()).inflate(R.layout.com_item_affiliate_product_card, llProductsContainer, false);
+
+        ((TextView) prodView.findViewById(R.id.tvProductName)).setText(stats.name);
+        ((TextView) prodView.findViewById(R.id.tvProductSold)).setText("Đã bán\n" + stats.count);
+        TextView tvPrice = prodView.findViewById(R.id.tvProductPrice);
+        if (tvPrice != null) {
+            tvPrice.setText(format.format(stats.price));
+        }
+        TextView tvComm = prodView.findViewById(R.id.tvProductCommission);
+        if (tvComm != null) {
+            tvComm.setText("Hoa hồng: " + format.format(stats.commission));
+        }
+
+        ImageView ivProduct = prodView.findViewById(R.id.ivProductImage);
+        if (ivProduct != null && stats.image != null && !stats.image.isEmpty()) {
+            com.bumptech.glide.Glide.with(ivProduct.getContext()).load(stats.image).into(ivProduct);
+        }
+
+        prodView.setOnClickListener(v -> ProductDetailLauncher.open(this, prodId));
+
+        Switch swDisplay = prodView.findViewById(R.id.swDisplay);
+        if (swDisplay != null) {
+            swDisplay.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (!isChecked) {
+                    View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_delete, null);
+                    AlertDialog dialog = new AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
+                            .setView(dialogView)
+                            .create();
+
+                    if (dialog.getWindow() != null) {
+                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                    }
+                    dialog.setCancelable(false);
+
+                    dialogView.findViewById(R.id.btnCancel).setOnClickListener(v -> {
+                        swDisplay.setChecked(true);
+                        dialog.dismiss();
+                    });
+
+                    dialogView.findViewById(R.id.btnConfirm).setOnClickListener(v -> {
+                        AffiliateProductsHelper.setProductDisplayed(requireContext(), currentUserId, prodId, false);
+                        productEntries.remove(entry);
+                        renderProducts();
+                        dialog.dismiss();
+                    });
+
+                    dialog.show();
+                }
+            });
+        }
+
+        llProductsContainer.addView(prodView);
     }
 }

@@ -47,8 +47,8 @@ public final class SkinAiAppDataLoader {
         int coinsToday = 0;
         List<SkinAiAppDataSnapshot.CoinEntry> todayCoins = new ArrayList<>();
         try {
-            coinsToday = db.rewardPointDao().getPointsEarnedSince(startOfDay);
-            List<RewardPointEntity> history = db.rewardPointDao().getHistorySince(startOfDay);
+            coinsToday = RewardPointsHelper.getPointsEarnedSince(context, startOfDay);
+            List<RewardPointEntity> history = RewardPointsHelper.getHistorySince(context, startOfDay);
             if (history != null) {
                 for (RewardPointEntity e : history) {
                     todayCoins.add(new SkinAiAppDataSnapshot.CoinEntry(e.getPoints(), e.getReason()));
@@ -89,7 +89,8 @@ public final class SkinAiAppDataLoader {
 
         List<SkinAiAppDataSnapshot.VoucherEntry> userVouchers = new ArrayList<>();
         try {
-            List<UserGiftEntity> gifts = db.userGiftDao().getAllUserGiftsSync();
+            String giftUserId = userId != null ? userId : "";
+            List<UserGiftEntity> gifts = db.userGiftDao().getAllUserGiftsSync(giftUserId);
             if (gifts != null) {
                 for (UserGiftEntity g : gifts) {
                     if (!"voucher_discount".equals(g.getGiftType())
@@ -127,7 +128,8 @@ public final class SkinAiAppDataLoader {
 
         List<SkinAiAppDataSnapshot.GiftEntry> giftList = new ArrayList<>();
         try {
-            List<UserGiftEntity> gifts = db.userGiftDao().getAllUserGiftsSync();
+            String giftUserId = userId != null ? userId : "";
+            List<UserGiftEntity> gifts = db.userGiftDao().getAllUserGiftsSync(giftUserId);
             if (gifts != null) {
                 for (UserGiftEntity g : gifts) {
                     giftList.add(new SkinAiAppDataSnapshot.GiftEntry(

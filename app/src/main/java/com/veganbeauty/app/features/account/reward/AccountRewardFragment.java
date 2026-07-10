@@ -51,7 +51,7 @@ public class AccountRewardFragment extends RootieFragment {
 
     private AccountRewardFragmentBinding binding;
     private OrderRepository repository;
-    private int currentPoints = 8500;
+    private int currentPoints = 0;
     private final List<UserGiftEntity> myGiftsList = new ArrayList<>();
     private final List<UserGiftEntity> filteredGiftsList = new ArrayList<>();
     private String activeFilter = "Tất cả";
@@ -135,8 +135,10 @@ public class AccountRewardFragment extends RootieFragment {
     @Override
     public void observeViewModel() {
         RootieDatabase db = RootieDatabase.getDatabase(requireContext());
+        String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext());
+        if (userId == null) userId = "";
 
-        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow())
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getTotalPointsFlow(userId))
                 .observe(getViewLifecycleOwner(), ptsList -> {
                     if (binding == null || !isAdded()) return;
                     int pts = (ptsList != null && !ptsList.isEmpty()) ? ptsList.get(0).total : 0;
@@ -168,7 +170,7 @@ public class AccountRewardFragment extends RootieFragment {
                     applyExchangeFilter();
                 });
 
-        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getAllRewardHistory())
+        FlowLiveDataConversions.asLiveData(db.rewardPointDao().getAllRewardHistory(userId))
                 .observe(getViewLifecycleOwner(), history -> {
                     if (binding == null || !isAdded()) return;
                     List<HistoryItem> histItems = new ArrayList<>();

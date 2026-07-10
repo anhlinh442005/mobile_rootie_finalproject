@@ -62,14 +62,16 @@ public class QuizTestLoadingFragment extends RootieFragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (isAdded()) {
+                    boolean isFirstTest = com.veganbeauty.app.data.local.ProfileSession
+                            .getLastSkinTestTime(requireContext()) == 0L;
                     QuizTestResultFragment resultFragment = new QuizTestResultFragment();
                     Bundle args = new Bundle();
-                    args.putBoolean(QuizTestResultFragment.ARG_IS_FIRST_TEST, true);
+                    args.putBoolean(QuizTestResultFragment.ARG_IS_FIRST_TEST, isFirstTest);
                     resultFragment.setArguments(args);
-                    
+
                     getParentFragmentManager().beginTransaction()
                             .replace(R.id.main_container, resultFragment)
-                            .commit();
+                            .commitAllowingStateLoss();
                 }
             }
         });

@@ -6,6 +6,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.utils.RewardPointsHelper;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.features.ai.RootieChatAdapter.RootieChatItem;
 import com.veganbeauty.app.features.weather.SkinWeatherProductMatcher;
 import com.veganbeauty.app.features.weather.SkinWeatherProfileHelper;
@@ -430,8 +431,10 @@ public final class SkinAiAssistantHelper {
 
     private static String buildGiftReply(Context context) {
         try {
+            String userId = ProfileSessionHelper.getEffectiveUserId(context);
+            if (userId == null) userId = "";
             List<com.veganbeauty.app.data.local.entities.UserGiftEntity> gifts =
-                    RootieDatabase.getDatabase(context).userGiftDao().getAllUserGiftsSync();
+                    RootieDatabase.getDatabase(context).userGiftDao().getAllUserGiftsSync(userId);
             if (gifts == null || gifts.isEmpty()) {
                 return "Bạn chưa đổi quà nào. Vào Tài khoản → Đổi quà — dùng "
                         + formatPoints(RewardPointsHelper.getTotalPoints(context))
@@ -522,8 +525,10 @@ public final class SkinAiAssistantHelper {
     private static String buildVoucherReply(Context context) {
         try {
             StringBuilder sb = new StringBuilder();
+            String userId = ProfileSessionHelper.getEffectiveUserId(context);
+            if (userId == null) userId = "";
             List<com.veganbeauty.app.data.local.entities.UserGiftEntity> gifts =
-                    RootieDatabase.getDatabase(context).userGiftDao().getAllUserGiftsSync();
+                    RootieDatabase.getDatabase(context).userGiftDao().getAllUserGiftsSync(userId);
             List<com.veganbeauty.app.data.local.entities.VoucherEntity> system =
                     RootieDatabase.getDatabase(context).voucherDao().getActiveVouchers();
             if (system == null || system.isEmpty()) {
@@ -591,9 +596,7 @@ public final class SkinAiAssistantHelper {
             cal.set(java.util.Calendar.MILLISECOND, 0);
             long startOfDay = cal.getTimeInMillis();
 
-            int todayEarned = RootieDatabase.getDatabase(context)
-                    .rewardPointDao()
-                    .getPointsEarnedSince(startOfDay);
+            int todayEarned = RewardPointsHelper.getPointsEarnedSince(context, startOfDay);
             int total = RewardPointsHelper.getTotalPoints(context);
 
             if (todayEarned <= 0) {
@@ -603,7 +606,7 @@ public final class SkinAiAssistantHelper {
             }
 
             List<com.veganbeauty.app.data.local.entities.RewardPointEntity> todayList =
-                    RootieDatabase.getDatabase(context).rewardPointDao().getHistorySince(startOfDay);
+                    RewardPointsHelper.getHistorySince(context, startOfDay);
 
             StringBuilder sb = new StringBuilder();
             sb.append("Hôm nay bạn đã nhận ").append(formatPoints(todayEarned)).append(" xu. Tổng số dư: ")

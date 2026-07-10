@@ -1,15 +1,15 @@
 package com.veganbeauty.app.features.profile;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,29 +17,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
-import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.AccountProfileAddressBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
+import com.veganbeauty.app.utils.AddressBookHelper;
+
+import java.util.List;
 
 public class AccountProfileAddressFragment extends RootieFragment {
 
     private AccountProfileAddressBinding binding;
     private SkinDetailHeaderScrollHelper headerScrollHelper;
-
-    private static final String PREFS_NAME = "rootie_profile_prefs";
-    
-    private static final String KEY_HOME_NAME = "addr_home_name";
-    private static final String KEY_HOME_PHONE = "addr_home_phone";
-    private static final String KEY_HOME_ADDR = "addr_home_addr";
-    
-    private static final String KEY_OFFICE_NAME = "addr_office_name";
-    private static final String KEY_OFFICE_PHONE = "addr_office_phone";
-    private static final String KEY_OFFICE_ADDR = "addr_office_addr";
-    
-    private static final String KEY_DEFAULT_TYPE = "addr_default_type"; // "HOME" or "OFFICE"
 
     @Nullable
     @Override
@@ -51,116 +43,18 @@ public class AccountProfileAddressFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         Context context = requireContext();
+        AddressBookHelper.ensureLoadedForCurrentUser(context);
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-
         binding.layoutNotification.getRoot().setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
                         .addToBackStack(null)
                         .commit());
 
+        binding.btnAddAddress.setOnClickListener(v -> showAddressDialog(null));
+
         loadAddressData();
-
-        binding.badgeHomeDefault.setOnClickListener(v -> setDefaultAddress("HOME"));
-        binding.badgeOfficeDefault.setOnClickListener(v -> setDefaultAddress("OFFICE"));
-
-        binding.btnHomeEdit.setOnClickListener(v -> {
-            SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-            String currentName = prefs.getString(KEY_HOME_NAME, "Ánh Linh");
-            String currentPhone = prefs.getString(KEY_HOME_PHONE, "0999 999 999");
-            String currentAddr = prefs.getString(KEY_HOME_ADDR, "123 Đường Bến Nghé, Phường Bến Nghé, TP.Hồ Chí Minh");
-            
-            showEditDialog("Nhà riêng", currentName, currentPhone, currentAddr, (name, phone, address) -> {
-                prefs.edit()
-                        .putString(KEY_HOME_NAME, name)
-                        .putString(KEY_HOME_PHONE, phone)
-                        .putString(KEY_HOME_ADDR, address)
-                        .apply();
-                if ("HOME".equals(prefs.getString(KEY_DEFAULT_TYPE, "HOME"))) {
-                    ProfileSession.INSTANCE.setAddress(context, address);
-                }
-                loadAddressData();
-                Toast.makeText(context, "Đã cập nhật địa chỉ Nhà riêng", Toast.LENGTH_SHORT).show();
-            });
-        });
-
-        binding.btnOfficeEdit.setOnClickListener(v -> {
-            SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-            String currentName = prefs.getString(KEY_OFFICE_NAME, "Khánh Xuân");
-            String currentPhone = prefs.getString(KEY_OFFICE_PHONE, "0868 888 888");
-            String currentAddr = prefs.getString(KEY_OFFICE_ADDR, "Bitexco Financial Tower, 2 Hải Triều, Phường Bến Nghé, TP.Hồ Chí Minh");
-            
-            showEditDialog("Văn phòng", currentName, currentPhone, currentAddr, (name, phone, address) -> {
-                prefs.edit()
-                        .putString(KEY_OFFICE_NAME, name)
-                        .putString(KEY_OFFICE_PHONE, phone)
-                        .putString(KEY_OFFICE_ADDR, address)
-                        .apply();
-                if ("OFFICE".equals(prefs.getString(KEY_DEFAULT_TYPE, "HOME"))) {
-                    ProfileSession.INSTANCE.setAddress(context, address);
-                }
-                loadAddressData();
-                Toast.makeText(context, "Đã cập nhật địa chỉ Văn phòng", Toast.LENGTH_SHORT).show();
-            });
-        });
-
-        binding.btnHomeDelete.setOnClickListener(v -> {
-            new AlertDialog.Builder(context)
-                    .setTitle("Xóa địa chỉ")
-                    .setMessage("Bạn có chắc chắn muốn xóa địa chỉ Nhà riêng?")
-                    .setPositiveButton("Xóa", (dialog, which) -> {
-                        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.remove(KEY_HOME_NAME);
-                        editor.remove(KEY_HOME_PHONE);
-                        editor.remove(KEY_HOME_ADDR);
-                        if ("HOME".equals(prefs.getString(KEY_DEFAULT_TYPE, "HOME"))) {
-                            editor.putString(KEY_DEFAULT_TYPE, "OFFICE");
-                            String officeAddr = prefs.getString(KEY_OFFICE_ADDR, "Bitexco Financial Tower, 2 Hải Triều, Phường Bến Nghé, TP.Hồ Chí Minh");
-                            if (officeAddr != null) {
-                                ProfileSession.INSTANCE.setAddress(context, officeAddr);
-                            }
-                        }
-                        editor.apply();
-                        loadAddressData();
-                        Toast.makeText(context, "Đã xóa địa chỉ Nhà riêng", Toast.LENGTH_SHORT).show();
-                    })
-                    .setNegativeButton("Hủy", null)
-                    .show();
-        });
-
-        binding.btnOfficeDelete.setOnClickListener(v -> {
-            new AlertDialog.Builder(context)
-                    .setTitle("Xóa địa chỉ")
-                    .setMessage("Bạn có chắc chắn muốn xóa địa chỉ Văn phòng?")
-                    .setPositiveButton("Xóa", (dialog, which) -> {
-                        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.remove(KEY_OFFICE_NAME);
-                        editor.remove(KEY_OFFICE_PHONE);
-                        editor.remove(KEY_OFFICE_ADDR);
-                        if ("OFFICE".equals(prefs.getString(KEY_DEFAULT_TYPE, "HOME"))) {
-                            editor.putString(KEY_DEFAULT_TYPE, "HOME");
-                            String homeAddr = prefs.getString(KEY_HOME_ADDR, "123 Đường Bến Nghé, Phường Bến Nghé, TP.Hồ Chí Minh");
-                            if (homeAddr != null) {
-                                ProfileSession.INSTANCE.setAddress(context, homeAddr);
-                            }
-                        }
-                        editor.apply();
-                        loadAddressData();
-                        Toast.makeText(context, "Đã xóa địa chỉ Văn phòng", Toast.LENGTH_SHORT).show();
-                    })
-                    .setNegativeButton("Hủy", null)
-                    .show();
-        });
-
-        binding.btnAddAddress.setOnClickListener(v -> {
-            showEditDialog("Mới", "", "", "", (name, phone, address) -> {
-                Toast.makeText(context, "Đã thêm địa chỉ mới thành công!", Toast.LENGTH_LONG).show();
-            });
-        });
-
         BottomNavHelper.setup(this, view, R.id.nav_account, tabId -> BottomNavHelper.navigate(this, tabId));
         setupScrollHideHeader();
     }
@@ -178,106 +72,213 @@ public class AccountProfileAddressFragment extends RootieFragment {
 
     private void loadAddressData() {
         Context context = requireContext();
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        List<AddressBookHelper.AddressEntry> list = AddressBookHelper.getSessionAddresses(context);
+        LinearLayout container = binding.llAddressList;
+        container.removeAllViews();
 
-        String homeName = prefs.getString(KEY_HOME_NAME, "Ánh Linh");
-        String homePhone = prefs.getString(KEY_HOME_PHONE, "0999 999 999");
-        String homeAddr = prefs.getString(KEY_HOME_ADDR, "123 Đường Bến Nghé, Phường Bến Nghé, TP.Hồ Chí Minh");
+        if (list.isEmpty()) {
+            binding.layoutEmpty.setVisibility(View.VISIBLE);
+            container.setVisibility(View.GONE);
+            return;
+        }
 
-        String officeName = prefs.getString(KEY_OFFICE_NAME, "Khánh Xuân");
-        String officePhone = prefs.getString(KEY_OFFICE_PHONE, "0868 888 888");
-        String officeAddr = prefs.getString(KEY_OFFICE_ADDR, "Bitexco Financial Tower, 2 Hải Triều, Phường Bến Nghé, TP.Hồ Chí Minh");
+        binding.layoutEmpty.setVisibility(View.GONE);
+        container.setVisibility(View.VISIBLE);
 
-        String defaultType = prefs.getString(KEY_DEFAULT_TYPE, "HOME");
+        LayoutInflater inflater = LayoutInflater.from(context);
+        for (AddressBookHelper.AddressEntry entry : list) {
+            View item = inflater.inflate(R.layout.account_item_address, container, false);
+            TextView tvLabel = item.findViewById(R.id.tv_label);
+            TextView badgeDefault = item.findViewById(R.id.badge_default);
+            TextView tvName = item.findViewById(R.id.tv_name);
+            TextView tvPhone = item.findViewById(R.id.tv_phone);
+            TextView tvAddress = item.findViewById(R.id.tv_address);
+            ImageView ivIcon = item.findViewById(R.id.iv_label_icon);
+            FrameLayout btnEdit = item.findViewById(R.id.btn_edit);
+            FrameLayout btnDelete = item.findViewById(R.id.btn_delete);
 
-        binding.tvHomeName.setText(homeName);
-        binding.tvHomePhone.setText(homePhone);
-        binding.tvHomeAddress.setText(homeAddr);
+            tvLabel.setText(entry.label);
+            tvName.setText(entry.name);
+            tvPhone.setText(entry.phone);
+            tvAddress.setText(entry.address);
+            applyLabelIcon(ivIcon, entry.label);
 
-        binding.tvOfficeName.setText(officeName);
-        binding.tvOfficePhone.setText(officePhone);
-        binding.tvOfficeAddress.setText(officeAddr);
+            if (entry.isDefault) {
+                badgeDefault.setVisibility(View.VISIBLE);
+                badgeDefault.setBackgroundResource(R.drawable.bg_dialog_btn_confirm);
+                badgeDefault.setTextColor(Color.parseColor("#D9D9D9"));
+            } else {
+                badgeDefault.setVisibility(View.VISIBLE);
+                badgeDefault.setBackgroundResource(R.drawable.tab_inactive_bg);
+                badgeDefault.setTextColor(Color.parseColor("#000000"));
+                badgeDefault.setOnClickListener(v -> {
+                    AddressBookHelper.setDefaultById(context, entry.id);
+                    loadAddressData();
+                    Toast.makeText(context, "Đã đặt \"" + entry.label + "\" làm địa chỉ mặc định", Toast.LENGTH_SHORT).show();
+                });
+            }
 
-        if ("HOME".equals(defaultType)) {
-            binding.badgeHomeDefault.setBackgroundResource(R.drawable.bg_dialog_btn_confirm);
-            binding.badgeHomeDefault.setTextColor(Color.parseColor("#D9D9D9"));
-            
-            binding.badgeOfficeDefault.setBackgroundResource(R.drawable.tab_inactive_bg);
-            binding.badgeOfficeDefault.setTextColor(Color.parseColor("#000000"));
+            btnEdit.setOnClickListener(v -> showAddressDialog(entry));
+            btnDelete.setOnClickListener(v -> new AlertDialog.Builder(context)
+                    .setTitle("Xóa địa chỉ")
+                    .setMessage("Bạn có chắc muốn xóa địa chỉ \"" + entry.label + "\"?")
+                    .setPositiveButton("Xóa", (d, w) -> {
+                        AddressBookHelper.deleteById(context, entry.id);
+                        loadAddressData();
+                        Toast.makeText(context, "Đã xóa địa chỉ", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show());
+
+            container.addView(item);
+        }
+    }
+
+    private void applyLabelIcon(ImageView iv, String label) {
+        String lower = label != null ? label.toLowerCase() : "";
+        if (lower.contains("nhà") || lower.contains("home")) {
+            iv.setImageResource(R.drawable.ic_home);
+        } else if (lower.contains("văn phòng") || lower.contains("office") || lower.contains("công ty")) {
+            iv.setImageResource(R.drawable.ic_address_office);
         } else {
-            binding.badgeOfficeDefault.setBackgroundResource(R.drawable.bg_dialog_btn_confirm);
-            binding.badgeOfficeDefault.setTextColor(Color.parseColor("#D9D9D9"));
-            
-            binding.badgeHomeDefault.setBackgroundResource(R.drawable.tab_inactive_bg);
-            binding.badgeHomeDefault.setTextColor(Color.parseColor("#000000"));
+            iv.setImageResource(R.drawable.ic_address_location_pin);
         }
     }
 
-    private void setDefaultAddress(String type) {
+    private void showAddressDialog(@Nullable AddressBookHelper.AddressEntry existing) {
         Context context = requireContext();
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        
-        prefs.edit().putString(KEY_DEFAULT_TYPE, type).apply();
-        
-        String defaultAddr = "HOME".equals(type) 
-                ? prefs.getString(KEY_HOME_ADDR, "123 Đường Bến Nghé, Phường Bến Nghé, TP.Hồ Chí Minh")
-                : prefs.getString(KEY_OFFICE_ADDR, "Bitexco Financial Tower, 2 Hải Triều, Phường Bến Nghé, TP.Hồ Chí Minh");
-        
-        if (defaultAddr != null) {
-            ProfileSession.INSTANCE.setAddress(context, defaultAddr);
-        }
-
-        loadAddressData();
-        String targetName = "HOME".equals(type) ? "Nhà riêng" : "Văn phòng";
-        Toast.makeText(context, "Đã đặt " + targetName + " làm địa chỉ mặc định", Toast.LENGTH_SHORT).show();
-    }
-
-    private interface OnSaveAddressListener {
-        void onSave(String name, String phone, String address);
-    }
-
-    private void showEditDialog(String title, String currentName, String currentPhone, String currentAddress, OnSaveAddressListener onSave) {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.account_dialog_edit_address, null);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.account_dialog_edit_address, null);
         TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
+        ChipGroup chipGroup = dialogView.findViewById(R.id.chip_group_label);
+        EditText etLabel = dialogView.findViewById(R.id.et_dialog_label);
         EditText etName = dialogView.findViewById(R.id.et_dialog_name);
         EditText etPhone = dialogView.findViewById(R.id.et_dialog_phone);
         EditText etAddress = dialogView.findViewById(R.id.et_dialog_address);
         View btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
         View btnSave = dialogView.findViewById(R.id.btn_dialog_save);
 
-        tvTitle.setText("Chỉnh sửa địa chỉ: " + title);
-        etName.setText(currentName);
-        etPhone.setText(currentPhone);
-        etAddress.setText(currentAddress);
+        boolean isEdit = existing != null;
+        tvTitle.setText(isEdit ? "Chỉnh sửa địa chỉ" : "Thêm địa chỉ mới");
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setView(dialogView)
-                .create();
+        String currentLabel = isEdit ? existing.label : "Nhà riêng";
+        setupLabelChips(chipGroup, etLabel, currentLabel);
 
+        if (isEdit) {
+            etName.setText(existing.name);
+            etPhone.setText(existing.phone);
+            etAddress.setText(existing.address);
+        } else {
+            String sessionName = com.veganbeauty.app.data.local.ProfileSession.getFullName(context);
+            String sessionPhone = com.veganbeauty.app.data.local.ProfileSession.getPhone(context);
+            if (sessionName != null && !sessionName.trim().isEmpty()) etName.setText(sessionName.trim());
+            if (sessionPhone != null && !sessionPhone.trim().isEmpty()) etPhone.setText(sessionPhone.trim());
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(context).setView(dialogView).create();
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
         }
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
-
         btnSave.setOnClickListener(v -> {
+            String label = resolveSelectedLabel(chipGroup, etLabel);
             String name = etName.getText().toString().trim();
             String phone = etPhone.getText().toString().trim();
             String addr = etAddress.getText().toString().trim();
-            if (!name.isEmpty() && !phone.isEmpty() && !addr.isEmpty()) {
-                onSave.onSave(name, phone, addr);
-                dialog.dismiss();
-            } else {
-                Toast.makeText(requireContext(), "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            if (label.isEmpty() || name.isEmpty() || phone.isEmpty() || addr.isEmpty()) {
+                Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                return;
             }
+            if (isEdit) {
+                existing.label = label;
+                existing.name = name;
+                existing.phone = phone;
+                existing.address = addr;
+                AddressBookHelper.updateAddress(context, existing);
+                Toast.makeText(context, "Đã cập nhật địa chỉ", Toast.LENGTH_SHORT).show();
+            } else {
+                AddressBookHelper.addAddress(context, label, name, phone, addr, false);
+                Toast.makeText(context, "Đã thêm địa chỉ mới", Toast.LENGTH_SHORT).show();
+            }
+            loadAddressData();
+            dialog.dismiss();
         });
 
         dialog.show();
     }
 
+    private void setupLabelChips(ChipGroup chipGroup, EditText etCustom, String currentLabel) {
+        chipGroup.removeAllViews();
+        boolean matched = false;
+        for (String suggested : AddressBookHelper.SUGGESTED_LABELS) {
+            Chip chip = new Chip(requireContext());
+            chip.setText(suggested);
+            chip.setCheckable(true);
+            chip.setClickable(true);
+            chipGroup.addView(chip);
+            if (suggested.equalsIgnoreCase(currentLabel) || ("Khác".equals(suggested) && !matched && isCustomLabel(currentLabel))) {
+                // select later
+            }
+            if (suggested.equalsIgnoreCase(currentLabel)) {
+                chip.setChecked(true);
+                matched = true;
+            }
+        }
+        if (!matched) {
+            // Custom label
+            for (int i = 0; i < chipGroup.getChildCount(); i++) {
+                Chip chip = (Chip) chipGroup.getChildAt(i);
+                if ("Khác".equals(chip.getText().toString())) {
+                    chip.setChecked(true);
+                    break;
+                }
+            }
+            etCustom.setVisibility(View.VISIBLE);
+            etCustom.setText(currentLabel);
+        } else {
+            etCustom.setVisibility(View.GONE);
+        }
+
+        chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            Chip selected = group.findViewById(checkedIds.get(0));
+            if (selected != null && "Khác".equals(selected.getText().toString())) {
+                etCustom.setVisibility(View.VISIBLE);
+                etCustom.requestFocus();
+            } else {
+                etCustom.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private boolean isCustomLabel(String label) {
+        if (label == null || label.trim().isEmpty()) return false;
+        for (String s : AddressBookHelper.SUGGESTED_LABELS) {
+            if (!"Khác".equals(s) && s.equalsIgnoreCase(label.trim())) return false;
+        }
+        return true;
+    }
+
+    @NonNull
+    private String resolveSelectedLabel(ChipGroup chipGroup, EditText etCustom) {
+        int checkedId = chipGroup.getCheckedChipId();
+        if (checkedId != View.NO_ID) {
+            Chip chip = chipGroup.findViewById(checkedId);
+            if (chip != null) {
+                String text = chip.getText().toString();
+                if ("Khác".equals(text)) {
+                    String custom = etCustom.getText().toString().trim();
+                    return custom.isEmpty() ? "Khác" : custom;
+                }
+                return text;
+            }
+        }
+        String custom = etCustom.getText().toString().trim();
+        return custom.isEmpty() ? "Địa chỉ" : custom;
+    }
+
     @Override
     public void observeViewModel() {
-        // Not used
     }
 
     @Override

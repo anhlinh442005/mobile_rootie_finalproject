@@ -6,6 +6,7 @@ import android.util.Log;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
 import com.veganbeauty.app.data.local.entities.NotificationItem;
 import com.veganbeauty.app.features.account.notification.NotificationPushHelper;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +29,18 @@ public final class BookingStatusNotifier {
             return;
         }
         if (newStatus.equals(previousStatus)) {
+            return;
+        }
+
+        // Chỉ đẩy thông báo vào inbox của đúng chủ lịch hẹn đang đăng nhập
+        String sessionUserId = ProfileSessionHelper.getEffectiveUserId(context);
+        String bookingUserId = booking.getUserId() != null ? booking.getUserId().trim() : "";
+        if (sessionUserId == null || sessionUserId.trim().isEmpty()) {
+            return;
+        }
+        if (!bookingUserId.isEmpty() && !sessionUserId.trim().equals(bookingUserId)) {
+            Log.i(TAG, "Skip booking notification for " + booking.getId()
+                    + " — owner " + bookingUserId + " != session " + sessionUserId);
             return;
         }
 

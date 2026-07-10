@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey;
 public class UserGiftEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
+    @NonNull private String userId;
     @NonNull private String giftId;
     @NonNull private String title;
     @NonNull private String description;
@@ -24,12 +25,46 @@ public class UserGiftEntity {
     private int discountValue;
     private long acquiredTimestamp;
 
-    public UserGiftEntity(int id, @NonNull String giftId, @NonNull String title, @NonNull String description, int cost, @NonNull String expiryDate, @NonNull String status, @NonNull String giftType, @NonNull String code, int minOrderValue, @NonNull String applicableProducts, @NonNull String offerType, @Nullable String productId, int discountValue, long acquiredTimestamp) {
-        this.id = id; this.giftId = giftId; this.title = title; this.description = description; this.cost = cost; this.expiryDate = expiryDate; this.status = status; this.giftType = giftType; this.code = code; this.minOrderValue = minOrderValue; this.applicableProducts = applicableProducts; this.offerType = offerType; this.productId = productId; this.discountValue = discountValue; this.acquiredTimestamp = acquiredTimestamp;
+    public UserGiftEntity(
+            int id,
+            @NonNull String userId,
+            @NonNull String giftId,
+            @NonNull String title,
+            @NonNull String description,
+            int cost,
+            @NonNull String expiryDate,
+            @NonNull String status,
+            @NonNull String giftType,
+            @NonNull String code,
+            int minOrderValue,
+            @NonNull String applicableProducts,
+            @NonNull String offerType,
+            @Nullable String productId,
+            int discountValue,
+            long acquiredTimestamp
+    ) {
+        this.id = id;
+        this.userId = userId;
+        this.giftId = giftId;
+        this.title = title;
+        this.description = description;
+        this.cost = cost;
+        this.expiryDate = expiryDate;
+        this.status = status;
+        this.giftType = giftType;
+        this.code = code;
+        this.minOrderValue = minOrderValue;
+        this.applicableProducts = applicableProducts;
+        this.offerType = offerType;
+        this.productId = productId;
+        this.discountValue = discountValue;
+        this.acquiredTimestamp = acquiredTimestamp;
     }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+    @NonNull public String getUserId() { return userId; }
+    public void setUserId(@NonNull String userId) { this.userId = userId; }
     @NonNull public String getGiftId() { return giftId; }
     public void setGiftId(@NonNull String giftId) { this.giftId = giftId; }
     @NonNull public String getTitle() { return title; }

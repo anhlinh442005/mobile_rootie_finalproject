@@ -115,11 +115,16 @@ public class BarcodeScanFragment extends RootieFragment {
             } else if (state instanceof BarcodeScanState.Loading) {
                 _binding.barcodeScanLoading.setVisibility(View.VISIBLE);
                 _binding.barcodeScanStatus.setVisibility(View.VISIBLE);
-                _binding.barcodeScanStatus.setText("Đang tìm sản phẩm...");
+                _binding.barcodeScanStatus.setText("Đang tìm sản phẩm (local + online)...");
             } else if (state instanceof BarcodeScanState.Found) {
                 _binding.barcodeScanLoading.setVisibility(View.GONE);
                 _binding.barcodeScanStatus.setVisibility(View.GONE);
-                openProductDetail(((BarcodeScanState.Found) state).getProduct());
+                com.veganbeauty.app.data.local.entities.ProductEntity found =
+                        ((BarcodeScanState.Found) state).getProduct();
+                if (found != null && com.veganbeauty.app.data.remote.OpenProductFactsService.isExternalProductId(found.getId())) {
+                    Toast.makeText(requireContext(), "Tìm thấy trên Open Facts (tham khảo)", Toast.LENGTH_SHORT).show();
+                }
+                openProductDetail(found);
             } else if (state instanceof BarcodeScanState.NotFound) {
                 _binding.barcodeScanLoading.setVisibility(View.GONE);
                 _binding.barcodeScanStatus.setVisibility(View.VISIBLE);
@@ -193,12 +198,20 @@ public class BarcodeScanFragment extends RootieFragment {
     }
 
     private void openProductDetail(com.veganbeauty.app.data.local.entities.ProductEntity product) {
-        if (product == null || product.getId() == null) return;
+        if (product == null || product.getId() == null || product.getId().isEmpty()) return;
+
+        // Capture activity/FM before popping — after popBackStackImmediate this fragment
+        // is detached and ProductDetailLauncher.open(this, ...) would fail silently.
+        androidx.fragment.app.FragmentActivity activity = getActivity();
+        if (activity == null) return;
+
+        androidx.fragment.app.FragmentManager fm = getParentFragmentManager();
         try {
-            getParentFragmentManager().popBackStackImmediate();
+            fm.popBackStackImmediate();
         } catch (Exception ignored) {
         }
-        ProductDetailLauncher.open(this, product);
+
+        ProductDetailLauncher.open(activity, product);
     }
 
     @Override

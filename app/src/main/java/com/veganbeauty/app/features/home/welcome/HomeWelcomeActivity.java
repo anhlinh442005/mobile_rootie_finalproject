@@ -36,6 +36,9 @@ import com.veganbeauty.app.databinding.HomeLoginSheetBinding;
 import com.veganbeauty.app.databinding.HomeWelcomeSheetBinding;
 import com.veganbeauty.app.databinding.HomeRegisterSheetBinding;
 import com.veganbeauty.app.features.auth.AuthViewModel;
+import com.veganbeauty.app.features.auth.FreshDemoAccountSeeder;
+import com.veganbeauty.app.features.ai.ChatHistoryHelper;
+import com.veganbeauty.app.features.home.HomeFragment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -188,22 +191,48 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                 setLoginInProgress(false);
                 com.veganbeauty.app.data.local.entities.UserEntity user = ((com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Success) state)
                         .getUser();
-                // Save all user info into ProfileSession so other screens can read it
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setLoggedIn(this, true);
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUserId(this, user.getUser_id());
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setFullName(this, user.getFull_name());
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setEmail(this, user.getEmail());
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPhone(this, user.getPhone());
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUsername(this, user.getUsername());
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(
-                        this,
-                        com.veganbeauty.app.utils.ProfileSessionHelper.resolveAvatarUrl(user)
-                );
-                com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPrimaryImage(this, user.getPrimary_image() != null ? user.getPrimary_image() : "");
+                Runnable completeLogin = () -> {
+                    com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setLoggedIn(HomeWelcomeActivity.this, true);
+                    com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUserId(HomeWelcomeActivity.this, user.getUser_id());
+                    com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setFullName(HomeWelcomeActivity.this, user.getFull_name());
+                    com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setEmail(HomeWelcomeActivity.this, user.getEmail());
+                    com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPhone(HomeWelcomeActivity.this, user.getPhone());
+                    com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setUsername(HomeWelcomeActivity.this, user.getUsername());
+                    com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setAvatar(
+                            HomeWelcomeActivity.this,
+                            com.veganbeauty.app.utils.ProfileSessionHelper.resolveAvatarUrl(user)
+                    );
+                    com.veganbeauty.app.data.local.ProfileSession.INSTANCE.setPrimaryImage(
+                            HomeWelcomeActivity.this,
+                            user.getPrimary_image() != null ? user.getPrimary_image() : ""
+                    );
+                    navigateToMain();
+                    if (!FreshDemoAccountSeeder.isDemoAccount(user.getUser_id(), user.getEmail())) {
+                        com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsFromFirestore(HomeWelcomeActivity.this);
+                        com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(HomeWelcomeActivity.this, null);
+                    }
+                };
 
-                navigateToMain();
-                com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsFromFirestore(this);
-                com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(this, null);
+                if (FreshDemoAccountSeeder.isDemoAccount(user.getUser_id(), user.getEmail())) {
+                    new Thread(() -> {
+                        FreshDemoAccountSeeder.resetLocalDataBlocking(getApplicationContext());
+                        runOnUiThread(() -> {
+                            ChatHistoryHelper.clearChatHistory(HomeWelcomeActivity.this);
+                            HomeFragment.resetQuizPopupSessionFlag();
+                            com.veganbeauty.app.features.shop.product.CartHelper.clearCart(HomeWelcomeActivity.this);
+                            // Ghi đè lại profile import sau clear (tránh dính session cũ)
+                            FreshDemoAccountSeeder.applyImportedDemoProfile(HomeWelcomeActivity.this);
+                            completeLogin.run();
+                        });
+                    }).start();
+                } else {
+                    com.veganbeauty.app.data.local.ProfileSession.activateUserSession(this, user.getUser_id());
+                    com.veganbeauty.app.utils.AddressBookHelper.loadForUser(this, user.getUser_id());
+                    ChatHistoryHelper.clearChatHistory(this);
+                    HomeFragment.resetQuizPopupSessionFlag();
+                    com.veganbeauty.app.features.shop.product.CartHelper.clearCart(this);
+                    completeLogin.run();
+                }
             } else if (state instanceof com.veganbeauty.app.features.auth.AuthViewModel.AuthState.Error) {
                 setLoginInProgress(false);
                 android.widget.Toast.makeText(this,

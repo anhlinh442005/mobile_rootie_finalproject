@@ -87,6 +87,7 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
 
         setupRecyclerView();
         setupListeners();
+        refreshPointsRow();
         observeCartItems();
     }
 
@@ -144,11 +145,7 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
             }).start();
         });
 
-        _binding.switchPoints.setOnClickListener(v -> {
-            isPointsChecked = !isPointsChecked;
-            updateSwitchUI(_binding.switchPoints, _binding.switchPointsThumb, isPointsChecked);
-            updateUI(adapter.getCurrentList());
-        });
+        _binding.switchPoints.setOnClickListener(v -> refreshPointsRow());
 
         _binding.llVoucherRow.setOnClickListener(v -> {
             ShopVoucherFragment voucherFragment = ShopVoucherFragment.newInstance(selectedVoucherCode);
@@ -234,10 +231,6 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
             finalPriceSum += item.getPrice() * item.getQuantity();
         }
 
-        if (isPointsChecked && finalPriceSum > 2400) {
-            finalPriceSum -= 2400;
-        }
-
         boolean isVoucherApplied = selectedVoucherCode != null && !selectedVoucherCode.isEmpty();
         if (isVoucherApplied && finalPriceSum > voucherDiscountAmount) {
             finalPriceSum -= voucherDiscountAmount;
@@ -273,6 +266,8 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
         _binding.tvTotalValue.setText(formatter.format(finalPriceSum));
         _binding.tvSavingsValue.setText(formatter.format(totalSavings));
 
+        refreshPointsRow();
+
         _binding.btnCheckout.setText("Mua hàng");
 
         _binding.tvSelectAllLabel.setText("Chọn tất cả (" + items.size() + ")");
@@ -290,6 +285,15 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
             _binding.ivSelectAll.setImageResource(R.drawable.ic_circle);
             _binding.ivSelectAll.setImageTintList(null);
         }
+    }
+
+    private void refreshPointsRow() {
+        if (_binding == null || !isAdded()) return;
+        int balance = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
+        String balanceText = String.format(Locale.getDefault(), "%,d", balance).replace(',', '.');
+        _binding.tvPointsText.setText("Bạn có " + balanceText + " xu");
+        isPointsChecked = false;
+        updateSwitchUI(_binding.switchPoints, _binding.switchPointsThumb, false);
     }
 
     private void updateSwitchUI(FrameLayout container, ImageView thumb, boolean enabled) {

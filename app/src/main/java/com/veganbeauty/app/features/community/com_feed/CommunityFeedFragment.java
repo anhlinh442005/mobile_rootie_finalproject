@@ -45,6 +45,7 @@ import com.veganbeauty.app.features.community.notification.CommunityNotification
 import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.utils.ComBottomNavHelper;
+import com.veganbeauty.app.utils.CommunityPostNotifier;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.utils.ProfileUpdateNotifier;
 import com.veganbeauty.app.utils.SideMenuHelper;
@@ -87,6 +88,20 @@ public class CommunityFeedFragment extends RootieFragment {
         }
     };
 
+    private final CommunityPostNotifier.Listener postCreatedListener = post -> {
+        if (binding != null && isAdded()) {
+            FeedDataCache.addPinnedPost(post);
+            scheduleFeedUpdate(true);
+            if (binding.nsvFeed != null) {
+                binding.nsvFeed.post(() -> {
+                    if (binding != null && binding.nsvFeed != null) {
+                        binding.nsvFeed.smoothScrollTo(0, 0);
+                    }
+                });
+            }
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -113,6 +128,7 @@ public class CommunityFeedFragment extends RootieFragment {
         binding.rvPosts.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvPosts.setAdapter(postAdapter);
         ProfileUpdateNotifier.addListener(profileUpdateListener);
+        CommunityPostNotifier.addListener(postCreatedListener);
         refreshFollowingStateAsync();
         postAdapter.setOnFollowStateChangedListener(this::onFollowStateChanged);
 
@@ -480,7 +496,6 @@ public class CommunityFeedFragment extends RootieFragment {
                         for (int i = pinnedPosts.size() - 1; i >= 0; i--) {
                             CommunityPostEntity pinned = pinnedPosts.get(i);
                             if (pinned == null || pinned.getPostId() == null) continue;
-                            if (!matchesCurrentFilter(pinned)) continue;
                             String pinnedId = pinned.getPostId();
                             allFilteredPosts.removeIf(p -> p != null && pinnedId.equals(p.getPostId()));
                             allFilteredPosts.add(0, pinned);
@@ -675,6 +690,7 @@ public class CommunityFeedFragment extends RootieFragment {
     @Override
     public void onDestroyView() {
         ProfileUpdateNotifier.removeListener(profileUpdateListener);
+        CommunityPostNotifier.removeListener(postCreatedListener);
         super.onDestroyView();
         binding = null;
     }
