@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
             String userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(this);
             String email = com.veganbeauty.app.data.local.ProfileSession.getEmail(this);
             com.veganbeauty.app.utils.AddressBookHelper.ensureLoadedForCurrentUser(this);
+            com.veganbeauty.app.utils.UserQuizStateHelper.restoreForUser(this, userId);
+            com.veganbeauty.app.data.local.SkinHistoryLocalStore.hydrateProfileFromHistoryIfNeeded(this);
+            com.veganbeauty.app.data.local.ProfileSession.ensureSkinTestTimestampFromProfile(this);
             if (!com.veganbeauty.app.features.auth.FreshDemoAccountSeeder.isDemoAccount(userId, email)) {
                 com.veganbeauty.app.utils.SyncDataHelper.syncRewardPointsFromFirestore(this);
                 com.veganbeauty.app.utils.SyncDataHelper.syncUserProfileFromFirestore(this, null);
@@ -609,6 +612,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openChatFragment() {
+        if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(this)) {
+            openSkinAiChatDialog();
+            return;
+        }
         androidx.fragment.app.Fragment current = getSupportFragmentManager().findFragmentById(R.id.main_container);
         if (current instanceof com.veganbeauty.app.features.ai.SkinAiChatFragment) {
             return;

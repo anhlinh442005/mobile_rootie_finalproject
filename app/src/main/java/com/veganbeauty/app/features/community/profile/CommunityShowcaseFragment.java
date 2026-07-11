@@ -86,11 +86,12 @@ public class CommunityShowcaseFragment extends Fragment {
         android.content.Context ctx = requireContext();
         LocalJsonReader jsonReader = new LocalJsonReader(ctx);
 
-        Map<String, List<String>> socialData = jsonReader.getSocialDataForUser(userId != null ? userId : "test_001");
+        String resolvedUserId = userId != null ? userId : "";
+        Map<String, List<String>> socialData = jsonReader.getSocialDataForUser(resolvedUserId);
         int followersCount = (socialData != null && socialData.containsKey("followers")) ? socialData.get("followers").size() : 867;
         _binding.tvFollowers.setText(String.valueOf(followersCount));
 
-        String currentUserId = userId != null ? userId : "test_001";
+        String currentUserId = resolvedUserId;
         List<String> productIds = AffiliateProductsHelper.getShowcaseProductIds(ctx, currentUserId);
         List<CommunityProduct> allProducts = jsonReader.getProducts();
         List<CommunityProduct> finalProducts = new ArrayList<>();

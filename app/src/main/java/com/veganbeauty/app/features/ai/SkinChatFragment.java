@@ -99,7 +99,9 @@ public class SkinChatFragment extends DialogFragment {
     );
 
     private void sendTextMessage(String text) {
+        if (blockGuestChat()) return;
         String currentUserId = getCurrentUserId();
+        if (currentUserId == null || currentUserId.isEmpty()) return;
         MessageHelper.sendMessage(requireContext(), conversationId, currentUserId, "rootie_vn", text);
         loadConversationData();
     }
@@ -168,6 +170,17 @@ public class SkinChatFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (!ProfileSession.isLoggedIn(requireContext())) {
+            // Guests must not chat — redirect to contact form via dialog container.
+            if (getParentFragment() instanceof SkinChatDialogContainer) {
+                ((SkinChatDialogContainer) getParentFragment()).dismiss();
+            } else if (getShowsDialog()) {
+                dismissAllowingStateLoss();
+            }
+            SkinChatDialogContainer.newInstance(false)
+                    .show(requireActivity().getSupportFragmentManager(), "SkinChatDialogContainer");
+            return;
+        }
         setupUI(view);
     }
 
@@ -321,15 +334,24 @@ public class SkinChatFragment extends DialogFragment {
     }
 
     private String getCurrentUserId() {
-        String userId = ProfileSession.getCurrentUserId(requireContext());
-        return userId != null ? userId : "guest_user";
+        return ProfileSession.getCurrentUserId(requireContext());
+    }
+
+    private boolean blockGuestChat() {
+        if (ProfileSession.isLoggedIn(requireContext())) return false;
+        Toast.makeText(requireContext(),
+                "Khách vãng lai không thể chat. Vui lòng để lại thông tin liên hệ.",
+                Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     private void sendMessage() {
+        if (blockGuestChat()) return;
         String text = _binding.etMessageInput.getText().toString().trim();
         if (text.isEmpty()) return;
 
         String currentUserId = getCurrentUserId();
+        if (currentUserId == null || currentUserId.isEmpty()) return;
 
         List<ChatMessageEntity> rawMessages = MessageHelper.getMessages(requireContext(), conversationId);
         long now = System.currentTimeMillis();

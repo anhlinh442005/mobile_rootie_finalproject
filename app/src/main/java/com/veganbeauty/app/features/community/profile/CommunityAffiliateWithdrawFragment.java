@@ -98,7 +98,10 @@ public class CommunityAffiliateWithdrawFragment extends Fragment {
 
             LocalJsonReader jsonReader = new LocalJsonReader(requireContext());
             List<OrderEntity> allOrders = jsonReader.getAllOrders();
-            String currentUserId = "test_001"; // Or get from session
+            String currentUserId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext());
+            if (currentUserId == null) {
+                currentUserId = "";
+            }
             
             long successCommission = 0L;
             long pendingCommission = 0L;

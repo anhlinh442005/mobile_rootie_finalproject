@@ -271,7 +271,7 @@ public final class AddressBookHelper {
                 .remove(KEY_DEFAULT_TYPE);
 
         if (list.isEmpty()) {
-            editor.remove(KEY_SAVED_LIST).apply();
+            editor.remove(KEY_SAVED_LIST).commit();
             ProfileSession.setAddress(context, "");
             return;
         }
@@ -294,11 +294,11 @@ public final class AddressBookHelper {
                 list.get(0).isDefault = true;
                 defaultEntry = list.get(0);
             }
-            editor.putString(KEY_SAVED_LIST, array.toString()).apply();
+            editor.putString(KEY_SAVED_LIST, array.toString()).commit();
             ProfileSession.setAddress(context, defaultEntry.address);
         } catch (Exception e) {
             e.printStackTrace();
-            editor.apply();
+            editor.commit();
         }
     }
 
@@ -363,7 +363,7 @@ public final class AddressBookHelper {
                 obj.put("isDefault", entry.isDefault);
                 array.put(obj);
             }
-            prefs.edit().putString(KEY_USER_PREFIX + userId, array.toString()).apply();
+            prefs.edit().putString(KEY_USER_PREFIX + userId, array.toString()).commit();
         } catch (Exception e) {
             e.printStackTrace();
         }

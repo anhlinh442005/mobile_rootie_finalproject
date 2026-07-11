@@ -753,7 +753,7 @@ public class ShopCheckoutFragment extends RootieFragment {
     private void setupCheckoutLabelChips(com.google.android.material.chip.ChipGroup chipGroup,
                                          EditText etCustom, String currentLabel) {
         chipGroup.removeAllViews();
-        boolean matched = false;
+        int matchedChipId = View.NO_ID;
         for (String suggested : AddressBookHelper.SUGGESTED_LABELS) {
             com.google.android.material.chip.Chip chip = new com.google.android.material.chip.Chip(requireContext());
             chip.setText(suggested);
@@ -761,23 +761,23 @@ public class ShopCheckoutFragment extends RootieFragment {
             chip.setClickable(true);
             chipGroup.addView(chip);
             if (suggested.equalsIgnoreCase(currentLabel)) {
-                chip.setChecked(true);
-                matched = true;
+                matchedChipId = chip.getId();
             }
         }
-        if (!matched) {
+        if (matchedChipId != View.NO_ID) {
+            chipGroup.check(matchedChipId);
+            etCustom.setVisibility(View.GONE);
+        } else {
             for (int i = 0; i < chipGroup.getChildCount(); i++) {
                 com.google.android.material.chip.Chip chip =
                         (com.google.android.material.chip.Chip) chipGroup.getChildAt(i);
                 if ("Khác".equals(chip.getText().toString())) {
-                    chip.setChecked(true);
+                    chipGroup.check(chip.getId());
                     break;
                 }
             }
             etCustom.setVisibility(View.VISIBLE);
             etCustom.setText(currentLabel);
-        } else {
-            etCustom.setVisibility(View.GONE);
         }
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) return;

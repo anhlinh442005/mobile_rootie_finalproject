@@ -18,7 +18,7 @@ import com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem;
 import com.veganbeauty.app.features.routine.SkinReminderFragment;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.features.community.message.CommunityMessageFragment;
-import com.veganbeauty.app.features.ai.SkinChatFragment;
+import com.veganbeauty.app.features.ai.SkinChatDialogContainer;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -57,8 +57,9 @@ public class NotificationIntentHandler {
         }
 
         if (action.equals("open_skin_chat")) {
-            SkinChatFragment dialog = new SkinChatFragment();
-            dialog.show(supportFragmentManager, "SkinChatDialog");
+            SkinChatDialogContainer
+                    .newInstance(false)
+                    .show(supportFragmentManager, "SkinChatDialogContainer");
             return;
         }
 

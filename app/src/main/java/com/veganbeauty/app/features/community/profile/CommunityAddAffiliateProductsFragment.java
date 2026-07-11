@@ -118,8 +118,8 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
     private void loadData() {
         try {
             String currentUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
-            if (currentUserId == null || currentUserId.isEmpty()) {
-                currentUserId = "test_001";
+            if (currentUserId == null) {
+                currentUserId = "";
             }
             try {
                 StringBuilder usersStr = new StringBuilder();
@@ -176,8 +176,8 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
         llAddProductsContainer.removeAllViews();
 
         String showcaseUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
-        if (showcaseUserId == null || showcaseUserId.isEmpty()) {
-            showcaseUserId = "test_001";
+        if (showcaseUserId == null) {
+            showcaseUserId = "";
         }
         final String finalShowcaseUserId = showcaseUserId;
 

@@ -80,9 +80,9 @@ public class CommunityProfileFragment extends RootieFragment {
     private int currentTab = 0;
     private List<CommunityPostEntity> currentAllPosts = new ArrayList<>();
     private List<ReelEntity> currentAllReels = new ArrayList<>();
-    private String currentUserId = "test_001";
-    private String profileUserId = "test_001";
-    private String ownUserId = "test_001";
+    private String currentUserId = "";
+    private String profileUserId = "";
+    private String ownUserId = "";
     private boolean isFollowing = false;
     private int currentFollowersCount = 0;
     private int currentFollowingCount = 0;
@@ -181,8 +181,8 @@ public class CommunityProfileFragment extends RootieFragment {
                 JSONArray usersJsonArray = new JSONArray(usersJsonStr);
                 for (int i = 0; i < usersJsonArray.length(); i++) {
                     JSONObject obj = usersJsonArray.getJSONObject(i);
-                    if (obj.optString("email").equals(loggedInEmail)) {
-                        ownUserId = obj.optString("user_id", "test_001");
+                    if (obj.optString("email").equalsIgnoreCase(loggedInEmail)) {
+                        ownUserId = obj.optString("user_id", "");
                         break;
                     }
                 }
@@ -190,8 +190,8 @@ public class CommunityProfileFragment extends RootieFragment {
                 e.printStackTrace();
             }
         }
-        if (ownUserId == null || ownUserId.isEmpty()) {
-            ownUserId = "test_001";
+        if (ownUserId == null) {
+            ownUserId = "";
         }
 
         currentUserId = (passedUserId != null) ? passedUserId : ownUserId;

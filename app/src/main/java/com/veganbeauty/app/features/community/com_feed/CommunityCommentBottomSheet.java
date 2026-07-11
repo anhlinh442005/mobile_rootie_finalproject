@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -383,7 +384,8 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
 
             String resolvedUserId = ProfileSessionHelper.getEffectiveUserId(context);
             if (resolvedUserId == null || resolvedUserId.isEmpty()) {
-                resolvedUserId = "test_001";
+                Toast.makeText(context, "Vui lòng đăng nhập để bình luận", Toast.LENGTH_SHORT).show();
+                return;
             }
             final String myUserId = resolvedUserId;
             String resolvedUsername = ProfileSession.getFullName(context);

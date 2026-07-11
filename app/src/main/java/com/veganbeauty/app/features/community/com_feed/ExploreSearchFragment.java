@@ -359,7 +359,7 @@ public class ExploreSearchFragment extends RootieFragment {
                 if (ownUserId == null || ownUserId.isEmpty()) {
                     ownUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(ctx);
                 }
-                if (ownUserId == null || ownUserId.isEmpty()) ownUserId = "test_001";
+                if (ownUserId == null) ownUserId = "";
                 
                 if (iconIndex == 0) {
                     // Saved posts: use snapshots so Rootie news keeps full data across sessions

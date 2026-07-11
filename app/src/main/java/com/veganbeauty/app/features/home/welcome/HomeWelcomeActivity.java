@@ -220,9 +220,15 @@ public class HomeWelcomeActivity extends AppCompatActivity {
                             ChatHistoryHelper.clearChatHistory(HomeWelcomeActivity.this);
                             HomeFragment.resetQuizPopupSessionFlag();
                             com.veganbeauty.app.features.shop.product.CartHelper.clearCart(HomeWelcomeActivity.this);
-                            // Ghi đè lại profile import sau clear (tránh dính session cũ)
-                            FreshDemoAccountSeeder.applyImportedDemoProfile(HomeWelcomeActivity.this);
+                            com.veganbeauty.app.data.local.ProfileSession.activateUserSession(
+                                    HomeWelcomeActivity.this, user.getUser_id());
+                            com.veganbeauty.app.data.local.SkinHistoryLocalStore.hydrateProfileFromHistoryIfNeeded(
+                                    HomeWelcomeActivity.this);
+                            com.veganbeauty.app.data.local.ProfileSession.ensureSkinTestTimestampFromProfile(
+                                    HomeWelcomeActivity.this);
                             completeLogin.run();
+                            com.veganbeauty.app.utils.ProfileSessionHelper.restoreLocalAvatarIfPresent(
+                                    HomeWelcomeActivity.this);
                         });
                     }).start();
                 } else {

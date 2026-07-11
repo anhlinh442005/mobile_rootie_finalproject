@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.veganbeauty.app.R;
 import androidx.fragment.app.DialogFragment;
+import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.features.weather.SkinWeatherProfileHelper;
 import com.veganbeauty.app.databinding.SkinAiChatBinding;
 import com.veganbeauty.app.features.ai.RootieChatAdapter.RootieChatItem;
@@ -156,6 +157,18 @@ public class SkinAiChatFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (!ProfileSession.isLoggedIn(requireContext())) {
+            if (getParentFragment() instanceof SkinChatDialogContainer) {
+                ((SkinChatDialogContainer) getParentFragment()).dismiss();
+            } else if (getShowsDialog()) {
+                dismissAllowingStateLoss();
+            } else if (getParentFragmentManager() != null) {
+                getParentFragmentManager().popBackStack();
+            }
+            SkinChatDialogContainer.newInstance(true)
+                    .show(requireActivity().getSupportFragmentManager(), "SkinChatDialogContainer");
+            return;
+        }
         setupUI(view);
     }
 
@@ -311,6 +324,12 @@ public class SkinAiChatFragment extends DialogFragment {
     }
 
     private void handleUserMessage(String text) {
+        if (!ProfileSession.isLoggedIn(requireContext())) {
+            Toast.makeText(requireContext(),
+                    "Khách vãng lai không thể chat. Vui lòng để lại thông tin liên hệ.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
         String timeStr = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         RootieChatItem userMsg = new RootieChatItem(
                 UUID.randomUUID().toString(),

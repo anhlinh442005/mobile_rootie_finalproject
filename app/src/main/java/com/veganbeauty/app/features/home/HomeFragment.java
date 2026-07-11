@@ -698,7 +698,7 @@ public class HomeFragment extends RootieFragment {
         long lastTestTime = ProfileSession.getLastSkinTestTime(requireContext());
         boolean needsWeeklyTest = ProfileSession.isWeeklyQuizReminderDue(requireContext());
         boolean dismissed = ProfileSession.isQuizReminderDismissedWeekly(requireContext());
-        boolean isFirstTimeUser = lastTestTime == 0L;
+        boolean isFirstTimeUser = !ProfileSession.hasSavedSkinProfile(requireContext());
         boolean isLoggedIn = ProfileSession.isLoggedIn(requireContext());
 
         View reminderBanner = binding.quizTestWeeklyReminderLayout.getRoot();

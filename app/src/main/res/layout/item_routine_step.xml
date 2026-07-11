@@ -1,59 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutStepCard"
     android:layout_width="match_parent"
-    android:layout_height="61dp"
-    android:layout_marginBottom="8dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_routine_step_card"
     android:clickable="true"
     android:focusable="true"
-    app:cardBackgroundColor="@color/status_bg_yellow"
-    app:cardCornerRadius="15dp"
-    app:cardElevation="2dp">
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="12dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingHorizontal="16dp">
+    <ImageView
+        android:id="@+id/ivStepCheckbox"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:clickable="true"
+        android:contentDescription="Bật/tắt bước"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Custom Checkbox -->
-        <ImageView
-            android:id="@+id/ivStepCheckbox"
-            android:layout_width="29dp"
-            android:layout_height="29dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="@drawable/skin_bg_button_light"
-            android:contentDescription="Checkbox" />
+    <LinearLayout
+        android:id="@+id/layoutStepTexts"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/layoutReorder"
+        app:layout_constraintStart_toEndOf="@id/ivStepCheckbox"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Step Title & Description -->
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvStepName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/ivStepCheckbox"
-            android:layout_marginStart="16dp"
-            android:layout_centerVertical="true"
-            android:orientation="vertical">
+            android:ellipsize="end"
+            android:fontFamily="@font/lexend"
+            android:maxLines="1"
+            android:textColor="#3E4D44"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvStepDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:maxLines="1"
+            android:textColor="#8A948C"
+            android:textSize="11sp" />
+
+        <LinearLayout
+            android:id="@+id/layoutStepDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_routine_duration_chip"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp">
+
+            <ImageView
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_time"
+                app:tint="#5C6B5F" />
 
             <TextView
-                android:id="@+id/tvStepName"
+                android:id="@+id/tvStepDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/lexend"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="2 phút"
                 android:textColor="#3E4D44"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvStepDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/lexend"
-                android:textColor="#AEAEB2"
-                android:textSize="12sp" />
         </LinearLayout>
-    </RelativeLayout>
-</androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <!-- Compact horizontal reorder pill -->
+    <LinearLayout
+        android:id="@+id/layoutReorder"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:background="@drawable/bg_routine_step_reorder"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnMoveUp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Đưa lên"
+            android:focusable="true"
+            android:padding="7dp"
+            android:src="@drawable/ic_chevron_up_filled"
+            app:tint="#3E4D44" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="14dp"
+            android:background="#D7DDD4" />
+
+        <ImageView
+            android:id="@+id/btnMoveDown"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Đưa xuống"
+            android:focusable="true"
+            android:padding="7dp"
+            android:rotation="180"
+            android:src="@drawable/ic_chevron_up_filled"
+            app:tint="#3E4D44" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

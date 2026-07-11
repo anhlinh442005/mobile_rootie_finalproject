@@ -100,6 +100,9 @@ public class SkinScanResultDialogFragment extends DialogFragment {
                 return;
             }
             dismiss();
+            androidx.fragment.app.Fragment dest = ProfileSession.isRoutineConfigured(requireContext())
+                    ? new SkinTimeRoutineFragment()
+                    : new com.veganbeauty.app.features.routine.SkinReminderFragment();
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .setCustomAnimations(
                             android.R.anim.slide_in_left,
@@ -107,7 +110,7 @@ public class SkinScanResultDialogFragment extends DialogFragment {
                             android.R.anim.fade_in,
                             android.R.anim.slide_out_right
                     )
-                    .replace(R.id.main_container, new SkinTimeRoutineFragment())
+                    .replace(R.id.main_container, dest)
                     .addToBackStack(null)
                     .commit();
         });

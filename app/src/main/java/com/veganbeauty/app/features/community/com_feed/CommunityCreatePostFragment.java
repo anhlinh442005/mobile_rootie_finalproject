@@ -81,9 +81,9 @@ public class CommunityCreatePostFragment extends RootieFragment {
     private CommunityRepository communityRepository;
     private CommunityViewModel communityViewModel;
 
-    private String loggedUserId = "test_001";
-    private String loggedUsername = "Test User";
-    private String loggedDisplayName = "Test User";
+    private String loggedUserId = "";
+    private String loggedUsername = "";
+    private String loggedDisplayName = "";
     private String loggedAvatarUrl = "";
 
     private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
@@ -232,8 +232,8 @@ public class CommunityCreatePostFragment extends RootieFragment {
     private void loadCurrentUserInfo() {
         Context ctx = requireContext();
         loggedUserId = ProfileSessionHelper.getEffectiveUserId(ctx);
-        if (loggedUserId == null || loggedUserId.isEmpty()) {
-            loggedUserId = "test_001";
+        if (loggedUserId == null) {
+            loggedUserId = "";
         }
         loggedDisplayName = ProfileSession.getFullName(ctx);
         if (loggedDisplayName == null || loggedDisplayName.trim().isEmpty()) {

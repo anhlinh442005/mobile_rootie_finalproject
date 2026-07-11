@@ -24,6 +24,8 @@ public class ProfileSession {
     private static final String KEY_FULLNAME = "fullname";
     private static final String KEY_PHONE = "phone";
     private static final String KEY_GUEST_PHONE = "guest_phone";
+    private static final String KEY_GUEST_NAME = "guest_name";
+    private static final String KEY_GUEST_EMAIL = "guest_email";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_FAST_LOGIN = "fast_login";
     private static final String KEY_CCCD = "cccd";
@@ -111,6 +113,30 @@ public class ProfileSession {
                 .apply();
     }
 
+    public static String getGuestName(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(KEY_GUEST_NAME, "");
+    }
+
+    public static void setGuestName(Context context, String name) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_GUEST_NAME, name != null ? name : "")
+                .apply();
+    }
+
+    public static String getGuestEmail(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(KEY_GUEST_EMAIL, "");
+    }
+
+    public static void setGuestEmail(Context context, String email) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_GUEST_EMAIL, email != null ? email : "")
+                .apply();
+    }
+
     public static String getEmail(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .getString(KEY_EMAIL, "");
@@ -183,11 +209,8 @@ public class ProfileSession {
     }
 
     public static String getAvatar(Context context) {
-        String avatar = getAvatarStored(context);
-        if (avatar.isEmpty()) {
-            return "https://i.pinimg.com/736x/1a/d8/4b/1ad84b9ab4a1e2ab17c7aab37fcff0a5.jpg";
-        }
-        return avatar;
+        // Đồng bộ với trang Cá nhân: session → file local → DB → fallback
+        return com.veganbeauty.app.utils.ProfileSessionHelper.getAccountProfileAvatarUrl(context);
     }
 
     /** Giá trị avatar thực trong prefs, không fallback mặc định. */
@@ -383,6 +406,8 @@ public class ProfileSession {
     private static final String KEY_ROUTINE_EVENING_TIME = "routine_evening_time";
     private static final String KEY_ROUTINE_MORNING_STEPS = "routine_morning_steps";
     private static final String KEY_ROUTINE_EVENING_STEPS = "routine_evening_steps";
+    /** Khách đã lưu cài đặt routine (bước + giờ + thông báo) ít nhất một lần. */
+    private static final String KEY_ROUTINE_USER_CONFIGURED = "routine_user_configured";
 
     public static boolean isMorningReminderEnabled(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -464,6 +489,32 @@ public class ProfileSession {
     public static void setEveningSteps(Context context, Set<String> steps) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
                 .putStringSet(KEY_ROUTINE_EVENING_STEPS, steps).apply();
+    }
+
+    /**
+     * Đã setup routine (bước + thời gian + thông báo) thì mới cho làm routine hàng ngày.
+     * Migrate nhẹ: user cũ đã có streak / đã hoàn thành routine → coi như đã setup.
+     */
+    public static boolean isRoutineConfigured(Context context) {
+        if (context == null) return false;
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (prefs.getBoolean(KEY_ROUTINE_USER_CONFIGURED, false)) {
+            return true;
+        }
+        if (getSkinStreak(context) > 0
+                || !prefs.getStringSet(KEY_COMPLETED_MORNING_DATES, new HashSet<>()).isEmpty()
+                || !prefs.getStringSet(KEY_COMPLETED_EVENING_DATES, new HashSet<>()).isEmpty()) {
+            setRoutineConfigured(context, true);
+            return true;
+        }
+        return false;
+    }
+
+    public static void setRoutineConfigured(Context context, boolean configured) {
+        if (context == null) return;
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+                .putBoolean(KEY_ROUTINE_USER_CONFIGURED, configured)
+                .apply();
     }
 
     public static Set<String> getCompletedStepIdsForDate(Context context, String date) {
@@ -760,7 +811,12 @@ public class ProfileSession {
             if (fromScan) {
                 editor.putBoolean(KEY_SKIN_PROFILE_FROM_SCAN, true);
             }
-            editor.apply();
+            if (!skinType.isEmpty() || obj.has("hydration") || obj.has("sensitivity")) {
+                if (getLastSkinTestTime(context) <= 0L) {
+                    editor.putLong(KEY_LAST_SKIN_TEST_TIME, System.currentTimeMillis());
+                }
+            }
+            editor.commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -796,14 +852,24 @@ public class ProfileSession {
     public static final long QUIZ_REWARD_COOLDOWN_MS = 7L * 24 * 60 * 60 * 1000;
 
     /**
-     * Đủ điều kiện cộng xu khi hoàn thành quiz.
-     * Cho phép làm lại + nhận xu mỗi lần hoàn thành (không khóa 7 ngày).
+     * Cộng xu khi: lần đầu test da, hoặc đã ≥ 7 ngày kể từ phiên test gần nhất.
+     * Làm lại giữa chu kỳ vẫn được (không cấm) nhưng không cộng xu.
+     * Gọi TRƯỚC khi ghi {@link #setLastSkinTestTime} / persist kết quả mới.
      */
     public static boolean isQuizRewardEligible(Context context) {
-        return true;
+        long lastTestTime = getLastSkinTestTime(context);
+        if (lastTestTime <= 0L) {
+            return true; // lần đầu
+        }
+        return System.currentTimeMillis() - lastTestTime >= QUIZ_REWARD_COOLDOWN_MS;
     }
 
-    /** Banner nhắc test định kỳ trên Home — vẫn theo chu kỳ 7 ngày. */
+    /** True nếu đây là lần test đầu (chưa có timestamp). Gọi trước khi persist. */
+    public static boolean isFirstSkinTest(Context context) {
+        return getLastSkinTestTime(context) <= 0L;
+    }
+
+    /** Banner nhắc test định kỳ trên Home — theo chu kỳ 7 ngày từ phiên gần nhất. */
     public static boolean isWeeklyQuizReminderDue(Context context) {
         long lastTestTime = getLastSkinTestTime(context);
         if (lastTestTime == 0L) {
@@ -842,6 +908,16 @@ public class ProfileSession {
                 .edit()
                 .putLong(KEY_LAST_SKIN_TEST_TIME, time)
                 .apply();
+    }
+
+    /** Đồng bộ timestamp test da khi đã có hồ sơ nhưng thiếu mốc thời gian (sau hydrate / restore). */
+    public static void ensureSkinTestTimestampFromProfile(Context context) {
+        if (context == null || getLastSkinTestTime(context) > 0L) {
+            return;
+        }
+        if (hasSavedSkinProfile(context)) {
+            setLastSkinTestTime(context, System.currentTimeMillis());
+        }
     }
 
     public static boolean isQuizReminderDismissedWeekly(Context context) {
@@ -1027,7 +1103,11 @@ public class ProfileSession {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String previousUserId = prefs.getString(KEY_LAST_ACTIVE_USER_ID, "");
         if (!trimmedUserId.equals(previousUserId)) {
+            if (previousUserId != null && !previousUserId.trim().isEmpty()) {
+                com.veganbeauty.app.utils.UserQuizStateHelper.saveForUser(context, previousUserId.trim());
+            }
             resetUserScopedData(context);
+            com.veganbeauty.app.utils.UserQuizStateHelper.restoreForUser(context, trimmedUserId);
             prefs.edit().putString(KEY_LAST_ACTIVE_USER_ID, trimmedUserId).apply();
         }
     }
@@ -1078,6 +1158,7 @@ public class ProfileSession {
                 .remove(KEY_SKIN_LAST_COMPLETED_DATE)
                 .remove("june_2026_seeded_v1")
                 .remove("skin_max_streak")
+                .remove(KEY_ROUTINE_USER_CONFIGURED)
                 .putBoolean(KEY_PROFILE_HAS_LOCAL_EDITS, false);
         clearSavedAddresses(profileEditor);
         for (Map.Entry<String, ?> entry : profilePrefs.getAll().entrySet()) {
@@ -1119,8 +1200,22 @@ public class ProfileSession {
                 .remove("saved_addresses_list_json");
     }
 
+    /**
+     * User id của phiên hiện tại. Luôn ưu tiên {@link #getUserId(Context)} đã ghi khi đăng nhập —
+     * không fallback sang test_001.
+     */
     public static String getCurrentUserId(Context context) {
+        if (context == null || !isLoggedIn(context)) {
+            return "";
+        }
+        String sessionUserId = getUserId(context);
+        if (sessionUserId != null && !sessionUserId.trim().isEmpty()) {
+            return sessionUserId.trim();
+        }
         String email = getEmail(context);
+        if (email == null || email.trim().isEmpty()) {
+            return "";
+        }
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(context.getAssets().open("users.json")))) {
             StringBuilder sb = new StringBuilder();
             String line;
@@ -1130,13 +1225,16 @@ public class ProfileSession {
             JSONArray usersJsonArray = new JSONArray(sb.toString().replace("\uFEFF", ""));
             for (int i = 0; i < usersJsonArray.length(); i++) {
                 JSONObject obj = usersJsonArray.getJSONObject(i);
-                if (email.equals(obj.optString("email"))) {
-                    return obj.optString("user_id", "test_001");
+                if (email.equalsIgnoreCase(obj.optString("email"))) {
+                    String fromAssets = obj.optString("user_id", "").trim();
+                    if (!fromAssets.isEmpty()) {
+                        return fromAssets;
+                    }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "test_001";
+        return "";
     }
 }

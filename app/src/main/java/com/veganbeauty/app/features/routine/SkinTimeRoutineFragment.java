@@ -31,7 +31,6 @@ import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +57,25 @@ public class SkinTimeRoutineFragment extends RootieFragment {
     public void setupUI(View view) {
         android.content.Context ctx = requireContext();
 
+        binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
+        if (!ProfileSession.isRoutineConfigured(ctx)) {
+            RoutineSetupDialogHelper.show(
+                    this,
+                    () -> {
+                        if (!isAdded()) return;
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.main_container, new SkinRoutineSettingsFragment())
+                                .addToBackStack(null)
+                                .commitAllowingStateLoss();
+                    },
+                    () -> {
+                        if (isAdded()) getParentFragmentManager().popBackStack();
+                    }
+            );
+            return;
+        }
+
         if (getArguments() != null) {
             routineType = getArguments().getString("routine_type", "morning");
         }
@@ -77,8 +95,6 @@ public class SkinTimeRoutineFragment extends RootieFragment {
             binding.tvTipTitle.setText("Mẹo nhỏ tối nay");
             binding.tvTipDesc.setText("Hãy thoa kem dưỡng trước 20 phút trước khi ngủ để dưỡng chất thẩm thấu tốt nhất nhé!");
         }
-
-        binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         binding.btnCustomize.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
@@ -280,17 +296,9 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         Set<String> rawSteps = "morning".equals(routineType) ? ProfileSession.getMorningSteps(ctx) : ProfileSession.getEveningSteps(ctx);
 
         activeSteps.clear();
-        for (String raw : rawSteps) {
-            String[] parts = raw.split(":");
-            if (parts.length >= 4) {
-                try {
-                    int index = Integer.parseInt(parts[0]);
-                    boolean isChecked = Boolean.parseBoolean(parts[3]);
-                    if (isChecked) activeSteps.add(new SkincareStep(index, parts[1], parts[2], true));
-                } catch (Exception ignored) {}
-            }
+        for (SkincareStep step : SkincareStep.parseList(rawSteps)) {
+            if (step.isChecked()) activeSteps.add(step);
         }
-        Collections.sort(activeSteps, (a, b) -> Integer.compare(a.getIndex(), b.getIndex()));
 
         populateStepsList();
         updateStatsAndProgress();
@@ -310,7 +318,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
 
             stepBinding.tvStepName.setText(step.getName());
             stepBinding.tvStepDesc.setText(step.getDescription());
-            stepBinding.tvStepTime.setText(getStepTime(step.getName()));
+            stepBinding.tvStepTime.setText(step.getDurationLabel());
             stepBinding.ivStepIcon.setImageResource(getStepIconRes(step.getName()));
 
             String stepId = routineType + "_" + step.getIndex();
@@ -398,7 +406,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         int totalMinutes = 0, completedMinutes = 0;
         boolean isSubmitted = ProfileSession.isRoutineSubmitted(ctx, routineType, targetDate);
         for (SkincareStep s : activeSteps) {
-            int mins = getStepTimeVal(getStepTime(s.getName()));
+            int mins = s.getDurationMinutes();
             totalMinutes += mins;
             if (completedSteps.contains(routineType + "_" + s.getIndex())) completedMinutes += mins;
         }
@@ -518,21 +526,6 @@ public class SkinTimeRoutineFragment extends RootieFragment {
             }
         }
         return 0;
-    }
-
-    private String getStepTime(String name) {
-        String lower = name.toLowerCase();
-        if (lower.contains("cleanser") || lower.contains("sữa rửa mặt") || lower.contains("rửa mặt")) return "2p";
-        if (lower.contains("toner") || lower.contains("nước hoa hồng") || lower.contains("cân bằng")) return "1p";
-        if (lower.contains("serum") || lower.contains("tinh chất")) return "3p";
-        if (lower.contains("moisturizer") || lower.contains("kem dưỡng ẩm") || lower.contains("dưỡng ẩm") || lower.contains("khóa ẩm")) return "2p";
-        if (lower.contains("sunscreen") || lower.contains("chống nắng") || lower.contains("kem chống nắng")) return "5p";
-        if (lower.contains("makeup remover") || lower.contains("tẩy trang")) return "5p";
-        return "2p";
-    }
-
-    private int getStepTimeVal(String timeStr) {
-        try { return Integer.parseInt(timeStr.replace("p", "")); } catch (Exception e) { return 2; }
     }
 
     private int getStepIconRes(String name) {

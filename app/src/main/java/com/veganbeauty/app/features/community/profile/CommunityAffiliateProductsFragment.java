@@ -204,8 +204,8 @@ public class CommunityAffiliateProductsFragment extends Fragment {
             Map<String, ProductStats> productMap = new HashMap<>();
 
             currentUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
-            if (currentUserId == null || currentUserId.isEmpty()) {
-                currentUserId = "test_001";
+            if (currentUserId == null) {
+                currentUserId = "";
             }
             final String finalUserId = currentUserId;
             LocalJsonReader jsonReader = new LocalJsonReader(requireContext());

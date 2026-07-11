@@ -44,7 +44,7 @@ import java.util.concurrent.Executors;
 public class ProfilePostDetailFragment extends Fragment {
 
     private RecyclerView rvPosts;
-    private String userId = "test_001";
+    private String userId = "";
     private int initialPosition = 0;
     private int currentTab = 0;
     private String targetPostId = null;
@@ -73,7 +73,7 @@ public class ProfilePostDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            userId = getArguments().getString("USER_ID", "test_001");
+            userId = getArguments().getString("USER_ID", "");
             initialPosition = getArguments().getInt("INITIAL_POSITION", 0);
             currentTab = getArguments().getInt("CURRENT_TAB", 0);
             targetPostId = getArguments().getString("TARGET_POST_ID");
@@ -129,7 +129,7 @@ public class ProfilePostDetailFragment extends Fragment {
                     if (ownUserId == null || ownUserId.isEmpty()) {
                         ownUserId = ProfileSession.getUserId(requireContext());
                     }
-                    if (ownUserId == null || ownUserId.isEmpty()) ownUserId = "test_001";
+                    if (ownUserId == null) ownUserId = "";
 
                     // For saved/reposted tabs, keep the profile owner id (whose list we are viewing).
                     // Only remap to post author when browsing that author's posts (tab 0).

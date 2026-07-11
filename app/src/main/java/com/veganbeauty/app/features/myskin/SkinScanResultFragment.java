@@ -151,6 +151,9 @@ public class SkinScanResultFragment extends RootieFragment {
         binding.skinResultBtnHistoryBottom.setOnClickListener(v -> openHistory());
 
         binding.skinResultBtnGoRoutine.setOnClickListener(v -> {
+            androidx.fragment.app.Fragment dest = ProfileSession.isRoutineConfigured(requireContext())
+                    ? new com.veganbeauty.app.features.routine.SkinTimeRoutineFragment()
+                    : new com.veganbeauty.app.features.routine.SkinReminderFragment();
             getParentFragmentManager().beginTransaction()
                     .setCustomAnimations(
                             android.R.anim.slide_in_left,
@@ -158,7 +161,7 @@ public class SkinScanResultFragment extends RootieFragment {
                             android.R.anim.fade_in,
                             android.R.anim.slide_out_right
                     )
-                    .replace(R.id.main_container, new com.veganbeauty.app.features.routine.SkinTimeRoutineFragment())
+                    .replace(R.id.main_container, dest)
                     .addToBackStack(null)
                     .commit();
         });

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#FEFBF4">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="28dp"
+        android:paddingBottom="32dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexend"
+            android:text="Để lại thông tin liên hệ"
+            android:textColor="#3E4D44"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:lineSpacingMultiplier="1.25"
+            android:text="Khách vãng lai chưa thể chat. Điền tên và số điện thoại hoặc email để Rootie liên hệ hỗ trợ bạn — không cần tạo tài khoản."
+            android:textColor="#5C6860"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
+            android:text="Họ và tên *"
+            android:textColor="@color/primary"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/etGuestContactName"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_card_white"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:hint="Nguyễn Văn A"
+            android:inputType="textPersonName"
+            android:maxLines="1"
+            android:paddingHorizontal="14dp"
+            android:textColor="@color/primary"
+            android:textColorHint="@color/gray_dark"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
+            android:text="Số điện thoại"
+            android:textColor="@color/primary"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/etGuestContactPhone"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_card_white"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:hint="0123456789"
+            android:inputType="phone"
+            android:maxLines="1"
+            android:paddingHorizontal="14dp"
+            android:textColor="@color/primary"
+            android:textColorHint="@color/gray_dark"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
+            android:text="Email"
+            android:textColor="@color/primary"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/etGuestContactEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_card_white"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:hint="email@example.com"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:paddingHorizontal="14dp"
+            android:textColor="@color/primary"
+            android:textColorHint="@color/gray_dark"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/be_vietnam_pro_regular"
+            android:text="* Cần ít nhất số điện thoại hoặc email."
+            android:textColor="#5C6860"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/btnSubmitGuestContact"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_btn_buy"
+            android:backgroundTint="#3E4D44"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lexend"
+                android:letterSpacing="0.03"
+                android:text="GỬI THÔNG TIN"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnGuestLoginInstead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Đã có tài khoản? Đăng nhập để chat"
+            android:textColor="#3E4D44"
+            android:textSize="13sp" />
+    </LinearLayout>
+</ScrollView>

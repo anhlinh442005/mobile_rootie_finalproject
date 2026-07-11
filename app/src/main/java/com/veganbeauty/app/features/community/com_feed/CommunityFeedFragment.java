@@ -595,14 +595,11 @@ public class CommunityFeedFragment extends RootieFragment {
                 if (ctx == null) return;
                 List<String> myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser(
                         ProfileSessionHelper.getEffectiveUserId(ctx));
-                if (myFriendsIdsList.isEmpty()) {
-                    myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser("test_001");
-                }
                 Set<String> myFriendsIds = new HashSet<>(myFriendsIdsList);
 
                 String ownUserId = ProfileSessionHelper.getEffectiveUserId(ctx);
-                if (ownUserId == null || ownUserId.isEmpty()) {
-                    ownUserId = "test_001";
+                if (ownUserId == null) {
+                    ownUserId = "";
                 }
                 final String currentUserId = ownUserId;
 
@@ -640,12 +637,9 @@ public class CommunityFeedFragment extends RootieFragment {
         }
         List<String> myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser(
                 ProfileSessionHelper.getEffectiveUserId(ctx));
-        if (myFriendsIdsList.isEmpty()) {
-            myFriendsIdsList = new LocalJsonReader(ctx).getFriendsForUser("test_001");
-        }
         String ownUserId = ProfileSessionHelper.getEffectiveUserId(ctx);
-        if (ownUserId == null || ownUserId.isEmpty()) {
-            ownUserId = "test_001";
+        if (ownUserId == null) {
+            ownUserId = "";
         }
         bindStories(users, new HashSet<>(myFriendsIdsList), ownUserId);
     }

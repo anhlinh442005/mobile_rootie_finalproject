@@ -38,6 +38,8 @@ import com.veganbeauty.app.features.myskin.BookingDetailCancelledFragment;
 import com.veganbeauty.app.features.myskin.BookingDetailCompletedFragment;
 import com.veganbeauty.app.features.myskin.BookingDetailUpcomingFragment;
 import com.veganbeauty.app.features.profile.AccountVoucherDetailFragment;
+import com.veganbeauty.app.utils.AvatarLoader;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem;
 import com.veganbeauty.app.features.routine.SkinReminderFragment;
 
@@ -132,12 +134,7 @@ public class AccountNotificationFragment extends RootieFragment {
             }
         });
 
-        String userAvatar = ProfileSession.getAvatar(requireContext());
-        if (userAvatar != null && !userAvatar.isEmpty()) {
-            com.bumptech.glide.Glide.with(this).load(userAvatar).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(getBinding().ivUserAvatar);
-        } else {
-            com.bumptech.glide.Glide.with(this).load(R.drawable.img_avatar).circleCrop().into(getBinding().ivUserAvatar);
-        }
+        bindUserAvatar();
         getBinding().ivUserAvatar.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(requireContext(), com.veganbeauty.app.MainActivity.class);
             intent.putExtra("navigateToTab", "profile");
@@ -413,9 +410,16 @@ public class AccountNotificationFragment extends RootieFragment {
         _binding = null;
     }
 
+    private void bindUserAvatar() {
+        if (_binding == null || !isAdded()) return;
+        String avatarUrl = ProfileSessionHelper.getAccountProfileAvatarUrl(requireContext());
+        AvatarLoader.loadAvatar(_binding.ivUserAvatar, avatarUrl);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        bindUserAvatar();
         AccountSyncHelper.sync(requireContext(), () -> {
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() ->

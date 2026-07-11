@@ -1,10 +1,13 @@
 package com.veganbeauty.app.features.routine;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -16,17 +19,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.SkinRoutineSettingsBinding;
+import com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper;
+import com.veganbeauty.app.features.account.notification.NotificationScheduleHelper;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -43,6 +51,24 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
     private boolean isMorningReminderEnabled = false;
     private boolean isEveningReminderEnabled = false;
     private boolean isLeadReminderEnabled = false;
+    private boolean pendingSaveAfterPermission = false;
+
+    private final ActivityResultLauncher<String> requestNotiPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
+                if (granted) {
+                    ProfileSession.setNotiEnabled(requireContext(), true);
+                    if (pendingSaveAfterPermission) {
+                        pendingSaveAfterPermission = false;
+                        persistConfiguration();
+                    } else {
+                        Toast.makeText(requireContext(), "Đã bật thông báo. Bấm Lưu cấu hình lại nhé.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    pendingSaveAfterPermission = false;
+                    Toast.makeText(requireContext(), "Chưa được cấp quyền thông báo", Toast.LENGTH_SHORT).show();
+                    NotificationScheduleHelper.openNotificationSettings(requireContext());
+                }
+            });
 
     @Nullable
     @Override
@@ -157,32 +183,10 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
 
     private void loadStepsFromPreferences() {
         Context ctx = requireContext();
-        Set<String> morningRaw = ProfileSession.getMorningSteps(ctx);
-        Set<String> eveningRaw = ProfileSession.getEveningSteps(ctx);
-
         morningSteps.clear();
-        morningSteps.addAll(parseRawSteps(morningRaw));
-        morningSteps.sort((a, b) -> Integer.compare(a.getIndex(), b.getIndex()));
-
+        morningSteps.addAll(SkincareStep.parseList(ProfileSession.getMorningSteps(ctx)));
         eveningSteps.clear();
-        eveningSteps.addAll(parseRawSteps(eveningRaw));
-        eveningSteps.sort((a, b) -> Integer.compare(a.getIndex(), b.getIndex()));
-    }
-
-    private List<SkincareStep> parseRawSteps(Set<String> rawSet) {
-        List<SkincareStep> list = new ArrayList<>();
-        for (String raw : rawSet) {
-            String[] parts = raw.split(":");
-            if (parts.length >= 4) {
-                try {
-                    int index = Integer.parseInt(parts[0]);
-                    list.add(new SkincareStep(index, parts[1], parts[2], Boolean.parseBoolean(parts[3])));
-                } catch (Exception ignored) {}
-            } else if (parts.length == 3) {
-                list.add(new SkincareStep(99, parts[0], parts[1], Boolean.parseBoolean(parts[2])));
-            }
-        }
-        return list;
+        eveningSteps.addAll(SkincareStep.parseList(ProfileSession.getEveningSteps(ctx)));
     }
 
     private void populateStepsList() {
@@ -195,11 +199,16 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
 
             TextView tvName = stepView.findViewById(R.id.tvStepName);
             TextView tvDesc = stepView.findViewById(R.id.tvStepDesc);
+            TextView tvDuration = stepView.findViewById(R.id.tvStepDuration);
             ImageView ivCheckbox = stepView.findViewById(R.id.ivStepCheckbox);
+            ImageView btnMoveUp = stepView.findViewById(R.id.btnMoveUp);
+            ImageView btnMoveDown = stepView.findViewById(R.id.btnMoveDown);
             View layoutStepCard = stepView.findViewById(R.id.layoutStepCard);
+            View layoutReorder = stepView.findViewById(R.id.layoutReorder);
 
             tvName.setText(step.getName());
             tvDesc.setText(step.getDescription());
+            tvDuration.setText(step.getDurationMinutes() + " phút");
 
             updateCheckboxUI(ivCheckbox, step.isChecked());
 
@@ -210,8 +219,30 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
 
             layoutStepCard.setOnClickListener(v -> showEditStepDialog(step, idx));
 
+            boolean canMoveUp = idx > 0;
+            boolean canMoveDown = idx < steps.size() - 1;
+            btnMoveUp.setEnabled(canMoveUp);
+            btnMoveDown.setEnabled(canMoveDown);
+            btnMoveUp.setAlpha(canMoveUp ? 1f : 0.28f);
+            btnMoveDown.setAlpha(canMoveDown ? 1f : 0.28f);
+            if (layoutReorder != null) {
+                layoutReorder.setAlpha(steps.size() <= 1 ? 0.45f : 1f);
+            }
+
+            btnMoveUp.setOnClickListener(v -> moveStep(idx, -1));
+            btnMoveDown.setOnClickListener(v -> moveStep(idx, 1));
+
             binding.layoutSkincareSteps.addView(stepView);
         }
+    }
+
+    private void moveStep(int fromIndex, int direction) {
+        List<SkincareStep> list = isMorningTabSelected ? morningSteps : eveningSteps;
+        int toIndex = fromIndex + direction;
+        if (toIndex < 0 || toIndex >= list.size()) return;
+        Collections.swap(list, fromIndex, toIndex);
+        SkincareStep.reindex(list);
+        populateStepsList();
     }
 
     private void updateCheckboxUI(ImageView ivCheckbox, boolean isChecked) {
@@ -253,6 +284,28 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         return String.format(Locale.getDefault(), "%02d : %02d %s", displayHour, minute, amPm);
     }
 
+    private void bindDurationControls(View view, int[] durationHolder) {
+        TextView tvDuration = view.findViewById(R.id.tvStepDurationValue);
+        View btnMinus = view.findViewById(R.id.btnDurationMinus);
+        View btnPlus = view.findViewById(R.id.btnDurationPlus);
+
+        Runnable refresh = () -> tvDuration.setText(durationHolder[0] + " phút");
+        refresh.run();
+
+        btnMinus.setOnClickListener(v -> {
+            if (durationHolder[0] > 1) {
+                durationHolder[0]--;
+                refresh.run();
+            }
+        });
+        btnPlus.setOnClickListener(v -> {
+            if (durationHolder[0] < 60) {
+                durationHolder[0]++;
+                refresh.run();
+            }
+        });
+    }
+
     private void showAddStepDialog() {
         View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_edit_step, null);
         TextView tvDialogTitle = view.findViewById(R.id.tvDialogTitle);
@@ -264,6 +317,9 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         tvDialogTitle.setText("Thêm bước dưỡng da mới");
         btnConfirm.setText("Thêm");
 
+        final int[] durationHolder = {2};
+        bindDurationControls(view, durationHolder);
+
         AlertDialog dialog = new AlertDialog.Builder(requireContext()).setView(view).create();
         if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
@@ -273,9 +329,8 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
             String desc = etDesc.getText().toString().trim();
             if (!name.isEmpty() && !desc.isEmpty()) {
                 List<SkincareStep> list = isMorningTabSelected ? morningSteps : eveningSteps;
-                int newIndex = 0;
-                for (SkincareStep s : list) if (s.getIndex() >= newIndex) newIndex = s.getIndex() + 1;
-                list.add(new SkincareStep(newIndex, name, desc, true));
+                list.add(new SkincareStep(list.size(), name, desc, true, durationHolder[0]));
+                SkincareStep.reindex(list);
                 populateStepsList();
                 dialog.dismiss();
             } else {
@@ -300,6 +355,9 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         etName.setText(step.getName());
         etDesc.setText(step.getDescription());
 
+        final int[] durationHolder = {step.getDurationMinutes()};
+        bindDurationControls(view, durationHolder);
+
         AlertDialog dialog = new AlertDialog.Builder(requireContext()).setView(view).create();
         if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
@@ -307,6 +365,7 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         btnDelete.setOnClickListener(v -> {
             List<SkincareStep> list = isMorningTabSelected ? morningSteps : eveningSteps;
             list.remove(indexInList);
+            SkincareStep.reindex(list);
             populateStepsList();
             dialog.dismiss();
         });
@@ -316,6 +375,7 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
             if (!name.isEmpty() && !desc.isEmpty()) {
                 step.setName(name);
                 step.setDescription(desc);
+                step.setDurationMinutes(durationHolder[0]);
                 populateStepsList();
                 dialog.dismiss();
             } else {
@@ -328,17 +388,22 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
     private void saveConfiguration() {
         Context ctx = requireContext();
 
-        if (!ProfileSession.isNotiEnabled(ctx)
-                || !com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.canPost(ctx)) {
-            new AlertDialog.Builder(ctx)
-                    .setTitle("Chưa bật thông báo trên máy")
-                    .setMessage("Toggle trong app chưa đủ. Hãy bật thông báo Rootie trong Cài đặt hệ thống (và cho phép báo thức/nhắc giờ nếu máy hỏi), rồi lưu lại.")
-                    .setPositiveButton("Mở cài đặt", (d, w) ->
-                            com.veganbeauty.app.features.account.notification.NotificationScheduleHelper.openAppSettings(ctx))
-                    .setNegativeButton("Để sau", null)
-                    .show();
+        // Hệ thống đã cho phép nhưng toggle trong app đang tắt → bật lại rồi lưu.
+        if (LocalSystemNotificationHelper.hasSystemPermission(ctx)
+                && !ProfileSession.isNotiEnabled(ctx)) {
+            ProfileSession.setNotiEnabled(ctx, true);
+        }
+
+        if (!LocalSystemNotificationHelper.hasSystemPermission(ctx)) {
+            showNotificationPermissionDialog(ctx);
             return;
         }
+
+        persistConfiguration();
+    }
+
+    private void persistConfiguration() {
+        Context ctx = requireContext();
 
         ProfileSession.setMorningReminderEnabled(ctx, isMorningReminderEnabled);
         ProfileSession.setEveningReminderEnabled(ctx, isEveningReminderEnabled);
@@ -347,20 +412,59 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         ProfileSession.setMorningReminderTime(ctx, morningTime);
         ProfileSession.setEveningReminderTime(ctx, eveningTime);
 
-        Set<String> morningRaw = new HashSet<>();
-        for (SkincareStep s : morningSteps) morningRaw.add(s.getIndex() + ":" + s.getName() + ":" + s.getDescription() + ":" + s.isChecked());
-        Set<String> eveningRaw = new HashSet<>();
-        for (SkincareStep s : eveningSteps) eveningRaw.add(s.getIndex() + ":" + s.getName() + ":" + s.getDescription() + ":" + s.isChecked());
+        Set<String> morningRaw = SkincareStep.toStorageSet(morningSteps);
+        Set<String> eveningRaw = SkincareStep.toStorageSet(eveningSteps);
 
         ProfileSession.setMorningSteps(ctx, morningRaw);
         ProfileSession.setEveningSteps(ctx, eveningRaw);
+        ProfileSession.setRoutineConfigured(ctx, true);
 
-        com.veganbeauty.app.features.account.notification.NotificationScheduleHelper.remindExactAlarmIfNeeded(ctx);
+        NotificationScheduleHelper.remindExactAlarmIfNeeded(ctx);
         RoutineAlarmScheduler.rescheduleAlarms(ctx);
 
         String nextHint = buildNextReminderHint();
-        Toast.makeText(ctx, "Đã lưu. " + nextHint, Toast.LENGTH_LONG).show();
+        Toast.makeText(ctx, "Đã lưu cài đặt routine. " + nextHint, Toast.LENGTH_LONG).show();
         getParentFragmentManager().popBackStack();
+    }
+
+    private void showNotificationPermissionDialog(Context ctx) {
+        View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_notification_permission, null);
+        AlertDialog dialog = new AlertDialog.Builder(ctx)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        dialogView.findViewById(R.id.btnOpenSystemSettings).setOnClickListener(v -> {
+            dialog.dismiss();
+            pendingSaveAfterPermission = true;
+            // Android 13+: xin runtime permission trước; nếu không được thì mở trang thông báo hệ thống.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                    && ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestNotiPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            } else {
+                NotificationScheduleHelper.openNotificationSettings(ctx);
+            }
+        });
+        dialogView.findViewById(R.id.btnNotiPermissionLater).setOnClickListener(v -> {
+            pendingSaveAfterPermission = false;
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!isAdded() || binding == null) return;
+        if (pendingSaveAfterPermission
+                && LocalSystemNotificationHelper.hasSystemPermission(requireContext())) {
+            pendingSaveAfterPermission = false;
+            ProfileSession.setNotiEnabled(requireContext(), true);
+            persistConfiguration();
+        }
     }
 
     private String buildNextReminderHint() {

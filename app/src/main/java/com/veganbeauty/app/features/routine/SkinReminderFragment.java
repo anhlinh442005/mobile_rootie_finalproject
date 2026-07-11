@@ -32,6 +32,7 @@ import com.veganbeauty.app.utils.CoinRewardDialogHelper;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -54,6 +55,7 @@ public class SkinReminderFragment extends RootieFragment {
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         binding.btnStartMorningRoutine.setOnClickListener(v -> {
+            if (!ensureRoutineConfiguredOrPrompt()) return;
             SkinTimeRoutineFragment fragment = new SkinTimeRoutineFragment();
             Bundle args = new Bundle();
             args.putString("routine_type", "morning");
@@ -64,7 +66,10 @@ public class SkinReminderFragment extends RootieFragment {
                     .commit();
         });
 
-        binding.btnStartEveningRoutine.setOnClickListener(v -> handleEveningRoutineClick());
+        binding.btnStartEveningRoutine.setOnClickListener(v -> {
+            if (!ensureRoutineConfiguredOrPrompt()) return;
+            handleEveningRoutineClick();
+        });
 
         binding.btnSetupRoutine.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
@@ -72,14 +77,31 @@ public class SkinReminderFragment extends RootieFragment {
                         .addToBackStack(null)
                         .commit());
 
-        binding.btnSkincareCalendar.setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new SkinCalendarFragment())
-                        .addToBackStack(null)
-                        .commit());
+        binding.btnSkincareCalendar.setOnClickListener(v -> {
+            if (!ensureRoutineConfiguredOrPrompt()) return;
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, new SkinCalendarFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         binding.btnSocialTask.setOnClickListener(v -> triggerSocialTaskReward());
         setupScrollHideHeader();
+    }
+
+    /** Chưa setup bước/giờ/thông báo → nhắc cài đặt, chưa cho làm routine. */
+    private boolean ensureRoutineConfiguredOrPrompt() {
+        if (ProfileSession.isRoutineConfigured(requireContext())) {
+            return true;
+        }
+        RoutineSetupDialogHelper.show(this, () -> {
+            if (!isAdded()) return;
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, new SkinRoutineSettingsFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }, null);
+        return false;
     }
 
     private void setupScrollHideHeader() {
@@ -111,7 +133,13 @@ public class SkinReminderFragment extends RootieFragment {
         binding.tvStreakDays.setTextColor(Color.parseColor("#FF5722"));
 
         String motivationMsg;
-        if (currentStreak == 0) motivationMsg = "Hãy bắt đầu ngày đầu tiên để chăm sóc làn da của bạn nhé! ✨";
+        if (!ProfileSession.isRoutineConfigured(ctx)) {
+            motivationMsg = "Hãy cài đặt các bước routine, thời gian và thông báo để bắt đầu chăm da hàng ngày nhé!";
+            binding.btnStartMorningRoutine.setText("Cài đặt để bắt đầu");
+            binding.btnStartEveningRoutine.setText("Cài đặt để bắt đầu");
+            binding.tvMorningHeaderStatus.setText("SÁNG • CHƯA THIẾT LẬP");
+            binding.tvEveningHeaderStatus.setText("TỐI • CHƯA THIẾT LẬP");
+        } else if (currentStreak == 0) motivationMsg = "Hãy bắt đầu ngày đầu tiên để chăm sóc làn da của bạn nhé! ✨";
         else if (currentStreak == 1) motivationMsg = "Khởi đầu tuyệt vời! Hãy duy trì chuỗi chăm sóc da ngày mai nhé! \uD83C\uDF31";
         else if (currentStreak >= 2 && currentStreak <= 4) motivationMsg = "Tuyệt vời! Bạn đang dần hình thành thói quen chăm da tốt đó! \uD83D\uDC4F";
         else if (currentStreak >= 5 && currentStreak <= 6) motivationMsg = "Cố lên! Sắp đạt chuỗi 7 ngày để nhận thưởng lớn rồi! \uD83D\uDD25";
@@ -123,15 +151,23 @@ public class SkinReminderFragment extends RootieFragment {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String todayStr = sdf.format(new Date());
 
+        if (!ProfileSession.isRoutineConfigured(ctx)) {
+            Set<String> completedSocialDates = ProfileSession.getSkinSocialCompletedDates(ctx);
+            boolean hasCompletedSocialToday = completedSocialDates.contains(todayStr);
+            binding.btnSocialTask.setEnabled(!hasCompletedSocialToday);
+            updateRewardCards(false, false, false, false, false, false, false, hasCompletedSocialToday);
+            return;
+        }
+
         // Morning Logic
         boolean hasCompletedMorningToday = ProfileSession.isMorningRewardAwarded(ctx, todayStr);
         boolean isMorningSubmitted = ProfileSession.isRoutineSubmitted(ctx, "morning", todayStr);
 
         Set<String> rawMorningSteps = ProfileSession.getMorningSteps(ctx);
+        List<SkincareStep> morningStepList = SkincareStep.parseList(rawMorningSteps);
         int activeMorningStepsCount = 0;
-        for (String raw : rawMorningSteps) {
-            String[] parts = raw.split(":");
-            if (parts.length >= 4 && Boolean.parseBoolean(parts[3])) activeMorningStepsCount++;
+        for (SkincareStep step : morningStepList) {
+            if (step.isChecked()) activeMorningStepsCount++;
         }
 
         int completedMorningStepsCount;
@@ -140,13 +176,9 @@ public class SkinReminderFragment extends RootieFragment {
         } else {
             Set<String> completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, todayStr);
             int count = 0;
-            for (String raw : rawMorningSteps) {
-                String[] parts = raw.split(":");
-                if (parts.length >= 4 && Boolean.parseBoolean(parts[3])) {
-                    try {
-                        int index = Integer.parseInt(parts[0]);
-                        if (completedStepIds.contains("morning_" + index)) count++;
-                    } catch (Exception ignored) {}
+            for (SkincareStep step : morningStepList) {
+                if (step.isChecked() && completedStepIds.contains("morning_" + step.getIndex())) {
+                    count++;
                 }
             }
             completedMorningStepsCount = count;
@@ -204,10 +236,10 @@ public class SkinReminderFragment extends RootieFragment {
         boolean isEveningSubmitted = ProfileSession.isRoutineSubmitted(ctx, "evening", eveningTargetDate);
 
         Set<String> rawEveningSteps = ProfileSession.getEveningSteps(ctx);
+        List<SkincareStep> eveningStepList = SkincareStep.parseList(rawEveningSteps);
         int activeEveningStepsCount = 0;
-        for (String raw : rawEveningSteps) {
-            String[] parts = raw.split(":");
-            if (parts.length >= 4 && Boolean.parseBoolean(parts[3])) activeEveningStepsCount++;
+        for (SkincareStep step : eveningStepList) {
+            if (step.isChecked()) activeEveningStepsCount++;
         }
 
         int completedEveningStepsCount;
@@ -216,13 +248,9 @@ public class SkinReminderFragment extends RootieFragment {
         } else {
             Set<String> completedStepIds = ProfileSession.getCompletedStepIdsForDate(ctx, eveningTargetDate);
             int count = 0;
-            for (String raw : rawEveningSteps) {
-                String[] parts = raw.split(":");
-                if (parts.length >= 4 && Boolean.parseBoolean(parts[3])) {
-                    try {
-                        int index = Integer.parseInt(parts[0]);
-                        if (completedStepIds.contains("evening_" + index)) count++;
-                    } catch (Exception ignored) {}
+            for (SkincareStep step : eveningStepList) {
+                if (step.isChecked() && completedStepIds.contains("evening_" + step.getIndex())) {
+                    count++;
                 }
             }
             completedEveningStepsCount = count;

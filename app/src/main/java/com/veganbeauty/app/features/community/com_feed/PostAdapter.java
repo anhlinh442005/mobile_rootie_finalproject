@@ -667,10 +667,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (ownId == null || ownId.trim().isEmpty()) {
             ownId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
         }
-        if (ownId == null || ownId.trim().isEmpty()) {
-            ownId = "test_001";
-        }
-        return ownId.trim();
+        return ownId != null ? ownId.trim() : "";
     }
 
     @Override

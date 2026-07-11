@@ -9,7 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bumptech.glide.Glide;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.entities.UserEntity;
@@ -136,12 +135,7 @@ public final class SideMenuHelper {
             tvUsername.setTextColor(Color.parseColor("#E6FFFFFF"));
         }
         if (ivAvatar != null) {
-            Glide.with(ivAvatar.getContext())
-                    .load(avatarUrl)
-                    .placeholder(R.drawable.img_avatar)
-                    .error(R.drawable.img_avatar)
-                    .circleCrop()
-                    .into(ivAvatar);
+            AvatarLoader.loadAvatar(ivAvatar, avatarUrl);
         }
     }
 

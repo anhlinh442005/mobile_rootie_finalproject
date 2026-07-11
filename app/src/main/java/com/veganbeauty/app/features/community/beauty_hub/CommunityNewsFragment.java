@@ -30,6 +30,7 @@ import com.veganbeauty.app.databinding.ComFragmentNewsBinding;
 import com.veganbeauty.app.features.community.com_feed.PostAdapter;
 import com.veganbeauty.app.features.community.message.ChatDetailFragment;
 import com.veganbeauty.app.features.community.message.MessageHelper;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 import com.veganbeauty.app.utils.RootieBrandHelper;
 import com.veganbeauty.app.features.community.notification.CommunityNotificationFragment;
 import com.veganbeauty.app.features.community.profile.CommunityProfileFragment;
@@ -61,7 +62,7 @@ public class CommunityNewsFragment extends RootieFragment {
     private ComFragmentNewsBinding binding;
     private final PostAdapter postAdapter = new PostAdapter();
 
-    private String currentUserId = "test_001";
+    private String currentUserId = "";
     private boolean isFollowing = false;
     private int rootieFollowersCount = 0;
     private int newsPostCount = 0;
@@ -116,24 +117,30 @@ public class CommunityNewsFragment extends RootieFragment {
                 .error(R.drawable.img_beautyhub_banner)
                 .into(binding.ivCover);
 
-        try {
-            String loggedInEmail = ProfileSession.getEmail(requireContext());
-            BufferedReader br = new BufferedReader(new InputStreamReader(requireContext().getAssets().open("users.json")));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) sb.append(line);
-            br.close();
-            
-            JSONArray usersArray = new JSONArray(sb.toString());
-            for (int i = 0; i < usersArray.length(); i++) {
-                JSONObject obj = usersArray.getJSONObject(i);
-                if (loggedInEmail != null && loggedInEmail.equals(obj.optString("email"))) {
-                    currentUserId = obj.optString("user_id", "test_001");
-                    break;
+        currentUserId = ProfileSessionHelper.getEffectiveUserId(requireContext());
+        if (currentUserId == null || currentUserId.isEmpty()) {
+            try {
+                String loggedInEmail = ProfileSession.getEmail(requireContext());
+                BufferedReader br = new BufferedReader(new InputStreamReader(requireContext().getAssets().open("users.json")));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) sb.append(line);
+                br.close();
+
+                JSONArray usersArray = new JSONArray(sb.toString());
+                for (int i = 0; i < usersArray.length(); i++) {
+                    JSONObject obj = usersArray.getJSONObject(i);
+                    if (loggedInEmail != null && loggedInEmail.equalsIgnoreCase(obj.optString("email"))) {
+                        currentUserId = obj.optString("user_id", "");
+                        break;
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        if (currentUserId == null) {
+            currentUserId = "";
         }
 
         try {

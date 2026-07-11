@@ -160,7 +160,7 @@ public class CommunityExploreFragment extends RootieFragment {
             userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(requireContext());
         }
         if (userId == null || userId.trim().isEmpty()) {
-            return "test_001";
+            return "";
         }
         return userId.trim();
     }

@@ -12,6 +12,7 @@ import com.veganbeauty.app.data.local.dao.UserDao;
 import com.veganbeauty.app.data.local.entities.UserEntity;
 import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.UserQuizStateHelper;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -43,51 +44,36 @@ public final class FreshDemoAccountSeeder {
         return email != null && EMAIL.equalsIgnoreCase(email.trim());
     }
 
-    /** Gọi trên background thread khi đăng nhập demo — xóa data cũ, áp profile import. */
+    /** Gọi trên background thread khi đăng nhập demo — xóa đơn/địa chỉ/quà mẫu, giữ quiz + routine + check-in + xu. */
     public static void resetLocalDataBlocking(Context context) {
         if (context == null) {
             return;
         }
         Context appContext = context.getApplicationContext();
-        ProfileSession.resetUserScopedData(appContext);
+        if (ProfileSession.hasSavedSkinProfile(appContext)) {
+            UserQuizStateHelper.saveForUser(appContext, USER_ID);
+        }
         ProfileSession.clearLocalProfileEdits(appContext);
-        ProfileSession.setQuizReminderDismissedWeekly(appContext, false);
 
-        // Xóa sạch địa chỉ / CCCD / bio / guest leftover từ tài khoản trước
+        // Xóa địa chỉ / CCCD / bio / guest leftover — không đụng hồ sơ da (quiz / quét AI)
         ProfileSession.clearSavedAddresses(appContext);
         ProfileSession.setGuestPhone(appContext, "");
         ProfileSession.setBio(appContext, "");
         ProfileSession.setPrimaryImage(appContext, "");
         ProfileSession.setCCCD(appContext, "");
-        ProfileSession.setSkinStreak(appContext, 0);
-
-        // Chỉ ghi lại thông tin đã import cho demo
-        applyImportedDemoProfile(appContext);
 
         RootieDatabase db = RootieDatabase.getDatabase(appContext);
-        db.skinHistoryDao().deleteByUser(USER_ID, EMAIL);
-        // Giữ xu đã kiếm (quiz/routine/check-in) — không xóa user_coin khi login lại demo.
-        // Chỉ xóa đơn/quà mẫu để tài khoản demo không dính data cũ.
+        // Giữ lịch sử da + kết quả quiz đã làm — không xóa skinHistoryDao.
         db.userGiftDao().deleteByUserId(USER_ID);
         db.orderDao().deleteByUserIdentity(USER_ID, PHONE);
         db.cartDao().clearCart();
         new LocalJsonReader(appContext).removeBookingsForUser(USER_ID, EMAIL);
 
-        // Inbox phải sạch theo tài khoản — không giữ đơn/lịch cũ từ lần đăng nhập trước
         clearDemoNotifications(appContext);
-
-        // Xóa lịch điểm danh legacy (từng không gắn userId)
-        appContext.getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE)
-                .edit()
-                .clear()
-                .apply();
 
         SharedPreferences prefs = appContext.getSharedPreferences("rootie_profile_prefs", Context.MODE_PRIVATE);
         prefs.edit()
-                .putString("last_active_user_id", USER_ID)
-                .putInt("skin_max_streak", 0)
                 .remove("june_2026_seeded_v1")
-                // Đảm bảo không còn list địa chỉ checkout cũ
                 .remove("saved_addresses_list_json")
                 .remove("addr_home_name")
                 .remove("addr_home_phone")
@@ -98,6 +84,10 @@ public final class FreshDemoAccountSeeder {
                 .remove("addr_default_type")
                 .putString("address", "")
                 .apply();
+
+        applyImportedDemoProfile(appContext);
+        UserQuizStateHelper.restoreForUser(appContext, USER_ID);
+        ProfileSession.ensureSkinTestTimestampFromProfile(appContext);
     }
 
     private static void clearDemoNotifications(Context appContext) {
@@ -133,7 +123,16 @@ public final class FreshDemoAccountSeeder {
         ProfileSession.setGuestPhone(appContext, "");
         ProfileSession.clearSavedAddresses(appContext);
         ProfileSession.clearLocalProfileEdits(appContext);
-        ProfileSession.setAvatar(appContext, ProfileSessionHelper.DEFAULT_AVATAR_URL);
+
+        UserEntity user = RootieDatabase.getDatabase(appContext).userDao().getUserByIdSync(USER_ID);
+        if (user == null) {
+            user = RootieDatabase.getDatabase(appContext).userDao().getUserByEmailSync(EMAIL);
+        }
+        if (user != null && user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
+            ProfileSession.setAvatar(appContext, user.getAvatar().trim());
+        } else {
+            ProfileSession.setAvatar(appContext, ProfileSessionHelper.DEFAULT_AVATAR_URL);
+        }
     }
 
     public static void seedIfNeeded(Context context) {

@@ -3,92 +3,154 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:background="@drawable/com_bg_post"
+    android:orientation="vertical"
     android:padding="20dp">
 
-    <!-- Dialog Title -->
     <TextView
         android:id="@+id/tvDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/be_vietnam_pro"
         android:text="Thêm bước dưỡng da mới"
         android:textColor="#3E4D44"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:fontFamily="@font/be_vietnam_pro"
-        android:layout_marginBottom="16dp" />
+        android:textStyle="bold" />
 
-    <!-- Label: Tên bước -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:fontFamily="@font/be_vietnam_pro"
         android:text="Tên bước dưỡng da"
         android:textColor="#3E4D44"
         android:textSize="14sp"
-        android:textStyle="bold"
-        android:fontFamily="@font/be_vietnam_pro"
-        android:layout_marginBottom="6dp" />
+        android:textStyle="bold" />
 
-    <!-- Input: Tên bước -->
     <EditText
         android:id="@+id/etStepName"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/home_bg_input"
+        android:fontFamily="@font/be_vietnam_pro"
         android:hint="Ví dụ: Cleanser, Toner..."
+        android:inputType="textCapWords"
+        android:paddingHorizontal="12dp"
         android:textColor="#3E4D44"
         android:textColorHint="#AEAEB2"
-        android:textSize="14sp"
-        android:fontFamily="@font/be_vietnam_pro"
-        android:paddingHorizontal="12dp"
-        android:background="@drawable/home_bg_input"
-        android:layout_marginBottom="16dp"
-        android:inputType="textCapWords" />
+        android:textSize="14sp" />
 
-    <!-- Label: Mô tả -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:fontFamily="@font/be_vietnam_pro"
         android:text="Mô tả chi tiết"
         android:textColor="#3E4D44"
         android:textSize="14sp"
-        android:textStyle="bold"
-        android:fontFamily="@font/be_vietnam_pro"
-        android:layout_marginBottom="6dp" />
+        android:textStyle="bold" />
 
-    <!-- Input: Mô tả -->
     <EditText
         android:id="@+id/etStepDesc"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/home_bg_input"
+        android:fontFamily="@font/be_vietnam_pro"
         android:hint="Ví dụ: Sữa rửa mặt dịu nhẹ..."
+        android:inputType="textCapSentences"
+        android:paddingHorizontal="12dp"
         android:textColor="#3E4D44"
         android:textColorHint="#AEAEB2"
-        android:textSize="14sp"
-        android:fontFamily="@font/be_vietnam_pro"
-        android:paddingHorizontal="12dp"
-        android:background="@drawable/home_bg_input"
-        android:layout_marginBottom="24dp"
-        android:inputType="textCapSentences" />
+        android:textSize="14sp" />
 
-    <!-- Action Buttons -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="Thời gian thực hiện"
+        android:textColor="#3E4D44"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/home_bg_input"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp">
+
+        <ImageView
+            android:id="@+id/btnDurationMinus"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Giảm"
+            android:focusable="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_minus"
+            app:tint="#3E4D44" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_time"
+                app:tint="#3E4D44" />
+
+            <TextView
+                android:id="@+id/tvStepDurationValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lexend"
+                android:text="2 phút"
+                android:textColor="#3E4D44"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnDurationPlus"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Tăng"
+            android:focusable="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_plus_dark"
+            app:tint="#3E4D44" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-        <!-- Button: Xóa bước (only visible when editing) -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
             android:text="Xóa bước"
             android:textAllCaps="false"
             android:textColor="#FF3B30"
             android:textSize="14sp"
-            android:fontFamily="@font/be_vietnam_pro"
             android:textStyle="bold"
             android:visibility="gone" />
 
@@ -97,33 +159,30 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!-- Button: Hủy -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginEnd="12dp"
             android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/be_vietnam_pro"
             android:text="Hủy"
             android:textAllCaps="false"
             android:textColor="#3E4D44"
             android:textSize="14sp"
-            android:fontFamily="@font/be_vietnam_pro"
             android:textStyle="bold" />
 
-        <!-- Button: Lưu / Thêm -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnConfirm"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:paddingHorizontal="16dp"
             android:background="@drawable/com_bg_tab_active"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:paddingHorizontal="16dp"
             android:text="Thêm"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
-            android:fontFamily="@font/be_vietnam_pro"
             android:textStyle="bold" />
     </LinearLayout>
-
 </LinearLayout>

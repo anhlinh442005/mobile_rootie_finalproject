@@ -63,7 +63,14 @@ public final class SkinProfileMetricsHelper {
         } catch (Exception ignored) {
         }
 
-        payloads.sort((a, b) -> extractSortKey(b).compareTo(extractSortKey(a)));
+        payloads.sort((a, b) -> {
+            long mb = extractSortMillis(b);
+            long ma = extractSortMillis(a);
+            if (ma > 0L && mb > 0L) {
+                return Long.compare(mb, ma);
+            }
+            return extractSortKey(b).compareTo(extractSortKey(a));
+        });
 
         List<Snapshot> snapshots = new ArrayList<>();
         for (JSONObject obj : payloads) {
@@ -194,6 +201,34 @@ public final class SkinProfileMetricsHelper {
         String date = obj.optString("date", "");
         String time = obj.optString("time", "");
         return (date + " " + time).trim();
+    }
+
+    /** Ưu tiên parse dd/MM/yyyy + HH:mm để sắp xếp đúng thời gian (tránh sort chuỗi lệch tháng). */
+    private static long extractSortMillis(JSONObject obj) {
+        String date = obj.optString("date", "").trim();
+        String time = obj.optString("time", "").trim();
+        String[] patterns = {
+                "dd/MM/yyyy HH:mm",
+                "dd/MM/yyyy HH:mm:ss",
+                "yyyy-MM-dd HH:mm",
+                "yyyy-MM-dd HH:mm:ss",
+                "dd/MM/yyyy",
+                "yyyy-MM-dd"
+        };
+        String combined = (date + " " + time).trim();
+        for (String pattern : patterns) {
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault());
+                sdf.setLenient(false);
+                String candidate = pattern.contains("HH") ? combined : date;
+                if (candidate.isEmpty()) continue;
+                java.util.Date parsed = sdf.parse(candidate);
+                if (parsed != null) return parsed.getTime();
+            } catch (Exception ignored) {
+            }
+        }
+        // Fallback: không parse được → 0 để comparator dùng chuỗi
+        return 0L;
     }
 
     private static int scoreFromEval(JSONObject detailed, String key) {

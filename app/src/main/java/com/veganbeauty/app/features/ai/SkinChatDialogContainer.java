@@ -14,6 +14,8 @@ import com.veganbeauty.app.data.local.ProfileSession;
 public class SkinChatDialogContainer extends DialogFragment {
 
     private boolean isAiActive = true;
+    private boolean isGuest = false;
+    private View layoutChatTabs;
     private View tabBubbleAi;
     private View tabBubbleHuman;
     private View cardTabAi;
@@ -39,6 +41,9 @@ public class SkinChatDialogContainer extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        isGuest = !ProfileSession.isLoggedIn(requireContext());
+
+        layoutChatTabs = view.findViewById(R.id.layoutChatTabs);
         tabBubbleAi = view.findViewById(R.id.tab_bubble_ai);
         tabBubbleHuman = view.findViewById(R.id.tab_bubble_human);
         cardTabAi = view.findViewById(R.id.card_tab_ai);
@@ -61,7 +66,14 @@ public class SkinChatDialogContainer extends DialogFragment {
             });
         }
 
-
+        if (isGuest) {
+            // Guests cannot chat — hide AI/Human tabs and show contact form only.
+            if (layoutChatTabs != null) {
+                layoutChatTabs.setVisibility(View.GONE);
+            }
+            showGuestContactForm();
+            return;
+        }
 
         setupTabs();
         showActiveChat(false);
@@ -77,6 +89,13 @@ public class SkinChatDialogContainer extends DialogFragment {
             window.setLayout(width, height);
             window.setBackgroundDrawableResource(android.R.color.transparent);
         }
+    }
+
+    private void showGuestContactForm() {
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.dialogContentContainer, new GuestChatContactFragment())
+                .commit();
     }
 
     private void setupTabs() {
@@ -98,6 +117,11 @@ public class SkinChatDialogContainer extends DialogFragment {
     }
 
     private void showActiveChat(boolean animate) {
+        if (isGuest) {
+            showGuestContactForm();
+            return;
+        }
+
         if (isAiActive) {
             cardTabAi.setScaleX(1.1f);
             cardTabAi.setScaleY(1.1f);
@@ -129,7 +153,7 @@ public class SkinChatDialogContainer extends DialogFragment {
     }
 
     public void updateTabBadges() {
-        if (!isAdded()) return;
+        if (!isAdded() || isGuest) return;
 
         if (isAiActive) {
             requireContext().getSharedPreferences("RootieQuizPrefs", android.content.Context.MODE_PRIVATE)
@@ -144,7 +168,7 @@ public class SkinChatDialogContainer extends DialogFragment {
         }
 
         String currentUserId = ProfileSession.getCurrentUserId(requireContext());
-        if (currentUserId == null) currentUserId = "guest_user";
+        if (currentUserId == null || currentUserId.isEmpty()) return;
         String skinChatConvId = "chat_rootie_vn_" + currentUserId;
         com.veganbeauty.app.data.local.entities.ConversationEntity conv =
             com.veganbeauty.app.features.community.message.MessageHelper.getConversationById(requireContext(), skinChatConvId);

@@ -222,11 +222,12 @@ public final class ProfileSessionHelper {
         if (sessionUserId != null && !sessionUserId.trim().isEmpty()) {
             return sessionUserId.trim();
         }
-        return ProfileSession.getCurrentUserId(context);
+        String resolved = ProfileSession.getCurrentUserId(context);
+        return resolved != null ? resolved.trim() : "";
     }
 
     public static String getDisplayAvatarUrl(Context context) {
-        return resolveEffectiveAvatarUrl(context);
+        return getAccountProfileAvatarUrl(context);
     }
 
     /** Giống Community profile: ưu tiên session trước, load UI ngay không cần chờ background. */

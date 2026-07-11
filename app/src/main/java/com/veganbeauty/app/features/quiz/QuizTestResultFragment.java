@@ -74,6 +74,8 @@ public class QuizTestResultFragment extends RootieFragment {
     private boolean historyLoggedThisOpen = false;
     /** Đủ điều kiện thưởng (tính trước khi auto-save cập nhật lastTestTime). */
     private boolean pendingQuizReward = false;
+    /** True nếu thưởng lần này là lần đầu test (khác message định kỳ 7 ngày). */
+    private boolean quizRewardIsFirstTest = false;
     private boolean quizRewardGrantedThisOpen = false;
     /** Chờ onResume rồi mới cộng xu — tránh show dialog khi fragment chưa ổn định (crash → ra Welcome). */
     private boolean quizRewardPendingUntilResume = false;
@@ -132,9 +134,10 @@ public class QuizTestResultFragment extends RootieFragment {
         binding.tvRecommendation.setText(recommendation);
         binding.tvSkinTypeDesc.setText(getSkinTypeDesc(skinType));
 
-        // Lưu hồ sơ da ngay; cộng xu hoãn tới onResume để tránh crash khi show dialog sớm
+        // Lưu hồ sơ da ngay; cộng xu chỉ lần đầu hoặc đủ 7 ngày từ phiên gần nhất
         if (!fromSkinProfile) {
             ProfileSession.touchSession(ctx);
+            quizRewardIsFirstTest = ProfileSession.isFirstSkinTest(ctx);
             pendingQuizReward = ProfileSession.isQuizRewardEligible(ctx);
             persistSkinProfileData(prefs, skinType, recommendation, flaggedSet,
                     sensitivity, hydration, elasticity, sebum, true);
@@ -658,7 +661,7 @@ public class QuizTestResultFragment extends RootieFragment {
             binding.tvRetakeQuizInline.setVisibility(View.GONE);
             return;
         }
-        // Màn kết quả sau khi làm quiz — ẩn làm lại (cooldown 7 ngày)
+        // Màn kết quả sau khi làm quiz — ẩn link làm lại (vào lại quiz từ hồ sơ / Home)
         binding.tvRetakeQuizInline.setVisibility(View.GONE);
     }
 
@@ -823,6 +826,8 @@ public class QuizTestResultFragment extends RootieFragment {
                 .putBoolean("KEY_HIDE_QUIZ_REMINDER_WEEKLY", false)
                 .commit();
 
+        saveQuizSnapshotForCurrentUser();
+
         if (!appendHistory || historyLoggedThisOpen) {
             return;
         }
@@ -870,6 +875,17 @@ public class QuizTestResultFragment extends RootieFragment {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void saveQuizSnapshotForCurrentUser() {
+        if (!isAdded()) {
+            return;
+        }
+        Context appContext = requireContext().getApplicationContext();
+        String userId = ProfileSession.getUserId(appContext);
+        if (userId != null && !userId.trim().isEmpty()) {
+            com.veganbeauty.app.utils.UserQuizStateHelper.saveForUser(appContext, userId.trim());
         }
     }
 
@@ -947,12 +963,21 @@ public class QuizTestResultFragment extends RootieFragment {
                 if (userId == null || userId.trim().isEmpty()) {
                     throw new IllegalStateException("Quiz reward skipped: user not logged in");
                 }
+                String rewardReason = quizRewardIsFirstTest
+                        ? "Kiểm tra da lần đầu (+" + QUIZ_REWARD_POINTS + " xu)"
+                        : "Cập nhật làn da định kỳ (+" + QUIZ_REWARD_POINTS + " xu)";
+                String rewardSource = quizRewardIsFirstTest
+                        ? "từ bài kiểm tra da lần đầu"
+                        : "từ quiz cập nhật chỉ số da";
+                String orderId = quizRewardIsFirstTest
+                        ? "SYSTEM_FIRST_QUIZ_" + System.currentTimeMillis()
+                        : "SYSTEM_WEEKLY_QUIZ_" + System.currentTimeMillis();
                 totalBalance = RewardPointsHelper.awardPoints(
                         appContext,
-                        "SYSTEM_WEEKLY_QUIZ_" + System.currentTimeMillis(),
+                        orderId,
                         QUIZ_REWARD_POINTS,
-                        "Cập nhật làn da định kỳ (+" + QUIZ_REWARD_POINTS + " xu)",
-                        "từ quiz cập nhật chỉ số da",
+                        rewardReason,
+                        rewardSource,
                         false
                 );
                 int verified = RewardPointsHelper.getTotalPoints(appContext);
@@ -966,6 +991,9 @@ public class QuizTestResultFragment extends RootieFragment {
             }
             final boolean awarded = success;
             final int total = totalBalance;
+            final String dialogSource = quizRewardIsFirstTest
+                    ? "từ bài kiểm tra da lần đầu"
+                    : "từ quiz cập nhật chỉ số da";
             hostActivity.runOnUiThread(() -> {
                 if (!isAdded()) {
                     return;
@@ -980,7 +1008,7 @@ public class QuizTestResultFragment extends RootieFragment {
                     return;
                 }
                 if (showDialogNow) {
-                    showSafeCoinRewardDialog(QUIZ_REWARD_POINTS, total, "từ quiz cập nhật chỉ số da", null);
+                    showSafeCoinRewardDialog(QUIZ_REWARD_POINTS, total, dialogSource, null);
                 } else if (listener == null) {
                     // Không có dialog / listener → hoãn AI routine luôn
                     schedulePendingAiRoutineAfterReward();
@@ -995,10 +1023,13 @@ public class QuizTestResultFragment extends RootieFragment {
     private void onSaveProfileFinished(boolean rewardGranted, int rewardPoints) {
         if (!isAdded()) return;
         if (rewardGranted) {
+            String source = quizRewardIsFirstTest
+                    ? "từ bài kiểm tra da lần đầu"
+                    : "từ quiz cập nhật chỉ số da";
             // Ở lại màn kết quả — không popBackStack / không out app
             showSafeCoinRewardDialog(rewardPoints,
                     com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()),
-                    "từ quiz cập nhật chỉ số da",
+                    source,
                     null);
         } else {
             showSavedProfileDialog();
@@ -1141,9 +1172,12 @@ public class QuizTestResultFragment extends RootieFragment {
                 (rewardGranted, rewardPoints) -> {
                     if (!isAdded()) return;
                     if (rewardGranted) {
+                        String source = quizRewardIsFirstTest
+                                ? "từ bài kiểm tra da lần đầu"
+                                : "từ quiz cập nhật chỉ số da";
                         showSafeCoinRewardDialog(rewardPoints,
                                 com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()),
-                                "từ quiz cập nhật chỉ số da",
+                                source,
                                 this::showApplyRoutineReminderDialog);
                     } else {
                         showApplyRoutineReminderDialog();
@@ -1161,8 +1195,8 @@ public class QuizTestResultFragment extends RootieFragment {
         TextView btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
 
         tvTitle.setText("Áp dụng và lưu thành công!");
-        tvMsg.setText("Đã lưu chỉ số da và áp dụng routine AI vào lịch trình hàng ngày.\n\nBạn có muốn thiết lập thời gian nhắc nhở routine không?");
-        tvConfirmText.setText("CÀI ĐẶT NHẮC HẸN");
+        tvMsg.setText("Đã lưu chỉ số da và gợi ý bước routine AI.\n\nHãy thiết lập bước, thời gian và thông báo để bắt đầu routine hàng ngày.");
+        tvConfirmText.setText("CÀI ĐẶT ROUTINE");
         btnCancel.setText("ĐỂ SAU");
 
         AlertDialog customDialog = new AlertDialog.Builder(requireContext()).setView(dialogView).create();

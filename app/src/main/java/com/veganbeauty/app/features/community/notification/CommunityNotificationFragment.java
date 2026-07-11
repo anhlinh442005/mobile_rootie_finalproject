@@ -21,6 +21,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.databinding.ComFragmentNotificationBinding;
+import com.veganbeauty.app.utils.AvatarLoader;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 public class CommunityNotificationFragment extends RootieFragment {
 
@@ -89,7 +91,7 @@ public class CommunityNotificationFragment extends RootieFragment {
                                     .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                                     .replace(R.id.main_container, newsFragment).addToBackStack(null).commit();
                             } else {
-                                String uid = item.getUserId() != null ? item.getUserId() : "test_001";
+                                String uid = item.getUserId() != null ? item.getUserId() : ProfileSessionHelper.getEffectiveUserId(requireContext());
                                 com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment postFrag =
                                     com.veganbeauty.app.features.community.profile.ProfilePostDetailFragment.newInstance(uid, 0, 0, item.getPostId());
                                 getParentFragmentManager().beginTransaction()
@@ -207,12 +209,7 @@ public class CommunityNotificationFragment extends RootieFragment {
             Toast.makeText(requireContext(), "Đã đánh dấu tất cả là đã đọc", Toast.LENGTH_SHORT).show();
         });
 
-        String userAvatar = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getAvatar(requireContext());
-        if (userAvatar != null && !userAvatar.isEmpty()) {
-            com.bumptech.glide.Glide.with(this).load(userAvatar).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(_binding.ivUserAvatar);
-        } else {
-            com.bumptech.glide.Glide.with(this).load(R.drawable.img_avatar).circleCrop().into(_binding.ivUserAvatar);
-        }
+        bindUserAvatar();
 
         _binding.ivUserAvatar.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(requireContext(), com.veganbeauty.app.MainActivity.class);
@@ -269,6 +266,18 @@ public class CommunityNotificationFragment extends RootieFragment {
         _binding.tabInteractions.setTextColor(interactionsActive ? white : primary);
         _binding.tabAffiliate.setTextColor(affiliateActive ? white : primary);
         _binding.tabNews.setTextColor(newsActive ? white : primary);
+    }
+
+    private void bindUserAvatar() {
+        if (_binding == null || !isAdded()) return;
+        String avatarUrl = ProfileSessionHelper.getAccountProfileAvatarUrl(requireContext());
+        AvatarLoader.loadAvatar(_binding.ivUserAvatar, avatarUrl);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bindUserAvatar();
     }
 
     @Override

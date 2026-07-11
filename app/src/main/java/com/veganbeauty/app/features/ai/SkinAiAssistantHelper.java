@@ -769,13 +769,11 @@ public final class SkinAiAssistantHelper {
 
     private static String formatRoutineSteps(Set<String> steps) {
         StringBuilder line = new StringBuilder();
-        for (String step : steps) {
-            String[] parts = step.split(":", 4);
-            if (parts.length < 3) continue;
-            boolean enabled = parts.length < 4 || "true".equalsIgnoreCase(parts[3]);
-            if (!enabled) continue;
+        for (com.veganbeauty.app.features.routine.SkincareStep step :
+                com.veganbeauty.app.features.routine.SkincareStep.parseList(steps)) {
+            if (!step.isChecked()) continue;
             if (line.length() > 0) line.append(" → ");
-            line.append(parts[2]);
+            line.append(step.getName());
         }
         return line.length() > 0 ? line.toString() : "chưa bật bước nào";
     }

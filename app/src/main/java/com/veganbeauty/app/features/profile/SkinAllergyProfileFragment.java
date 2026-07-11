@@ -43,6 +43,7 @@ import kotlinx.coroutines.Dispatchers;
 import androidx.lifecycle.LifecycleOwnerKt;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.SkinProfileMetricsHelper;
+import com.veganbeauty.app.features.ai.SkinComparisonAiHelper;
 
 public class SkinAllergyProfileFragment extends RootieFragment {
 
@@ -458,6 +459,7 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         binding.skinComparisonSection.setVisibility(View.GONE);
 
         Context appContext = requireContext().getApplicationContext();
+        final String geminiKey = com.veganbeauty.app.BuildConfig.GEMINI_API_KEY;
         LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
             BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
                 String userId = ProfileSession.getUserId(appContext);
@@ -465,30 +467,45 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                 List<SkinProfileMetricsHelper.Snapshot> snapshots =
                         SkinProfileMetricsHelper.loadComparableSnapshots(appContext, userId, email);
 
-                return BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
-                    if (binding == null) {
-                        return kotlin.Unit.INSTANCE;
-                    }
-                    try {
-                        if (snapshots.size() < 2) {
+                if (snapshots.size() < 2) {
+                    return BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
+                        if (binding != null) {
                             binding.skinComparisonSection.setVisibility(View.GONE);
-                            return kotlin.Unit.INSTANCE;
                         }
+                        return kotlin.Unit.INSTANCE;
+                    }, c2);
+                }
 
-                        SkinProfileMetricsHelper.Snapshot newer = snapshots.get(0);
-                        SkinProfileMetricsHelper.Snapshot older = snapshots.get(1);
+                final SkinProfileMetricsHelper.Snapshot newer = snapshots.get(0);
+                final SkinProfileMetricsHelper.Snapshot older = snapshots.get(1);
+                final String localAnalysis = buildEfficacyAnalysis(older, newer);
 
+                // Hiện UI + text tạm trên Main, rồi gọi Gemini trên IO
+                BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
+                    if (binding == null) return kotlin.Unit.INSTANCE;
+                    try {
                         binding.skinComparisonSection.setVisibility(View.VISIBLE);
-
                         bindHydrationComparison(older.hydration, newer.hydration);
                         bindSebumComparison(older.sebum, newer.sebum);
                         bindSensitivityComparison(older.sensitivity, newer.sensitivity);
                         bindElasticityComparison(older.elasticity, newer.elasticity);
                         binding.skinTvProductEfficacyAnalysis.setText(
-                                buildEfficacyAnalysis(older, newer));
+                                "Rootie AI đang phân tích thay đổi da của bạn...\n\n" + localAnalysis);
                     } catch (Exception e) {
                         e.printStackTrace();
                         binding.skinComparisonSection.setVisibility(View.GONE);
+                    }
+                    return kotlin.Unit.INSTANCE;
+                }, c2);
+
+                String aiText = SkinComparisonAiHelper.analyzeWithGemini(geminiKey, older, newer);
+                final String display = (aiText != null && !aiText.trim().isEmpty())
+                        ? aiText.trim()
+                        : localAnalysis;
+
+                return BuildersKt.withContext(Dispatchers.getMain(), (s4, c4) -> {
+                    if (binding != null) {
+                        binding.skinTvProductEfficacyAnalysis.setText(display);
                     }
                     return kotlin.Unit.INSTANCE;
                 }, c2);
@@ -577,6 +594,20 @@ public class SkinAllergyProfileFragment extends RootieFragment {
                     .append(" → ").append(newer.dateLabel).append(":\n\n");
         }
 
+        if (older.skinType != null && newer.skinType != null
+                && !older.skinType.equalsIgnoreCase(newer.skinType)) {
+            sb.append("• Loại da: ").append(older.skinType)
+                    .append(" → ").append(newer.skinType).append("\n");
+        } else if (newer.skinType != null && !newer.skinType.isEmpty()) {
+            sb.append("• Loại da hiện tại: ").append(newer.skinType).append("\n");
+        }
+
+        sb.append("• Chỉ số trước → sau:\n");
+        sb.append("  - Ẩm: ").append(older.hydration).append("% → ").append(newer.hydration).append("%\n");
+        sb.append("  - Bã nhờn: ").append(older.sebum).append("% → ").append(newer.sebum).append("%\n");
+        sb.append("  - Nhạy cảm: ").append(older.sensitivity).append("% → ").append(newer.sensitivity).append("%\n");
+        sb.append("  - Đàn hồi: ").append(older.elasticity).append("% → ").append(newer.elasticity).append("%\n\n");
+
         int changeCount = 0;
         if (hydDiff > 0) { sb.append("• Cấp ẩm tốt hơn (+").append(hydDiff).append("%)\n"); changeCount++; }
         if (sebDiff < 0) { sb.append("• Kiểm soát bã nhờn ổn định (").append(sebDiff).append("%)\n"); changeCount++; }
@@ -587,9 +618,9 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         if (sensDiff > 0) { sb.append("• Nhạy cảm tăng (+").append(sensDiff).append("%)\n"); changeCount++; }
         if (elastDiff < 0) { sb.append("• Đàn hồi giảm (").append(elastDiff).append("%)\n"); changeCount++; }
         if (changeCount == 0) {
-            sb.append("• Chỉ số da duy trì ở mức ổn định.\n");
+            sb.append("• Chỉ số da duy trì ở mức ổn định theo dữ liệu đo của bạn.\n");
         }
-        sb.append("\n=> Tiếp tục theo dõi routine chăm sóc da để đánh giá hiệu quả lâu dài.");
+        sb.append("\n=> Phân tích dựa trên lịch sử test/quét da đã lưu của bạn. Tiếp tục theo dõi routine để đánh giá hiệu quả lâu dài.");
         return sb.toString();
     }
 

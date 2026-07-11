@@ -62,6 +62,24 @@ public final class NotificationScheduleHelper {
         }
     }
 
+    /** Mở đúng trang bật/tắt thông báo của app (không phải trang thông tin app chung). */
+    public static void openNotificationSettings(@NonNull Context context) {
+        try {
+            Intent intent = new Intent();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+            } else {
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + context.getPackageName()));
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            openAppSettings(context);
+        }
+    }
+
     /** Nhắc một lần nếu chưa có quyền alarm chính xác. */
     public static void remindExactAlarmIfNeeded(@NonNull Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || canScheduleExactAlarms(context)) {

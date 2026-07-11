@@ -64,6 +64,15 @@ public class AccountProfileAddressFragment extends RootieFragment {
         headerScrollHelper.attachToNestedScrollView(binding.scrollContent);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (binding != null) {
+            AddressBookHelper.ensureLoadedForCurrentUser(requireContext());
+            loadAddressData();
+        }
+    }
+
     private void loadAddressData() {
         Context context = requireContext();
         List<AddressBookHelper.AddressEntry> list = AddressBookHelper.getSessionAddresses(context);
@@ -203,34 +212,30 @@ public class AccountProfileAddressFragment extends RootieFragment {
 
     private void setupLabelChips(ChipGroup chipGroup, EditText etCustom, String currentLabel) {
         chipGroup.removeAllViews();
-        boolean matched = false;
+        int matchedChipId = View.NO_ID;
         for (String suggested : AddressBookHelper.SUGGESTED_LABELS) {
             Chip chip = new Chip(requireContext());
             chip.setText(suggested);
             chip.setCheckable(true);
             chip.setClickable(true);
             chipGroup.addView(chip);
-            if (suggested.equalsIgnoreCase(currentLabel) || ("Khác".equals(suggested) && !matched && isCustomLabel(currentLabel))) {
-                // select later
-            }
             if (suggested.equalsIgnoreCase(currentLabel)) {
-                chip.setChecked(true);
-                matched = true;
+                matchedChipId = chip.getId();
             }
         }
-        if (!matched) {
-            // Custom label
+        if (matchedChipId != View.NO_ID) {
+            chipGroup.check(matchedChipId);
+            etCustom.setVisibility(View.GONE);
+        } else {
             for (int i = 0; i < chipGroup.getChildCount(); i++) {
                 Chip chip = (Chip) chipGroup.getChildAt(i);
                 if ("Khác".equals(chip.getText().toString())) {
-                    chip.setChecked(true);
+                    chipGroup.check(chip.getId());
                     break;
                 }
             }
             etCustom.setVisibility(View.VISIBLE);
             etCustom.setText(currentLabel);
-        } else {
-            etCustom.setVisibility(View.GONE);
         }
 
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
@@ -243,14 +248,6 @@ public class AccountProfileAddressFragment extends RootieFragment {
                 etCustom.setVisibility(View.GONE);
             }
         });
-    }
-
-    private boolean isCustomLabel(String label) {
-        if (label == null || label.trim().isEmpty()) return false;
-        for (String s : AddressBookHelper.SUGGESTED_LABELS) {
-            if (!"Khác".equals(s) && s.equalsIgnoreCase(label.trim())) return false;
-        }
-        return true;
     }
 
     @NonNull

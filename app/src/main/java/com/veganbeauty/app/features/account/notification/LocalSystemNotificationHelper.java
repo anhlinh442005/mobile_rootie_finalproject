@@ -39,6 +39,15 @@ public final class LocalSystemNotificationHelper {
         if (!ProfileSession.isNotiEnabled(appContext)) {
             return false;
         }
+        return hasSystemPermission(appContext);
+    }
+
+    /** Chỉ kiểm tra quyền thông báo ở cấp hệ thống (không phụ thuộc toggle trong app). */
+    public static boolean hasSystemPermission(Context context) {
+        if (context == null) {
+            return false;
+        }
+        Context appContext = context.getApplicationContext();
         if (!NotificationManagerCompat.from(appContext).areNotificationsEnabled()) {
             return false;
         }
