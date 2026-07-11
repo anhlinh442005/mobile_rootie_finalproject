@@ -25,7 +25,6 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.databinding.ShopBottomSheetCartBinding;
-import com.veganbeauty.app.features.home.BottomNavHelper;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -70,11 +69,6 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (!ProfileSession.isLoggedIn(requireContext())) {
-            BottomNavHelper.showLoginRequiredDialog(requireContext());
-            dismiss();
-            return null;
-        }
         _binding = ShopBottomSheetCartBinding.inflate(inflater, container, false);
         database = RootieDatabase.getDatabase(requireContext());
         return _binding.getRoot();
@@ -87,8 +81,18 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
 
         setupRecyclerView();
         setupListeners();
-        refreshPointsRow();
+        applyGuestCartMode();
         observeCartItems();
+    }
+
+    private void applyGuestCartMode() {
+        if (!ProfileSession.isLoggedIn(requireContext())) {
+            _binding.llPointsRow.setVisibility(View.GONE);
+            isPointsChecked = false;
+            return;
+        }
+        _binding.llPointsRow.setVisibility(View.VISIBLE);
+        refreshPointsRow();
     }
 
     private void setupRecyclerView() {
@@ -288,7 +292,7 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void refreshPointsRow() {
-        if (_binding == null || !isAdded()) return;
+        if (_binding == null || !isAdded() || !ProfileSession.isLoggedIn(requireContext())) return;
         int balance = Math.max(0, com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()));
         String balanceText = String.format(Locale.getDefault(), "%,d", balance).replace(',', '.');
         _binding.tvPointsText.setText("Bạn có " + balanceText + " xu");

@@ -129,11 +129,6 @@ public class ChooseQuantityBottomSheet extends BottomSheetDialogFragment {
         });
 
         binding.btnAddToCartOutline.setOnClickListener(v -> {
-            if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(requireContext())) {
-                com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(requireContext());
-                dismiss();
-                return;
-            }
             String input = binding.tvQuantityValue.getText().toString().trim();
             if (input.isEmpty()) {
                 android.widget.Toast.makeText(requireContext(), "Vui lòng nhập số lượng", android.widget.Toast.LENGTH_SHORT).show();

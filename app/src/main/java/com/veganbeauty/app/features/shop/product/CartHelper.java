@@ -13,11 +13,6 @@ public class CartHelper {
     }
 
     public static boolean addToCart(Context context, Object coroutineScope, ProductEntity product, int quantity, boolean showToast) {
-        if (!com.veganbeauty.app.data.local.ProfileSession.isLoggedIn(context)) {
-            com.veganbeauty.app.features.home.BottomNavHelper.showLoginRequiredDialog(context);
-            return false;
-        }
-
         if (product.getStock() <= 0) {
             Toast.makeText(context, "Sản phẩm hiện đã hết hàng", Toast.LENGTH_SHORT).show();
             return false;
