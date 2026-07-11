@@ -3,13 +3,14 @@ package com.veganbeauty.app.features.community.profile;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -137,6 +138,16 @@ public class CommunityAffiliateProductsFragment extends Fragment {
         renderProducts();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (llProductsContainer == null) {
+            return;
+        }
+        loadProductsData();
+        renderProducts();
     }
 
     private void setupSearch() {
@@ -318,37 +329,57 @@ public class CommunityAffiliateProductsFragment extends Fragment {
 
         prodView.setOnClickListener(v -> ProductDetailLauncher.open(this, prodId));
 
-        Switch swDisplay = prodView.findViewById(R.id.swDisplay);
-        if (swDisplay != null) {
-            swDisplay.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (!isChecked) {
-                    View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_delete, null);
-                    AlertDialog dialog = new AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
-                            .setView(dialogView)
-                            .create();
+        FrameLayout swDisplay = prodView.findViewById(R.id.swDisplay);
+        ImageView swDisplayThumb = prodView.findViewById(R.id.swDisplayThumb);
+        if (swDisplay != null && swDisplayThumb != null) {
+            updateSwitchUI(swDisplay, swDisplayThumb, true);
+            swDisplay.setOnClickListener(v -> {
+                View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_delete, null);
+                AlertDialog dialog = new AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
+                        .setView(dialogView)
+                        .create();
 
-                    if (dialog.getWindow() != null) {
-                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    }
-                    dialog.setCancelable(false);
-
-                    dialogView.findViewById(R.id.btnCancel).setOnClickListener(v -> {
-                        swDisplay.setChecked(true);
-                        dialog.dismiss();
-                    });
-
-                    dialogView.findViewById(R.id.btnConfirm).setOnClickListener(v -> {
-                        AffiliateProductsHelper.setProductDisplayed(requireContext(), currentUserId, prodId, false);
-                        productEntries.remove(entry);
-                        renderProducts();
-                        dialog.dismiss();
-                    });
-
-                    dialog.show();
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 }
+                dialog.setCancelable(false);
+
+                dialogView.findViewById(R.id.btnCancel).setOnClickListener(btn -> {
+                    updateSwitchUI(swDisplay, swDisplayThumb, true);
+                    dialog.dismiss();
+                });
+
+                dialogView.findViewById(R.id.btnConfirm).setOnClickListener(btn -> {
+                    AffiliateProductsHelper.setProductDisplayed(requireContext(), currentUserId, prodId, false);
+                    productEntries.remove(entry);
+                    renderProducts();
+                    dialog.dismiss();
+                });
+
+                updateSwitchUI(swDisplay, swDisplayThumb, false);
+                dialog.show();
             });
         }
 
         llProductsContainer.addView(prodView);
+    }
+
+    private void updateSwitchUI(FrameLayout container, ImageView thumb, boolean enabled) {
+        int margin = (int) (2 * getResources().getDisplayMetrics().density);
+        if (enabled) {
+            container.setBackgroundResource(R.drawable.ic_switch_track_on);
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) thumb.getLayoutParams();
+            lp.gravity = Gravity.CENTER_VERTICAL | Gravity.END;
+            lp.setMarginStart(0);
+            lp.setMarginEnd(margin);
+            thumb.setLayoutParams(lp);
+        } else {
+            container.setBackgroundResource(R.drawable.ic_switch_track_off);
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) thumb.getLayoutParams();
+            lp.gravity = Gravity.CENTER_VERTICAL | Gravity.START;
+            lp.setMarginEnd(0);
+            lp.setMarginStart(margin);
+            thumb.setLayoutParams(lp);
+        }
     }
 }

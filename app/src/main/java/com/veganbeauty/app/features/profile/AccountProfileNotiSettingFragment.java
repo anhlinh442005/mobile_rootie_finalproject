@@ -59,6 +59,8 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
                 ProfileSession.setNotiEnabled(ctx, true);
                 updateSwitchUI(binding.switchNotiEnabledContainer, binding.switchNotiEnabledThumb, true);
                 syncAllSettingsEnabledState();
+                com.veganbeauty.app.features.routine.RoutineAlarmScheduler.rescheduleAlarms(ctx);
+                com.veganbeauty.app.features.account.notification.NotificationScheduleHelper.remindExactAlarmIfNeeded(ctx);
                 triggerTestNotification("Đã bật thông báo", "Bạn sẽ nhận được các thông báo mới nhất từ Rootie.");
             } else {
                 Toast.makeText(ctx, "Quyền thông báo bị từ chối", Toast.LENGTH_SHORT).show();
@@ -81,11 +83,6 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
     public void setupUI(View view) {
         Context ctx = requireContext();
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                        .addToBackStack(null).commit());
-
         List<String> freqs = Arrays.asList("Mỗi ngày","Mỗi tuần","Mỗi tháng");
         ArrayAdapter<String> freqAdapter = new ArrayAdapter<>(ctx, android.R.layout.simple_spinner_item, freqs);
         freqAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -131,7 +128,8 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
 
     private void loadSwitchesState() {
         Context ctx = requireContext();
-        updateSwitchUI(binding.switchNotiEnabledContainer, binding.switchNotiEnabledThumb, ProfileSession.isNotiEnabled(ctx));
+        boolean masterOn = ProfileSession.isNotiEnabled(ctx) && areNotificationsAllowed();
+        updateSwitchUI(binding.switchNotiEnabledContainer, binding.switchNotiEnabledThumb, masterOn);
         updateSwitchUI(binding.switchSoundContainer, binding.switchSoundThumb, ProfileSession.isSoundEnabled(ctx));
         updateSwitchUI(binding.switchVibrateContainer, binding.switchVibrateThumb, ProfileSession.isVibrateEnabled(ctx));
         updateSwitchUI(binding.switchLockScreenContainer, binding.switchLockScreenThumb, ProfileSession.isLockScreenEnabled(ctx));
@@ -156,6 +154,8 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
                     ProfileSession.setNotiEnabled(ctx, true);
                     updateSwitchUI(binding.switchNotiEnabledContainer, binding.switchNotiEnabledThumb, true);
                     syncAllSettingsEnabledState();
+                    com.veganbeauty.app.features.routine.RoutineAlarmScheduler.rescheduleAlarms(ctx);
+                    com.veganbeauty.app.features.account.notification.NotificationScheduleHelper.remindExactAlarmIfNeeded(ctx);
                     triggerTestNotification("Thông báo đã bật", "Bạn sẽ nhận được các thông báo mới nhất từ Rootie.");
                 }
             } else {
@@ -217,7 +217,7 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
     }
 
     private void syncAllSettingsEnabledState() {
-        boolean enabled = ProfileSession.isNotiEnabled(requireContext());
+        boolean enabled = ProfileSession.isNotiEnabled(requireContext()) && areNotificationsAllowed();
         float alpha = enabled ? 1.0f : 0.5f;
         FrameLayout[] switches = {binding.switchSoundContainer,binding.switchVibrateContainer,binding.switchLockScreenContainer,binding.switchOrderStatusContainer,binding.switchPromotionContainer,binding.switchStaffMessageContainer,binding.switchSkinWeatherContainer,binding.switchExpiryNotiContainer};
         for (FrameLayout sw : switches) { sw.setEnabled(enabled); sw.setAlpha(alpha); }
@@ -285,7 +285,12 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
 
     private void triggerTestNotification(String title, String content) {
         Context ctx = requireContext();
-        if (!ProfileSession.isNotiEnabled(ctx) || !areNotificationsAllowed()) return;
+        if (!areNotificationsAllowed()) {
+            Toast.makeText(ctx, "Máy đang chặn thông báo Rootie. Hãy bật trong Cài đặt hệ thống.", Toast.LENGTH_LONG).show();
+            showSystemNotificationSettingsDialog();
+            return;
+        }
+        if (!ProfileSession.isNotiEnabled(ctx)) return;
         boolean sound = ProfileSession.isSoundEnabled(ctx), vibrate = ProfileSession.isVibrateEnabled(ctx);
         String channelId = "rootie_channel_" + (sound ? "s1" : "s0") + "_" + (vibrate ? "v1" : "v0");
         NotificationManager nm = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -298,26 +303,52 @@ public class AccountProfileNotiSettingFragment extends RootieFragment {
             nm.createNotificationChannel(ch);
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, channelId)
-                .setSmallIcon(R.drawable.ic_bell).setContentTitle(title).setContentText(content).setAutoCancel(true);
+                .setSmallIcon(R.drawable.ic_stat_notification)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setAutoCancel(true);
         if (!sound) { builder.setSound(null); builder.setPriority(NotificationCompat.PRIORITY_LOW); }
         else { builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)); builder.setPriority(NotificationCompat.PRIORITY_DEFAULT); }
         if (!vibrate) builder.setVibrate(new long[]{0L});
         else builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
-        try { nm.notify(101, builder.build()); } catch (SecurityException e) { e.printStackTrace(); }
+        try {
+            nm.notify(101, builder.build());
+            Toast.makeText(ctx, "Đã gửi thông báo thử — kiểm tra thanh thông báo máy.", Toast.LENGTH_SHORT).show();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            Toast.makeText(ctx, "Không gửi được thông báo. Hãy bật quyền trong Cài đặt hệ thống.", Toast.LENGTH_LONG).show();
+            showSystemNotificationSettingsDialog();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (binding != null) {
+            syncMasterSwitchWithSystemPermission();
             loadSwitchesState();
             syncAllSettingsEnabledState();
         }
         Context ctx = getContext();
         if (ctx != null
                 && ProfileSession.isNotiEnabled(ctx)
+                && areNotificationsAllowed()
                 && ProfileSession.isSkinWeatherNotiEnabled(ctx)) {
             DailySkinWeatherScheduler.scheduleOnly(ctx);
+        }
+        if (ctx != null && ProfileSession.isNotiEnabled(ctx) && areNotificationsAllowed()) {
+            com.veganbeauty.app.features.routine.RoutineAlarmScheduler.rescheduleAlarms(ctx);
+        }
+    }
+
+    private boolean systemSettingsPromptShown;
+
+    private void syncMasterSwitchWithSystemPermission() {
+        Context ctx = getContext();
+        if (ctx == null || binding == null) return;
+        if (ProfileSession.isNotiEnabled(ctx) && !areNotificationsAllowed() && !systemSettingsPromptShown) {
+            systemSettingsPromptShown = true;
+            showSystemNotificationSettingsDialog();
         }
     }
 

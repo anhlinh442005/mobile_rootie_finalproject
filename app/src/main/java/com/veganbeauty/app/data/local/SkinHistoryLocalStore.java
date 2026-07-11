@@ -59,6 +59,57 @@ public final class SkinHistoryLocalStore {
                             @Nullable String userId, @Nullable String email) {
         try {
             Context appContext = context.getApplicationContext();
+            SkinHistoryEntity entity = buildEntity(historyObj, userId, email);
+            if (entity == null) {
+                return;
+            }
+            SAVE_EXECUTOR.execute(() -> {
+                try {
+                    RootieDatabase.getDatabase(appContext).skinHistoryDao().insert(entity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Lưu đồng bộ trên thread hiện tại (gọi từ background thread).
+     * Dùng khi cần đọc lại lịch sử ngay sau khi ghi (vd. đồng bộ từ lịch SPA).
+     */
+    public static void saveSync(@NonNull Context context, @NonNull JSONObject historyObj,
+                                @Nullable String userId, @Nullable String email) {
+        try {
+            SkinHistoryEntity entity = buildEntity(historyObj, userId, email);
+            if (entity == null) {
+                return;
+            }
+            RootieDatabase.getDatabase(context.getApplicationContext()).skinHistoryDao().insert(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteSync(@NonNull Context context, @NonNull String historyId) {
+        if (historyId.trim().isEmpty()) {
+            return;
+        }
+        try {
+            RootieDatabase.getDatabase(context.getApplicationContext())
+                    .skinHistoryDao()
+                    .deleteById(historyId.trim());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Nullable
+    private static SkinHistoryEntity buildEntity(@NonNull JSONObject historyObj,
+                                                 @Nullable String userId,
+                                                 @Nullable String email) {
+        try {
             JSONObject copy = new JSONObject(historyObj.toString());
             String safeUserId = userId != null ? userId.trim() : "";
             String safeEmail = email != null ? email.trim() : "";
@@ -85,7 +136,7 @@ public final class SkinHistoryLocalStore {
                 copy.put("time", time);
             }
 
-            SkinHistoryEntity entity = new SkinHistoryEntity(
+            return new SkinHistoryEntity(
                     id,
                     safeUserId,
                     safeEmail,
@@ -94,15 +145,9 @@ public final class SkinHistoryLocalStore {
                     time,
                     copy.optString("scanType", "Quét AI")
             );
-            SAVE_EXECUTOR.execute(() -> {
-                try {
-                    RootieDatabase.getDatabase(appContext).skinHistoryDao().insert(entity);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 

@@ -18,8 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Tài khoản demo Nguyễn Thị Demo — luôn bắt đầu sạch.
- * Chỉ giữ thông tin đã import (users.json / hằng số bên dưới), không kế thừa địa chỉ/đơn/xu từ tài khoản cũ.
+ * Tài khoản demo Nguyễn Thị Demo.
+ * Login lại: làm sạch địa chỉ/đơn/quà mẫu, nhưng giữ xu đã kiếm (quiz/routine/check-in).
  */
 public final class FreshDemoAccountSeeder {
 
@@ -66,8 +66,8 @@ public final class FreshDemoAccountSeeder {
 
         RootieDatabase db = RootieDatabase.getDatabase(appContext);
         db.skinHistoryDao().deleteByUser(USER_ID, EMAIL);
-        // Chỉ xóa xu/quà của demo — không đụng điểm của user khác
-        db.rewardPointDao().deleteByUserId(USER_ID);
+        // Giữ xu đã kiếm (quiz/routine/check-in) — không xóa user_coin khi login lại demo.
+        // Chỉ xóa đơn/quà mẫu để tài khoản demo không dính data cũ.
         db.userGiftDao().deleteByUserId(USER_ID);
         db.orderDao().deleteByUserIdentity(USER_ID, PHONE);
         db.cartDao().clearCart();

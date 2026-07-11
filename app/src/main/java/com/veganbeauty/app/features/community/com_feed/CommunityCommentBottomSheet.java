@@ -6,6 +6,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -16,6 +18,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -296,24 +302,51 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
     private void showInputOverlay(Context context, String initialText, Runnable refreshComments) {
         android.app.Dialog dialog = new android.app.Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
         dialog.setContentView(R.layout.com_dialog_comment_input);
-        
-        android.view.Window window = dialog.getWindow();
+
+        Window window = dialog.getWindow();
         if (window != null) {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            // Translucent dialogs ignore ADJUST_RESIZE — lift input via IME insets instead.
+            window.setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+                            | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            WindowCompat.setDecorFitsSystemWindows(window, false);
         }
 
+        View contentRoot = dialog.findViewById(android.R.id.content);
+        final View root = (contentRoot instanceof ViewGroup && ((ViewGroup) contentRoot).getChildCount() > 0)
+                ? ((ViewGroup) contentRoot).getChildAt(0)
+                : contentRoot;
+        View llInputContainer = dialog.findViewById(R.id.llInputContainer);
         View viewDismiss = dialog.findViewById(R.id.viewDismiss);
         EditText etComment = dialog.findViewById(R.id.etComment);
         ImageView ivMyAvatar = dialog.findViewById(R.id.ivMyAvatar);
         ImageView ivSubmitComment = dialog.findViewById(R.id.ivSubmitComment);
+
+        if (root != null && llInputContainer != null) {
+            final int baseBottomPad = (int) (12 * context.getResources().getDisplayMetrics().density);
+            ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+                Insets nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                // Push the composer above the keyboard so typed text stays visible.
+                llInputContainer.setTranslationY(-ime.bottom);
+                llInputContainer.setPadding(
+                        llInputContainer.getPaddingLeft(),
+                        llInputContainer.getPaddingTop(),
+                        llInputContainer.getPaddingRight(),
+                        baseBottomPad + (ime.bottom > 0 ? 0 : nav.bottom)
+                );
+                return insets;
+            });
+            ViewCompat.requestApplyInsets(root);
+        }
 
         String myAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(context);
         if (ivMyAvatar != null) {
             com.bumptech.glide.Glide.with(context).load(myAvatar).placeholder(R.drawable.img_avatar).error(R.drawable.img_avatar).circleCrop().into(ivMyAvatar);
         }
 
-        if (initialText != null && !initialText.isEmpty()) {
+        if (initialText != null && !initialText.isEmpty() && etComment != null) {
             etComment.setText(initialText);
             etComment.setSelection(initialText.length());
         }
@@ -321,7 +354,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
         if (viewDismiss != null) {
             viewDismiss.setOnClickListener(v -> {
                 InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm != null) {
+                if (imm != null && etComment != null) {
                     imm.hideSoftInputFromWindow(etComment.getWindowToken(), 0);
                 }
                 dialog.dismiss();
@@ -331,7 +364,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
         int[] emojiIds = {R.id.tvEmoji1, R.id.tvEmoji2, R.id.tvEmoji3, R.id.tvEmoji4, R.id.tvEmoji5, R.id.tvEmoji6, R.id.tvEmoji7, R.id.tvEmoji8};
         for (int emojiId : emojiIds) {
             TextView emojiView = dialog.findViewById(emojiId);
-            if (emojiView != null) {
+            if (emojiView != null && etComment != null) {
                 emojiView.setOnClickListener(v -> {
                     etComment.append(emojiView.getText());
                     etComment.requestFocus();
@@ -340,6 +373,9 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
         }
 
         View.OnClickListener submitAction = v -> {
+            if (etComment == null) {
+                return;
+            }
             String text = etComment.getText().toString().trim();
             if (text.isEmpty() || postId == null) {
                 return;
@@ -382,7 +418,7 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
             replyingToCommentId = null;
             replyingToUserId = null;
             replyingToUsername = null;
-            
+
             InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm != null) {
                 imm.hideSoftInputFromWindow(etComment.getWindowToken(), 0);
@@ -435,22 +471,35 @@ public class CommunityCommentBottomSheet extends BottomSheetDialogFragment {
             }).start();
         };
 
-        etComment.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND ||
-                    (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                submitAction.onClick(v);
-                return true;
-            }
-            return false;
-        });
+        if (etComment != null) {
+            etComment.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND ||
+                        (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    submitAction.onClick(v);
+                    return true;
+                }
+                return false;
+            });
+        }
 
         if (ivSubmitComment != null) {
             ivSubmitComment.setOnClickListener(submitAction);
         }
-        
+
         dialog.show();
-        
-        etComment.requestFocus();
+
+        if (etComment != null) {
+            etComment.requestFocus();
+            etComment.post(() -> {
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(etComment, InputMethodManager.SHOW_IMPLICIT);
+                }
+                if (root != null) {
+                    ViewCompat.requestApplyInsets(root);
+                }
+            });
+        }
     }
 
     private List<CommentItem> loadCommentsList(Context context) {

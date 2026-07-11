@@ -17,10 +17,7 @@ import androidx.fragment.app.Fragment;
 
 
 import com.veganbeauty.app.R;
-import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
-import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.features.community.affiliate.AffiliateProductsHelper;
 import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
 import com.veganbeauty.app.utils.ProfileSessionHelper;
@@ -70,6 +67,16 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
         renderProducts();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (llAddProductsContainer == null) {
+            return;
+        }
+        loadData();
+        renderProducts();
     }
 
     private void setupChips(View view) {
@@ -136,16 +143,9 @@ public class CommunityAddAffiliateProductsFragment extends Fragment {
             }
 
             purchasedProductIds.clear();
-            List<OrderEntity> orders = new LocalJsonReader(requireContext()).getAllOrders();
-            for (OrderEntity order : orders) {
-                if (currentUserId.equals(order.getUserId()) && "Hoàn tất".equals(order.getStatus())) {
-                    for (OrderItem item : order.getItems()) {
-                        if (item.getProductId() != null && !item.getProductId().isEmpty()) {
-                            purchasedProductIds.add(item.getProductId());
-                        }
-                    }
-                }
-            }
+            purchasedProductIds.addAll(
+                    AffiliateProductsHelper.getCompletedPurchaseProductIds(requireContext(), currentUserId)
+            );
 
             StringBuilder jsonProducts = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(requireContext().getAssets().open("products.json")))) {

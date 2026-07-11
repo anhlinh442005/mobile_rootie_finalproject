@@ -101,6 +101,9 @@ public class OrderListAdapter extends ListAdapter<OrderEntity, OrderListAdapter.
         ) {
             Context context = binding.getRoot().getContext();
 
+            // Khôi phục feedback đã lưu theo đơn — nút hiện "Xem đánh giá" đúng
+            com.veganbeauty.app.data.local.OrderReviewLocalStore.applyTo(context, order);
+
             binding.getRoot().setOnClickListener(v -> onItemClick.onClick(order));
 
             binding.tvOrderDateTime.setText(order.getOrderDate() + " • " + order.getOrderTime());
@@ -268,7 +271,10 @@ public class OrderListAdapter extends ListAdapter<OrderEntity, OrderListAdapter.
 
         @Override
         public boolean areContentsTheSame(@NonNull OrderEntity oldItem, @NonNull OrderEntity newItem) {
-            return oldItem.equals(newItem);
+            return oldItem.equals(newItem)
+                    && oldItem.isHasReview() == newItem.isHasReview()
+                    && oldItem.getReviewStars() == newItem.getReviewStars()
+                    && java.util.Objects.equals(oldItem.getReviewText(), newItem.getReviewText());
         }
     }
 }

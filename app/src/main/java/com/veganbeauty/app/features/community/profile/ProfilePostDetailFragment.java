@@ -21,6 +21,7 @@ import com.veganbeauty.app.data.local.entities.CommunityProduct;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.features.community.UserMemoryHelper;
+import com.veganbeauty.app.features.community.com_feed.CommunityPostsDiff;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory;
 import com.veganbeauty.app.features.community.com_feed.PostAdapter;
@@ -47,6 +48,7 @@ public class ProfilePostDetailFragment extends Fragment {
     private int initialPosition = 0;
     private int currentTab = 0;
     private String targetPostId = null;
+    private List<CommunityPostEntity> lastObservedDbPosts = null;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -110,18 +112,29 @@ public class ProfilePostDetailFragment extends Fragment {
         List<CommunityProduct> productsList = jsonReader.getProducts();
 
         viewModel.getPosts().observe(getViewLifecycleOwner(), dbPosts -> {
+            List<CommunityPostEntity> safeDbPosts = dbPosts != null ? dbPosts : Collections.emptyList();
+            if (!CommunityPostsDiff.hasStructuralChange(lastObservedDbPosts, safeDbPosts)) {
+                lastObservedDbPosts = new ArrayList<>(safeDbPosts);
+                return;
+            }
+            lastObservedDbPosts = new ArrayList<>(safeDbPosts);
+
             executor.execute(() -> {
                 try {
                     List<CommunityPostEntity> newsList = jsonReader.getCommunityNews();
-                    List<CommunityPostEntity> allPostsCombined = new ArrayList<>();
-                    if (dbPosts != null) allPostsCombined.addAll(dbPosts);
-                    if (newsList != null) allPostsCombined.addAll(newsList);
+                    List<CommunityPostEntity> allPostsCombined =
+                            UserMemoryHelper.mergePostSources(dbPosts, newsList);
 
-                    String ownUserId = ProfileSession.getUserId(requireContext());
+                    String ownUserId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(requireContext());
+                    if (ownUserId == null || ownUserId.isEmpty()) {
+                        ownUserId = ProfileSession.getUserId(requireContext());
+                    }
                     if (ownUserId == null || ownUserId.isEmpty()) ownUserId = "test_001";
 
+                    // For saved/reposted tabs, keep the profile owner id (whose list we are viewing).
+                    // Only remap to post author when browsing that author's posts (tab 0).
                     String profileUserId = userId;
-                    if (targetPostId != null && !targetPostId.isEmpty()) {
+                    if (currentTab == 0 && targetPostId != null && !targetPostId.isEmpty()) {
                         for (CommunityPostEntity p : allPostsCombined) {
                             if (targetPostId.equals(p.getPostId())) {
                                 profileUserId = p.getAuthorId();
@@ -130,38 +143,49 @@ public class ProfilePostDetailFragment extends Fragment {
                         }
                     }
 
-                    Set<String> repostedIds = currentTab == 2
-                            ? UserMemoryHelper.getRepostedPostIds(requireContext(), profileUserId)
-                            : Collections.emptySet();
-                    Set<String> savedIds = currentTab == 3
-                            ? UserMemoryHelper.getSavedPostIds(requireContext(), profileUserId)
-                            : Collections.emptySet();
+                    // Also try snapshots when target is a Rootie news post not yet in combined list
+                    if (currentTab == 3 && targetPostId != null && !targetPostId.isEmpty()) {
+                        boolean found = false;
+                        for (CommunityPostEntity p : allPostsCombined) {
+                            if (targetPostId.equals(p.getPostId())) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            for (CommunityPostEntity snap : UserMemoryHelper.getSavedPosts(requireContext(), userId)) {
+                                if (targetPostId.equals(snap.getPostId())) {
+                                    allPostsCombined.add(snap);
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
                     List<CommunityPostEntity> myPosts = new ArrayList<>();
                     Set<String> addedPostIds = new HashSet<>();
-                    for (CommunityPostEntity post : allPostsCombined) {
-                        boolean shouldInclude = false;
-                        switch (currentTab) {
-                            case 0:
-                                shouldInclude = profileUserId.equals(post.getAuthorId());
-                                break;
-                            case 1:
-                                shouldInclude = false;
-                                break;
-                            case 2:
-                                shouldInclude = repostedIds.contains(post.getPostId());
-                                break;
-                            case 3:
-                                shouldInclude = savedIds.contains(post.getPostId());
-                                break;
-                            default:
-                                shouldInclude = profileUserId.equals(post.getAuthorId());
-                                break;
-                        }
 
-                        if (shouldInclude && !addedPostIds.contains(post.getPostId())) {
-                            myPosts.add(post);
+                    if (currentTab == 3) {
+                        myPosts.addAll(UserMemoryHelper.resolveSavedPosts(
+                                requireContext(), profileUserId, allPostsCombined));
+                        for (CommunityPostEntity post : myPosts) {
                             addedPostIds.add(post.getPostId());
+                        }
+                    } else if (currentTab == 2) {
+                        myPosts.addAll(UserMemoryHelper.resolveRepostedPosts(
+                                requireContext(), profileUserId, allPostsCombined));
+                        for (CommunityPostEntity post : myPosts) {
+                            addedPostIds.add(post.getPostId());
+                        }
+                    } else {
+                        for (CommunityPostEntity post : allPostsCombined) {
+                            boolean shouldInclude = currentTab == 0
+                                    && profileUserId.equals(post.getAuthorId());
+
+                            if (shouldInclude && !addedPostIds.contains(post.getPostId())) {
+                                myPosts.add(post);
+                                addedPostIds.add(post.getPostId());
+                            }
                         }
                     }
 

@@ -289,7 +289,7 @@ public class CartBottomSheetFragment extends BottomSheetDialogFragment {
 
     private void refreshPointsRow() {
         if (_binding == null || !isAdded()) return;
-        int balance = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
+        int balance = Math.max(0, com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()));
         String balanceText = String.format(Locale.getDefault(), "%,d", balance).replace(',', '.');
         _binding.tvPointsText.setText("Bạn có " + balanceText + " xu");
         isPointsChecked = false;

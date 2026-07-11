@@ -26,14 +26,27 @@ public final class CloudinaryUploadHelper {
   private CloudinaryUploadHelper() {}
 
   public static String uploadAvatarFile(File imageFile, String userId) throws Exception {
+    if (userId == null || userId.trim().isEmpty()) {
+      throw new IllegalArgumentException("Thiếu user_id");
+    }
+    String folder = "rootie/avatars/" + userId.trim();
+    String publicId = "avatar_" + System.currentTimeMillis();
+    return uploadImageFile(imageFile, folder, publicId);
+  }
+
+  /** Upload ảnh feedback/review — dùng Cloudinary (free), không tốn Firebase Storage. */
+  public static String uploadImageFile(File imageFile, String folder, String publicId) throws Exception {
     if (!CloudinaryConfig.isConfigured()) {
       throw new IllegalStateException("Chưa cấu hình Cloudinary cloud_name / upload_preset");
     }
     if (imageFile == null || !imageFile.exists() || imageFile.length() == 0) {
       throw new IllegalArgumentException("File ảnh không hợp lệ");
     }
-    if (userId == null || userId.trim().isEmpty()) {
-      throw new IllegalArgumentException("Thiếu user_id");
+    if (folder == null || folder.trim().isEmpty()) {
+      throw new IllegalArgumentException("Thiếu folder upload");
+    }
+    if (publicId == null || publicId.trim().isEmpty()) {
+      throw new IllegalArgumentException("Thiếu public_id");
     }
 
     String boundary = "----RootieBoundary" + System.currentTimeMillis();
@@ -52,13 +65,10 @@ public final class CloudinaryUploadHelper {
       connection.setConnectTimeout(30_000);
       connection.setReadTimeout(60_000);
 
-      String folder = "rootie/avatars/" + userId.trim();
-      String publicId = "avatar_" + System.currentTimeMillis();
-
       try (DataOutputStream output = new DataOutputStream(connection.getOutputStream())) {
         writeFormField(output, boundary, "upload_preset", CloudinaryConfig.CLOUDINARY_UPLOAD_PRESET.trim());
-        writeFormField(output, boundary, "folder", folder);
-        writeFormField(output, boundary, "public_id", publicId);
+        writeFormField(output, boundary, "folder", folder.trim());
+        writeFormField(output, boundary, "public_id", publicId.trim());
         writeFileField(output, boundary, "file", imageFile.getName(), "image/jpeg", imageFile);
         output.write(("--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
         output.flush();

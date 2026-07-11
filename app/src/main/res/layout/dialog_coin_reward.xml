@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootOverlay"
     android:layout_width="match_parent"
@@ -20,67 +19,66 @@
         android:layout_gravity="center"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingHorizontal="28dp">
+        android:paddingHorizontal="24dp">
 
         <ImageView
             android:id="@+id/ivMoneyBag"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
             android:adjustViewBounds="true"
             android:contentDescription="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/img_coin_reward_moneybag" />
+            android:scaleType="fitCenter" />
 
         <TextView
             android:id="@+id/tvRewardMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:fontFamily="@font/be_vietnam_pro"
             android:gravity="center"
             android:text="Bạn nhận được"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvCoinAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="6dp"
             android:fontFamily="@font/be_vietnam_pro"
             android:gravity="center"
             android:text=""
-            tools:text="5.150 xu"
             android:textColor="#FFD54F"
-            android:textSize="32sp"
-            android:textStyle="bold" />
+            android:textSize="36sp"
+            android:textStyle="bold"
+            tools:text="5.150 xu" />
 
         <TextView
             android:id="@+id/tvRewardSource"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:fontFamily="@font/lexend"
             android:gravity="center"
             android:textColor="#E6FFFFFF"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/layoutCoinBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="22dp"
             android:background="@drawable/bg_coin_reward_pill"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="10dp">
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_marginEnd="8dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_coin" />
@@ -91,21 +89,21 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:text=""
-                tools:text="+5.150 xu"
                 android:textColor="#FFFFFF"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="+5.150 xu" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvTapToClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/lexend"
             android:padding="8dp"
             android:text="Chạm để đóng"
             android:textColor="#99FFFFFF"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 </FrameLayout>

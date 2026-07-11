@@ -59,12 +59,6 @@ public class AccountProfilePersonalInfoFragment extends RootieFragment {
 
         com.veganbeauty.app.features.home.BottomNavHelper.highlightTab(view, R.id.nav_account);
 
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                        .addToBackStack(null)
-                        .commit());
-
         if (!ProfileSession.hasLocalProfileEdits(context)) {
             SyncDataHelper.syncUserProfileFromFirestore(context, () -> {
                 if (binding != null && isAdded()) {

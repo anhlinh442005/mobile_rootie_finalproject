@@ -92,6 +92,7 @@ public class ShopCheckoutFragment extends RootieFragment {
     private String selectedVoucherCode = null;
     private boolean isInvoiceChecked = false;
     private boolean isPointsChecked = false;
+    private int appliedPointsAmount = 0;
     private boolean isHideProductInfoChecked = false;
 
     private static class CheckoutAddress {
@@ -361,9 +362,23 @@ public class ShopCheckoutFragment extends RootieFragment {
                 binding.llVoucherRow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#EDF3ED")));
             }
             calculatePrices();
+            if (isLoggedIn) {
+                refreshPointsRow();
+            }
         });
 
-        binding.switchPoints.setOnClickListener(v -> refreshPointsRow());
+        binding.switchPoints.setOnClickListener(v -> {
+            int balance = Math.max(0, com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()));
+            if (balance <= 0) {
+                Toast.makeText(requireContext(), "Bạn chưa có xu để áp dụng.", Toast.LENGTH_SHORT).show();
+                isPointsChecked = false;
+                refreshPointsRow();
+                return;
+            }
+            isPointsChecked = !isPointsChecked;
+            refreshPointsRow();
+            calculatePrices();
+        });
 
         binding.switchInvoice.setOnClickListener(v -> {
             isInvoiceChecked = !isInvoiceChecked;
@@ -467,22 +482,39 @@ public class ShopCheckoutFragment extends RootieFragment {
         }
 
         long directDiscount = originalPriceSum - finalPriceSum;
-        long pointsDiscount = 0L;
 
         if (isVoucherApplied && finalPriceSum > voucherDiscountAmount) {
             finalPriceSum -= voucherDiscountAmount;
         }
 
+        long pointsDiscount = resolvePointsDiscount(finalPriceSum);
+        finalPriceSum = Math.max(0L, finalPriceSum - pointsDiscount);
+
         long totalSavings = originalPriceSum - finalPriceSum;
 
         binding.tvDetailSubtotal.setText(formatter.format(originalPriceSum));
-        binding.tvDetailDirectDiscount.setText((directDiscount + pointsDiscount > 0) ? "-" + formatter.format(directDiscount + pointsDiscount) : "0đ");
+        binding.tvDetailDirectDiscount.setText(directDiscount > 0 ? "-" + formatter.format(directDiscount) : "0đ");
         binding.tvDetailVoucherDiscount.setText((voucherDiscountAmount > 0) ? "-" + formatter.format(voucherDiscountAmount) : "0đ");
+        if (binding.tvDetailPointsDiscount != null) {
+            binding.llDetailPointsDiscount.setVisibility(pointsDiscount > 0 ? View.VISIBLE : View.GONE);
+            binding.tvDetailPointsDiscount.setText(pointsDiscount > 0 ? "-" + formatter.format(pointsDiscount) : "0đ");
+        }
 
         binding.tvOriginalTotalPrice.setText(formatter.format(originalPriceSum));
         binding.tvOriginalTotalPrice.setPaintFlags(binding.tvOriginalTotalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         binding.tvTotalValue.setText(formatter.format(finalPriceSum));
         binding.tvSavingsValue.setText(formatter.format(totalSavings));
+    }
+
+    /** 1 xu = 1đ, không vượt phần còn phải trả sau voucher. */
+    private long resolvePointsDiscount(long payableAfterVoucher) {
+        if (!isPointsChecked || !isLoggedIn || payableAfterVoucher <= 0) {
+            appliedPointsAmount = 0;
+            return 0L;
+        }
+        int balance = Math.max(0, com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()));
+        appliedPointsAmount = (int) Math.min(balance, payableAfterVoucher);
+        return appliedPointsAmount;
     }
 
     private void showDeliveryTypeBottomSheet() {
@@ -1078,6 +1110,8 @@ public class ShopCheckoutFragment extends RootieFragment {
 
     private void persistOrderSync(OrderEntity order) {
         final android.content.Context appContext = requireContext().getApplicationContext();
+        final boolean shouldSpendPoints = isPointsChecked && appliedPointsAmount > 0 && !order.isGuest();
+        final int pointsToSpend = appliedPointsAmount;
         new Thread(() -> {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             try {
@@ -1086,6 +1120,10 @@ public class ShopCheckoutFragment extends RootieFragment {
                     orderMap.put("createdAt", order.getCreatedAt());
                 } else {
                     orderMap.put("createdAt", System.currentTimeMillis());
+                }
+                if (shouldSpendPoints) {
+                    orderMap.put("pointsDiscount", pointsToSpend);
+                    orderMap.put("pointsUsed", pointsToSpend);
                 }
                 com.google.android.gms.tasks.Tasks.await(db.collection("orders").document(order.getId()).set(orderMap));
             } catch (Exception e) {
@@ -1138,6 +1176,18 @@ public class ShopCheckoutFragment extends RootieFragment {
                 AffiliateTrackingHelper.recordAffiliateSideEffects(appContext, order);
                 AffiliateTrackingHelper.clearAttributionForItems(appContext, checkoutItems);
                 OrderStatusNotifier.notifyOrderPlaced(appContext, order);
+
+                if (shouldSpendPoints) {
+                    int spent = com.veganbeauty.app.utils.RewardPointsHelper.spendPoints(
+                            appContext,
+                            order.getId(),
+                            pointsToSpend,
+                            "Thanh toán đơn " + order.getId() + " (−" + pointsToSpend + " xu)"
+                    );
+                    if (spent < 0) {
+                        Log.w(TAG, "Failed to spend " + pointsToSpend + " xu for order " + order.getId());
+                    }
+                }
             } catch (Exception e) {
                 Log.e(TAG, "persistOrderSync local DB write failed", e);
             }
@@ -1221,17 +1271,33 @@ public class ShopCheckoutFragment extends RootieFragment {
         long finalPriceSum = 0;
         for (CartItemEntity ci : checkoutItems) finalPriceSum += ci.getPrice() * ci.getQuantity();
         if (isVoucherApplied && finalPriceSum > voucherDiscountAmount) finalPriceSum -= voucherDiscountAmount;
+        finalPriceSum = Math.max(0L, finalPriceSum - resolvePointsDiscount(finalPriceSum));
         return finalPriceSum;
     }
 
-    /** Hiển thị số xu của tài khoản đang đăng nhập. */
+    /** Hiển thị số xu của tài khoản đang đăng nhập (Room + cache). */
     private void refreshPointsRow() {
         if (binding == null || !isLoggedIn) return;
-        int balance = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
+        int balance = Math.max(0, com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()));
+        if (balance <= 0) {
+            isPointsChecked = false;
+            appliedPointsAmount = 0;
+        }
+
         String balanceText = String.format(Locale.getDefault(), "%,d", balance).replace(',', '.');
-        binding.tvPointsText.setText("Bạn có " + balanceText + " xu");
-        isPointsChecked = false;
-        updateSwitchUI(binding.switchPoints, binding.switchPointsThumb, false);
+        if (isPointsChecked) {
+            long payable = 0L;
+            for (CartItemEntity ci : checkoutItems) payable += ci.getPrice() * ci.getQuantity();
+            if (isVoucherApplied && payable > voucherDiscountAmount) payable -= voucherDiscountAmount;
+            appliedPointsAmount = (int) Math.min(balance, Math.max(0L, payable));
+            String usedText = String.format(Locale.getDefault(), "%,d", appliedPointsAmount).replace(',', '.');
+            NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            binding.tvPointsText.setText("Dùng " + usedText + " xu (−" + formatter.format(appliedPointsAmount) + ")");
+        } else {
+            appliedPointsAmount = 0;
+            binding.tvPointsText.setText("Bạn có " + balanceText + " xu");
+        }
+        updateSwitchUI(binding.switchPoints, binding.switchPointsThumb, isPointsChecked);
     }
 
     @Override

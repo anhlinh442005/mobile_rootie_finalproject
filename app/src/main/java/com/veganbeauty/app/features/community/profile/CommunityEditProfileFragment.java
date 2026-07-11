@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -39,48 +40,95 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
+import java.io.OutputStream;
 
 public class CommunityEditProfileFragment extends Fragment {
 
+    private static final String LOCAL_COVER_FILENAME = "user_cover.jpg";
+
     private ComFragmentEditProfileBinding binding;
     private Uri selectedAvatarUri = null;
+    private Uri selectedCoverUri = null;
+    private boolean pickingCover = false;
     private boolean isSaving = false;
 
     private final ActivityResultLauncher<Intent> cropImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Uri resultUri = UCrop.getOutput(result.getData());
-                    if (resultUri != null) {
-                        selectedAvatarUri = resultUri;
-                        com.bumptech.glide.Glide.with(binding.ivAvatar.getContext()).load(resultUri).circleCrop().into(binding.ivAvatar);
-                    }
+                if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null || binding == null) {
+                    pickingCover = false;
+                    return;
                 }
+                Uri resultUri = UCrop.getOutput(result.getData());
+                if (resultUri == null) {
+                    pickingCover = false;
+                    return;
+                }
+                if (pickingCover) {
+                    selectedCoverUri = resultUri;
+                    bindCoverImage(resultUri.toString());
+                } else {
+                    selectedAvatarUri = resultUri;
+                    com.bumptech.glide.Glide.with(binding.ivAvatar.getContext())
+                            .load(resultUri)
+                            .circleCrop()
+                            .into(binding.ivAvatar);
+                }
+                pickingCover = false;
             }
     );
 
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Uri uri = result.getData().getData();
-                    if (uri != null) {
-                        Uri destUri = Uri.fromFile(new File(requireContext().getCacheDir(), "cropped_" + System.currentTimeMillis() + ".jpg"));
-                        UCrop.Options options = new UCrop.Options();
-                        options.setCircleDimmedLayer(true);
-                        options.setShowCropGrid(false);
-                        options.setToolbarTitle("Chỉnh sửa ảnh");
+                if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                    pickingCover = false;
+                    return;
+                }
+                Uri uri = result.getData().getData();
+                if (uri == null) {
+                    pickingCover = false;
+                    return;
+                }
 
-                        Intent uCropIntent = UCrop.of(uri, destUri)
-                                .withAspectRatio(1f, 1f)
-                                .withMaxResultSize(800, 800)
-                                .withOptions(options)
-                                .getIntent(requireContext());
+                String prefix = pickingCover ? "cropped_cover_" : "cropped_avatar_";
+                Uri destUri = Uri.fromFile(new File(requireContext().getCacheDir(),
+                        prefix + System.currentTimeMillis() + ".jpg"));
 
-                        cropImageLauncher.launch(uCropIntent);
-                    }
+                UCrop.Options options = new UCrop.Options();
+                options.setShowCropGrid(true);
+                options.setToolbarColor(ContextCompat.getColor(requireContext(), R.color.primary));
+                options.setStatusBarColor(ContextCompat.getColor(requireContext(), R.color.primary));
+                options.setActiveControlsWidgetColor(ContextCompat.getColor(requireContext(), R.color.secondary));
+
+                UCrop uCrop;
+                if (pickingCover) {
+                    options.setCircleDimmedLayer(false);
+                    options.setToolbarTitle("Chỉnh sửa ảnh bìa");
+                    uCrop = UCrop.of(uri, destUri)
+                            .withAspectRatio(16f, 9f)
+                            .withMaxResultSize(1600, 900)
+                            .withOptions(options);
+                } else {
+                    options.setCircleDimmedLayer(true);
+                    options.setShowCropGrid(false);
+                    options.setToolbarTitle("Chỉnh sửa ảnh đại diện");
+                    uCrop = UCrop.of(uri, destUri)
+                            .withAspectRatio(1f, 1f)
+                            .withMaxResultSize(800, 800)
+                            .withOptions(options);
+                }
+                try {
+                    Intent uCropIntent = uCrop.getIntent(requireContext());
+                    uCropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    cropImageLauncher.launch(uCropIntent);
+                } catch (Exception e) {
+                    pickingCover = false;
+                    e.printStackTrace();
+                    Toast.makeText(requireContext(), "Không mở được trình cắt ảnh", Toast.LENGTH_SHORT).show();
                 }
             }
     );
@@ -110,10 +158,7 @@ public class CommunityEditProfileFragment extends Fragment {
 
         SyncDataHelper.syncUserProfileFromFirestore(ctx, () -> loadProfileFields(ctx));
 
-        String coverUrl = ProfileSession.getPrimaryImage(ctx);
-        if (!coverUrl.isEmpty()) {
-            com.bumptech.glide.Glide.with(binding.ivCover.getContext()).load(coverUrl).placeholder(android.R.color.darker_gray).into(binding.ivCover);
-        }
+        bindCoverImage(resolveCoverUrl(ctx));
 
         try {
             StringBuilder sb = new StringBuilder();
@@ -170,6 +215,7 @@ public class CommunityEditProfileFragment extends Fragment {
         binding.btnSaveBottom.setOnClickListener(saveAction);
 
         View.OnClickListener pickAvatarAction = v -> {
+            pickingCover = false;
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             pickImageLauncher.launch(intent);
         };
@@ -178,9 +224,13 @@ public class CommunityEditProfileFragment extends Fragment {
         binding.ivCameraIcon.setOnClickListener(pickAvatarAction);
         binding.tvChangeAvatarHint.setOnClickListener(pickAvatarAction);
 
-        binding.btnChangeCover.setOnClickListener(v -> {
-            Toast.makeText(ctx, "Tính năng đổi ảnh bìa đang được cập nhật", Toast.LENGTH_SHORT).show();
-        });
+        View.OnClickListener pickCoverAction = v -> {
+            pickingCover = true;
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            pickImageLauncher.launch(intent);
+        };
+        binding.btnChangeCover.setOnClickListener(pickCoverAction);
+        binding.ivCover.setOnClickListener(pickCoverAction);
     }
 
     private void loadProfileFields(Context ctx) {
@@ -189,6 +239,9 @@ public class CommunityEditProfileFragment extends Fragment {
         }
 
         bindAvatarImage(ctx, ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx));
+        if (selectedCoverUri == null) {
+            bindCoverImage(resolveCoverUrl(ctx));
+        }
 
         new Thread(() -> {
             UserEntity savedUser = ProfileSessionHelper.findCurrentUser(ctx);
@@ -196,6 +249,7 @@ public class CommunityEditProfileFragment extends Fragment {
                 return;
             }
             String resolvedAvatar = ProfileSessionHelper.resolveEffectiveAvatarUrl(ctx, savedUser);
+            String coverFromUser = savedUser.getPrimary_image();
             getActivity().runOnUiThread(() -> {
                 if (!isAdded() || binding == null) {
                     return;
@@ -211,6 +265,11 @@ public class CommunityEditProfileFragment extends Fragment {
                     binding.etBio.setText(savedUser.getBio().trim());
                 }
                 bindAvatarImage(ctx, resolvedAvatar);
+                if (selectedCoverUri == null
+                        && coverFromUser != null
+                        && !coverFromUser.trim().isEmpty()) {
+                    bindCoverImage(coverFromUser.trim());
+                }
             });
         }).start();
     }
@@ -239,18 +298,25 @@ public class CommunityEditProfileFragment extends Fragment {
         ProfileSession.setFullName(ctx, newName);
         ProfileSession.setUsername(ctx, newUname);
         ProfileSession.setBio(ctx, newBio);
+        ProfileSession.markLocalProfileEdited(ctx);
 
-        if (selectedAvatarUri != null) {
-            finishSave(ctx, userId, newName, newUname, newBio, selectedAvatarUri.toString());
-            return;
+        String avatarToSave = selectedAvatarUri != null
+                ? selectedAvatarUri.toString()
+                : resolveRemoteAvatarForSave(ctx);
+        String coverToSave = selectedCoverUri != null
+                ? persistCoverLocally(ctx, selectedCoverUri)
+                : resolveCoverUrl(ctx);
+
+        if (coverToSave != null && !coverToSave.trim().isEmpty()) {
+            ProfileSession.setPrimaryImage(ctx, coverToSave.trim());
         }
 
-        String avatarToSave = resolveRemoteAvatarForSave(ctx);
-        finishSave(ctx, userId, newName, newUname, newBio, avatarToSave);
+        finishSave(ctx, userId, newName, newUname, newBio, avatarToSave, coverToSave);
     }
 
-    private void finishSave(Context ctx, String userId, String fullName, String username, String bio, String avatar) {
-        persistProfileChanges(ctx, userId, fullName, username, bio, avatar);
+    private void finishSave(Context ctx, String userId, String fullName, String username, String bio,
+                            String avatar, String cover) {
+        persistProfileChanges(ctx, userId, fullName, username, bio, avatar, cover);
         Toast.makeText(ctx, "Lưu thông tin thành công", Toast.LENGTH_SHORT).show();
         getParentFragmentManager().popBackStack();
     }
@@ -267,12 +333,30 @@ public class CommunityEditProfileFragment extends Fragment {
         return "";
     }
 
-    private void setSaveEnabled(boolean enabled) {
-        if (binding == null) {
+    @NonNull
+    private String resolveCoverUrl(Context ctx) {
+        String localCover = ProfileSessionHelper.getLocalCoverFileUri(ctx);
+        if (localCover != null) {
+            return localCover;
+        }
+        String cover = ProfileSession.getPrimaryImage(ctx);
+        return cover != null ? cover.trim() : "";
+    }
+
+    private void bindCoverImage(@Nullable String coverUrl) {
+        if (binding == null || binding.ivCover == null) {
             return;
         }
-        binding.tvSaveTop.setEnabled(enabled);
-        binding.btnSaveBottom.setEnabled(enabled);
+        if (coverUrl == null || coverUrl.trim().isEmpty()) {
+            binding.ivCover.setImageResource(R.color.primary);
+            return;
+        }
+        com.bumptech.glide.Glide.with(binding.ivCover.getContext())
+                .load(coverUrl)
+                .placeholder(R.color.primary)
+                .error(R.color.primary)
+                .centerCrop()
+                .into(binding.ivCover);
     }
 
     private void bindAvatarImage(Context ctx, String avatarUrl) {
@@ -287,8 +371,35 @@ public class CommunityEditProfileFragment extends Fragment {
                 .into(binding.ivAvatar);
     }
 
-    private void persistProfileChanges(Context ctx, String userId, String fullName, String username, String bio, String avatar) {
+    @Nullable
+    private String persistCoverLocally(Context ctx, @NonNull Uri sourceUri) {
+        try {
+            File outFile = new File(ctx.getFilesDir(), LOCAL_COVER_FILENAME);
+            try (InputStream in = ctx.getContentResolver().openInputStream(sourceUri);
+                 OutputStream out = new FileOutputStream(outFile)) {
+                if (in == null) {
+                    return sourceUri.toString();
+                }
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, read);
+                }
+                out.flush();
+            }
+            if (outFile.exists() && outFile.length() > 0) {
+                return "file://" + outFile.getAbsolutePath();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sourceUri.toString();
+    }
+
+    private void persistProfileChanges(Context ctx, String userId, String fullName, String username,
+                                       String bio, String avatar, String cover) {
         final String avatarToPersist = avatar;
+        final String coverToPersist = cover;
         new Thread(() -> {
             try {
                 UserEntity user = ProfileSessionHelper.findCurrentUser(ctx);
@@ -301,7 +412,7 @@ public class CommunityEditProfileFragment extends Fragment {
                             ProfileSession.getPhone(ctx) != null ? ProfileSession.getPhone(ctx) : "",
                             "",
                             avatarToPersist,
-                            ProfileSession.getPrimaryImage(ctx)
+                            coverToPersist
                     );
                     user.setBio(bio);
                 } else {
@@ -311,13 +422,15 @@ public class CommunityEditProfileFragment extends Fragment {
                         user.setAvatar(avatarToPersist);
                     }
                     user.setBio(bio);
-                    String primaryImage = ProfileSession.getPrimaryImage(ctx);
-                    if (primaryImage != null && !primaryImage.trim().isEmpty()) {
-                        user.setPrimary_image(primaryImage);
+                    if (coverToPersist != null && !coverToPersist.trim().isEmpty()) {
+                        user.setPrimary_image(coverToPersist.trim());
                     }
                 }
 
                 ProfileSessionHelper.syncSessionFromUser(ctx, user);
+                if (coverToPersist != null && !coverToPersist.trim().isEmpty()) {
+                    ProfileSession.setPrimaryImage(ctx, coverToPersist.trim());
+                }
                 RootieDatabase.getDatabase(ctx).userDao().insertUserSync(user);
                 RootieDatabase.getDatabase(ctx).communityDao().insertUsers(
                         java.util.Collections.singletonList(user)

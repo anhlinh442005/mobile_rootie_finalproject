@@ -5,17 +5,17 @@
     android:layout_height="match_parent"
     android:background="#FEFBF4">
 
-    <!-- Scrollable Content -->
+    <!-- Scrollable Content — neo trên bottom nav (FAB 96dp) để không bị che -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/quiz_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/bottom_nav"
         android:layout_alignParentTop="true"
         android:clipToPadding="false"
         android:fillViewport="true"
         android:paddingTop="56dp"
-        android:paddingBottom="@dimen/home_nav_bar_height"
+        android:paddingBottom="20dp"
         android:scrollbars="none">
 
         <LinearLayout

@@ -44,7 +44,7 @@ public class NotificationIntentHandler {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_container, new AccountNotificationFragment())
                 .addToBackStack(null)
-                .commit();
+                .commitAllowingStateLoss();
             return;
         }
 

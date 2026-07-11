@@ -2,21 +2,221 @@ package com.veganbeauty.app.features.myskin;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-final class BookingSkinScanResultHelper {
+/**
+ * Kết quả soi da gắn với lịch SPA, và đồng bộ sang lịch sử "Soi da offline".
+ */
+public final class BookingSkinScanResultHelper {
+
+    private static final String TAG = "BookingSkinScanSync";
+    private static final String SCAN_TYPE_OFFLINE = "Soi da offline";
+    private static final String STATUS_COMPLETED = "Đã hoàn thành";
+    private static final String OFFLINE_ID_PREFIX = "sh_offline_";
 
     private BookingSkinScanResultHelper() {
+    }
+
+    /**
+     * Đồng bộ lịch SPA đã hoàn thành ↔ lịch sử soi da offline (ngày giờ + trạng thái).
+     * Gọi trên background thread.
+     */
+    public static void syncOfflineHistoryFromCompletedBookings(Context context) {
+        if (context == null) {
+            return;
+        }
+        Context appContext = context.getApplicationContext();
+        if (!ProfileSession.isLoggedIn(appContext)) {
+            return;
+        }
+
+        String userId = ProfileSessionHelper.getEffectiveUserId(appContext);
+        String email = ProfileSession.getEmail(appContext);
+        if ((userId == null || userId.trim().isEmpty())
+                && (email == null || email.trim().isEmpty())) {
+            return;
+        }
+
+        List<BookingHistoryEntity> bookings = collectCurrentUserBookings(appContext);
+        if (bookings.isEmpty()) {
+            return;
+        }
+
+        JSONArray existingHistory = SkinHistoryLocalStore.getHistory(appContext, userId, email);
+        Set<String> completedBookingIds = new HashSet<>();
+        int upserted = 0;
+        int removed = 0;
+
+        for (BookingHistoryEntity booking : bookings) {
+            if (booking == null || TextUtils.isEmpty(booking.getId())) {
+                continue;
+            }
+            String bookingId = booking.getId().trim();
+            boolean completed = isCompletedStatus(booking.getStatus());
+
+            if (completed) {
+                completedBookingIds.add(bookingId);
+                if (upsertOfflineHistory(appContext, booking, existingHistory, userId, email)) {
+                    upserted++;
+                }
+            }
+        }
+
+        // Xóa bản ghi offline gắn booking không còn "Đã hoàn thành"
+        for (int i = 0; i < existingHistory.length(); i++) {
+            try {
+                JSONObject item = existingHistory.getJSONObject(i);
+                if (!SCAN_TYPE_OFFLINE.equals(item.optString("scanType", ""))) {
+                    continue;
+                }
+                String linkedId = item.optString("bookingId", item.optString("booking_id", "")).trim();
+                if (linkedId.isEmpty()) {
+                    continue;
+                }
+                if (completedBookingIds.contains(linkedId)) {
+                    continue;
+                }
+                // Chỉ xóa bản ghi do sync tạo (hoặc còn gắn booking đã huỷ/đổi trạng thái)
+                boolean ownedByBooking = false;
+                for (BookingHistoryEntity booking : bookings) {
+                    if (booking != null && linkedId.equals(booking.getId())) {
+                        ownedByBooking = true;
+                        break;
+                    }
+                }
+                if (!ownedByBooking) {
+                    continue;
+                }
+                String historyId = item.optString("id", "");
+                if (!historyId.isEmpty()) {
+                    SkinHistoryLocalStore.deleteSync(appContext, historyId);
+                    removed++;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (upserted > 0 || removed > 0) {
+            Log.i(TAG, "Synced offline skin history: upserted=" + upserted + ", removed=" + removed);
+        }
+    }
+
+    private static boolean upsertOfflineHistory(
+            Context context,
+            BookingHistoryEntity booking,
+            JSONArray existingHistory,
+            String userId,
+            String email
+    ) {
+        try {
+            String bookingId = booking.getId().trim();
+            String date = normalizeDate(booking.getDateDisplay());
+            String time = extractTime(booking.getTime());
+            String historyId = offlineHistoryId(bookingId);
+
+            JSONObject existing = findLinkedOfflineHistory(existingHistory, bookingId);
+            JSONObject data;
+            if (existing != null) {
+                data = new JSONObject(existing.toString());
+            } else {
+                data = buildFromBooking(context, booking);
+            }
+
+            if (data == null) {
+                return false;
+            }
+
+            // Giữ id ổn định theo booking để không tạo trùng
+            if (existing != null && !TextUtils.isEmpty(existing.optString("id", ""))) {
+                historyId = existing.optString("id");
+            }
+            data.put("id", historyId);
+            data.put("bookingId", bookingId);
+            data.put("date", date);
+            data.put("time", time);
+            data.put("scanType", SCAN_TYPE_OFFLINE);
+            data.put("bookingStatus", STATUS_COMPLETED);
+            if (!TextUtils.isEmpty(booking.getServiceName())) {
+                data.put("serviceName", booking.getServiceName());
+            }
+            if (!TextUtils.isEmpty(booking.getStoreName())) {
+                data.put("storeName", booking.getStoreName());
+            }
+
+            boolean needsWrite = existing == null
+                    || !date.equals(normalizeDate(existing.optString("date", "")))
+                    || !time.equals(extractTime(existing.optString("time", "")))
+                    || !SCAN_TYPE_OFFLINE.equals(existing.optString("scanType", ""))
+                    || !STATUS_COMPLETED.equals(existing.optString("bookingStatus", ""))
+                    || !bookingId.equals(existing.optString("bookingId", existing.optString("booking_id", "")));
+
+            if (!needsWrite) {
+                return false;
+            }
+
+            SkinHistoryLocalStore.saveSync(context, data, userId, email);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to upsert offline history for booking " + booking.getId(), e);
+            return false;
+        }
+    }
+
+    private static String offlineHistoryId(String bookingId) {
+        return OFFLINE_ID_PREFIX + bookingId;
+    }
+
+    private static boolean isCompletedStatus(String status) {
+        return status != null && STATUS_COMPLETED.equalsIgnoreCase(status.trim());
+    }
+
+    private static List<BookingHistoryEntity> collectCurrentUserBookings(Context appContext) {
+        Map<String, BookingHistoryEntity> byId = new LinkedHashMap<>();
+        LocalJsonReader reader = new LocalJsonReader(appContext);
+
+        if (ProfileSession.isLoggedIn(appContext)) {
+            String userId = ProfileSessionHelper.getEffectiveUserId(appContext);
+            if (userId != null && !userId.trim().isEmpty()) {
+                addBookings(byId, reader.getUserBookingHistory(userId.trim()));
+            }
+        }
+
+        String email = ProfileSession.getEmail(appContext);
+        if (email != null && !email.trim().isEmpty()) {
+            addBookings(byId, reader.getUserBookingHistory(email.trim()));
+        }
+
+        return new ArrayList<>(byId.values());
+    }
+
+    private static void addBookings(Map<String, BookingHistoryEntity> byId, List<BookingHistoryEntity> bookings) {
+        if (bookings == null) {
+            return;
+        }
+        for (BookingHistoryEntity booking : bookings) {
+            if (booking == null || booking.getId() == null || booking.getId().trim().isEmpty()) {
+                continue;
+            }
+            byId.put(booking.getId(), booking);
+        }
     }
 
     static JSONObject resolveScanResult(Context context, BookingHistoryEntity booking) {
@@ -95,6 +295,29 @@ final class BookingSkinScanResultHelper {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private static JSONObject findLinkedOfflineHistory(JSONArray history, String bookingId) {
+        if (history == null || history.length() == 0 || TextUtils.isEmpty(bookingId)) {
+            return null;
+        }
+        String expectedId = offlineHistoryId(bookingId);
+        for (int i = 0; i < history.length(); i++) {
+            try {
+                JSONObject item = history.getJSONObject(i);
+                String id = item.optString("id", "");
+                if (expectedId.equals(id)) {
+                    return item;
+                }
+                String linkedBookingId = item.optString("bookingId", item.optString("booking_id", ""));
+                if (bookingId.equals(linkedBookingId)
+                        && SCAN_TYPE_OFFLINE.equals(item.optString("scanType", ""))) {
+                    return item;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
     }
 
     private static JSONObject findInHistory(JSONArray history, BookingHistoryEntity booking) {

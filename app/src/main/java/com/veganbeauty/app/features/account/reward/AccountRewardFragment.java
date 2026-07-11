@@ -80,10 +80,6 @@ public class AccountRewardFragment extends RootieFragment {
         redeemableGifts = loadGiftsFromAssets(requireContext());
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                        .addToBackStack(null).commit());
         binding.btnCheckIn.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.account.checkin.AccountCheckinFragment())

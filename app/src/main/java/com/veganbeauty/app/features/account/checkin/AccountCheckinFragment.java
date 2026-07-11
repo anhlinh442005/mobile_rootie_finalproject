@@ -28,7 +28,6 @@ import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.databinding.AccountCheckinFragmentBinding;
 import com.veganbeauty.app.databinding.ItemCalendarDayBinding;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 import com.veganbeauty.app.utils.CoinRewardDialogHelper;
@@ -63,11 +62,6 @@ public class AccountCheckinFragment extends RootieFragment {
     @Override
     protected void setupUI(@NonNull View view) {
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-
-        binding.layoutNotification.getRoot().setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new AccountNotificationFragment())
-                .addToBackStack(null)
-                .commit());
 
         binding.btnPrevMonth.setOnClickListener(v -> {
             calendarInstance.add(Calendar.MONTH, -1);

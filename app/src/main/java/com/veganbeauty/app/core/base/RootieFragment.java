@@ -19,12 +19,11 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.FlowLiveDataConversions;
 
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.repository.NotificationRepository;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.home.NotificationBadgeHelper;
+import com.veganbeauty.app.features.home.NotificationBellHelper;
 
 import kotlinx.coroutines.flow.Flow;
 
@@ -408,22 +407,13 @@ public abstract class RootieFragment extends Fragment {
             p = p.getParent();
         }
 
-        // Only wire default navigation when the screen did not set its own handler in setupUI().
+        // Default = account inbox. Community screens set their own click in setupUI().
         if (!hadOwnClickListener) {
-            notificationBtn.setOnClickListener(v -> {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new AccountNotificationFragment())
-                        .addToBackStack(null)
-                        .commit();
-            });
+            NotificationBellHelper.bindClick(notificationBtn, this);
         }
 
         if (badgeTextView != null) {
-            TextView finalBadge = badgeTextView;
-            FlowLiveDataConversions.asLiveData(
-                    getUnreadCountFlow(requireContext())
-            ).observe(getViewLifecycleOwner(), count ->
-                    NotificationBadgeHelper.updateBadgeCount(finalBadge, count));
+            NotificationBellHelper.bindBadge(this, badgeTextView, getUnreadCountFlow(requireContext()));
         }
     }
 }

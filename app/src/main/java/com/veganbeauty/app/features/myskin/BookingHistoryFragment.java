@@ -157,7 +157,12 @@ public class BookingHistoryFragment extends RootieFragment {
         if (remoteBookings.isEmpty()) return;
 
         new LocalJsonReader(requireContext()).mergeBookingsFromRemote(remoteBookings);
-        requireActivity().runOnUiThread(this::loadBookings);
+        new Thread(() -> {
+            BookingSkinScanResultHelper.syncOfflineHistoryFromCompletedBookings(requireContext());
+            if (isAdded()) {
+                requireActivity().runOnUiThread(this::loadBookings);
+            }
+        }).start();
     }
 
     private BookingHistoryEntity mapBookingDoc(DocumentSnapshot doc) {
@@ -481,25 +486,10 @@ public class BookingHistoryFragment extends RootieFragment {
         return true;
     }
 
-    private boolean hasActiveAdvancedFilter() {
-        return !filterServiceName.isEmpty() || !filterStoreName.isEmpty()
-                || !filterDate.isEmpty()
-                || !filterTime.isEmpty() || !filterMonth.isEmpty();
-    }
-
     private void updateEmptyState() {
         boolean isEmpty = filteredBookings.isEmpty();
-        boolean hasActiveFilter = hasActiveAdvancedFilter() || !"ALL".equals(currentStatusFilter);
-
         _binding.rvHistory.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
         _binding.emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-
-        if (hasActiveFilter && !isEmpty) {
-            _binding.tvResultCount.setVisibility(View.VISIBLE);
-            _binding.tvResultCount.setText("Tìm thấy " + filteredBookings.size() + " lịch hẹn");
-        } else {
-            _binding.tvResultCount.setVisibility(View.GONE);
-        }
     }
 
     @Override

@@ -541,8 +541,11 @@ public class ProfileSession {
         editor.putStringSet("completed_steps_" + date, steps);
         editor.apply();
 
-        String orderId = "morning".equals(type) ? "MORNING_ROUTINE" : "EVENING_ROUTINE";
+        String orderId = ("morning".equals(type) ? "MORNING_ROUTINE_" : "EVENING_ROUTINE_") + date;
         com.veganbeauty.app.utils.RewardPointsHelper.removeRewardsByOrderIdToday(context, orderId);
+        // Legacy orderId (không gắn ngày) — xóa luôn nếu còn từ bản cũ
+        com.veganbeauty.app.utils.RewardPointsHelper.removeRewardsByOrderIdToday(
+                context, "morning".equals(type) ? "MORNING_ROUTINE" : "EVENING_ROUTINE");
     }
 
     // --- Skincare Quiz & Skin Profile Storage ---

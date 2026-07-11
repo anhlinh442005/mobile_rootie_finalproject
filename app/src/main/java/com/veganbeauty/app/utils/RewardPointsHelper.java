@@ -23,6 +23,9 @@ public final class RewardPointsHelper {
         }
         String userId = ProfileSessionHelper.getEffectiveUserId(context);
         if (userId == null || userId.trim().isEmpty()) {
+            userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+        }
+        if (userId == null || userId.trim().isEmpty()) {
             return null;
         }
         return userId.trim();
@@ -31,14 +34,46 @@ public final class RewardPointsHelper {
     public static int getTotalPoints(Context context) {
         String userId = resolveUserId(context);
         if (userId == null) {
-            return 0;
+            return readCachedBalance(context);
         }
         try {
-            return RootieDatabase.getDatabase(context.getApplicationContext())
+            int total = RootieDatabase.getDatabase(context.getApplicationContext())
                     .rewardPointDao()
                     .getTotalPointsSync(userId);
+            cacheBalance(context, userId, total);
+            return total;
         } catch (Exception e) {
             e.printStackTrace();
+            return readCachedBalance(context);
+        }
+    }
+
+    private static final String COIN_CACHE_PREFS = "rootie_coin_cache";
+
+    private static void cacheBalance(Context context, String userId, int total) {
+        if (context == null || userId == null) return;
+        try {
+            context.getApplicationContext()
+                    .getSharedPreferences(COIN_CACHE_PREFS, Context.MODE_PRIVATE)
+                    .edit()
+                    .putInt("balance_" + userId, Math.max(total, 0))
+                    .apply();
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static int readCachedBalance(Context context) {
+        if (context == null) return 0;
+        try {
+            String userId = resolveUserId(context);
+            if (userId == null) {
+                userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+            }
+            if (userId == null || userId.trim().isEmpty()) return 0;
+            return context.getApplicationContext()
+                    .getSharedPreferences(COIN_CACHE_PREFS, Context.MODE_PRIVATE)
+                    .getInt("balance_" + userId.trim(), 0);
+        } catch (Exception e) {
             return 0;
         }
     }
@@ -140,7 +175,9 @@ public final class RewardPointsHelper {
                     )
             );
             SyncDataHelper.syncRewardPointsToFirestore(appContext);
-            return getTotalPoints(appContext);
+            int total = getTotalPoints(appContext);
+            cacheBalance(appContext, userId, total);
+            return total;
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
@@ -155,11 +192,18 @@ public final class RewardPointsHelper {
             @Nullable String sourceLabel,
             boolean showDialog
     ) {
-        String userId = resolveUserId(context);
-        if (context == null || userId == null || points <= 0) {
+        if (context == null || points <= 0) {
             return getTotalPoints(context);
         }
         Context appContext = context.getApplicationContext();
+        try {
+            ProfileSessionHelper.ensureCurrentUserInDatabase(appContext);
+        } catch (Exception ignored) {
+        }
+        String userId = resolveUserId(appContext);
+        if (userId == null) {
+            return 0;
+        }
         try {
             RootieDatabase.getDatabase(appContext).rewardPointDao().insertRewardPoints(
                     new RewardPointEntity(
@@ -173,6 +217,7 @@ public final class RewardPointsHelper {
             );
             SyncDataHelper.syncRewardPointsToFirestore(appContext);
             int total = getTotalPoints(appContext);
+            cacheBalance(appContext, userId, total);
             if (showDialog) {
                 String label = sourceLabel != null && !sourceLabel.trim().isEmpty()
                         ? sourceLabel.trim()

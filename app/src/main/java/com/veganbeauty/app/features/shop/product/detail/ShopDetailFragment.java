@@ -760,14 +760,14 @@ public class ShopDetailFragment extends RootieFragment {
             binding.cvNotes.setVisibility(View.GONE);
         }
 
-        ProductReviewHelper.RatingStats ratingStats = ProductReviewHelper.getRatingStats(safeStr(product.getId()));
+        ProductReviewHelper.RatingStats ratingStats = ProductReviewHelper.getRatingStats(ctx, safeStr(product.getId()));
         double averageRating = ratingStats.rating;
         int totalReviews = ratingStats.reviewCount;
         binding.tvRatingValue.setText(String.format(Locale.US, "%.1f", averageRating));
         binding.tvReviewsCount.setText("(" + totalReviews + " reviews)");
 
         List<ProductReview> reviewItems = ProductReviewHelper.getReviews(
-                safeStr(product.getId()), safeStr(product.getName()), safeStr(product.getCategory()));
+                ctx, safeStr(product.getId()), safeStr(product.getName()), safeStr(product.getCategory()));
         if (!reviewItems.isEmpty()) {
             reviewAdapter.updateData(new ArrayList<>(reviewItems.subList(0, Math.min(3, reviewItems.size()))));
         } else {

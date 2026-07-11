@@ -158,7 +158,7 @@ public class SkinScanResultFragment extends RootieFragment {
                             android.R.anim.fade_in,
                             android.R.anim.slide_out_right
                     )
-                    .replace(R.id.main_container, new MySkinFragment())
+                    .replace(R.id.main_container, new com.veganbeauty.app.features.routine.SkinTimeRoutineFragment())
                     .addToBackStack(null)
                     .commit();
         });

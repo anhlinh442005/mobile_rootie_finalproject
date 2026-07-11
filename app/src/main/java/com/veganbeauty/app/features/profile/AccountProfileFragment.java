@@ -300,7 +300,7 @@ public class AccountProfileFragment extends RootieFragment {
                     return Unit.INSTANCE;
                 });
             } else {
-                binding.tvCoins.setText("0");
+                // Demo: không ép "0 xu" — số xu lấy từ Room qua observeViewModel
                 updateOrderBadges(Collections.emptyList());
             }
         } else {
@@ -368,7 +368,7 @@ public class AccountProfileFragment extends RootieFragment {
                 .observe(getViewLifecycleOwner(), points -> {
                     if (binding == null || !isAdded()) return;
                     int total = (points != null && !points.isEmpty()) ? points.get(0).total : 0;
-                    binding.tvCoins.setText(String.valueOf(total));
+                    binding.tvCoins.setText(String.valueOf(Math.max(total, 0)));
                 });
 
         if (orderRepository == null) {

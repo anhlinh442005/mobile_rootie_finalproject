@@ -93,7 +93,7 @@
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_dots"
-            app:tint="@color/primary" />
+            app:tint="@color/secondary" />
     </LinearLayout>
 
     <!-- Post Images Slider (ViewPager2 + Dots Indicator) -->
@@ -149,14 +149,15 @@
                 android:id="@+id/ivLike"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_heart" />
+                android:src="@drawable/ic_heart"
+                app:tint="@color/secondary" />
             <TextView
                 android:id="@+id/tvLikes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4.186"
                 android:layout_marginStart="4dp"
-                android:textColor="#4A5568" />
+                android:textColor="@color/secondary" />
         </LinearLayout>
 
         <LinearLayout
@@ -170,14 +171,15 @@
                 android:id="@+id/ivComment"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_comment" />
+                android:src="@drawable/ic_comment"
+                app:tint="@color/secondary" />
             <TextView
                 android:id="@+id/tvComments"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="18"
                 android:layout_marginStart="4dp"
-                android:textColor="#4A5568" />
+                android:textColor="@color/secondary" />
         </LinearLayout>
 
         <LinearLayout
@@ -189,8 +191,8 @@
             
             <ImageView
                 android:id="@+id/ivReup"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_reup" />
             <TextView
                 android:id="@+id/tvReups"
@@ -198,7 +200,7 @@
                 android:layout_height="wrap_content"
                 android:text="3"
                 android:layout_marginStart="4dp"
-                android:textColor="#4A5568" />
+                android:textColor="@color/secondary" />
         </LinearLayout>
 
         <LinearLayout
@@ -212,14 +214,15 @@
                 android:id="@+id/ivShare"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/ic_plane" />
+                android:src="@drawable/ic_plane"
+                app:tint="@color/secondary" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3"
                 android:layout_marginStart="4dp"
                 android:visibility="gone"
-                android:textColor="#4A5568" />
+                android:textColor="@color/secondary" />
         </LinearLayout>
             
         <View
@@ -231,7 +234,8 @@
             android:id="@+id/ivBookmark"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_save" />
+            android:src="@drawable/ic_save"
+            app:tint="@color/secondary" />
     </LinearLayout>
 
     <!-- Post Content Container -->

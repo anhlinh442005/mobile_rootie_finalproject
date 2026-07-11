@@ -109,7 +109,7 @@ public final class ComBottomNavHelper {
     public static void highlightTab(@NonNull View navRoot, int activeTabId, @NonNull View lifecycleView) {
         Context context = navRoot.getContext();
         int activeColor = ContextCompat.getColor(context, R.color.primary);
-        int inactiveColor = ContextCompat.getColor(context, R.color.tertiary);
+        int inactiveColor = ContextCompat.getColor(context, R.color.secondary);
 
         for (int i = 0; i < TAB_IDS.length; i++) {
             boolean isActive = TAB_IDS[i] == activeTabId;

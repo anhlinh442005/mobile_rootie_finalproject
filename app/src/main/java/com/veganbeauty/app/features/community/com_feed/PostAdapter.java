@@ -2,6 +2,7 @@ package com.veganbeauty.app.features.community.com_feed;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -315,9 +316,14 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 String text = dateStr + " •  ";
                 SpannableStringBuilder spannable = new SpannableStringBuilder(text);
-                android.graphics.drawable.Drawable publicIcon = ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_public);
+                android.graphics.drawable.Drawable publicIcon = ContextCompat.getDrawable(
+                        holder.itemView.getContext(), R.drawable.ic_public);
                 if (publicIcon != null) {
-                    publicIcon.setBounds(0, 0, 36, 36);
+                    publicIcon = publicIcon.mutate();
+                    publicIcon.setTint(ContextCompat.getColor(
+                            holder.itemView.getContext(), R.color.primary));
+                    int iconSize = (int) (14 * holder.itemView.getResources().getDisplayMetrics().density);
+                    publicIcon.setBounds(0, 0, iconSize, iconSize);
                     ImageSpan imageSpan = new ImageSpan(publicIcon, ImageSpan.ALIGN_BASELINE);
                     spannable.setSpan(imageSpan, text.length() - 1, text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
@@ -446,18 +452,27 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (isLiked[0]) {
                 postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_filled);
+                postHolder.binding.ivLike.setImageTintList(null);
+                postHolder.binding.ivLike.clearColorFilter();
             } else {
                 postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart);
+                postHolder.binding.ivLike.setImageTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.secondary)));
             }
 
             postHolder.binding.ivLike.setOnClickListener(v -> {
                 isLiked[0] = !isLiked[0];
                 if (isLiked[0]) {
                     postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart_filled);
+                    postHolder.binding.ivLike.setImageTintList(null);
+                    postHolder.binding.ivLike.clearColorFilter();
                     currentLikesCount[0]++;
                     postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
+                    post.setLikesCount(currentLikesCount[0]);
                     sharedPrefs.edit().putBoolean("liked_" + currentUserIdForLike + "_" + post.getPostId(), true).apply();
-                    new Thread(() -> RootieDatabase.getDatabase(context).communityDao().incrementLikesCount(post.getPostId())).start();
+                    if (!RootieBrandHelper.isRootieUser(post.getAuthorId())) {
+                        new Thread(() -> RootieDatabase.getDatabase(context).communityDao().incrementLikesCount(post.getPostId())).start();
+                    }
                     String currentUserId = getOwnUserId(context);
                     String currentUserName = com.veganbeauty.app.data.local.ProfileSession.INSTANCE.getFullName(context);
                     if (currentUserName == null || currentUserName.isEmpty()) currentUserName = "Người dùng";
@@ -480,10 +495,15 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 } else {
                     postHolder.binding.ivLike.setImageResource(R.drawable.ic_heart);
+                    postHolder.binding.ivLike.setImageTintList(
+                            ColorStateList.valueOf(ContextCompat.getColor(context, R.color.secondary)));
                     currentLikesCount[0] = Math.max(0, currentLikesCount[0] - 1);
                     postHolder.binding.tvLikes.setText(String.valueOf(currentLikesCount[0]));
+                    post.setLikesCount(currentLikesCount[0]);
                     sharedPrefs.edit().putBoolean("liked_" + currentUserIdForLike + "_" + post.getPostId(), false).apply();
-                    new Thread(() -> RootieDatabase.getDatabase(context).communityDao().decrementLikesCount(post.getPostId())).start();
+                    if (!RootieBrandHelper.isRootieUser(post.getAuthorId())) {
+                        new Thread(() -> RootieDatabase.getDatabase(context).communityDao().decrementLikesCount(post.getPostId())).start();
+                    }
                 }
             });
 
@@ -538,16 +558,11 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final boolean[] isReuped = {UserMemoryHelper.isPostReposted(context, ownUserId, post.getPostId())};
             final int[] currentReupsCount = {post.getReupsCount()};
 
-            if (isReuped[0]) {
-                postHolder.binding.ivReup.setColorFilter(Color.parseColor("#4CAF50"));
-            } else {
-                postHolder.binding.ivReup.clearColorFilter();
-            }
+            applyReupIcon(postHolder.binding.ivReup, postHolder.binding.tvReups, isReuped[0]);
 
             postHolder.binding.ivReup.setOnClickListener(v -> {
-                isReuped[0] = UserMemoryHelper.toggleRepost(context, ownUserId, post.getPostId());
+                isReuped[0] = UserMemoryHelper.toggleRepost(context, ownUserId, post);
                 if (isReuped[0]) {
-                    postHolder.binding.ivReup.setColorFilter(Color.parseColor("#4CAF50"));
                     currentReupsCount[0]++;
                     
                     if (!ownUserId.equals(post.getAuthorId())) {
@@ -566,28 +581,22 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         );
                     }
                 } else {
-                    postHolder.binding.ivReup.clearColorFilter();
                     currentReupsCount[0] = Math.max(0, currentReupsCount[0] - 1);
                 }
+                applyReupIcon(postHolder.binding.ivReup, postHolder.binding.tvReups, isReuped[0]);
                 postHolder.binding.tvReups.setText(String.valueOf(currentReupsCount[0]));
             });
 
             final boolean[] isBookmarked = {UserMemoryHelper.isPostSaved(context, ownUserId, post.getPostId())};
+            applyBookmarkIcon(postHolder.binding.ivBookmark, isBookmarked[0]);
+            // Backfill snapshot for older saves that only stored the post id
             if (isBookmarked[0]) {
-                postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_save_full);
-            } else {
-                postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_save);
+                UserMemoryHelper.ensureSavedPostSnapshot(context, ownUserId, post);
             }
-            postHolder.binding.ivBookmark.clearColorFilter();
 
             postHolder.binding.ivBookmark.setOnClickListener(v -> {
-                isBookmarked[0] = UserMemoryHelper.toggleSave(context, ownUserId, post.getPostId());
-                if (isBookmarked[0]) {
-                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_save_full);
-                } else {
-                    postHolder.binding.ivBookmark.setImageResource(R.drawable.ic_save);
-                }
-                postHolder.binding.ivBookmark.clearColorFilter();
+                isBookmarked[0] = UserMemoryHelper.toggleSave(context, ownUserId, post);
+                applyBookmarkIcon(postHolder.binding.ivBookmark, isBookmarked[0]);
             });
 
             postHolder.binding.llAuthorInfo.setOnClickListener(onProfileClick);
@@ -629,6 +638,22 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.binding.tabIndicator.removeAllTabs();
     }
 
+    private void applyBookmarkIcon(ImageView ivBookmark, boolean isSaved) {
+        ivBookmark.setImageResource(isSaved ? R.drawable.ic_save_full : R.drawable.ic_save);
+        ivBookmark.clearColorFilter();
+        ivBookmark.setImageTintList(ColorStateList.valueOf(
+                ContextCompat.getColor(ivBookmark.getContext(), R.color.secondary)));
+    }
+
+    private void applyReupIcon(ImageView ivReup, TextView tvReups, boolean isReuped) {
+        int colorRes = isReuped ? R.color.repost_active : R.color.secondary;
+        int color = ContextCompat.getColor(ivReup.getContext(), colorRes);
+        ivReup.clearColorFilter();
+        ivReup.setImageTintList(ColorStateList.valueOf(color));
+        tvReups.setTextColor(color);
+        tvReups.setTypeface(null, isReuped ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+    }
+
     @Override
     public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
         if (holder instanceof PostViewHolder) {
@@ -638,11 +663,14 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private String getOwnUserId(Context context) {
-        String ownId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+        String ownId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(context);
+        if (ownId == null || ownId.trim().isEmpty()) {
+            ownId = com.veganbeauty.app.data.local.ProfileSession.getUserId(context);
+        }
         if (ownId == null || ownId.trim().isEmpty()) {
             ownId = "test_001";
         }
-        return ownId;
+        return ownId.trim();
     }
 
     @Override

@@ -1,5 +1,11 @@
 package com.veganbeauty.app.features.shop.product.detail;
 
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
+import com.veganbeauty.app.data.local.ProductReviewLocalStore;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,6 +64,20 @@ public class ProductReviewHelper {
     );
 
     public static List<ProductReview> getReviews(String productId, String productName, String category) {
+        return getReviews(null, productId, productName, category);
+    }
+
+    public static List<ProductReview> getReviews(
+            @Nullable Context context,
+            String productId,
+            String productName,
+            String category
+    ) {
+        List<ProductReview> result = new ArrayList<>();
+        if (context != null) {
+            result.addAll(ProductReviewLocalStore.getReviews(context, productId));
+        }
+
         String safeId = productId != null ? productId : "";
         Random rand = new Random(safeId.hashCode());
         String nameLower = productName != null ? productName.toLowerCase() : "";
@@ -81,7 +101,6 @@ public class ProductReviewHelper {
         Collections.shuffle(shuffledNames, rand);
 
         int count = 6 + rand.nextInt(5);
-        List<ProductReview> result = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
             String name = shuffledNames.get(i % shuffledNames.size());
@@ -153,10 +172,27 @@ public class ProductReviewHelper {
     }
 
     public static RatingStats getRatingStats(String productId) {
+        return getRatingStats(null, productId);
+    }
+
+    public static RatingStats getRatingStats(@Nullable Context context, String productId) {
         String safeId = productId != null ? productId : "";
         Random rand = new Random(safeId.hashCode() + 1);
         int reviewCount = 45 + rand.nextInt(320);
         double rating = 4.5 + rand.nextDouble() * 0.5;
+
+        if (context != null) {
+            List<ProductReview> userReviews = ProductReviewLocalStore.getReviews(context, productId);
+            if (!userReviews.isEmpty()) {
+                reviewCount += userReviews.size();
+                double sum = rating * (reviewCount - userReviews.size());
+                for (ProductReview r : userReviews) {
+                    sum += r.getRating();
+                }
+                rating = sum / reviewCount;
+            }
+        }
+
         double formattedRating = Math.round(rating * 10.0) / 10.0;
         return new RatingStats(formattedRating, reviewCount);
     }

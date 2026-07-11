@@ -55,7 +55,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -74,12 +73,14 @@ public class CommunityFeedFragment extends RootieFragment {
     private final int postsPerPage = 5;
     private boolean isLoadingMore = false;
     private List<CommunityPostEntity> allFilteredPosts = new ArrayList<>();
+    private List<CommunityPostEntity> lastObservedPosts = null;
     private String currentFilter = "Tất cả";
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private List<UserEntity> lastStoryUsers = new ArrayList<>();
     private boolean feedUpdatePending = false;
+    private boolean feedUpdatePendingReset = true;
     private boolean feedUpdateRunning = false;
 
     private final ProfileUpdateNotifier.Listener profileUpdateListener = () -> {
@@ -247,6 +248,7 @@ public class CommunityFeedFragment extends RootieFragment {
         binding.swipeRefreshLayout.setOnRefreshListener(() -> {
             mainHandler.postDelayed(() -> {
                 if (isAdded()) {
+                    FeedDataCache.clearFeaturedNews();
                     scheduleFeedUpdate(true);
                     binding.swipeRefreshLayout.setRefreshing(false);
                 }
@@ -370,17 +372,23 @@ public class CommunityFeedFragment extends RootieFragment {
         }
         if (feedUpdateRunning) {
             feedUpdatePending = true;
+            if (!resetData) {
+                feedUpdatePendingReset = false;
+            }
             return;
         }
         feedUpdateRunning = true;
+        feedUpdatePendingReset = true;
         updateFeedData(resetData);
     }
 
     private void finishFeedUpdate() {
         feedUpdateRunning = false;
         if (feedUpdatePending) {
+            boolean reset = feedUpdatePendingReset;
             feedUpdatePending = false;
-            scheduleFeedUpdate(true);
+            feedUpdatePendingReset = true;
+            scheduleFeedUpdate(reset);
         }
     }
 
@@ -407,6 +415,16 @@ public class CommunityFeedFragment extends RootieFragment {
         return currentFilter.equalsIgnoreCase(post.getType())
                 || currentFilter.equalsIgnoreCase(post.getSkinType())
                 || currentFilter.equalsIgnoreCase(post.getConcern());
+    }
+
+    /** True when posts were added/removed — not when only likes/comments counts changed. */
+    private boolean hasStructuralPostChange(@Nullable List<CommunityPostEntity> oldPosts,
+                                            @Nullable List<CommunityPostEntity> newPosts) {
+        return CommunityPostsDiff.hasStructuralChange(oldPosts, newPosts);
+    }
+
+    private void syncFilteredPostCountsFromDb(@Nullable List<CommunityPostEntity> dbPosts) {
+        CommunityPostsDiff.syncCounts(allFilteredPosts, dbPosts);
     }
 
     private void updateFeedData(boolean resetData) {
@@ -476,20 +494,11 @@ public class CommunityFeedFragment extends RootieFragment {
                             return com.veganbeauty.app.utils.TimeFormatter.compareCreatedAtDesc(o1.getCreatedAt(), o2.getCreatedAt());
                         });
 
-                        if (FeedDataCache.newsList != null && !FeedDataCache.newsList.isEmpty()) {
-                            CommunityPostEntity news = null;
-                            if ("Tất cả".equals(currentFilter)) {
-                                news = FeedDataCache.newsList.get(new Random().nextInt(FeedDataCache.newsList.size()));
-                            } else {
-                                List<CommunityPostEntity> filteredNews = new ArrayList<>();
-                                for (CommunityPostEntity n : FeedDataCache.newsList) {
-                                    if (currentFilter.equalsIgnoreCase(n.getType()) || currentFilter.equalsIgnoreCase(n.getSkinType()) || currentFilter.equalsIgnoreCase(n.getConcern())) {
-                                        filteredNews.add(n);
-                                    }
-                                }
-                                if (!filteredNews.isEmpty()) news = filteredNews.get(new Random().nextInt(filteredNews.size()));
-                            }
-                            if (news != null) allFilteredPosts.add(0, news);
+                        CommunityPostEntity news = FeedDataCache.resolveFeaturedNews(currentFilter);
+                        if (news != null && news.getPostId() != null) {
+                            String featuredId = news.getPostId();
+                            allFilteredPosts.removeIf(p -> p != null && featuredId.equals(p.getPostId()));
+                            allFilteredPosts.add(0, news);
                         }
 
                         List<CommunityPostEntity> pinnedPosts = FeedDataCache.getPinnedPosts();
@@ -606,9 +615,14 @@ public class CommunityFeedFragment extends RootieFragment {
         });
 
         viewModel.getPosts().observe(getViewLifecycleOwner(), posts -> mainHandler.post(() -> {
-            if (binding != null && isAdded()) {
+            if (binding == null || !isAdded()) return;
+            List<CommunityPostEntity> safePosts = posts != null ? posts : Collections.emptyList();
+            if (hasStructuralPostChange(lastObservedPosts, safePosts)) {
                 scheduleFeedUpdate(true);
+            } else {
+                syncFilteredPostCountsFromDb(safePosts);
             }
+            lastObservedPosts = new ArrayList<>(safePosts);
         }));
         viewModel.getReels().observe(getViewLifecycleOwner(), reels -> {});
     }

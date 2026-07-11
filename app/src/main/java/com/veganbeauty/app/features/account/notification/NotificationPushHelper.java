@@ -75,7 +75,7 @@ public class NotificationPushHelper {
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_bell)
+                .setSmallIcon(R.drawable.ic_stat_notification)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setAutoCancel(true)
@@ -200,7 +200,7 @@ public class NotificationPushHelper {
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_bell)
+                .setSmallIcon(R.drawable.ic_stat_notification)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setAutoCancel(true)

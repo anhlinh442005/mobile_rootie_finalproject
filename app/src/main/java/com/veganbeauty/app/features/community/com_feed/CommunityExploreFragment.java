@@ -40,9 +40,13 @@ import com.veganbeauty.app.databinding.ComFragmentExploreBinding;
 
 import com.veganbeauty.app.data.local.entities.YtVideoEntity;
 
+import com.veganbeauty.app.features.community.UserMemoryHelper;
+
 import com.veganbeauty.app.utils.ComBottomNavHelper;
 
 import com.veganbeauty.app.utils.ExploreVideoCache;
+
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import java.util.ArrayList;
 
@@ -71,6 +75,10 @@ public class CommunityExploreFragment extends RootieFragment {
 
         @Override
         public void onShareClick(YtVideoEntity video) {
+            String userId = resolveOwnUserId();
+            if (!UserMemoryHelper.isPostReposted(requireContext(), userId, video.getId())) {
+                UserMemoryHelper.toggleVideoRepost(requireContext(), userId, video);
+            }
             saveToLocalPrefs(video, true, "reposted_videos_prefs", "reposted_videos");
         }
 
@@ -128,6 +136,12 @@ public class CommunityExploreFragment extends RootieFragment {
 
         @Override
         public void onSaveClick(YtVideoEntity video, boolean isSaved) {
+            String userId = resolveOwnUserId();
+            // Keep UserMemory + legacy prefs in sync for this user
+            boolean currentlySaved = UserMemoryHelper.isPostSaved(requireContext(), userId, video.getId());
+            if (currentlySaved != isSaved) {
+                UserMemoryHelper.toggleVideoSave(requireContext(), userId, video);
+            }
             saveToLocalPrefs(video, isSaved, "saved_videos_prefs", "saved_videos");
         }
 
@@ -139,6 +153,17 @@ public class CommunityExploreFragment extends RootieFragment {
     });
 
 
+
+    private String resolveOwnUserId() {
+        String userId = ProfileSessionHelper.getEffectiveUserId(requireContext());
+        if (userId == null || userId.trim().isEmpty()) {
+            userId = com.veganbeauty.app.data.local.ProfileSession.getUserId(requireContext());
+        }
+        if (userId == null || userId.trim().isEmpty()) {
+            return "test_001";
+        }
+        return userId.trim();
+    }
 
     private boolean isNavVisible = true;
 

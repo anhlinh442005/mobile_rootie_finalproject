@@ -18,19 +18,14 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderTrackingFragmentBinding;
 import com.veganbeauty.app.databinding.AccountOrderTrackingStepItemBinding;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
-import com.veganbeauty.app.features.home.NotificationBadgeHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import androidx.lifecycle.FlowLiveDataConversions;
 
 public class AccountOrderTrackingFragment extends RootieFragment {
 
@@ -78,14 +73,6 @@ public class AccountOrderTrackingFragment extends RootieFragment {
             }
         });
 
-        View.OnClickListener navigateToNotification = v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new AccountNotificationFragment())
-                    .addToBackStack(null)
-                    .commit();
-        };
-        getBinding().layoutNotification.getRoot().setOnClickListener(navigateToNotification);
-
         getBinding().btnCallShipper.setOnClickListener(v ->
                 Toast.makeText(getContext(), "Đang kết nối cuộc gọi đến shipper...", Toast.LENGTH_SHORT).show()
         );
@@ -96,16 +83,6 @@ public class AccountOrderTrackingFragment extends RootieFragment {
         viewModel.order.observe(getViewLifecycleOwner(), order -> {
             if (order != null) {
                 bindOrderTracking(order);
-            }
-        });
-
-        FlowLiveDataConversions.asLiveData(
-                NotificationRepository.getInstance(requireContext()).getUnreadCount()
-        ).observe(getViewLifecycleOwner(), count -> {
-            if (_binding == null) return;
-            TextView badge = NotificationBadgeHelper.findBadgeView(_binding.getRoot());
-            if (badge != null) {
-                NotificationBadgeHelper.updateBadgeCount(badge, count);
             }
         });
     }

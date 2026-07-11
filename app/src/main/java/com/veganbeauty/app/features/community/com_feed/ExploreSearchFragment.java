@@ -61,6 +61,9 @@ public class ExploreSearchFragment extends RootieFragment {
     private List<YtVideoEntity> allExploreVideos = new ArrayList<>();
     private CommunityViewModel viewModel;
     private List<CommunityPostEntity> allCommunityPosts = new ArrayList<>();
+    private boolean savedModeIsVideo = false;
+    private int savedModeIconIndex = 0;
+    private boolean isSavedMode = false;
 
     @Nullable
     @Override
@@ -113,7 +116,8 @@ public class ExploreSearchFragment extends RootieFragment {
         rvGrid.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         rvGrid.setAdapter(adapter);
 
-        boolean isSavedMode = getArguments() != null && getArguments().getBoolean("SAVED_MODE", false);
+        boolean isSavedModeArg = getArguments() != null && getArguments().getBoolean("SAVED_MODE", false);
+        isSavedMode = isSavedModeArg;
 
         if (isSavedMode) {
             etSearch.setVisibility(View.GONE);
@@ -166,22 +170,22 @@ public class ExploreSearchFragment extends RootieFragment {
                 tvArticle.setGravity(android.view.Gravity.CENTER);
                 tvArticle.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
                 tvArticle.setPadding(0, (int)(12*density), 0, (int)(12*density));
-                tvArticle.setTextColor(Color.parseColor("#677559"));
+                tvArticle.setTextColor(Color.WHITE);
                 tvArticle.setTextSize(14f);
-                tvArticle.setBackground(null);
 
                 TextView tvVideo = new TextView(requireContext());
                 tvVideo.setText("Video");
                 tvVideo.setGravity(android.view.Gravity.CENTER);
                 tvVideo.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
                 tvVideo.setPadding(0, (int)(12*density), 0, (int)(12*density));
-                tvVideo.setTextColor(Color.WHITE);
+                tvVideo.setTextColor(Color.parseColor("#677559"));
                 tvVideo.setTextSize(14f);
                 
                 android.graphics.drawable.GradientDrawable activeGd = new android.graphics.drawable.GradientDrawable();
                 activeGd.setColor(Color.parseColor("#3E4D44"));
                 activeGd.setCornerRadius(44f * density);
-                tvVideo.setBackground(activeGd);
+                tvArticle.setBackground(activeGd);
+                tvVideo.setBackground(null);
 
                 try {
                     Typeface tf = androidx.core.content.res.ResourcesCompat.getFont(requireContext(), R.font.be_vietnam_pro);
@@ -200,15 +204,17 @@ public class ExploreSearchFragment extends RootieFragment {
                 iconsRow.setOrientation(LinearLayout.HORIZONTAL);
 
                 // Segmented click listeners
-                final boolean[] isVideoState = {true}; // default is Video
+                final boolean[] isVideoState = {false}; // default is Bài viết
                 View.OnClickListener segClick = v -> {
                     isVideoState[0] = (v == tvVideo);
+                    savedModeIsVideo = isVideoState[0];
                     tvVideo.setBackground(isVideoState[0] ? activeGd : null);
                     tvVideo.setTextColor(isVideoState[0] ? Color.WHITE : Color.parseColor("#677559"));
                     tvArticle.setBackground(!isVideoState[0] ? activeGd : null);
                     tvArticle.setTextColor(!isVideoState[0] ? Color.WHITE : Color.parseColor("#677559"));
                     
                     int iconTag = iconsRow.getTag() != null ? (int) iconsRow.getTag() : 0;
+                    savedModeIconIndex = iconTag;
                     loadFilteredVideos(isVideoState[0], iconTag);
                 };
                 tvArticle.setOnClickListener(segClick);
@@ -251,6 +257,7 @@ public class ExploreSearchFragment extends RootieFragment {
                     final int idx = i;
                     container.setOnClickListener(v -> {
                         iconsRow.setTag(idx);
+                        savedModeIconIndex = idx;
                         for (int j = 0; j < 3; j++) {
                             ivs[j].setColorFilter(j == idx ? colorActive : colorInactive);
                             lines[j].setBackgroundColor(j == idx ? colorActive : Color.TRANSPARENT);
@@ -265,7 +272,7 @@ public class ExploreSearchFragment extends RootieFragment {
                 e.printStackTrace();
             }
             
-            loadFilteredVideos(true, 0); // Default load: Video, Save
+            loadFilteredVideos(false, 0); // Default load: Bài viết, Save
         } else {
             setupTrendingKeywords();
 
@@ -348,33 +355,30 @@ public class ExploreSearchFragment extends RootieFragment {
             } else {
                 List<CommunityPostEntity> loadedPosts = new ArrayList<>();
                 Context ctx = requireContext();
-                String ownUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(ctx);
+                String ownUserId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(ctx);
+                if (ownUserId == null || ownUserId.isEmpty()) {
+                    ownUserId = com.veganbeauty.app.data.local.ProfileSession.getUserId(ctx);
+                }
                 if (ownUserId == null || ownUserId.isEmpty()) ownUserId = "test_001";
                 
-                Set<String> filterIds = new HashSet<>();
                 if (iconIndex == 0) {
-                    filterIds = UserMemoryHelper.getSavedPostIds(ctx, ownUserId);
+                    // Saved posts: use snapshots so Rootie news keeps full data across sessions
+                    loadedPosts.addAll(UserMemoryHelper.resolveSavedPosts(ctx, ownUserId, allCommunityPosts));
                 } else if (iconIndex == 1) {
-                    filterIds = UserMemoryHelper.getRepostedPostIds(ctx, ownUserId);
+                    loadedPosts.addAll(UserMemoryHelper.resolveRepostedPosts(ctx, ownUserId, allCommunityPosts));
                 } else if (iconIndex == 2) {
                     android.content.SharedPreferences prefs = ctx.getSharedPreferences("rootie_prefs", Context.MODE_PRIVATE);
                     for (CommunityPostEntity p : allCommunityPosts) {
                         if (prefs.getBoolean("liked_" + ownUserId + "_" + p.getPostId(), false)) {
-                            filterIds.add(p.getPostId());
+                            loadedPosts.add(p);
                         }
-                    }
-                }
-
-                for (CommunityPostEntity p : allCommunityPosts) {
-                    if (filterIds.contains(p.getPostId())) {
-                        loadedPosts.add(p);
                     }
                 }
 
                 rvGrid.setLayoutManager(new GridLayoutManager(requireContext(), 3));
                 String finalOwnUserId = ownUserId;
                 ProfileGridAdapter postAdapter = new ProfileGridAdapter(loadedPosts, position -> {
-                    ProfilePostDetailFragment fragment = ProfilePostDetailFragment.newInstance(finalOwnUserId, position, 0, loadedPosts.get(position).getPostId());
+                    ProfilePostDetailFragment fragment = ProfilePostDetailFragment.newInstance(finalOwnUserId, position, 3, loadedPosts.get(position).getPostId());
                     getParentFragmentManager().beginTransaction()
                             .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                             .replace(R.id.main_container, fragment)
@@ -473,8 +477,13 @@ public class ExploreSearchFragment extends RootieFragment {
         viewModel.getPosts().observe(getViewLifecycleOwner(), dbPosts -> {
             List<CommunityPostEntity> newsList = jsonReader.getCommunityNews();
             allCommunityPosts.clear();
-            if (dbPosts != null) allCommunityPosts.addAll(dbPosts);
-            if (newsList != null) allCommunityPosts.addAll(newsList);
+            allCommunityPosts.addAll(UserMemoryHelper.mergePostSources(dbPosts, newsList));
+
+            boolean isSavedModeFlag = getArguments() != null && getArguments().getBoolean("SAVED_MODE", false);
+            if (isSavedModeFlag && isAdded()) {
+                // Refresh current saved grid once feed+news data is ready
+                loadFilteredVideos(savedModeIsVideo, savedModeIconIndex);
+            }
         });
     }
 

@@ -36,6 +36,7 @@ import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.data.repository.CommunityRepository;
 import com.veganbeauty.app.databinding.ComFragmentProfileBinding;
 import com.veganbeauty.app.features.community.UserMemoryHelper;
+import com.veganbeauty.app.features.community.com_feed.CommunityPostsDiff;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModel;
 import com.veganbeauty.app.features.community.com_feed.CommunityViewModelFactory;
 import com.veganbeauty.app.features.community.com_feed.ReelPlayerDialog;
@@ -339,9 +340,20 @@ public class CommunityProfileFragment extends RootieFragment {
 
         binding.tvBio.setText(bioText);
 
-        String primaryImage = !jsonPrimaryImage.isEmpty() ? jsonPrimaryImage : (isOwnProfile ? ProfileSession.INSTANCE.getPrimaryImage(ctx) : "");
+        String primaryImage;
+        if (isOwnProfile) {
+            String localCover = ProfileSessionHelper.getLocalCoverFileUri(ctx);
+            primaryImage = localCover != null ? localCover : ProfileSession.INSTANCE.getPrimaryImage(ctx);
+        } else {
+            primaryImage = !jsonPrimaryImage.isEmpty() ? jsonPrimaryImage : "";
+        }
         if (primaryImage != null && !primaryImage.isEmpty()) {
-            com.bumptech.glide.Glide.with(binding.ivCover.getContext()).load(primaryImage).into(binding.ivCover);
+            com.bumptech.glide.Glide.with(binding.ivCover.getContext())
+                    .load(primaryImage)
+                    .placeholder(R.color.primary)
+                    .error(R.color.primary)
+                    .centerCrop()
+                    .into(binding.ivCover);
         } else {
             binding.ivCover.setImageResource(R.color.primary);
         }
@@ -603,28 +615,26 @@ public class CommunityProfileFragment extends RootieFragment {
         HashSet<String> seenIds = new HashSet<>();
         Context ctx = requireContext();
 
-        Set<String> repostedIds = currentTab == 2
-                ? UserMemoryHelper.getRepostedPostIds(ctx, profileUserId)
-                : Collections.emptySet();
-        Set<String> savedIds = currentTab == 3
-                ? UserMemoryHelper.getSavedPostIds(ctx, profileUserId)
-                : Collections.emptySet();
-
-        for (CommunityPostEntity post : allPosts) {
-            if (seenIds.contains(post.getPostId())) continue;
-
-            boolean include = false;
-            if (currentTab == 0) {
-                include = profileUserId.equals(post.getAuthorId());
-            } else if (currentTab == 2) {
-                include = repostedIds.contains(post.getPostId());
-            } else if (currentTab == 3) {
-                include = savedIds.contains(post.getPostId());
-            }
-
-            if (include) {
-                myPosts.add(post);
+        if (currentTab == 3) {
+            myPosts.addAll(UserMemoryHelper.resolveSavedPosts(ctx, profileUserId, allPosts));
+            for (CommunityPostEntity post : myPosts) {
                 seenIds.add(post.getPostId());
+            }
+        } else if (currentTab == 2) {
+            myPosts.addAll(UserMemoryHelper.resolveRepostedPosts(ctx, profileUserId, allPosts));
+            for (CommunityPostEntity post : myPosts) {
+                seenIds.add(post.getPostId());
+            }
+        } else {
+            for (CommunityPostEntity post : allPosts) {
+                if (seenIds.contains(post.getPostId())) continue;
+
+                boolean include = currentTab == 0 && profileUserId.equals(post.getAuthorId());
+
+                if (include) {
+                    myPosts.add(post);
+                    seenIds.add(post.getPostId());
+                }
             }
         }
 
@@ -653,10 +663,16 @@ public class CommunityProfileFragment extends RootieFragment {
         viewModel.getPosts().observe(getViewLifecycleOwner(), dbPosts -> {
             if (binding == null || !isAdded()) return;
             List<CommunityPostEntity> newsList = jsonReader.getCommunityNews();
-            currentAllPosts = new ArrayList<>();
-            if (dbPosts != null) currentAllPosts.addAll(dbPosts);
-            if (newsList != null) currentAllPosts.addAll(newsList);
-            loadContentForCurrentTab();
+            if (currentTab == 3 && profileUserId != null) {
+                UserMemoryHelper.repairSavedNewsSnapshots(ctx, profileUserId, newsList);
+            }
+            List<CommunityPostEntity> merged = UserMemoryHelper.mergePostSources(dbPosts, newsList);
+            if (CommunityPostsDiff.hasStructuralChange(currentAllPosts, merged)) {
+                currentAllPosts = merged;
+                loadContentForCurrentTab();
+            } else {
+                CommunityPostsDiff.syncCounts(currentAllPosts, merged);
+            }
         });
 
         viewModel.getReels().observe(getViewLifecycleOwner(), reels -> {
@@ -690,6 +706,18 @@ public class CommunityProfileFragment extends RootieFragment {
             com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivHighlight1, avatar);
             com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivHighlight2, avatar);
         }
+        String localCover = ProfileSessionHelper.getLocalCoverFileUri(ctx);
+        String cover = localCover != null ? localCover : ProfileSession.getPrimaryImage(ctx);
+        if (cover != null && !cover.isEmpty()) {
+            com.bumptech.glide.Glide.with(binding.ivCover.getContext())
+                    .load(cover)
+                    .placeholder(R.color.primary)
+                    .error(R.color.primary)
+                    .centerCrop()
+                    .into(binding.ivCover);
+        } else {
+            binding.ivCover.setImageResource(R.color.primary);
+        }
         NavigationView nav = binding.getRoot().findViewById(R.id.navView);
         if (nav != null) {
             SideMenuHelper.bindCurrentUser(nav);
@@ -710,6 +738,10 @@ public class CommunityProfileFragment extends RootieFragment {
                 && ProfileSession.isLoggedIn(requireContext())) {
             Context ctx = requireContext();
             refreshOwnProfileFromSession(ctx);
+            // Refresh reup/save tabs so actions from feed appear on this user's profile
+            if (currentTab == 2 || currentTab == 3) {
+                loadContentForCurrentTab();
+            }
             if (!ProfileSession.hasLocalProfileEdits(ctx)) {
                 SyncDataHelper.syncUserProfileFromFirestore(ctx, () -> {
                     if (binding != null && isAdded()) {

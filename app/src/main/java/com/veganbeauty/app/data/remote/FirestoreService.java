@@ -798,14 +798,41 @@ public class FirestoreService {
                     }
                 }
 
+                String content = doc.getString("content");
+                if (content == null || content.trim().isEmpty()) {
+                    content = doc.getString("message");
+                }
+                if (content == null) {
+                    content = "";
+                }
+
+                String createdAt = doc.getString("created_at");
+                if (createdAt == null || createdAt.trim().isEmpty()) {
+                    Object ts = doc.get("timestamp");
+                    if (ts instanceof Number) {
+                        createdAt = String.valueOf(((Number) ts).longValue());
+                    } else {
+                        createdAt = "";
+                    }
+                }
+
+                if (mediaUrls.length() == 0) {
+                    Map<String, Object> imageMap = (Map<String, Object>) doc.get("image");
+                    if (imageMap != null && imageMap.get("uri") instanceof String) {
+                        mediaUrls.append((String) imageMap.get("uri"));
+                    }
+                }
+
                 posts.add(new CommunityPostEntity(
                         doc.getId(),
-                        authorMap != null && authorMap.get("user_id") != null ? authorMap.get("user_id").toString() : "",
+                        authorMap != null && authorMap.get("user_id") != null ? authorMap.get("user_id").toString()
+                                : (authorMap != null && authorMap.get("id") != null ? authorMap.get("id").toString() : ""),
                         authorMap != null && authorMap.get("username") != null ? authorMap.get("username").toString() : "",
-                        authorMap != null && authorMap.get("display_name") != null ? authorMap.get("display_name").toString() : "",
+                        authorMap != null && authorMap.get("display_name") != null ? authorMap.get("display_name").toString()
+                                : (authorMap != null && authorMap.get("username") != null ? authorMap.get("username").toString() : ""),
                         avatarUrl,
-                        doc.getString("content") != null ? doc.getString("content") : "",
-                        doc.getString("created_at") != null ? doc.getString("created_at") : "",
+                        content,
+                        createdAt,
                         likesCount,
                         doc.getLong("comments_count") != null ? doc.getLong("comments_count").intValue() : 0,
                         doc.getLong("reups_count") != null ? doc.getLong("reups_count").intValue() : 0,

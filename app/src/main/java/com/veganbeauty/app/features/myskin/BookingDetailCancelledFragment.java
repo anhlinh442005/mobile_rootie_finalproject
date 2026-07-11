@@ -40,13 +40,6 @@ public class BookingDetailCancelledFragment extends RootieFragment {
     public void setupUI(@NonNull View view) {
         binding.skinDetailBtnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        binding.skinDetailBtnNotification.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
         if (bookingData != null) {
             populateUI(bookingData);
         } else {

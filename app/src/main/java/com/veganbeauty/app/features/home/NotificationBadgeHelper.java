@@ -85,7 +85,11 @@ public final class NotificationBadgeHelper {
         if (root == null) {
             return null;
         }
-        return root.findViewById(R.id.viewNotificationBadge);
+        TextView badge = root.findViewById(R.id.viewNotificationBadge);
+        if (badge != null) {
+            return badge;
+        }
+        return root.findViewById(R.id.home_header_notification_badge);
     }
 
     @Nullable
@@ -102,7 +106,15 @@ public final class NotificationBadgeHelper {
             return container;
         }
         View button = root.findViewById(R.id.btnNotification);
-        if (button != null && button.getParent() instanceof View) {
+        if (button == null) {
+            button = root.findViewById(R.id.btn_notification);
+        }
+        if (button == null) {
+            button = root.findViewById(R.id.skin_detail_btn_notification);
+        }
+        if (button != null && button.getParent() instanceof View
+                && button.getId() == R.id.btnNotification) {
+            // include_notification_bell: click the FrameLayout wrapper, not only the icon
             return (View) button.getParent();
         }
         return button;

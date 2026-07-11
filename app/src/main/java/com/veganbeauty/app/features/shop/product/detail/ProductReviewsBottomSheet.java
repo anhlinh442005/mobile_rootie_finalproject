@@ -62,12 +62,13 @@ public class ProductReviewsBottomSheet extends BottomSheetDialogFragment {
             category = getArguments().getString(ARG_CATEGORY, "");
         }
 
-        ProductReviewHelper.RatingStats stats = ProductReviewHelper.getRatingStats(productId);
+        ProductReviewHelper.RatingStats stats = ProductReviewHelper.getRatingStats(requireContext(), productId);
         
         binding.tvAverageRating.setText(String.format(Locale.US, "%.1f", stats.rating));
         binding.tvTotalRatingCount.setText(stats.reviewCount + " reviews");
 
-        List<ProductReview> initialReviews = ProductReviewHelper.getReviews(productId, productName, category);
+        List<ProductReview> initialReviews = ProductReviewHelper.getReviews(
+                requireContext(), productId, productName, category);
         allReviews.addAll(initialReviews);
         
         updateProgressBars();

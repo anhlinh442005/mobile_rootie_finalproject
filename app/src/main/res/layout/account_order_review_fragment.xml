@@ -242,99 +242,65 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:fontFamily="sans-serif-medium"
-                android:text="* Nhận ngay 200 xu khi đánh giá sao, có bình luận và kèm hình ảnh!"
+                android:text="* Nhận ngay 200 xu khi đánh giá sao, có bình luận và kèm hình ảnh (có thể chọn nhiều ảnh)!"
                 android:textColor="@color/content"
                 android:textSize="11sp" />
 
             <!-- Image Upload Grid Section -->
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:orientation="horizontal">
+                android:scrollbars="none">
 
-                <!-- Add Image Button (Dashed box simulator) -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/btnAddImage"
-                    android:layout_width="84dp"
-                    android:layout_height="84dp"
-                    android:layout_marginEnd="12dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="@color/gray_dark"
-                    app:strokeWidth="1dp"
-                    app:cardBackgroundColor="#F8F8F6">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:src="@drawable/ic_camera"
-                            app:tint="@color/primary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:fontFamily="sans-serif"
-                            android:text="Thêm ảnh"
-                            android:textColor="@color/primary"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Container for uploaded image previews -->
                 <LinearLayout
                     android:id="@+id/layoutImagesContainer"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="84dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <!-- Simulated Image Slot 1 -->
+                    <!-- Add Image Button -->
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardImg1"
+                        android:id="@+id/btnAddImage"
                         android:layout_width="84dp"
                         android:layout_height="84dp"
                         android:layout_marginEnd="12dp"
-                        android:visibility="gone"
+                        android:clickable="true"
+                        android:focusable="true"
                         app:cardCornerRadius="8dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="@color/gray_light"
-                        app:strokeWidth="1dp">
+                        app:strokeColor="@color/gray_dark"
+                        app:strokeWidth="1dp"
+                        app:cardBackgroundColor="#F8F8F6">
 
-                        <ImageView
-                            android:id="@+id/ivImg1"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:scaleType="centerCrop" />
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:src="@drawable/ic_camera"
+                                app:tint="@color/primary" />
+
+                            <TextView
+                                android:id="@+id/tvAddImageLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="sans-serif"
+                                android:text="Thêm ảnh"
+                                android:textColor="@color/primary"
+                                android:textSize="10sp" />
+                        </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Simulated Image Slot 2 -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardImg2"
-                        android:layout_width="84dp"
-                        android:layout_height="84dp"
-                        android:visibility="gone"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/gray_light"
-                        app:strokeWidth="1dp">
-
-                        <ImageView
-                            android:id="@+id/ivImg2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop" />
-                    </com.google.android.material.card.MaterialCardView>
+                    <!-- Dynamic thumbnails are added here in code -->
                 </LinearLayout>
-            </LinearLayout>
+            </HorizontalScrollView>
 
             <!-- Checkbox Option 1: Giới thiệu bạn bè -->
             <CheckBox

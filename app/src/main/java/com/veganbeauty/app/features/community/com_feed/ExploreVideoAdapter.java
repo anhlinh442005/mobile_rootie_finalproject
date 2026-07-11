@@ -395,13 +395,10 @@ public class ExploreVideoAdapter extends RecyclerView.Adapter<ExploreVideoAdapte
             }
             ImageView ivSave = itemView.findViewById(R.id.ivSave);
             if (ivSave != null) {
-                ivSave.setImageResource(R.drawable.ic_save_full);
-                if (isSaved) {
-                    ivSave.setColorFilter(android.graphics.Color.parseColor("#EEDB5B"),
-                            android.graphics.PorterDuff.Mode.SRC_IN);
-                } else {
-                    ivSave.clearColorFilter();
-                }
+                ivSave.setImageResource(isSaved ? R.drawable.ic_save_full : R.drawable.ic_save);
+                ivSave.clearColorFilter();
+                ivSave.setImageTintList(android.content.res.ColorStateList.valueOf(
+                        android.graphics.Color.parseColor(isSaved ? "#EEDB5B" : "#EAF0E6")));
             }
         }
 

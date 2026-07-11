@@ -92,7 +92,12 @@ public final class ProfileSessionHelper {
             if (!hasLocalEdits
                     && user.getPrimary_image() != null
                     && !user.getPrimary_image().trim().isEmpty()) {
-                ProfileSession.setPrimaryImage(context, user.getPrimary_image().trim());
+                String localCover = getLocalCoverFileUri(context);
+                if (localCover != null) {
+                    ProfileSession.setPrimaryImage(context, localCover);
+                } else {
+                    ProfileSession.setPrimaryImage(context, user.getPrimary_image().trim());
+                }
             }
         }
         if (!hasLocalEdits && user.getBio() != null && !user.getBio().trim().isEmpty()) {
@@ -241,10 +246,20 @@ public final class ProfileSessionHelper {
     }
 
     private static final String LOCAL_AVATAR_FILENAME = "user_avatar.jpg";
+    private static final String LOCAL_COVER_FILENAME = "user_cover.jpg";
 
     @Nullable
     public static String getLocalAvatarFileUri(Context context) {
         File file = new File(context.getFilesDir(), LOCAL_AVATAR_FILENAME);
+        if (file.exists() && file.length() > 0) {
+            return "file://" + file.getAbsolutePath();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String getLocalCoverFileUri(Context context) {
+        File file = new File(context.getFilesDir(), LOCAL_COVER_FILENAME);
         if (file.exists() && file.length() > 0) {
             return "file://" + file.getAbsolutePath();
         }

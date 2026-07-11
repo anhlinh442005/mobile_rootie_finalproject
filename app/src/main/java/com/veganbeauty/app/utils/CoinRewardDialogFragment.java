@@ -73,6 +73,8 @@ public class CoinRewardDialogFragment extends DialogFragment {
         TextView tvCoinBadge = view.findViewById(R.id.tvCoinBadge);
         TextView tvRewardSource = view.findViewById(R.id.tvRewardSource);
         View layoutRewardContent = view.findViewById(R.id.layoutRewardContent);
+        android.widget.ImageView ivMoneyBag = view.findViewById(R.id.ivMoneyBag);
+        MoneyBagBitmapHelper.bind(ivMoneyBag);
 
         tvCoinAmount.setText(CoinRewardDialogHelper.formatAmountLabel(coins));
         tvCoinBadge.setText(CoinRewardDialogHelper.formatBadgeLabel(coins));
@@ -94,8 +96,8 @@ public class CoinRewardDialogFragment extends DialogFragment {
             tvRewardSource.setVisibility(View.GONE);
         }
 
-        layoutRewardContent.setScaleX(0.88f);
-        layoutRewardContent.setScaleY(0.88f);
+        layoutRewardContent.setScaleX(0.92f);
+        layoutRewardContent.setScaleY(0.92f);
         layoutRewardContent.setAlpha(0f);
         layoutRewardContent.animate()
                 .scaleX(1f)

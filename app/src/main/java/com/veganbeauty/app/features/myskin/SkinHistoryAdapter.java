@@ -73,7 +73,11 @@ public class SkinHistoryAdapter extends RecyclerView.Adapter<SkinHistoryAdapter.
             binding.itemSkinHistoryDate.setText(item.optString("date", ""));
             binding.itemSkinHistoryTime.setText(item.optString("time", ""));
             binding.itemSkinHistoryType.setText(item.optString("scanType", "Quét AI"));
-            binding.itemSkinHistoryScore.setText(String.valueOf(item.optInt("score", 0)));
+            int score = item.optInt("score", -1);
+            if (score < 0) {
+                score = com.veganbeauty.app.data.local.SkinProfileMetricsHelper.computeOverallScore(item);
+            }
+            binding.itemSkinHistoryScore.setText(String.valueOf(score));
 
             binding.getRoot().setOnClickListener(v -> onItemClick.onItemClick(item));
         }

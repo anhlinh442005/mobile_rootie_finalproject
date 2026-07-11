@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -24,20 +23,15 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
-import com.veganbeauty.app.data.repository.NotificationRepository;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderDetailFragmentBinding;
 import com.veganbeauty.app.databinding.AccountOrderDetailProductItemBinding;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
-import com.veganbeauty.app.features.home.NotificationBadgeHelper;
 import com.veganbeauty.app.features.ai.SkinAiChatFragment;
 import com.veganbeauty.app.features.shop.home.ShopHomeFragment;
 import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.lifecycle.FlowLiveDataConversions;
 
 public class AccountOrderDetailFragment extends RootieFragment {
 
@@ -112,13 +106,6 @@ public class AccountOrderDetailFragment extends RootieFragment {
                 getActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
             }
         }
-
-        View.OnClickListener navigateToNotification = v -> getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new AccountNotificationFragment())
-                .addToBackStack(null)
-                .commit();
-
-        binding.layoutNotification.getRoot().setOnClickListener(navigateToNotification);
     }
 
     private void navigateToShopHome() {
@@ -141,21 +128,14 @@ public class AccountOrderDetailFragment extends RootieFragment {
                 bindOrderDetails(order);
             }
         });
-
-        FlowLiveDataConversions.asLiveData(
-                NotificationRepository.getInstance(requireContext()).getUnreadCount()
-        ).observe(getViewLifecycleOwner(), count -> {
-            if (binding == null) return;
-            TextView badge = NotificationBadgeHelper.findBadgeView(binding.getRoot());
-            if (badge != null) {
-                NotificationBadgeHelper.updateBadgeCount(badge, count);
-            }
-        });
     }
 
     private void bindOrderDetails(OrderEntity order) {
         Context context = getContext();
         if (context == null) return;
+
+        // Khôi phục feedback đã lưu theo đơn của khách
+        com.veganbeauty.app.data.local.OrderReviewLocalStore.applyTo(context, order);
 
         binding.tvOrderCode.setText(order.getId());
         binding.tvOrderDate.setText(order.getOrderDate() + " - " + order.getOrderTime());

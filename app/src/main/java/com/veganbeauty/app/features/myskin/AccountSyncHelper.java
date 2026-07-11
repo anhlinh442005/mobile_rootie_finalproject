@@ -95,6 +95,8 @@ public final class AccountSyncHelper {
             localJsonReader.mergeBookingsFromRemote(new java.util.ArrayList<>(merged.values()));
         }
         BookingExpiryHelper.expireOverdueBookings(appContext);
+        // Lịch SPA hoàn thành ↔ lịch sử soi da offline (ngày giờ + trạng thái)
+        BookingSkinScanResultHelper.syncOfflineHistoryFromCompletedBookings(appContext);
     }
 
     private static void syncOrders(Context appContext) {

@@ -73,13 +73,6 @@ public class BookingDetailUpcomingFragment extends RootieFragment {
             }
         });
 
-        _binding.skinDetailBtnNotification.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
         _binding.skinDetailBtnCancel.setOnClickListener(v -> showCancelDialog(bookingData));
         setupScrollHideHeader();
     }

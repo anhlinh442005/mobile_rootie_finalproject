@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -29,6 +28,7 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.databinding.SkinFragmentHistoryBinding;
 import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.routine.SkinTimeRoutineFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -78,6 +78,9 @@ public class SkinHistoryFragment extends RootieFragment {
     private void loadDataFromLocal() {
         new Thread(() -> {
             try {
+                // Đồng bộ lịch SPA đã hoàn thành → lịch sử "Soi da offline"
+                BookingSkinScanResultHelper.syncOfflineHistoryFromCompletedBookings(requireContext());
+
                 String currentUserId = ProfileSession.getUserId(requireContext());
                 String email = ProfileSession.getEmail(requireContext());
                 allHistory = SkinHistoryLocalStore.getHistory(requireContext(), currentUserId, email);
@@ -134,7 +137,22 @@ public class SkinHistoryFragment extends RootieFragment {
 
     private void setupListeners() {
         _binding.skinHistoryBtnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        _binding.skinHistoryBtnRoutine.setOnClickListener(v -> Toast.makeText(requireContext(), "Gợi ý Routine clicked", Toast.LENGTH_SHORT).show());
+        _binding.skinHistoryBtnRoutine.setOnClickListener(v -> {
+            if (!ProfileSession.isLoggedIn(requireContext())) {
+                BottomNavHelper.showLoginRequiredDialog(requireContext());
+                return;
+            }
+            getParentFragmentManager().beginTransaction()
+                    .setCustomAnimations(
+                            android.R.anim.slide_in_left,
+                            android.R.anim.fade_out,
+                            android.R.anim.fade_in,
+                            android.R.anim.slide_out_right
+                    )
+                    .replace(R.id.main_container, new SkinTimeRoutineFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void setupFilters() {
@@ -230,7 +248,11 @@ public class SkinHistoryFragment extends RootieFragment {
         for (int i = 0; i < len; i++) {
             try {
                 JSONObject item = chartSorted.get(i);
-                float score = (float) item.optInt("score", 0);
+                int rawScore = item.optInt("score", -1);
+                if (rawScore < 0) {
+                    rawScore = com.veganbeauty.app.data.local.SkinProfileMetricsHelper.computeOverallScore(item);
+                }
+                float score = (float) rawScore;
                 String dateStr = item.optString("date", "");
 
                 String shortDate = dateStr.length() >= 5 ? dateStr.substring(0, 5) : dateStr;
@@ -349,6 +371,14 @@ public class SkinHistoryFragment extends RootieFragment {
         currentDataSet.setCircleColors(circleColors);
 
         _binding.skinHistoryLineChart.invalidate();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (_binding != null && ProfileSession.isLoggedIn(requireContext())) {
+            loadDataFromLocal();
+        }
     }
 
     @Override

@@ -131,15 +131,8 @@ public class MainActivity extends AppCompatActivity {
                             db.userGiftDao(),
                             new com.veganbeauty.app.data.local.LocalJsonReader(getApplicationContext()));
                     orderRepository.seedOrdersFromAssetsIfNeeded();
-                } else if (isFreshDemo) {
-                    // Đảm bảo account demo luôn 0 đơn / 0 xu — chỉ xóa data của demo
-                    String demoId = com.veganbeauty.app.features.auth.FreshDemoAccountSeeder.USER_ID;
-                    db.orderDao().deleteByUserIdentity(
-                            demoId,
-                            com.veganbeauty.app.features.auth.FreshDemoAccountSeeder.PHONE);
-                    db.rewardPointDao().deleteByUserId(demoId);
-                    db.userGiftDao().deleteByUserId(demoId);
                 }
+                // Tài khoản demo: KHÔNG xóa xu/đơn mỗi lần mở app — chỉ reset khi đăng nhập lại (resetLocalDataBlocking).
 
                 com.veganbeauty.app.data.repository.StoreRepository storeRepository = new com.veganbeauty.app.data.repository.StoreRepository(
                         db.storeDao(),

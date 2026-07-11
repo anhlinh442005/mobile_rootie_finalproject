@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow;
 
 @Dao
 public interface RewardPointDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insertRewardPoints(RewardPointEntity reward);
 
     public static class TotalPoints {

@@ -49,10 +49,14 @@ import com.veganbeauty.app.features.home.adapter.HomeProductCardAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeProductGridAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeShortcutItem;
+import com.veganbeauty.app.features.home.adapter.HomeToolkitAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeTopSearchAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeVoucherCardAdapter;
 import com.veganbeauty.app.features.home.adapter.HomeVoucherCategoryAdapter;
 import com.veganbeauty.app.features.home.HomeHeaderHelper;
+import com.veganbeauty.app.features.community.profile.CommunityAffiliateOrdersFragment;
+import com.veganbeauty.app.features.community.profile.CommunityRevenueFragment;
+import com.veganbeauty.app.features.community.profile.CommunityShowcaseFragment;
 import com.veganbeauty.app.features.myskin.AccountSyncHelper;
 import com.veganbeauty.app.features.myskin.ChooseBranchFragment;
 import com.veganbeauty.app.features.myskin.MySkinFragment;
@@ -70,6 +74,7 @@ import com.veganbeauty.app.features.shop.product.list.ShopListFragment;
 import com.veganbeauty.app.features.shop.store.ShopStoreSystemFragment;
 import com.veganbeauty.app.features.weather.SkinWeatherForecastFragment;
 import com.veganbeauty.app.utils.CartFlyAnimationHelper;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
 
 import android.widget.ImageView;
 
@@ -97,6 +102,7 @@ public class HomeFragment extends RootieFragment {
     private HomeCategoryAdapter categoryAdapter;
     private HomeBannerAdapter bannerAdapter;
     private HomeShortcutAdapter shortcutAdapter;
+    private HomeToolkitAdapter toolkitAdapter;
     private HomeVoucherCategoryAdapter voucherCategoryAdapter;
     private HomeVoucherCardAdapter voucherCardAdapter;
 
@@ -109,6 +115,7 @@ public class HomeFragment extends RootieFragment {
     private int recommendationLimit = 6;
     private List<ProductEntity> allRecommendationProducts = new ArrayList<>();
     private List<HomeShortcutItem> allShortcuts;
+    private List<HomeShortcutItem> toolkitItems;
     private HomeHeaderScrollHelper headerScrollHelper;
 
     private final HomeProductCartListener homeProductCartListener = new HomeProductCartListener() {
@@ -162,9 +169,11 @@ public class HomeFragment extends RootieFragment {
     @Override
     public void setupUI(View view) {
         buildShortcuts();
+        buildToolkit();
         setupRecyclerViews();
         setupBanner();
         setupShortcuts();
+        setupToolkit();
         setupHeaderActions();
         setupBottomNav();
         setupPromoClicks();
@@ -205,6 +214,37 @@ public class HomeFragment extends RootieFragment {
         );
     }
 
+    private void buildToolkit() {
+        toolkitItems = Arrays.asList(
+                new HomeShortcutItem("Đơn hàng tiếp thị", R.drawable.ic_bag,
+                        () -> navigateIfLoggedIn(new CommunityAffiliateOrdersFragment())),
+                new HomeShortcutItem("Trang trưng bày", R.drawable.ic_box, this::openOwnShowcase),
+                new HomeShortcutItem("Doanh thu", R.drawable.ic_coin_outline,
+                        () -> navigateIfLoggedIn(new CommunityRevenueFragment())),
+                new HomeShortcutItem("Hỗ trợ Rootie", R.drawable.ic_help, () ->
+                        Toast.makeText(requireContext(), "Tính năng đang phát triển", Toast.LENGTH_SHORT).show())
+        );
+    }
+
+    private void openOwnShowcase() {
+        if (!ProfileSession.isLoggedIn(requireContext())) {
+            BottomNavHelper.showLoginRequiredDialog(requireContext());
+            return;
+        }
+        CommunityShowcaseFragment fragment = new CommunityShowcaseFragment();
+        Bundle args = new Bundle();
+        String userId = ProfileSessionHelper.getEffectiveUserId(requireContext());
+        String name = ProfileSession.getFullName(requireContext());
+        if (name == null || name.trim().isEmpty()) {
+            name = ProfileSession.getUsername(requireContext());
+        }
+        args.putString("USER_ID", userId);
+        args.putString("AVATAR_URL", ProfileSessionHelper.getDisplayAvatarUrl(requireContext()));
+        args.putString("USER_NAME", name != null ? name : "Rootie");
+        fragment.setArguments(args);
+        navigateTo(fragment);
+    }
+
     private void navigateTo(Fragment fragment) {
         getParentFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
@@ -232,6 +272,14 @@ public class HomeFragment extends RootieFragment {
             isShortcutsExpanded = !isShortcutsExpanded;
             updateShortcutsList();
         });
+    }
+
+    private void setupToolkit() {
+        if (toolkitAdapter != null && toolkitItems != null) {
+            toolkitAdapter.submitList(toolkitItems);
+        }
+        binding.btnToolkitHeader.setOnClickListener(v ->
+                navigateIfLoggedIn(new CommunityRevenueFragment()));
     }
 
     private void updateShortcutsList() {
@@ -369,10 +417,15 @@ public class HomeFragment extends RootieFragment {
         categoryAdapter = new HomeCategoryAdapter(this::navigateToCategoryList);
         bannerAdapter = new HomeBannerAdapter();
         shortcutAdapter = new HomeShortcutAdapter();
+        toolkitAdapter = new HomeToolkitAdapter();
 
         binding.rvShortcuts.setLayoutManager(new GridLayoutManager(getContext(), 3));
         binding.rvShortcuts.setAdapter(shortcutAdapter);
         binding.rvShortcuts.setNestedScrollingEnabled(false);
+
+        binding.rvToolkit.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        binding.rvToolkit.setAdapter(toolkitAdapter);
+        binding.rvToolkit.setNestedScrollingEnabled(false);
 
         binding.flashsaleV2Section.rvFlashSaleV2.setLayoutManager(
                 new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));

@@ -10,6 +10,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.veganbeauty.app.data.local.LocalJsonReader;
+import com.veganbeauty.app.data.local.OrderReviewLocalStore;
+import com.veganbeauty.app.data.local.ProductReviewLocalStore;
+import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.dao.OrderDao;
 import com.veganbeauty.app.data.local.dao.RewardPointDao;
 import com.veganbeauty.app.data.local.dao.UserGiftDao;
@@ -18,6 +21,8 @@ import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 import com.veganbeauty.app.data.local.entities.RewardPointEntity;
 import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.repository.OrderStatusNotifier;
+import com.veganbeauty.app.utils.FeedbackImageUploadHelper;
+import com.veganbeauty.app.features.community.affiliate.AffiliateProductsHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -145,6 +150,11 @@ public class OrderRepository {
                 }
                 enrichCreatedAt(order, doc);
                 normalizeOrderForRoom(order);
+                // Ưu tiên feedback đã lưu trên máy khách, rồi mới fallback Room
+                if (appContext != null) {
+                    OrderReviewLocalStore.applyTo(appContext, order);
+                }
+                preserveLocalReviewIfNeeded(order);
 
                 orders.add(order);
                 if (appContext != null) {
@@ -160,6 +170,44 @@ public class OrderRepository {
             } catch (Exception ex) {
                 Log.e("OrderRepository", "Error inserting orders", ex);
             }
+            if (appContext != null) {
+                for (OrderEntity order : orders) {
+                    if (AffiliateProductsHelper.isCompletedOrderStatus(order.getStatus())) {
+                        AffiliateProductsHelper.syncProductsFromCompletedOrder(appContext, order);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Firebase sync dùng REPLACE — nếu remote chưa có review mà local/Room đã có thì giữ lại.
+     */
+    private void preserveLocalReviewIfNeeded(OrderEntity remoteOrder) {
+        if (remoteOrder == null || remoteOrder.getId() == null) return;
+        if (remoteOrder.isHasReview() && remoteOrder.getReviewStars() > 0) {
+            // Remote/local-store đã có review đủ — vẫn bổ sung text nếu đang trống
+            if (remoteOrder.getReviewText() != null && !remoteOrder.getReviewText().trim().isEmpty()) {
+                return;
+            }
+        }
+        try {
+            android.content.Context appContext = localJsonReader.getAppContext();
+            if (appContext != null && OrderReviewLocalStore.applyTo(appContext, remoteOrder)) {
+                return;
+            }
+            OrderEntity local = orderDao.getOrderByIdSync(remoteOrder.getId());
+            if (local == null || !local.isHasReview()) {
+                return;
+            }
+            remoteOrder.setHasReview(true);
+            remoteOrder.setReviewStars(local.getReviewStars());
+            remoteOrder.setReviewText(local.getReviewText());
+            remoteOrder.setReviewImage(local.getReviewImage());
+            remoteOrder.setAnonymous(local.isAnonymous());
+            remoteOrder.setRecommendToFriends(local.isRecommendToFriends());
+        } catch (Exception e) {
+            Log.w(TAG, "preserveLocalReviewIfNeeded failed for " + remoteOrder.getId(), e);
         }
     }
 
@@ -326,6 +374,21 @@ public class OrderRepository {
             boolean isAnonymous,
             boolean recommend
     ) {
+        List<String> images = new ArrayList<>();
+        if (image != null && !image.trim().isEmpty()) {
+            images.add(image.trim());
+        }
+        return updateOrderReview(orderId, stars, text, images, isAnonymous, recommend);
+    }
+
+    public boolean updateOrderReview(
+            String orderId,
+            int stars,
+            String text,
+            List<String> images,
+            boolean isAnonymous,
+            boolean recommend
+    ) {
         try {
             int wordCount = 0;
             if (text != null && !text.trim().isEmpty()) {
@@ -333,10 +396,105 @@ public class OrderRepository {
                 wordCount = words.length;
             }
             boolean hasText = text != null && !text.trim().isEmpty() && wordCount <= 200;
-            boolean hasImage = image != null && !image.isEmpty();
+            boolean hasImage = images != null && !images.isEmpty();
             boolean qualifiesForCoins = stars > 0 && hasText && hasImage;
 
-            orderDao.updateOrderReviewStatus(orderId, true);
+            android.content.Context appContext = localJsonReader.getAppContext();
+            List<String> sourceImages = images != null ? images : new ArrayList<>();
+            List<String> remoteImages = sourceImages;
+            if (appContext != null && !sourceImages.isEmpty()) {
+                remoteImages = FeedbackImageUploadHelper.ensureRemoteUrls(
+                        appContext,
+                        sourceImages,
+                        "feedback/orders/" + orderId
+                );
+            }
+
+            org.json.JSONArray arr = new org.json.JSONArray();
+            for (String path : remoteImages) {
+                if (path != null && !path.trim().isEmpty()) {
+                    arr.put(path.trim());
+                }
+            }
+            String imageJson = arr.toString();
+
+            String safeText = text != null ? text : "";
+            int updatedRows = orderDao.updateOrderReviewFull(
+                    orderId,
+                    true,
+                    stars,
+                    safeText,
+                    imageJson,
+                    isAnonymous,
+                    recommend
+            );
+            if (updatedRows <= 0) {
+                throw new IllegalStateException("Không tìm thấy đơn hàng để lưu đánh giá: " + orderId);
+            }
+
+            // Lưu bền theo orderId trên máy khách (không phụ thuộc Firebase sync)
+            if (appContext != null) {
+                OrderReviewLocalStore.save(
+                        appContext,
+                        orderId,
+                        stars,
+                        safeText,
+                        imageJson,
+                        isAnonymous,
+                        recommend
+                );
+            }
+
+            // Đồng bộ review lên Firestore (merge) để không bị sync ghi đè mất
+            try {
+                java.util.Map<String, Object> updates = new java.util.HashMap<>();
+                updates.put("hasReview", true);
+                updates.put("reviewStars", stars);
+                updates.put("reviewText", safeText);
+                updates.put("reviewImage", imageJson);
+                updates.put("isAnonymous", isAnonymous);
+                updates.put("recommendToFriends", recommend);
+                Tasks.await(FirebaseFirestore.getInstance()
+                        .collection("orders")
+                        .document(orderId)
+                        .set(updates, com.google.firebase.firestore.SetOptions.merge()));
+            } catch (Exception firestoreError) {
+                Log.e(TAG, "Failed to sync order review to Firestore: " + orderId, firestoreError);
+            }
+
+            // Lưu đánh giá theo từng sản phẩm trong đơn để hiện ở trang sản phẩm
+            if (appContext != null) {
+                OrderEntity order = orderDao.getOrderByIdSync(orderId);
+                if (order != null) {
+                    // Đảm bảo entity local cũng có đủ field review (phòng Flow đọc lại)
+                    order.setHasReview(true);
+                    order.setReviewStars(stars);
+                    order.setReviewText(safeText);
+                    order.setReviewImage(imageJson);
+                    order.setAnonymous(isAnonymous);
+                    order.setRecommendToFriends(recommend);
+                    orderDao.insertOrder(order);
+
+                    if (order.getItems() != null && !order.getItems().isEmpty()) {
+                        List<String> productIds = new ArrayList<>();
+                        for (OrderItem item : order.getItems()) {
+                            if (item != null && item.getProductId() != null && !item.getProductId().trim().isEmpty()) {
+                                productIds.add(item.getProductId().trim());
+                            }
+                        }
+                        String reviewerName = ProfileSession.getFullName(appContext);
+                        ProductReviewLocalStore.upsertFromOrder(
+                                appContext,
+                                orderId,
+                                productIds,
+                                reviewerName,
+                                stars,
+                                safeText,
+                                isAnonymous
+                        );
+                    }
+                }
+            }
 
             if (qualifiesForCoins) {
                 if (!rewardPointDao.hasReceivedPointsForOrder(
@@ -357,7 +515,7 @@ public class OrderRepository {
             return false;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Không thể lưu đánh giá đơn hàng", e);
         }
     }
 
@@ -620,6 +778,11 @@ public class OrderRepository {
                 if (existing != null) {
                     existing.setStatus(status);
                     OrderStatusNotifier.notifyIfStatusChanged(appContext, existing, previousStatus, status);
+                    if (appContext != null
+                            && AffiliateProductsHelper.isCompletedOrderStatus(status)
+                            && !AffiliateProductsHelper.isCompletedOrderStatus(previousStatus)) {
+                        AffiliateProductsHelper.syncProductsFromCompletedOrder(appContext, existing);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

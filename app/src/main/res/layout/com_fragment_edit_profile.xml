@@ -15,11 +15,14 @@
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_cancel"
-            app:tint="@color/black" />
+            android:padding="9dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Đóng"
+            android:src="@drawable/ic_close_thin"
+            app:tint="@color/secondary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -88,45 +91,52 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_camera"
-                        app:tint="@color/black" />
+                        app:tint="@color/secondary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="Ảnh bìa"
-                        android:textColor="@color/black"
+                        android:textColor="@color/secondary"
                         android:textSize="12sp" />
                 </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/ivAvatar"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvAvatar"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_marginTop="90dp"
-                    android:background="@drawable/com_bg_post"
-                    android:padding="4dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/img_avatar"
+                    app:cardCornerRadius="50dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@android:color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/ivAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_avatar" />
+                </androidx.cardview.widget.CardView>
 
                 <ImageView
                     android:id="@+id/ivCameraIcon"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginBottom="4dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="2dp"
                     android:background="@drawable/bg_circle_white_green_border"
                     android:contentDescription="Thay đổi ảnh đại diện"
-                    android:elevation="2dp"
+                    android:elevation="4dp"
                     android:padding="8dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_camera"
-                    app:layout_constraintBottom_toBottomOf="@id/ivAvatar"
-                    app:layout_constraintEnd_toEndOf="@id/ivAvatar"
-                    app:tint="@color/black" />
+                    app:layout_constraintBottom_toBottomOf="@id/cvAvatar"
+                    app:layout_constraintEnd_toEndOf="@id/cvAvatar"
+                    app:tint="@color/secondary" />
 
                 <TextView
                     android:id="@+id/tvChangeAvatarHint"
@@ -138,7 +148,7 @@
                     android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
+                    app:layout_constraintTop_toBottomOf="@id/cvAvatar" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

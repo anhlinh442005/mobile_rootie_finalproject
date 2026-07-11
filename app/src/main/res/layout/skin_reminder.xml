@@ -627,8 +627,8 @@
 
                         <ImageView
                             android:id="@+id/ivMorningRewardCoin"
-                            android:layout_width="14dp"
-                            android:layout_height="12dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:layout_marginEnd="4dp"
                             android:src="@drawable/ic_coin" />
 
@@ -721,8 +721,8 @@
 
                         <ImageView
                             android:id="@+id/ivEveningRewardCoin"
-                            android:layout_width="14dp"
-                            android:layout_height="12dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:layout_marginEnd="4dp"
                             android:src="@drawable/ic_coin" />
 
@@ -815,8 +815,8 @@
 
                         <ImageView
                             android:id="@+id/ivWeeklyRewardCoin"
-                            android:layout_width="14dp"
-                            android:layout_height="12dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:layout_marginEnd="4dp"
                             android:src="@drawable/ic_coin" />
 
@@ -909,8 +909,8 @@
 
                         <ImageView
                             android:id="@+id/ivLoyaltyRewardCoin"
-                            android:layout_width="14dp"
-                            android:layout_height="12dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:layout_marginEnd="4dp"
                             android:src="@drawable/ic_coin" />
 
@@ -1005,8 +1005,8 @@
 
                         <ImageView
                             android:id="@+id/ivSocialRewardCoin"
-                            android:layout_width="14dp"
-                            android:layout_height="12dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:layout_marginEnd="4dp"
                             android:src="@drawable/ic_coin" />
 

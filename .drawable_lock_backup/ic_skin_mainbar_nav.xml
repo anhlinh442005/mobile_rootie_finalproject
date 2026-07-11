@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Less inset = larger green circle on nav; ~11% trims PNG cream ring at 488² -->
-<inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_skin_mainbar"
-    android:inset="4%" />

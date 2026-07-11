@@ -37,8 +37,7 @@ import com.veganbeauty.app.data.local.entities.BookingHistoryEntity;
 import com.veganbeauty.app.data.remote.FirestoreService;
 import com.veganbeauty.app.databinding.SkinFragmentBookingDetailCompletedBinding;
 import com.veganbeauty.app.utils.CoinRewardDialogHelper;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
-
+import com.veganbeauty.app.utils.FeedbackImageUploadHelper;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -112,13 +111,6 @@ public class BookingDetailCompletedFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         binding.skinDetailBtnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-
-        binding.skinDetailBtnNotification.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new AccountNotificationFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
 
         if (bookingData != null) {
             populateUI(bookingData);
@@ -640,9 +632,25 @@ public class BookingDetailCompletedFragment extends RootieFragment {
         bookingData = copyBookingWithFeedbackImages(feedbackImages);
         final List<String> imagesToSave = new ArrayList<>(feedbackImages);
         ioExecutor.execute(() -> {
-            LocalJsonReader localJsonReader = new LocalJsonReader(requireContext());
-            localJsonReader.updateBookingFeedbackImages(bookingData.getId(), imagesToSave);
-            new FirestoreService().updateBookingFeedbackImages(bookingData.getId(), imagesToSave);
+            try {
+                List<String> remoteImages = FeedbackImageUploadHelper.ensureRemoteUrls(
+                        requireContext().getApplicationContext(),
+                        imagesToSave,
+                        "feedback/bookings/" + bookingData.getId()
+                );
+                LocalJsonReader localJsonReader = new LocalJsonReader(requireContext());
+                localJsonReader.updateBookingFeedbackImages(bookingData.getId(), remoteImages);
+                new FirestoreService().updateBookingFeedbackImages(bookingData.getId(), remoteImages);
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        if (isAdded()) {
+                            Toast.makeText(requireContext(), "Không thể tải ảnh feedback lên cloud", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
         });
     }
 

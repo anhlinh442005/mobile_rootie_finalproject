@@ -49,11 +49,6 @@ public class SkinAllergyProfileFragment extends RootieFragment {
     private FragmentSkinAllergyProfileBinding binding;
     private SkinDetailHeaderScrollHelper headerScrollHelper;
 
-    @Override
-    protected boolean shouldSetupNotificationBell() {
-        return false;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -113,10 +108,6 @@ public class SkinAllergyProfileFragment extends RootieFragment {
         setupSkinComparison();
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                        .addToBackStack(null).commit());
 
         int finalSensitivity = sensitivity;
         int finalHydration = hydration;

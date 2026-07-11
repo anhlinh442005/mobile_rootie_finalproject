@@ -80,7 +80,8 @@
             android:id="@+id/ivReplyLike"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/ic_heart" />
+            android:src="@drawable/ic_heart"
+            app:tint="@color/secondary" />
 
         <TextView
             android:id="@+id/tvReplyLikesCount"

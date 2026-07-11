@@ -361,7 +361,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/ic_coin"
+                                android:src="@drawable/ic_coin_outline"
                                 app:tint="@color/gray_dark" />
 
                             <TextView

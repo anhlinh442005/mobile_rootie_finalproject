@@ -92,7 +92,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_nav_com_hub"
-                app:tint="@color/tertiary" />
+                app:tint="@color/secondary" />
         </FrameLayout>
 
         <TextView
@@ -105,7 +105,7 @@
             android:maxLines="1"
             android:text="Beauty Hub"
             android:textSize="9sp"
-            android:textColor="@color/tertiary"
+            android:textColor="@color/secondary"
             android:fontFamily="@font/be_vietnam_pro" />
     </LinearLayout>
 
@@ -139,8 +139,8 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_explore"
-                app:tint="@color/tertiary" />
+                android:src="@drawable/ic_nav_com_explore"
+                app:tint="@color/secondary" />
         </FrameLayout>
 
         <TextView
@@ -153,7 +153,7 @@
             android:maxLines="1"
             android:text="Khám phá"
             android:textSize="9sp"
-            android:textColor="@color/tertiary"
+            android:textColor="@color/secondary"
             android:fontFamily="@font/be_vietnam_pro" />
     </LinearLayout>
 
@@ -188,7 +188,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_nav_com_chat"
-                app:tint="@color/tertiary" />
+                app:tint="@color/secondary" />
         </FrameLayout>
 
         <TextView
@@ -201,7 +201,7 @@
             android:maxLines="1"
             android:text="Tin nhắn"
             android:textSize="9sp"
-            android:textColor="@color/tertiary"
+            android:textColor="@color/secondary"
             android:fontFamily="@font/be_vietnam_pro" />
     </LinearLayout>
 
@@ -236,7 +236,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_account_outline"
-                app:tint="@color/tertiary" />
+                app:tint="@color/secondary" />
         </FrameLayout>
 
         <TextView
@@ -249,7 +249,7 @@
             android:maxLines="1"
             android:text="Trang cá nhân"
             android:textSize="9sp"
-            android:textColor="@color/tertiary"
+            android:textColor="@color/secondary"
             android:fontFamily="@font/be_vietnam_pro" />
     </LinearLayout>
 

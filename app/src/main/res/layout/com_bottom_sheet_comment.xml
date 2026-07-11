@@ -38,7 +38,8 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_plane" />
+            android:src="@drawable/ic_plane"
+            app:tint="@color/secondary" />
     </RelativeLayout>
 
     <View

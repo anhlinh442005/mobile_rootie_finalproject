@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.OrderEntity.OrderItem;
 
@@ -104,6 +105,14 @@ public class AffiliateProductsHelper {
         return newObj;
     }
 
+    public static boolean isCompletedOrderStatus(@Nullable String status) {
+        if (status == null) {
+            return false;
+        }
+        String s = status.trim();
+        return "Hoàn tất".equals(s) || "Đã giao hàng".equals(s) || "Thành công".equals(s);
+    }
+
     public static boolean isProductDisplayed(Context context, String userId, String productId) {
         if (!isCompletedPurchaseProduct(context, userId, productId)) {
             return false;
@@ -134,8 +143,7 @@ public class AffiliateProductsHelper {
             return new ArrayList<>();
         }
         String safeUserId = userId.trim();
-        LinkedHashSet<String> eligibleIds = new LinkedHashSet<>();
-        addCompletedPurchaseProductIds(context, safeUserId, eligibleIds);
+        LinkedHashSet<String> eligibleIds = getCompletedPurchaseProductIds(context, safeUserId);
 
         List<String> result = new ArrayList<>();
         for (String productId : eligibleIds) {
@@ -146,16 +154,82 @@ public class AffiliateProductsHelper {
         return result;
     }
 
+    /**
+     * Product IDs from completed ("Hoàn tất") orders for this user —
+     * merges Room (live orders) with assets/orders.json (demo seed).
+     */
+    public static LinkedHashSet<String> getCompletedPurchaseProductIds(Context context, String userId) {
+        LinkedHashSet<String> ids = new LinkedHashSet<>();
+        if (context == null || userId == null || userId.trim().isEmpty()) {
+            return ids;
+        }
+        addCompletedPurchaseProductIds(context, userId.trim(), ids);
+        return ids;
+    }
+
     private static void addCompletedPurchaseProductIds(Context context, String userId, Set<String> ids) {
-        for (OrderEntity order : new com.veganbeauty.app.data.local.LocalJsonReader(context).getAllOrders()) {
-            if (!userId.equals(order.getUserId()) || !"Hoàn tất".equals(order.getStatus())) {
+        for (OrderEntity order : loadCompletedOrdersForUser(context, userId)) {
+            addProductIdsFromOrder(order, ids);
+        }
+    }
+
+    private static List<OrderEntity> loadCompletedOrdersForUser(Context context, String userId) {
+        List<OrderEntity> result = new ArrayList<>();
+        LinkedHashSet<String> seenOrderIds = new LinkedHashSet<>();
+
+        try {
+            List<OrderEntity> roomOrders = RootieDatabase.getDatabase(context)
+                    .orderDao()
+                    .getCompletedOrdersForUserSync(userId);
+            if (roomOrders != null) {
+                for (OrderEntity order : roomOrders) {
+                    if (order == null) {
+                        continue;
+                    }
+                    String orderId = order.getId();
+                    if (orderId != null && !orderId.trim().isEmpty()) {
+                        if (!seenOrderIds.add(orderId.trim())) {
+                            continue;
+                        }
+                    }
+                    result.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            for (OrderEntity order : new com.veganbeauty.app.data.local.LocalJsonReader(context).getAllOrders()) {
+                if (order == null || !userId.equals(order.getUserId()) || !isCompletedOrderStatus(order.getStatus())) {
+                    continue;
+                }
+                String orderId = order.getId();
+                if (orderId != null && !orderId.trim().isEmpty()) {
+                    if (!seenOrderIds.add(orderId.trim())) {
+                        continue;
+                    }
+                }
+                result.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    private static void addProductIdsFromOrder(@Nullable OrderEntity order, Set<String> ids) {
+        if (order == null || order.getItems() == null) {
+            return;
+        }
+        for (OrderItem item : order.getItems()) {
+            if (item == null) {
                 continue;
             }
-            for (OrderItem item : order.getItems()) {
-                String productId = item.getProductId();
-                if (productId != null && !productId.trim().isEmpty()) {
-                    ids.add(productId.trim());
-                }
+            String productId = item.getProductId();
+            if (productId != null && !productId.trim().isEmpty()) {
+                ids.add(productId.trim());
             }
         }
     }
@@ -164,21 +238,49 @@ public class AffiliateProductsHelper {
         if (productId == null || productId.trim().isEmpty()) {
             return false;
         }
-        String safeProductId = productId.trim();
-        for (OrderEntity order : new com.veganbeauty.app.data.local.LocalJsonReader(context).getAllOrders()) {
-            if (!userId.equals(order.getUserId()) || !"Hoàn tất".equals(order.getStatus())) {
+        return getCompletedPurchaseProductIds(context, userId).contains(productId.trim());
+    }
+
+    /**
+     * When a buyer order becomes completed, mark its products as available/displayed
+     * in Community affiliate "Sản phẩm khả dụng".
+     */
+    public static void syncProductsFromCompletedOrder(Context context, @Nullable OrderEntity order) {
+        if (context == null || order == null) {
+            return;
+        }
+        if (!isCompletedOrderStatus(order.getStatus())) {
+            return;
+        }
+        String userId = order.getUserId();
+        if (userId == null || userId.trim().isEmpty() || order.getItems() == null) {
+            return;
+        }
+        String safeUserId = userId.trim();
+        for (OrderItem item : order.getItems()) {
+            if (item == null) {
                 continue;
             }
-            for (OrderItem item : order.getItems()) {
-                if (safeProductId.equals(item.getProductId())) {
-                    return true;
-                }
+            String productId = item.getProductId();
+            if (productId == null || productId.trim().isEmpty()) {
+                continue;
             }
+            // Force-write: order itself proves purchase eligibility.
+            writeDisplayFlag(context, safeUserId, productId.trim(), true, true);
         }
-        return false;
     }
 
     public static void setProductDisplayed(Context context, String userId, String productId, boolean displayed) {
+        writeDisplayFlag(context, userId, productId, displayed, false);
+    }
+
+    private static void writeDisplayFlag(
+            Context context,
+            String userId,
+            String productId,
+            boolean displayed,
+            boolean forceAllow
+    ) {
         try {
             JSONObject root = readData(context);
             JSONArray arr = root.optJSONArray("affiliate_products");
@@ -186,7 +288,7 @@ public class AffiliateProductsHelper {
                 arr = new JSONArray();
                 root.put("affiliate_products", arr);
             }
-            
+
             JSONObject userData = null;
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject obj = arr.optJSONObject(i);
@@ -195,32 +297,35 @@ public class AffiliateProductsHelper {
                     break;
                 }
             }
-            
+
             if (userData == null) {
                 userData = new JSONObject();
                 userData.put("userId", userId);
                 userData.put("products", new JSONArray());
                 arr.put(userData);
             }
-            
+
             JSONArray productsArr = userData.optJSONArray("products");
             if (productsArr == null) {
                 productsArr = new JSONArray();
                 userData.put("products", productsArr);
             }
-            
+
             boolean found = false;
             for (int i = 0; i < productsArr.length(); i++) {
                 JSONObject p = productsArr.optJSONObject(i);
                 if (p != null && p.optString("productId").equals(productId)) {
-                    p.put("affiliate_display", displayed);
+                    if (!forceAllow) {
+                        p.put("affiliate_display", displayed);
+                    }
+                    // forceAllow (order sync): keep user's existing on/off choice
                     found = true;
                     break;
                 }
             }
-            
+
             if (!found) {
-                if (!isCompletedPurchaseProduct(context, userId, productId)) {
+                if (!forceAllow && !isCompletedPurchaseProduct(context, userId, productId)) {
                     return;
                 }
                 JSONObject p = new JSONObject();
@@ -228,7 +333,7 @@ public class AffiliateProductsHelper {
                 p.put("affiliate_display", displayed);
                 productsArr.put(p);
             }
-            
+
             writeData(context, root);
         } catch (Exception e) {
             e.printStackTrace();

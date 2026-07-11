@@ -191,20 +191,6 @@
         </HorizontalScrollView>
     </LinearLayout>
 
-    <!-- Result Count -->
-    <TextView
-        android:id="@+id/tv_result_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="4dp"
-        android:fontFamily="@font/be_vietnam_pro"
-        android:textColor="@color/tertiary"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filter_row" />
-
     <!-- List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_history"

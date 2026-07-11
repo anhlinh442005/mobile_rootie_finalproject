@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.databinding.QuizTestLevelSelectionBinding;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 
 public class QuizTestLevelSelectionFragment extends RootieFragment {
@@ -32,12 +31,6 @@ public class QuizTestLevelSelectionFragment extends RootieFragment {
     @Override
     public void setupUI(@NonNull View view) {
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new AccountNotificationFragment())
-                        .addToBackStack(null)
-                        .commit());
 
         binding.cardQuizBasic.setOnClickListener(v -> selectBasic());
         binding.cardQuizAdvanced.setOnClickListener(v -> selectAdvanced());

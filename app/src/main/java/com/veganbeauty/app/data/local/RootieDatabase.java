@@ -196,6 +196,8 @@ public abstract class RootieDatabase extends RoomDatabase {
         })
         .addMigrations(MIGRATION_23_24)
         .fallbackToDestructiveMigration()
+        // Nhiều màn (checkout, cart, popup xu) đọc số dư trên main thread
+        .allowMainThreadQueries()
         .build();
     }
 

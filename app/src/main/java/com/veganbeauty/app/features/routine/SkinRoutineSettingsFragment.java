@@ -57,11 +57,6 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         Context ctx = requireContext();
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                        .addToBackStack(null).commit());
-
         binding.btnAiSuggestion.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.main_container, new com.veganbeauty.app.features.ai.SkinAiChatFragment())
@@ -333,6 +328,18 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
     private void saveConfiguration() {
         Context ctx = requireContext();
 
+        if (!ProfileSession.isNotiEnabled(ctx)
+                || !com.veganbeauty.app.features.account.notification.LocalSystemNotificationHelper.canPost(ctx)) {
+            new AlertDialog.Builder(ctx)
+                    .setTitle("Chưa bật thông báo trên máy")
+                    .setMessage("Toggle trong app chưa đủ. Hãy bật thông báo Rootie trong Cài đặt hệ thống (và cho phép báo thức/nhắc giờ nếu máy hỏi), rồi lưu lại.")
+                    .setPositiveButton("Mở cài đặt", (d, w) ->
+                            com.veganbeauty.app.features.account.notification.NotificationScheduleHelper.openAppSettings(ctx))
+                    .setNegativeButton("Để sau", null)
+                    .show();
+            return;
+        }
+
         ProfileSession.setMorningReminderEnabled(ctx, isMorningReminderEnabled);
         ProfileSession.setEveningReminderEnabled(ctx, isEveningReminderEnabled);
         ProfileSession.setLeadReminderEnabled(ctx, isLeadReminderEnabled);
@@ -348,10 +355,23 @@ public class SkinRoutineSettingsFragment extends RootieFragment {
         ProfileSession.setMorningSteps(ctx, morningRaw);
         ProfileSession.setEveningSteps(ctx, eveningRaw);
 
+        com.veganbeauty.app.features.account.notification.NotificationScheduleHelper.remindExactAlarmIfNeeded(ctx);
         RoutineAlarmScheduler.rescheduleAlarms(ctx);
 
-        Toast.makeText(ctx, "Đã lưu cấu hình routine. Nhắc nhở sẽ đến đúng giờ bạn đã chọn.", Toast.LENGTH_SHORT).show();
+        String nextHint = buildNextReminderHint();
+        Toast.makeText(ctx, "Đã lưu. " + nextHint, Toast.LENGTH_LONG).show();
         getParentFragmentManager().popBackStack();
+    }
+
+    private String buildNextReminderHint() {
+        if (!isMorningReminderEnabled && !isEveningReminderEnabled) {
+            return "Bạn đang tắt hết nhắc routine.";
+        }
+        StringBuilder sb = new StringBuilder("Nhắc sẽ tới đúng giờ đã chọn");
+        if (isMorningReminderEnabled) sb.append(" · sáng ").append(morningTime);
+        if (isEveningReminderEnabled) sb.append(" · tối ").append(eveningTime);
+        sb.append(" (không gửi ngay lúc lưu).");
+        return sb.toString();
     }
 
     @Override

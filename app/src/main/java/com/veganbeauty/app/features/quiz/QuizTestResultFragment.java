@@ -21,12 +21,14 @@ import com.veganbeauty.app.core.base.RootieFragment;
 import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.SkinHistoryLocalStore;
 import com.veganbeauty.app.databinding.QuizTestResultBinding;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.ai.SkinAiRoutineRecommender;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.myskin.SkinDetailHeaderScrollHelper;
 import com.veganbeauty.app.features.weather.SkinWeatherProfileHelper;
+import com.veganbeauty.app.data.local.SkinProfileMetricsHelper;
 import com.veganbeauty.app.utils.CoinRewardDialogHelper;
+import com.veganbeauty.app.utils.ProfileSessionHelper;
+import com.veganbeauty.app.utils.RewardPointsHelper;
 import com.veganbeauty.app.utils.SkinHistoryIdHelper;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,11 +77,14 @@ public class QuizTestResultFragment extends RootieFragment {
     private boolean quizRewardGrantedThisOpen = false;
     /** Chờ onResume rồi mới cộng xu — tránh show dialog khi fragment chưa ổn định (crash → ra Welcome). */
     private boolean quizRewardPendingUntilResume = false;
-
-    @Override
-    protected boolean shouldSetupNotificationBell() {
-        return false;
-    }
+    /** Hoãn load AI routine đến sau khi đóng popup xu (tránh OOM). */
+    private boolean aiRoutinePendingAfterReward = false;
+    private String pendingAiSkinType;
+    private int pendingAiHydration;
+    private int pendingAiSebum;
+    private int pendingAiSensitivity;
+    private int pendingAiElasticity;
+    private Set<String> pendingAiFlagged;
 
     @Nullable
     @Override
@@ -140,14 +145,6 @@ public class QuizTestResultFragment extends RootieFragment {
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        if (binding.layoutNotification != null) {
-            binding.layoutNotification.getRoot().setOnClickListener(v ->
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.main_container, new AccountNotificationFragment())
-                            .addToBackStack(null)
-                            .commitAllowingStateLoss());
-        }
-
         String finalSkinType = skinType;
         String finalRecommendation = recommendation;
         Set<String> finalFlaggedSet = flaggedSet;
@@ -186,7 +183,24 @@ public class QuizTestResultFragment extends RootieFragment {
                 });
             }
 
-            loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity, finalFlaggedSet);
+            // Hoãn AI routine đến sau popup xu — tránh OOM (ảnh túi tiền + products.json cùng lúc)
+            if (pendingQuizReward) {
+                aiRoutinePendingAfterReward = true;
+                pendingAiSkinType = finalSkinType;
+                pendingAiHydration = hydration;
+                pendingAiSebum = sebum;
+                pendingAiSensitivity = sensitivity;
+                pendingAiElasticity = elasticity;
+                pendingAiFlagged = finalFlaggedSet != null ? new HashSet<>(finalFlaggedSet) : new HashSet<>();
+                if (binding.llAiRoutineStepsContainer != null) {
+                    showRoutineLoading(true);
+                }
+            } else {
+                binding.getRoot().postDelayed(() -> {
+                    if (!isAdded() || binding == null) return;
+                    loadAiRoutine(finalSkinType, hydration, sebum, sensitivity, elasticity, finalFlaggedSet);
+                }, 400);
+            }
             populateReportSectionsDeferred(finalFlaggedSet);
         }
 
@@ -212,11 +226,181 @@ public class QuizTestResultFragment extends RootieFragment {
             }
             try {
                 processIngredients(flaggedGroups);
-                recommendProducts(flaggedGroups);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            // Gợi ý SP chạy nền — tránh OOM khi đọc products.json trên main thread
+            recommendProductsAsync(flaggedGroups);
         });
+    }
+
+    private void recommendProductsAsync(Set<String> flaggedGroups) {
+        final Context appContext = requireContext().getApplicationContext();
+        final Set<String> flaggedCopy = flaggedGroups != null ? new HashSet<>(flaggedGroups) : new HashSet<>();
+        new Thread(() -> {
+            List<ProductRecommendItem> items = buildProductRecommendations(appContext, flaggedCopy);
+            if (!isAdded()) return;
+            requireActivity().runOnUiThread(() -> {
+                if (!isAdded() || binding == null) return;
+                try {
+                    bindProductRecommendations(items);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }).start();
+    }
+
+    private static final class ProductRecommendItem {
+        final String name;
+        final String mainImage;
+        final String badge;
+        final String badgeColor;
+        final int badgeIcon;
+        final String desc;
+
+        ProductRecommendItem(String name, String mainImage, String badge, String badgeColor,
+                             int badgeIcon, String desc) {
+            this.name = name;
+            this.mainImage = mainImage;
+            this.badge = badge;
+            this.badgeColor = badgeColor;
+            this.badgeIcon = badgeIcon;
+            this.desc = desc;
+        }
+    }
+
+    @NonNull
+    private List<ProductRecommendItem> buildProductRecommendations(@NonNull Context context,
+                                                                   @NonNull Set<String> flaggedGroups) {
+        List<ProductRecommendItem> result = new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(context.getAssets().open("products.json")));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) sb.append(line);
+            br.close();
+            JSONObject root = new JSONObject(sb.toString());
+            JSONArray jsonArray = root.getJSONArray("products");
+
+            BufferedReader br2 = new BufferedReader(new InputStreamReader(context.getAssets().open("quiz_thanhphan.json")));
+            StringBuilder sb2 = new StringBuilder();
+            String line2;
+            while ((line2 = br2.readLine()) != null) sb2.append(line2);
+            br2.close();
+            JSONObject tpObject = new JSONObject(sb2.toString());
+            JSONArray tpArray = tpObject.getJSONArray("ingredients");
+
+            Set<String> avoidChemicals = new HashSet<>();
+            Set<String> cautionChemicals = new HashSet<>();
+            for (int i = 0; i < tpArray.length(); i++) {
+                JSONObject ing = tpArray.getJSONObject(i);
+                String name = ing.getString("name");
+                String category = ing.getString("category");
+                String risk = ing.getString("risk");
+                if (flaggedGroups.contains(category)) {
+                    if ("avoid".equals(risk)) avoidChemicals.add(name.toLowerCase(Locale.ROOT));
+                    else if ("caution".equals(risk)) cautionChemicals.add(name.toLowerCase(Locale.ROOT));
+                }
+            }
+
+            int count = 0;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                if (count >= 5) break;
+                JSONObject prodObj = jsonArray.getJSONObject(i);
+                String prodName = prodObj.getString("name");
+                String mainImage = prodObj.optString("mainImage", "");
+
+                List<String> detailedIngredientsList = new ArrayList<>();
+                if (prodObj.has("detailedIngredients")) {
+                    JSONArray detailedArray = prodObj.getJSONArray("detailedIngredients");
+                    for (int j = 0; j < detailedArray.length(); j++) {
+                        detailedIngredientsList.add(detailedArray.getString(j).toLowerCase(Locale.ROOT));
+                    }
+                }
+
+                List<String> triggeredAvoids = new ArrayList<>();
+                List<String> triggeredCautions = new ArrayList<>();
+                for (String chem : avoidChemicals) {
+                    for (String ing : detailedIngredientsList) {
+                        if (ing.contains(chem)) triggeredAvoids.add(chem);
+                    }
+                }
+                for (String chem : cautionChemicals) {
+                    for (String ing : detailedIngredientsList) {
+                        if (ing.contains(chem)) triggeredCautions.add(chem);
+                    }
+                }
+
+                String badge;
+                String badgeColor;
+                int badgeIcon;
+                String desc;
+                if (!triggeredAvoids.isEmpty()) {
+                    badgeIcon = R.drawable.ic_warning_triangle;
+                    badge = "Nguy cơ kích ứng cao";
+                    badgeColor = "#F04758";
+                    Set<String> uniqueNames = new HashSet<>();
+                    for (String c : triggeredAvoids) uniqueNames.add(getViName(c));
+                    desc = "Sản phẩm chứa " + String.join(", ", uniqueNames)
+                            + " không phù hợp với da nhạy cảm của bạn.";
+                } else if (!triggeredCautions.isEmpty()) {
+                    badgeIcon = R.drawable.ic_warning_outline;
+                    badge = "Cần thận trọng khi dùng";
+                    badgeColor = "#E29400";
+                    Set<String> uniqueNames = new HashSet<>();
+                    for (String c : triggeredCautions) uniqueNames.add(getViName(c));
+                    desc = "Sản phẩm chứa " + String.join(", ", uniqueNames)
+                            + " cần lưu ý theo dõi khi sử dụng.";
+                } else {
+                    badgeIcon = R.drawable.ic_check;
+                    badge = "Lành tính - Khuyên dùng";
+                    badgeColor = "#375633";
+                    desc = "Công thức tối giản, lành tính giúp củng cố lớp màng ẩm tự nhiên mà không gây bí da.";
+                }
+                result.add(new ProductRecommendItem(prodName, mainImage, badge, badgeColor, badgeIcon, desc));
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private void bindProductRecommendations(@NonNull List<ProductRecommendItem> items) {
+        if (binding == null) return;
+        binding.llProductsContainer.removeAllViews();
+        for (ProductRecommendItem item : items) {
+            View itemView = LayoutInflater.from(getContext())
+                    .inflate(R.layout.quiz_item_product_recommendation, binding.llProductsContainer, false);
+            TextView tvProdName = itemView.findViewById(R.id.tv_product_name);
+            TextView tvProdDesc = itemView.findViewById(R.id.tv_product_desc);
+            TextView tvBadge = itemView.findViewById(R.id.tv_compatibility_badge);
+            ImageView ivBadgeIcon = itemView.findViewById(R.id.iv_badge_icon);
+            ImageView ivImage = itemView.findViewById(R.id.iv_product_image);
+
+            tvProdName.setText(item.name);
+            tvProdDesc.setText(item.desc);
+            tvBadge.setText(item.badge);
+            tvBadge.setTextColor(Color.parseColor(item.badgeColor));
+            ivBadgeIcon.setImageResource(item.badgeIcon);
+            ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor(item.badgeColor)));
+
+            if (item.mainImage != null && !item.mainImage.isEmpty()) {
+                com.bumptech.glide.Glide.with(ivImage.getContext())
+                        .load(item.mainImage)
+                        .placeholder(R.drawable.myphamxanh)
+                        .into(ivImage);
+            } else {
+                ivImage.setImageResource(R.drawable.myphamxanh);
+            }
+            binding.llProductsContainer.addView(itemView);
+        }
+    }
+
+    private void recommendProducts(Set<String> flaggedGroups) {
+        // Giữ method cũ cho tương thích — chuyển sang async
+        recommendProductsAsync(flaggedGroups);
     }
 
     private static final class ReportSnapshot {
@@ -451,113 +635,6 @@ public class QuizTestResultFragment extends RootieFragment {
         }
     }
 
-    private void recommendProducts(Set<String> flaggedGroups) {
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(requireContext().getAssets().open("products.json")));
-            StringBuilder sb = new StringBuilder(); String line;
-            while ((line = br.readLine()) != null) sb.append(line);
-            br.close();
-            JSONObject root = new JSONObject(sb.toString());
-            JSONArray jsonArray = root.getJSONArray("products");
-
-            BufferedReader br2 = new BufferedReader(new InputStreamReader(requireContext().getAssets().open("quiz_thanhphan.json")));
-            StringBuilder sb2 = new StringBuilder(); String line2;
-            while ((line2 = br2.readLine()) != null) sb2.append(line2);
-            br2.close();
-            JSONObject tpObject = new JSONObject(sb2.toString());
-            JSONArray tpArray = tpObject.getJSONArray("ingredients");
-
-            Set<String> avoidChemicals = new HashSet<>();
-            Set<String> cautionChemicals = new HashSet<>();
-
-            for (int i = 0; i < tpArray.length(); i++) {
-                JSONObject ing = tpArray.getJSONObject(i);
-                String name = ing.getString("name");
-                String category = ing.getString("category");
-                String risk = ing.getString("risk");
-
-                if (flaggedGroups.contains(category)) {
-                    if ("avoid".equals(risk)) avoidChemicals.add(name.toLowerCase());
-                    else if ("caution".equals(risk)) cautionChemicals.add(name.toLowerCase());
-                }
-            }
-
-            binding.llProductsContainer.removeAllViews();
-            int count = 0;
-            for (int i = 0; i < jsonArray.length(); i++) {
-                if (count >= 5) break;
-                JSONObject prodObj = jsonArray.getJSONObject(i);
-                String prodName = prodObj.getString("name");
-                String mainImage = prodObj.optString("mainImage", "");
-
-                List<String> detailedIngredientsList = new ArrayList<>();
-                if (prodObj.has("detailedIngredients")) {
-                    JSONArray detailedArray = prodObj.getJSONArray("detailedIngredients");
-                    for (int j = 0; j < detailedArray.length(); j++) {
-                        detailedIngredientsList.add(detailedArray.getString(j).toLowerCase());
-                    }
-                }
-
-                List<String> triggeredAvoids = new ArrayList<>();
-                List<String> triggeredCautions = new ArrayList<>();
-
-                for (String chem : avoidChemicals) {
-                    for (String ing : detailedIngredientsList) {
-                        if (ing.contains(chem)) triggeredAvoids.add(chem);
-                    }
-                }
-                for (String chem : cautionChemicals) {
-                    for (String ing : detailedIngredientsList) {
-                        if (ing.contains(chem)) triggeredCautions.add(chem);
-                    }
-                }
-
-                View itemView = LayoutInflater.from(getContext()).inflate(R.layout.quiz_item_product_recommendation, binding.llProductsContainer, false);
-                TextView tvProdName = itemView.findViewById(R.id.tv_product_name);
-                TextView tvProdDesc = itemView.findViewById(R.id.tv_product_desc);
-                TextView tvBadge = itemView.findViewById(R.id.tv_compatibility_badge);
-                ImageView ivBadgeIcon = itemView.findViewById(R.id.iv_badge_icon);
-                ImageView ivImage = itemView.findViewById(R.id.iv_product_image);
-
-                tvProdName.setText(prodName);
-                if (!mainImage.isEmpty()) {
-                    com.bumptech.glide.Glide.with(ivImage.getContext()).load(mainImage).placeholder(R.drawable.myphamxanh).into(ivImage);
-                } else {
-                    ivImage.setImageResource(R.drawable.myphamxanh);
-                }
-
-                if (!triggeredAvoids.isEmpty()) {
-                    ivBadgeIcon.setImageResource(R.drawable.ic_warning_triangle);
-                    ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#F04758")));
-                    tvBadge.setText("Nguy cơ kích ứng cao");
-                    tvBadge.setTextColor(Color.parseColor("#F04758"));
-                    Set<String> uniqueNames = new HashSet<>();
-                    for (String c : triggeredAvoids) uniqueNames.add(getViName(c));
-                    String namesStr = String.join(", ", uniqueNames);
-                    tvProdDesc.setText("Sản phẩm chứa " + namesStr + " không phù hợp với da nhạy cảm của bạn.");
-                } else if (!triggeredCautions.isEmpty()) {
-                    ivBadgeIcon.setImageResource(R.drawable.ic_warning_outline);
-                    ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#E29400")));
-                    tvBadge.setText("Cần thận trọng khi dùng");
-                    tvBadge.setTextColor(Color.parseColor("#E29400"));
-                    Set<String> uniqueNames = new HashSet<>();
-                    for (String c : triggeredCautions) uniqueNames.add(getViName(c));
-                    String namesStr = String.join(", ", uniqueNames);
-                    tvProdDesc.setText("Sản phẩm chứa " + namesStr + " cần lưu ý theo dõi khi sử dụng.");
-                } else {
-                    ivBadgeIcon.setImageResource(R.drawable.ic_check);
-                    ivBadgeIcon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#375633")));
-                    tvBadge.setText("Lành tính - Khuyên dùng");
-                    tvBadge.setTextColor(Color.parseColor("#375633"));
-                    tvProdDesc.setText("Công thức tối giản, lành tính giúp củng cố lớp màng ẩm tự nhiên mà không gây bí da.");
-                }
-
-                binding.llProductsContainer.addView(itemView);
-                count++;
-            }
-        } catch (Exception e) { e.printStackTrace(); }
-    }
-
     private void setupAiRoutineListeners(SharedPreferences prefs, String skinType, String recommendation,
                                          Set<String> flaggedSet, int sensitivity, int hydration,
                                          int elasticity, int sebum, boolean fromSkinProfile) {
@@ -604,30 +681,42 @@ public class QuizTestResultFragment extends RootieFragment {
     }
 
     private void loadAiRoutine(String skinType, int hydration, int sebum, int sensitivity, int elasticity, Set<String> flaggedSet) {
-        if (binding == null) return;
-        showRoutineLoading(true);
-        Context appContext = requireContext().getApplicationContext();
-        LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
-                BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
-                    SkinAiRoutineRecommender.RoutinePlan plan = null;
-                    try {
-                        plan = SkinAiRoutineRecommender.recommend(
-                                appContext, skinType, hydration, sebum, sensitivity, elasticity,
-                                flaggedSet, GEMINI_API_KEY);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    SkinAiRoutineRecommender.RoutinePlan finalPlan = plan;
-                    BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
-                        if (!isAdded() || binding == null) return kotlin.Unit.INSTANCE;
-                        showRoutineLoading(false);
-                        if (finalPlan != null) {
-                            applyRoutinePlan(finalPlan);
+        if (binding == null || !isAdded()) return;
+        try {
+            showRoutineLoading(true);
+            Context appContext = requireContext().getApplicationContext();
+            LifecycleOwnerKt.getLifecycleScope(getViewLifecycleOwner()).launchWhenStarted((scope, cont) ->
+                    BuildersKt.withContext(Dispatchers.getIO(), (s2, c2) -> {
+                        SkinAiRoutineRecommender.RoutinePlan plan = null;
+                        try {
+                            plan = SkinAiRoutineRecommender.recommend(
+                                    appContext, skinType, hydration, sebum, sensitivity, elasticity,
+                                    flaggedSet, GEMINI_API_KEY);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
+                        SkinAiRoutineRecommender.RoutinePlan finalPlan = plan;
+                        BuildersKt.withContext(Dispatchers.getMain(), (s3, c3) -> {
+                            if (!isAdded() || binding == null) return kotlin.Unit.INSTANCE;
+                            try {
+                                showRoutineLoading(false);
+                                if (finalPlan != null) {
+                                    applyRoutinePlan(finalPlan);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            return kotlin.Unit.INSTANCE;
+                        }, c2);
                         return kotlin.Unit.INSTANCE;
-                    }, c2);
-                    return kotlin.Unit.INSTANCE;
-                }, cont));
+                    }, cont));
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                showRoutineLoading(false);
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private void showRoutineLoading(boolean loading) {
@@ -758,15 +847,18 @@ public class QuizTestResultFragment extends RootieFragment {
             newLog.put("hydration", hydration);
             newLog.put("elasticity", elasticity);
             newLog.put("sebum", sebum);
+            newLog.put("score", SkinProfileMetricsHelper.computeOverallScore(newLog));
             newLog.put("scanType", "Test da");
 
             historyArray.put(newLog);
-            prefs.edit().putString("QUIZ_HISTORY_LIST", historyArray.toString()).apply();
+            String historyJson = historyArray.toString();
+            prefs.edit().putString("QUIZ_HISTORY_LIST", historyJson).apply();
 
             Context appContext = requireContext().getApplicationContext();
+            ProfileSession.setQuizHistoryList(appContext, historyJson);
             String email = ProfileSession.getEmail(appContext);
             String userId = ProfileSession.getUserId(appContext);
-            // Luôn lưu Room khi đã đăng nhập (có userId hoặc email)
+            // Luôn lưu Room khi đã đăng nhập — nguồn so sánh cũ/mới trên lịch sử da
             if ((email != null && !email.trim().isEmpty())
                     || (userId != null && !userId.trim().isEmpty())) {
                 SkinHistoryLocalStore.save(
@@ -802,23 +894,23 @@ public class QuizTestResultFragment extends RootieFragment {
             return;
         }
         quizRewardPendingUntilResume = false;
-        // Đợi layout/fragment transaction xong rồi mới cộng xu + hiện popup
         View root = getView();
         if (root == null) {
             grantQuizRewardIfPending(true, null);
             return;
         }
-        root.post(() -> {
+        // Đợi màn kết quả ổn định rồi mới cộng xu
+        root.postDelayed(() -> {
             if (!isAdded() || quizRewardGrantedThisOpen) {
                 return;
             }
             grantQuizRewardIfPending(true, null);
-        });
+        }, 600);
     }
 
     /**
-     * Cộng 100 xu quiz trên background thread (Room), rồi hiện dialog / callback trên UI.
-     * Dialog gắn vào Activity FragmentManager — tránh getViewLifecycleOwner khi view chưa sẵn sàng.
+     * Cộng 100 xu quiz trên background thread (Room), rồi hiện popup full-screen.
+     * Xu được ghi vào user_coin theo userId hiện tại — hồ sơ / đổi quà / giỏ hàng đọc cùng nguồn.
      */
     private void grantQuizRewardIfPending(boolean showDialogNow,
                                           @Nullable OnSkinProfileSavedListener listener) {
@@ -834,7 +926,7 @@ public class QuizTestResultFragment extends RootieFragment {
         final Context appContext = requireContext().getApplicationContext();
         ProfileSession.touchSession(appContext);
         final androidx.fragment.app.FragmentActivity hostActivity = getActivity();
-        if (hostActivity == null) {
+        if (hostActivity == null || hostActivity.isFinishing()) {
             quizRewardGrantedThisOpen = false;
             pendingQuizReward = true;
             if (listener != null) {
@@ -847,19 +939,26 @@ public class QuizTestResultFragment extends RootieFragment {
             boolean success = false;
             int totalBalance = 0;
             try {
-                // Phải có userId — nếu mất session thì không đánh dấu đã thưởng
-                String userId = com.veganbeauty.app.utils.ProfileSessionHelper.getEffectiveUserId(appContext);
+                ProfileSessionHelper.ensureCurrentUserInDatabase(appContext);
+                String userId = ProfileSessionHelper.getEffectiveUserId(appContext);
+                if (userId == null || userId.trim().isEmpty()) {
+                    userId = ProfileSession.getUserId(appContext);
+                }
                 if (userId == null || userId.trim().isEmpty()) {
                     throw new IllegalStateException("Quiz reward skipped: user not logged in");
                 }
-                totalBalance = com.veganbeauty.app.utils.RewardPointsHelper.awardPoints(
+                totalBalance = RewardPointsHelper.awardPoints(
                         appContext,
-                        "SYSTEM_WEEKLY_QUIZ",
+                        "SYSTEM_WEEKLY_QUIZ_" + System.currentTimeMillis(),
                         QUIZ_REWARD_POINTS,
-                        "Cập nhật làn da định kỳ hàng tuần (+" + QUIZ_REWARD_POINTS + " xu)",
+                        "Cập nhật làn da định kỳ (+" + QUIZ_REWARD_POINTS + " xu)",
                         "từ quiz cập nhật chỉ số da",
                         false
                 );
+                int verified = RewardPointsHelper.getTotalPoints(appContext);
+                if (verified >= totalBalance) {
+                    totalBalance = verified;
+                }
                 ProfileSession.markQuizRewardGranted(appContext);
                 success = true;
             } catch (Exception e) {
@@ -874,33 +973,17 @@ public class QuizTestResultFragment extends RootieFragment {
                 if (!awarded) {
                     quizRewardGrantedThisOpen = false;
                     pendingQuizReward = true;
+                    schedulePendingAiRoutineAfterReward();
                     if (listener != null) {
                         listener.onSaved(false, 0);
                     }
                     return;
                 }
                 if (showDialogNow) {
-                    try {
-                        // Dùng Activity FM + delay nhẹ: tránh IllegalStateException / crash → Welcome
-                        hostActivity.getWindow().getDecorView().postDelayed(() -> {
-                            if (!isAdded() || hostActivity.isFinishing()) {
-                                return;
-                            }
-                            try {
-                                CoinRewardDialogHelper.showWithDismissCallback(
-                                        hostActivity,
-                                        QUIZ_REWARD_POINTS,
-                                        total,
-                                        "từ quiz cập nhật chỉ số da",
-                                        null
-                                );
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }, 350);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    showSafeCoinRewardDialog(QUIZ_REWARD_POINTS, total, "từ quiz cập nhật chỉ số da", null);
+                } else if (listener == null) {
+                    // Không có dialog / listener → hoãn AI routine luôn
+                    schedulePendingAiRoutineAfterReward();
                 }
                 if (listener != null) {
                     listener.onSaved(true, QUIZ_REWARD_POINTS);
@@ -912,21 +995,108 @@ public class QuizTestResultFragment extends RootieFragment {
     private void onSaveProfileFinished(boolean rewardGranted, int rewardPoints) {
         if (!isAdded()) return;
         if (rewardGranted) {
-            showCoinRewardThen(this::popBackStackIfAdded, rewardPoints, "từ quiz cập nhật chỉ số da");
+            // Ở lại màn kết quả — không popBackStack / không out app
+            showSafeCoinRewardDialog(rewardPoints,
+                    com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()),
+                    "từ quiz cập nhật chỉ số da",
+                    null);
         } else {
             showSavedProfileDialog();
         }
     }
 
+    /** Popup xu full-screen (giống Routine) — tránh AlertDialog nhỏ bị chạm nhầm bottom nav về Home. */
+    private void showSafeCoinRewardDialog(int rewardPoints, int totalBalance,
+                                          @Nullable String source, @Nullable Runnable onDismiss) {
+        if (!isAdded() || rewardPoints <= 0) {
+            schedulePendingAiRoutineAfterReward();
+            if (onDismiss != null) onDismiss.run();
+            return;
+        }
+        try {
+            CoinRewardDialogHelper.showWithDismissCallback(
+                    this,
+                    rewardPoints,
+                    totalBalance,
+                    source,
+                    () -> {
+                        schedulePendingAiRoutineAfterReward();
+                        if (onDismiss != null && isAdded()) {
+                            onDismiss.run();
+                        }
+                    }
+            );
+        } catch (OutOfMemoryError | Exception e) {
+            e.printStackTrace();
+            try {
+                android.widget.Toast.makeText(
+                        requireContext(),
+                        "Bạn nhận +" + rewardPoints + " xu!",
+                        android.widget.Toast.LENGTH_LONG
+                ).show();
+            } catch (Exception ignored) {
+            }
+            schedulePendingAiRoutineAfterReward();
+            if (onDismiss != null) onDismiss.run();
+        }
+    }
+
+    /** Hoãn AI routine sau khi đóng popup — tránh OOM / trắng màn khi decode túi + load products cùng lúc. */
+    private void schedulePendingAiRoutineAfterReward() {
+        if (!aiRoutinePendingAfterReward || !isAdded()) {
+            return;
+        }
+        View root = getView();
+        if (root == null) {
+            startPendingAiRoutineIfNeeded();
+            return;
+        }
+        root.postDelayed(() -> {
+            if (!isAdded()) return;
+            startPendingAiRoutineIfNeeded();
+        }, 700);
+    }
+
+    private void startPendingAiRoutineIfNeeded() {
+        if (!aiRoutinePendingAfterReward || !isAdded()) {
+            return;
+        }
+        aiRoutinePendingAfterReward = false;
+        final String skinType = pendingAiSkinType;
+        final int hydration = pendingAiHydration;
+        final int sebum = pendingAiSebum;
+        final int sensitivity = pendingAiSensitivity;
+        final int elasticity = pendingAiElasticity;
+        final Set<String> flagged = pendingAiFlagged != null ? pendingAiFlagged : new HashSet<>();
+        View root = getView();
+        if (root == null) {
+            loadAiRoutine(skinType, hydration, sebum, sensitivity, elasticity, flagged);
+            return;
+        }
+        root.post(() -> {
+            if (!isAdded() || binding == null) return;
+            loadAiRoutine(skinType, hydration, sebum, sensitivity, elasticity, flagged);
+        });
+    }
+
     private void showCoinRewardThen(Runnable onDismiss, int rewardPoints, String source) {
         if (!isAdded()) return;
-        int total = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
-        CoinRewardDialogHelper.showWithDismissCallback(this, rewardPoints, total, source, onDismiss);
+        int total = 0;
+        try {
+            total = com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext());
+        } catch (Exception ignored) {
+        }
+        showSafeCoinRewardDialog(rewardPoints, total, source, onDismiss);
     }
 
     private void popBackStackIfAdded() {
+        // Chỉ pop khi user chủ động (nút Back) — không tự out sau quiz
         if (isAdded()) {
-            getParentFragmentManager().popBackStack();
+            try {
+                getParentFragmentManager().popBackStack();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -948,11 +1118,8 @@ public class QuizTestResultFragment extends RootieFragment {
             customDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        btnConfirm.setOnClickListener(v -> {
-            customDialog.dismiss();
-            popBackStackIfAdded();
-        });
-        customDialog.setOnDismissListener(dialog -> popBackStackIfAdded());
+        // Ở lại màn kết quả — không tự popBackStack (tránh cảm giác bị out)
+        btnConfirm.setOnClickListener(v -> customDialog.dismiss());
         customDialog.show();
     }
 
@@ -974,7 +1141,10 @@ public class QuizTestResultFragment extends RootieFragment {
                 (rewardGranted, rewardPoints) -> {
                     if (!isAdded()) return;
                     if (rewardGranted) {
-                        showCoinRewardThen(this::showApplyRoutineReminderDialog, rewardPoints, "từ quiz cập nhật chỉ số da");
+                        showSafeCoinRewardDialog(rewardPoints,
+                                com.veganbeauty.app.utils.RewardPointsHelper.getTotalPoints(requireContext()),
+                                "từ quiz cập nhật chỉ số da",
+                                this::showApplyRoutineReminderDialog);
                     } else {
                         showApplyRoutineReminderDialog();
                     }
@@ -982,6 +1152,7 @@ public class QuizTestResultFragment extends RootieFragment {
     }
 
     private void showApplyRoutineReminderDialog() {
+        if (!isAdded()) return;
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_quiz_save_success, null);
         TextView tvTitle = dialogView.findViewById(R.id.tv_dialog_title);
         TextView tvMsg = dialogView.findViewById(R.id.tv_dialog_message);
@@ -995,27 +1166,21 @@ public class QuizTestResultFragment extends RootieFragment {
         btnCancel.setText("ĐỂ SAU");
 
         AlertDialog customDialog = new AlertDialog.Builder(requireContext()).setView(dialogView).create();
-        if (customDialog.getWindow() != null) customDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        if (customDialog.getWindow() != null) {
+            customDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
 
-        final boolean[] isNavigatingToReminder = {false};
         btnConfirm.setOnClickListener(v -> {
-            isNavigatingToReminder[0] = true;
             customDialog.dismiss();
+            if (!isAdded()) return;
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new com.veganbeauty.app.features.routine.SkinRoutineSettingsFragment())
                     .addToBackStack(null)
-                    .commit();
+                    .commitAllowingStateLoss();
         });
 
-        btnCancel.setOnClickListener(v -> {
-            customDialog.dismiss();
-            getParentFragmentManager().popBackStack();
-        });
-
-        customDialog.setOnDismissListener(dialog -> {
-            if (!isNavigatingToReminder[0]) getParentFragmentManager().popBackStack();
-        });
-
+        // ĐỂ SAU: chỉ đóng dialog, ở lại màn kết quả — không popBackStack
+        btnCancel.setOnClickListener(v -> customDialog.dismiss());
         customDialog.show();
     }
 

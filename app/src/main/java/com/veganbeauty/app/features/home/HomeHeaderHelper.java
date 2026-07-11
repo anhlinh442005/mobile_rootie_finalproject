@@ -1,6 +1,5 @@
 package com.veganbeauty.app.features.home;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
@@ -10,8 +9,6 @@ import androidx.lifecycle.FlowLiveDataConversions;
 import com.veganbeauty.app.R;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
-import com.veganbeauty.app.data.repository.NotificationRepository;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.shop.barcode.BarcodeScanFragment;
 import com.veganbeauty.app.features.shop.product.CartBottomSheetFragment;
 import com.veganbeauty.app.features.shop.search.ShopSearchFragment;
@@ -47,21 +44,7 @@ public final class HomeHeaderHelper {
             bindCartBadge(fragment, cartBadge);
         }
 
-        View notificationBtn = NotificationBadgeHelper.findBellContainer(root);
-        if (notificationBtn != null) {
-            notificationBtn.setOnClickListener(v -> {
-                fragment.getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new AccountNotificationFragment())
-                        .addToBackStack(null)
-                        .commitAllowingStateLoss();
-            });
-        }
-
-        TextView badge = NotificationBadgeHelper.findBadgeView(root);
-        if (badge != null) {
-            NotificationBadgeHelper.styleBadge(badge, fragment.requireContext());
-            bindNotificationBadge(fragment, badge);
-        }
+        // Bell click + unread badge are wired once by RootieFragment via NotificationBellHelper.
     }
 
     private static void openSearch(Fragment fragment) {
@@ -104,13 +87,4 @@ public final class HomeHeaderHelper {
         }
     }
 
-    private static void bindNotificationBadge(Fragment fragment, TextView badge) {
-        if (fragment.getContext() == null) {
-            return;
-        }
-        FlowLiveDataConversions.asLiveData(
-                NotificationRepository.getInstance(fragment.requireContext()).getUnreadCount()
-        ).observe(fragment.getViewLifecycleOwner(), count ->
-                NotificationBadgeHelper.updateBadgeCount(badge, count));
-    }
 }

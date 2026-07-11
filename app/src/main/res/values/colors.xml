@@ -6,6 +6,8 @@
     <color name="primary_light">#D8E8C6</color>
     <color name="secondary">#677559</color>
     <color name="content">#677559</color>
+    <!-- Active "đăng lại" — xanh ROOTIE đậm, dễ nhìn hơn secondary -->
+    <color name="repost_active">#2F6B3A</color>
     <color name="tertiary">#97A49C</color>
     <color name="flashsale_v2_outer_border">#75A63E</color>
     <color name="flashsale_v2_wrapper_bg">#D8E8C6</color>

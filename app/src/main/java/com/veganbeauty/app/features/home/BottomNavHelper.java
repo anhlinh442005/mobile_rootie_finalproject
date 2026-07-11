@@ -189,9 +189,12 @@ public class BottomNavHelper {
         if (btnConfirm != null) {
             btnConfirm.setOnClickListener(v -> {
                 dialog.dismiss();
+                // Không CLEAR_TASK — giữ MainActivity, chỉ mở màn đăng nhập khi user chủ động chọn
                 Intent intent = new Intent(context, HomeWelcomeActivity.class);
                 intent.putExtra("DIRECT_LOGIN", true);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                if (!(context instanceof android.app.Activity)) {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                }
                 context.startActivity(intent);
             });
         }

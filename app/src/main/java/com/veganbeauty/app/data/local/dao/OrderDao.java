@@ -59,6 +59,22 @@ public interface OrderDao {
     @Query("UPDATE orders SET hasReview = :hasReview WHERE id = :orderId")
     int updateOrderReviewStatus(String orderId, boolean hasReview);
 
+    @Query("UPDATE orders SET hasReview = :hasReview, reviewStars = :stars, reviewText = :text, "
+            + "reviewImage = :imageJson, isAnonymous = :isAnonymous, recommendToFriends = :recommend "
+            + "WHERE id = :orderId")
+    int updateOrderReviewFull(
+            String orderId,
+            boolean hasReview,
+            int stars,
+            String text,
+            String imageJson,
+            boolean isAnonymous,
+            boolean recommend
+    );
+
+    @Query("SELECT * FROM orders WHERE hasReview = 1")
+    List<OrderEntity> getReviewedOrdersSync();
+
     @Query("DELETE FROM orders")
     int deleteAllOrders();
 
@@ -72,6 +88,9 @@ public interface OrderDao {
 
     @Query("SELECT * FROM orders WHERE userId = :userId AND status = 'Chờ xác nhận'")
     List<OrderEntity> getPendingOrdersForUserSync(String userId);
+
+    @Query("SELECT * FROM orders WHERE userId = :userId AND status = 'Hoàn tất'")
+    List<OrderEntity> getCompletedOrdersForUserSync(String userId);
 
     @Query("SELECT * FROM orders WHERE userId = :userId OR shippingPhone = :phone OR REPLACE(shippingPhone, ' ', '') = REPLACE(:phone, ' ', '')")
     List<OrderEntity> getOrdersForBuyerIdentitySync(String userId, String phone);

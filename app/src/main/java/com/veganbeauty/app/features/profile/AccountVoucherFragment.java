@@ -24,7 +24,6 @@ import com.veganbeauty.app.data.local.entities.UserGiftEntity;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.data.repository.VoucherRepository;
 import com.veganbeauty.app.databinding.AccountVoucherBinding;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.profile.VoucherListAdapter.VoucherItem;
 
@@ -89,11 +88,6 @@ public class AccountVoucherFragment extends RootieFragment {
         Context context = requireContext();
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-
-        binding.btnNotification.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new AccountNotificationFragment())
-                .addToBackStack(null)
-                .commit());
 
         systemVouchers = new ArrayList<>();
         VoucherRepository.loadActiveVouchers(context, entities -> {

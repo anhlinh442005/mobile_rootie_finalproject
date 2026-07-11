@@ -93,10 +93,6 @@ public class SkinTimeRoutineFragment extends RootieFragment {
 
         loadSteps();
 
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                        .addToBackStack(null).commit());
     }
 
     private String getRoutineDate(String type) {
@@ -158,7 +154,8 @@ public class SkinTimeRoutineFragment extends RootieFragment {
                 final int rewardPoints = 10;
                 final String source = "morning".equals(routineType) ? "từ Routine Sáng" : "từ Routine Tối";
                 final String reason = "morning".equals(routineType) ? "Hoàn thành Routine Sáng" : "Hoàn thành Routine Tối";
-                final String orderId = "morning".equals(routineType) ? "MORNING_ROUTINE" : "EVENING_ROUTINE";
+                final String orderId = ("morning".equals(routineType) ? "MORNING_ROUTINE_" : "EVENING_ROUTINE_")
+                        + targetDate;
                 awardRoutineRewardAsync(ctx, targetDate, orderId, rewardPoints, reason, source);
             } else {
                 Toast.makeText(ctx, "Routine đã được hoàn tất và nhận thưởng trước đó!", Toast.LENGTH_SHORT).show();
@@ -351,7 +348,7 @@ public class SkinTimeRoutineFragment extends RootieFragment {
         String targetDate = getRoutineDate(routineType);
 
         if (ProfileSession.isRoutineSubmitted(ctx, routineType, targetDate)) {
-            Toast.makeText(ctx, "Routine đã được chốt và hoàn thành, không thể thay đổi!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, "Routine đã hoàn thành — bấm \"Làm lại Routine\" nếu muốn làm lại và nhận xu.", Toast.LENGTH_SHORT).show();
             return;
         }
 

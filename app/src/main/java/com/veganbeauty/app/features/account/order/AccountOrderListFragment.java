@@ -25,16 +25,11 @@ import com.veganbeauty.app.features.ai.SkinAiChatFragment;
 import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderListFragmentBinding;
-import com.veganbeauty.app.data.repository.NotificationRepository;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
-import com.veganbeauty.app.features.home.NotificationBadgeHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import androidx.lifecycle.FlowLiveDataConversions;
 
 public class AccountOrderListFragment extends RootieFragment {
 
@@ -141,14 +136,6 @@ public class AccountOrderListFragment extends RootieFragment {
             }
         });
 
-        View.OnClickListener navigateToNotification = v -> {
-            getParentFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new AccountNotificationFragment())
-                .addToBackStack(null)
-                .commit();
-        };
-        _binding.layoutNotification.getRoot().setOnClickListener(navigateToNotification);
-
         _binding.rvOrders.setAdapter(orderAdapter);
 
         _binding.tabAll.setOnClickListener(v -> viewModel.setFilter("Tất cả"));
@@ -170,16 +157,6 @@ public class AccountOrderListFragment extends RootieFragment {
         });
 
         viewModel.selectedStatus.observe(getViewLifecycleOwner(), this::updateTabStyles);
-
-        FlowLiveDataConversions.asLiveData(
-                NotificationRepository.getInstance(requireContext()).getUnreadCount()
-        ).observe(getViewLifecycleOwner(), count -> {
-            if (_binding == null) return;
-            TextView badge = NotificationBadgeHelper.findBadgeView(_binding.getRoot());
-            if (badge != null) {
-                NotificationBadgeHelper.updateBadgeCount(badge, count);
-            }
-        });
     }
 
     @Override

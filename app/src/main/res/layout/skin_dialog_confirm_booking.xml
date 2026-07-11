@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/com_bg_popup_menu"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/be_vietnam_pro_bold"
+        android:gravity="center"
+        android:text="Xác nhận đặt lịch"
+        android:textColor="@color/primary"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/dialog_confirm_booking_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:gravity="start"
+        android:lineSpacingExtra="4dp"
+        android:textColor="@color/content"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialog_confirm_booking_btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/skin_bg_btn_outline_dark"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:gravity="center"
+            android:text="Hủy"
+            android:textColor="@color/primary"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/dialog_confirm_booking_btn_ok"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/com_bg_tab_active"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:gravity="center"
+            android:text="Đồng ý"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingHorizontal="4dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp">
+
+    <FrameLayout
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@drawable/home_bg_toolkit_tile">
+
+        <ImageView
+            android:id="@+id/ivToolkitIcon"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            app:tint="@color/primary"
+            tools:src="@drawable/ic_bag" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvToolkitName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/be_vietnam_pro_medium"
+        android:gravity="center_horizontal"
+        android:lineSpacingExtra="1dp"
+        android:maxLines="2"
+        android:minLines="2"
+        android:textColor="@color/primary"
+        android:textSize="11sp"
+        tools:text="Đơn hàng tiếp thị" />
+
+</LinearLayout>

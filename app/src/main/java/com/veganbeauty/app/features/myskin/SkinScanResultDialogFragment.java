@@ -28,7 +28,10 @@ import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.veganbeauty.app.R;
+import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.databinding.SkinDialogScanResultBinding;
+import com.veganbeauty.app.features.home.BottomNavHelper;
+import com.veganbeauty.app.features.routine.SkinTimeRoutineFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -91,6 +94,23 @@ public class SkinScanResultDialogFragment extends DialogFragment {
 
         _binding.dialogSkinBtnClose.setOnClickListener(v -> dismiss());
         _binding.dialogSkinImage.setOnClickListener(v -> showImageZoomDialog());
+        _binding.dialogSkinBtnRoutine.setOnClickListener(v -> {
+            if (!ProfileSession.isLoggedIn(requireContext())) {
+                BottomNavHelper.showLoginRequiredDialog(requireContext());
+                return;
+            }
+            dismiss();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(
+                            android.R.anim.slide_in_left,
+                            android.R.anim.fade_out,
+                            android.R.anim.fade_in,
+                            android.R.anim.slide_out_right
+                    )
+                    .replace(R.id.main_container, new SkinTimeRoutineFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void bindData(JSONObject data) throws Exception {

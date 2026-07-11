@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/dialog_skin_bottom_bar"
         app:layout_constraintTop_toBottomOf="@id/dialog_skin_header">
 
         <LinearLayout
@@ -321,5 +321,31 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- BOTTOM BAR -->
+    <LinearLayout
+        android:id="@+id/dialog_skin_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FAFAF4"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/dialog_skin_btn_routine"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/com_bg_tab_active"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:gravity="center"
+            android:text="Gợi ý Routine"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

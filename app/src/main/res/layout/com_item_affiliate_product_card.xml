@@ -94,14 +94,23 @@
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <Switch
+            <FrameLayout
                 android:id="@+id/swDisplay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="30dp"
                 android:layout_marginStart="16dp"
-                android:checked="true"
-                android:thumbTint="#6E846A"
-                android:trackTint="#C8E6C9" />
+                android:background="@drawable/ic_switch_track_on"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/swDisplayThumb"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="2dp"
+                    android:src="@drawable/bg_white_rounded_corner_border" />
+            </FrameLayout>
         </LinearLayout>
     </LinearLayout>
 

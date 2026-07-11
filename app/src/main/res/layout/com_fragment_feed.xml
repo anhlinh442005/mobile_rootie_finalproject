@@ -25,7 +25,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:src="@drawable/ic_home"
-            app:tint="@color/primary"
+            app:tint="@color/secondary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -35,7 +35,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:src="@drawable/ic_menu"
-            app:tint="@color/primary"
+            app:tint="@color/secondary"
             app:layout_constraintStart_toEndOf="@id/ivHome"
             android:layout_marginStart="12dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -86,7 +86,7 @@
                 android:layout_height="26dp"
                 android:layout_marginEnd="12dp"
                 android:src="@drawable/ic_plus"
-                app:tint="@color/primary" />
+                app:tint="@color/secondary" />
 
             <ImageView
                 android:id="@+id/ivSearch"
@@ -95,7 +95,7 @@
                 android:layout_marginEnd="12dp"
                 android:padding="2dp"
                 android:src="@drawable/ic_search"
-                app:tint="@color/primary" />
+                app:tint="@color/secondary" />
 
             <ImageView
                 android:id="@+id/ivNotification"
@@ -103,7 +103,7 @@
                 android:layout_height="26dp"
                 android:padding="2dp"
                 android:src="@drawable/ic_bell"
-                app:tint="@color/primary" />
+                app:tint="@color/secondary" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

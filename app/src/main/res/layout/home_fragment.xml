@@ -461,6 +461,59 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- Công cụ ROOTIE Affiliate -->
+            <LinearLayout
+                android:id="@+id/sectionToolkit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="@dimen/home_section_spacing"
+                android:background="@drawable/home_bg_toolkit_section"
+                android:elevation="1dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/btnToolkitHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingVertical="2dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_toolkit_title"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:layout_width="10dp"
+                        android:layout_height="14dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_skin_chevron_right"
+                        app:tint="@color/secondary" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvToolkit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never" />
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/tvHomeSloganMarquee"
                 android:layout_width="match_parent"

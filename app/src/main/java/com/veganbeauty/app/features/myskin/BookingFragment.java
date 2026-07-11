@@ -1,6 +1,8 @@
 package com.veganbeauty.app.features.myskin;
 
 import android.app.AlertDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -287,12 +289,23 @@ public class BookingFragment extends RootieFragment {
                 "Thời gian: " + selectedTime.getTime() + " - " + selectedDate.getDayOfWeek() + ", " + selectedDate.getDate() + "/" + year + "\n" +
                 "Chi nhánh: " + storeNameStr;
 
-        new AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
-                .setTitle("Xác nhận đặt lịch")
-                .setMessage(msg)
-                .setPositiveButton("Đồng ý", (d, w) -> completeBooking())
-                .setNegativeButton("Hủy", null)
-                .show();
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.skin_dialog_confirm_booking, null);
+        TextView messageView = dialogView.findViewById(R.id.dialog_confirm_booking_message);
+        messageView.setText(msg);
+
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        dialogView.findViewById(R.id.dialog_confirm_booking_btn_cancel).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.dialog_confirm_booking_btn_ok).setOnClickListener(v -> {
+            dialog.dismiss();
+            completeBooking();
+        });
+        dialog.show();
     }
 
     private void completeBooking() {

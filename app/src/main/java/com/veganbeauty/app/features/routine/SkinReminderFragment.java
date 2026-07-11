@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,12 +52,6 @@ public class SkinReminderFragment extends RootieFragment {
         refreshUI();
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-
-        binding.btnNotification.setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                        .addToBackStack(null)
-                        .commit());
 
         binding.btnStartMorningRoutine.setOnClickListener(v -> {
             SkinTimeRoutineFragment fragment = new SkinTimeRoutineFragment();
@@ -284,22 +277,7 @@ public class SkinReminderFragment extends RootieFragment {
     }
 
     private void handleEveningRoutineClick() {
-        Context ctx = requireContext();
-        String eveningDate = getRoutineDate("evening");
-        if (ProfileSession.isRoutineSubmitted(ctx, "evening", eveningDate)) {
-            new AlertDialog.Builder(requireContext())
-                    .setTitle("Routine Tối đã hoàn thành")
-                    .setMessage("Làm lại routine tối nay để test popup cộng xu?\n\nTick đủ các bước rồi bấm Hoàn tất Routine.")
-                    .setPositiveButton("Làm lại", (dialog, which) -> {
-                        ProfileSession.resetRoutineSession(ctx, "evening", eveningDate);
-                        Toast.makeText(ctx, "Đã reset Routine Tối. Bắt đầu làm lại nhé!", Toast.LENGTH_SHORT).show();
-                        refreshUI();
-                        openEveningRoutine();
-                    })
-                    .setNegativeButton("Xem lại", (dialog, which) -> openEveningRoutine())
-                    .show();
-            return;
-        }
+        // Vào thẳng trang Evening Routine — không hiện dialog hỏi lại
         openEveningRoutine();
     }
 
@@ -604,11 +582,16 @@ public class SkinReminderFragment extends RootieFragment {
         int muted = Color.parseColor("#8E8E93");
         int frequency = Color.parseColor("#AEAEB2");
         if (claimed) {
+            // Keep the gold coin artwork — SRC_IN would flatten it into a grey circle.
             xuText.setTextColor(muted);
-            coinIcon.setColorFilter(muted, PorterDuff.Mode.SRC_IN);
+            coinIcon.clearColorFilter();
+            coinIcon.setImageResource(R.drawable.ic_coin);
+            coinIcon.setAlpha(0.45f);
         } else {
             xuText.setTextColor(activeGoldColor);
             coinIcon.clearColorFilter();
+            coinIcon.setImageResource(R.drawable.ic_coin);
+            coinIcon.setAlpha(1f);
         }
         frequencyText.setTextColor(frequency);
     }

@@ -81,6 +81,46 @@ public final class SkinProfileMetricsHelper {
         return loadComparableSnapshots(context, userId, email).size() >= 2;
     }
 
+    /**
+     * Điểm tổng 0–100 để vẽ biểu đồ / so sánh trước–sau.
+     * Ưu tiên field {@code score}; nếu thiếu thì lấy trung bình các chỉ số đo được.
+     */
+    public static int computeOverallScore(@Nullable JSONObject obj) {
+        if (obj == null) {
+            return 0;
+        }
+        if (obj.has("score")) {
+            return Math.max(0, Math.min(100, obj.optInt("score", 0)));
+        }
+        Snapshot snap = fromPayload(obj);
+        if (!snap.hasMetrics) {
+            return 0;
+        }
+        int sum = 0;
+        int count = 0;
+        if (snap.hydration >= 0) {
+            sum += snap.hydration;
+            count++;
+        }
+        if (snap.elasticity >= 0) {
+            sum += snap.elasticity;
+            count++;
+        }
+        if (snap.sebum >= 0) {
+            // Bã nhờn quá cao/thấp đều kém — điểm gần 50 là cân bằng hơn
+            int sebumScore = 100 - Math.min(100, Math.abs(snap.sebum - 50) * 2);
+            sum += sebumScore;
+            count++;
+        }
+        if (snap.sensitivity >= 0) {
+            // Quiz: % nhạy cảm cao = kém → đảo; AI scan: score cao = tốt (đã map sẵn)
+            boolean fromAiScan = obj.has("detailedEvaluation");
+            sum += fromAiScan ? snap.sensitivity : Math.max(0, 100 - snap.sensitivity);
+            count++;
+        }
+        return count == 0 ? 0 : Math.max(0, Math.min(100, Math.round(sum / (float) count)));
+    }
+
     @NonNull
     public static Snapshot fromPayload(@Nullable JSONObject obj) {
         if (obj == null) {

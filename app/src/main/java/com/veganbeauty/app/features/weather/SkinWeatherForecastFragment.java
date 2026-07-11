@@ -40,7 +40,6 @@ import com.veganbeauty.app.data.local.ProfileSession;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.ProductEntity;
 import com.veganbeauty.app.databinding.SkinWeatherForecastBinding;
-import com.veganbeauty.app.features.account.notification.AccountNotificationFragment;
 import com.veganbeauty.app.features.ai.SkinAiChatFragment;
 import com.veganbeauty.app.features.home.BottomNavHelper;
 import com.veganbeauty.app.features.shop.product.detail.ProductDetailLauncher;
@@ -319,12 +318,6 @@ public class SkinWeatherForecastFragment extends RootieFragment {
     private void setupToolbar() {
         getBinding().btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         getBinding().btnHistory.setOnClickListener(v -> showHistoryDialog());
-        getBinding().btnNotification.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new AccountNotificationFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
     }
 
     private void loadUserProfileData() {

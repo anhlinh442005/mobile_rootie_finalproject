@@ -56,10 +56,6 @@ public class SkinCalendarFragment extends RootieFragment {
         Context ctx = requireContext();
 
         binding.btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        binding.layoutNotification.getRoot().setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.main_container, new com.veganbeauty.app.features.account.notification.AccountNotificationFragment())
-                        .addToBackStack(null).commit());
 
         com.veganbeauty.app.utils.AvatarLoader.loadAvatar(binding.ivAvatar, ProfileSession.getAvatar(ctx));
         binding.ivAvatar.setOnClickListener(v -> BottomNavHelper.navigate(this, R.id.nav_account));
