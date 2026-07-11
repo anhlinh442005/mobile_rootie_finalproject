@@ -38,3 +38,5 @@ rootie-db-*
 
 # 8. Backup drawable cu
 .drawable_lock_backup/
+# 9. File zip lon trong app (khong dua len GitHub)
+app/*.zip
