@@ -220,12 +220,21 @@ public class OrderListAdapter extends ListAdapter<OrderEntity, OrderListAdapter.
                 OnOrderClickListener onContactClick,
                 OnOrderClickListener onReviewClick
         ) {
+            android.content.Context context = binding.getRoot().getContext();
+            binding.btnActionOutlined.setTextColor(ContextCompat.getColor(context, R.color.black));
+            binding.btnActionOutlined.setStrokeColorResource(R.color.black);
+
             switch (order.getStatus()) {
                 case "Chờ xác nhận":
                     binding.btnActionOutlined.setVisibility(View.VISIBLE);
                     binding.btnActionOutlined.setText("Hủy đơn");
+                    binding.btnActionOutlined.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+                    binding.btnActionOutlined.setStrokeColorResource(android.R.color.holo_red_dark);
                     binding.btnActionOutlined.setOnClickListener(v -> onCancelClick.onClick(order));
-                    binding.btnActionFilled.setVisibility(View.GONE);
+
+                    binding.btnActionFilled.setVisibility(View.VISIBLE);
+                    binding.btnActionFilled.setText("Liên hệ hỗ trợ");
+                    binding.btnActionFilled.setOnClickListener(v -> onContactClick.onClick(order));
                     break;
                 case "Đang xử lý":
                     binding.btnActionOutlined.setVisibility(View.VISIBLE);

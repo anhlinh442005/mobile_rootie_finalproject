@@ -68,13 +68,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="14dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -120,11 +119,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="8dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -204,11 +202,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp"
                 android:visibility="gone">
 
                 <TextView
@@ -350,11 +347,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp"
                 android:visibility="gone">
 
                 <RelativeLayout
@@ -412,11 +408,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -442,18 +437,56 @@
                     android:inputType="textMultiLine" />
             </LinearLayout>
 
+                        <!-- 3.1 Ẩn thông tin sản phẩm khi giao hàng -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:elevation="0dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Ẩn thông tin sản phẩm khi giao hàng"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp" />
+
+                <FrameLayout
+                    android:id="@+id/switchHideProductInfo"
+                    android:layout_width="48dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ic_switch_track_off"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:id="@+id/switchHideProductInfoThumb"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_gravity="center_vertical|start"
+                        android:layout_marginStart="2dp"
+                        android:src="@drawable/bg_white_rounded_corner_border" />
+                </FrameLayout>
+            </LinearLayout>
+
             <!-- 3. Yêu cầu xuất hóa đơn điện tử -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="14dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -499,11 +532,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:padding="8dp"
                 android:orientation="vertical"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="8dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCheckoutItems"
@@ -518,11 +550,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="8dp">
 
                 <!-- Apply Voucher Bar -->
                 <LinearLayout
@@ -604,11 +635,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="8dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -671,30 +701,29 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 7. Thông tin thanh toán title -->
+            <!-- 7. Tóm tắt đơn hàng title -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro_regular"
-                android:text="Thông tin thanh toán"
+                android:text="Tóm tắt đơn hàng"
                 android:textColor="@color/gray_dark"
                 android:textSize="14sp"
                 android:paddingHorizontal="16dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="4dp" />
 
-            <!-- 7. Thông tin thanh toán container -->
+            <!-- 7. Tóm tắt đơn hàng container -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:elevation="2dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp">
+                android:layout_marginTop="8dp">
 
-                <!-- Tổng tiền row -->
+                <!-- Tổng phụ sản phẩm row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -706,7 +735,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:text="Tổng tiền"
+                        android:text="Tổng phụ sản phẩm"
                         android:textColor="@color/primary"
                         android:textSize="14sp" />
 
@@ -806,67 +835,9 @@
                     android:background="@color/gray_light"
                     android:layout_marginVertical="10dp" />
 
-                <!-- Thành tiền row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="6dp">
+                
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/be_vietnam_pro_bold"
-                        android:text="Thành tiền"
-                        android:textColor="@color/primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvOriginalTotalPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:textColor="@color/gray_dark"
-                        android:textSize="14sp"
-                        android:layout_marginEnd="8dp"
-                        tools:text="325.000đ" />
-
-                    <TextView
-                        android:id="@+id/tvTotalValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/be_vietnam_pro_bold"
-                        android:textColor="#B4202A"
-                        android:textSize="18sp"
-                        tools:text="241.000đ" />
-                </LinearLayout>
-
-                <!-- Tiết kiệm được row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/be_vietnam_pro_regular"
-                        android:text="Tiết kiệm được"
-                        android:textColor="@color/gray_dark"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/tvSavingsValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/be_vietnam_pro_medium"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        tools:text="81.000đ" />
-                </LinearLayout>
+                
             </LinearLayout>
 
             <!-- 8. Terms disclaimer -->
@@ -896,54 +867,61 @@
         android:paddingVertical="12dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Hide info toggle -->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
-
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+            
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:fontFamily="@font/be_vietnam_pro_medium"
-                android:text="Ẩn thông tin sản phẩm khi giao hàng"
+                android:text="Tổng (1 mặt hàng)"
                 android:textColor="@color/primary"
-                android:textSize="14sp" />
+                android:textSize="16sp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true" />
+                
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="end"
+                android:layout_alignParentEnd="true">
+                
+                <TextView
+                    android:id="@+id/tvTotalValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:textColor="#B4202A"
+                    android:textSize="18sp"
+                    tools:text="40.650đ" />
+                    
+                <TextView
+                    android:id="@+id/tvSavingsValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_regular"
+                    android:textColor="#B4202A"
+                    android:textSize="12sp"
+                    tools:text="Tiết kiệm 81.000đ" />
+            </LinearLayout>
+        </RelativeLayout>
 
-            <FrameLayout
-                android:id="@+id/switchHideProductInfo"
-                android:layout_width="48dp"
-                android:layout_height="30dp"
-                android:background="@drawable/ic_switch_track_off"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:id="@+id/switchHideProductInfoThumb"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="2dp"
-                    android:src="@drawable/bg_white_rounded_corner_border" />
-            </FrameLayout>
-        </LinearLayout>
-
-        <!-- Checkout Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCheckout"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:backgroundTint="@color/primary"
             android:fontFamily="@font/be_vietnam_pro_bold"
-            android:text="Thanh toán"
+            android:text="Đặt hàng"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            app:cornerRadius="12dp" />
+            app:cornerRadius="24dp" />
 
     </LinearLayout>
+
 
     <!-- Push Notification Overlay Slide-down Card (Geofencing banner style) -->
     <com.google.android.material.card.MaterialCardView

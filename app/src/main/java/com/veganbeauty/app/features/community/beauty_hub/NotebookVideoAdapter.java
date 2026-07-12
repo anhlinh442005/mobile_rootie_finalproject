@@ -33,6 +33,7 @@ public class NotebookVideoAdapter extends RecyclerView.Adapter<NotebookVideoAdap
         public final TextView tvTitle;
         public final TextView tvDuration;
         public final TextView tvLikes;
+        public final ImageView ivLike;
 
         public NotebookViewHolder(View view) {
             super(view);
@@ -40,6 +41,7 @@ public class NotebookVideoAdapter extends RecyclerView.Adapter<NotebookVideoAdap
             tvTitle = view.findViewById(R.id.tvTitle);
             tvDuration = view.findViewById(R.id.tvDuration);
             tvLikes = view.findViewById(R.id.tvLikes);
+            ivLike = view.findViewById(R.id.ivLike);
         }
     }
 
@@ -77,12 +79,22 @@ public class NotebookVideoAdapter extends RecyclerView.Adapter<NotebookVideoAdap
         
         holder.itemView.setOnClickListener(v -> {
             try {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getUrl()));
-                holder.itemView.getContext().startActivity(intent);
+                VideoPlayerHelper.showVideoPlayerDialog(holder.itemView.getContext(), item, null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+
+        if (holder.ivLike != null) {
+            holder.ivLike.setOnClickListener(v -> {
+                try {
+                    com.veganbeauty.app.data.local.UserMemoryManager memoryManager = new com.veganbeauty.app.data.local.UserMemoryManager(v.getContext());
+                    VideoPlayerHelper.showSaveVideoDialog(v.getContext(), item, memoryManager, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override

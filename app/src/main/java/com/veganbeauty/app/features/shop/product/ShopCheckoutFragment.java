@@ -500,10 +500,8 @@ public class ShopCheckoutFragment extends RootieFragment {
             binding.tvDetailPointsDiscount.setText(pointsDiscount > 0 ? "-" + formatter.format(pointsDiscount) : "0đ");
         }
 
-        binding.tvOriginalTotalPrice.setText(formatter.format(originalPriceSum));
-        binding.tvOriginalTotalPrice.setPaintFlags(binding.tvOriginalTotalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         binding.tvTotalValue.setText(formatter.format(finalPriceSum));
-        binding.tvSavingsValue.setText(formatter.format(totalSavings));
+        binding.tvSavingsValue.setText("Tiết kiệm " + formatter.format(totalSavings));
     }
 
     /** 1 xu = 1đ, không vượt phần còn phải trả sau voucher. */

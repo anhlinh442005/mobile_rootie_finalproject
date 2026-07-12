@@ -299,7 +299,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:fontFamily="@font/lexend"
+                                    android:fontFamily="@font/be_vietnam_pro_regular"
                                     android:text="Sản phẩm chứa 2 thành phần gây kích ứng cho làn da của bạn."
                                     android:textColor="#888888"
                                     android:textSize="12sp" />
@@ -352,7 +352,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:fontFamily="@font/lexend"
+                                    android:fontFamily="@font/be_vietnam_pro_regular"
                                     android:text="Dựa trên hồ sơ dị ứng và biểu hiện da của bạn."
                                     android:textColor="#97A49C"
                                     android:textSize="10sp" />
@@ -380,7 +380,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:fontFamily="@font/lexend"
+                                    android:fontFamily="@font/be_vietnam_pro_regular"
                                     android:text="Hồ sơ da của bạn cho thấy hàng rào bảo vệ da đang yếu."
                                     android:textColor="#97A49C"
                                     android:textSize="10sp" />

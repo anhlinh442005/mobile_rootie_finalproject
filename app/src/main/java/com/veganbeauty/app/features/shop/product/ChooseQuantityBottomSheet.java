@@ -147,6 +147,25 @@ public class ChooseQuantityBottomSheet extends BottomSheetDialogFragment {
                 android.widget.Toast.makeText(requireContext(), "Số lượng chọn vượt quá tồn kho (" + product.getStock() + ")", android.widget.Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (getActivity() != null) {
+                View cartTarget = null;
+                int[] possibleIds = {
+                    com.veganbeauty.app.R.id.home_header_cart_btn,
+                    com.veganbeauty.app.R.id.btnCart,
+                    com.veganbeauty.app.R.id.ivCart
+                };
+                for (int id : possibleIds) {
+                    View targetView = getActivity().findViewById(id);
+                    if (targetView != null && targetView.isShown()) {
+                        cartTarget = targetView;
+                        break;
+                    }
+                }
+                if (cartTarget != null) {
+                    com.veganbeauty.app.utils.CartFlyAnimationHelper.flyToCart(getActivity(), binding.ivProduct, cartTarget, binding.ivProduct);
+                }
+            }
+            
             if (listener != null) listener.onAddToCartClick(product, finalQty);
             dismiss();
         });

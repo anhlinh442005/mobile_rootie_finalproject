@@ -20,15 +20,23 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="16dp">
 
+                <!-- Placeholder to keep the title centered -->
+                <View
+                    android:layout_width="32dp"
+                    android:layout_height="32dp" />
+                
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:fontFamily="@font/be_vietnam_pro"
                     android:text="Lưu vào sổ cẩm nang"
                     android:textColor="#3E4D44"
@@ -39,14 +47,12 @@
                     android:id="@+id/ivCloseSaveDialog"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
                     android:padding="7dp"
                     android:src="@drawable/com_ic_close_handbook"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Đóng"
                     android:scaleType="fitCenter" />
-            </RelativeLayout>
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSaveCategories"
@@ -109,6 +115,17 @@
                     android:textColor="@android:color/white"
                     app:cornerRadius="8dp" />
             </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoToMyHandbook"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="16dp"
+                android:text="Đến sổ tay của tôi"
+                android:textColor="@color/primary"
+                android:backgroundTint="@color/gray_light"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                app:cornerRadius="8dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

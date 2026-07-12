@@ -13,14 +13,12 @@
     android:paddingTop="8dp"
     android:paddingBottom="14dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <FrameLayout
         android:id="@+id/vIconBg"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        app:cardBackgroundColor="@color/primary_light"
-        app:cardCornerRadius="32dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="0dp">
+        android:clipToOutline="true"
+        android:background="@drawable/bg_shortcut_gradient">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -65,7 +63,7 @@
                 tools:src="@drawable/ic_grid" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvShortcutName"

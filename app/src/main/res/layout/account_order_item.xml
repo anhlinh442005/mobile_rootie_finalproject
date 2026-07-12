@@ -233,6 +233,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/black"
                 android:textSize="14sp"
+                app:cornerRadius="12dp"
                 app:strokeColor="@color/black"
                 tools:text="Đánh giá" />
 
@@ -247,6 +248,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/white"
                 android:textSize="14sp"
+                app:cornerRadius="12dp"
                 app:backgroundTint="@color/primary"
                 app:iconTint="@color/white"
                 app:iconGravity="textStart"

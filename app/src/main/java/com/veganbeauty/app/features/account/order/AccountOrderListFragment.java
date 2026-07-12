@@ -21,7 +21,7 @@ import com.veganbeauty.app.data.local.LocalJsonReader;
 import com.veganbeauty.app.data.local.RootieDatabase;
 import com.veganbeauty.app.data.local.entities.OrderEntity;
 import com.veganbeauty.app.data.local.entities.CartItemEntity;
-import com.veganbeauty.app.features.ai.SkinAiChatFragment;
+import com.veganbeauty.app.features.ai.SkinChatFragment;
 import com.veganbeauty.app.features.shop.product.ShopCheckoutFragment;
 import com.veganbeauty.app.data.repository.OrderRepository;
 import com.veganbeauty.app.databinding.AccountOrderListFragmentBinding;
@@ -60,7 +60,7 @@ public class AccountOrderListFragment extends RootieFragment {
                     .commit();
             },
             order -> {
-                showCancelConfirmationDialog(order);
+                showCancelReasonBottomSheet(order);
             },
             order -> {
                 getParentFragmentManager().beginTransaction()
@@ -96,7 +96,7 @@ public class AccountOrderListFragment extends RootieFragment {
             },
             order -> {
                 getParentFragmentManager().beginTransaction()
-                    .replace(R.id.main_container, new SkinAiChatFragment())
+                    .replace(R.id.main_container, new SkinChatFragment())
                     .addToBackStack(null)
                     .commit();
             },
@@ -204,15 +204,35 @@ public class AccountOrderListFragment extends RootieFragment {
         }
     }
 
-    private void showCancelConfirmationDialog(OrderEntity order) {
-        new MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Hủy đơn hàng")
-            .setMessage("Bạn có chắc chắn muốn hủy đơn hàng " + order.getId() + " không?")
-            .setPositiveButton("Xác nhận", (dialog, which) -> {
-                viewModel.cancelOrder(order.getId());
-                Toast.makeText(requireContext(), "Đã hủy đơn hàng " + order.getId() + " thành công!", Toast.LENGTH_SHORT).show();
-            })
-            .setNegativeButton("Quay lại", null)
-            .show();
+    private void showCancelReasonBottomSheet(OrderEntity order) {
+        android.content.Context context = getContext();
+        if (context == null) return;
+
+        com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog = 
+                new com.google.android.material.bottomsheet.BottomSheetDialog(context);
+
+        android.view.View view = android.view.LayoutInflater.from(context).inflate(R.layout.order_bottom_sheet_cancel_reason, null);
+        bottomSheetDialog.setContentView(view);
+
+        android.widget.RadioGroup rgReasons = view.findViewById(R.id.rgReasons);
+        com.google.android.material.button.MaterialButton btnContinue = view.findViewById(R.id.btnContinue);
+
+        btnContinue.setOnClickListener(v -> {
+            int checkedId = rgReasons.getCheckedRadioButtonId();
+            if (checkedId == -1) {
+                Toast.makeText(context, "Vui lòng chọn lý do huỷ đơn", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            bottomSheetDialog.dismiss();
+            viewModel.cancelOrder(order.getId());
+            
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, AccountOrderCancelSuccessFragment.newInstance(order.getId(), order.getTotalAmount(), order.getPaymentMethod()))
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        bottomSheetDialog.show();
     }
 }

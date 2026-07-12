@@ -618,11 +618,17 @@ public class ShopDetailFragment extends RootieFragment {
 
         binding.llKeyIngredientsContainer.removeAllViews();
         List<com.veganbeauty.app.data.local.entities.KeyIngredient> keyIngredients = safeKeyIngredients(product.getKeyIngredients());
+        
+        android.graphics.Typeface fontBold = androidx.core.content.res.ResourcesCompat.getFont(ctx, R.font.be_vietnam_pro_bold);
+        android.graphics.Typeface fontRegular = androidx.core.content.res.ResourcesCompat.getFont(ctx, R.font.be_vietnam_pro_regular);
+        android.graphics.Typeface fontMedium = androidx.core.content.res.ResourcesCompat.getFont(ctx, R.font.be_vietnam_pro_medium);
+
         if (keyIngredients.isEmpty()) {
             TextView emptyTv = new TextView(ctx);
             emptyTv.setText("Chưa cập nhật thông tin thành phần nổi bật.");
             emptyTv.setTextColor(Color.parseColor("#888888"));
             emptyTv.setTextSize(14f);
+            emptyTv.setTypeface(fontRegular);
             emptyTv.setPadding(0, 8, 0, 8);
             binding.llKeyIngredientsContainer.addView(emptyTv);
         } else {
@@ -630,13 +636,14 @@ public class ShopDetailFragment extends RootieFragment {
                 TextView titleTv = new TextView(ctx);
                 titleTv.setText("• " + safeStr(ingredient.getName()));
                 titleTv.setTextColor(Color.parseColor("#333333"));
-                titleTv.setTypeface(null, Typeface.BOLD);
+                titleTv.setTypeface(fontBold);
                 titleTv.setTextSize(14f);
                 titleTv.setPadding(0, 8, 0, 4);
 
                 TextView descTv = new TextView(ctx);
                 descTv.setText(safeStr(ingredient.getDescription()));
                 descTv.setTextColor(Color.parseColor("#666666"));
+                descTv.setTypeface(fontRegular);
                 descTv.setTextSize(13f);
                 descTv.setPadding(16, 0, 0, 8);
 
@@ -690,6 +697,7 @@ public class ShopDetailFragment extends RootieFragment {
                 TextView text = new TextView(ctx);
                 text.setText(ideal);
                 text.setTextColor(Color.parseColor("#444444"));
+                text.setTypeface(fontRegular);
                 text.setTextSize(14f);
 
                 row.addView(icon);
@@ -721,6 +729,7 @@ public class ShopDetailFragment extends RootieFragment {
                 TextView text = new TextView(ctx);
                 text.setText(benefit);
                 text.setTextColor(Color.parseColor("#444444"));
+                text.setTypeface(fontRegular);
                 text.setTextSize(14f);
 
                 row.addView(icon);

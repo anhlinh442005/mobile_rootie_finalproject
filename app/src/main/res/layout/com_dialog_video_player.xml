@@ -15,15 +15,15 @@
     <!-- Close Button Overlay -->
     <ImageView
         android:id="@+id/ivClosePlayer"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_cancel"
         app:tint="@android:color/white"
-        android:padding="8dp"
+        android:padding="6dp"
         android:background="#40000000" />
 
     <!-- Bottom Content Container -->

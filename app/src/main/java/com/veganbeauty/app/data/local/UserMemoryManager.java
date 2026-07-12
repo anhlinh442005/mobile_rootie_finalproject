@@ -63,9 +63,12 @@ public class UserMemoryManager {
             JSONArray array = new JSONArray(sb.toString());
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
+                String catName = obj.optString("name", "");
+                if (catName.trim().isEmpty()) continue;
+                
                 HandbookCategory cat = new HandbookCategory(
                         obj.optString("id", UUID.randomUUID().toString()),
-                        obj.optString("name", ""),
+                        catName,
                         new ArrayList<>()
                 );
                 JSONArray videosArr = obj.optJSONArray("videos");

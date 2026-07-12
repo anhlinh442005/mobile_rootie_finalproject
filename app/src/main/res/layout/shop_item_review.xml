@@ -104,6 +104,6 @@
             android:text='"Chất kem rất mỏng nhẹ, thấm nhanh và không để lại vệt trắng trên da. Rất ưng ý!"'
             android:textColor="@color/content"
             android:textSize="13sp"
-            android:fontFamily="@font/lexend"/>
+            android:fontFamily="@font/be_vietnam_pro_regular"/>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

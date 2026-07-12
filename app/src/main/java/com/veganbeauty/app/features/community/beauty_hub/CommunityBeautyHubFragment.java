@@ -143,16 +143,7 @@ public class CommunityBeautyHubFragment extends RootieFragment {
             tvNotebookMore.setOnClickListener(v -> openHandbookFragment());
         }
 
-        binding.btnExploreFeed.setOnClickListener(v -> {
-            if (ProfileSession.isLoggedIn(requireContext())) {
-                getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.main_container, new CommunityFeedFragment())
-                        .commit();
-            } else {
-                BottomNavHelper.showLoginRequiredDialog(requireContext());
-            }
-        });
+
 
         binding.swipeRefreshLayout.setColorSchemeResources(R.color.primary);
         binding.swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -173,7 +164,7 @@ public class CommunityBeautyHubFragment extends RootieFragment {
                     } else if (dy < -15) {
                         showBottomNavigation();
                     }
-                    if (!v.canScrollVertically(1) && hasMoreBlogs && !isLoadingMoreBlogs) {
+                    if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
                         loadNextBlogPage();
                     }
                 });
